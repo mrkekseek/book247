@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests;
+use App\Role;
 use Illuminate\Http\Request;
 use Auth;
 use Illuminate\Support\MessageBag;

@@ -15,16 +15,13 @@ class CreateProfessionalDetailsTable extends Migration
         Schema::create('professional_details', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('user_id')->unsigned();
-            $table->integer('address_id')->unsigned();
-            $table->string('personal_email');
-            $table->string('mobile_number');
-            $table->date('date_of_birth');
-            $table->string('about_info');
-            $table->string('avatar_image');
+            $table->string('professional_email');
+            $table->string('job_title');
+            $table->date('profession');
+            $table->string('description');
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users');
-            $table->foreign('address_id')->references('id')->on('addresses');
         });
     }
 

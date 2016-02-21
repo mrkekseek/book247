@@ -57,11 +57,15 @@ class BackEndUserController extends Controller
         ];
         $sidebar_link= 'admin-backend-all_users';
 
+        $all_roles = Role::orderBy('name')->get();
+        //xdebug_var_dump($all_roles);
+
         return view('admin/back_users/all_list', [
             'users' => $back_users,
             'breadcrumbs' => $breadcrumbs,
             'text_parts'  => $text_parts,
             'in_sidebar'  => $sidebar_link,
+            'all_roles'   => $all_roles,
         ]);
     }
 
@@ -89,7 +93,7 @@ class BackEndUserController extends Controller
             'username' => 'required|min:6|max:30|unique:users,username',
             'password' => 'required|min:8',
             'email' => 'required|email|email|unique:users',
-            'user_type' => '',
+            'user_type' => 'required|exists:roles,id',
         ], $messages, $attributeNames);
 
         if ($validator->fails()){

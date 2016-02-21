@@ -182,9 +182,9 @@
                                             <div class="input-icon right">
                                                 <i class="fa"></i>
                                                 <select class="form-control" name="user_type">
-                                                    <option value="Category 1">Employee</option>
-                                                    <option value="Category 2">Manager</option>
-                                                    <option value="Category 3">Owner</option>
+                                                @foreach($all_roles as $role)
+                                                    <option value="{{$role->id}}">{{$role->name}}</option>
+                                                @endforeach
                                                 </select> </div>
                                             <span class="help-block"> e.g: 5500 0000 0000 0004 </span>
                                         </div>

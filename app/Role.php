@@ -27,11 +27,11 @@ class Role extends EntrustRole
 
     public function permission()
     {
-        return $this->belongsToMany('App\Permission');
+        return $this->belongsTo('App\Permission');
     }
     public function users()
     {
-        return $this->belongsToMany('App\user');
+        return $this->hasOne('App\user');
     }
     public static function rules($method, $id=0){
         switch($method){
