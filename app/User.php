@@ -41,10 +41,14 @@ class User extends Authenticatable
 
     public function roles()
     {
-        return $this->hasOne('App\Role');
+        return $this->belongsToMany('App\Role');
     }
 
     public function addresses(){
         return $this->hasMany('App\Address');
+    }
+
+    public function ProfessionalDetail(){
+        return $this->hasOne('App\ProfessionalDetail');
     }
 }

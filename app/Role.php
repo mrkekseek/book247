@@ -31,7 +31,7 @@ class Role extends EntrustRole
     }
     public function users()
     {
-        return $this->hasOne('App\user');
+        return $this->HasMany('App\user');
     }
     public static function rules($method, $id=0){
         switch($method){

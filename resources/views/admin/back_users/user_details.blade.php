@@ -63,6 +63,9 @@
                         <a href="#tab_1_3" data-toggle="tab"> Account </a>
                     </li>
                     <li>
+                        <a href="#tab_1_9" data-toggle="tab"> Personal </a>
+                    </li>
+                    <li>
                         <a href="#tab_1_6" data-toggle="tab"> Help </a>
                     </li>
                 </ul>
@@ -596,7 +599,7 @@
                                 <ul class="ver-inline-menu tabbable margin-bottom-10">
                                     <li class="active">
                                         <a data-toggle="tab" href="#tab_1-1">
-                                            <i class="fa fa-cog"></i> Personal info </a>
+                                            <i class="fa fa-cog"></i> Account info </a>
                                         <span class="after"> </span>
                                     </li>
                                     <li>
@@ -609,38 +612,66 @@
                                     </li>
                                     <li>
                                         <a data-toggle="tab" href="#tab_4-4">
-                                            <i class="fa fa-eye"></i> Privacity Settings </a>
+                                            <i class="fa fa-eye"></i> Account Permissions </a>
                                     </li>
                                 </ul>
                             </div>
                             <div class="col-md-9">
                                 <div class="tab-content">
                                     <div id="tab_1-1" class="tab-pane active">
-                                        <form role="form" action="#">
+                                        <form role="form" action="#" id="form_acc_info">
+                                            <div class="alert alert-danger display-hide">
+                                                <button class="close" data-close="alert"></button> You have some form errors. Please check below. </div>
+                                            <div class="alert alert-success display-hide">
+                                                <button class="close" data-close="alert"></button> Your form validation is successful! </div>
                                             <div class="form-group">
-                                                <label class="control-label">First Name</label>
-                                                <input type="text" placeholder="John" class="form-control" /> </div>
-                                            <div class="form-group">
-                                                <label class="control-label">Last Name</label>
-                                                <input type="text" placeholder="Doe" class="form-control" /> </div>
-                                            <div class="form-group">
-                                                <label class="control-label">Mobile Number</label>
-                                                <input type="text" placeholder="+1 646 580 DEMO (6284)" class="form-control" /> </div>
-                                            <div class="form-group">
-                                                <label class="control-label">Interests</label>
-                                                <input type="text" placeholder="Design, Web etc." class="form-control" /> </div>
-                                            <div class="form-group">
-                                                <label class="control-label">Occupation</label>
-                                                <input type="text" placeholder="Web Developer" class="form-control" /> </div>
-                                            <div class="form-group">
-                                                <label class="control-label">About</label>
-                                                <textarea class="form-control" rows="3" placeholder="We are KeenThemes!!!"></textarea>
+                                                <label class="control-label">Full Name</label>
+                                                <div class="input-icon">
+                                                    <i class="fa"></i>
+                                                    <input type="text" placeholder="Full Name" value="{{  $user->first_name .' '. $user->middle_name .' '. $user->last_name }}" class="form-control" readonly="readonly" /> </div>
                                             </div>
                                             <div class="form-group">
-                                                <label class="control-label">Website Url</label>
-                                                <input type="text" placeholder="http://www.mywebsite.com" class="form-control" /> </div>
+                                                <label class="control-label">Username</label>
+                                                <div class="input-icon">
+                                                    <i class="fa"></i>
+                                                    <input type="text" name="accountUsername" id="accountUsername" placeholder="Username" value="{{$user->username}}" class="form-control" /> </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="control-label">Email Address</label>
+                                                <div class="input-icon">
+                                                    <i class="fa"></i>
+                                                    <input type="text" name="accountEmail" id="accountEmail" placeholder="Registration Email" value="{{ $user->email }}" class="form-control" /> </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="control-label">Job Title</label>
+                                                <div class="input-icon">
+                                                    <i class="fa"></i>
+                                                    <input type="text" name="accountJobTitle" id="accountJobTitle" placeholder="Design, Web etc." value="{{ @$professional->job_title }}" class="form-control" /> </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="control-label">Profession</label>
+                                                <div class="input-icon">
+                                                    <i class="fa"></i>
+                                                    <input type="text" name="accountProfession" id="accountProfession" value="{{ @$professional->profession }}" placeholder="Design, Web etc." class="form-control" /> </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="control-label">Description</label>
+                                                <div class="input-icon">
+                                                    <i class="fa"></i>
+                                                    <textarea name="accountDescription" id="accountDescription" class="form-control" rows="3" placeholder="We are KeenThemes!!!">{{ @$professional->description }}</textarea> </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="control-label">User Role</label>
+                                                <div class="input-icon">
+                                                    <i class="fa"></i>
+                                                    <select name="employeeRole" id="employeeRole" class="form-control">
+                                                    @foreach ($roles as $role)
+                                                        <option value="{{$role->id}}" {{ $role->id==$userRole->id?' selected="selected" ':''  }}>{{$role->name}}</option>
+                                                    @endforeach
+                                                    </select> </div>
+                                            </div>
                                             <div class="margiv-top-10">
-                                                <a href="javascript:;" class="btn green"> Save Changes </a>
+                                                <a href="javascript:;" onCLick="javascript: $('#form_acc_info').submit();" class="btn green"> Save Changes </a>
                                                 <a href="javascript:;" class="btn default"> Cancel </a>
                                             </div>
                                         </form>
@@ -1071,6 +1102,94 @@
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                    <!--end tab-pane-->
+                    <!--tab_1_9-->
+                    <div class="tab-pane" id="tab_1_9">
+                        <div class="row profile-account">
+                            <div class="col-md-3">
+                                <ul class="ver-inline-menu tabbable margin-bottom-10">
+                                    <li class="active">
+                                        <a data-toggle="tab" href="#tab_5-5">
+                                            <i class="fa fa-cog"></i> Personal info </a>
+                                        <span class="after"> </span>
+                                    </li>
+                                    <li>
+                                        <a data-toggle="tab" href="#tab_6-6">
+                                            <i class="fa fa-eye"></i> Home Address </a>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="col-md-9">
+                                <div class="tab-content">
+                                    <div id="tab_5-5" class="tab-pane active">
+                                        <form role="form" action="#">
+                                            <div class="form-group">
+                                                <label class="control-label">First Name</label>
+                                                <input type="text" name="employeeFirstName" id="employeeFirstName" placeholder="First Name" value="{{$user->first_name}}" class="form-control" /> </div>
+                                            <div class="form-group">
+                                                <label class="control-label">Middle Name</label>
+                                                <input type="text" name="employeeMiddleName" id="employeeMiddleName" placeholder="Middle Name" value="{{$user->middle_name}}" class="form-control" /> </div>
+                                            <div class="form-group">
+                                                <label class="control-label">Last Name</label>
+                                                <input type="text" name="employeeLastName" id="employeeLastName" placeholder="Last Name" value="{{$user->last_name}}" class="form-control" /> </div>
+                                            <div class="form-group">
+                                                <label class="control-label">Citizenship</label>
+                                                <select name="" class="form-control">
+                                                    @foreach ($countries as $country)
+                                                        <option value="{{ $country->id }}">{{ $country->citizenship }}</option>
+                                                    @endforeach
+                                                </select></div>
+                                            <div class="form-group">
+                                                <label class="control-label">Date of Birth</label>
+                                                <input type="text" name="employeeMobile" id="employeeMobile" placeholder="+1 234 567 8910 (6284)" class="form-control" /> </div>
+                                            <div class="form-group">
+                                                <label class="control-label">Mobile Phone Number</label>
+                                                <input type="text" name="employeeMobile" id="employeeMobile" placeholder="+1 234 567 8910 (6284)" class="form-control" /> </div>
+                                            <div class="form-group">
+                                                <label class="control-label">About</label>
+                                                <textarea name="employeeFirstName" id="employeeFirstName" class="form-control" rows="3" placeholder="We are KeenThemes!!!"></textarea>
+                                            </div>
+                                            <div class="margiv-top-10">
+                                                <a href="javascript:;" class="btn green"> Save Changes </a>
+                                                <a href="javascript:;" class="btn default"> Cancel </a>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div id="tab_6-6" class="tab-pane">
+                                        <form action="#">
+                                            <div class="form-group">
+                                                <label class="control-label">Address Line1</label>
+                                                <input type="text" name="employeeFirstName" id="employeeFirstName" placeholder="Address1" value="{{$user->first_name}}" class="form-control" /> </div>
+                                            <div class="form-group">
+                                                <label class="control-label">Address Line2</label>
+                                                <input type="text" name="employeeMiddleName" id="employeeMiddleName" placeholder="Address2" value="{{$user->middle_name}}" class="form-control" /> </div>
+                                            <div class="form-group">
+                                                <label class="control-label">City</label>
+                                                <input type="text" name="employeeLastName" id="employeeLastName" placeholder="City" value="{{$user->last_name}}" class="form-control" /> </div>
+                                            <div class="form-group">
+                                                <label class="control-label">Region</label>
+                                                <input type="text" name="employeeLastName" id="employeeLastName" placeholder="Region" value="{{$user->country_id}}" class="form-control" /> </div>
+                                            <div class="form-group">
+                                                <label class="control-label">Postal Code</label>
+                                                <input type="text" name="employeeMobile" id="employeeMobile" placeholder="Postal Code" class="form-control" /> </div>
+                                            <div class="form-group">
+                                                <label class="control-label">Country</label>
+                                                <select class="form-control" name="personalAddressCountry">
+                                                    @foreach ($countries as $country)
+                                                        <option value="{{ $country->id }}">{{ $country->name }}</option>
+                                                    @endforeach
+                                                </select></div>
+                                            <div class="margiv-top-10">
+                                                <a href="javascript:;" class="btn green"> Save Changes </a>
+                                                <a href="javascript:;" class="btn default"> Cancel </a>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            <!--end col-md-9-->
                         </div>
                     </div>
                     <!--end tab-pane-->
@@ -1653,9 +1772,10 @@
 @endsection
 
 @section('pageBelowLevelPlugins')
-    <script src="{{asset('assets/global/plugins/bootstrap-fileinput/bootstrap-fileinput.js')}}" type="text/javascript"></script>
+    <script src="{{ asset('assets/global/plugins/bootstrap-fileinput/bootstrap-fileinput.js') }}" type="text/javascript"></script>
     <script src="http://maps.google.com/maps/api/js?sensor=false" type="text/javascript"></script>
-    <script src="{{asset('assets/global/plugins/gmaps/gmaps.min.js')}}" type="text/javascript"></script>
+    <script src="{{ asset('assets/global/plugins/gmaps/gmaps.min.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('assets/global/plugins/jquery-validation/js/jquery.validate.min.js') }}" type="text/javascript"></script>
 @endsection
 
 @section('pageBelowLevelScripts')
@@ -1670,296 +1790,103 @@
 
 @section('pageCustomJScripts')
     <script type="text/javascript">
-        var TableDatatablesEditable = function () {
-
-            var handleTable = function () {
-
-                function restoreRow(oTable, nRow) {
-                    var aData = oTable.fnGetData(nRow);
-                    var jqTds = $('>td', nRow);
-
-                    for (var i = 0, iLen = jqTds.length; i < iLen; i++) {
-                        oTable.fnUpdate(aData[i], nRow, i, false);
-                    }
-
-                    oTable.fnDraw();
-                }
-
-                function editRow(oTable, nRow, dataID) {
-                    dataID = typeof dataID !== 'undefined' ? dataID : false;
-                    var aData = oTable.fnGetData(nRow);
-                    var jqTds = $('>td', nRow);
-
-                    jqTds[0].innerHTML = '<input type="text" class="form-control" value="' + aData[0] + '">';
-                    jqTds[1].innerHTML = '<input type="text" class="form-control" value="' + aData[1] + '">';
-                    jqTds[2].innerHTML = '<input type="text" class="form-control" value="' + aData[2] + '">';
-                    if (dataID==false){
-                        jqTds[3].innerHTML = '<a class="edit" href="">Save</a>';
-                    }
-                    else{
-                        jqTds[3].innerHTML = '<a class="edit" href="" id="'+dataID+'">Save</a>';
-                    }
-                    jqTds[4].innerHTML = '<a class="cancel" href="">Cancel</a>';
-                }
-
-                function saveRow(oTable, nRow) {
-                    var jqInputs = $('input', nRow);
-
-                    oTable.fnUpdate(jqInputs[0].value, nRow, 0, false);
-                    oTable.fnUpdate(jqInputs[1].value, nRow, 1, false);
-                    oTable.fnUpdate(jqInputs[2].value, nRow, 2, false);
-                    oTable.fnUpdate('<a class="edit" href="">Edit</a>', nRow, 3, false);
-                    oTable.fnUpdate('<a class="delete" href="">Delete</a>', nRow, 4, false);
-                    oTable.fnDraw();
-                }
-
-                function cancelEditRow(oTable, nRow) {
-                    var jqInputs = $('input', nRow);
-                    oTable.fnUpdate(jqInputs[0].value, nRow, 0, false);
-                    oTable.fnUpdate(jqInputs[1].value, nRow, 1, false);
-                    oTable.fnUpdate(jqInputs[2].value, nRow, 2, false);
-                    oTable.fnUpdate('<a class="edit" href="">Edit</a>', nRow, 3, false);
-                    oTable.fnDraw();
-                }
-
-                var table = $('#sample_editable_1');
-
-                var oTable = table.dataTable({
-
-                    // Uncomment below line("dom" parameter) to fix the dropdown overflow issue in the datatable cells. The default datatable layout
-                    // setup uses scrollable div(table-scrollable) with overflow:auto to enable vertical scroll(see: assets/global/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.js).
-                    // So when dropdowns used the scrollable div should be removed.
-                    //"dom": "<'row'<'col-md-6 col-sm-12'l><'col-md-6 col-sm-12'f>r>t<'row'<'col-md-5 col-sm-12'i><'col-md-7 col-sm-12'p>>",
-
-                    "lengthMenu": [
-                        [5, 15, 20, -1],
-                        [5, 15, 20, "All"] // change per page values here
-                    ],
-
-                    // Or you can use remote translation file
-                    //"language": {
-                    //   url: '//cdn.datatables.net/plug-ins/3cfcc339e89/i18n/Portuguese.json'
-                    //},
-
-                    // set the initial value
-                    "pageLength": 5,
-
-                    "language": {
-                        "lengthMenu": " _MENU_ records"
-                    },
-                    "columnDefs": [{ // set default column settings
-                        'orderable': true,
-                        'targets': [0]
-                    }, {
-                        "searchable": true,
-                        "targets": [0]
-                    }],
-                    "order": [
-                        [0, "asc"]
-                    ] // set first column as a default sort by asc
-                });
-
-                var tableWrapper = $("#sample_editable_1_wrapper");
-
-                var nEditing = null;
-                var nNew = false;
-
-                $('#sample_editable_1_new').click(function (e) {
-                    e.preventDefault();
-
-                    if (nNew && nEditing) {
-                        if (confirm("Previose row not saved. Do you want to save it ?")) {
-                            saveRow(oTable, nEditing); // save
-                            $(nEditing).find("td:first").html("Untitled");
-                            nEditing = null;
-                            nNew = false;
-
-                        } else {
-                            oTable.fnDeleteRow(nEditing); // cancel
-                            nEditing = null;
-                            nNew = false;
-
-                            return;
-                        }
-                    }
-
-                    var aiNew = oTable.fnAddData(['', '', '', '', '']);
-                    var nRow = oTable.fnGetNodes(aiNew[0]);
-                    editRow(oTable, nRow);
-                    nEditing = nRow;
-                    nNew = true;
-                });
-
-                table.on('click', '.delete', function (e) {
-                    e.preventDefault();
-                    var roleID = $(this).attr('id');
-
-                    if (confirm("Are you sure to delete this row ?") == false) {
-                        return;
-                    }
-
-                    delete_role(roleID);
-                    if (returnStatus==false){
-                        // here we make the fields red
-                        return false;
-                    }
-
-                    var nRow = $(this).parents('tr')[0];
-                    oTable.fnDeleteRow(nRow);
-                    //alert("Deleted! Do not forget to do some ajax to sync with backend :)");
-                });
-
-                table.on('click', '.cancel', function (e) {
-                    e.preventDefault();
-                    if (nNew) {
-                        oTable.fnDeleteRow(nEditing);
-                        nEditing = null;
-                        nNew = false;
-                    } else {
-                        restoreRow(oTable, nEditing);
-                        nEditing = null;
-                    }
-                });
-
-                table.on('click', '.edit', function (e) {
-                    e.preventDefault();
-
-                    /* Get the row as a parent of the link that was clicked on */
-                    var nRow = $(this).parents('tr')[0];
-                    var roleID = $(this).attr('id');
-
-                    if (nEditing !== null && nEditing != nRow) {
-                        /* Currently editing - but not this row - restore the old before continuing to edit mode */
-                        restoreRow(oTable, nEditing);
-                        editRow(oTable, nRow, roleID);
-                        nEditing = nRow;
-                    } else if (nEditing == nRow && this.innerHTML == "Save") {
-                        /* Editing this row and want to save it */
-                        add_role_to_database(nEditing, roleID);
-                        if (returnStatus==false){
-                            // here we make the fields red
-                            return false;
-                        }
-
-                        saveRow(oTable, nEditing);
-                        nEditing = null;
-                        //alert("Updated! Do not forget to do some ajax to sync with backend :)");
-                    } else {
-                        /* No edit in progress - let's start one */
-                        editRow(oTable, nRow, roleID);
-                        nEditing = nRow;
-                    }
-                });
-            }
-
-            return {
-
-                //main function to initiate the module
-                init: function () {
-                    handleTable();
-                }
-
-            };
-
-        }();
-
-        jQuery(document).ready(function() {
-            TableDatatablesEditable.init();
-        });
-
-        var returnStatus;
-        function statusChangeReturn(new_val){
-            returnStatus = new_val;
-        }
-
         $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             }
         });
 
-        function add_role_to_database(nRow, dataID){
-            var array_vars = $('input', nRow);
-            dataID = typeof dataID !== 'undefined' ? dataID : false;
-            var fieldsName = {0:"RoleName", 1:"RoleDisplayName"};
+        var FormValidation = function () {
 
-            var name = array_vars[0].value;
-            var display_name = array_vars[1].value;
-            var description = array_vars[2].value;
-            returnStatus = true;
+            // validation using icons
+            var handleValidation1 = function() {
+                // for more info visit the official plugin documentation:
+                // http://docs.jquery.com/Plugins/Validation
 
-            if (dataID==false){
-                var method = 'post';
-            }
-            else{
-                var method = 'put';
-            }
+                var form2 = $('#form_acc_info');
+                var error2 = $('.alert-danger', form2);
+                var success2 = $('.alert-success', form2);
 
-            $.ajax({
-                url: '{{route('admin/back_users/user_roles')}}',
-                type: "post",
-                async: false,
-                data: {
-                    'name': name,
-                    'display_name': display_name,
-                    'description': description,
-                    'dataID': dataID,
-                    '_method': method,},
-                success: function (data) {
-                    if (data.success==false){
-                        var notificationTitle = data.title;
-                        var notificationMessage = data.message;
-                        var inputFields = $('#sample_editable_1').find("input");
-                        inputFields.each(function(k, v){
-                            $(this).attr('name', fieldsName[k]);
-                            $(this).addClass('border-green-meadow');
-                        });
+                form2.validate({
+                    errorElement: 'span', //default input error message container
+                    errorClass: 'help-block help-block-error', // default input error message class
+                    focusInvalid: false, // do not focus the last invalid input
+                    ignore: "",  // validate all fields including form hidden input
+                    rules: {
+                        accountUsername: {
+                            minlength: 3,
+                            required: true
+                        },
+                        accountEmail: {
+                            required: true,
+                            email: true
+                        },
+                    },
 
-                        $.each(data.errors, function(k, v){
-                            if (k=="name"){
-                                $("input[name='RoleName']").removeClass('border-green-meadow');
-                                $("input[name='RoleName']").addClass('border-red-mint');
-                            }
-                            else if(k=="display_name"){
-                                $("input[name='RoleName']").removeClass('border-green-meadow');
-                                $("input[name='RoleDisplayName']").addClass('border-red-mint');
-                            }
-                        });
+                    invalidHandler: function (event, validator) { //display error alert on form submit
+                        success2.hide();
+                        error2.show();
+                        App.scrollTo(error2, -200);
+                    },
 
-                        show_notification(notificationTitle, notificationMessage, 'ruby', 10000, false);
-                        statusChangeReturn(false);
+                    errorPlacement: function (error, element) { // render error placement for each input type
+                        var icon = $(element).parent('.input-icon').children('i');
+                        icon.removeClass('fa-check').addClass("fa-warning");
+                        icon.attr("data-original-title", error.text()).tooltip({'container': 'body'});
+                    },
+
+                    highlight: function (element) { // hightlight error inputs
+                        $(element)
+                                .closest('.form-group').removeClass("has-success").addClass('has-error'); // set error class to the control group
+                    },
+
+                    unhighlight: function (element) { // revert the change done by hightlight
+
+                    },
+
+                    success: function (label, element) {
+                        var icon = $(element).parent('.input-icon').children('i');
+                        $(element).closest('.form-group').removeClass('has-error').addClass('has-success'); // set success class to the control group
+                        icon.removeClass("fa-warning").addClass("fa-check");
+                    },
+
+                    submitHandler: function (form) {
+                        success2.show();
+                        error2.hide();
+                        store_account_info(); // submit the form
                     }
-                    else{
-                        var notificationTitle = data.title;
-                        var notificationMessage = data.message;
-                        show_notification(notificationTitle, notificationMessage, 'lime', 10000, false);
-                    }
+                });
+            }
+
+            return {
+                //main function to initiate the module
+                init: function () {
+                    handleValidation1();
                 }
-            });
-        }
 
-        function delete_role(roleID){
-            returnStatus = true;
+            };
+
+        }();
+
+        $(document).ready(function(){
+            FormValidation.init();
+        });
+
+        function store_account_info(){
             $.ajax({
-                url: '{{route('admin/back_users/user_roles')}}',
+                url: '{{route('admin/back_users/view_user/acc_info', ['id'=>$user->id])}}',
                 type: "post",
-                async: false,
                 data: {
-                    'dataID'  : roleID,
-                    '_method' : 'delete',},
-                success: function (data) {
-                    if (data.success==false){
-                        var notificationTitle = data.title;
-                        var notificationMessage = data.message;
-
-                        show_notification(notificationTitle, notificationMessage, 'ruby', 10000, false);
-                        statusChangeReturn(false);
-                    }
-                    else{
-                        var notificationTitle = data.title;
-                        var notificationMessage = data.message;
-                        show_notification(notificationTitle, notificationMessage, 'lime', 10000, false);
-                    }
+                    'accountUsername': $('input[name=accountUsername]').val(),
+                    'accountEmail': $('input[name=accountEmail]').val(),
+                    'accountJobTitle': $('input[name=accountJobTitle]').val(),
+                    'accountProfession': $('input[name=accountProfession]').val(),
+                    'accountDescription': $('textarea[name=accountDescription]').val(),
+                    'employeeRole': $('select[name=employeeRole]').val(),
+                    '_method': 'post',
+                },
+                success: function(data){
+                    alert(data);
                 }
             });
         }

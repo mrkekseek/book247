@@ -8,6 +8,9 @@
  * @package Zizaco\Entrust
  */
 
+use App\Permission;
+use App\Role;
+
 return [
 
     /*
@@ -19,7 +22,7 @@ return [
     | the role if it is in a different namespace.
     |
     */
-    'role' => App\Role::class,
+    'role' => Role::class,
 
     /*
     |--------------------------------------------------------------------------
@@ -40,7 +43,7 @@ return [
     | Update the permission if it is in a different namespace.
     |
     */
-    'permission' => App\Permission::class,
+    'permission' => Permission::class,
 
     /*
     |--------------------------------------------------------------------------

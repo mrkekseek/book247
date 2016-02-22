@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\ProfessionalDetail;
 use Illuminate\Http\Response;
 use Mockery\CountValidator\Exception;
 use Validator;
@@ -10,6 +11,7 @@ use App\Http\Requests;
 use App\User;
 use Auth;
 use \App\Role;
+use Webpatser\Countries\Countries;
 
 class BackEndUserController extends Controller
 {
@@ -76,7 +78,7 @@ class BackEndUserController extends Controller
      */
     public function create(Request $request)
     {
-        $vars = $request->only('first_name', 'middle_name', 'last_name', 'email', 'user_type', 'username', 'password');
+        $vars = $request->only('first_name', 'middle_name', 'last_name', 'email', 'user_type', 'username', 'password', 'user_type');
         $messages = array(
             'email.unique' => 'Please use an email that is not in the database',
         );
@@ -108,6 +110,9 @@ class BackEndUserController extends Controller
         $credentials['password'] = bcrypt($credentials['password']);
         try {
             $user = User::create($credentials);
+            // attach the roles to the new created user
+            $user->attachRole($vars['user_type']);
+
         } catch (Exception $e) {
             return Response::json(['error' => 'User already exists.'], Response::HTTP_CONFLICT);
         }
@@ -137,7 +142,7 @@ class BackEndUserController extends Controller
         if (!Auth::check()) {
             return redirect()->intended(route('admin/login'));
         }
-        $back_user = User::find($id);
+        $back_user = User::with('roles')->find($id);
 //xdebug_var_dump($back_user);
         $breadcrumbs = [
             'Home'              => route('admin'),
@@ -152,8 +157,18 @@ class BackEndUserController extends Controller
         ];
         $sidebar_link= 'admin-backend-all_users';
 
+        $userRole = $back_user->roles[0];
+        $userProfessional = $back_user->ProfessionalDetail;
+
+        $roles = Role::all();
+        $countries = Countries::orderBy('name')->get();
+
         return view('admin/back_users/user_details', [
-            'user' => $back_user,
+            'user'      => $back_user,
+            'userRole'  => $userRole,
+            'professional' => $userProfessional,
+            'countries' => $countries,
+            'roles'     => $roles,
             'breadcrumbs' => $breadcrumbs,
             'text_parts'  => $text_parts,
             'in_sidebar'  => $sidebar_link,
@@ -178,7 +193,60 @@ class BackEndUserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update_account_info(Request $request, $id)
+    {
+        if (!Auth::check()) {
+            return redirect()->intended(route('admin/login'));
+        }
+        $vars = $request->only('accountDescription', 'accountJobTitle', 'accountProfession', 'accountEmail', 'accountUsername', 'employeeRole');
+        $userVars = array('username'=>$vars["accountUsername"], 'email'=>$vars["accountEmail"]);
+        $user = User::find($id);
+
+        $validator = Validator::make($userVars, [
+            'username' => 'required|min:6|max:30|unique:users,username, '.$id.', id',
+            'email' => 'required|email|email|unique:users, email, '.$id.', id',
+        ]);
+
+        if ($validator->fails()){
+            //return array(
+            //    'success' => false,
+            //    'errors' => $validator->getMessageBag()->toArray()
+            //);
+        }
+        else{
+            $user->username = $vars["accountUsername"];
+            $user->email    = $vars["accountEmail"];
+            $user->save();
+
+            $user->attachRole($vars['employeeRole']);
+        }
+
+        $professionData = array('job_title'=>$vars['accountJobTitle'], 'profession'=>$vars['accountProfession'], 'description'=>$vars['accountDescription'], 'user_id'=>$id);
+        $professionalDetails = ProfessionalDetail::firstOrNew(array('user_id'=>$id));
+        $professionalDetails->job_title   = $professionData['job_title'];
+        $professionalDetails->profession  = $professionData['profession'];
+        $professionalDetails->description = $professionData['description'];
+        $professionalDetails->save();
+
+        return "bine";
+    }
+
+    public function update_account_avatar(Request $request, $id)
+    {
+        //
+    }
+
+    public function update_account_permission(Request $request, $id)
+    {
+        //
+    }
+
+    public function update_personal_info(Request $request, $id)
+    {
+        //
+    }
+
+    public function update_personal_address(Request $request, $id)
     {
         //
     }

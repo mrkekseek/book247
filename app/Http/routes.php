@@ -95,4 +95,9 @@ Route::group(['middleware' => 'web'], function () {
         'as' => 'admin/back_users/view_user/',
         'uses' => 'BackEndUserController@show',
     ]);
+
+    Route::post('admin/back_users/view_user/{id}/acc_info', [
+        'as' => 'admin/back_users/view_user/acc_info',
+        'uses' => 'BackEndUserController@update_account_info',
+    ]);
 });
