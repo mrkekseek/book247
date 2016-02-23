@@ -157,8 +157,14 @@ class BackEndUserController extends Controller
         ];
         $sidebar_link= 'admin-backend-all_users';
 
-        $userRole = $back_user->roles[0];
+        @$userRole = $back_user->roles[0];
+        if (!$userRole){
+            $defaultRole = Role::where('name','employee')->get();
+            $userRole = $defaultRole[0];
+        }
+
         $userProfessional = $back_user->ProfessionalDetail;
+        $userPersonal = $back_user->PersonalDetails;
 
         $roles = Role::all();
         $countries = Countries::orderBy('name')->get();
@@ -167,6 +173,7 @@ class BackEndUserController extends Controller
             'user'      => $back_user,
             'userRole'  => $userRole,
             'professional' => $userProfessional,
+            'personal'  => $userPersonal,
             'countries' => $countries,
             'roles'     => $roles,
             'breadcrumbs' => $breadcrumbs,
@@ -200,11 +207,11 @@ class BackEndUserController extends Controller
         }
         $vars = $request->only('accountDescription', 'accountJobTitle', 'accountProfession', 'accountEmail', 'accountUsername', 'employeeRole');
         $userVars = array('username'=>$vars["accountUsername"], 'email'=>$vars["accountEmail"]);
-        $user = User::find($id);
+        $userCh = User::with('roles')->find($id);
 
         $validator = Validator::make($userVars, [
-            'username' => 'required|min:6|max:30|unique:users,username, '.$id.', id',
-            'email' => 'required|email|email|unique:users, email, '.$id.', id',
+            'username' => 'required|min:6|max:30|unique:users,username,'.$id.',id',
+            'email' => 'required|email|email|unique:users,email,'.$id.',id',
         ]);
 
         if ($validator->fails()){
@@ -214,11 +221,12 @@ class BackEndUserController extends Controller
             //);
         }
         else{
-            $user->username = $vars["accountUsername"];
-            $user->email    = $vars["accountEmail"];
-            $user->save();
+            $userCh->username = $vars["accountUsername"];
+            $userCh->email    = $vars["accountEmail"];
+            @$userCh->detachRoles($userCh->roles);
+            $userCh->attachRole($vars['employeeRole']);
 
-            $user->attachRole($vars['employeeRole']);
+            $userCh->save();
         }
 
         $professionData = array('job_title'=>$vars['accountJobTitle'], 'profession'=>$vars['accountProfession'], 'description'=>$vars['accountDescription'], 'user_id'=>$id);

@@ -51,4 +51,8 @@ class User extends Authenticatable
     public function ProfessionalDetail(){
         return $this->hasOne('App\ProfessionalDetail');
     }
+
+    public function PersonalDetail(){
+        return $this->hasOne('App\PersonalDetail');
+    }
 }

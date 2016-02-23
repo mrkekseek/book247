@@ -2,6 +2,7 @@
 
 @section('pageLevelPlugins')
     <link href="{{ asset('assets/global/plugins/bootstrap-fileinput/bootstrap-fileinput.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/global/plugins/bootstrap-datepicker/css/bootstrap-datepicker3.min.css') }}" rel="stylesheet" type="text/css" />
 @endsection
 
 @section('themeGlobalStyle')
@@ -211,54 +212,6 @@
                                                             <a class="btn btn-sm grey-salsa btn-outline" href="javascript:;"> View </a>
                                                         </td>
                                                     </tr>
-                                                    <tr>
-                                                        <td>
-                                                            <a href="javascript:;"> WaterPure Ltd </a>
-                                                        </td>
-                                                        <td class="hidden-xs"> Payment for Jan 2013 </td>
-                                                        <td> 610.50$
-                                                            <span class="label label-danger label-sm"> Overdue </span>
-                                                        </td>
-                                                        <td>
-                                                            <a class="btn btn-sm grey-salsa btn-outline" href="javascript:;"> View </a>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>
-                                                            <a href="javascript:;"> Pixel Ltd </a>
-                                                        </td>
-                                                        <td class="hidden-xs"> Server hardware purchase </td>
-                                                        <td> 52560.10$
-                                                            <span class="label label-success label-sm"> Paid </span>
-                                                        </td>
-                                                        <td>
-                                                            <a class="btn btn-sm grey-salsa btn-outline" href="javascript:;"> View </a>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>
-                                                            <a href="javascript:;"> Smart House </a>
-                                                        </td>
-                                                        <td class="hidden-xs"> Office furniture purchase </td>
-                                                        <td> 5760.00$
-                                                            <span class="label label-warning label-sm"> Pending </span>
-                                                        </td>
-                                                        <td>
-                                                            <a class="btn btn-sm grey-salsa btn-outline" href="javascript:;"> View </a>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>
-                                                            <a href="javascript:;"> FoodMaster Ltd </a>
-                                                        </td>
-                                                        <td class="hidden-xs"> Company Anual Dinner Catering </td>
-                                                        <td> 12400.00$
-                                                            <span class="label label-success label-sm"> Paid </span>
-                                                        </td>
-                                                        <td>
-                                                            <a class="btn btn-sm grey-salsa btn-outline" href="javascript:;"> View </a>
-                                                        </td>
-                                                    </tr>
                                                     </tbody>
                                                 </table>
                                             </div>
@@ -340,246 +293,6 @@
                                                             </div>
                                                             <div class="col2">
                                                                 <div class="date"> 30 mins </div>
-                                                            </div>
-                                                        </li>
-                                                        <li>
-                                                            <div class="col1">
-                                                                <div class="cont">
-                                                                    <div class="cont-col1">
-                                                                        <div class="label label-success">
-                                                                            <i class="fa fa-bullhorn"></i>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="cont-col2">
-                                                                        <div class="desc"> New order received. Please take care of it. </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            <div class="col2">
-                                                                <div class="date"> 40 mins </div>
-                                                            </div>
-                                                        </li>
-                                                        <li>
-                                                            <div class="col1">
-                                                                <div class="cont">
-                                                                    <div class="cont-col1">
-                                                                        <div class="label label-warning">
-                                                                            <i class="fa fa-plus"></i>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="cont-col2">
-                                                                        <div class="desc"> New user registered. </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            <div class="col2">
-                                                                <div class="date"> 1.5 hours </div>
-                                                            </div>
-                                                        </li>
-                                                        <li>
-                                                            <div class="col1">
-                                                                <div class="cont">
-                                                                    <div class="cont-col1">
-                                                                        <div class="label label-success">
-                                                                            <i class="fa fa-bell-o"></i>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="cont-col2">
-                                                                        <div class="desc"> Web server hardware needs to be upgraded.
-                                                                            <span class="label label-inverse label-sm"> Overdue </span>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            <div class="col2">
-                                                                <div class="date"> 2 hours </div>
-                                                            </div>
-                                                        </li>
-                                                        <li>
-                                                            <div class="col1">
-                                                                <div class="cont">
-                                                                    <div class="cont-col1">
-                                                                        <div class="label label-default">
-                                                                            <i class="fa fa-bullhorn"></i>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="cont-col2">
-                                                                        <div class="desc"> New order received. Please take care of it. </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            <div class="col2">
-                                                                <div class="date"> 3 hours </div>
-                                                            </div>
-                                                        </li>
-                                                        <li>
-                                                            <div class="col1">
-                                                                <div class="cont">
-                                                                    <div class="cont-col1">
-                                                                        <div class="label label-warning">
-                                                                            <i class="fa fa-bullhorn"></i>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="cont-col2">
-                                                                        <div class="desc"> New order received. Please take care of it. </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            <div class="col2">
-                                                                <div class="date"> 5 hours </div>
-                                                            </div>
-                                                        </li>
-                                                        <li>
-                                                            <div class="col1">
-                                                                <div class="cont">
-                                                                    <div class="cont-col1">
-                                                                        <div class="label label-info">
-                                                                            <i class="fa fa-bullhorn"></i>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="cont-col2">
-                                                                        <div class="desc"> New order received. Please take care of it. </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            <div class="col2">
-                                                                <div class="date"> 18 hours </div>
-                                                            </div>
-                                                        </li>
-                                                        <li>
-                                                            <div class="col1">
-                                                                <div class="cont">
-                                                                    <div class="cont-col1">
-                                                                        <div class="label label-default">
-                                                                            <i class="fa fa-bullhorn"></i>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="cont-col2">
-                                                                        <div class="desc"> New order received. Please take care of it. </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            <div class="col2">
-                                                                <div class="date"> 21 hours </div>
-                                                            </div>
-                                                        </li>
-                                                        <li>
-                                                            <div class="col1">
-                                                                <div class="cont">
-                                                                    <div class="cont-col1">
-                                                                        <div class="label label-info">
-                                                                            <i class="fa fa-bullhorn"></i>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="cont-col2">
-                                                                        <div class="desc"> New order received. Please take care of it. </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            <div class="col2">
-                                                                <div class="date"> 22 hours </div>
-                                                            </div>
-                                                        </li>
-                                                        <li>
-                                                            <div class="col1">
-                                                                <div class="cont">
-                                                                    <div class="cont-col1">
-                                                                        <div class="label label-default">
-                                                                            <i class="fa fa-bullhorn"></i>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="cont-col2">
-                                                                        <div class="desc"> New order received. Please take care of it. </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            <div class="col2">
-                                                                <div class="date"> 21 hours </div>
-                                                            </div>
-                                                        </li>
-                                                        <li>
-                                                            <div class="col1">
-                                                                <div class="cont">
-                                                                    <div class="cont-col1">
-                                                                        <div class="label label-info">
-                                                                            <i class="fa fa-bullhorn"></i>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="cont-col2">
-                                                                        <div class="desc"> New order received. Please take care of it. </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            <div class="col2">
-                                                                <div class="date"> 22 hours </div>
-                                                            </div>
-                                                        </li>
-                                                        <li>
-                                                            <div class="col1">
-                                                                <div class="cont">
-                                                                    <div class="cont-col1">
-                                                                        <div class="label label-default">
-                                                                            <i class="fa fa-bullhorn"></i>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="cont-col2">
-                                                                        <div class="desc"> New order received. Please take care of it. </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            <div class="col2">
-                                                                <div class="date"> 21 hours </div>
-                                                            </div>
-                                                        </li>
-                                                        <li>
-                                                            <div class="col1">
-                                                                <div class="cont">
-                                                                    <div class="cont-col1">
-                                                                        <div class="label label-info">
-                                                                            <i class="fa fa-bullhorn"></i>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="cont-col2">
-                                                                        <div class="desc"> New order received. Please take care of it. </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            <div class="col2">
-                                                                <div class="date"> 22 hours </div>
-                                                            </div>
-                                                        </li>
-                                                        <li>
-                                                            <div class="col1">
-                                                                <div class="cont">
-                                                                    <div class="cont-col1">
-                                                                        <div class="label label-default">
-                                                                            <i class="fa fa-bullhorn"></i>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="cont-col2">
-                                                                        <div class="desc"> New order received. Please take care of it. </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            <div class="col2">
-                                                                <div class="date"> 21 hours </div>
-                                                            </div>
-                                                        </li>
-                                                        <li>
-                                                            <div class="col1">
-                                                                <div class="cont">
-                                                                    <div class="cont-col1">
-                                                                        <div class="label label-info">
-                                                                            <i class="fa fa-bullhorn"></i>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="cont-col2">
-                                                                        <div class="desc"> New order received. Please take care of it. </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            <div class="col2">
-                                                                <div class="date"> 22 hours </div>
                                                             </div>
                                                         </li>
                                                     </ul>
@@ -830,71 +543,6 @@
                                                         VHS. </div>
                                                 </div>
                                             </div>
-                                            <div class="panel panel-success">
-                                                <div class="panel-heading">
-                                                    <h4 class="panel-title">
-                                                        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1" href="#accordion1_3"> 3. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor ? </a>
-                                                    </h4>
-                                                </div>
-                                                <div id="accordion1_3" class="panel-collapse collapse">
-                                                    <div class="panel-body"> Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Anim pariatur cliche reprehenderit,
-                                                        enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf
-                                                        moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente
-                                                        ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable
-                                                        VHS. </div>
-                                                </div>
-                                            </div>
-                                            <div class="panel panel-warning">
-                                                <div class="panel-heading">
-                                                    <h4 class="panel-title">
-                                                        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1" href="#accordion1_4"> 4. Wolf moon officia aute, non cupidatat skateboard dolor brunch ? </a>
-                                                    </h4>
-                                                </div>
-                                                <div id="accordion1_4" class="panel-collapse collapse">
-                                                    <div class="panel-body"> 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee
-                                                        nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat
-                                                        craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS. </div>
-                                                </div>
-                                            </div>
-                                            <div class="panel panel-danger">
-                                                <div class="panel-heading">
-                                                    <h4 class="panel-title">
-                                                        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1" href="#accordion1_5"> 5. Leggings occaecat craft beer farm-to-table, raw denim aesthetic ? </a>
-                                                    </h4>
-                                                </div>
-                                                <div id="accordion1_5" class="panel-collapse collapse">
-                                                    <div class="panel-body"> 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee
-                                                        nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat
-                                                        craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS. Food truck quinoa nesciunt laborum eiusmod. Brunch 3
-                                                        wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et </div>
-                                                </div>
-                                            </div>
-                                            <div class="panel panel-default">
-                                                <div class="panel-heading">
-                                                    <h4 class="panel-title">
-                                                        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1" href="#accordion1_6"> 6. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth ? </a>
-                                                    </h4>
-                                                </div>
-                                                <div id="accordion1_6" class="panel-collapse collapse">
-                                                    <div class="panel-body"> 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee
-                                                        nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat
-                                                        craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS. Food truck quinoa nesciunt laborum eiusmod. Brunch 3
-                                                        wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et </div>
-                                                </div>
-                                            </div>
-                                            <div class="panel panel-default">
-                                                <div class="panel-heading">
-                                                    <h4 class="panel-title">
-                                                        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1" href="#accordion1_7"> 7. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft ? </a>
-                                                    </h4>
-                                                </div>
-                                                <div id="accordion1_7" class="panel-collapse collapse">
-                                                    <div class="panel-body"> 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee
-                                                        nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat
-                                                        craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS. Food truck quinoa nesciunt laborum eiusmod. Brunch 3
-                                                        wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et </div>
-                                                </div>
-                                            </div>
                                         </div>
                                     </div>
                                     <div id="tab_2" class="tab-pane">
@@ -930,71 +578,6 @@
                                                         moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente
                                                         ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable
                                                         VHS. </div>
-                                                </div>
-                                            </div>
-                                            <div class="panel panel-success">
-                                                <div class="panel-heading">
-                                                    <h4 class="panel-title">
-                                                        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#accordion2_3"> 3. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor ? </a>
-                                                    </h4>
-                                                </div>
-                                                <div id="accordion2_3" class="panel-collapse collapse">
-                                                    <div class="panel-body"> Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Anim pariatur cliche reprehenderit,
-                                                        enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf
-                                                        moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente
-                                                        ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable
-                                                        VHS. </div>
-                                                </div>
-                                            </div>
-                                            <div class="panel panel-default">
-                                                <div class="panel-heading">
-                                                    <h4 class="panel-title">
-                                                        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#accordion2_4"> 4. Wolf moon officia aute, non cupidatat skateboard dolor brunch ? </a>
-                                                    </h4>
-                                                </div>
-                                                <div id="accordion2_4" class="panel-collapse collapse">
-                                                    <div class="panel-body"> 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee
-                                                        nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat
-                                                        craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS. </div>
-                                                </div>
-                                            </div>
-                                            <div class="panel panel-default">
-                                                <div class="panel-heading">
-                                                    <h4 class="panel-title">
-                                                        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#accordion2_5"> 5. Leggings occaecat craft beer farm-to-table, raw denim aesthetic ? </a>
-                                                    </h4>
-                                                </div>
-                                                <div id="accordion2_5" class="panel-collapse collapse">
-                                                    <div class="panel-body"> 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee
-                                                        nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat
-                                                        craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS. Food truck quinoa nesciunt laborum eiusmod. Brunch 3
-                                                        wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et </div>
-                                                </div>
-                                            </div>
-                                            <div class="panel panel-default">
-                                                <div class="panel-heading">
-                                                    <h4 class="panel-title">
-                                                        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#accordion2_6"> 6. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth ? </a>
-                                                    </h4>
-                                                </div>
-                                                <div id="accordion2_6" class="panel-collapse collapse">
-                                                    <div class="panel-body"> 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee
-                                                        nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat
-                                                        craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS. Food truck quinoa nesciunt laborum eiusmod. Brunch 3
-                                                        wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et </div>
-                                                </div>
-                                            </div>
-                                            <div class="panel panel-default">
-                                                <div class="panel-heading">
-                                                    <h4 class="panel-title">
-                                                        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#accordion2_7"> 7. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft ? </a>
-                                                    </h4>
-                                                </div>
-                                                <div id="accordion2_7" class="panel-collapse collapse">
-                                                    <div class="panel-body"> 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee
-                                                        nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat
-                                                        craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS. Food truck quinoa nesciunt laborum eiusmod. Brunch 3
-                                                        wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -1033,71 +616,6 @@
                                                         VHS. </div>
                                                 </div>
                                             </div>
-                                            <div class="panel panel-default">
-                                                <div class="panel-heading">
-                                                    <h4 class="panel-title">
-                                                        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion3" href="#accordion3_3"> 3. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor ? </a>
-                                                    </h4>
-                                                </div>
-                                                <div id="accordion3_3" class="panel-collapse collapse">
-                                                    <div class="panel-body"> Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Anim pariatur cliche reprehenderit,
-                                                        enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf
-                                                        moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente
-                                                        ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable
-                                                        VHS. </div>
-                                                </div>
-                                            </div>
-                                            <div class="panel panel-default">
-                                                <div class="panel-heading">
-                                                    <h4 class="panel-title">
-                                                        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion3" href="#accordion3_4"> 4. Wolf moon officia aute, non cupidatat skateboard dolor brunch ? </a>
-                                                    </h4>
-                                                </div>
-                                                <div id="accordion3_4" class="panel-collapse collapse">
-                                                    <div class="panel-body"> 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee
-                                                        nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat
-                                                        craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS. </div>
-                                                </div>
-                                            </div>
-                                            <div class="panel panel-default">
-                                                <div class="panel-heading">
-                                                    <h4 class="panel-title">
-                                                        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion3" href="#accordion3_5"> 5. Leggings occaecat craft beer farm-to-table, raw denim aesthetic ? </a>
-                                                    </h4>
-                                                </div>
-                                                <div id="accordion3_5" class="panel-collapse collapse">
-                                                    <div class="panel-body"> 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee
-                                                        nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat
-                                                        craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS. Food truck quinoa nesciunt laborum eiusmod. Brunch 3
-                                                        wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et </div>
-                                                </div>
-                                            </div>
-                                            <div class="panel panel-default">
-                                                <div class="panel-heading">
-                                                    <h4 class="panel-title">
-                                                        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion3" href="#accordion3_6"> 6. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth ? </a>
-                                                    </h4>
-                                                </div>
-                                                <div id="accordion3_6" class="panel-collapse collapse">
-                                                    <div class="panel-body"> 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee
-                                                        nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat
-                                                        craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS. Food truck quinoa nesciunt laborum eiusmod. Brunch 3
-                                                        wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et </div>
-                                                </div>
-                                            </div>
-                                            <div class="panel panel-default">
-                                                <div class="panel-heading">
-                                                    <h4 class="panel-title">
-                                                        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion3" href="#accordion3_7"> 7. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft ? </a>
-                                                    </h4>
-                                                </div>
-                                                <div id="accordion3_7" class="panel-collapse collapse">
-                                                    <div class="panel-body"> 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee
-                                                        nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat
-                                                        craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS. Food truck quinoa nesciunt laborum eiusmod. Brunch 3
-                                                        wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et </div>
-                                                </div>
-                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -1124,65 +642,86 @@
                             <div class="col-md-9">
                                 <div class="tab-content">
                                     <div id="tab_5-5" class="tab-pane active">
-                                        <form role="form" action="#">
+                                        <form role="form" action="#" name="form_acc_personal" id="form_acc_personal">
+                                            <div class="alert alert-danger display-hide">
+                                                <button class="close" data-close="alert"></button> You have some form errors. Please check below. </div>
+                                            <div class="alert alert-success display-hide">
+                                                <button class="close" data-close="alert"></button> Your form validation is successful! </div>
                                             <div class="form-group">
                                                 <label class="control-label">First Name</label>
-                                                <input type="text" name="employeeFirstName" id="employeeFirstName" placeholder="First Name" value="{{$user->first_name}}" class="form-control" /> </div>
+                                                <input type="text" name="personalFirstName" id="personalFirstName" placeholder="First Name" value="{{$user->first_name}}" class="form-control" /> </div>
                                             <div class="form-group">
                                                 <label class="control-label">Middle Name</label>
-                                                <input type="text" name="employeeMiddleName" id="employeeMiddleName" placeholder="Middle Name" value="{{$user->middle_name}}" class="form-control" /> </div>
+                                                <input type="text" name="personalMiddleName" id="personalMiddleName" placeholder="Middle Name" value="{{$user->middle_name}}" class="form-control" /> </div>
                                             <div class="form-group">
                                                 <label class="control-label">Last Name</label>
-                                                <input type="text" name="employeeLastName" id="employeeLastName" placeholder="Last Name" value="{{$user->last_name}}" class="form-control" /> </div>
+                                                <input type="text" name="personalLastName" id="personalLastName" placeholder="Last Name" value="{{$user->last_name}}" class="form-control" /> </div>
                                             <div class="form-group">
                                                 <label class="control-label">Citizenship</label>
-                                                <select name="" class="form-control">
+                                                <select name="personalCountry" id="personalCountry" class="form-control">
                                                     @foreach ($countries as $country)
                                                         <option value="{{ $country->id }}">{{ $country->citizenship }}</option>
                                                     @endforeach
                                                 </select></div>
                                             <div class="form-group">
                                                 <label class="control-label">Date of Birth</label>
-                                                <input type="text" name="employeeMobile" id="employeeMobile" placeholder="+1 234 567 8910 (6284)" class="form-control" /> </div>
+                                                <div class="control-label">
+                                                    <div class="input-group input-medium date date-picker" data-date="{{ @$personal->date_of_birth }}" data-date-format="dd-mm-yyyy" data-date-viewmode="years">
+                                                        <input type="text" class="form-control" name="personalDOB" id="personalDOB" readonly>
+                                                        <span class="input-group-btn">
+                                                            <button class="btn default" type="button">
+                                                                <i class="fa fa-calendar"></i>
+                                                            </button>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="control-label">Personal Email</label>
+                                                <input type="text" name="personalEmail" id="personalEmail" placeholder="Personal Email Address" class="form-control" value="{{@$personal->personal_email}}" /> </div>
                                             <div class="form-group">
                                                 <label class="control-label">Mobile Phone Number</label>
-                                                <input type="text" name="employeeMobile" id="employeeMobile" placeholder="+1 234 567 8910 (6284)" class="form-control" /> </div>
+                                                <input type="text" name="personalPhone" id="personalPhone" placeholder="+1 234 567 8910 (6284)" class="form-control" value="{{@$personal->personal_number}}" /> </div>
                                             <div class="form-group">
                                                 <label class="control-label">About</label>
-                                                <textarea name="employeeFirstName" id="employeeFirstName" class="form-control" rows="3" placeholder="We are KeenThemes!!!"></textarea>
+                                                <textarea name="personalAbout" id="personalAbout" class="form-control" rows="3" placeholder="Other personal information">{{@$personal->about_info}}</textarea>
                                             </div>
                                             <div class="margiv-top-10">
-                                                <a href="javascript:;" class="btn green"> Save Changes </a>
+                                                <a href="javascript:;" class="btn green" onCLick="javascript: $('#form_acc_personal').submit();" > Save Changes </a>
                                                 <a href="javascript:;" class="btn default"> Cancel </a>
                                             </div>
                                         </form>
                                     </div>
                                     <div id="tab_6-6" class="tab-pane">
-                                        <form action="#">
+                                        <form action="#" name="form_personal_address" id="form_personal_address">
+                                            <div class="alert alert-danger display-hide">
+                                                <button class="close" data-close="alert"></button> You have some form errors. Please check below. </div>
+                                            <div class="alert alert-success display-hide">
+                                                <button class="close" data-close="alert"></button> Your form validation is successful! </div>
                                             <div class="form-group">
                                                 <label class="control-label">Address Line1</label>
-                                                <input type="text" name="employeeFirstName" id="employeeFirstName" placeholder="Address1" value="{{$user->first_name}}" class="form-control" /> </div>
+                                                <input type="text" name="personal_addr1" id="personal_addr1" placeholder="Address1" value="{{$user->first_name}}" class="form-control" /> </div>
                                             <div class="form-group">
                                                 <label class="control-label">Address Line2</label>
-                                                <input type="text" name="employeeMiddleName" id="employeeMiddleName" placeholder="Address2" value="{{$user->middle_name}}" class="form-control" /> </div>
+                                                <input type="text" name="personal_addr2" id="personal_addr2" placeholder="Address2" value="{{$user->middle_name}}" class="form-control" /> </div>
                                             <div class="form-group">
                                                 <label class="control-label">City</label>
-                                                <input type="text" name="employeeLastName" id="employeeLastName" placeholder="City" value="{{$user->last_name}}" class="form-control" /> </div>
+                                                <input type="text" name="personal_addr_city" id="personal_addr_city" placeholder="City" value="{{$user->last_name}}" class="form-control" /> </div>
                                             <div class="form-group">
                                                 <label class="control-label">Region</label>
-                                                <input type="text" name="employeeLastName" id="employeeLastName" placeholder="Region" value="{{$user->country_id}}" class="form-control" /> </div>
+                                                <input type="text" name="personal_addr_region" id="personal_addr_region" placeholder="Region" value="{{$user->country_id}}" class="form-control" /> </div>
                                             <div class="form-group">
                                                 <label class="control-label">Postal Code</label>
-                                                <input type="text" name="employeeMobile" id="employeeMobile" placeholder="Postal Code" class="form-control" /> </div>
+                                                <input type="text" name="personal_addr_pcode" id="personal_addr_pcode" placeholder="Postal Code" class="form-control" /> </div>
                                             <div class="form-group">
                                                 <label class="control-label">Country</label>
-                                                <select class="form-control" name="personalAddressCountry">
+                                                <select class="form-control" name="personal_addr_country" id="personal_addr_country">
                                                     @foreach ($countries as $country)
                                                         <option value="{{ $country->id }}">{{ $country->name }}</option>
                                                     @endforeach
                                                 </select></div>
                                             <div class="margiv-top-10">
-                                                <a href="javascript:;" class="btn green"> Save Changes </a>
+                                                <a href="javascript:;" class="btn green" onCLick="javascript: $('#form_personal_address').submit();"> Save Changes </a>
                                                 <a href="javascript:;" class="btn default"> Cancel </a>
                                             </div>
                                         </form>
@@ -1776,6 +1315,7 @@
     <script src="http://maps.google.com/maps/api/js?sensor=false" type="text/javascript"></script>
     <script src="{{ asset('assets/global/plugins/gmaps/gmaps.min.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/global/plugins/jquery-validation/js/jquery.validate.min.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('assets/global/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}" type="text/javascript"></script>
 @endsection
 
 @section('pageBelowLevelScripts')
@@ -1796,13 +1336,106 @@
             }
         });
 
+        var ComponentsDateTimePickers = function () {
+
+            var handleDatePickers = function () {
+
+                if (jQuery().datepicker) {
+                    $('.date-picker').datepicker({
+                        rtl: App.isRTL(),
+                        orientation: "left",
+                        autoclose: true
+                    });
+                    //$('body').removeClass("modal-open"); // fix bug when inline picker is used in modal
+                }
+
+                /* Workaround to restrict daterange past date select: http://stackoverflow.com/questions/11933173/how-to-restrict-the-selectable-date-ranges-in-bootstrap-datepicker */
+            }
+
+            return {
+                //main function to initiate the module
+                init: function () {
+                    handleDatePickers();
+                }
+            };
+
+        }();
+
+        if (App.isAngularJsApp() === false) {
+            jQuery(document).ready(function() {
+                ComponentsDateTimePickers.init();
+            });
+        }
+
         var FormValidation = function () {
 
-            // validation using icons
             var handleValidation1 = function() {
+                var form1 = $('#form_acc_personal');
+                var error1 = $('.alert-danger', form1);
+                var success1 = $('.alert-success', form1);
+
+                form1.validate({
+                    errorElement: 'span', //default input error message container
+                    errorClass: 'help-block help-block-error', // default input error message class
+                    focusInvalid: false, // do not focus the last invalid input
+                    ignore: "",  // validate all fields including form hidden input
+                    rules: {
+                        personalFirstName: {
+                            minlength: 3,
+                            required: true
+                        },
+                        personalLastName: {
+                            minlength: 3,
+                            required: true
+                        },
+                        personalDOB: {
+                            required: true,
+                            date:true
+                        },
+                        personalEmail: {
+                            required: true,
+                            email: true
+                        },
+                    },
+
+                    invalidHandler: function (event, validator) { //display error alert on form submit
+                        success1.hide();
+                        error1.show();
+                        App.scrollTo(error1, -200);
+                    },
+
+                    errorPlacement: function (error, element) { // render error placement for each input type
+                        var icon = $(element).parent('.input-icon').children('i');
+                        icon.removeClass('fa-check').addClass("fa-warning");
+                        icon.attr("data-original-title", error.text()).tooltip({'container': 'body'});
+                    },
+
+                    highlight: function (element) { // hightlight error inputs
+                        $(element)
+                                .closest('.form-group').removeClass("has-success").addClass('has-error'); // set error class to the control group
+                    },
+
+                    unhighlight: function (element) { // revert the change done by hightlight
+
+                    },
+
+                    success: function (label, element) {
+                        var icon = $(element).parent('.input-icon').children('i');
+                        $(element).closest('.form-group').removeClass('has-error').addClass('has-success'); // set success class to the control group
+                        icon.removeClass("fa-warning").addClass("fa-check");
+                    },
+
+                    submitHandler: function (form) {
+                        success1.show();
+                        error1.hide();
+                        store_account_personal(); // submit the form
+                    }
+                });
+            }
+
+            var handleValidation2 = function() {
                 // for more info visit the official plugin documentation:
                 // http://docs.jquery.com/Plugins/Validation
-
                 var form2 = $('#form_acc_info');
                 var error2 = $('.alert-danger', form2);
                 var success2 = $('.alert-success', form2);
@@ -1858,10 +1491,76 @@
                 });
             }
 
+            var handleValidation3 = function() {
+                var form3 = $('#form_personal_address');
+                var error3 = $('.alert-danger', form3);
+                var success3 = $('.alert-success', form3);
+
+                form3.validate({
+                    errorElement: 'span', //default input error message container
+                    errorClass: 'help-block help-block-error', // default input error message class
+                    focusInvalid: false, // do not focus the last invalid input
+                    ignore: "",  // validate all fields including form hidden input
+                    rules: {
+                        personal_addr1: {
+                            minlength: 5,
+                            required: true
+                        },
+                        personal_addr_city: {
+                            minlength: 3,
+                            required: true
+                        },
+                        personal_addr_region: {
+                            minlength:2,
+                            required: true
+                        },
+                        personal_addr_pcode: {
+                            minlength: 2,
+                            required: true
+                        },
+                    },
+
+                    invalidHandler: function (event, validator) { //display error alert on form submit
+                        success3.hide();
+                        error3.show();
+                        App.scrollTo(error3, -200);
+                    },
+
+                    errorPlacement: function (error, element) { // render error placement for each input type
+                        var icon = $(element).parent('.input-icon').children('i');
+                        icon.removeClass('fa-check').addClass("fa-warning");
+                        icon.attr("data-original-title", error.text()).tooltip({'container': 'body'});
+                    },
+
+                    highlight: function (element) { // hightlight error inputs
+                        $(element)
+                                .closest('.form-group').removeClass("has-success").addClass('has-error'); // set error class to the control group
+                    },
+
+                    unhighlight: function (element) { // revert the change done by hightlight
+
+                    },
+
+                    success: function (label, element) {
+                        var icon = $(element).parent('.input-icon').children('i');
+                        $(element).closest('.form-group').removeClass('has-error').addClass('has-success'); // set success class to the control group
+                        icon.removeClass("fa-warning").addClass("fa-check");
+                    },
+
+                    submitHandler: function (form) {
+                        success3.show();
+                        error3.hide();
+                        store_account_personal(); // submit the form
+                    }
+                });
+            }
+
             return {
                 //main function to initiate the module
                 init: function () {
                     handleValidation1();
+                    handleValidation2();
+                    handleValidation3();
                 }
 
             };
