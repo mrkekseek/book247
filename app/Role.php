@@ -29,10 +29,12 @@ class Role extends EntrustRole
     {
         return $this->belongsTo('App\Permission');
     }
+
     public function users()
     {
         return $this->HasMany('App\user');
     }
+
     public static function rules($method, $id=0){
         switch($method){
             case 'GET':

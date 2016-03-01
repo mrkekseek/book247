@@ -106,15 +106,13 @@
                                         </p>
                                         <ul class="list-inline">
                                             <li>
-                                                <i class="fa fa-map-marker"></i> Spain </li>
+                                                <i class="fa fa-map-marker"></i> {{ isset($countryDetails->full_name) ? $countryDetails->full_name : 'nationality not set' }} </li>
                                             <li>
-                                                <i class="fa fa-calendar"></i> 18 Jan 1982 </li>
+                                                <i class="fa fa-calendar"></i> {{ isset($personal->dob_to_show) ? $personal->dob_to_show : 'date of birth not set' }} </li>
                                             <li>
-                                                <i class="fa fa-briefcase"></i> Design </li>
+                                                <i class="fa fa-briefcase"></i> {{ isset($professional->job_title) ? $professional->job_title : 'job title' }} </li>
                                             <li>
-                                                <i class="fa fa-star"></i> Top Seller </li>
-                                            <li>
-                                                <i class="fa fa-heart"></i> BASE Jumping </li>
+                                                <i class="fa fa-star"></i> {{ isset($professional->profession) ? $professional->profession : 'profession' }} </li>
                                         </ul>
                                     </div>
                                     <!--end col-md-8-->
@@ -379,7 +377,7 @@
                                                     <i class="fa"></i>
                                                     <select name="employeeRole" id="employeeRole" class="form-control">
                                                     @foreach ($roles as $role)
-                                                        <option value="{{$role->id}}" {{ $role->id==$userRole->id?' selected="selected" ':''  }}>{{$role->name}}</option>
+                                                        <option value="{{$role->id}}" {!! $role->id==$userRole->id?' selected="selected" ':'' !!}>{{$role->name}}</option>
                                                     @endforeach
                                                     </select> </div>
                                             </div>
@@ -390,8 +388,6 @@
                                         </form>
                                     </div>
                                     <div id="tab_2-2" class="tab-pane">
-                                        <p> Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod.
-                                        </p>
                                         <form action="#" role="form">
                                             <div class="form-group">
                                                 <div class="fileinput fileinput-new" data-provides="fileinput">
@@ -399,10 +395,10 @@
                                                         <img src="http://www.placehold.it/200x150/EFEFEF/AAAAAA&amp;text=no+image" alt="" /> </div>
                                                     <div class="fileinput-preview fileinput-exists thumbnail" style="max-width: 200px; max-height: 150px;"> </div>
                                                     <div>
-                                                                    <span class="btn default btn-file">
-                                                                        <span class="fileinput-new"> Select image </span>
-                                                                        <span class="fileinput-exists"> Change </span>
-                                                                        <input type="file" name="..."> </span>
+                                                        <span class="btn default btn-file">
+                                                            <span class="fileinput-new"> Select image </span>
+                                                            <span class="fileinput-exists"> Change </span>
+                                                            <input type="file" name="..."> </span>
                                                         <a href="javascript:;" class="btn default fileinput-exists" data-dismiss="fileinput"> Remove </a>
                                                     </div>
                                                 </div>
@@ -418,18 +414,25 @@
                                         </form>
                                     </div>
                                     <div id="tab_3-3" class="tab-pane">
-                                        <form action="#">
-                                            <div class="form-group">
-                                                <label class="control-label">Current Password</label>
-                                                <input type="password" class="form-control" /> </div>
+                                        <form action="#" id="form_password_update" role="form">
+                                            <div class="alert alert-danger display-hide">
+                                                <button class="close" data-close="alert"></button> You have some form errors. Please check below. </div>
+                                            <div class="alert alert-success display-hide">
+                                                <button class="close" data-close="alert"></button> Your form validation is successful! </div>
                                             <div class="form-group">
                                                 <label class="control-label">New Password</label>
-                                                <input type="password" class="form-control" /> </div>
+                                                <div class="input-icon">
+                                                    <i class="fa"></i>
+                                                    <input type="password" name="new_password1" id="new_password1" class="form-control" /> </div>
+                                            </div>
                                             <div class="form-group">
                                                 <label class="control-label">Re-type New Password</label>
-                                                <input type="password" class="form-control" /> </div>
+                                                <div class="input-icon">
+                                                    <i class="fa"></i>
+                                                    <input type="password" name="new_password2" id="new_password2" class="form-control" /> </div>
+                                            </div>
                                             <div class="margin-top-10">
-                                                <a href="javascript:;" class="btn green"> Change Password </a>
+                                                <a href="javascript:;" class="btn green" onCLick="javascript: $('#form_password_update').submit();"> Change Password </a>
                                                 <a href="javascript:;" class="btn default"> Cancel </a>
                                             </div>
                                         </form>
@@ -450,21 +453,27 @@
                                                     <td> Enim eiusmod high life accusamus terry richardson ad squid wolf moon </td>
                                                     <td>
                                                         <label class="uniform-inline">
-                                                            <input type="checkbox" value="" /> Yes </label>
+                                                            <input type="radio" name="optionsRadios2" value="option1" /> Yes </label>
+                                                        <label class="uniform-inline">
+                                                            <input type="radio" name="optionsRadios2" value="option2" checked/> No </label>
                                                     </td>
                                                 </tr>
                                                 <tr>
                                                     <td> Enim eiusmod high life accusamus terry richardson ad squid wolf moon </td>
                                                     <td>
                                                         <label class="uniform-inline">
-                                                            <input type="checkbox" value="" /> Yes </label>
+                                                            <input type="radio" name="optionsRadios3" value="option1" /> Yes </label>
+                                                        <label class="uniform-inline">
+                                                            <input type="radio" name="optionsRadios3" value="option2" checked/> No </label>
                                                     </td>
                                                 </tr>
                                                 <tr>
                                                     <td> Enim eiusmod high life accusamus terry richardson ad squid wolf moon </td>
                                                     <td>
                                                         <label class="uniform-inline">
-                                                            <input type="checkbox" value="" /> Yes </label>
+                                                            <input type="radio" name="optionsRadios4" value="option1" /> Yes </label>
+                                                        <label class="uniform-inline">
+                                                            <input type="radio" name="optionsRadios4" value="option2" checked/> No </label>
                                                     </td>
                                                 </tr>
                                             </table>
@@ -660,14 +669,14 @@
                                                 <label class="control-label">Citizenship</label>
                                                 <select name="personalCountry" id="personalCountry" class="form-control">
                                                     @foreach ($countries as $country)
-                                                        <option value="{{ $country->id }}">{{ $country->citizenship }}</option>
+                                                        <option value="{{ $country->id }}" {!! ($country->id==$user->country_id ? ' selected="selected" ' : '') !!}>{{ $country->citizenship }}</option>
                                                     @endforeach
                                                 </select></div>
                                             <div class="form-group">
                                                 <label class="control-label">Date of Birth</label>
                                                 <div class="control-label">
-                                                    <div class="input-group input-medium date date-picker" data-date="{{ @$personal->date_of_birth }}" data-date-format="dd-mm-yyyy" data-date-viewmode="years">
-                                                        <input type="text" class="form-control" name="personalDOB" id="personalDOB" readonly>
+                                                    <div class="input-group input-medium date date-picker" data-date="{{ @$personal->dob_format }}" data-date-format="dd-mm-yyyy" data-date-viewmode="years">
+                                                        <input type="text" class="form-control" name="personalDOB" id="personalDOB" value="{{ @$personal->dob_format }}" readonly>
                                                         <span class="input-group-btn">
                                                             <button class="btn default" type="button">
                                                                 <i class="fa fa-calendar"></i>
@@ -681,7 +690,13 @@
                                                 <input type="text" name="personalEmail" id="personalEmail" placeholder="Personal Email Address" class="form-control" value="{{@$personal->personal_email}}" /> </div>
                                             <div class="form-group">
                                                 <label class="control-label">Mobile Phone Number</label>
-                                                <input type="text" name="personalPhone" id="personalPhone" placeholder="+1 234 567 8910 (6284)" class="form-control" value="{{@$personal->personal_number}}" /> </div>
+                                                <input type="text" name="personalPhone" id="personalPhone" placeholder="+1 234 567 8910 (6284)" class="form-control" value="{{@$personal->mobile_number}}" /> </div>
+                                            <div class="form-group">
+                                                <label class="control-label">Bank Account Number</label>
+                                                <input type="text" name="personalBankAcc" id="personalBankAcc" placeholder="Bank account" class="form-control" value="{{@$personal->bank_acc_no}}" /> </div>
+                                            <div class="form-group">
+                                                <label class="control-label">Social Security Number [SSN]</label>
+                                                <input type="text" name="personalSSN" id="personalSSN" placeholder="Social Security Number" class="form-control" value="{{@$personal->social_sec_no}}" /> </div>
                                             <div class="form-group">
                                                 <label class="control-label">About</label>
                                                 <textarea name="personalAbout" id="personalAbout" class="form-control" rows="3" placeholder="Other personal information">{{@$personal->about_info}}</textarea>
@@ -700,19 +715,19 @@
                                                 <button class="close" data-close="alert"></button> Your form validation is successful! </div>
                                             <div class="form-group">
                                                 <label class="control-label">Address Line1</label>
-                                                <input type="text" name="personal_addr1" id="personal_addr1" placeholder="Address1" value="{{$user->first_name}}" class="form-control" /> </div>
+                                                <input type="text" name="personal_addr1" id="personal_addr1" placeholder="Address1" value="{{ $personalAddress->address1 }}" class="form-control" /> </div>
                                             <div class="form-group">
                                                 <label class="control-label">Address Line2</label>
-                                                <input type="text" name="personal_addr2" id="personal_addr2" placeholder="Address2" value="{{$user->middle_name}}" class="form-control" /> </div>
+                                                <input type="text" name="personal_addr2" id="personal_addr2" placeholder="Address2" value="{{ $personalAddress->address2 }}" class="form-control" /> </div>
                                             <div class="form-group">
                                                 <label class="control-label">City</label>
-                                                <input type="text" name="personal_addr_city" id="personal_addr_city" placeholder="City" value="{{$user->last_name}}" class="form-control" /> </div>
+                                                <input type="text" name="personal_addr_city" id="personal_addr_city" placeholder="City" value="{{ $personalAddress->city }}" class="form-control" /> </div>
                                             <div class="form-group">
                                                 <label class="control-label">Region</label>
-                                                <input type="text" name="personal_addr_region" id="personal_addr_region" placeholder="Region" value="{{$user->country_id}}" class="form-control" /> </div>
+                                                <input type="text" name="personal_addr_region" id="personal_addr_region" placeholder="Region" value="{{ $personalAddress->region }}" class="form-control" /> </div>
                                             <div class="form-group">
                                                 <label class="control-label">Postal Code</label>
-                                                <input type="text" name="personal_addr_pcode" id="personal_addr_pcode" placeholder="Postal Code" class="form-control" /> </div>
+                                                <input type="text" name="personal_addr_pcode" id="personal_addr_pcode" placeholder="Postal Code" value="{{ $personalAddress->postal_code }}" class="form-control" /> </div>
                                             <div class="form-group">
                                                 <label class="control-label">Country</label>
                                                 <select class="form-control" name="personal_addr_country" id="personal_addr_country">
@@ -1367,6 +1382,15 @@
             });
         }
 
+        $.validator.addMethod(
+                "datePickerDate",
+                function(value, element) {
+                    // put your own logic here, this is just a (crappy) example
+                    return value.match(/^\d\d?-\d\d?-\d\d\d\d$/);
+                },
+                "Please enter a date in the format dd/mm/yyyy."
+        );
+
         var FormValidation = function () {
 
             var handleValidation1 = function() {
@@ -1390,7 +1414,7 @@
                         },
                         personalDOB: {
                             required: true,
-                            date:true
+                            datePickerDate:true
                         },
                         personalEmail: {
                             required: true,
@@ -1550,7 +1574,64 @@
                     submitHandler: function (form) {
                         success3.show();
                         error3.hide();
-                        store_account_personal(); // submit the form
+                        update_personal_address(); // submit the form
+                    }
+                });
+            }
+
+            var handleValidation4 = function() {
+                var form4 = $('#form_password_update');
+                var error4 = $('.alert-danger', form4);
+                var success4 = $('.alert-success', form4);
+
+                form4.validate({
+                    errorElement: 'span', //default input error message container
+                    errorClass: 'help-block help-block-error', // default input error message class
+                    focusInvalid: false, // do not focus the last invalid input
+                    ignore: "",  // validate all fields including form hidden input
+                    rules: {
+                        new_password1: {
+                            minlength: 8,
+                            required: true,
+                        },
+                        new_password2: {
+                            minlength: 8,
+                            required: true,
+                            equalTo: '#new_password1',
+                        },
+                    },
+
+                    invalidHandler: function (event, validator) { //display error alert on form submit
+                        success4.hide();
+                        error4.show();
+                        App.scrollTo(error4, -200);
+                    },
+
+                    errorPlacement: function (error, element) { // render error placement for each input type
+                        var icon = $(element).parent('.input-icon').children('i');
+                        icon.removeClass('fa-check').addClass("fa-warning");
+                        icon.attr("data-original-title", error.text()).tooltip({'container': 'body'});
+                    },
+
+                    highlight: function (element) { // hightlight error inputs
+                        $(element)
+                                .closest('.form-group').removeClass("has-success").addClass('has-error'); // set error class to the control group
+                    },
+
+                    unhighlight: function (element) { // revert the change done by hightlight
+
+                    },
+
+                    success: function (label, element) {
+                        var icon = $(element).parent('.input-icon').children('i');
+                        $(element).closest('.form-group').removeClass('has-error').addClass('has-success'); // set success class to the control group
+                        icon.removeClass("fa-warning").addClass("fa-check");
+                    },
+
+                    submitHandler: function (form) {
+                        success4.show();
+                        error4.hide();
+                        update_passwd(); // submit the form
                     }
                 });
             }
@@ -1561,6 +1642,7 @@
                     handleValidation1();
                     handleValidation2();
                     handleValidation3();
+                    handleValidation4();
                 }
 
             };
@@ -1582,6 +1664,63 @@
                     'accountProfession': $('input[name=accountProfession]').val(),
                     'accountDescription': $('textarea[name=accountDescription]').val(),
                     'employeeRole': $('select[name=employeeRole]').val(),
+                    '_method': 'post',
+                },
+                success: function(data){
+                    alert(data);
+                }
+            });
+        }
+
+        function store_account_personal(){
+            $.ajax({
+                url: '{{route('admin/back_users/view_user/personal_info', ['id'=>$user->id])}}',
+                type: "post",
+                data: {
+                    'first_name':       $('input[name=personalFirstName]').val(),
+                    'middle_name':      $('input[name=personalMiddleName]').val(),
+                    'last_name':        $('input[name=personalLastName]').val(),
+                    'date_of_birth':    $('input[name=personalDOB]').val(),
+                    'personal_email':   $('input[name=personalEmail]').val(),
+                    'mobile_number':    $('input[name=personalPhone]').val(),
+                    'bank_acc_no':      $('input[name=personalBankAcc]').val(),
+                    'social_sec_no':    $('input[name=personalSSN]').val(),
+                    'about_info':       $('textarea[name=personalAbout]').val(),
+                    'country_id':       $('select[name=personalCountry]').val(),
+                    '_method': 'post',
+                },
+                success: function(data){
+                    alert(data);
+                }
+            });
+        }
+
+        function update_personal_address(){
+            $.ajax({
+                url: '{{route('admin/back_users/view_user/personal_address', ['id'=>$user->id])}}',
+                type: "post",
+                data: {
+                    'address1':     $('input[name=personal_addr1]').val(),
+                    'address2':     $('input[name=personal_addr2]').val(),
+                    'city':         $('input[name=personal_addr_city]').val(),
+                    'region':       $('input[name=personal_addr_region]').val(),
+                    'postal_code':  $('input[name=personal_addr_pcode]').val(),
+                    'country_id':   $('select[name=personal_addr_country]').val(),
+                    '_method': 'post',
+                },
+                success: function(data){
+                    alert(data);
+                }
+            });
+        }
+
+        function update_passwd(){
+            $.ajax({
+                url: '{{route('admin/back_users/view_user/password_update', ['id'=>$user->id])}}',
+                type: "post",
+                data: {
+                    'password1':    $('input[name=new_password1]').val(),
+                    'password2':    $('input[name=new_password2]').val(),
                     '_method': 'post',
                 },
                 success: function(data){

@@ -71,26 +71,6 @@ Route::group(['middleware' => 'web'], function () {
         'uses'  =>  'BackEndUserController@create'
     ]);
 
-    Route::get('/admin/back_users/user_roles', [
-        'as'    =>  'admin/back_users/user_roles',
-        'uses'  =>  'BackEndUserController@all_users_roles'
-    ]);
-
-    Route::post('/admin/back_users/user_roles', [
-        'as'    =>  'admin/back_users/user_roles',
-        'uses'  =>  'BackEndUserController@add_user_role'
-    ]);
-
-    Route::put('/admin/back_users/user_roles', [
-        'as'    =>  'admin/back_users/user_roles',
-        'uses'  =>  'BackEndUserController@update_user_role'
-    ]);
-
-    Route::delete('/admin/back_users/user_roles', [
-        'as'    =>  'admin/back_users/user_roles',
-        'uses'  =>  'BackEndUserController@delete_user_role'
-    ]);
-
     Route::get('/admin/back_users/view_user/{id}', [
         'as' => 'admin/back_users/view_user/',
         'uses' => 'BackEndUserController@show',
@@ -100,4 +80,86 @@ Route::group(['middleware' => 'web'], function () {
         'as' => 'admin/back_users/view_user/acc_info',
         'uses' => 'BackEndUserController@update_account_info',
     ]);
+
+    Route::post('admin/back_users/view_user/{id}/personal_info', [
+        'as' => 'admin/back_users/view_user/personal_info',
+        'uses' => 'BackEndUserController@update_personal_info',
+    ]);
+
+    Route::post('admin/back_users/view_user/{id}/password_update', [
+        'as' => 'admin/back_users/view_user/password_update',
+        'uses' => 'BackEndUserController@updatePassword',
+    ]);
+
+    Route::post('admin/back_users/view_user/{id}/personal_address', [
+        'as' => 'admin/back_users/view_user/personal_address',
+        'uses' => 'BackEndUserController@update_personal_address',
+    ]);
+
+
+    /** Routes for employees and backend users roles */
+    Route::get('/admin/back_users/user_roles', [
+        'as'    =>  'admin/back_users/user_roles',
+        'uses'  =>  'RolesController@all_users_roles'
+    ]);
+
+    Route::get('/admin/back_users/roles_permissions', [
+        'as'    =>  'admin/back_users/roles_permissions',
+        'uses'  =>  'RolesController@list_permissions'
+    ]);
+
+    Route::post('/admin/back_users/roles_permissions', [
+        'as'    =>  'admin/back_users/roles_permissions',
+        'uses'  =>  'RolesController@add_permission'
+    ]);
+
+    Route::get('/admin/back_users/roles_permissions/{id}', [
+        'as'    =>  'admin/back_users/roles_permissions/view',
+        'uses'  =>  'RolesController@view_permission'
+    ]);
+
+    Route::put('/admin/back_users/roles_permissions/{id}', [
+        'as'    =>  'admin/back_users/roles_permissions/view',
+        'uses'  =>  'RolesController@update_permission'
+    ]);
+
+    Route::post('/admin/back_users/user_roles', [
+        'as'    =>  'admin/back_users/user_roles',
+        'uses'  =>  'RolesController@add_user_role'
+    ]);
+
+    Route::put('/admin/back_users/user_roles', [
+        'as'    =>  'admin/back_users/user_roles',
+        'uses'  =>  'RolesController@update_user_role'
+    ]);
+
+    Route::delete('/admin/back_users/user_roles', [
+        'as'    =>  'admin/back_users/user_roles',
+        'uses'  =>  'RolesController@delete_user_role'
+    ]);
+    /** End Routes for employees roles */
+
+    /** Start Routes for Shops/Locations */
+    Route::get('/admin/shops/locations', [
+        'as'    => 'admin/shops/locations/all',
+        'uses'  => 'ShopController@list_all'
+    ]);
+
+    Route::get('/admin/shops/locations/{id}', [
+        'as'    => 'admin/shops/locations/view',
+        'uses'  => 'ShopController@get_shop_location'
+    ]);
+
+    Route::post('/admin/shops/locations/add', [
+        'as'    => 'admin/shops/locations/add',
+        'uses'  => 'ShopController@add_shop_location'
+    ]);
+    /** Stop Routes for Shops/Locations */
+
+    /** Start Routes for Products Management */
+    Route::get('/admin/shops/products/all',[
+        'as'    => 'admin/shops/products/all',
+        'uses'  => 'ProductController@list_all'
+    ]);
+    /** Start Routes for Products Management */
 });

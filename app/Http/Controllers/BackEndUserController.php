@@ -2,16 +2,20 @@
 
 namespace App\Http\Controllers;
 
+use App\PersonalDetail;
 use App\ProfessionalDetail;
+use App\Address;
 use Illuminate\Http\Response;
-use Mockery\CountValidator\Exception;
-use Validator;
 use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\User;
+use Validator;
 use Auth;
+use Hash;
+use Mockery\CountValidator\Exception;
 use \App\Role;
 use Webpatser\Countries\Countries;
+use Carbon\Carbon;
 
 class BackEndUserController extends Controller
 {
@@ -143,13 +147,7 @@ class BackEndUserController extends Controller
             return redirect()->intended(route('admin/login'));
         }
         $back_user = User::with('roles')->find($id);
-//xdebug_var_dump($back_user);
-        $breadcrumbs = [
-            'Home'              => route('admin'),
-            'Administration'    => route('admin'),
-            'Back End User'     => route('admin'),
-            'All Backend Users' => '',
-        ];
+
         $text_parts  = [
             'title'     => 'Back-End Users',
             'subtitle'  => 'view all users',
@@ -164,16 +162,42 @@ class BackEndUserController extends Controller
         }
 
         $userProfessional = $back_user->ProfessionalDetail;
-        $userPersonal = $back_user->PersonalDetails;
+        if (!isset($userProfessional)){
+            $userProfessional = new ProfessionalDetail();
+        }
+
+        $userPersonal = $back_user->PersonalDetail;
+        if (isset($userPersonal)) {
+            $userPersonal->dob_format = Carbon::createFromFormat('Y-m-d', $userPersonal->date_of_birth)->format('d-m-Y');
+            $userPersonal->dob_to_show = Carbon::createFromFormat('Y-m-d', $userPersonal->date_of_birth)->format('d M Y');
+        }
+        else{
+            $userPersonal = new PersonalDetail();
+        }
+
+        $personalAddress = Address::find($userPersonal->address_id);
+        if (!isset($personalAddress)){
+            $personalAddress = new Address();
+        }
 
         $roles = Role::all();
         $countries = Countries::orderBy('name')->get();
+        $userCountry = Countries::find($back_user->country_id);
+
+        $breadcrumbs = [
+            'Home'              => route('admin'),
+            'Administration'    => route('admin'),
+            'Back End Users'    => route('admin/back_users'),
+            $back_user->first_name.' '.$back_user->middle_name.' '.$back_user->last_name => '',
+        ];
 
         return view('admin/back_users/user_details', [
             'user'      => $back_user,
             'userRole'  => $userRole,
             'professional' => $userProfessional,
             'personal'  => $userPersonal,
+            'personalAddress' => $personalAddress,
+            'countryDetails' => $userCountry,
             'countries' => $countries,
             'roles'     => $roles,
             'breadcrumbs' => $breadcrumbs,
@@ -251,12 +275,111 @@ class BackEndUserController extends Controller
 
     public function update_personal_info(Request $request, $id)
     {
-        //
+        if (!Auth::check()) {
+            return redirect()->intended(route('admin/login'));
+        }
+        $vars = $request->only('about_info', 'country_id', 'date_of_birth', 'first_name', 'last_name', 'middle_name', 'mobile_number', 'personal_email', 'bank_acc_no', 'social_sec_no');
+
+        $userVars = array(  'first_name'    => $vars["first_name"],
+                            'last_name'     => $vars["last_name"],
+                            'middle_name'   => $vars["middle_name"],
+                            'country_id'    => $vars["country_id"],
+                            'date_of_birth' => $vars["date_of_birth"]);
+        $userCh = User::find($id);
+
+        $validator = Validator::make($userVars, [
+            'first_name'    => 'required|min:4|max:150',
+            'last_name'     => 'required|min:4|max:150',
+            'date_of_birth' => 'required|date',
+            'country_id'    => 'required|exists:countries,id',
+        ]);
+
+        if ($validator->fails()){
+            //return array(
+            //    'success' => false,
+            //    'errors' => $validator->getMessageBag()->toArray()
+            //);
+        }
+        else{
+            $userCh->first_name  = $vars["first_name"];
+            $userCh->last_name   = $vars["last_name"];
+            $userCh->middle_name = $vars["middle_name"];
+            $userCh->country_id  = $vars["country_id"];
+            $userCh->save();
+        }
+
+        $personalData = array(  'personal_email'=> $vars['personal_email'],
+                                'mobile_number' => $vars['mobile_number'],
+                                'date_of_birth' => $vars['date_of_birth'],
+                                'bank_acc_no'   => $vars['bank_acc_no'],
+                                'social_sec_no' => $vars['social_sec_no'],
+                                'about_info'    => $vars['about_info'],
+                                'user_id'       => $id);
+        $personalDetails = PersonalDetail::firstOrNew(array('user_id'=>$id));
+        //$personalDetails->personal_email = $personalData['personal_email'];
+        //$personalDetails->mobile_number  = $personalData['mobile_number'];
+        //$personalDetails->date_of_birth  = Carbon::createFromFormat('d-m-Y', $personalData['date_of_birth'])->toDateString();
+        //$personalDetails->bank_acc_no    = $personalData['bank_acc_no'];
+        //$personalDetails->social_sec_no  = $personalData['social_sec_no'];
+        //$personalDetails->about_info     = $personalData['about_info'];
+        //$personalDetails->user_id        = $personalData['user_id'];
+        $personalData['date_of_birth'] = Carbon::createFromFormat('d-m-Y', $personalData['date_of_birth'])->toDateString();
+        $personalDetails->fill($personalData);
+        $personalDetails->save();
+
+        return "bine";
     }
 
     public function update_personal_address(Request $request, $id)
     {
-        //
+        if (!Auth::check()) {
+            return redirect()->intended(route('admin/login'));
+        }
+
+        $userPersonal = PersonalDetail::find($id);
+
+        $vars = $request->only('address1', 'address2', 'city', 'country_id', 'postal_code', 'region');
+        $validator = Validator::make($vars, [
+            'address1'    => 'required|min:5|max:150',
+            'city'        => 'required|min:3|max:150',
+            'region'      => 'required|min:2',
+            'postal_code' => 'required|min:2',
+            'country_id'  => 'required|exists:countries,id',
+        ]);
+
+        if ($validator->fails()){
+            //return array(
+            //    'success' => false,
+            //    'errors' => $validator->getMessageBag()->toArray()
+            //);
+        }
+        else{
+            if ( !isset($userPersonal) || $userPersonal->address_id==0 ){
+                $personalAddress = new Address();
+                $userPersonal = new PersonalDetail();
+                $userPersonal->user_id = $id;
+            }
+            else {
+                $addressID = $userPersonal->address_id;
+                $personalAddress = Address::find($addressID);
+            }
+
+            $personalAddress->fill([
+                'user_id'   => $id,
+                'address1'  => $vars['address1'],
+                'address2'  => $vars['address2'],
+                'city'      => $vars['city'],
+                'region'    => $vars['region'],
+                'postal_code'   => $vars['postal_code'],
+                'country_id'    => $vars['country_id'],
+            ]);
+            $personalAddress->save();
+
+            $userPersonal->address_id = $personalAddress->id;
+            $userPersonal->save();
+        }
+
+        return "bine";
     }
 
     /**
@@ -270,131 +393,30 @@ class BackEndUserController extends Controller
         //
     }
 
-    /** List all user roles */
-    public function all_users_roles(){
-        if (!Auth::check()) {
-            return redirect()->intended(route('admin/login'));
-        }
+    /** Change password */
+    public function updatePassword(Request $request, $id)
+    {
+        $user = User::findOrFail($id);
+        $userVars = $request->only('password1','password2');
 
-        $all_roles = Role::All();
-
-        $breadcrumbs = [
-            'Home'              => route('admin'),
-            'Administration'    => route('admin'),
-            'Back End User'     => route('admin'),
-            'User Roles'        => '',
-        ];
-        $text_parts  = [
-            'title'     => 'User Roles',
-            'subtitle'  => 'add/edit/view roles',
-            'table_head_text1' => 'Backend User Roles List'
-        ];
-        $sidebar_link= 'admin-backend-user_roles';
-
-        return view('admin/back_users/all_roles', [
-            'roles'       => $all_roles,
-            'breadcrumbs' => $breadcrumbs,
-            'text_parts'  => $text_parts,
-            'in_sidebar'  => $sidebar_link,
+        // Validate the new password length...
+        $validator = Validator::make($userVars, [
+            'password1' => 'required|min:8',
+            'password2' => 'required|min:8|same:password1',
         ]);
-    }
-
-    /** Add new user role */
-    public function add_user_role(Request $request){
-        $vars = $request->only('name', 'display_name', 'description');
-        $vars['name'] = trim($vars['name']);
-        $message = array(
-            'name.unique' => 'Duplicate Role name in the database.',
-        );
-
-        $validator = Validator::make($vars, Role::rules('POST'), $message, Role::$attributeNames);
 
         if ($validator->fails()){
-            return array(
-                'success' => false,
-                'errors' => $validator->getMessageBag()->toArray()
-            );
+            //return array(
+            //    'success' => false,
+            //    'errors' => $validator->getMessageBag()->toArray()
+            //);
+        }
+        else {
+            $user->fill([
+                'password' => Hash::make($request->password1)
+            ])->save();
         }
 
-        try {
-            Role::create($vars);
-        } catch (Exception $e) {
-            return Response::json(['error' => 'Role already exists.'], Response::HTTP_CONFLICT);
-        }
-
-        return $vars;
-    }
-
-    /** Update user role */
-    public function update_user_role(Request $request){
-        $message = array(
-            'name.unique' => 'Duplicate Role name in the database.',
-        );
-        $vars = $request->only('name', 'display_name', 'description', 'dataID');
-        $roleID = $vars['dataID'];
-
-        $roleToUpdate = Role::find(array('id'=>$roleID))->first();
-        if (!$roleToUpdate){
-            return array(
-                'success' => false,
-                'errors'  => 'Something went wrong',
-            );
-        }
-        else{
-            $validator = Validator::make($vars, Role::rules('PUT', $roleID), $message, Role::$attributeNames);
-
-            if ($validator->fails()){
-                return array(
-                    'success' => false,
-                    'errors' => $validator->getMessageBag()->toArray()
-                );
-            }
-        }
-
-        try {
-            $roleToUpdate->name = trim($vars['name']);
-            $roleToUpdate->display_name = $vars['display_name'];
-            $roleToUpdate->description = $vars['description'];
-            $roleToUpdate->save();
-        }
-        catch (Exception $ex){
-            return array(
-                'success' => false,
-                'errors'  => 'Error while updating fields. Please reload page then try again!',
-            );
-        }
-
-        return array(
-            'success' => true,
-            'message' => 'Role updated successfully!',
-        );
-    }
-
-    /** Delete user role */
-    public function delete_user_role(Request $request){
-        $vars = $request->only('dataID');
-
-        $roleToUpdate = Role::find(array('id'=>$vars['dataID']))->first();
-        if (!$roleToUpdate){
-            return array(
-                'success' => false,
-                'errors'  => 'Something went wrong',
-            );
-        }
-
-        try {
-            $roleToUpdate->delete();
-        }
-        catch (Exception $ex){
-            return array(
-                'success' => false,
-                'errors'  => 'Error while deleting. Please reload page then try again!',
-            );
-        }
-
-        return array(
-            'success' => true,
-            'message' => 'Role deleted successfully!',
-        );
+        return 'bine';
     }
 }

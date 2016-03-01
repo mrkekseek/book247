@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "8a5feb461d6f168f884d65e458268645",
-    "content-hash": "25161d6996ef570ea9381c92b65155d4",
+    "hash": "09959bc8d749cb0cf8a52bff8ab93f42",
+    "content-hash": "1c17a7958de68708301e1d545dac74a6",
     "packages": [
         {
             "name": "classpreloader/classpreloader",
@@ -3408,7 +3408,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/webpatser/laravel-countries/zipball/e29dcce821f2c4a522e35483c38632ca534db4ee",
+                "url": "https://api.github.com/repos/webpatser/laravel-countries/zipball/2a310c0ff1b112d3710223d3bd51e8a30c5a304d",
                 "reference": "e29dcce821f2c4a522e35483c38632ca534db4ee",
                 "shasum": ""
             },

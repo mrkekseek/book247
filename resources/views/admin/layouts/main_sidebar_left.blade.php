@@ -402,7 +402,7 @@
         <li class="heading">
             <h3 class="uppercase">Administration</h3>
         </li>
-        <li class="nav-item {{ in_array($in_sidebar, array('admin-backend-user_roles', 'admin-backend-all_users'))?'active open':'' }} ">
+        <li class="nav-item {{ in_array($in_sidebar, array('admin-backend-user_roles', 'admin-backend-all_users', 'admin-backend-roles_permission'))?'active open':'' }} ">
             <a href="javascript:;" class="nav-link nav-toggle">
                 <i class="icon-diamond"></i>
                 <span class="title">Back End Users</span>
@@ -414,14 +414,38 @@
                         <span class="title">View All Users</span>
                     </a>
                 </li>
-                <li class="nav-item {{ $in_sidebar=='admin-backend-user_roles'?'active open':'' }} ">
+                <li class="nav-item {{ $in_sidebar=='admin-backend-user_roles'?'active open':'' }}">
                     <a href="{{ route('admin/back_users/user_roles') }}" class="nav-link ">
                         <span class="title">User Roles</span>
                     </a>
                 </li>
+                <li class="nav-item {{ $in_sidebar=='admin-backend-roles_permission'?'active open':'' }}">
+                    <a href="{{ route('admin/back_users/roles_permissions') }}" class="nav-link ">
+                        <span class="title">Permissions</span>
+                    </a>
+                </li>
+            </ul>
+        </li>
+        <li class="nav-item {{ in_array($in_sidebar, array('admin-backend-shop-locations-list'))?'active open':'' }} ">
+            <a href="javascript:;" class="nav-link nav-toggle">
+                <i class="icon-settings"></i>
+                <span class="title">Shop</span>
+                <span class="arrow"></span>
+            </a>
+            <ul class="sub-menu">
+                <li class="nav-item {{ $in_sidebar=='admin-backend-shop-locations-list'?'active open':'' }} ">
+                    <a href="{{ route("admin/shops/locations/all") }}" class="nav-link ">
+                        <span class="title">All Locations</span>
+                    </a>
+                </li>
                 <li class="nav-item  ">
-                    <a href="ui_confirmations.html" class="nav-link ">
-                        <span class="title">Popover Confirmations</span>
+                    <a href="form_controls_md.html" class="nav-link ">
+                        <span class="title">All Products</span>
+                    </a>
+                </li>
+                <li class="nav-item  ">
+                    <a href="form_validation.html" class="nav-link ">
+                        <span class="title">Product Inventory</span>
                     </a>
                 </li>
             </ul>
@@ -528,84 +552,6 @@
                 <li class="nav-item  ">
                     <a href="components_knob_dials.html" class="nav-link ">
                         <span class="title">Knob Circle Dials</span>
-                    </a>
-                </li>
-            </ul>
-        </li>
-        <li class="nav-item  ">
-            <a href="javascript:;" class="nav-link nav-toggle">
-                <i class="icon-settings"></i>
-                <span class="title">Shop</span>
-                <span class="arrow"></span>
-            </a>
-            <ul class="sub-menu">
-                <li class="nav-item  ">
-                    <a href="form_controls.html" class="nav-link ">
-                                        <span class="title">Bootstrap Form
-                                            <br>Controls</span>
-                    </a>
-                </li>
-                <li class="nav-item  ">
-                    <a href="form_controls_md.html" class="nav-link ">
-                                        <span class="title">Material Design
-                                            <br>Form Controls</span>
-                    </a>
-                </li>
-                <li class="nav-item  ">
-                    <a href="form_validation.html" class="nav-link ">
-                        <span class="title">Form Validation</span>
-                    </a>
-                </li>
-                <li class="nav-item  ">
-                    <a href="form_validation_states_md.html" class="nav-link ">
-                                        <span class="title">Material Design
-                                            <br>Form Validation States</span>
-                    </a>
-                </li>
-                <li class="nav-item  ">
-                    <a href="form_validation_md.html" class="nav-link ">
-                                        <span class="title">Material Design
-                                            <br>Form Validation</span>
-                    </a>
-                </li>
-                <li class="nav-item  ">
-                    <a href="form_layouts.html" class="nav-link ">
-                        <span class="title">Form Layouts</span>
-                    </a>
-                </li>
-                <li class="nav-item  ">
-                    <a href="form_input_mask.html" class="nav-link ">
-                        <span class="title">Form Input Mask</span>
-                    </a>
-                </li>
-                <li class="nav-item  ">
-                    <a href="form_editable.html" class="nav-link ">
-                        <span class="title">Form X-editable</span>
-                    </a>
-                </li>
-                <li class="nav-item  ">
-                    <a href="form_wizard.html" class="nav-link ">
-                        <span class="title">Form Wizard</span>
-                    </a>
-                </li>
-                <li class="nav-item  ">
-                    <a href="form_icheck.html" class="nav-link ">
-                        <span class="title">iCheck Controls</span>
-                    </a>
-                </li>
-                <li class="nav-item  ">
-                    <a href="form_image_crop.html" class="nav-link ">
-                        <span class="title">Image Cropping</span>
-                    </a>
-                </li>
-                <li class="nav-item  ">
-                    <a href="form_fileupload.html" class="nav-link ">
-                        <span class="title">Multiple File Upload</span>
-                    </a>
-                </li>
-                <li class="nav-item  ">
-                    <a href="form_dropzone.html" class="nav-link ">
-                        <span class="title">Dropzone File Upload</span>
                     </a>
                 </li>
             </ul>

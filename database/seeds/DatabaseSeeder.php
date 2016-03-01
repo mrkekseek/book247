@@ -16,5 +16,8 @@ class DatabaseSeeder extends Seeder
 
         //$this->call('CountriesSeeder');
         //$this->command->info('Seeded the countries!');
+
+        //$this->call(VatRatesTableSeeder::class);
+        //$this->command->info('VAT added to DB!');
     }
 }
