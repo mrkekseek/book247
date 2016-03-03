@@ -402,7 +402,7 @@
         <li class="heading">
             <h3 class="uppercase">Administration</h3>
         </li>
-        <li class="nav-item {{ in_array($in_sidebar, array('admin-backend-user_roles', 'admin-backend-all_users', 'admin-backend-roles_permission'))?'active open':'' }} ">
+        <li class="nav-item {{ in_array($in_sidebar, array('admin-backend-user_roles', 'admin-backend-all_users', 'admin-backend-roles_permission', 'admin-backend-user_details_view', 'admin-backend-permission_details_view'))?'active open':'' }} ">
             <a href="javascript:;" class="nav-link nav-toggle">
                 <i class="icon-diamond"></i>
                 <span class="title">Back End Users</span>
@@ -414,6 +414,13 @@
                         <span class="title">View All Users</span>
                     </a>
                 </li>
+                @if ($in_sidebar=="admin-backend-user_details_view")
+                <li class="nav-item {{ $in_sidebar=='admin-backend-user_details_view'?'active open':'' }}">
+                    <a class="nav-link ">
+                        <span class="title">User Details</span>
+                    </a>
+                </li>
+                @endif
                 <li class="nav-item {{ $in_sidebar=='admin-backend-user_roles'?'active open':'' }}">
                     <a href="{{ route('admin/back_users/user_roles') }}" class="nav-link ">
                         <span class="title">User Roles</span>
@@ -424,9 +431,16 @@
                         <span class="title">Permissions</span>
                     </a>
                 </li>
+                @if ($in_sidebar=="admin-backend-permission_details_view")
+                    <li class="nav-item {{ $in_sidebar=='admin-backend-permission_details_view'?'active open':'' }}">
+                        <a class="nav-link ">
+                            <span class="title">Permission Details</span>
+                        </a>
+                    </li>
+                @endif
             </ul>
         </li>
-        <li class="nav-item {{ in_array($in_sidebar, array('admin-backend-shop-locations-list'))?'active open':'' }} ">
+        <li class="nav-item {{ in_array($in_sidebar, array('admin-backend-shop-locations-list','admin-backend-shop-products-list','admin-backend-shop-products-inventory', 'admin-backend-shop-locations-details-view', 'admin-backend-product-details-view'))?'active open':'' }} ">
             <a href="javascript:;" class="nav-link nav-toggle">
                 <i class="icon-settings"></i>
                 <span class="title">Shop</span>
@@ -438,12 +452,26 @@
                         <span class="title">All Locations</span>
                     </a>
                 </li>
-                <li class="nav-item  ">
-                    <a href="form_controls_md.html" class="nav-link ">
+                @if ($in_sidebar=="admin-backend-shop-locations-details-view")
+                    <li class="nav-item {{ $in_sidebar=='admin-backend-shop-locations-details-view'?'active open':'' }}">
+                        <a class="nav-link ">
+                            <span class="title">Location Details</span>
+                        </a>
+                    </li>
+                @endif
+                <li class="nav-item {{ $in_sidebar=='admin-backend-shop-products-list'?'active open':'' }} ">
+                    <a href="{{ route('admin/shops/products/all') }}" class="nav-link ">
                         <span class="title">All Products</span>
                     </a>
                 </li>
-                <li class="nav-item  ">
+                @if ($in_sidebar=="admin-backend-product-details-view")
+                    <li class="nav-item {{ $in_sidebar=='admin-backend-product-details-view'?'active open':'' }}">
+                        <a class="nav-link ">
+                            <span class="title">Product Details</span>
+                        </a>
+                    </li>
+                @endif
+                <li class="nav-item {{ $in_sidebar=='admin-backend-shop-products-inventory'?'active open':'' }} ">
                     <a href="form_validation.html" class="nav-link ">
                         <span class="title">Product Inventory</span>
                     </a>

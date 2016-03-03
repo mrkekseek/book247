@@ -226,7 +226,7 @@ class RolesController extends Controller
             'subtitle'  => 'add/edit/view permissions',
             'table_head_text1' => 'Backend Roles Permissions - '.$permission->display_name
         ];
-        $sidebar_link= 'admin-backend-roles_permission';
+        $sidebar_link= 'admin-backend-permission_details_view';
 
         return view('admin/back_users/view_permission', [
             'breadcrumbs' => $breadcrumbs,

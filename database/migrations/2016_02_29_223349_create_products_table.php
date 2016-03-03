@@ -24,6 +24,7 @@ class CreateProductsTable extends Migration
             $table->string('description');
             $table->string('url');
             $table->string('barcode');
+            $table->tinyInteger('status');
             $table->integer('vat_rate_id')->unsigned();
             $table->timestamps();
 

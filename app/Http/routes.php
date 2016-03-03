@@ -161,5 +161,30 @@ Route::group(['middleware' => 'web'], function () {
         'as'    => 'admin/shops/products/all',
         'uses'  => 'ProductController@list_all'
     ]);
+
+    Route::post('/admin/shops/products/add',[
+        'as'    => 'admin/shops/products/add',
+        'uses'  => 'ProductController@create'
+    ]);
+
+    Route::get('/admin/shops/products/{id}',[
+        'as'    => 'admin/shops/products/view',
+        'uses'  => 'ProductController@get_product'
+    ]);
+
+    Route::post('/admin/shops/products/get_product_history', [
+        'as'    => 'admin/shops/products/get_history',
+        'uses'  => 'ProductController@get_product_history'
+    ]);
+
+    Route::post('/admin/shops/products/get_product_inventory', [
+        'as'    => 'admin/shops/products/get_inventory',
+        'uses'  => 'ProductController@get_product_inventory'
+    ]);
+
+    Route::put('admin/shops/product/{id}/update_availability', [
+        'as'    => 'admin/shops/products/update_availability',
+        'uses'  => 'ProductController@update_product_availability'
+    ]);
     /** Start Routes for Products Management */
 });

@@ -36,18 +36,6 @@ class BackEndUserController extends Controller
             return redirect()->intended(route('admin/login'));
         }
 
-        /*$owner = new Role();
-        $owner->name         = 'owner';
-        $owner->display_name = 'Project Owner'; // optional
-        $owner->description  = 'User is the owner of a given project'; // optional
-        $owner->save();
-
-        $admin = new Role();
-        $admin->name         = 'admin';
-        $admin->display_name = 'User Administrator'; // optional
-        $admin->description  = 'User is allowed to manage and edit other users'; // optional
-        $admin->save();*/
-
         $back_users = User::all();
 
         $breadcrumbs = [
@@ -153,7 +141,7 @@ class BackEndUserController extends Controller
             'subtitle'  => 'view all users',
             'table_head_text1' => 'Backend User List'
         ];
-        $sidebar_link= 'admin-backend-all_users';
+        $sidebar_link= 'admin-backend-user_details_view';
 
         @$userRole = $back_user->roles[0];
         if (!$userRole){

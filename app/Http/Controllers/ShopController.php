@@ -134,7 +134,7 @@ class ShopController extends Controller
             'subtitle'  => 'view location details',
             'table_head_text1' => 'Backend Shop Location Details'
         ];
-        $sidebar_link= 'admin-backend-shop-locations-list';
+        $sidebar_link= 'admin-backend-shop-locations-details-view';
 
         return view('admin/shops/get_location', [
             'breadcrumbs'   => $breadcrumbs,
