@@ -172,19 +172,44 @@ Route::group(['middleware' => 'web'], function () {
         'uses'  => 'ProductController@get_product'
     ]);
 
+    Route::put('/admin/shops/products/{id}',[
+        'as'    => 'admin/shops/products/update',
+        'uses'  => 'ProductController@update_product'
+    ]);
+
     Route::post('/admin/shops/products/get_product_history', [
         'as'    => 'admin/shops/products/get_history',
         'uses'  => 'ProductController@get_product_history'
     ]);
 
-    Route::post('/admin/shops/products/get_product_inventory', [
+    Route::post('/admin/shops/products/{id}/get_product_inventory', [
         'as'    => 'admin/shops/products/get_inventory',
         'uses'  => 'ProductController@get_product_inventory'
+    ]);
+
+    Route::post('/admin/shops/products/get_all_products_inventory', [
+        'as'    => 'admin/shops/products/get_all_inventories',
+        'uses'  => 'ProductController@get_all_products_inventory'
+    ]);
+
+    Route::post('/admin/shops/products/{id}/add_to_inventory', [
+        'as'    => 'admin/shops/products/add_to_inventory',
+        'uses'  => 'ProductController@add_to_inventory'
+    ]);
+
+    Route::post('/admin/shops/products/{id}/get_from_inventory', [
+        'as'    => 'admin/shops/products/get_from_inventory',
+        'uses'  => 'ProductController@remove_from_inventory'
     ]);
 
     Route::put('admin/shops/product/{id}/update_availability', [
         'as'    => 'admin/shops/products/update_availability',
         'uses'  => 'ProductController@update_product_availability'
+    ]);
+
+    Route::get('admin/shops/all_inventory', [
+        'as'    => 'admin/shops/all_inventory',
+        'uses'  => 'ProductController@all_inventory'
     ]);
     /** Start Routes for Products Management */
 });

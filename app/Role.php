@@ -54,7 +54,7 @@ class Role extends EntrustRole
             case 'PATCH':
             {
                 return [
-                    'name' => 'required|min:3|max:50|unique:roles,'.($id ? "id, $id," : ''),
+                    'name' => 'required|min:3|max:50|unique:roles,name,'.($id ? "$id,id" : ''),
                     'display_name' => 'required|min:10',
                     'description' => '',
                 ];

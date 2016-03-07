@@ -2,10 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Inventory;
 use App\Product;
 use App\ProductCategories;
 use App\ProductAvailability;
+use App\ProductPrice;
+use App\ShopLocations;
 use App\VatRate;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -15,6 +19,7 @@ use Validator;
 use Auth;
 use Hash;
 use Webpatser\Countries\Countries;
+use DB;
 
 class ProductController extends Controller
 {
@@ -76,6 +81,7 @@ class ProductController extends Controller
 
         $vars = $request->only('alternate_name', 'barcode', 'category_id', 'description', 'manufacturer', 'name', 'brand', 'vat_rate_id');
         $vars['url'] = str_slug($vars['manufacturer'] . ' ' . $vars['name']);
+        $vars['status'] = 0;
 
         $validator = Validator::make($vars, Product::rules('POST'), Product::$message, Product::$attributeNames);
 
@@ -106,7 +112,16 @@ class ProductController extends Controller
         $product_availability = $this->get_availability($id);
         $vatRates = VatRate::orderBy('display_name')->get();
         $categories = ProductCategories::orderBy('name')->get();
-        $currencies = Countries::distinct()->select('currency_code')->orderBy('currency')->groupBy('currency_code')->get(['id', 'currency', 'currency_code']);
+        $price = $this->get_price($id);
+        $currencies = Countries::distinct()->
+                                select(array('id', 'currency', 'currency_code'))->
+                                where('currency_code','!=',"")->
+                                orderBy('currency')->
+                                groupBy('currency_code')->
+                                get();
+        $shops = ShopLocations::all();
+        $usersList = User::all('id', 'first_name', 'middle_name', 'last_name');
+        //xdebug_var_dump($currencies[9]);
 
         $breadcrumbs = [
             'Home'              => route('admin'),
@@ -132,7 +147,81 @@ class ProductController extends Controller
             'vat_rates' => $vatRates,
             'categories' => $categories,
             'currencies' => $currencies,
+            'price' => $price,
+            'shops' => $shops,
+            'users' => $usersList,
         ]);
+    }
+
+    public function update_product(Request $request, $id){
+        if (!Auth::check()) {
+            return redirect()->intended(route('admin/login'));
+        }
+
+        /** @var $prod_vars - updated fields for the product that is edited */
+        $prod_vars = $request->only('name', 'alternate_name', 'category_id', 'brand', 'manufacturer', 'description', 'url', 'barcode', 'status', 'vat_rate_id');
+        $prod_vars['id'] = $id;
+        $prod_validator = Validator::make($prod_vars, Product::rules('PUT', $id), Product::$message, Product::$attributeNames);
+        if ($prod_validator->fails()){
+            return array(
+                'success' => false,
+                'errors' => $prod_validator->getMessageBag()->toArray()
+            );
+        }
+        else {
+            $product_det = Product::find($id);
+            $product_det->fill($prod_vars);
+            $product_det->save();
+        }
+
+        $availability_vars = $request->only('available_from','available_to');
+        $availability_vars['product_id'] = $id;
+
+        $old_availability = $this->get_availability($id);
+        if ($old_availability['available_from']!=$availability_vars['available_from'] || $old_availability['available_to']!=$availability_vars['available_to']){
+            // availability changed, so we update it
+            $availability_vars['available_from'] =  Carbon::createFromFormat('d-m-Y', $availability_vars['available_from'])->format('Y-m-d');
+            $availability_vars['available_to'] =  Carbon::createFromFormat('d-m-Y', $availability_vars['available_to'])->format('Y-m-d');
+
+            $availability_validator = Validator::make($availability_vars, ProductAvailability::rules('POST'), ProductAvailability::$message, ProductAvailability::$attributeNames);
+            if ($availability_validator->fails()){
+                //echo 'Naspa'; exit;
+            }
+            else{
+                ProductAvailability::create($availability_vars);
+            }
+        }
+
+        $price_vars = $request->only('list_price', 'country_id');
+        $this->update_price($id, $price_vars['list_price'], $price_vars['country_id']);
+        /*$currentTime = Carbon::now();
+        $last_price = ProductPrice::where('product_id', $id)->orderBy('updated_at', 'desc')->get()->first();
+        if ($last_price){
+            // we have a defined price in database, let's see if we need to update it
+            if ($last_price->list_price != $price_vars['list_price'] || $last_price->country_id != $price_vars['country_id']){
+                // we update the old price end date
+                $last_price->end_date = $currentTime->toDateTimeString();
+                $last_price->save();
+                $old_price_updated = true;
+            }
+        }
+
+        if ( ($last_price && isset($old_price_updated)) || !$last_price){
+            // we need to add the price to the database - old price was different or there is no old price
+            $price_vars['product_id'] = $id;
+            $price_vars['start_date'] = $currentTime->toDateTimeString();
+//xdebug_var_dump($price_vars); //exit;
+            $price_validator = Validator::make($price_vars, ProductPrice::rules('POST'), ProductPrice::$message, ProductPrice::$attributeNames);
+
+            if ($price_validator->fails()){
+                return $price_validator->errors()->all(); exit;
+            }
+            else{
+                ProductPrice::create($price_vars);
+            }
+        }*/
+
+        return "bine";
     }
 
     public function get_product_history(Request $request){
@@ -180,16 +269,126 @@ class ProductController extends Controller
         return $records;
     }
 
-    public function get_product_inventory(Request $request){
+    public function get_product_inventory(Request $request, $id){
         if (!Auth::check()) {
             return redirect()->intended(route('admin/login'));
         }
 
-        $iTotalRecords = 45;
-        $iDisplayLength = intval($request['length']);
+        $where_clause = $request->only('t_inventory_amount', 't_inventory_date_from', 't_inventory_date_to', 't_inventory_id_no',
+                                       't_inventory_list_price', 't_inventory_location', 't_inventory_employee', 'order[0][column]', 'order[0][dir]');
+        $where_clause['product_id'] = $id;
+        $queryBuild = DB::table('inventories')
+                        ->join('users', 'users.id', '=', 'inventories.user_id')
+                        ->join('shop_locations', 'shop_locations.id', '=', 'inventories.location_id')
+                        ->where('inventories.product_id','=',$id);
+
+        $amount_validator = Validator::make($where_clause, ["t_inventory_amount" => "required|integer"]);
+        if ( $amount_validator->fails() ){
+            // send error back
+        }
+        else{
+            $queryBuild->where('inventories.quantity','>=',$where_clause["t_inventory_amount"]);
+        }
+
+        $from_validator = Validator::make($where_clause, ["t_inventory_date_from" => "required|date"]);
+        if ( $from_validator->fails() ){
+            // send error back
+        }
+        else{
+            $from_date = Carbon::createFromFormat('d-m-Y', $where_clause["t_inventory_date_from"])->format('Y-m-d');
+            $queryBuild->where('inventories.created_at', '>=', $from_date);
+        }
+
+        $from_validator = Validator::make($where_clause, ["t_inventory_date_to" => "required|date"]);
+        if ( $from_validator->fails() ){
+            // send error back
+        }
+        else{
+            // since we have datetime in DB and we use date here, to get the current day as well we increment it to +1
+            $to_date = Carbon::createFromFormat('d-m-Y', $where_clause["t_inventory_date_to"])->addDay()->format('Y-m-d');
+            $queryBuild->where('inventories.created_at', '<', $to_date);
+        }
+
+        $from_validator = Validator::make($where_clause, ["t_inventory_id_no" => "required|integer"]);
+        if ( $from_validator->fails() ){
+            // send error back
+        }
+        else {
+            $queryBuild->where('inventories.id','=',$where_clause["t_inventory_id_no"]);
+        }
+
+        $from_validator = Validator::make($where_clause, ["t_inventory_list_price" => "required|numeric"]);
+        if ( $from_validator->fails() ){
+            // send error back
+        }
+        else {
+            $queryBuild->where('inventories.entry_price','>=',$where_clause["t_inventory_list_price"]);
+        }
+
+        $from_validator = Validator::make($where_clause, ["t_inventory_location" => "required|numeric|exists:shop_locations,id"]);
+        if ( $from_validator->fails() ){
+            // send error back
+        }
+        else {
+            $queryBuild->where('inventories.location_id','=',$where_clause["t_inventory_location"]);
+        }
+
+        $from_validator = Validator::make($where_clause, ["t_inventory_employee" => "required|numeric|exists:users,id"]);
+        if ( $from_validator->fails() ){
+            // send error back
+        }
+        else {
+            //echo $where_clause["t_inventory_employee"]; exit;
+            $queryBuild->where('inventories.user_id','=',$where_clause["t_inventory_employee"]);
+        }
+
+        // order by rules
+        $orderColumn = $where_clause['order[0][column]'];
+        $orderDirection = $where_clause['order[0][dir]'];
+        switch($orderColumn){
+            case 1 : // order by inventory_date
+                $orderByFirst = 'inventories.created_at';
+            break;
+            case 2 : // order by amount
+                $orderByFirst = 'inventories.quantity';
+            break;
+            case 3 : // order by list price
+                $orderByFirst = 'inventories.entry_price';
+            break;
+            case 4 : // order by shop location
+                $orderByFirst = 'inventories.location_id';
+            break;
+            case 5 : // order by shop location
+                $orderByFirst = 'inventories.user_id';
+                break;
+            default : // order by Inventory ID
+                $orderByFirst = 'inventories.id';
+            break;
+        }
+
+        switch($orderDirection){
+            case 'desc':
+            case 'DESC':
+                $orderBySecond = 'desc';
+            break;
+            default:
+                $orderBySecond = 'asc';
+            break;
+        }
+
+        $queryBuild->orderBy($orderByFirst, $orderBySecond);
+        //$abd = $queryBuild->toSql();
+        //dd($abd); exit;
+
+        $results = $queryBuild->get();
+
+        $vars = $request->only('length','start','draw','customActionType');
+
+        $iTotalRecords = sizeof($results);
+        $iDisplayLength = intval($vars['length']);
         $iDisplayLength = $iDisplayLength < 0 ? $iTotalRecords : $iDisplayLength;
-        $iDisplayStart = intval($request['start']);
-        $sEcho = intval($request['draw']);
+        $iDisplayStart = intval($vars['start']);
+        $sEcho = intval($vars['draw']);
 
         $records = array();
         $records["data"] = array();
@@ -198,12 +397,27 @@ class ProductController extends Controller
         $end = $end > $iTotalRecords ? $iTotalRecords : $end;
 
         $status_list = array(
-            array("info" => "Pending"),
+            array("info"    => "Pending"),
             array("success" => "Approved"),
-            array("danger" => "Rejected")
+            array("danger"  => "Rejected")
         );
 
         for($i = $iDisplayStart; $i < $end; $i++) {
+            $status = $status_list[rand(0, 2)];
+            //xdebug_var_dump($results[$i]);
+            $id = ($i + 1);
+            $records["data"][] = array(
+                $id,
+                $results[$i]->created_at,
+                $results[$i]->quantity,
+                $results[$i]->entry_price,
+                '<a href="'.route("admin/shops/locations/view", $results[$i]->location_id).'" class="btn btn-sm btn-default btn-editable"><i class="fa fa-building"></i> '.$results[$i]->name.'</a>',
+                '<a href="'.route("admin/back_users/view_user/", $results[$i]->user_id).'" class="btn btn-sm btn-default btn-editable"><i class="fa fa-user"></i> '.$results[$i]->first_name.' '.$results[$i]->middle_name.' '.$results[$i]->last_name.'</a>',
+                '',
+            );
+        }
+
+        /*for($i = $iDisplayStart; $i < $end; $i++) {
             $status = $status_list[rand(0, 2)];
             $id = ($i + 1);
             $records["data"][] = array(
@@ -212,11 +426,186 @@ class ProductController extends Controller
                 'Test Customer',
                 'Very nice and useful product. I recommend to this everyone.',
                 '<span class="label label-sm label-'.(key($status)).'">'.(current($status)).'</span>',
+                'Test Users',
                 '<a href="javascript:;" class="btn btn-sm btn-default btn-editable"><i class="fa fa-share"></i> View</a>',
+            );
+        }*/
+
+        if (isset($vars["customActionType"]) && $vars["customActionType"] == "group_action") {
+            $records["customActionStatus"] = "OK"; // pass custom message(useful for getting status of group actions)
+            $records["customActionMessage"] = "Group action successfully has been completed. Well done!"; // pass custom message(useful for getting status of group actions)
+        }
+
+        $records["draw"] = $sEcho;
+        $records["recordsTotal"] = $iTotalRecords;
+        $records["recordsFiltered"] = $iTotalRecords;
+
+        return $records;
+    }
+
+    public function get_all_products_inventory(Request $request){
+        if (!Auth::check()) {
+            return redirect()->intended(route('admin/login'));
+        }
+
+        $where_clause = $request->only('t_inventory_amount', 't_inventory_date_from', 't_inventory_date_to', 't_inventory_product',
+            't_inventory_list_price', 't_inventory_location', 't_inventory_employee', 'order[0][column]', 'order[0][dir]');
+        $queryBuild = DB::table('inventories')
+            ->select('inventories.*','shop_locations.*','products.name as product_name','users.first_name as first_name','users.middle_name as middle_name','users.last_name as last_name')
+            ->join('users', 'users.id', '=', 'inventories.user_id')
+            ->join('products', 'products.id', '=', 'inventories.product_id')
+            ->join('shop_locations', 'shop_locations.id', '=', 'inventories.location_id');
+
+        $amount_validator = Validator::make($where_clause, ["t_inventory_amount" => "required|integer"]);
+        if ( $amount_validator->fails() ){
+            // send error back
+        }
+        else{
+            $queryBuild->where('inventories.quantity','>=',$where_clause["t_inventory_amount"]);
+        }
+
+        $from_validator = Validator::make($where_clause, ["t_inventory_date_from" => "required|date"]);
+        if ( $from_validator->fails() ){
+            // send error back
+        }
+        else{
+            $from_date = Carbon::createFromFormat('d-m-Y', $where_clause["t_inventory_date_from"])->format('Y-m-d');
+            $queryBuild->where('inventories.created_at', '>=', $from_date);
+        }
+
+        $from_validator = Validator::make($where_clause, ["t_inventory_date_to" => "required|date"]);
+        if ( $from_validator->fails() ){
+            // send error back
+        }
+        else{
+            // since we have datetime in DB and we use date here, to get the current day as well we increment it to +1
+            $to_date = Carbon::createFromFormat('d-m-Y', $where_clause["t_inventory_date_to"])->addDay()->format('Y-m-d');
+            $queryBuild->where('inventories.created_at', '<', $to_date);
+        }
+
+        $from_validator = Validator::make($where_clause, ["t_inventory_product" => "required|min:1"]);
+        if ( $from_validator->fails() ){
+            // send error back
+        }
+        else {
+            $queryBuild->where('products.name','like', '%'.$where_clause["t_inventory_product"].'%');
+        }
+
+        $from_validator = Validator::make($where_clause, ["t_inventory_list_price" => "required|numeric"]);
+        if ( $from_validator->fails() ){
+            // send error back
+        }
+        else {
+            $queryBuild->where('inventories.entry_price','>=',$where_clause["t_inventory_list_price"]);
+        }
+
+        $from_validator = Validator::make($where_clause, ["t_inventory_location" => "required|numeric|exists:shop_locations,id"]);
+        if ( $from_validator->fails() ){
+            // send error back
+        }
+        else {
+            $queryBuild->where('inventories.location_id','=',$where_clause["t_inventory_location"]);
+        }
+
+        $from_validator = Validator::make($where_clause, ["t_inventory_employee" => "required|numeric|exists:users,id"]);
+        if ( $from_validator->fails() ){
+            // send error back
+        }
+        else {
+            //echo $where_clause["t_inventory_employee"]; exit;
+            $queryBuild->where('inventories.user_id','=',$where_clause["t_inventory_employee"]);
+        }
+
+        // order by rules
+        $orderColumn = $where_clause['order[0][column]'];
+        $orderDirection = $where_clause['order[0][dir]'];
+        switch($orderColumn){
+            case 1 : // order by inventory_date
+                $orderByFirst = 'inventories.created_at';
+                break;
+            case 2 : // order by amount
+                $orderByFirst = 'inventories.quantity';
+                break;
+            case 3 : // order by list price
+                $orderByFirst = 'inventories.entry_price';
+                break;
+            case 4 : // order by shop location
+                $orderByFirst = 'inventories.location_id';
+                break;
+            case 5 : // order by shop location
+                $orderByFirst = 'inventories.user_id';
+                break;
+            default : // order by Inventory ID
+                $orderByFirst = 'inventories.id';
+                break;
+        }
+
+        switch($orderDirection){
+            case 'desc':
+            case 'DESC':
+                $orderBySecond = 'desc';
+                break;
+            default:
+                $orderBySecond = 'asc';
+                break;
+        }
+
+        $queryBuild->orderBy($orderByFirst, $orderBySecond);
+        //$abd = $queryBuild->toSql();
+        //dd($abd); exit;
+
+        $results = $queryBuild->get();
+
+        $vars = $request->only('length','start','draw','customActionType');
+
+        $iTotalRecords = sizeof($results);
+        $iDisplayLength = intval($vars['length']);
+        $iDisplayLength = $iDisplayLength < 0 ? $iTotalRecords : $iDisplayLength;
+        $iDisplayStart = intval($vars['start']);
+        $sEcho = intval($vars['draw']);
+
+        $records = array();
+        $records["data"] = array();
+
+        $end = $iDisplayStart + $iDisplayLength;
+        $end = $end > $iTotalRecords ? $iTotalRecords : $end;
+
+        $status_list = array(
+            array("info"    => "Pending"),
+            array("success" => "Approved"),
+            array("danger"  => "Rejected")
+        );
+
+        for($i = $iDisplayStart; $i < $end; $i++) {
+            $status = $status_list[rand(0, 2)];
+            //xdebug_var_dump($results[$i]);
+            $id = ($i + 1);
+            $records["data"][] = array(
+                $id.'. <a href="'.route("admin/shops/products/view", $results[$i]->product_id).'">'.$results[$i]->product_name.'</a>',
+                $results[$i]->created_at,
+                $results[$i]->quantity,
+                $results[$i]->entry_price,
+                ' <a href="'.route("admin/shops/locations/view", $results[$i]->location_id).'" class="btn btn-sm btn-default btn-editable"><i class="fa fa-building"></i> '.$results[$i]->name.'</a> ',
+                ' <a href="'.route("admin/back_users/view_user/", $results[$i]->user_id).'" class="btn btn-sm btn-default btn-editable"><i class="fa fa-user"></i> '.$results[$i]->first_name.' '.$results[$i]->middle_name.' '.$results[$i]->last_name.'</a> ',
+                '',
             );
         }
 
-        if (isset($request["customActionType"]) && $request["customActionType"] == "group_action") {
+        /*for($i = $iDisplayStart; $i < $end; $i++) {
+            $status = $status_list[rand(0, 2)];
+            $id = ($i + 1);
+            $records["data"][] = array(
+                $id,
+                '12/09/2013',
+                'Test Customer',
+                'Very nice and useful product. I recommend to this everyone.',
+                '<span class="label label-sm label-'.(key($status)).'">'.(current($status)).'</span>',
+                'Test Users',
+                '<a href="javascript:;" class="btn btn-sm btn-default btn-editable"><i class="fa fa-share"></i> View</a>',
+            );
+        }*/
+
+        if (isset($vars["customActionType"]) && $vars["customActionType"] == "group_action") {
             $records["customActionStatus"] = "OK"; // pass custom message(useful for getting status of group actions)
             $records["customActionMessage"] = "Group action successfully has been completed. Well done!"; // pass custom message(useful for getting status of group actions)
         }
@@ -230,11 +619,12 @@ class ProductController extends Controller
 
     public function get_availability($id)
     {
-        if (!Auth::check()) {
-            return redirect()->intended(route('admin/login'));
+        $availability = ProductAvailability::where('product_id','=',$id)->orderBy('updated_at','desc')->get()->first();
+        //xdebug_var_dump($availability);
+        if ($availability) {
+            $availability['available_from'] = Carbon::createFromFormat('Y-m-d', $availability['available_from'])->format('d-m-Y');
+            $availability['available_to']   = Carbon::createFromFormat('Y-m-d', $availability['available_to'])->format('d-m-Y');
         }
-
-        $availability = ProductAvailability::where('product_id','=',$id)->get();
 
         return $availability;
     }
@@ -246,6 +636,9 @@ class ProductController extends Controller
 
         $vars = $request->only('available_from', 'available_to');
         $vars['product_id'] = $id;
+        $vars['available_from'] =  Carbon::createFromFormat('d-m-Y', $vars['available_from'])->format('Y-m-d');
+        $vars['available_to'] =  Carbon::createFromFormat('d-m-Y', $vars['available_to'])->format('Y-m-d');
+
         $validator = Validator::make($vars, ProductAvailability::rules('POST'), ProductAvailability::$message, ProductAvailability::$attributeNames);
 
         if ($validator->fails()){
@@ -262,5 +655,133 @@ class ProductController extends Controller
         }
 
         return 'bine';
+    }
+
+    public function get_price($id){
+        $price = ProductPrice::with('currency')->where('product_id','=',$id)->orderBy('updated_at','desc')->get()->first();
+        //xdebug_var_dump($price);
+
+        return $price;
+    }
+
+    public function update_price($product_id, $new_price, $new_currency){
+        $price_vars = array('list_price'=>$new_price, 'country_id'=>$new_currency, 'product_id'=>$product_id);
+        $currentTime = Carbon::now();
+        $last_price = ProductPrice::where('product_id', $product_id)->orderBy('updated_at', 'desc')->get()->first();
+        if ($last_price){
+            // we have a defined price in database, let's see if we need to update it
+            if ($last_price->list_price != $price_vars['list_price'] || $last_price->country_id != $price_vars['country_id']){
+                // we update the old price end date
+                $last_price->end_date = $currentTime->toDateString();
+                $last_price->save();
+                $old_price_updated = true;
+            }
+        }
+
+        if ( ($last_price && isset($old_price_updated)) || !$last_price){
+            // we need to add the price to the database - old price was different or there is no old price
+            $price_vars['start_date'] = $currentTime->toDateTimeString();
+            $price_validator = Validator::make($price_vars, ProductPrice::rules('POST'), ProductPrice::$message, ProductPrice::$attributeNames);
+
+            if ($price_validator->fails()){
+                return $price_validator->errors()->all();
+            }
+            else{
+                ProductPrice::create($price_vars);
+            }
+        }
+
+        return true;
+    }
+
+    public function all_inventory(){
+        if (!Auth::check()) {
+            return redirect()->intended(route('admin/login'));
+        }
+
+        $shops = ShopLocations::all();
+        $usersList = User::all('id', 'first_name', 'middle_name', 'last_name');
+
+        $breadcrumbs = [
+            'Home'              => route('admin'),
+            'Administration'    => route('admin'),
+            'Products'          => route('admin/shops/products/all'),
+            'Inventory'         => '',
+        ];
+        $text_parts  = [
+            'title'     => 'Company Inventory',
+            'subtitle'  => 'in / out',
+            'table_head_text' => 'Inventory',
+        ];
+        $sidebar_link= 'admin-backend-all-products-inventory';
+
+        return view('admin/products/all_inventory', [
+            'breadcrumbs' => $breadcrumbs,
+            'text_parts'  => $text_parts,
+            'in_sidebar'  => $sidebar_link,
+            'shops'       => $shops,
+            'users'       => $usersList
+        ]);
+    }
+
+    public function add_to_inventory(Request $request, $id){
+        if (!Auth::check()) {
+            return redirect()->intended(route('admin/login'));
+        }
+        else{
+            $user = Auth::user();
+        }
+
+        $vars = $request->only('entry_price', 'quantity', 'location_id');
+        $vars['product_id'] = $id;
+        $vars['user_id'] = $user->id;
+
+        // check if product exists
+        $product = Product::find($id);
+        if (!$product){
+            return "Product error";
+        }
+
+        // check old price and compare it with the new
+        $price = $this->get_price($id);
+        if (!$price){
+            return "Price error!";
+        }
+
+        // check if location exists
+        $location = ShopLocations::find($vars['location_id']);
+        if (!$location){
+            return 'Shop Location Error';
+        }
+
+        $validator = Validator::make($vars, Inventory::rules('POST'), Inventory::$message, Inventory::$attributeNames);
+
+        if ($validator->fails()){
+            return array(
+                'success' => false,
+                'errors' => $validator->getMessageBag()->toArray()
+            );
+        }
+
+        $newInventory = new Inventory();
+        $newInventory->fill($vars);
+        $newInventory->save();
+
+        if ($newInventory->wasRecentlyCreated){
+            /** @var  $sell_price : when true, the entry_price is the sell price, else entry_price is the price the company buys the product */
+            $sell_price = false;
+
+            // check if the inventory price is the same as the list price
+            if ($vars['entry_price']!=$price['list_price'] && $sell_price){
+                // we update the list price
+                $this->update_price($id, $vars['entry_price'], $price['country_id']);
+            }
+        }
+
+        return 'Add to inventory - bine';
+    }
+
+    public function remove_from_inventory($id){
+
     }
 }

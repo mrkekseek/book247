@@ -736,7 +736,7 @@
                                                     @endforeach
                                                 </select></div>
                                             <div class="margiv-top-10">
-                                                <a href="javascript:;" class="btn green" onCLick="javascript: $('#form_personal_address').submit();"> Save Changes </a>
+                                                <a href="javascript:;" class="btn green" onclick="javascript: $('#form_personal_address').submit();"> Save Changes </a>
                                                 <a href="javascript:;" class="btn default"> Cancel </a>
                                             </div>
                                         </form>

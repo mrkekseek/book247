@@ -61,24 +61,24 @@ class Product extends Model
             case 'POST':
             {
                 return [
-                    'name'      => 'required|min:3|max:75|unique:roles',
+                    'name'      => 'required|min:3|max:75|unique:products,name',
                     'category_id'   => 'required|exists:product_categories,id',
                     'brand'     => 'required|min:3',
                     'vat_rate_id'   => 'required|exists:vat_rates,id',
                     'url'       => 'required|min:3|unique:products,url',
-                    'status'    => 'required|in_array:0,1'
+                    'status'    => 'required|in:0,1'
                 ];
             }
             case 'PUT':
             case 'PATCH':
             {
                 return [
-                    'name'      => 'required|min:3|max:75|unique:roles,'.($id ? "id, $id," : ''),
+                    'name'      => 'required|min:3|max:75|unique:products,name,'.($id ? "$id,id" : ''),
                     'category_id'   => 'required|exists:product_categories,id',
                     'brand'     => 'required|min:3',
                     'vat_rate_id'   => 'required|exists:vat_rates,id',
-                    'url'       => 'required|min:3|unique:products,url,'.($id ? "id, $id," : ''),
-                    'status'    => 'required|in_array:0,1'
+                    'url'       => 'required|min:3|unique:products,url,'.($id ? "$id,id" : ''),
+                    'status'    => 'required|in:0,1'
                 ];
             }
             default:break;

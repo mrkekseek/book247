@@ -45,7 +45,7 @@ class Permission extends EntrustPermission
             case 'PATCH':
             {
                 return [
-                    'name' => 'required|min:5|max:50|unique:permissions,'.($id ? "id, $id," : ''),
+                    'name' => 'required|min:5|max:50|unique:permissions,'.($id ? "$id,id" : ''),
                     'display_name' => 'required|min:5',
                     'description' => 'required|min:10',
                 ];
