@@ -112,7 +112,12 @@ class ProductController extends Controller
         $product_availability = $this->get_availability($id);
         $vatRates = VatRate::orderBy('display_name')->get();
         $categories = ProductCategories::orderBy('name')->get();
+
         $price = $this->get_price($id);
+        $entry_price = Inventory::select('entry_price','created_at')->where('product_id','=',$id)->orderBy('created_at','desc')->get()->first();
+        $abc = $entry_price->created_at;
+        $entry_price->added_on = $abc->format('d-m-Y');
+
         $currencies = Countries::distinct()->
                                 select(array('id', 'currency', 'currency_code'))->
                                 where('currency_code','!=',"")->
@@ -121,7 +126,8 @@ class ProductController extends Controller
                                 get();
         $shops = ShopLocations::all();
         $usersList = User::all('id', 'first_name', 'middle_name', 'last_name');
-        //xdebug_var_dump($currencies[9]);
+        $stocks = $this->get_product_stock($id);
+        //xdebug_var_dump($stocks);
 
         $breadcrumbs = [
             'Home'              => route('admin'),
@@ -148,8 +154,10 @@ class ProductController extends Controller
             'categories' => $categories,
             'currencies' => $currencies,
             'price' => $price,
+            'entry_price' => $entry_price,
             'shops' => $shops,
             'users' => $usersList,
+            'stocks' => $stocks
         ]);
     }
 
@@ -275,9 +283,12 @@ class ProductController extends Controller
         }
 
         $where_clause = $request->only('t_inventory_amount', 't_inventory_date_from', 't_inventory_date_to', 't_inventory_id_no',
-                                       't_inventory_list_price', 't_inventory_location', 't_inventory_employee', 'order[0][column]', 'order[0][dir]');
+                                       't_inventory_list_price', 't_inventory_location', 't_inventory_employee', 'order', 'order');
+        //xdebug_var_dump($where_clause);
         $where_clause['product_id'] = $id;
         $queryBuild = DB::table('inventories')
+                        ->select('inventories.created_at','inventories.quantity','inventories.entry_price','shop_locations.id as location_id','shop_locations.name as name',
+                                 'users.id as user_id','users.first_name','users.middle_name','users.last_name')
                         ->join('users', 'users.id', '=', 'inventories.user_id')
                         ->join('shop_locations', 'shop_locations.id', '=', 'inventories.location_id')
                         ->where('inventories.product_id','=',$id);
@@ -343,8 +354,8 @@ class ProductController extends Controller
         }
 
         // order by rules
-        $orderColumn = $where_clause['order[0][column]'];
-        $orderDirection = $where_clause['order[0][dir]'];
+        $orderColumn = $where_clause['order'][0]['column'];
+        $orderDirection = $where_clause['order'][0]['dir'];
         switch($orderColumn){
             case 1 : // order by inventory_date
                 $orderByFirst = 'inventories.created_at';
@@ -377,7 +388,7 @@ class ProductController extends Controller
         }
 
         $queryBuild->orderBy($orderByFirst, $orderBySecond);
-        //$abd = $queryBuild->toSql();
+        $abd = $queryBuild->toSql();
         //dd($abd); exit;
 
         $results = $queryBuild->get();
@@ -664,6 +675,16 @@ class ProductController extends Controller
         return $price;
     }
 
+    public function get_entry_price($id){
+        $entry_price = Inventory::select('entry_price','created_at')->where('product_id','=',$id)->orderBy('created_at','desc')->get()->first();
+        if ($entry_price) {
+            $abc = $entry_price->created_at;
+            $entry_price->added_on = $abc->format('d-m-Y');
+        }
+
+        return $entry_price;
+    }
+
     public function update_price($product_id, $new_price, $new_currency){
         $price_vars = array('list_price'=>$new_price, 'country_id'=>$new_currency, 'product_id'=>$product_id);
         $currentTime = Carbon::now();
@@ -724,7 +745,7 @@ class ProductController extends Controller
         ]);
     }
 
-    public function add_to_inventory(Request $request, $id){
+    public function add_to_inventory(Request $request){
         if (!Auth::check()) {
             return redirect()->intended(route('admin/login'));
         }
@@ -732,18 +753,18 @@ class ProductController extends Controller
             $user = Auth::user();
         }
 
-        $vars = $request->only('entry_price', 'quantity', 'location_id');
-        $vars['product_id'] = $id;
+        $vars = $request->only('entry_price', 'quantity', 'location_id', 'product_id');
+        //$vars['product_id'] = $id;
         $vars['user_id'] = $user->id;
 
         // check if product exists
-        $product = Product::find($id);
+        $product = Product::find($vars['product_id']);
         if (!$product){
             return "Product error";
         }
 
         // check old price and compare it with the new
-        $price = $this->get_price($id);
+        $price = $this->get_price($vars['product_id']);
         if (!$price){
             return "Price error!";
         }
@@ -774,14 +795,170 @@ class ProductController extends Controller
             // check if the inventory price is the same as the list price
             if ($vars['entry_price']!=$price['list_price'] && $sell_price){
                 // we update the list price
-                $this->update_price($id, $vars['entry_price'], $price['country_id']);
+                $this->update_price($vars['product_id'], $vars['entry_price'], $price['country_id']);
             }
         }
 
-        return 'Add to inventory - bine';
+        return array(
+            'success' => true,
+            'message' => 'Inventory successfully added'
+        );
     }
 
-    public function remove_from_inventory($id){
+    public function transfer_from_inventory(Request $request){
+        if (!Auth::check()) {
+            return redirect()->intended(route('admin/login'));
+        }
+        else{
+            $user = Auth::user();
+        }
 
+        $vars = $request->only('quantity', 'old_location_id', 'new_location_id', 'product_id');
+        $vars['user_id'] = $user->id;
+
+        $entry_price = $this->get_entry_price($vars['product_id']);
+        $vars["entry_price"] = isset($entry_price->entry_price)?$entry_price->entry_price:0;
+
+        // check if stock is valid
+        $stock = $this->get_product_stock($vars['product_id'], $vars['old_location_id']);
+        //xdebug_var_dump($stock, $vars['old_location_id']); exit;
+        if (!$stock){
+            return array(
+                'success' => false,
+                'errors'  => 'Stock error - nothing in stock ',
+            );
+        }
+        elseif ($vars['quantity']>$stock['quantity']){
+            return array(
+                'success' => false,
+                'errors'  => 'Stock too low - only '.$stock['quantity'].' in selected location',
+            );
+        }
+        //xdebug_var_dump($stock); exit;
+
+        $validator = Validator::make($vars, Inventory::rules('PATCH'), Inventory::$message, Inventory::$attributeNames);
+
+        if ($validator->fails()){
+            return array(
+                'success' => false,
+                'errors' => $validator->getMessageBag()->toArray()
+            );
+        }
+
+        $vars_from = array('product_id'=>$vars['product_id'], 'location_id'=>$vars['old_location_id'], 'quantity'=>(-$vars['quantity']), 'entry_price'=>$vars['entry_price'], 'user_id'=>$vars['user_id']);
+        $newInventoryFrom = new Inventory();
+        $newInventoryFrom->fill($vars_from);
+        $newInventoryFrom->save();
+
+        $vars_to = array('product_id'=>$vars['product_id'], 'location_id'=>$vars['new_location_id'], 'quantity'=>$vars['quantity'], 'entry_price'=>$vars['entry_price'], 'user_id'=>$vars['user_id']);
+        $newInventoryTo = new Inventory();
+        $newInventoryTo->fill($vars_to);
+        $newInventoryTo->save();
+        /*if ($newInventoryTo->wasRecentlyCreated){
+            // @var  $sell_price : when true, the entry_price is the sell price, else entry_price is the price the company buys the product
+            $sell_price = false;
+
+            // check if the inventory price is the same as the list price
+            if ($vars['entry_price']!=$price['list_price'] && $sell_price){
+                // we update the list price
+                $this->update_price($id, $vars['entry_price'], $price['country_id']);
+            }
+        }*/
+
+        return array(
+            'success' => true,
+            'message' => 'Inventory successfully transfered'
+        );
+    }
+
+    public function get_product_stock($productID, $shopID=0){
+        if (!Auth::check()) {
+            return redirect()->intended(route('admin/login'));
+        }
+        else{
+            $user = Auth::user();
+        }
+
+        // check if product exists
+        $product = Product::find($productID);
+        if (!$product){
+            return false;
+        }
+
+        $query = DB::table('inventories')
+            ->select(DB::raw('sum(quantity) as quantity'), 'shop_locations.name as location_name', 'shop_locations.id as location_id')
+            ->join('shop_locations','inventories.location_id','=','shop_locations.id')
+            ->where('product_id',"=",$productID)
+            ->groupBy('location_id');
+
+        // if we get one locationID -> check if location exists
+        if ($shopID!=0) {
+            $shop = ShopLocations::find($shopID);
+            if (!$shop) {
+                return false;
+            }
+            else {
+                $query->where('location_id', $shopID);
+            }
+        }
+        $results = $query->get();
+
+        if (isset($results)){
+            $arrayResult = array();
+            if ($shopID==0) {
+                foreach ($results as $result) {
+                    $arrayResult[$result->location_id] = array('quantity' => (int)$result->quantity, 'location_name' => $result->location_name, 'location_id' => $result->location_id);
+                }
+            }
+            else{
+                foreach ($results as $result) {
+                    $arrayResult = array('quantity' => (int)$result->quantity, 'location_name' => $result->location_name, 'location_id' => $result->location_id);
+                }
+            }
+
+            return $arrayResult;
+        }
+        else{
+            return 0;
+        }
+    }
+
+    public function ajax_get(Request $request){
+        $vars = $request->only('q');
+        $items_array = array();
+        $items = array();
+
+        $query = DB::table('products')
+            ->select('products.name','products.alternate_name','products.manufacturer','products.id','product_categories.name as category_name')
+            ->join('product_categories','product_categories.id','=','products.category_id')
+            ->where(    'products.name','like','%'.$vars['q'].'%')
+            ->orWhere(  'products.alternate_name','like','%'.$vars['q'].'%')
+            ->orWhere(  'products.brand','like','%'.$vars['q'].'%')
+            ->orWhere(  'products.manufacturer','like','%'.$vars['q'].'%')
+            ->orWhere(  'product_categories.name','like','%'.$vars['q'].'%');
+
+        $results = $query->get();
+        if ($results){
+            foreach($results as $result){
+                $product_price = $this->get_price($result->id);
+                $product_entry_price = $this->get_entry_price($result->id);
+
+                $items[] = array('id'=>$result->id,
+                    'full_name' => $result->name,
+                    'text' => $result->alternate_name,
+                    'product_name'=>$result->name,
+                    'manufacturer'=>$result->manufacturer,
+                    'category'=>$result->category_name,
+                    'list_price'=>$product_price->list_price,
+                    'entry_price'=>$product_entry_price->entry_price,
+                    'currency'=>$product_price->currency->currency_code,
+                    'product_image_url' => asset('assets/pages/img/avatars/team'.rand(1,10).'.jpg')
+                );
+            }
+        }
+
+        $items_array['items'] = $items;
+
+        return $items_array;
     }
 }

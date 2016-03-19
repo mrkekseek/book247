@@ -1,14 +1,13 @@
 @extends('admin.layouts.main')
 
 @section('pageLevelPlugins')
-
+    <link href="{{ asset('assets/global/plugins/fullcalendar/fullcalendar.min.css') }}" rel="stylesheet" type="text/css" />
 @endsection
 
 @section('themeGlobalStyle')
     <link href="{{ asset('assets/global/css/components-rounded.min.css') }}" rel="stylesheet" id="style_components" type="text/css" />
     <link href="{{ asset('assets/global/css/plugins.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('assets/global/plugins/jquery-notific8/jquery.notific8.min.css') }}" rel="stylesheet" type="text/css" />
-    <link href="{{ asset('assets/global/plugins/bootstrap-timepicker/css/bootstrap-timepicker.min.css') }}" rel="stylesheet" type="text/css" />
 @endsection
 
 @section('themeLayoutStyle')
@@ -52,475 +51,36 @@
         <!-- END PAGE BREADCRUMB -->
         <!-- BEGIN PAGE BASE CONTENT -->
         <div class="row">
-            <div class="col-md-6 ">
-                <div class="portlet light bordered">
-                    <div class="portlet-title">
-                        <div class="caption">
-                            <i class="icon-settings font-dark"></i>
-                            <span class="caption-subject font-dark sbold uppercase">Shop/Store Details</span>
-                        </div>
-                    </div>
-                    <div class="portlet-body form">
-                        <form class="form-horizontal" role="form">
-                            <div class="form-body">
-                                <div class="form-group">
-                                    <label class="col-md-3 control-label">Shop Name</label>
-                                    <div class="col-md-9">
-                                        <div class="input-group">
-                                            <span class="input-group-addon">
-                                                <i class="fa fa-envelope"></i>
-                                            </span>
-                                            <input type="text" name="shop_name" class="form-control" placeholder="Shop Name" value="{{ $shopDetails->name }}" /> </div>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="col-md-3 control-label">Phone Number</label>
-                                    <div class="col-md-9">
-                                        <input type="text" name="shop_phone" value="{{ $shopDetails->phone }}" class="form-control input-inline input-medium" placeholder="Phone Number">
-                                        <span class="help-inline"> land line </span>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="col-md-3 control-label">Fax Number</label>
-                                    <div class="col-md-9">
-                                        <input type="text" name="shop_fax" value="{{ $shopDetails->fax }}" class="form-control input-inline input-medium" placeholder="Fax Number">
-                                        <span class="help-inline"> land line </span>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="col-md-3 control-label">Contact Email</label>
-                                    <div class="col-md-9">
-                                        <div class="input-group">
-                                            <span class="input-group-addon">
-                                                <i class="fa fa-envelope"></i>
-                                            </span>
-                                        <input type="email" name="shop_email" value="{{ $shopDetails->email }}" class="form-control" placeholder="Email Address"> </div>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="col-md-3 control-label">Bank Account</label>
-                                    <div class="col-md-9">
-                                        <input type="text" name="shop_bank_acc_no" value="{{ $shopDetails->bank_acc_no }}" placeholder="Bank Account" class="form-control">
-                                        <span class="help-block"> Bank Account Number </span>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="col-md-3 control-label">Registered No.</label>
-                                    <div class="col-md-9">
-                                        <input type="text" name="shop_registration_no" value="{{ $shopDetails->registered_no }}" placeholder="Shop Registration Number" class="form-control">
-                                        <span class="help-block"> National Registration Number </span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="form-actions">
-                                <div class="row">
-                                    <div class="col-md-offset-3 col-md-9">
-                                        <button type="submit" class="btn green">Submit</button>
-                                        <button type="button" class="btn default">Cancel</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6 ">
-                <!-- BEGIN SAMPLE FORM PORTLET-->
-                <div class="portlet light bordered">
-                    <div class="portlet-title">
-                        <div class="caption">
-                            <i class="icon-settings font-dark"></i>
-                            <span class="caption-subject font-dark sbold uppercase">Shop/Store Address</span>
-                        </div>
-                    </div>
-                    <div class="portlet-body form">
-                        <form class="form-horizontal" role="form">
-                            <div class="form-body">
-                                <div class="form-group">
-                                    <label class="col-md-3 control-label">Address Line1</label>
-                                    <div class="col-md-9">
-                                        <input type="text" name="shop_address1" value="{{ $shopAddress->address1 }}" class="form-control" placeholder="Enter text">
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="col-md-3 control-label">Address Line2</label>
-                                    <div class="col-md-9">
-                                        <input type="text" name="shop_address1" value="{{ $shopAddress->address2 }}" class="form-control" placeholder="Enter text">
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="col-md-3 control-label">City</label>
-                                    <div class="col-md-9">
-                                        <input type="text" name="shop_city" value="{{ $shopAddress->city }}" class="form-control input-inline input-medium" placeholder="Enter text">
-                                        <span class="help-inline"> Inline help. </span>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="col-md-3 control-label">Postal Code</label>
-                                    <div class="col-md-9">
-                                        <input type="text" name="shop_postal_code" value="{{ $shopAddress->postal_code }}" class="form-control input-inline input-medium" placeholder="Enter text">
-                                        <span class="help-inline"> Inline help. </span>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="col-md-3 control-label">Region</label>
-                                    <div class="col-md-9">
-                                        <input type="text" name="shop_region" value="{{ $shopAddress->region }}" class="form-control input-inline input-medium" placeholder="Enter text">
-                                        <span class="help-inline"> Inline help. </span>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="col-md-3 control-label">Country</label>
-                                    <div class="col-md-9">
-                                        <input type="text" name="shop_country" value="{{ $shopAddress->countryName }}" class="form-control" readonly placeholder="Enter text">
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="form-actions">
-                                <div class="row">
-                                    <div class="col-md-offset-3 col-md-9">
-                                        <button type="submit" class="btn green">Submit</button>
-                                        <button type="button" class="btn default">Cancel</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-                <!-- END SAMPLE FORM PORTLET-->
-            </div>
-        </div>
-
-        <div class="row">
             <div class="col-md-12">
-                <!-- BEGIN PORTLET-->
-                <div class="portlet box red">
+                <div class="portlet light portlet-fit bordered calendar">
                     <div class="portlet-title">
                         <div class="caption">
-                            <i class="fa fa-gift"></i>Opening Hours </div>
-                        <div class="tools">
-                            <a href="javascript:;" class="collapse"> </a>
-                            <a href="javascript:;" class="reload"> </a>
-                            <a href="javascript:;" class="remove"> </a>
+                            <i class=" icon-layers font-green"></i>
+                            <span class="caption-subject font-green sbold uppercase">Calendar</span>
                         </div>
                     </div>
-                    <div class="portlet-body form">
-                        <!-- BEGIN FORM-->
-                        <form action="#" class="form-horizontal form-bordered">
-                            <div class="form-body form">
-                                <div class="form-group">
-                                    <div class="control-label col-md-2">
-                                        Week Days - Open
-                                    </div>
-                                    <div class="col-md-1">
-                                        <div class="input-group">
-                                            <input type="text" class="form-control timepicker timepicker-24">
-                                                <span class="input-group-btn">
-                                                    <button class="btn default" type="button">
-                                                        <i class="fa fa-clock-o"></i>
-                                                    </button>
-                                                </span>
-                                        </div>
-                                    </div>
-                                    <label class="control-label col-md-1">Close</label>
-                                    <div class="col-md-1">
-                                        <div class="input-group">
-                                            <input type="text" class="form-control timepicker timepicker-24">
-                                                <span class="input-group-btn">
-                                                    <button class="btn default" type="button">
-                                                        <i class="fa fa-clock-o"></i>
-                                                    </button>
-                                                </span>
-                                        </div>
-                                    </div>
-
-                                    <div class="control-label col-md-3">
-                                        Day Break From
-                                    </div>
-                                    <div class="col-md-1">
-                                        <div class="input-group">
-                                            <input type="text" class="form-control timepicker timepicker-24">
-                                                <span class="input-group-btn">
-                                                    <button class="btn default" type="button">
-                                                        <i class="fa fa-clock-o"></i>
-                                                    </button>
-                                                </span>
-                                        </div>
-                                    </div>
-                                    <label class="control-label col-md-1">To</label>
-                                    <div class="col-md-1">
-                                        <div class="input-group">
-                                            <input type="text" class="form-control timepicker timepicker-24">
-                                                <span class="input-group-btn">
-                                                    <button class="btn default" type="button">
-                                                        <i class="fa fa-clock-o"></i>
-                                                    </button>
-                                                </span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <div class="control-label col-md-2">
-                                        Saturday - Open
-                                    </div>
-                                    <div class="col-md-1">
-                                        <div class="input-group">
-                                            <input type="text" class="form-control timepicker timepicker-24">
-                                                <span class="input-group-btn">
-                                                    <button class="btn default" type="button">
-                                                        <i class="fa fa-clock-o"></i>
-                                                    </button>
-                                                </span>
-                                        </div>
-                                    </div>
-                                    <label class="control-label col-md-1">Close</label>
-                                    <div class="col-md-1">
-                                        <div class="input-group">
-                                            <input type="text" class="form-control timepicker timepicker-24">
-                                                <span class="input-group-btn">
-                                                    <button class="btn default" type="button">
-                                                        <i class="fa fa-clock-o"></i>
-                                                    </button>
-                                                </span>
-                                        </div>
-                                    </div>
-
-                                    <div class="control-label col-md-3">
-                                        Day Break From
-                                    </div>
-                                    <div class="col-md-1">
-                                        <div class="input-group">
-                                            <input type="text" class="form-control timepicker timepicker-24">
-                                                <span class="input-group-btn">
-                                                    <button class="btn default" type="button">
-                                                        <i class="fa fa-clock-o"></i>
-                                                    </button>
-                                                </span>
-                                        </div>
-                                    </div>
-                                    <label class="control-label col-md-1">To</label>
-                                    <div class="col-md-1">
-                                        <div class="input-group">
-                                            <input type="text" class="form-control timepicker timepicker-24">
-                                                <span class="input-group-btn">
-                                                    <button class="btn default" type="button">
-                                                        <i class="fa fa-clock-o"></i>
-                                                    </button>
-                                                </span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <div class="control-label col-md-2">
-                                        Sunday - Open
-                                    </div>
-                                    <div class="col-md-1">
-                                        <div class="input-group">
-                                            <input type="text" class="form-control timepicker timepicker-24">
-                                                <span class="input-group-btn">
-                                                    <button class="btn default" type="button">
-                                                        <i class="fa fa-clock-o"></i>
-                                                    </button>
-                                                </span>
-                                        </div>
-                                    </div>
-                                    <label class="control-label col-md-1">Close</label>
-                                    <div class="col-md-1">
-                                        <div class="input-group">
-                                            <input type="text" class="form-control timepicker timepicker-24">
-                                                <span class="input-group-btn">
-                                                    <button class="btn default" type="button">
-                                                        <i class="fa fa-clock-o"></i>
-                                                    </button>
-                                                </span>
-                                        </div>
-                                    </div>
-
-                                    <div class="control-label col-md-3">
-                                        Day Break From
-                                    </div>
-                                    <div class="col-md-1">
-                                        <div class="input-group">
-                                            <input type="text" class="form-control timepicker timepicker-24">
-                                                <span class="input-group-btn">
-                                                    <button class="btn default" type="button">
-                                                        <i class="fa fa-clock-o"></i>
-                                                    </button>
-                                                </span>
-                                        </div>
-                                    </div>
-                                    <label class="control-label col-md-1">To</label>
-                                    <div class="col-md-1">
-                                        <div class="input-group">
-                                            <input type="text" class="form-control timepicker timepicker-24">
-                                                <span class="input-group-btn">
-                                                    <button class="btn default" type="button">
-                                                        <i class="fa fa-clock-o"></i>
-                                                    </button>
-                                                </span>
-                                        </div>
-                                    </div>
-                                </div>
+                    <div class="portlet-body">
+                        <div class="row">
+                            <div class="col-md-3 col-sm-12">
+                                <!-- BEGIN DRAGGABLE EVENTS PORTLET-->
+                                <h3 class="event-form-title margin-bottom-20">Draggable Events</h3>
+                                <div id="external-events">
+                                    <form class="inline-form">
+                                        <input type="text" value="" class="form-control" placeholder="Event Title..." id="event_title" />
+                                        <br/>
+                                        <a href="javascript:;" id="event_add" class="btn green"> Add Event </a>
+                                    </form>
+                                    <hr/>
+                                    <div id="event_box" class="margin-bottom-10"></div>
+                                    <label for="drop-remove">
+                                        <input type="checkbox" id="drop-remove" />remove after drop </label>
+                                    <hr class="visible-xs" /> </div>
+                                <!-- END DRAGGABLE EVENTS PORTLET-->
                             </div>
-                        </form>
-                        <!-- END FORM-->
-                    </div>
-                </div>
-                <!-- END PORTLET-->
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col-md-12">
-                <div class="portlet box green">
-                    <div class="portlet-title">
-                        <div class="caption">
-                            <i class="fa fa-cogs"></i>Cash flow log </div>
-                        <div class="tools">
-                            <a class="collapse" href="javascript:;" data-original-title="" title=""> </a>
-                            <a class="reload" href="javascript:;" data-original-title="" title=""> </a>
-                            <a class="remove" href="javascript:;" data-original-title="" title=""> </a>
+                            <div class="col-md-9 col-sm-12">
+                                <div id="calendar" class="has-toolbar"> </div>
+                            </div>
                         </div>
-                    </div>
-                    <div class="portlet-body flip-scroll">
-                        <table class="table table-bordered table-striped table-condensed flip-content">
-                            <thead class="flip-content">
-                            <tr>
-                                <th width="20%"> Code </th>
-                                <th> Company </th>
-                                <th class="numeric"> Price </th>
-                                <th class="numeric"> Change </th>
-                                <th class="numeric"> Change % </th>
-                                <th class="numeric"> Open </th>
-                                <th class="numeric"> High </th>
-                                <th class="numeric"> Low </th>
-                                <th class="numeric"> Volume </th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr>
-                                <td> AAC </td>
-                                <td> AUSTRALIAN AGRICULTURAL COMPANY LIMITED. </td>
-                                <td class="numeric"> &nbsp; </td>
-                                <td class="numeric"> -0.01 </td>
-                                <td class="numeric"> -0.36% </td>
-                                <td class="numeric"> $1.39 </td>
-                                <td class="numeric"> $1.39 </td>
-                                <td class="numeric"> &nbsp; </td>
-                                <td class="numeric"> 9,395 </td>
-                            </tr>
-                            <tr>
-                                <td> AAD </td>
-                                <td> ARDENT LEISURE GROUP </td>
-                                <td class="numeric"> $1.15 </td>
-                                <td class="numeric"> +0.02 </td>
-                                <td class="numeric"> 1.32% </td>
-                                <td class="numeric"> $1.14 </td>
-                                <td class="numeric"> $1.15 </td>
-                                <td class="numeric"> $1.13 </td>
-                                <td class="numeric"> 56,431 </td>
-                            </tr>
-                            <tr>
-                                <td> AAX </td>
-                                <td> AUSENCO LIMITED </td>
-                                <td class="numeric"> $4.00 </td>
-                                <td class="numeric"> -0.04 </td>
-                                <td class="numeric"> -0.99% </td>
-                                <td class="numeric"> $4.01 </td>
-                                <td class="numeric"> $4.05 </td>
-                                <td class="numeric"> $4.00 </td>
-                                <td class="numeric"> 90,641 </td>
-                            </tr>
-                            <tr>
-                                <td> ABC </td>
-                                <td> ADELAIDE BRIGHTON LIMITED </td>
-                                <td class="numeric"> $3.00 </td>
-                                <td class="numeric"> +0.06 </td>
-                                <td class="numeric"> 2.04% </td>
-                                <td class="numeric"> $2.98 </td>
-                                <td class="numeric"> $3.00 </td>
-                                <td class="numeric"> $2.96 </td>
-                                <td class="numeric"> 862,518 </td>
-                            </tr>
-                            <tr>
-                                <td> ABP </td>
-                                <td> ABACUS PROPERTY GROUP </td>
-                                <td class="numeric"> $1.91 </td>
-                                <td class="numeric"> 0.00 </td>
-                                <td class="numeric"> 0.00% </td>
-                                <td class="numeric"> $1.92 </td>
-                                <td class="numeric"> $1.93 </td>
-                                <td class="numeric"> $1.90 </td>
-                                <td class="numeric"> 595,701 </td>
-                            </tr>
-                            <tr>
-                                <td> ABY </td>
-                                <td> ADITYA BIRLA MINERALS LIMITED </td>
-                                <td class="numeric"> $0.77 </td>
-                                <td class="numeric"> +0.02 </td>
-                                <td class="numeric"> 2.00% </td>
-                                <td class="numeric"> $0.76 </td>
-                                <td class="numeric"> $0.77 </td>
-                                <td class="numeric"> $0.76 </td>
-                                <td class="numeric"> 54,567 </td>
-                            </tr>
-                            <tr>
-                                <td> ACR </td>
-                                <td> ACRUX LIMITED </td>
-                                <td class="numeric"> $3.71 </td>
-                                <td class="numeric"> +0.01 </td>
-                                <td class="numeric"> 0.14% </td>
-                                <td class="numeric"> $3.70 </td>
-                                <td class="numeric"> $3.72 </td>
-                                <td class="numeric"> $3.68 </td>
-                                <td class="numeric"> 191,373 </td>
-                            </tr>
-                            <tr>
-                                <td> ADU </td>
-                                <td> ADAMUS RESOURCES LIMITED </td>
-                                <td class="numeric"> $0.72 </td>
-                                <td class="numeric"> 0.00 </td>
-                                <td class="numeric"> 0.00% </td>
-                                <td class="numeric"> $0.73 </td>
-                                <td class="numeric"> $0.74 </td>
-                                <td class="numeric"> $0.72 </td>
-                                <td class="numeric"> 8,602,291 </td>
-                            </tr>
-                            <tr>
-                                <td> AGG </td>
-                                <td> ANGLOGOLD ASHANTI LIMITED </td>
-                                <td class="numeric"> $7.81 </td>
-                                <td class="numeric"> -0.22 </td>
-                                <td class="numeric"> -2.74% </td>
-                                <td class="numeric"> $7.82 </td>
-                                <td class="numeric"> $7.82 </td>
-                                <td class="numeric"> $7.81 </td>
-                                <td class="numeric"> 148 </td>
-                            </tr>
-                            <tr>
-                                <td> AGK </td>
-                                <td> AGL ENERGY LIMITED </td>
-                                <td class="numeric"> $13.82 </td>
-                                <td class="numeric"> +0.02 </td>
-                                <td class="numeric"> 0.14% </td>
-                                <td class="numeric"> $13.83 </td>
-                                <td class="numeric"> $13.83 </td>
-                                <td class="numeric"> $13.67 </td>
-                                <td class="numeric"> 846,403 </td>
-                            </tr>
-                            <tr>
-                                <td> AGO </td>
-                                <td> ATLAS IRON LIMITED </td>
-                                <td class="numeric"> $3.17 </td>
-                                <td class="numeric"> -0.02 </td>
-                                <td class="numeric"> -0.47% </td>
-                                <td class="numeric"> $3.11 </td>
-                                <td class="numeric"> $3.22 </td>
-                                <td class="numeric"> $3.10 </td>
-                                <td class="numeric"> 5,416,303 </td>
-                            </tr>
-                            </tbody>
-                        </table>
                     </div>
                 </div>
             </div>
@@ -1101,8 +661,10 @@
 @endsection
 
 @section('pageBelowLevelPlugins')
+    <script src="{{ asset('assets/global/plugins/moment.min.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('assets/global/plugins/fullcalendar/fullcalendar.min.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('assets/global/plugins/jquery-ui/jquery-ui.min.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/global/plugins/jquery-validation/js/jquery.validate.min.js') }}" type="text/javascript"></script>
-    <script src="{{ asset('assets/global/plugins/bootstrap-timepicker/js/bootstrap-timepicker.min.js') }}" type="text/javascript"></script>
 @endsection
 
 @section('pageBelowLevelScripts')
@@ -1124,155 +686,184 @@
             }
         });
 
-        var TableDatatablesManaged = function () {
-
-            var initTable1 = function () {
-
-                var table = $('#all_permissions');
-
-                // begin first table
-                table.dataTable({
-
-                    // Internationalisation. For more info refer to http://datatables.net/manual/i18n
-                    "language": {
-                        "aria": {
-                            "sortAscending": ": activate to sort column ascending",
-                            "sortDescending": ": activate to sort column descending"
-                        },
-                        "emptyTable": "No data available in table",
-                        "info": "Showing _START_ to _END_ of _TOTAL_ records",
-                        "infoEmpty": "No records found",
-                        "infoFiltered": "(filtered1 from _MAX_ total records)",
-                        "lengthMenu": "Show _MENU_",
-                        "search": "Search:",
-                        "zeroRecords": "No matching records found",
-                        "paginate": {
-                            "previous":"Prev",
-                            "next": "Next",
-                            "last": "Last",
-                            "first": "First"
-                        }
-                    },
-
-                    // Or you can use remote translation file
-                    //"language": {
-                    //   url: '//cdn.datatables.net/plug-ins/3cfcc339e89/i18n/Portuguese.json'
-                    //},
-
-                    // Uncomment below line("dom" parameter) to fix the dropdown overflow issue in the datatable cells. The default datatable layout
-                    // setup uses scrollable div(table-scrollable) with overflow:auto to enable vertical scroll(see: assets/global/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.js).
-                    // So when dropdowns used the scrollable div should be removed.
-                    //"dom": "<'row'<'col-md-6 col-sm-12'l><'col-md-6 col-sm-12'f>r>t<'row'<'col-md-5 col-sm-12'i><'col-md-7 col-sm-12'p>>",
-
-                    "bStateSave": true, // save datatable state(pagination, sort, etc) in cookie.
-
-                    "columnDefs": [ {
-                        "targets": 0,
-                        "orderable": false,
-                        "searchable": false
-                    }],
-
-                    "lengthMenu": [
-                        [5, 15, 20, -1],
-                        [5, 15, 20, "All"] // change per page values here
-                    ],
-                    // set the initial value
-                    "pageLength": 5,
-                    "pagingType": "bootstrap_full_number",
-                    "columnDefs": [{  // set default column settings
-                        'orderable': false,
-                        'targets': [0]
-                    }, {
-                        "searchable": false,
-                        "targets": [0]
-                    }],
-                    "order": [
-                        [1, "asc"]
-                    ] // set first column as a default sort by asc
-                });
-
-                var tableWrapper = jQuery('#sample_1_wrapper');
-
-                table.find('.group-checkable').change(function () {
-                    var set = jQuery(this).attr("data-set");
-                    var checked = jQuery(this).is(":checked");
-                    jQuery(set).each(function () {
-                        if (checked) {
-                            $(this).prop("checked", true);
-                            $(this).parents('tr').addClass("active");
-                        } else {
-                            $(this).prop("checked", false);
-                            $(this).parents('tr').removeClass("active");
-                        }
-                    });
-                    jQuery.uniform.update(set);
-                });
-
-                table.on('change', 'tbody tr .checkboxes', function () {
-                    $(this).parents('tr').toggleClass("active");
-                });
-            }
+        var AppCalendar = function() {
 
             return {
-
                 //main function to initiate the module
-                init: function () {
-                    if (!jQuery().dataTable) {
+                init: function() {
+                    this.initCalendar();
+                },
+
+                initCalendar: function() {
+
+                    if (!jQuery().fullCalendar) {
                         return;
                     }
 
-                    initTable1();
+                    var date = new Date();
+                    var d = date.getDate();
+                    var m = date.getMonth();
+                    var y = date.getFullYear();
+
+                    var h = {};
+
+                    if (App.isRTL()) {
+                        if ($('#calendar').parents(".portlet").width() <= 720) {
+                            $('#calendar').addClass("mobile");
+                            h = {
+                                right: 'title, prev, next',
+                                center: '',
+                                left: 'agendaDay, agendaWeek, month, today'
+                            };
+                        } else {
+                            $('#calendar').removeClass("mobile");
+                            h = {
+                                right: 'title',
+                                center: '',
+                                left: 'agendaDay, agendaWeek, month, today, prev,next'
+                            };
+                        }
+                    } else {
+                        if ($('#calendar').parents(".portlet").width() <= 720) {
+                            $('#calendar').addClass("mobile");
+                            h = {
+                                left: 'title, prev, next',
+                                center: '',
+                                right: 'today,month,agendaWeek,agendaDay'
+                            };
+                        } else {
+                            $('#calendar').removeClass("mobile");
+                            h = {
+                                left: 'title',
+                                center: '',
+                                right: 'prev,next,today,month,agendaWeek,agendaDay'
+                            };
+                        }
+                    }
+
+                    var initDrag = function(el) {
+                        // create an Event Object (http://arshaw.com/fullcalendar/docs/event_data/Event_Object/)
+                        // it doesn't need to have a start or end
+                        var eventObject = {
+                            title: $.trim(el.text()) // use the element's text as the event title
+                        };
+                        // store the Event Object in the DOM element so we can get to it later
+                        el.data('eventObject', eventObject);
+                        // make the event draggable using jQuery UI
+                        el.draggable({
+                            zIndex: 999,
+                            revert: true, // will cause the event to go back to its
+                            revertDuration: 0 //  original position after the drag
+                        });
+                    };
+
+                    var addEvent = function(title) {
+                        title = title.length === 0 ? "Untitled Event" : title;
+                        var html = $('<div class="external-event label label-default">' + title + '</div>');
+                        jQuery('#event_box').append(html);
+                        initDrag(html);
+                    };
+
+                    $('#external-events div.external-event').each(function() {
+                        initDrag($(this));
+                    });
+
+                    $('#event_add').unbind('click').click(function() {
+                        var title = $('#event_title').val();
+                        addEvent(title);
+                    });
+
+                    //predefined events
+                    $('#event_box').html("");
+                    addEvent("My Event 1");
+                    addEvent("My Event 2");
+                    addEvent("My Event 3");
+                    addEvent("My Event 4");
+                    addEvent("My Event 5");
+                    addEvent("My Event 6");
+
+                    $('#calendar').fullCalendar('destroy'); // destroy the calendar
+                    $('#calendar').fullCalendar({ //re-initialize the calendar
+                        header: h,
+                        defaultView: 'month', // change default view with available options from http://arshaw.com/fullcalendar/docs/views/Available_Views/
+                        slotMinutes: 15,
+                        editable: true,
+                        droppable: true, // this allows things to be dropped onto the calendar !!!
+                        drop: function(date, allDay) { // this function is called when something is dropped
+
+                            // retrieve the dropped element's stored Event Object
+                            var originalEventObject = $(this).data('eventObject');
+                            // we need to copy it, so that multiple events don't have a reference to the same object
+                            var copiedEventObject = $.extend({}, originalEventObject);
+
+                            // assign it the date that was reported
+                            copiedEventObject.start = date;
+                            copiedEventObject.allDay = allDay;
+                            copiedEventObject.className = $(this).attr("data-class");
+
+                            // render the event on the calendar
+                            // the last `true` argument determines if the event "sticks" (http://arshaw.com/fullcalendar/docs/event_rendering/renderEvent/)
+                            $('#calendar').fullCalendar('renderEvent', copiedEventObject, true);
+
+                            // is the "remove after drop" checkbox checked?
+                            if ($('#drop-remove').is(':checked')) {
+                                // if so, remove the element from the "Draggable Events" list
+                                $(this).remove();
+                            }
+                        },
+                        events: [{
+                            title: 'All Day Event',
+                            start: new Date(y, m, 1),
+                            backgroundColor: App.getBrandColor('yellow')
+                        }, {
+                            title: 'Long Event',
+                            start: new Date(y, m, d - 5),
+                            end: new Date(y, m, d - 2),
+                            backgroundColor: App.getBrandColor('green')
+                        }, {
+                            title: 'Repeating Event',
+                            start: new Date(y, m, d - 3, 16, 0),
+                            allDay: false,
+                            backgroundColor: App.getBrandColor('red')
+                        }, {
+                            title: 'Repeating Event',
+                            start: new Date(y, m, d + 4, 16, 0),
+                            allDay: false,
+                            backgroundColor: App.getBrandColor('green')
+                        }, {
+                            title: 'Meeting',
+                            start: new Date(y, m, d, 10, 30),
+                            allDay: false,
+                        }, {
+                            title: 'Lunch',
+                            start: new Date(y, m, d, 12, 0),
+                            end: new Date(y, m, d, 14, 0),
+                            backgroundColor: App.getBrandColor('grey'),
+                            allDay: false,
+                        }, {
+                            title: 'Birthday Party',
+                            start: new Date(y, m, d + 1, 19, 0),
+                            end: new Date(y, m, d + 1, 22, 30),
+                            backgroundColor: App.getBrandColor('purple'),
+                            allDay: false,
+                        }, {
+                            title: 'Click for Google',
+                            start: new Date(y, m, 28),
+                            end: new Date(y, m, 29),
+                            backgroundColor: App.getBrandColor('yellow'),
+                            url: 'http://google.com/',
+                        }]
+                    });
+
                 }
 
             };
 
         }();
 
-        var ComponentsDateTimePickers = function () {
-
-            var handleTimePickers = function () {
-
-                if (jQuery().timepicker) {
-                    $('.timepicker-default').timepicker({
-                        autoclose: true,
-                        showSeconds: true,
-                        minuteStep: 1
-                    });
-
-                    $('.timepicker-no-seconds').timepicker({
-                        autoclose: true,
-                        minuteStep: 5
-                    });
-
-                    $('.timepicker-24').timepicker({
-                        autoclose: true,
-                        minuteStep: 5,
-                        showSeconds: false,
-                        showMeridian: false
-                    });
-
-                    // handle input group button click
-                    $('.timepicker').parent('.input-group').on('click', '.input-group-btn', function(e){
-                        e.preventDefault();
-                        $(this).parent('.input-group').find('.timepicker').timepicker('showWidget');
-                    });
-                }
-            }
-
-            return {
-                //main function to initiate the module
-                init: function () {
-                    handleTimePickers();
-                }
-            };
-
-        }();
-
-        if (App.isAngularJsApp() === false) {
-            jQuery(document).ready(function() {
-                ComponentsDateTimePickers.init();
-            });
-        }
+        jQuery(document).ready(function() {
+            AppCalendar.init();
+        });
 
         var FormValidation = function () {
 

@@ -148,4 +148,32 @@ class ShopController extends Controller
     public function view_shop_location(){
 
     }
+
+    public function shops_employee_working_plan(){
+        if (!Auth::check()) {
+            return redirect()->intended(route('admin/login'));
+        }
+
+        $shop_locations = ShopLocations::orderBy('name')->get();
+
+        $breadcrumbs = [
+            'Home'              => route('admin'),
+            'Administration'    => route('admin'),
+            'Shop'              => route('admin'),
+            'Shop Locations'    => '',
+        ];
+        $text_parts  = [
+            'title'     => 'Shops Working Plan',
+            'subtitle'  => 'create / view / change working plan',
+            'table_head_text1' => 'Backend Shops Working Plan'
+        ];
+        $sidebar_link= 'admin-backend-shops-employees-work-plan';
+
+        return view('admin/shops/view_working_plan', [
+            'breadcrumbs'   => $breadcrumbs,
+            'text_parts'    => $text_parts,
+            'in_sidebar'    => $sidebar_link,
+            'shopLocations' => $shop_locations,
+        ]);
+    }
 }

@@ -385,12 +385,13 @@ class BackEndUserController extends Controller
     public function updatePassword(Request $request, $id)
     {
         $user = User::findOrFail($id);
-        $userVars = $request->only('password1','password2');
+        $userVars = $request->only('old_password','password1','password2');
 
         // Validate the new password length...
         $validator = Validator::make($userVars, [
-            'password1' => 'required|min:8',
-            'password2' => 'required|min:8|same:password1',
+            'old_password'  => 'required|min:8',
+            'password1'     => 'required|min:8',
+            'password2'     => 'required|min:8|same:password1',
         ]);
 
         if ($validator->fails()){
@@ -400,9 +401,15 @@ class BackEndUserController extends Controller
             //);
         }
         else {
-            $user->fill([
-                'password' => Hash::make($request->password1)
-            ])->save();
+            $auth = auth();
+            if ($auth->attempt([ 'id' => $id, 'password' => $userVars['old_password'] ])) {
+                $user->fill([
+                    'password' => Hash::make($request->password1)
+                ])->save();
+            }
+            else{
+                return 'Old password mismatch';
+            }
         }
 
         return 'bine';

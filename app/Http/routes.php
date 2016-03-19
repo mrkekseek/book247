@@ -154,6 +154,11 @@ Route::group(['middleware' => 'web'], function () {
         'as'    => 'admin/shops/locations/add',
         'uses'  => 'ShopController@add_shop_location'
     ]);
+
+    Route::get('admin/shops/employee_work_plan', [
+        'as'    => 'admin/shops/employee_work_plan',
+        'uses'  => 'ShopController@shops_employee_working_plan'
+    ]);
     /** Stop Routes for Shops/Locations */
 
     /** Start Routes for Products Management */
@@ -192,9 +197,19 @@ Route::group(['middleware' => 'web'], function () {
         'uses'  => 'ProductController@get_all_products_inventory'
     ]);
 
-    Route::post('/admin/shops/products/{id}/add_to_inventory', [
+    Route::post('/admin/shops/products/add_to_inventory', [
         'as'    => 'admin/shops/products/add_to_inventory',
         'uses'  => 'ProductController@add_to_inventory'
+    ]);
+
+    Route::post('/admin/shops/products/transfer_inventory', [
+        'as'    => 'admin/shops/products/transfer_inventory',
+        'uses'  => 'ProductController@transfer_from_inventory'
+    ]);
+
+    Route::post('/admin/shops/products/ajax_get', [
+        'as'    => 'admin/shops/products/ajax_get',
+        'uses'  => 'ProductController@ajax_get'
     ]);
 
     Route::post('/admin/shops/products/{id}/get_from_inventory', [
@@ -211,5 +226,6 @@ Route::group(['middleware' => 'web'], function () {
         'as'    => 'admin/shops/all_inventory',
         'uses'  => 'ProductController@all_inventory'
     ]);
+
     /** Start Routes for Products Management */
 });

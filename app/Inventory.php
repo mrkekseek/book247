@@ -43,10 +43,19 @@ class Inventory extends Model
                     'user_id'       => 'required|exists:users,id',
                 ];
             }
-            case 'PUT':
+            case 'PUT': {
+                return [];
+            }
             case 'PATCH':
             {
-                return [];
+                return [
+                    'product_id'    => 'required|exists:products,id',
+                    'old_location_id'   => 'required|exists:shop_locations,id',
+                    'new_location_id'   => 'required|exists:shop_locations,id',
+                    'quantity'      => 'required|min:1|integer',
+                    'entry_price'   => 'required|numeric',
+                    'user_id'       => 'required|exists:users,id',
+                ];
             }
             default:break;
         }

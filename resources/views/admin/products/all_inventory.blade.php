@@ -6,6 +6,9 @@
     <link href="{{ asset('assets/global/plugins/bootstrap-datepicker/css/bootstrap-datepicker3.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('assets/global/plugins/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('assets/global/plugins/fancybox/source/jquery.fancybox.css') }}" rel="stylesheet" type="text/css" />
+
+    <link href="{{ asset('assets/global/plugins/select2/css/select2.min.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/global/plugins/select2/css/select2-bootstrap.min.css') }}" rel="stylesheet" type="text/css" />
 @endsection
 
 @section('themeGlobalStyle')
@@ -186,7 +189,9 @@
                                         <div class="col-md-7">
                                             <div class="input-icon right">
                                                 <i class="fa"></i>
-                                                <input type="text" class="form-control input-sm" value="" readonly /> </div>
+                                                <select id="inventory_product" name="inventory_product" class="form-control js-data-example-ajax">
+                                                    <option value="" selected="selected">Select...</option>
+                                                </select> </div>
                                         </div>
                                     </div>
                                     <div class="form-group">
@@ -194,15 +199,23 @@
                                         <div class="col-md-7">
                                             <div class="input-icon right">
                                                 <i class="fa"></i>
-                                                <input type="text" class="form-control input-sm" id="inventory_quantity" name="inventory_quantity" /> </div>
+                                                <input type="text" class="form-control input-small" id="inventory_quantity" name="inventory_quantity" /> </div>
                                         </div>
                                     </div>
                                     <div class="form-group">
-                                        <label class="control-label col-md-4">Price</label>
+                                        <label class="control-label col-md-4">Entry Price</label>
                                         <div class="col-md-7">
                                             <div class="input-icon right">
                                                 <i class="fa"></i>
-                                                <input type="text" class="form-control input-sm" id="inventory_product_price" name="inventory_product_price" value="" /> </div>
+                                                <input type="text" class="btn-group form-control input-small" id="inventory_entry_price" name="inventory_entry_price" value="0" /> <span class="price_currency help-inline"></span> </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label col-md-4">List Price</label>
+                                        <div class="col-md-7">
+                                            <div class="input-icon right">
+                                                <i class="fa"></i>
+                                                <input type="text" class="btn-group form-control input-small" value="0" name="inventory_list_price" readonly disabled /> <span class="price_currency help-inline"></span> </div>
                                         </div>
                                     </div>
                                     <div class="form-group">
@@ -231,7 +244,7 @@
                 <!-- /.modal-dialog -->
             </div>
 
-            <div class="modal fade draggable-modal" id="transfer_inventory_box" tabindex="-1" role="basic" aria-hidden="true">
+            <div class="modal fade draggable-modal" id="transfer_inventory_box" role="basic" aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
@@ -239,7 +252,7 @@
                             <h4 class="modal-title">Transfer Inventory</h4>
                         </div>
                         <div class="modal-body">
-                            <form action="#" id="new_product" name="new_shop" class="form-horizontal">
+                            <form action="#" id="product_inventory_transfer" name="product_inventory_transfer" class="form-horizontal">
                                 <div class="form-body">
                                     <div class="alert alert-danger display-hide">
                                         <button class="close" data-close="alert"></button> You have some form errors. Please check below. </div>
@@ -252,72 +265,59 @@
                                         <div class="col-md-7">
                                             <div class="input-icon right">
                                                 <i class="fa"></i>
-                                                <input type="text" class="form-control input-sm" name="product_name" id="product_name" /> </div>
+                                                <select id="inventory_transfer_product" name="inventory_transfer_product" class="form-control js-data-example-ajax">
+                                                    <option value="" selected="selected">Select...</option>
+                                                </select> </div>
                                         </div>
                                     </div>
                                     <div class="form-group">
-                                        <label class="control-label col-md-4">Alternate Name</label>
+                                        <label class="control-label col-md-4">Quantity</label>
                                         <div class="col-md-7">
                                             <div class="input-icon right">
                                                 <i class="fa"></i>
-                                                <input type="text" class="form-control input-sm" id="product_alternate_name" name="product_alternate_name" /> </div>
+                                                <input type="text" class="form-control input-small" id="inventory_transfer_quantity" name="inventory_transfer_quantity" /> </div>
                                         </div>
                                     </div>
                                     <div class="form-group">
-                                        <label class="control-label col-md-4">Category
+                                        <label class="control-label col-md-4">Entry Price</label>
+                                        <div class="col-md-7">
+                                            <div class="input-icon right">
+                                                <i class="fa"></i>
+                                                <input type="text" class="form-control input-small" value="" name="inventory_entry_price" readonly disabled /> </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label col-md-4">List Price</label>
+                                        <div class="col-md-7">
+                                            <div class="input-icon right">
+                                                <i class="fa"></i>
+                                                <input class="form-control input-small" value="" name="inventory_list_price" readonly disabled /></div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label col-md-4">From Location
                                             <span class="required"> * </span>
                                         </label>
                                         <div class="col-md-7">
-                                            <select class="form-control input-sm" name="product_category" id="product_category">
-                                                <option value="-1">Select Product Category</option>
-
+                                            <select class="form-control input-sm" name="transfer_from_location" id="transfer_from_location">
+                                                <option>Select...</option>
+                                                @foreach($shops as $shop)
+                                                    <option value="{{$shop->id}}">{{$shop->name}}</option>
+                                                @endforeach
                                             </select>
                                         </div>
                                     </div>
                                     <div class="form-group">
-                                        <label class="control-label col-md-4">Brand
+                                        <label class="control-label col-md-4">To Location
                                             <span class="required"> * </span>
                                         </label>
                                         <div class="col-md-7">
-                                            <div class="input-icon right">
-                                                <i class="fa"></i>
-                                                <input type="text" class="form-control input-sm" id="product_brand" name="product_brand" /> </div>
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="control-label col-md-4">Manufacturer</label>
-                                        <div class="col-md-7">
-                                            <div class="input-icon right">
-                                                <i class="fa"></i>
-                                                <input type="text" class="form-control input-sm" id="product_manufacturer" name="product_manufacturer" /> </div>
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="control-label col-md-4">Bar Code</label>
-                                        <div class="col-md-7">
-                                            <div class="input-icon right">
-                                                <i class="fa"></i>
-                                                <input type="text" class="form-control input-sm" id="product_bar_code" name="product_bar_code" /> </div>
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="control-label col-md-4">Vat Rate
-                                            <span class="required"> * </span>
-                                        </label>
-                                        <div class="col-md-7">
-                                            <select class="form-control input-sm" name="product_vat_rate" id="product_vat_rate">
-                                                <option value="-1">Select VAT rate</option>
-
+                                            <select class="form-control input-sm" name="transfer_to_location" id="transfer_to_location">
+                                                <option>Select...</option>
+                                                @foreach($shops as $shop)
+                                                    <option value="{{$shop->id}}">{{$shop->name}}</option>
+                                                @endforeach
                                             </select>
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="control-label col-md-4">Description
-                                        </label>
-                                        <div class="col-md-7">
-                                            <div class="input-icon right">
-                                                <i class="fa"></i>
-                                                <textarea class="form-control input-sm" id="product_description" name="product_description"></textarea> </div>
                                         </div>
                                     </div>
                                 </div>
@@ -325,7 +325,7 @@
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn dark btn-outline" data-dismiss="modal">Close</button>
-                            <button type="button" class="btn green submit_form_2" onCLick="javascript: $('#new_product').submit();">Save changes</button>
+                            <button type="button" class="btn green submit_form_2" onClick="javascript: $('#product_inventory_transfer').submit();">Save changes</button>
                         </div>
                     </div>
                     <!-- /.modal-content -->
@@ -919,6 +919,13 @@
     <script src="{{ asset('assets/global/plugins/bootstrap-maxlength/bootstrap-maxlength.min.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/global/plugins/fancybox/source/jquery.fancybox.pack.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/global/plugins/plupload/js/plupload.full.min.js') }}" type="text/javascript"></script>
+
+    <script src="{{ asset('assets/global/plugins/bootstrap-hover-dropdown/bootstrap-hover-dropdown.min.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('assets/global/plugins/jquery-slimscroll/jquery.slimscroll.min.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('assets/global/plugins/jquery.blockui.min.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('assets/global/plugins/uniform/jquery.uniform.min.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('assets/global/plugins/bootstrap-switch/js/bootstrap-switch.min.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('assets/global/plugins/select2/js/select2.full.min.js') }}" type="text/javascript"></script>
 @endsection
 
 @section('pageBelowLevelScripts')
@@ -941,79 +948,6 @@
         });
 
         var EcommerceProductsEdit = function () {
-
-            var handleImages = function() {
-
-                // see http://www.plupload.com/
-                var uploader = new plupload.Uploader({
-                    runtimes : 'html5,flash,silverlight,html4',
-
-                    browse_button : document.getElementById('tab_images_uploader_pickfiles'), // you can pass in id...
-                    container: document.getElementById('tab_images_uploader_container'), // ... or DOM Element itself
-
-                    url : "{{ asset('assets/plugins/plupload/examples/upload.php') }}",
-
-                    filters : {
-                        max_file_size : '10mb',
-                        mime_types: [
-                            {title : "Image files", extensions : "jpg,gif,png"},
-                            {title : "Zip files", extensions : "zip"}
-                        ]
-                    },
-
-                    // Flash settings
-                    flash_swf_url : '{{ asset('assets/plugins/plupload/js/Moxie.swf') }}',
-
-                    // Silverlight settings
-                    silverlight_xap_url : '{{ asset('assets/plugins/plupload/js/Moxie.xap') }}',
-
-                    init: {
-                        PostInit: function() {
-                            $('#tab_images_uploader_filelist').html("");
-
-                            $('#tab_images_uploader_uploadfiles').click(function() {
-                                uploader.start();
-                                return false;
-                            });
-
-                            $('#tab_images_uploader_filelist').on('click', '.added-files .remove', function(){
-                                uploader.removeFile($(this).parent('.added-files').attr("id"));
-                                $(this).parent('.added-files').remove();
-                            });
-                        },
-
-                        FilesAdded: function(up, files) {
-                            plupload.each(files, function(file) {
-                                $('#tab_images_uploader_filelist').append('<div class="alert alert-warning added-files" id="uploaded_file_' + file.id + '">' + file.name + '(' + plupload.formatSize(file.size) + ') <span class="status label label-info"></span>&nbsp;<a href="javascript:;" style="margin-top:-5px" class="remove pull-right btn btn-sm red"><i class="fa fa-times"></i> remove</a></div>');
-                            });
-                        },
-
-                        UploadProgress: function(up, file) {
-                            $('#uploaded_file_' + file.id + ' > .status').html(file.percent + '%');
-                        },
-
-                        FileUploaded: function(up, file, response) {
-                            var response = $.parseJSON(response.response);
-
-                            if (response.result && response.result == 'OK') {
-                                var id = response.id; // uploaded file's unique name. Here you can collect uploaded file names and submit an jax request to your server side script to process the uploaded files and update the images tabke
-
-                                $('#uploaded_file_' + file.id + ' > .status').removeClass("label-info").addClass("label-success").html('<i class="fa fa-check"></i> Done'); // set successfull upload
-                            } else {
-                                $('#uploaded_file_' + file.id + ' > .status').removeClass("label-info").addClass("label-danger").html('<i class="fa fa-warning"></i> Failed'); // set failed upload
-                                App.alert({type: 'danger', message: 'One of uploads failed. Please retry.', closeInSeconds: 10, icon: 'warning'});
-                            }
-                        },
-
-                        Error: function(up, err) {
-                            App.alert({type: 'danger', message: err.message, closeInSeconds: 10, icon: 'warning'});
-                        }
-                    }
-                });
-
-                uploader.init();
-
-            }
 
             var handleReviews = function () {
 
@@ -1083,8 +1017,6 @@
                 //main function to initiate the module
                 init: function () {
                     initComponents();
-
-                    handleImages();
                     handleReviews();
                 }
 
@@ -1096,13 +1028,20 @@
             EcommerceProductsEdit.init();
         });
 
-        $.validator.addMethod(
+        jQuery.validator.addMethod(
                 "datePickerDate",
                 function(value, element) {
                     // put your own logic here, this is just a (crappy) example
                     return value.match(/^\d\d?-\d\d?-\d\d\d\d$/);
                 },
                 "Please enter a date in the format dd/mm/yyyy."
+        );
+        jQuery.validator.addMethod(
+                "notEqual",
+                function(value, element, param) {
+                    return this.optional(element) || value != $(param).val();
+                },
+                "Please specify a different (non-default) value"
         );
 
         var FormValidation = function () {
@@ -1118,12 +1057,16 @@
                     focusInvalid: false, // do not focus the last invalid input
                     ignore: "",  // validate all fields including form hidden input
                     rules: {
+                        inventory_product: {
+                            number: true,
+                            required: true
+                        },
                         inventory_quantity: {
                             minlength: 1,
                             number: true,
                             required: true
                         },
-                        inventory_product_price: {
+                        inventory_entry_price: {
                             minlength: 1,
                             number: true,
                             required: true
@@ -1169,10 +1112,79 @@
                 });
             }
 
+            var handleValidation3 = function() {
+                var form3 = $('#product_inventory_transfer');
+                var error3 = $('.alert-danger', form3);
+                var success3 = $('.alert-success', form3);
+
+                form3.validate({
+                    errorElement: 'span', //default input error message container
+                    errorClass: 'help-block help-block-error', // default input error message class
+                    focusInvalid: false, // do not focus the last invalid input
+                    ignore: "",  // validate all fields including form hidden input
+                    rules: {
+                        inventory_transfer_product: {
+                            number: true,
+                            required: true
+                        },
+                        inventory_transfer_quantity: {
+                            minlength: 1,
+                            number: true,
+                            required: true
+                        },
+                        transfer_from_location: {
+                            number: true,
+                            required: true,
+                            notEqual: '#transfer_to_location'
+                        },
+                        transfer_to_location: {
+                            number: true,
+                            required: true,
+                            notEqual: '#transfer_from_location'
+                        },
+
+                    },
+
+                    invalidHandler: function (event, validator) { //display error alert on form submit
+                        success3.hide();
+                        error3.show();
+                        App.scrollTo(error3, -200);
+                    },
+
+                    errorPlacement: function (error, element) { // render error placement for each input type
+                        var icon = $(element).parent('.input-icon').children('i');
+                        icon.removeClass('fa-check').addClass("fa-warning");
+                        icon.attr("data-original-title", error.text()).tooltip({'container': 'body'});
+                    },
+
+                    highlight: function (element) { // hightlight error inputs
+                        $(element)
+                                .closest('.form-group').removeClass("has-success").addClass('has-error'); // set error class to the control group
+                    },
+
+                    unhighlight: function (element) { // revert the change done by hightlight
+
+                    },
+
+                    success: function (label, element) {
+                        var icon = $(element).parent('.input-icon').children('i');
+                        $(element).closest('.form-group').removeClass('has-error').addClass('has-success'); // set success class to the control group
+                        icon.removeClass("fa-warning").addClass("fa-check");
+                    },
+
+                    submitHandler: function (form) {
+                        success3.show();
+                        error3.hide();
+                        transfer_inventory(); // submit the form
+                    }
+                });
+            }
+
             return {
                 //main function to initiate the module
                 init: function () {
                     handleValidation2();
+                    handleValidation3();
                 }
             };
 
@@ -1182,28 +1194,192 @@
             FormValidation.init();
         });
 
+        var ComponentsSelect2 = function() {
+
+            var handleDemo = function() {
+
+                // Set the "bootstrap" theme as the default theme for all Select2
+                // widgets.
+                //
+                // @see https://github.com/select2/select2/issues/2927
+                $.fn.select2.defaults.set("theme", "bootstrap");
+                $.fn.modal.Constructor.prototype.enforceFocus = function() {};
+
+                var placeholder = "Select a State";
+
+                $(".select2, .select2-multiple").select2({
+                    placeholder: placeholder,
+                    width: null
+                });
+
+                $(".select2-allow-clear").select2({
+                    allowClear: true,
+                    placeholder: placeholder,
+                    width: null
+                });
+
+                // @see https://select2.github.io/examples.html#data-ajax
+                function formatRepo(repo) {
+                    if (repo.loading) return repo.text;
+
+                    var markup = "<div class='select2-result-repository clearfix'>" +
+                            "<div class='select2-result-repository__avatar'><img src='" + repo.product_image_url + "' /></div>" +
+                            "<div class='select2-result-repository__meta'>" +
+                            "<div class='select2-result-repository__title'>" + repo.product_name + "</div>";
+
+                    if (repo.description) {
+                        markup += "<div class='select2-result-repository__description'>" + repo.description + "</div>";
+                    }
+
+                    markup += "<div class='select2-result-repository__statistics'>" +
+                            "<div class='select2-result-repository__forks'><span class='glyphicon glyphicon-flash'></span> " + repo.category + "</div>" +
+                            "<div class='select2-result-repository__stargazers'><span class='glyphicon glyphicon-star'></span> " + repo.manufacturer + "</div>" +
+                            "</div>" +
+                            "</div></div>";
+
+                    return markup;
+                }
+
+                function formatRepoSelection(repo) {
+                    // we add product price to the form
+                    $('input[name=inventory_list_price]').val(repo.list_price);
+                    $('input[name=inventory_entry_price]').val(repo.entry_price);
+                    $('.price_currency').html(repo.currency);
+
+                    return repo.full_name || repo.text;
+                }
+
+                $(".js-data-example-ajax").select2({
+                    width: "off",
+                    ajax: {
+                        url: "{{ route('admin/shops/products/ajax_get') }}",
+                        type: "post",
+                        dataType: 'json',
+                        delay: 250,
+                        data: function(params) {
+                            return {
+                                q: params.term, // search term
+                                page: params.page
+                            };
+                        },
+                        processResults: function(data, page) {
+                            // parse the results into the format expected by Select2.
+                            // since we are using custom formatting functions we do not need to
+                            // alter the remote JSON data
+                            return {
+                                results: data.items
+                            };
+                        },
+                        cache: true
+                    },
+                    escapeMarkup: function(markup) {
+                        return markup;
+                    }, // let our custom formatter work
+                    minimumInputLength: 1,
+                    templateResult: formatRepo,
+                    templateSelection: formatRepoSelection
+                });
+
+                $("button[data-select2-open]").click(function() {
+                    $("#" + $(this).data("select2-open")).select2("open");
+                });
+
+                $(":checkbox").on("click", function() {
+                    $(this).parent().nextAll("select").prop("disabled", !this.checked);
+                });
+
+                // copy Bootstrap validation states to Select2 dropdown
+                //
+                // add .has-waring, .has-error, .has-succes to the Select2 dropdown
+                // (was #select2-drop in Select2 v3.x, in Select2 v4 can be selected via
+                // body > .select2-container) if _any_ of the opened Select2's parents
+                // has one of these forementioned classes (YUCK! ;-))
+                $(".select2, .select2-multiple, .select2-allow-clear, .js-data-example-ajax").on("select2:open", function() {
+                    if ($(this).parents("[class*='has-']").length) {
+                        var classNames = $(this).parents("[class*='has-']")[0].className.split(/\s+/);
+
+                        for (var i = 0; i < classNames.length; ++i) {
+                            if (classNames[i].match("has-")) {
+                                $("body > .select2-container").addClass(classNames[i]);
+                            }
+                        }
+                    }
+                });
+
+                $(".js-btn-set-scaling-classes").on("click", function() {
+                    $("#select2-multiple-input-sm, #select2-single-input-sm").next(".select2-container--bootstrap").addClass("input-sm");
+                    $("#select2-multiple-input-lg, #select2-single-input-lg").next(".select2-container--bootstrap").addClass("input-lg");
+                    $(this).removeClass("btn-primary btn-outline").prop("disabled", true);
+                });
+            }
+
+            return {
+                //main function to initiate the module
+                init: function() {
+                    handleDemo();
+                }
+            };
+
+        }();
+
+        if (App.isAngularJsApp() === false) {
+            jQuery(document).ready(function() {
+                ComponentsSelect2.init();
+            });
+        }
+
         function add_to_inventory(){
             $.ajax({
-                url: '{{route('admin/shops/products/add_to_inventory', array('id'=>"3"))}}',
+                url: '{{route('admin/shops/products/add_to_inventory')}}',
                 type: "post",
                 data: {
+                    'product_id':    $('select[name=inventory_product]').val(),
                     'quantity':      $('input[name=inventory_quantity]').val(),
-                    'entry_price':   $('input[name=inventory_product_price]').val(),
+                    'entry_price':   $('input[name=inventory_entry_price]').val(),
                     'location_id':   $('select[name=inventory_shop_location]').val(),
                 },
                 success: function(data){
-                    alert(data);
+                    if (data.success==true){
+                        $('#new_inventory_box').modal('hide');
+                        show_notification('Inventory Updated', 'The selected items was added to inventory.', 'lime', 3000, false);
+                    }
+                    else {
+                        alert(data);
+                    }
                 }
             });
         }
 
-        function show_notification(title_heading, message, theme, life, sticky) {
+        function transfer_inventory(){
+            $.ajax({
+                url: '{{route('admin/shops/products/transfer_inventory')}}',
+                type: "post",
+                data: {
+                    'product_id':       $('select[name=inventory_transfer_product]').val(),
+                    'quantity':         $('input[name=inventory_transfer_quantity]').val(),
+                    'old_location_id':  $('select[name=transfer_from_location]').val(),
+                    'new_location_id':  $('select[name=transfer_to_location]').val(),
+                },
+                success: function(data){
+                    if (data.success==true){
+                        $('#transfer_inventory_box').modal('hide');
+                        show_notification('Inventory Updated', 'The selected items was transferred.', 'lime', 3000, false, true);
+                    }
+                    else {
+                        //$('#transfer_inventory_box').modal('hide');
+                        show_notification('Inventory Update Error', data.errors, 'tangerine', 3000, false, false);
+                    }
+                }
+            });
+        }
+
+        function show_notification(title_heading, message, theme, life, sticky, reload) {
             var settings = {
                 theme: theme,
                 sticky: sticky,
                 horizontalEdge: 'top',
                 verticalEdge: 'right',
-                life : life,
+                life : life-500,
             };
 
             if ($.trim(title_heading) != '') {
@@ -1212,6 +1388,11 @@
 
             $.notific8('zindex', 11500);
             $.notific8($.trim(message), settings);
+            if (reload) {
+                setTimeout(function () {
+                    location.reload();
+                }, life + 500);
+            }
         }
     </script>
 @endsection

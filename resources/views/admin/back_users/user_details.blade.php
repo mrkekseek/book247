@@ -420,6 +420,12 @@
                                             <div class="alert alert-success display-hide">
                                                 <button class="close" data-close="alert"></button> Your form validation is successful! </div>
                                             <div class="form-group">
+                                                <label class="control-label">Old Password</label>
+                                                <div class="input-icon">
+                                                    <i class="fa"></i>
+                                                    <input type="password" name="old_password" id="old_password" class="form-control" /> </div>
+                                            </div>
+                                            <div class="form-group">
                                                 <label class="control-label">New Password</label>
                                                 <div class="input-icon">
                                                     <i class="fa"></i>
@@ -1590,6 +1596,10 @@
                     focusInvalid: false, // do not focus the last invalid input
                     ignore: "",  // validate all fields including form hidden input
                     rules: {
+                        old_password: {
+                            minlength: 8,
+                            required: true,
+                        },
                         new_password1: {
                             minlength: 8,
                             required: true,
@@ -1719,6 +1729,7 @@
                 url: '{{route('admin/back_users/view_user/password_update', ['id'=>$user->id])}}',
                 type: "post",
                 data: {
+                    'old_password': $('input[name=old_password]').val(),
                     'password1':    $('input[name=new_password1]').val(),
                     'password2':    $('input[name=new_password2]').val(),
                     '_method': 'post',

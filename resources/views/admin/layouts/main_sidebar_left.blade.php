@@ -440,7 +440,7 @@
                 @endif
             </ul>
         </li>
-        <li class="nav-item {{ in_array($in_sidebar, array('admin-backend-shop-locations-list','admin-backend-shop-products-list','admin-backend-shop-products-inventory', 'admin-backend-shop-locations-details-view', 'admin-backend-product-details-view', 'admin-backend-all-products-inventory'))?'active open':'' }} ">
+        <li class="nav-item {{ in_array($in_sidebar, array('admin-backend-shop-locations-list','admin-backend-shop-products-list','admin-backend-shop-products-inventory', 'admin-backend-shop-locations-details-view', 'admin-backend-product-details-view', 'admin-backend-all-products-inventory', 'admin-backend-shops-employees-work-plan'))?'active open':'' }} ">
             <a href="javascript:;" class="nav-link nav-toggle">
                 <i class="icon-settings"></i>
                 <span class="title">Shop</span>
@@ -476,8 +476,8 @@
                         <span class="title">Product Inventory</span>
                     </a>
                 </li>
-                <li class="nav-item {{ $in_sidebar=='admin-backend-all-products-inventory'?'active open':'' }} ">
-                    <a href="{{ route('admin/shops/all_inventory') }}" class="nav-link ">
+                <li class="nav-item {{ $in_sidebar=='admin-backend-shops-employees-work-plan'?'active open':'' }} ">
+                    <a href="{{ route('admin/shops/employee_work_plan') }}" class="nav-link ">
                         <span class="title"> Working Schedule </span>
                     </a>
                 </li>
