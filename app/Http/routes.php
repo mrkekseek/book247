@@ -96,6 +96,15 @@ Route::group(['middleware' => 'web'], function () {
         'uses' => 'BackEndUserController@update_personal_address',
     ]);
 
+    Route::post('admin/back_users/view_user/{id}/avatar_image', [
+        'as' => 'admin/back_users/view_user/avatar_image',
+        'uses' => 'BackEndUserController@update_personal_avatar',
+    ]);
+
+    Route::post('admin/back_users/view_user/{id}/add_document', [
+        'as' => 'admin/back_users/view_user/add_document',
+        'uses' => 'BackEndUserController@add_account_document',
+    ]);
 
     /** Routes for employees and backend users roles */
     Route::get('/admin/back_users/user_roles', [

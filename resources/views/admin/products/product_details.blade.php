@@ -166,17 +166,18 @@
                                                 </div>
                                             </div>
                                             <div class="form-group">
-                                                <label class="col-md-2 control-label">Entry Price:</label>
+                                                <label class="col-md-2 control-label">Cost Price:</label>
                                                 <div class="col-md-10">
                                                     <span class="btn default disabled" > {{ isset($entry_price)?$entry_price->entry_price." - since ".$entry_price->added_on:'-' }} </span>
-                                                    </div>
+                                                    <span class="help-inline"> ex. VAT </span></div>
                                             </div>
                                             <div class="form-group">
                                                 <label class="col-md-2 control-label">List Price:
                                                     <span class="required"> * </span>
                                                 </label>
                                                 <div class="col-md-10">
-                                                    <input type="text" class="form-control input-medium" name="product_price" placeholder="Product Price" value="{{ @$price->list_price }}"> </div>
+                                                    <input type="text" class="form-control input-medium input-inline" name="product_price" placeholder="Product Price" value="{{ @$price->list_price }}">
+                                                    <span class="help-inline"> ex. VAT </span></div>
                                             </div>
                                             <div class="form-group">
                                                 <label class="col-md-2 control-label">Currency:
@@ -606,11 +607,12 @@
                                         </div>
                                     </div>
                                     <div class="form-group">
-                                        <label class="control-label col-md-4">Entry Price</label>
+                                        <label class="control-label col-md-4">Cost Price</label>
                                         <div class="col-md-7">
                                             <div class="input-icon right">
                                                 <i class="fa"></i>
-                                                <input type="text" class="form-control input-small" id="inventory_product_price" name="inventory_product_price" value="{{ @$entry_price->entry_price }}" /> </div>
+                                                <input type="text" class="form-control input-small input-inline" id="inventory_product_price" name="inventory_product_price" value="{{ @$entry_price->entry_price }}" />
+                                                <span class="help-inline"> ex. VAT </span></div>
                                         </div>
                                     </div>
                                     <div class="form-group">
@@ -618,7 +620,8 @@
                                         <div class="col-md-7">
                                             <div class="input-icon right">
                                                 <i class="fa"></i>
-                                                <input class="form-control input-small" value="{{ $price->list_price }}" readonly disabled /></div>
+                                                <input class="form-control input-small input-inline" value="{{ $price->list_price }}" readonly disabled />
+                                                <span class="help-inline"> ex. VAT </span></div>
                                         </div>
                                     </div>
                                     <div class="form-group">
@@ -680,11 +683,12 @@
                                         </div>
                                     </div>
                                     <div class="form-group">
-                                        <label class="control-label col-md-4">Entry Price</label>
+                                        <label class="control-label col-md-4">Cost Price</label>
                                         <div class="col-md-7">
                                             <div class="input-icon right">
                                                 <i class="fa"></i>
-                                                <input type="text" class="form-control input-small" value="{{ @$entry_price->entry_price }}" readonly disabled /> </div>
+                                                <input type="text" class="form-control input-small input-inline" value="{{ @$entry_price->entry_price }}" readonly disabled />
+                                                <span class="help-inline"> ex. VAT </span></div>
                                         </div>
                                     </div>
                                     <div class="form-group">
@@ -692,7 +696,8 @@
                                         <div class="col-md-7">
                                             <div class="input-icon right">
                                                 <i class="fa"></i>
-                                                <input class="form-control input-small" value="{{ $price->list_price }}" readonly disabled /></div>
+                                                <input class="form-control input-small input-inline" value="{{ $price->list_price }}" readonly disabled />
+                                                <span class="help-inline"> ex. VAT </span></div>
                                         </div>
                                     </div>
                                     <div class="form-group">

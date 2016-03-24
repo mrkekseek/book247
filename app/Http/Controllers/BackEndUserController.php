@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Permission;
 use App\PersonalDetail;
 use App\ProfessionalDetail;
 use App\Address;
+use App\UserAvatars;
+use App\UserDocuments;
 use Illuminate\Http\Response;
 use Illuminate\Http\Request;
 use App\Http\Requests;
@@ -12,6 +15,7 @@ use App\User;
 use Validator;
 use Auth;
 use Hash;
+use Storage;
 use Mockery\CountValidator\Exception;
 use \App\Role;
 use Webpatser\Countries\Countries;
@@ -148,6 +152,10 @@ class BackEndUserController extends Controller
             $defaultRole = Role::where('name','employee')->get();
             $userRole = $defaultRole[0];
         }
+        else{
+            $permissions = Permission::all();
+            //xdebug_var_dump($permissions);
+        }
 
         $userProfessional = $back_user->ProfessionalDetail;
         if (!isset($userProfessional)){
@@ -179,6 +187,16 @@ class BackEndUserController extends Controller
             $back_user->first_name.' '.$back_user->middle_name.' '.$back_user->last_name => '',
         ];
 
+        $avatar = $back_user->avatar;
+        if (!$avatar) {
+            $avatar = new UserAvatars();
+            $avatar->file_location = 'employees/default/avatars/';
+            $avatar->file_name = 'default.jpg';
+        }
+
+        $avatarContent = Storage::get($avatar->file_location . $avatar->file_name);
+        $avatarType = Storage::mimeType($avatar->file_location . $avatar->file_name);
+
         return view('admin/back_users/user_details', [
             'user'      => $back_user,
             'userRole'  => $userRole,
@@ -191,6 +209,9 @@ class BackEndUserController extends Controller
             'breadcrumbs' => $breadcrumbs,
             'text_parts'  => $text_parts,
             'in_sidebar'  => $sidebar_link,
+            'avatar'      => $avatarContent,
+            'avatarType'  => $avatarType,
+            'permissions' => $permissions
         ]);
     }
 
@@ -413,5 +434,79 @@ class BackEndUserController extends Controller
         }
 
         return 'bine';
+    }
+
+    public function update_personal_avatar(Request $request, $id){
+        if (!Auth::check()) {
+            return redirect()->intended(route('admin/login'));
+        }
+
+        $user = User::findOrFail($id);
+
+        $avatarLocation = 'employees/'.$id.'/avatars/';
+        $avatarFilename = $user->username.'.'.$request->file('user_avatar')->getClientOriginalExtension();
+        $exists = Storage::exists($avatarLocation . $avatarFilename);
+        if ($exists){
+            Storage::move( $avatarLocation . $avatarFilename, $avatarLocation . time().'-'.$avatarFilename.'.old');
+        }
+
+        $avatarData = [
+            'user_id'   => $id,
+            'file_name' => $avatarFilename,
+            'file_location' => $avatarLocation,
+            'width' => 0,
+            'height'=> 0
+        ];
+
+        $avatar = UserAvatars::find(['user_id' => $id])->first();
+        if (!$avatar) {
+            $avatar = new UserAvatars();
+        }
+        $avatar->fill($avatarData);
+        $avatar->save();
+
+        Storage::put(
+            $avatarLocation . $avatarFilename,
+            file_get_contents($request->file('user_avatar')->getRealPath())
+        );
+
+        //return redirect('admin/back_users/view_user/'.$id);
+        return redirect()->intended(route('admin/back_users/view_user/', ['id' => $id]));
+    }
+
+    public function add_account_document(Request $request, $id){
+        if (!Auth::check()) {
+            return redirect()->intended(route('admin/login'));
+        }
+
+        $user = User::findOrFail($id);
+
+        $documentLocation = 'employees/'.$id.'/documents/';
+        $documentFilename = $request->file('user_doc')->getClientOriginalName();
+        $exists = Storage::exists($documentLocation . $documentFilename);
+        if ($exists){
+            return "Error";
+        }
+
+        $documentData = [
+            'user_id'   => $id,
+            'file_name' => $documentFilename,
+            'file_location' => $documentLocation,
+            'file_type' => $request->file('user_doc')->getClientMimeType(),
+            'category' => 'account_documents',
+            'comments'=> ''
+        ];
+
+        $document = new UserDocuments();
+        $document->fill($documentData);
+        $document->save();
+
+        Storage::put(
+            $documentLocation . $documentFilename,
+            file_get_contents($request->file('user_doc')->getRealPath())
+        );
+
+        return "Bine";
+        //return redirect('admin/back_users/view_user/'.$id);
     }
 }

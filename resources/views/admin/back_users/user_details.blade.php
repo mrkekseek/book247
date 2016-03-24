@@ -1,6 +1,8 @@
 @extends('admin.layouts.main')
 
 @section('pageLevelPlugins')
+    <link href="{{ asset('assets/global/plugins/dropzone/dropzone.min.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/global/plugins/dropzone/basic.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('assets/global/plugins/bootstrap-fileinput/bootstrap-fileinput.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('assets/global/plugins/bootstrap-datepicker/css/bootstrap-datepicker3.min.css') }}" rel="stylesheet" type="text/css" />
 @endsection
@@ -76,8 +78,8 @@
                             <div class="col-md-3">
                                 <ul class="list-unstyled profile-nav">
                                     <li>
-                                        <img src="{{asset('assets/pages/media/profile/people19.png')}}" class="img-responsive pic-bordered" alt="" />
-                                        <a href="javascript:;" class="profile-edit"> edit </a>
+                                        <img src="data:{{ $avatarType }};base64,{{ base64_encode($avatar) }}" class="img-responsive pic-bordered" alt="" />
+                                        <a data-toggle="modal" href="#draggable" class="profile-edit"> edit </a>
                                     </li>
                                     <li>
                                         <a href="javascript:;"> Projects </a>
@@ -325,6 +327,10 @@
                                         <a data-toggle="tab" href="#tab_4-4">
                                             <i class="fa fa-eye"></i> Account Permissions </a>
                                     </li>
+                                    <li>
+                                        <a data-toggle="tab" href="#tab_4-5">
+                                            <i class="fa fa-eye"></i> Account Documents </a>
+                                    </li>
                                 </ul>
                             </div>
                             <div class="col-md-9">
@@ -388,27 +394,29 @@
                                         </form>
                                     </div>
                                     <div id="tab_2-2" class="tab-pane">
-                                        <form action="#" role="form">
+                                        <form action="{{ route('admin/back_users/view_user/avatar_image', ['id'=>$user->id]) }}" id="user_picture_upload2" class="form-horizontal" method="post" enctype="multipart/form-data">
+                                            <input type="hidden" name="_token" value="{{ csrf_token() }}">
                                             <div class="form-group">
                                                 <div class="fileinput fileinput-new" data-provides="fileinput">
-                                                    <div class="fileinput-new thumbnail" style="width: 200px; height: 150px;">
+                                                    <div class="fileinput-new thumbnail" style="width: 200px; height: 246px;">
                                                         <img src="http://www.placehold.it/200x150/EFEFEF/AAAAAA&amp;text=no+image" alt="" /> </div>
-                                                    <div class="fileinput-preview fileinput-exists thumbnail" style="max-width: 200px; max-height: 150px;"> </div>
+                                                    <div class="fileinput-preview fileinput-exists thumbnail" style="max-width: 200px; max-height: 240px;"> </div>
                                                     <div>
                                                         <span class="btn default btn-file">
                                                             <span class="fileinput-new"> Select image </span>
                                                             <span class="fileinput-exists"> Change </span>
-                                                            <input type="file" name="..."> </span>
+                                                            <input type="file" name="user_avatar" class="user_avatar_select_btn2" /> </span>
                                                         <a href="javascript:;" class="btn default fileinput-exists" data-dismiss="fileinput"> Remove </a>
                                                     </div>
                                                 </div>
                                                 <div class="clearfix margin-top-10">
-                                                    <span class="label label-danger"> NOTE! </span>
-                                                    <span> Attached image thumbnail is supported in Latest Firefox, Chrome, Opera, Safari and Internet Explorer 10 only </span>
+                                                    <div class="note note-warning margin-bottom-5">
+                                                        <p> Image preview only works in IE10+, FF3.6+, Safari6.0+, Chrome6.0+ and Opera11.1+. In older browsers the filename is shown instead. </p>
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div class="margin-top-10">
-                                                <a href="javascript:;" class="btn green"> Submit </a>
+                                                <a href="javascript:;" onclick="javascript: $('#user_picture_upload2').submit();" class="btn green"> Submit </a>
                                                 <a href="javascript:;" class="btn default"> Cancel </a>
                                             </div>
                                         </form>
@@ -438,7 +446,7 @@
                                                     <input type="password" name="new_password2" id="new_password2" class="form-control" /> </div>
                                             </div>
                                             <div class="margin-top-10">
-                                                <a href="javascript:;" class="btn green" onCLick="javascript: $('#form_password_update').submit();"> Change Password </a>
+                                                <a href="javascript:;" class="btn green" onClick="javascript: $('#form_password_update').submit();"> Change Password </a>
                                                 <a href="javascript:;" class="btn default"> Cancel </a>
                                             </div>
                                         </form>
@@ -446,48 +454,37 @@
                                     <div id="tab_4-4" class="tab-pane">
                                         <form action="#">
                                             <table class="table table-bordered table-striped">
-                                                <tr>
-                                                    <td> Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus.. </td>
-                                                    <td>
-                                                        <label class="uniform-inline">
-                                                            <input type="radio" name="optionsRadios1" value="option1" /> Yes </label>
-                                                        <label class="uniform-inline">
-                                                            <input type="radio" name="optionsRadios1" value="option2" checked/> No </label>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td> Enim eiusmod high life accusamus terry richardson ad squid wolf moon </td>
-                                                    <td>
-                                                        <label class="uniform-inline">
-                                                            <input type="radio" name="optionsRadios2" value="option1" /> Yes </label>
-                                                        <label class="uniform-inline">
-                                                            <input type="radio" name="optionsRadios2" value="option2" checked/> No </label>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td> Enim eiusmod high life accusamus terry richardson ad squid wolf moon </td>
-                                                    <td>
-                                                        <label class="uniform-inline">
-                                                            <input type="radio" name="optionsRadios3" value="option1" /> Yes </label>
-                                                        <label class="uniform-inline">
-                                                            <input type="radio" name="optionsRadios3" value="option2" checked/> No </label>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td> Enim eiusmod high life accusamus terry richardson ad squid wolf moon </td>
-                                                    <td>
-                                                        <label class="uniform-inline">
-                                                            <input type="radio" name="optionsRadios4" value="option1" /> Yes </label>
-                                                        <label class="uniform-inline">
-                                                            <input type="radio" name="optionsRadios4" value="option2" checked/> No </label>
-                                                    </td>
-                                                </tr>
+                                                @foreach ($permissions as $permission)
+                                                    @if ($user->can($permission->name))
+                                                    <tr>
+                                                        <td> {{ $permission->display_name }}
+                                                            <span class="help-block"> {{ $permission->description }} </span></td>
+                                                        <td>
+                                                            <label class="uniform-inline">
+                                                                <input type="radio" name="optionsRadios{{rand(10,1000)}}" value="option1" checked disabled /> Yes </label>
+                                                            <label class="uniform-inline">
+                                                                <input type="radio" name="optionsRadios{{rand(10,1000)}}" value="option2" disabled /> No </label>
+                                                        </td>
+                                                    </tr>
+                                                    @endif
+                                                @endforeach
                                             </table>
                                             <!--end profile-settings-->
-                                            <div class="margin-top-10">
+                                            <!--<div class="margin-top-10">
                                                 <a href="javascript:;" class="btn green"> Save Changes </a>
                                                 <a href="javascript:;" class="btn default"> Cancel </a>
-                                            </div>
+                                            </div>-->
+                                        </form>
+                                    </div>
+                                    <div id="tab_4-5" class="tab-pane">
+                                        <div class="m-heading-1 border-green m-bordered">
+                                            <h3>Documents Dropzone</h3>
+                                            <p> Select the documents you want to add, documents related to this specific user, and upload them once you added all of them to the dropbox area. </p>
+                                        </div>
+                                        <form action="{{ route('admin/back_users/view_user/add_document', ['id'=>$user->id]) }}" class="dropzone dropzone-file-area" id="my-dropzone" style="width: 500px; margin-top: 50px;">
+                                            <h3 class="sbold">Drop files here or click to upload</h3>
+                                            <p> This is just a demo dropzone. Selected files are not actually uploaded. </p>
+                                            <input type="hidden" name="_token" value="{{ csrf_token() }}">
                                         </form>
                                     </div>
                                 </div>
@@ -754,6 +751,56 @@
                     </div>
                     <!--end tab-pane-->
                 </div>
+            </div>
+
+            <div class="modal fade draggable-modal" id="draggable" tabindex="-1" role="basic" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                            <h4 class="modal-title">Update user avatar picture</h4>
+                        </div>
+                        <div class="modal-body">
+                            <form action="{{ route('admin/back_users/view_user/avatar_image', ['id'=>$user->id]) }}" id="user_picture_upload1" class="form-horizontal" method="post" enctype="multipart/form-data">
+                                <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                                <div class="form-body">
+                                    <div class="alert alert-danger display-hide">
+                                        <button class="close" data-close="alert"></button> You have some form errors. Please check below. </div>
+                                    <div class="alert alert-success display-hide">
+                                        <button class="close" data-close="alert"></button> Your form validation is successful! </div>
+                                    <div class="form-group last">
+                                        <label class="control-label col-md-3">User Avatar</label>
+                                        <div class="col-md-9">
+                                            <div class="fileinput fileinput-new " data-provides="fileinput">
+                                                <div class="fileinput-new thumbnail" style="width: 200px; height: 246px;">
+                                                    <img src="http://www.placehold.it/200x150/EFEFEF/AAAAAA&amp;text=no+image" alt="" /> </div>
+                                                <div class="fileinput-preview fileinput-exists thumbnail" style="max-width: 200px; max-height: 240px;"> </div>
+                                                <div>
+                                                    <span class="btn default btn-file">
+                                                        <span class="fileinput-new"> Select image </span>
+                                                        <span class="fileinput-exists"> Change </span>
+                                                        <input type="file" name="user_avatar" class="user_avatar_select_btn1" /> </span>
+                                                    <a href="javascript:;" class="btn red fileinput-exists" data-dismiss="fileinput"> Remove </a>
+                                                </div>
+                                            </div>
+                                            <div class="clearfix margin-top-10">
+                                                <div class="note note-warning margin-bottom-5">
+                                                    <p> Image preview only works in IE10+, FF3.6+, Safari6.0+, Chrome6.0+ and Opera11.1+. In older browsers the filename is shown instead. </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn dark btn-outline" data-dismiss="modal">Close</button>
+                            <button type="button" class="btn green submit_form_2" onclick="javascript: $('#user_picture_upload1').submit();">Save changes</button>
+                        </div>
+                    </div>
+                    <!-- /.modal-content -->
+                </div>
+                <!-- /.modal-dialog -->
             </div>
         </div>
         <!-- END PAGE BASE CONTENT -->
@@ -1336,11 +1383,14 @@
     <script src="http://maps.google.com/maps/api/js?sensor=false" type="text/javascript"></script>
     <script src="{{ asset('assets/global/plugins/gmaps/gmaps.min.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/global/plugins/jquery-validation/js/jquery.validate.min.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('assets/global/plugins/jquery-validation/js/additional-methods.min.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/global/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}" type="text/javascript"></script>
 @endsection
 
 @section('pageBelowLevelScripts')
     <script src="{{ asset('assets/global/plugins/jquery-notific8/jquery.notific8.min.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('assets/global/plugins/jquery.blockui.min.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('assets/global/plugins/dropzone/dropzone.min.js') }}" type="text/javascript"></script>
 @endsection
 
 @section('themeBelowLayoutScripts')
@@ -1389,12 +1439,23 @@
         }
 
         $.validator.addMethod(
-                "datePickerDate",
-                function(value, element) {
-                    // put your own logic here, this is just a (crappy) example
-                    return value.match(/^\d\d?-\d\d?-\d\d\d\d$/);
-                },
-                "Please enter a date in the format dd/mm/yyyy."
+            "datePickerDate",
+            function(value, element) {
+                // put your own logic here, this is just a (crappy) example
+                return value.match(/^\d\d?-\d\d?-\d\d\d\d$/);
+            },
+            "Please enter a date in the format dd/mm/yyyy."
+        );
+
+        $.validator.addMethod(
+            'filesize',
+            function(value, element, param) {
+                // param = size (in bytes)
+                // element = element to validate (<input>)
+                // value = value of the element (file name)
+                return this.optional(element) || (element.files[0].size <= param);
+            },
+            "File must be JPG, GIF or PNG, less than 1MB"
         );
 
         var FormValidation = function () {
@@ -1646,6 +1707,114 @@
                 });
             }
 
+            var handleValidation5 = function() {
+                var form5 = $('#user_picture_upload1');
+                var error5 = $('.alert-danger', form5);
+                var success5 = $('.alert-success', form5);
+
+                form5.validate({
+                    errorElement: 'span', //default input error message container
+                    errorClass: 'help-block help-block-error', // default input error message class
+                    focusInvalid: false, // do not focus the last invalid input
+                    ignore: "",  // validate all fields including form hidden input
+                    rules: {
+                        user_avatar: {
+                            required: true,
+                            accept: "image/*",
+                            filesize: 1048576,
+                        },
+                    },
+                    messages: {
+                        user_avatar: {
+                            required: "We need your avatar before submitting the form",
+                            accept: "The uploaded file must be an image",
+                            filesize: "File must be JPG, GIF or PNG, less than 1MB",
+                        }
+                    },
+
+                    invalidHandler: function (event, validator) { //display error alert on form submit
+                        success5.hide();
+                        error5.show();
+                        App.scrollTo(error5, -200);
+                    },
+
+                    highlight: function (element) { // hightlight error inputs
+                        $(element)
+                                .closest('.form-group').addClass('has-error'); // set error class to the control group
+                    },
+
+                    unhighlight: function (element) { // revert the change done by hightlight
+                        $(element)
+                                .closest('.form-group').removeClass('has-error'); // set error class to the control group
+                    },
+
+                    success: function (label) {
+                        label
+                                .closest('.form-group').removeClass('has-error'); // set success class to the control group
+                    },
+
+                    submitHandler: function (form) {
+                        success5.show();
+                        error5.hide();
+                        form.submit();
+                    }
+                });
+            }
+
+            var handleValidation6 = function() {
+                var form6 = $('#user_picture_upload2');
+                var error6 = $('.alert-danger', form6);
+                var success6 = $('.alert-success', form6);
+
+                form5.validate({
+                    errorElement: 'span', //default input error message container
+                    errorClass: 'help-block help-block-error', // default input error message class
+                    focusInvalid: false, // do not focus the last invalid input
+                    ignore: "",  // validate all fields including form hidden input
+                    rules: {
+                        user_avatar: {
+                            required: true,
+                            accept: "image/*",
+                            filesize: 1048576,
+                        },
+                    },
+                    messages: {
+                        user_avatar: {
+                            required: "We need your avatar before submitting the form",
+                            accept: "The uploaded file must be an image",
+                            filesize: "File must be JPG, GIF or PNG, less than 1MB",
+                        }
+                    },
+
+                    invalidHandler: function (event, validator) { //display error alert on form submit
+                        success6.hide();
+                        error6.show();
+                        App.scrollTo(error6, -200);
+                    },
+
+                    highlight: function (element) { // hightlight error inputs
+                        $(element)
+                                .closest('.form-group').addClass('has-error'); // set error class to the control group
+                    },
+
+                    unhighlight: function (element) { // revert the change done by hightlight
+                        $(element)
+                                .closest('.form-group').removeClass('has-error'); // set error class to the control group
+                    },
+
+                    success: function (label) {
+                        label
+                                .closest('.form-group').removeClass('has-error'); // set success class to the control group
+                    },
+
+                    submitHandler: function (form) {
+                        success6.show();
+                        error6.hide();
+                        form.submit();
+                    }
+                });
+            }
+
             return {
                 //main function to initiate the module
                 init: function () {
@@ -1653,14 +1822,54 @@
                     handleValidation2();
                     handleValidation3();
                     handleValidation4();
+                    handleValidation5();
                 }
-
             };
+        }();
 
+        var FormDropzone = function () {
+            return {
+                //main function to initiate the module
+                init: function () {
+
+                    Dropzone.options.myDropzone = {
+                        paramName: "user_doc", // The name that will be used to transfer the file
+                        maxFilesize: 10, // MB
+                        acceptedFiles: "image/*,application/pdf,.psd,.doc,.docx,.xls,.xlsx",
+                        dictDefaultMessage: "",
+                        init: function() {
+                            this.on("addedfile", function(file) {
+                                // Create the remove button
+                                var removeButton = Dropzone.createElement("<a href='javascript:;'' class='btn red btn-sm btn-block'>Remove</a>");
+
+                                // Capture the Dropzone instance as closure.
+                                var _this = this;
+
+                                // Listen to the click event
+                                removeButton.addEventListener("click", function(e) {
+                                    // Make sure the button click doesn't submit the form:
+                                    e.preventDefault();
+                                    e.stopPropagation();
+
+                                    // Remove the file preview.
+                                    _this.removeFile(file);
+                                    // If you want to the delete the file on the server as well,
+                                    // you can do the AJAX request here.
+                                });
+
+                                // Add the button to the file preview element.
+                                file.previewElement.appendChild(removeButton);
+                            });
+                        }
+                    }
+                }
+            };
         }();
 
         $(document).ready(function(){
             FormValidation.init();
+
+            FormDropzone.init();
         });
 
         function store_account_info(){
@@ -1739,6 +1948,28 @@
                 }
             });
         }
+
+        $(".user_avatar_select_btn1").on("click", function(){
+            App.blockUI({
+                target: '#user_picture_upload1',
+                boxed: true
+            });
+        });
+
+        $(".user_avatar_select_btn1").on("change", function(){
+            App.unblockUI('#user_picture_upload1');
+        });
+
+        $(".user_avatar_select_btn2").on("click", function(){
+            App.blockUI({
+                target: '#user_picture_upload2',
+                boxed: true
+            });
+        });
+
+        $(".user_avatar_select_btn2").on("change", function(){
+            App.unblockUI('#user_picture_upload2');
+        });
 
         function show_notification(title_heading, message, theme, life, sticky) {
             var settings = {

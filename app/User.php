@@ -55,4 +55,12 @@ class User extends Authenticatable
     public function PersonalDetail(){
         return $this->hasOne('App\PersonalDetail');
     }
+
+    public function avatar(){
+        return $this->hasOne('App\UserAvatars');
+    }
+
+    public function documents(){
+        return $this->hasMany('App\UserDocuments');
+    }
 }
