@@ -152,10 +152,7 @@ class BackEndUserController extends Controller
             $defaultRole = Role::where('name','employee')->get();
             $userRole = $defaultRole[0];
         }
-        else{
-            $permissions = Permission::all();
-            //xdebug_var_dump($permissions);
-        }
+        $permissions = Permission::all();
 
         $userProfessional = $back_user->ProfessionalDetail;
         if (!isset($userProfessional)){
@@ -180,13 +177,6 @@ class BackEndUserController extends Controller
         $countries = Countries::orderBy('name')->get();
         $userCountry = Countries::find($back_user->country_id);
 
-        $breadcrumbs = [
-            'Home'              => route('admin'),
-            'Administration'    => route('admin'),
-            'Back End Users'    => route('admin/back_users'),
-            $back_user->first_name.' '.$back_user->middle_name.' '.$back_user->last_name => '',
-        ];
-
         $avatar = $back_user->avatar;
         if (!$avatar) {
             $avatar = new UserAvatars();
@@ -194,8 +184,17 @@ class BackEndUserController extends Controller
             $avatar->file_name = 'default.jpg';
         }
 
-        $avatarContent = Storage::get($avatar->file_location . $avatar->file_name);
-        $avatarType = Storage::mimeType($avatar->file_location . $avatar->file_name);
+        $avatarContent = Storage::disk('local')->get($avatar->file_location . $avatar->file_name);
+        $avatarType = Storage::disk('local')->mimeType($avatar->file_location . $avatar->file_name);
+
+        $userDocuments = UserDocuments::where('user_id','=',$id)->where('category','=','account_documents')->get();
+
+        $breadcrumbs = [
+            'Home'              => route('admin'),
+            'Administration'    => route('admin'),
+            'Back End Users'    => route('admin/back_users'),
+            $back_user->first_name.' '.$back_user->middle_name.' '.$back_user->last_name => '',
+        ];
 
         return view('admin/back_users/user_details', [
             'user'      => $back_user,
@@ -211,7 +210,8 @@ class BackEndUserController extends Controller
             'in_sidebar'  => $sidebar_link,
             'avatar'      => $avatarContent,
             'avatarType'  => $avatarType,
-            'permissions' => $permissions
+            'permissions' => $permissions,
+            'documents'   => $userDocuments,
         ]);
     }
 
@@ -445,9 +445,9 @@ class BackEndUserController extends Controller
 
         $avatarLocation = 'employees/'.$id.'/avatars/';
         $avatarFilename = $user->username.'.'.$request->file('user_avatar')->getClientOriginalExtension();
-        $exists = Storage::exists($avatarLocation . $avatarFilename);
+        $exists = Storage::disk('local')->exists($avatarLocation . $avatarFilename);
         if ($exists){
-            Storage::move( $avatarLocation . $avatarFilename, $avatarLocation . time().'-'.$avatarFilename.'.old');
+            Storage::disk('local')->move( $avatarLocation . $avatarFilename, $avatarLocation . time().'-'.$avatarFilename.'.old');
         }
 
         $avatarData = [
@@ -465,7 +465,7 @@ class BackEndUserController extends Controller
         $avatar->fill($avatarData);
         $avatar->save();
 
-        Storage::put(
+        Storage::disk('local')->put(
             $avatarLocation . $avatarFilename,
             file_get_contents($request->file('user_avatar')->getRealPath())
         );
@@ -480,10 +480,10 @@ class BackEndUserController extends Controller
         }
 
         $user = User::findOrFail($id);
-
+//xdebug_var_dump($request); exit;
         $documentLocation = 'employees/'.$id.'/documents/';
         $documentFilename = $request->file('user_doc')->getClientOriginalName();
-        $exists = Storage::exists($documentLocation . $documentFilename);
+        $exists = Storage::disk('local')->exists($documentLocation . $documentFilename);
         if ($exists){
             return "Error";
         }
@@ -501,12 +501,38 @@ class BackEndUserController extends Controller
         $document->fill($documentData);
         $document->save();
 
-        Storage::put(
+        Storage::disk('local')->put(
             $documentLocation . $documentFilename,
             file_get_contents($request->file('user_doc')->getRealPath())
         );
 
         return "Bine";
         //return redirect('admin/back_users/view_user/'.$id);
+    }
+
+    public function get_user_account_document($id, $document_name){
+        if (!Auth::check()) {
+            return redirect()->intended(route('admin/login'));
+        }
+        $user = User::findOrFail($id);
+        $entry = UserDocuments::where('user_id',$user->id)->where('file_name', $document_name)->where('category', 'account_documents')->firstOrFail();
+
+        $file_path = 'employees/'.$id.'/documents/'. $document_name;
+        $exists = Storage::disk('local')->exists($file_path);
+        if ($exists) {
+            $file = Storage::disk('local')->get($file_path);
+            return (new Response($file, 200))
+                ->header('Content-Type', $entry->file_type)
+                ->header('Content-Disposition', 'attachment; filename="'.$document_name.'"');
+        }
+        else
+        {
+            // Error
+            exit('Requested file does not exist on our server!');
+        }
+    }
+
+    public function ajax_get_user_info(){
+        return "Bine";
     }
 }

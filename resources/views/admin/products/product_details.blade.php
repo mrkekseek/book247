@@ -311,84 +311,38 @@
                                         </tr>
                                         </thead>
                                         <tbody>
-                                        <tr>
-                                            <td>
-                                                <a href="../assets/pages/media/works/img1.jpg" class="fancybox-button" data-rel="fancybox-button">
-                                                    <img class="img-responsive" src="{{ asset('assets/pages/media/works/img1.jpg') }}" alt=""> </a>
-                                            </td>
-                                            <td>
-                                                <input type="text" class="form-control" name="product[images][1][label]" value="Thumbnail image"> </td>
-                                            <td>
-                                                <input type="text" class="form-control" name="product[images][1][sort_order]" value="1"> </td>
-                                            <td>
-                                                <label>
-                                                    <input type="radio" name="product[images][1][image_type]" value="1"> </label>
-                                            </td>
-                                            <td>
-                                                <label>
-                                                    <input type="radio" name="product[images][1][image_type]" value="2"> </label>
-                                            </td>
-                                            <td>
-                                                <label>
-                                                    <input type="radio" name="product[images][1][image_type]" value="3" checked> </label>
-                                            </td>
-                                            <td>
-                                                <a href="javascript:;" class="btn btn-default btn-sm">
-                                                    <i class="fa fa-times"></i> Remove </a>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>
-                                                <a href="../assets/pages/media/works/img2.jpg" class="fancybox-button" data-rel="fancybox-button">
-                                                    <img class="img-responsive" src="{{ asset('assets/pages/media/works/img2.jpg') }}" alt=""> </a>
-                                            </td>
-                                            <td>
-                                                <input type="text" class="form-control" name="product[images][2][label]" value="Product image #1"> </td>
-                                            <td>
-                                                <input type="text" class="form-control" name="product[images][2][sort_order]" value="1"> </td>
-                                            <td>
-                                                <label>
-                                                    <input type="radio" name="product[images][2][image_type]" value="1"> </label>
-                                            </td>
-                                            <td>
-                                                <label>
-                                                    <input type="radio" name="product[images][2][image_type]" value="2" checked> </label>
-                                            </td>
-                                            <td>
-                                                <label>
-                                                    <input type="radio" name="product[images][2][image_type]" value="3"> </label>
-                                            </td>
-                                            <td>
-                                                <a href="javascript:;" class="btn btn-default btn-sm">
-                                                    <i class="fa fa-times"></i> Remove </a>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>
-                                                <a href="../assets/pages/media/works/img3.jpg" class="fancybox-button" data-rel="fancybox-button">
-                                                    <img class="img-responsive" src="{{ asset('assets/pages/media/works/img3.jpg') }}" alt=""> </a>
-                                            </td>
-                                            <td>
-                                                <input type="text" class="form-control" name="product[images][3][label]" value="Product image #2"> </td>
-                                            <td>
-                                                <input type="text" class="form-control" name="product[images][3][sort_order]" value="1"> </td>
-                                            <td>
-                                                <label>
-                                                    <input type="radio" name="product[images][3][image_type]" value="1" checked> </label>
-                                            </td>
-                                            <td>
-                                                <label>
-                                                    <input type="radio" name="product[images][3][image_type]" value="2"> </label>
-                                            </td>
-                                            <td>
-                                                <label>
-                                                    <input type="radio" name="product[images][3][image_type]" value="3"> </label>
-                                            </td>
-                                            <td>
-                                                <a href="javascript:;" class="btn btn-default btn-sm">
-                                                    <i class="fa fa-times"></i> Remove </a>
-                                            </td>
-                                        </tr>
+                                        @if ($product_images)
+                                            @foreach ($product_images as $product_image)
+                                                <tr>
+                                                    <td>
+                                                        <a href="" class="fancybox-button" data-rel="fancybox-button">
+                                                            <img class="img-responsive" src="{{ asset("uploads/".$product_image->file_location) }}" alt=""> </a>
+                                                    </td>
+                                                    <td>
+                                                        <input type="text" class="form-control" name="product[images][{{ $product_image->id }}][label]" value="{{ $product_image->label }}"> </td>
+                                                    <td>
+                                                        <input type="text" class="form-control" name="product[images][{{ $product_image->id }}][sort_order]" value="{{ $product_image->sort_order }}"> </td>
+                                                    <td>
+                                                        <label>
+                                                            <input type="radio" name="product[images][{{ $product_image->id }}][image_type]" value="1" {{ $product_image->image_size==1?' checked ':'' }}> </label>
+                                                    </td>
+                                                    <td>
+                                                        <label>
+                                                            <input type="radio" name="product[images][{{ $product_image->id }}][image_type]" value="2" {{ $product_image->image_size==2?' checked ':'' }}> </label>
+                                                    </td>
+                                                    <td>
+                                                        <label>
+                                                            <input type="radio" name="product[images][{{ $product_image->id }}][image_type]" value="3" {{ $product_image->image_size==3?' checked ':'' }}> </label>
+                                                    </td>
+                                                    <td>
+                                                        <a href="javascript:;" class="btn btn-default btn-sm">
+                                                            <i class="fa fa-save"></i> Update </a>
+                                                        <a href="javascript:;" class="btn btn-default btn-sm">
+                                                            <i class="fa fa-times"></i> Remove </a>
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        @endif
                                         </tbody>
                                     </table>
                                 </div>
@@ -1357,13 +1311,12 @@
                     browse_button : document.getElementById('tab_images_uploader_pickfiles'), // you can pass in id...
                     container: document.getElementById('tab_images_uploader_container'), // ... or DOM Element itself
 
-                    url : "{{ asset('assets/plugins/plupload/examples/upload.php') }}",
+                    url : "{{ route('admin/shops/products/add_image', ['id'=>$product_details->id]) }}",
 
                     filters : {
                         max_file_size : '10mb',
                         mime_types: [
                             {title : "Image files", extensions : "jpg,gif,png"},
-                            {title : "Zip files", extensions : "zip"}
                         ]
                     },
 
@@ -1372,6 +1325,10 @@
 
                     // Silverlight settings
                     silverlight_xap_url : '{{ asset('assets/plugins/plupload/js/Moxie.xap') }}',
+
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
 
                     init: {
                         PostInit: function() {

@@ -106,6 +106,16 @@ Route::group(['middleware' => 'web'], function () {
         'uses' => 'BackEndUserController@add_account_document',
     ]);
 
+    Route::get('admin/back_users/{id}/get_document/{document_name}',[
+        'as' => 'admin/back_user/get_document',
+        'uses' => 'BackEndUserController@get_user_account_document'
+    ]);
+
+    Route::post('admin/users/ajax_get', [
+       'as'     => 'admin/users/ajax_get',
+        'uses'  => 'BackEndUserController@ajax_get_user_info'
+    ]);
+
     /** Routes for employees and backend users roles */
     Route::get('/admin/back_users/user_roles', [
         'as'    =>  'admin/back_users/user_roles',
@@ -201,6 +211,16 @@ Route::group(['middleware' => 'web'], function () {
         'uses'  => 'ProductController@get_product_inventory'
     ]);
 
+    Route::post('/admin/shops/products/{id}/add_document', [
+        'as'    => 'admin/shops/products/add_document',
+        'uses'  => 'ProductController@add_product_document'
+    ]);
+
+    Route::post('/admin/shops/products/{id}/add_image', [
+        'as'    => 'admin/shops/products/add_image',
+        'uses'  => 'ProductController@add_product_image'
+    ]);
+
     Route::post('/admin/shops/products/get_all_products_inventory', [
         'as'    => 'admin/shops/products/get_all_inventories',
         'uses'  => 'ProductController@get_all_products_inventory'
@@ -236,5 +256,11 @@ Route::group(['middleware' => 'web'], function () {
         'uses'  => 'ProductController@all_inventory'
     ]);
 
-    /** Start Routes for Products Management */
+    /** Stop Routes for Products Management */
+
+    /** Start Routes for new orders */
+    Route::get('admin/shops/new_order', [
+        'as'    => 'admin/shops/add_new_order',
+        'uses'  => 'OrderController@add_order'
+    ]);
 });

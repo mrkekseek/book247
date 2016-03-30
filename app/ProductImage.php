@@ -4,18 +4,17 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class ProductDocument extends Model
+class ProductImage extends Model
 {
-    protected $table = 'product_documents';
+    protected $table = 'product_images';
     protected $primaryKey = 'id';
 
     protected $fillable = array(
         'product_id',
-        'file_name',
-        'file_location',
-        'file_type',
         'label',
-        'category',
+        'file_location',
+        'image_size',
+        'sort_order',
     );
 
     public function product(){

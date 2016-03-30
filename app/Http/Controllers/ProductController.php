@@ -6,6 +6,7 @@ use App\Inventory;
 use App\Product;
 use App\ProductCategories;
 use App\ProductAvailability;
+use App\ProductImage;
 use App\ProductPrice;
 use App\ShopLocations;
 use App\VatRate;
@@ -18,6 +19,7 @@ use App\User;
 use Validator;
 use Auth;
 use Hash;
+use Storage;
 use Webpatser\Countries\Countries;
 use DB;
 
@@ -129,6 +131,8 @@ class ProductController extends Controller
         $stocks = $this->get_product_stock($id);
         //xdebug_var_dump($stocks);
 
+        $product_images = ProductImage::where('product_id', '=', $id)->get();
+
         $breadcrumbs = [
             'Home'              => route('admin'),
             'Administration'    => route('admin'),
@@ -157,7 +161,8 @@ class ProductController extends Controller
             'entry_price' => $entry_price,
             'shops' => $shops,
             'users' => $usersList,
-            'stocks' => $stocks
+            'stocks' => $stocks,
+            'product_images' => $product_images,
         ]);
     }
 
@@ -961,4 +966,37 @@ class ProductController extends Controller
 
         return $items_array;
     }
+
+    public function add_product_image(Request $request, $id){
+        if (!Auth::check()) {
+            return redirect()->intended(route('admin/login'));
+        }
+
+        $product = Product::findOrFail($id);
+        $documentLabel = $request->file('file')->getClientOriginalName();
+        $documentLocation = 'products/'.$product->id.'/img/'.str_slug($documentLabel);
+        $exists = Storage::disk('uploads')->exists($documentLocation);
+        if ($exists){
+            return "Error";
+        }
+
+        $productImage = [
+            'product_id'   => $product->id,
+            'label' => $documentLabel,
+            'file_location' => $documentLocation,
+        ];
+
+        $document = new ProductImage();
+        $document->fill($productImage);
+        $document->save();
+
+        Storage::disk('uploads')->put(
+            $documentLocation,
+            file_get_contents($request->file('file')->getRealPath())
+        );
+
+        return "Bine";
+        //return redirect('admin/back_users/view_user/'.$id);
+    }
+
 }

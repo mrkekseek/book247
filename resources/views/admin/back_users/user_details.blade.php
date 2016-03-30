@@ -397,10 +397,14 @@
                                         <form action="{{ route('admin/back_users/view_user/avatar_image', ['id'=>$user->id]) }}" id="user_picture_upload2" class="form-horizontal" method="post" enctype="multipart/form-data">
                                             <input type="hidden" name="_token" value="{{ csrf_token() }}">
                                             <div class="form-group">
-                                                <div class="fileinput fileinput-new" data-provides="fileinput">
-                                                    <div class="fileinput-new thumbnail" style="width: 200px; height: 246px;">
-                                                        <img src="http://www.placehold.it/200x150/EFEFEF/AAAAAA&amp;text=no+image" alt="" /> </div>
-                                                    <div class="fileinput-preview fileinput-exists thumbnail" style="max-width: 200px; max-height: 240px;"> </div>
+                                                <div class="fileinput fileinput-{{ (strlen($avatar)>10) ? 'exists':'new' }}" data-provides="fileinput">
+                                                    <div class="fileinput-new thumbnail" style="width: 200px; height: 244px;">
+                                                        <img src="http://www.placehold.it/200x246/EFEFEF/AAAAAA&amp;text=no+image" alt="" /> </div>
+                                                    <div class="fileinput-preview fileinput-exists thumbnail" style="max-width: 200px; max-height: 240px; line-height: 200px;">
+                                                    @if ( strlen($avatar)>10 )
+                                                        <img src="data:{{ $avatarType }};base64,{{ base64_encode($avatar) }}" />
+                                                    @endif
+                                                    </div>
                                                     <div>
                                                         <span class="btn default btn-file">
                                                             <span class="fileinput-new"> Select image </span>
@@ -477,15 +481,56 @@
                                         </form>
                                     </div>
                                     <div id="tab_4-5" class="tab-pane">
-                                        <div class="m-heading-1 border-green m-bordered">
-                                            <h3>Documents Dropzone</h3>
-                                            <p> Select the documents you want to add, documents related to this specific user, and upload them once you added all of them to the dropbox area. </p>
+                                        <div class="portlet box blue">
+                                            <div class="portlet-title">
+                                                <div class="caption">
+                                                    <i class="fa fa-gift"></i>Upload Documents </div>
+                                                <div class="tools">
+                                                    <a class="expand" href="javascript:;" data-original-title="" title=""> </a>
+                                                </div>
+                                            </div>
+                                            <div class="portlet-body" style="display: none;">
+                                                <div class="m-heading-1 border-green m-bordered">
+                                                    <h3>Documents Dropzone</h3>
+                                                    <p> Select the documents you want to add, documents related to this specific user, and upload them once you added all of them to the dropbox area. </p>
+                                                </div>
+                                                <form action="{{ route('admin/back_users/view_user/add_document', ['id'=>$user->id]) }}" class="dropzone dropzone-file-area" id="my-dropzone" style="width: 500px; margin-top: 50px;">
+                                                    <h3 class="sbold">Drop files here or click to upload</h3>
+                                                    <p> This is just a demo dropzone. Selected files are not actually uploaded. </p>
+                                                </form>
+                                            </div>
                                         </div>
-                                        <form action="{{ route('admin/back_users/view_user/add_document', ['id'=>$user->id]) }}" class="dropzone dropzone-file-area" id="my-dropzone" style="width: 500px; margin-top: 50px;">
-                                            <h3 class="sbold">Drop files here or click to upload</h3>
-                                            <p> This is just a demo dropzone. Selected files are not actually uploaded. </p>
-                                            <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                                        </form>
+
+                                        <div class="portlet light portlet-fit bordered">
+                                            <div class="portlet-title">
+                                                <div class="caption">
+                                                    <i class=" icon-layers font-green"></i>
+                                                    <span class="caption-subject font-green bold uppercase">Uploaded documents [page needs to be reloaded for latest files to be shown]</span>
+                                                    <div class="caption-desc font-grey-cascade"> hire documents, national identification card, etc. </div>
+                                                </div>
+                                            </div>
+                                            <div class="portlet-body">
+                                                <div class="mt-element-list">
+                                                    <div class="mt-list-container list-simple ext-1">
+                                                        <ul>
+                                                            @foreach ($documents as $document)
+                                                            <li class="mt-list-item">
+                                                                <div class="list-icon-container">
+                                                                    <i class="icon-check"></i>
+                                                                </div>
+                                                                <div class="list-datetime"> {{ $document->created_at->format('m/d/y') }} </div>
+                                                                <div class="list-item-content">
+                                                                    <h3 class="uppercase">
+                                                                        <a href="{{ route('admin/back_user/get_document', [ 'id' => $user->id , 'document_name'=> $document->file_name ]) }}" target="_blank">{{ $document->file_name }}</a>
+                                                                    </h3>
+                                                                </div>
+                                                            </li>
+                                                            @endforeach
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -705,7 +750,7 @@
                                                 <textarea name="personalAbout" id="personalAbout" class="form-control" rows="3" placeholder="Other personal information">{{@$personal->about_info}}</textarea>
                                             </div>
                                             <div class="margiv-top-10">
-                                                <a href="javascript:;" class="btn green" onCLick="javascript: $('#form_acc_personal').submit();" > Save Changes </a>
+                                                <a href="javascript:;" class="btn green" onClick="javascript: $('#form_acc_personal').submit();" > Save Changes </a>
                                                 <a href="javascript:;" class="btn default"> Cancel </a>
                                             </div>
                                         </form>
@@ -771,10 +816,14 @@
                                     <div class="form-group last">
                                         <label class="control-label col-md-3">User Avatar</label>
                                         <div class="col-md-9">
-                                            <div class="fileinput fileinput-new " data-provides="fileinput">
-                                                <div class="fileinput-new thumbnail" style="width: 200px; height: 246px;">
-                                                    <img src="http://www.placehold.it/200x150/EFEFEF/AAAAAA&amp;text=no+image" alt="" /> </div>
-                                                <div class="fileinput-preview fileinput-exists thumbnail" style="max-width: 200px; max-height: 240px;"> </div>
+                                            <div class="fileinput fileinput-{{ (strlen($avatar)>10) ? 'exists':'new' }} " data-provides="fileinput">
+                                                <div class="fileinput-new thumbnail" style="width: 200px; height: 244px;">
+                                                    <img src="http://www.placehold.it/200x246/EFEFEF/AAAAAA&amp;text=no+image" alt="" /> </div>
+                                                <div class="fileinput-preview fileinput-exists thumbnail" style="max-width: 200px; max-height: 240px;">
+                                                    @if ( strlen($avatar)>10 )
+                                                        <img src="data:{{ $avatarType }};base64,{{ base64_encode($avatar) }}" />
+                                                    @endif
+                                                </div>
                                                 <div>
                                                     <span class="btn default btn-file">
                                                         <span class="fileinput-new"> Select image </span>
@@ -1834,10 +1883,14 @@
 
                     Dropzone.options.myDropzone = {
                         paramName: "user_doc", // The name that will be used to transfer the file
-                        maxFilesize: 10, // MB
-                        acceptedFiles: "image/*,application/pdf,.psd,.doc,.docx,.xls,.xlsx",
-                        dictDefaultMessage: "",
+                        maxFilesize: 20, // MB
+                        acceptedFiles: "image/jpeg,image/png,application/pdf,.psd,.doc,.docx,.xls,.xlsx,.JPG",
+                        dictDefaultMessage: '',
+                        dictResponseError: 'Error uploading file!',
                         init: function() {
+                            this.on("sending", function(file, xhr, data) {
+                                data.append("_token", '{{ csrf_token() }}');
+                            });
                             this.on("addedfile", function(file) {
                                 // Create the remove button
                                 var removeButton = Dropzone.createElement("<a href='javascript:;'' class='btn red btn-sm btn-block'>Remove</a>");

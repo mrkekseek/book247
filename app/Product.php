@@ -51,6 +51,14 @@ class Product extends Model
         return $this->hasMany('App\ProductAvailability', 'product_id', 'id');
     }
 
+    public function images(){
+        return $this->hasMany('App\ProductImage', 'product_id', 'id');
+    }
+
+    public function documents(){
+        return $this->hasMany('App\ProductDocument', 'product_id', 'id');
+    }
+
     public static function rules($method, $id=0){
         switch($method){
             case 'GET':
