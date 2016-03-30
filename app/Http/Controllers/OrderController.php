@@ -44,4 +44,17 @@ class OrderController extends Controller
             'in_sidebar'  => $sidebar_link,
         ]);
     }
+
+    public function get_order_details(Request $request, $id=-1){
+
+        $order_details = [
+            'order_no' => ' 12313232 <span class="label label-info label-sm"> Email confirmation was sent </span> ',
+            'order_date_time' => ' Dec 27, 2013 7:16:25 PM ',
+            'order_status' => ' <span class="label label-success"> Closed </span> ',
+            'order_total_price' => ' $175.25 ',
+            'order_payment_info' => ' Credit Card ',
+        ];
+
+        return $order_details;
+    }
 }

@@ -16,6 +16,7 @@ use Validator;
 use Auth;
 use Hash;
 use Storage;
+use DB;
 use Mockery\CountValidator\Exception;
 use \App\Role;
 use Webpatser\Countries\Countries;
@@ -532,7 +533,139 @@ class BackEndUserController extends Controller
         }
     }
 
-    public function ajax_get_user_info(){
-        return "Bine";
+    public function ajax_get_users(Request $request){
+        $vars = $request->only('q');
+        $items_array = array();
+        $items = array();
+
+        $query = DB::table('users')
+            ->select('users.first_name','users.middle_name','users.last_name','users.id','users.email','personal_details.mobile_number','addresses.city','addresses.region')
+            ->leftjoin('personal_details','personal_details.user_id','=','users.id')
+            ->leftjoin('addresses','addresses.id','=','personal_details.address_id')
+            ->where(    'users.first_name','like','%'.$vars['q'].'%')
+            ->orWhere(  'users.middle_name','like','%'.$vars['q'].'%')
+            ->orWhere(  'users.last_name','like','%'.$vars['q'].'%')
+            ->orWhere(  'users.email','like','%'.$vars['q'].'%')
+            ->orWhere(  'personal_details.personal_email','like','%'.$vars['q'].'%');
+
+        $results = $query->get();
+        if ($results){
+            foreach($results as $result){
+                $items[] = array('id'=>$result->id,
+                    'first_name' => $result->first_name,
+                    'middle_name' => $result->middle_name,
+                    'last_name' => $result->last_name,
+                    'email' => $result->email,
+                    'phone'=>$result->mobile_number,
+                    'city'=>$result->city,
+                    'region'=>$result->region,
+                    'product_image_url' => asset('assets/pages/img/avatars/team'.rand(1,10).'.jpg')
+                );
+            }
+        }
+
+        $items_array['items'] = $items;
+
+        return $items_array;
+
+
+        $user_info = [];
     }
+
+    public function ajax_get_user_info(Request $request, $id=-1)
+    {
+        if (isset($request->id)){
+            $id = $request->id;
+        }
+
+        $user_info = [
+            'full_name' => ' - ',
+            'email' => ' - ',
+            'city' => ' - ',
+            'state' => ' - ',
+            'phone_number' => ' - ',
+        ];
+
+        if ($id == -1) {
+            $user_info = [
+                'full_name' => ' Jhon Doe ',
+                'email' => ' jhon@doe.com ',
+                'city' => ' New York ',
+                'state' => ' WA ',
+                'phone_number' => ' 12234389 ',
+            ];
+        }
+        else {
+            $query = DB::table('users')
+                ->select('users.first_name','users.middle_name','users.last_name','users.id','users.email','personal_details.mobile_number','addresses.city','addresses.region','addresses.id as billAddress')
+                ->leftjoin('personal_details','personal_details.user_id','=','users.id')
+                ->leftjoin('addresses','addresses.id','=','personal_details.address_id')
+                ->where('users.id','=',$id)
+                ->limit(1);
+
+            $results = $query->get();
+            if ($results){
+                $result = $results[0];
+                $user_info = [
+                    'full_name' => $result->first_name.' '.$result->middle_name.' '.$result->last_name,
+                    'email' => $result->email,
+                    'city' => $result->city?$result->city:'-',
+                    'state' => $result->region?$result->region:'-',
+                    'phone_number' => $result->mobile_number?$result->mobile_number:'-',
+                    'bill_address' => $result->billAddress,
+                    'ship_address' => $result->billAddress,
+                ];
+            }
+        }
+
+        return $user_info;
+    }
+
+    public function ajax_get_bill_address(Request $request){
+        $vars = $request->only('addressID','memberID');
+        $user_address = ['full_address' => '<br /> -<br /> -<br /> -<br /> -<br /> -<br /> -<br />'];
+
+        if ($vars['addressID']==-1){
+            $user_address = [
+                'full_address' => ' Jhon Done <br> #24 Park Avenue Str <br> New York <br> Connecticut, 23456 New York <br> United States <br> T: 123123232 <br> F: 231231232 <br> ',
+            ];
+        }
+        else{
+            $query = DB::table('users')
+                ->select('first_name','last_name','middle_name','address1','address2','city','postal_code','region','countries.name','personal_details.mobile_number')
+                ->join('addresses','addresses.user_id','=','users.id')
+                ->where('users.id','=',$vars['memberID'])
+                ->where('addresses.id','=',$vars['addressID'])
+                ->limit(1);
+            $results = $query->get();
+            if ($results){
+                $result = $results[0];
+                $user_address['full_address'] = $result->first_name." ".$result->middle_name." ".$result->last_name."
+                <br /> ".$result->address1." ".$result->address2."
+                <br /> ".$result->city.", ".$result->postal_code." ".$result->region."
+                <br /> ".$result->country_name."
+                <br /> ".($result->mobile_number?$result->mobile_number:'-')."
+                <br />
+                <br /> ";
+            }
+        }
+
+        return $user_address;
+    }
+
+    public function ajax_get_ship_address(Request $request, $id=-1){
+        $user_address = [];
+
+        if ($id==-1){
+            $user_address = [
+                'full_address' => ' Jhon Done <br> #24 Park Avenue Str <br> New York <br> Connecticut, 23456 New York <br> United States <br> T: 123123232 <br> F: 231231232 <br> ',
+            ];
+        }
+        else{
+
+        }
+
+        return $user_address;
+    }
+
 }

@@ -111,9 +111,24 @@ Route::group(['middleware' => 'web'], function () {
         'uses' => 'BackEndUserController@get_user_account_document'
     ]);
 
-    Route::post('admin/users/ajax_get', [
-       'as'     => 'admin/users/ajax_get',
+    Route::post('admin/users/ajax_get_info', [
+       'as'     => 'admin/users/ajax_get_info',
         'uses'  => 'BackEndUserController@ajax_get_user_info'
+    ]);
+
+    Route::post('admin/users/ajax_get_users', [
+        'as'     => 'admin/users/ajax_get_users',
+        'uses'  => 'BackEndUserController@ajax_get_users'
+    ]);
+
+    Route::post('admin/users/ajax_get_bill_address', [
+        'as'     => 'admin/users/ajax_get_bill_address',
+        'uses'  => 'BackEndUserController@ajax_get_bill_address'
+    ]);
+
+    Route::post('admin/users/ajax_get_ship_address', [
+        'as'     => 'admin/users/ajax_get_ship_address',
+        'uses'  => 'BackEndUserController@ajax_get_ship_address'
     ]);
 
     /** Routes for employees and backend users roles */
@@ -262,5 +277,15 @@ Route::group(['middleware' => 'web'], function () {
     Route::get('admin/shops/new_order', [
         'as'    => 'admin/shops/add_new_order',
         'uses'  => 'OrderController@add_order'
+    ]);
+
+    Route::post('admin/shops/orders/ajax_get_details',[
+        'as'    => 'admin/shops/orders/ajax_get_details',
+        'uses'  => 'OrderController@get_order_details'
+    ]);
+
+    Route::post('admin/shops/orders/{id}/ajax_get_details',[
+        'as'    => 'admin/shops/orders/ajax_get_details_id',
+        'uses'  => 'OrderController@get_order_details'
     ]);
 });

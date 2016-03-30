@@ -124,27 +124,25 @@
                                                 <div class="portlet-body">
                                                     <div class="row static-info">
                                                         <div class="col-md-5 name"> Order #: </div>
-                                                        <div class="col-md-7 value" data-title="order_det-no"> 12313232
-                                                            <span class="label label-info label-sm"> Email confirmation was sent </span>
-                                                        </div>
+                                                        <div class="col-md-7 value" data-title="order_det-no"> - </div>
                                                     </div>
                                                     <div class="row static-info">
                                                         <div class="col-md-5 name"> Order Date & Time: </div>
-                                                        <div class="col-md-7 value" data-title="order_det-date_time"> Dec 27, 2013 7:16:25 PM </div>
+                                                        <div class="col-md-7 value" data-title="order_det-date_time"> - </div>
                                                     </div>
                                                     <div class="row static-info">
                                                         <div class="col-md-5 name"> Order Status: </div>
                                                         <div class="col-md-7 value" data-title="order_det-status">
-                                                            <span class="label label-success"> Closed </span>
+                                                            <span class="label label-success"> - </span>
                                                         </div>
                                                     </div>
                                                     <div class="row static-info">
                                                         <div class="col-md-5 name"> Grand Total: </div>
-                                                        <div class="col-md-7 value" data-title="order_det-total_price"> $175.25 </div>
+                                                        <div class="col-md-7 value" data-title="order_det-total_price"> - </div>
                                                     </div>
                                                     <div class="row static-info">
                                                         <div class="col-md-5 name"> Payment Information: </div>
-                                                        <div class="col-md-7 value" data-title="order_det-payment_method"> Credit Card </div>
+                                                        <div class="col-md-7 value" data-title="order_det-payment_method"> - </div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -155,30 +153,30 @@
                                                     <div class="caption">
                                                         <i class="fa fa-cogs"></i>Customer Information </div>
                                                     <div class="actions">
-                                                        <a href="javascript:;" class="btn btn-default btn-sm">
-                                                            <i class="fa fa-pencil"></i> Edit </a>
+                                                        <a data-toggle="modal" href="#customer_search_box" class="btn btn-default btn-sm">
+                                                            <i class="fa fa-pencil"></i> Search Registered Customer </a>
                                                     </div>
                                                 </div>
                                                 <div class="portlet-body">
                                                     <div class="row static-info">
                                                         <div class="col-md-5 name"> Customer Name: </div>
-                                                        <div class="col-md-7 value" data-title="customer_info-name"> Jhon Doe </div>
+                                                        <div class="col-md-7 value" data-title="customer_info-name"> - </div>
                                                     </div>
                                                     <div class="row static-info">
                                                         <div class="col-md-5 name"> Email: </div>
-                                                        <div class="col-md-7 value" data-title="customer_info-email"> jhon@doe.com </div>
+                                                        <div class="col-md-7 value" data-title="customer_info-email"> - </div>
                                                     </div>
                                                     <div class="row static-info">
                                                         <div class="col-md-5 name"> City: </div>
-                                                        <div class="col-md-7 value" data-title="customer_info-city"> New York </div>
+                                                        <div class="col-md-7 value" data-title="customer_info-city"> - </div>
                                                     </div>
                                                     <div class="row static-info">
                                                         <div class="col-md-5 name"> State: </div>
-                                                        <div class="col-md-7 value" data-title="customer_info-state"> WA </div>
+                                                        <div class="col-md-7 value" data-title="customer_info-state"> - </div>
                                                     </div>
                                                     <div class="row static-info">
                                                         <div class="col-md-5 name"> Phone Number: </div>
-                                                        <div class="col-md-7 value" data-title="customer_info-phone_no"> 12234389 </div>
+                                                        <div class="col-md-7 value" data-title="customer_info-phone_no"> - </div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -197,13 +195,13 @@
                                                 </div>
                                                 <div class="portlet-body">
                                                     <div class="row static-info">
-                                                        <div class="col-md-12 value" data-title="order_bill_address"> Jhon Done
-                                                            <br> #24 Park Avenue Str
-                                                            <br> New York
-                                                            <br> Connecticut, 23456 New York
-                                                            <br> United States
-                                                            <br> T: 123123232
-                                                            <br> F: 231231232
+                                                        <div class="col-md-12 value" data-title="order_bill_address">
+                                                            <br>
+                                                            <br>
+                                                            <br>
+                                                            <br>
+                                                            <br>
+                                                            <br>
                                                             <br> </div>
                                                     </div>
                                                 </div>
@@ -221,13 +219,13 @@
                                                 </div>
                                                 <div class="portlet-body">
                                                     <div class="row static-info">
-                                                        <div class="col-md-12 value" data-title="order_shipp_address"> Jhon Done
-                                                            <br> #24 Park Avenue Str
-                                                            <br> New York
-                                                            <br> Connecticut, 23456 New York
-                                                            <br> United States
-                                                            <br> T: 123123232
-                                                            <br> F: 231231232
+                                                        <div class="col-md-12 value" data-title="order_ship_address">
+                                                            <br>
+                                                            <br>
+                                                            <br>
+                                                            <br>
+                                                            <br>
+                                                            <br>
                                                             <br> </div>
                                                     </div>
                                                 </div>
@@ -241,7 +239,7 @@
                                                     <div class="caption">
                                                         <i class="fa fa-cogs"></i>Shopping Cart </div>
                                                     <div class="actions">
-                                                        <a data-toggle="modal" href="#new_inventory_box" class="btn btn-default btn-sm">
+                                                        <a data-toggle="modal" href="#product_search_box" class="btn btn-default btn-sm">
                                                             <i class="fa fa-pencil"></i> Edit </a>
                                                     </div>
                                                 </div>
@@ -510,7 +508,7 @@
                 <!-- End: life time stats -->
             </div>
 
-            <div class="modal fade draggable-modal" id="new_inventory_box" tabindex="-1" role="basic" aria-hidden="true">
+            <div class="modal fade draggable-modal" id="product_search_box" tabindex="-1" role="basic" aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
@@ -586,7 +584,7 @@
                 <!-- /.modal-dialog -->
             </div>
 
-            <div class="modal fade draggable-modal" id="new_inventory_box" tabindex="-1" role="basic" aria-hidden="true">
+            <div class="modal fade draggable-modal" id="customer_search_box" tabindex="-1" role="basic" aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
@@ -612,49 +610,12 @@
                                                 </select> </div>
                                         </div>
                                     </div>
-                                    <div class="form-group">
-                                        <label class="control-label col-md-4">Quantity</label>
-                                        <div class="col-md-7">
-                                            <div class="input-icon right">
-                                                <i class="fa"></i>
-                                                <input type="text" class="form-control input-small" id="inventory_quantity" name="inventory_quantity" /> </div>
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="control-label col-md-4">Cost Price</label>
-                                        <div class="col-md-7">
-                                            <div class="input-icon right">
-                                                <i class="fa"></i>
-                                                <input type="text" class="btn-group form-control input-small" id="inventory_entry_price" name="inventory_entry_price" value="0" /> <span class="price_currency help-inline"></span> </div>
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="control-label col-md-4">List Price</label>
-                                        <div class="col-md-7">
-                                            <div class="input-icon right">
-                                                <i class="fa"></i>
-                                                <input type="text" class="btn-group form-control input-small" value="0" name="inventory_list_price" readonly disabled /> <span class="price_currency help-inline"></span> </div>
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="control-label col-md-4">Shop Location
-                                            <span class="required"> * </span>
-                                        </label>
-                                        <div class="col-md-7">
-                                            <select class="form-control input-sm" name="inventory_shop_location" id="inventory_shop_location">
-                                                <option value="-1">Select...</option>
-                                                @foreach($shops as $shop)
-                                                    <option value="{{$shop->id}}">{{$shop->name}}</option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-                                    </div>
                                 </div>
                             </form>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn dark btn-outline" data-dismiss="modal">Close</button>
-                            <button type="button" class="btn green submit_form_2" onClick="javascript: $('#new_inventory').submit();">Add inventory</button>
+                            <button type="button" class="btn green submit_form_2" onclick="javascript: get_customer_information();">Select Customer</button>
                         </div>
                     </div>
                     <!-- /.modal-content -->
@@ -1460,15 +1421,16 @@
                     var markup = "<div class='select2-result-repository clearfix'>" +
                             "<div class='select2-result-repository__avatar'><img src='" + repo.product_image_url + "' /></div>" +
                             "<div class='select2-result-repository__meta'>" +
-                            "<div class='select2-result-repository__title'>" + repo.product_name + "</div>";
+                            "<div class='select2-result-repository__title'>" + repo.first_name + " " + repo.middle_name + " " + repo.last_name + "</div>";
 
                     if (repo.description) {
                         markup += "<div class='select2-result-repository__description'>" + repo.description + "</div>";
                     }
 
                     markup += "<div class='select2-result-repository__statistics'>" +
-                            "<div class='select2-result-repository__forks'><span class='glyphicon glyphicon-flash'></span> " + repo.category + "</div>" +
-                            "<div class='select2-result-repository__stargazers'><span class='glyphicon glyphicon-star'></span> " + repo.manufacturer + "</div>" +
+                            "<div class='select2-result-repository__forks'><span class='glyphicon glyphicon-flash'></span> " + repo.email + "</div>";
+
+                    markup += "<div class='select2-result-repository__stargazers'><span class='glyphicon glyphicon-star'></span> " + repo.city + ", " + repo.region + "</div>" +
                             "</div>" +
                             "</div></div>";
 
@@ -1481,13 +1443,20 @@
                     $('input[name=inventory_entry_price]').val(repo.entry_price);
                     $('.price_currency').html(repo.currency);
 
-                    return repo.full_name || repo.text;
+                    if (repo.first_name==null && repo.first_name==null && repo.first_name==null){
+                        var full_name = null;
+                    }
+                    else{
+                        var full_name = repo.first_name + " " + repo.middle_name + " " + repo.last_name;
+                    }
+
+                    return full_name || repo.text;
                 }
 
                 $(".js-data-users-ajax").select2({
                     width: "off",
                     ajax: {
-                        url: "{{ route('admin/users/ajax_get') }}",
+                        url: "{{ route('admin/users/ajax_get_users') }}",
                         type: "post",
                         dataType: 'json',
                         delay: 250,
@@ -1587,6 +1556,105 @@
                 }
             });
         }
+
+        function get_order_details(){
+            // here we make the load items button
+
+            $.ajax({
+                url: '{{ route('admin/shops/orders/ajax_get_details') }}',
+                type: "post",
+                data: {
+                    'id': -1,
+                },
+                success: function(data){
+                    format_order_details_data(data);
+                }
+            });
+        }
+
+        function format_order_details_data(order_details){
+            //alert(order_details.order_no);
+            $("div").find("[data-title='order_det-no']").html(order_details.order_no);
+            $("div").find("[data-title='order_det-date_time']").html(order_details.order_date_time);
+            $("div").find("[data-title='order_det-status']").html(order_details.order_status);
+            $("div").find("[data-title='order_det-total_price']").html(order_details.order_total_price);
+            $("div").find("[data-title='order_det-payment_method']").html(order_details.order_payment_info);
+        }
+
+        function get_customer_information(){
+            // here we make the load items button
+            var customer_id = -1;
+            if ($('select[name=find_customer_name]').val()!=""){
+                customer_id = $('select[name=find_customer_name]').val();
+            }
+
+            $.ajax({
+                url: '{{ route('admin/users/ajax_get_info') }}',
+                type: "post",
+                data: {
+                    'id': customer_id,
+                },
+                success: function(data){
+                    format_customer_information_data(data);
+                }
+            });
+        }
+
+        function format_customer_information_data(order_details){
+            //alert(order_details.order_no);
+            $("div").find("[data-title='customer_info-name']").html(order_details.full_name);
+            $("div").find("[data-title='customer_info-email']").html(order_details.email);
+            $("div").find("[data-title='customer_info-city']").html(order_details.city);
+            $("div").find("[data-title='customer_info-state']").html(order_details.state);
+            $("div").find("[data-title='customer_info-phone_no']").html(order_details.phone_number);
+
+            $('#customer_search_box').modal('hide');
+        }
+
+        function get_customer_bill_address(){
+            // here we make the load items button
+
+            $.ajax({
+                url: '{{ route('admin/users/ajax_get_bill_address') }}',
+                type: "post",
+                data: {
+                    'addressID': -1,
+                    'memberID': -1,
+                },
+                success: function(data){
+                    format_customer_bill_address_data(data, 'order_bill_address');
+                }
+            });
+        }
+
+        function get_customer_ship_address(){
+            // here we make the load items button
+
+            $.ajax({
+                url: '{{ route('admin/users/ajax_get_ship_address') }}',
+                type: "post",
+                data: {
+                    'id': -1,
+                },
+                success: function(data){
+                    format_customer_bill_address_data(data, 'order_ship_address');
+                }
+            });
+        }
+
+        function format_customer_bill_address_data(bill_address, field){
+            //alert(order_details.order_no);
+            $("div").find("[data-title='" + field + "']").html(bill_address.full_address);
+        }
+
+        $(document).ready(function(){
+            get_order_details();
+            get_customer_information();
+            get_customer_bill_address();
+            get_customer_ship_address()
+
+
+        });
 
         function show_notification(title_heading, message, theme, life, sticky) {
             var settings = {
