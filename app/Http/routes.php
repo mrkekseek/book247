@@ -288,4 +288,14 @@ Route::group(['middleware' => 'web'], function () {
         'as'    => 'admin/shops/orders/ajax_get_details_id',
         'uses'  => 'OrderController@get_order_details'
     ]);
+
+    Route::post('admin/shops/orders/{id}/ajax_get_line_items',[
+        'as'    => 'admin/shops/orders/ajax_get_line_items',
+        'uses'  => 'OrderController@get_order_lines_items',
+    ]);
+
+    Route::post('admin/shops/orders/add_update_line_item', [
+        'as'    => 'admin/shops/orders/add_update_line_items',
+        'uses'  => 'OrderController@add_update_line_item'
+    ]);
 });

@@ -39,6 +39,25 @@ class Product extends Model
         'vat_rate_id'
     ];
 
+    public function get_list_price(){
+        $price = ProductPrice::with('currency')->where('product_id','=',$this->id)->orderBy('updated_at','desc')->get()->first();
+        return $price;
+    }
+
+    public function get_entry_price(){
+        $price = Inventory::select('entry_price','created_at')->where('product_id','=',$this->id)->orderBy('created_at','desc')->get()->first();
+        if ($price) {
+            $abc = $price->created_at;
+            $price->added_on = $abc->format('d-m-Y');
+        }
+        return $price;
+    }
+
+    public function get_vat(){
+        $vat = Product::with('vat_rate')->where('id','=',$this->id)->get()->first();
+        return $vat->vat_rate;
+    }
+
     public function category(){
         return $this->belongsTo('App\ProductCategories', 'category_id', 'id');
     }

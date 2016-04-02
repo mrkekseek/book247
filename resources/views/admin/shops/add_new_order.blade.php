@@ -125,6 +125,7 @@
                                                     <div class="row static-info">
                                                         <div class="col-md-5 name"> Order #: </div>
                                                         <div class="col-md-7 value" data-title="order_det-no"> - </div>
+                                                        <input type="hidden" name="order_number_id" value="{{$orderID}}" id="order_number_id" />
                                                     </div>
                                                     <div class="row static-info">
                                                         <div class="col-md-5 name"> Order Date & Time: </div>
@@ -245,77 +246,22 @@
                                                 </div>
                                                 <div class="portlet-body">
                                                     <div class="table-responsive">
-                                                        <table class="table table-hover table-bordered table-striped">
+                                                        <table class="table table-hover table-bordered table-striped" id="order_line_items">
                                                             <thead>
                                                             <tr>
                                                                 <th> Product </th>
                                                                 <th> Item Status </th>
-                                                                <th> Original Price </th>
-                                                                <th> Price </th>
+                                                                <th> Cost Price </th>
+                                                                <th> Sell Price </th>
                                                                 <th> Quantity </th>
-                                                                <th> Tax Amount </th>
-                                                                <th> Tax Percent </th>
+                                                                <th> VAT Percentage </th>
+                                                                <th> VAT Amount </th>
                                                                 <th> Discount Amount </th>
                                                                 <th> Total </th>
                                                             </tr>
                                                             </thead>
                                                             <tbody>
-                                                            <tr>
-                                                                <td>
-                                                                    <a href="javascript:;"> Product 1 </a>
-                                                                </td>
-                                                                <td>
-                                                                    <span class="label label-sm label-success"> Available </span></td>
-                                                                <td> 345.50$ </td>
-                                                                <td> 345.50$ </td>
-                                                                <td> 2 </td>
-                                                                <td> 2.00$ </td>
-                                                                <td> 4% </td>
-                                                                <td> 0.00$ </td>
-                                                                <td> 691.00$ </td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td>
-                                                                    <a href="javascript:;"> Product 1 </a>
-                                                                </td>
-                                                                <td>
-                                                                    <span class="label label-sm label-success"> Available </span></td>
-                                                                <td> 345.50$ </td>
-                                                                <td> 345.50$ </td>
-                                                                <td> 2 </td>
-                                                                <td> 2.00$ </td>
-                                                                <td> 4% </td>
-                                                                <td> 0.00$ </td>
-                                                                <td> 691.00$ </td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td>
-                                                                    <a href="javascript:;"> Product 1 </a>
-                                                                </td>
-                                                                <td>
-                                                                    <span class="label label-sm label-success"> Available </span></td>
-                                                                <td> 345.50$ </td>
-                                                                <td> 345.50$ </td>
-                                                                <td> 2 </td>
-                                                                <td> 2.00$ </td>
-                                                                <td> 4% </td>
-                                                                <td> 0.00$ </td>
-                                                                <td> 691.00$ </td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td>
-                                                                    <a href="javascript:;"> Product 1 </a>
-                                                                </td>
-                                                                <td>
-                                                                    <span class="label label-sm label-success"> Available </span></td>
-                                                                <td> 345.50$ </td>
-                                                                <td> 345.50$ </td>
-                                                                <td> 2 </td>
-                                                                <td> 2.00$ </td>
-                                                                <td> 4% </td>
-                                                                <td> 0.00$ </td>
-                                                                <td> 691.00$ </td>
-                                                            </tr>
+
                                                             </tbody>
                                                         </table>
                                                     </div>
@@ -329,27 +275,26 @@
                                             <div class="well">
                                                 <div class="row static-info align-reverse">
                                                     <div class="col-md-8 name"> Sub Total: </div>
-                                                    <div class="col-md-3 value"> $1,124.50 </div>
+                                                    <div class="col-md-3 value"> <span class="all_sub_total">0.00</span> <span class="currency_code help-inline"></span> </div>
                                                 </div>
                                                 <div class="row static-info align-reverse">
-                                                    <div class="col-md-8 name"> Shipping: </div>
-                                                    <div class="col-md-3 value"> $40.50 </div>
+                                                    <div class="col-md-8 name"> Shipping Cost: </div>
+                                                    <div class="col-md-3 value"> <span class="all_shipping_cost">0.00</span> <span class="currency_code help-inline"></span></div>
                                                 </div>
                                                 <div class="row static-info align-reverse">
-                                                    <div class="col-md-8 name"> Grand Total: </div>
-                                                    <div class="col-md-3 value"> $1,260.00 </div>
+                                                    <div class="col-md-8 name"> Total Discount: </div>
+                                                    <div class="col-md-3 value"> <span class="all_total_discount">0.00</span> <span class="currency_code help-inline"></span></div>
                                                 </div>
                                                 <div class="row static-info align-reverse">
                                                     <div class="col-md-8 name"> Total Paid: </div>
-                                                    <div class="col-md-3 value"> $1,260.00 </div>
+                                                    <div class="col-md-3 value"> <span class="all_total_paid">0.00</span> <span class="currency_code help-inline"></span></div>
                                                 </div>
-                                                <div class="row static-info align-reverse">
-                                                    <div class="col-md-8 name"> Total Refunded: </div>
-                                                    <div class="col-md-3 value"> $0.00 </div>
-                                                </div>
-                                                <div class="row static-info align-reverse">
-                                                    <div class="col-md-8 name"> Total Due: </div>
-                                                    <div class="col-md-3 value"> $1,124.50 </div>
+                                            </div>
+                                            <div class="form">
+                                                <div class="form-actions right">
+                                                    <button class="btn default" type="button">Cancel Order</button>
+                                                    <button class="btn green" type="submit">Save Order</button>
+                                                    <button class="btn blue" type="submit">Pay Order</button>
                                                 </div>
                                             </div>
                                         </div>
@@ -547,7 +492,7 @@
                                         <div class="col-md-7">
                                             <div class="input-icon right">
                                                 <i class="fa"></i>
-                                                <input type="text" class="btn-group form-control input-small" id="inventory_entry_price" name="inventory_entry_price" value="0" /> <span class="price_currency help-inline"></span> </div>
+                                                <input type="text" class="btn-group form-control input-small" id="inventory_entry_price" name="inventory_entry_price" value="0" readonly disabled /> <span class="price_currency help-inline"></span> </div>
                                         </div>
                                     </div>
                                     <div class="form-group">
@@ -558,25 +503,12 @@
                                                 <input type="text" class="btn-group form-control input-small" value="0" name="inventory_list_price" readonly disabled /> <span class="price_currency help-inline"></span> </div>
                                         </div>
                                     </div>
-                                    <div class="form-group">
-                                        <label class="control-label col-md-4">Shop Location
-                                            <span class="required"> * </span>
-                                        </label>
-                                        <div class="col-md-7">
-                                            <select class="form-control input-sm" name="inventory_shop_location" id="inventory_shop_location">
-                                                <option value="-1">Select...</option>
-                                                @foreach($shops as $shop)
-                                                    <option value="{{$shop->id}}">{{$shop->name}}</option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-                                    </div>
                                 </div>
                             </form>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn dark btn-outline" data-dismiss="modal">Close</button>
-                            <button type="button" class="btn green submit_form_2" onClick="javascript: $('#new_inventory').submit();">Add inventory</button>
+                            <button type="button" class="btn green submit_form_2" onclick="add_update_order_line_items(-1,-1,-1)">Add inventory</button>
                         </div>
                     </div>
                     <!-- /.modal-content -->
@@ -1201,7 +1133,6 @@
 @section('pageBelowLevelPlugins')
     <script src="{{ asset('assets/global/plugins/bootstrap-maxlength/bootstrap-maxlength.min.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/global/plugins/jquery-validation/js/jquery.validate.min.js') }}" type="text/javascript"></script>
-
     <script src="{{ asset('assets/global/plugins/select2/js/select2.full.min.js') }}" type="text/javascript"></script>
 @endsection
 
@@ -1532,7 +1463,7 @@
             });
         }
 
-        function add_new_shop(){
+        function add_new_order(){
             $.ajax({
                 url: '{{route('admin/shops/locations/add')}}',
                 type: "post",
@@ -1564,7 +1495,7 @@
                 url: '{{ route('admin/shops/orders/ajax_get_details') }}',
                 type: "post",
                 data: {
-                    'id': -1,
+                    'id':$('input[name=order_number_id]').val(),
                 },
                 success: function(data){
                     format_order_details_data(data);
@@ -1622,7 +1553,7 @@
                     'memberID': -1,
                 },
                 success: function(data){
-                    format_customer_bill_address_data(data, 'order_bill_address');
+                    format_customer_address_data(data, 'order_bill_address');
                 }
             });
         }
@@ -1637,14 +1568,96 @@
                     'id': -1,
                 },
                 success: function(data){
-                    format_customer_bill_address_data(data, 'order_ship_address');
+                    format_customer_address_data(data, 'order_ship_address');
                 }
             });
         }
 
-        function format_customer_bill_address_data(bill_address, field){
+        function format_customer_address_data(bill_address, field){
             //alert(order_details.order_no);
             $("div").find("[data-title='" + field + "']").html(bill_address.full_address);
+        }
+
+        function add_update_order_line_items(lineID, sell_price, discount_amount){
+            var productID = $('select[name=inventory_product]').val();
+            var quantity  = $('input[name=inventory_quantity]').val();
+            var orderID = $('input[name=order_number_id]').val();
+
+            if (lineID!=-1){
+                var quantity    = $('input[name=quantity_'+ lineID +']').val();
+                var sell_price  = $('input[name=sell_price_'+ lineID +']').val();
+                var discount_amount = $('input[name=discount_amount_'+ lineID +']').val();
+            }
+
+            $.ajax({
+                url: '{{route('admin/shops/orders/add_update_line_items')}}',
+                type: "post",
+                data: {
+                    'productID':        productID,
+                    'quantity':         quantity,
+                    'sell_price':       sell_price,
+                    'discount_amount':  discount_amount,
+                    'orderID':          orderID,
+                    'lineID':           lineID,
+                },
+                success: function (orderLine) {
+                    //get_order_line_items();
+                    var new_line = '<tr data-info="'+orderLine.item_line+'">'+
+                            '<td><a href="'+orderLine.product_link+'">' + orderLine.product_name + '</a></td>'+
+                            '<td><span class="label label-sm label-success">'+orderLine.inventory_status+'</span></td>'+
+                            '<td> '+orderLine.cost_price+'<span class="help-inline">'+orderLine.currency+'</span> </td>'+
+                            '<td> <input type="text" class="form-control input-inline input-xsmall lineSellPrice" value="'+orderLine.sell_price+'" name="sell_price_'+orderLine.item_line+'"><span class="help-inline">'+orderLine.currency+'</span> </td>'+
+                            '<td> <input type="text" class="form-control input-xsmall lineQuantity" name="quantity_'+orderLine.item_line+'" value="'+orderLine.quantity+'"> </td>'+
+                            '<td> '+orderLine.vat+'% </td>'+
+                            '<td> <span class="vat_amount">'+orderLine.vat_value+'</span> <span class="help-inline">'+orderLine.currency+'</span> </td>'+
+                            '<td> <input type="text" class="form-control input-xsmall input-inline lineDiscount" name="discount_'+orderLine.item_line+'" value="'+orderLine.discount_value+'"><span class="help-inline">%</span> </td>'+
+                            '<td> <span class="total_amount">'+orderLine.total_amount+'</span><span class="help-inline">'+orderLine.currency+'</span> </td>'+
+                            '<input type="hidden" name="orderLineSellPrice_'+orderLine.item_line+'" value="'+ orderLine.sell_price +'" />'+
+                            '<input type="hidden" name="orderLineQuantity_'+orderLine.item_line+'" value="'+ orderLine.quantity +'" />'+
+                            '<input type="hidden" name="orderLineVAT_'+orderLine.item_line+'" value="'+ orderLine.vat +'" />'+
+                            '<input type="hidden" name="orderLineDiscount_'+orderLine.item_line+'" value="0" />'+
+                            '</tr>';
+
+                    if (orderLine.orderID){
+                        $('input[name=order_number_id]').val(orderLine.orderID);
+                    }
+
+                    $("#order_line_items tbody").append(new_line);
+
+                    $('input[name=inventory_quantity]').val('');
+                    $('input[name=inventory_entry_price]').val('');
+                    $('input[name=inventory_list_price]').val('');
+                    //$('#select2-inventory_product-container').attr('title', 'Select...');
+                    //$('#select2-inventory_product-container').html('Select...');
+
+                    $('span.currency_code').html(orderLine.currency);
+
+                    recalculate_all_lines();
+                }
+            });
+
+            $('#product_search_box').modal('hide');
+        }
+
+        function get_order_line_items(){
+            $.ajax({
+                url: '{{route('admin/shops/orders/ajax_get_line_items',['id' => $orderID])}}',
+                type: "post",
+                data: {
+                    'orderID': $('input[name=order_number_id]').val(),
+                },
+                success: function (data) {
+                    format_order_line_items(data);
+                }
+            });
+        }
+
+        function format_order_line_items(data){
+            $("#order_line_items tbody").html('');
+
+            $.each(data, function(key, value){
+                $("#order_line_items tbody").append(value);
+            });
         }
 
         $(document).ready(function(){
@@ -1653,8 +1666,85 @@
             get_customer_bill_address();
             get_customer_ship_address()
 
-
         });
+
+        $('body').on('keyup','input.lineSellPrice',function(){
+            var topContainer = $(this).closest('tr');
+            var lineNo = topContainer.attr('data-info');
+            $('input[name=orderLineSellPrice_'+lineNo+']').val($(this).val());
+
+            recalculate_line(lineNo);
+        });
+
+        $('body').on('keyup','input.lineQuantity',function(){
+            var topContainer = $(this).closest('tr');
+            var lineNo = topContainer.attr('data-info');
+            $('input[name=orderLineQuantity_'+lineNo+']').val($(this).val());
+
+            recalculate_line(lineNo);
+        });
+
+        $('body').on('keyup','input.lineDiscount',function(){
+            var topContainer = $(this).closest('tr');
+            var lineNo = topContainer.attr('data-info');
+            $('input[name=orderLineDiscount_'+lineNo+']').val($(this).val());
+
+            recalculate_line(lineNo);
+        });
+
+        function recalculate_line(lineNo){
+            var container = $('tr[data-info='+lineNo+']');
+            var price =     $('input[name=orderLineSellPrice_'+lineNo+']').val()*100;
+            var vat =       $('input[name=orderLineVAT_'+lineNo+']').val();
+            var quantity =  $('input[name=orderLineQuantity_'+lineNo+']').val();
+            var discount =  $('input[name=orderLineDiscount_'+lineNo+']').val();
+
+            var vatAmount = (price*quantity)*(vat/100);
+            var totalAmount = (price*quantity) + vatAmount;
+            totalAmount = totalAmount - (totalAmount*(discount/100));
+
+            totalAmount = Math.round(totalAmount);
+            vatAmount = Math.round(vatAmount);
+
+            container.find('span.vat_amount').html(vatAmount/100);
+            container.find('span.total_amount').html(totalAmount/100);
+
+            recalculate_all_lines();
+        }
+
+        function recalculate_all_lines(){
+            var allVatAmount = 0;
+            var allSubTotal = 0;
+            var allDiscount = 0;
+
+            $('#order_line_items > tbody tr').each(function() {
+                $this = $(this);
+
+                var lineNo = $this.attr('data-info');
+                var price =     $('input[name=orderLineSellPrice_'+lineNo+']').val()*100;
+                var vat =       $('input[name=orderLineVAT_'+lineNo+']').val();
+                var quantity =  $('input[name=orderLineQuantity_'+lineNo+']').val();
+                var discount =  $('input[name=orderLineDiscount_'+lineNo+']').val();
+
+                var vatAmount = (price*quantity)*(vat/100);
+                var totalAmount = (price*quantity) + vatAmount;
+                var discount = totalAmount*(discount/100);
+
+                allSubTotal+= Math.round(totalAmount);
+                allVatAmount+= Math.round(vatAmount);
+                allDiscount+=discount;
+            });
+
+            var totalPaid = allSubTotal-allDiscount;
+            allSubTotal = parseFloat(Math.round(allSubTotal)/100).toFixed(2);
+            allDiscount = parseFloat(Math.round(allDiscount)/100).toFixed(2);
+            totalPaid = parseFloat(Math.round(totalPaid)/100).toFixed(2);
+
+
+            $(".all_sub_total").html(allSubTotal);
+            $(".all_total_discount").html(allDiscount);
+            $(".all_total_paid").html(totalPaid);
+        }
 
         function show_notification(title_heading, message, theme, life, sticky) {
             var settings = {
