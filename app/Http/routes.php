@@ -279,6 +279,11 @@ Route::group(['middleware' => 'web'], function () {
         'uses'  => 'OrderController@add_order'
     ]);
 
+    Route::get('admin/shops/list_orders', [
+        'as'    =>  'admin/shops/list_orders',
+        'uses'  =>  'OrderController@all_orders'
+    ]);
+
     Route::post('admin/shops/orders/ajax_get_details',[
         'as'    => 'admin/shops/orders/ajax_get_details',
         'uses'  => 'OrderController@get_order_details'

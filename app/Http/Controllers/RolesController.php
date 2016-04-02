@@ -20,6 +20,9 @@ class RolesController extends Controller
         if (!Auth::check()) {
             return redirect()->intended(route('admin/login'));
         }
+        else{
+            $user = Auth::user();
+        }
 
         $all_roles = Role::All();
 
@@ -46,6 +49,13 @@ class RolesController extends Controller
 
     /** Add new user role */
     public function add_user_role(Request $request){
+        if (!Auth::check()) {
+            return redirect()->intended(route('admin/login'));
+        }
+        else{
+            $user = Auth::user();
+        }
+
         $vars = $request->only('name', 'display_name', 'description');
         $vars['name'] = trim($vars['name']);
         $message = array(
@@ -72,6 +82,13 @@ class RolesController extends Controller
 
     /** Update user role */
     public function update_user_role(Request $request){
+        if (!Auth::check()) {
+            return redirect()->intended(route('admin/login'));
+        }
+        else{
+            $user = Auth::user();
+        }
+
         $message = array(
             'name.unique' => 'Duplicate Role name in the database.',
         );
@@ -117,6 +134,13 @@ class RolesController extends Controller
 
     /** Delete user role */
     public function delete_user_role(Request $request){
+        if (!Auth::check()) {
+            return redirect()->intended(route('admin/login'));
+        }
+        else{
+            $user = Auth::user();
+        }
+
         $vars = $request->only('dataID');
 
         $roleToUpdate = Role::find(array('id'=>$vars['dataID']))->first();
@@ -147,6 +171,9 @@ class RolesController extends Controller
     public function list_permissions(){
         if (!Auth::check()) {
             return redirect()->intended(route('admin/login'));
+        }
+        else{
+            $user = Auth::user();
         }
 
         $permissions = Permission::all();
@@ -181,6 +208,13 @@ class RolesController extends Controller
     }
 
     public function add_permission(Request $request){
+        if (!Auth::check()) {
+            return redirect()->intended(route('admin/login'));
+        }
+        else{
+            $user = Auth::user();
+        }
+
         $vars = $request->only('name', 'display_name', 'description');
         $vars['name'] = trim($vars['name']);
         $message = array(
@@ -206,6 +240,13 @@ class RolesController extends Controller
     }
 
     public function view_permission($id){
+        if (!Auth::check()) {
+            return redirect()->intended(route('admin/login'));
+        }
+        else{
+            $user = Auth::user();
+        }
+
         $permission = Permission::find($id);
         $roles = Role::all(['id','display_name']);
         $assigned_to = array();
@@ -239,6 +280,13 @@ class RolesController extends Controller
     }
 
     public function update_permission(Request $request, $id){
+        if (!Auth::check()) {
+            return redirect()->intended(route('admin/login'));
+        }
+        else{
+            $user = Auth::user();
+        }
+
         $permission = Permission::find($id);
 
         if(!$permission){

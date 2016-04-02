@@ -21,6 +21,9 @@ class ShopController extends Controller
         if (!Auth::check()) {
             return redirect()->intended(route('admin/login'));
         }
+        else{
+            $user = Auth::user();
+        }
 
         $shop_locations = ShopLocations::get();
         foreach($shop_locations as $shop_loc){
@@ -69,6 +72,9 @@ class ShopController extends Controller
         if (!Auth::check()) {
             return redirect()->intended(route('admin/login'));
         }
+        else{
+            $user = Auth::user();
+        }
 
         $shop_vars = $request->only('name', 'bank_acc_no', 'phone', 'fax', 'email', 'registered_no');
         $address_vars = $request->only('address1', 'address2', 'city', 'country_id', 'postal_code', 'region');
@@ -116,6 +122,9 @@ class ShopController extends Controller
         if (!Auth::check()) {
             return redirect()->intended(route('admin/login'));
         }
+        else{
+            $user = Auth::user();
+        }
 
         $shopDetails = ShopLocations::find($id);
         $shopAddress = Address::find($shopDetails->address_id);
@@ -146,12 +155,22 @@ class ShopController extends Controller
     }
 
     public function view_shop_location(){
+        if (!Auth::check()) {
+            return redirect()->intended(route('admin/login'));
+        }
+        else{
+            $user = Auth::user();
+        }
+
 
     }
 
     public function shops_employee_working_plan(){
         if (!Auth::check()) {
             return redirect()->intended(route('admin/login'));
+        }
+        else{
+            $user = Auth::user();
         }
 
         $shop_locations = ShopLocations::orderBy('name')->get();

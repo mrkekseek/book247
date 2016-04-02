@@ -40,6 +40,9 @@ class BackEndUserController extends Controller
         if (!Auth::check()) {
             return redirect()->intended(route('admin/login'));
         }
+        else{
+            $user = Auth::user();
+        }
 
         $back_users = User::all();
 
@@ -75,6 +78,13 @@ class BackEndUserController extends Controller
      */
     public function create(Request $request)
     {
+        if (!Auth::check()) {
+            return redirect()->intended(route('admin/login'));
+        }
+        else{
+            $user = Auth::user();
+        }
+
         $vars = $request->only('first_name', 'middle_name', 'last_name', 'email', 'user_type', 'username', 'password', 'user_type');
         $messages = array(
             'email.unique' => 'Please use an email that is not in the database',
@@ -138,6 +148,9 @@ class BackEndUserController extends Controller
     {
         if (!Auth::check()) {
             return redirect()->intended(route('admin/login'));
+        }
+        else{
+            $user = Auth::user();
         }
         $back_user = User::with('roles')->find($id);
 
@@ -239,6 +252,10 @@ class BackEndUserController extends Controller
         if (!Auth::check()) {
             return redirect()->intended(route('admin/login'));
         }
+        else{
+            $user = Auth::user();
+        }
+
         $vars = $request->only('accountDescription', 'accountJobTitle', 'accountProfession', 'accountEmail', 'accountUsername', 'employeeRole');
         $userVars = array('username'=>$vars["accountUsername"], 'email'=>$vars["accountEmail"]);
         $userCh = User::with('roles')->find($id);
@@ -288,6 +305,10 @@ class BackEndUserController extends Controller
         if (!Auth::check()) {
             return redirect()->intended(route('admin/login'));
         }
+        else{
+            $user = Auth::user();
+        }
+
         $vars = $request->only('about_info', 'country_id', 'date_of_birth', 'first_name', 'last_name', 'middle_name', 'mobile_number', 'personal_email', 'bank_acc_no', 'social_sec_no');
 
         $userVars = array(  'first_name'    => $vars["first_name"],
@@ -344,6 +365,9 @@ class BackEndUserController extends Controller
     {
         if (!Auth::check()) {
             return redirect()->intended(route('admin/login'));
+        }
+        else{
+            $user = Auth::user();
         }
 
         $userPersonal = PersonalDetail::find($id);
@@ -406,6 +430,13 @@ class BackEndUserController extends Controller
     /** Change password */
     public function updatePassword(Request $request, $id)
     {
+        if (!Auth::check()) {
+            return redirect()->intended(route('admin/login'));
+        }
+        else{
+            $user = Auth::user();
+        }
+
         $user = User::findOrFail($id);
         $userVars = $request->only('old_password','password1','password2');
 
@@ -440,6 +471,9 @@ class BackEndUserController extends Controller
     public function update_personal_avatar(Request $request, $id){
         if (!Auth::check()) {
             return redirect()->intended(route('admin/login'));
+        }
+        else{
+            $user = Auth::user();
         }
 
         $user = User::findOrFail($id);
@@ -479,6 +513,9 @@ class BackEndUserController extends Controller
         if (!Auth::check()) {
             return redirect()->intended(route('admin/login'));
         }
+        else{
+            $user = Auth::user();
+        }
 
         $user = User::findOrFail($id);
 //xdebug_var_dump($request); exit;
@@ -515,8 +552,12 @@ class BackEndUserController extends Controller
         if (!Auth::check()) {
             return redirect()->intended(route('admin/login'));
         }
-        $user = User::findOrFail($id);
-        $entry = UserDocuments::where('user_id',$user->id)->where('file_name', $document_name)->where('category', 'account_documents')->firstOrFail();
+        else{
+            $user = Auth::user();
+        }
+
+        $back_user = User::findOrFail($id);
+        $entry = UserDocuments::where('user_id',$back_user->id)->where('file_name', $document_name)->where('category', 'account_documents')->firstOrFail();
 
         $file_path = 'employees/'.$id.'/documents/'. $document_name;
         $exists = Storage::disk('local')->exists($file_path);
@@ -534,6 +575,13 @@ class BackEndUserController extends Controller
     }
 
     public function ajax_get_users(Request $request){
+        if (!Auth::check()) {
+            return redirect()->intended(route('admin/login'));
+        }
+        else{
+            $user = Auth::user();
+        }
+
         $vars = $request->only('q');
         $items_array = array();
         $items = array();
@@ -574,6 +622,13 @@ class BackEndUserController extends Controller
 
     public function ajax_get_user_info(Request $request, $id=-1)
     {
+        if (!Auth::check()) {
+            return redirect()->intended(route('admin/login'));
+        }
+        else{
+            $user = Auth::user();
+        }
+
         if (isset($request->id)){
             $id = $request->id;
         }
@@ -622,6 +677,13 @@ class BackEndUserController extends Controller
     }
 
     public function ajax_get_bill_address(Request $request){
+        if (!Auth::check()) {
+            return redirect()->intended(route('admin/login'));
+        }
+        else{
+            $user = Auth::user();
+        }
+
         $vars = $request->only('addressID','memberID');
         $user_address = ['full_address' => '<br /> -<br /> -<br /> -<br /> -<br /> -<br /> -<br />'];
 
@@ -654,6 +716,13 @@ class BackEndUserController extends Controller
     }
 
     public function ajax_get_ship_address(Request $request, $id=-1){
+        if (!Auth::check()) {
+            return redirect()->intended(route('admin/login'));
+        }
+        else{
+            $user = Auth::user();
+        }
+
         $user_address = [];
 
         if ($id==-1){
