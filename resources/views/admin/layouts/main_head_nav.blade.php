@@ -1,3 +1,6 @@
+<?php
+    $all_locations = \App\Http\Controllers\ShopController::list_all_locations();
+?>
 <div class="page-header-inner ">
     <!-- BEGIN LOGO -->
     <div class="page-logo">
@@ -16,33 +19,21 @@
     <div class="page-actions">
         <div class="btn-group">
             <button type="button" class="btn red-haze btn-sm dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true">
-                <span class="hidden-sm hidden-xs">Actions&nbsp;</span>
+                <span class="hidden-sm hidden-xs">Shop Locations&nbsp;</span>
                 <i class="fa fa-angle-down"></i>
             </button>
             <ul class="dropdown-menu" role="menu">
-                <li>
-                    <a href="javascript:;">
-                        <i class="icon-docs"></i> New Post </a>
-                </li>
-                <li>
-                    <a href="javascript:;">
-                        <i class="icon-tag"></i> New Comment </a>
-                </li>
-                <li>
-                    <a href="javascript:;">
-                        <i class="icon-share"></i> Share </a>
-                </li>
+                @foreach ($all_locations as $location)
+                    <li>
+                        <a href="javascript:;" class="set_default_shop" data-id="{{$location->id}}">
+                            <i class="icon-docs"></i> {{ $location->name }} </a>
+                    </li>
+                @endforeach
                 <li class="divider"> </li>
                 <li>
-                    <a href="javascript:;">
-                        <i class="icon-flag"></i> Comments
+                    <a href="javascript:;" class="set_default_shop" data-id="-1">
+                        <i class="icon-flag"></i> All Locations
                         <span class="badge badge-success">4</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="javascript:;">
-                        <i class="icon-users"></i> Feedbacks
-                        <span class="badge badge-danger">2</span>
                     </a>
                 </li>
             </ul>
@@ -56,11 +47,11 @@
         <form class="search-form" action="page_general_search_2.html" method="GET">
             <div class="input-group">
                 <input type="text" class="form-control input-sm" placeholder="Search..." name="query">
-                            <span class="input-group-btn">
-                                <a href="javascript:;" class="btn submit">
-                                    <i class="icon-magnifier"></i>
-                                </a>
-                            </span>
+                    <span class="input-group-btn">
+                        <a href="javascript:;" class="btn submit">
+                            <i class="icon-magnifier"></i>
+                        </a>
+                    </span>
             </div>
         </form>
         <!-- END HEADER SEARCH BOX -->

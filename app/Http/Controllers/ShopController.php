@@ -195,4 +195,17 @@ class ShopController extends Controller
             'shopLocations' => $shop_locations,
         ]);
     }
+
+    public static function list_all_locations(){
+        if (!Auth::check()) {
+            return redirect()->intended(route('admin/login'));
+        }
+        else{
+            $user = Auth::user();
+        }
+
+        $shop_locations = ShopLocations::orderBy('name')->get();
+
+        return $shop_locations;
+    }
 }

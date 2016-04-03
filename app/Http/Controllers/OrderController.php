@@ -30,6 +30,7 @@ class OrderController extends Controller
         }
 
         $shops = ShopLocations::all();
+        $order_date = Carbon::now()->format('d-M-Y H:i');
 
         $breadcrumbs = [
             'Home'              => route('admin'),
@@ -49,7 +50,8 @@ class OrderController extends Controller
             'breadcrumbs' => $breadcrumbs,
             'text_parts'  => $text_parts,
             'in_sidebar'  => $sidebar_link,
-            'orderID'     => -1
+            'orderID'     => -1,
+            'order_date'  => $order_date,
         ]);
     }
 
@@ -297,8 +299,8 @@ class OrderController extends Controller
         }
         else {
             $order_details = [
-                'order_no' => ' 11223344 ',
-                'order_date_time' => Carbon::today()->toDateTimeString(),
+                'order_no' => ' - ',
+                'order_date_time' => Carbon::now()->format('d-M-Y H:i'),
                 'order_status' => ' <span class="label label-success"> Not Started </span> ',
                 'order_total_price' => ' - ',
                 'order_payment_info' => ' - ',

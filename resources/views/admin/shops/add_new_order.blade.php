@@ -27,17 +27,6 @@
 
 @section('pageContentBody')
     <div class="page-content">
-        <!-- BEGIN PAGE HEAD-->
-        <div class="page-head">
-            <!-- BEGIN PAGE TITLE -->
-            <div class="page-title">
-                <h1>{!!$text_parts['title']!!}
-                    <small>{!!$text_parts['subtitle']!!}</small>
-                </h1>
-            </div>
-            <!-- END PAGE TITLE -->
-        </div>
-        <!-- END PAGE HEAD-->
         <!-- BEGIN PAGE BREADCRUMB -->
         <ul class="page-breadcrumb breadcrumb">
             @foreach($breadcrumbs as $key=>$val)
@@ -62,36 +51,9 @@
                     <div class="portlet-title">
                         <div class="caption">
                             <i class="icon-settings font-dark"></i>
-                            <span class="caption-subject font-dark sbold uppercase"> Order #12313232
-                                <span class="hidden-xs">| Dec 27, 2013 7:16:25 </span>
+                            <span class="caption-subject font-dark sbold uppercase"> Order #{{@$order_number}}
+                                <span class="hidden-xs">| {{@$order_date}} </span>
                             </span>
-                        </div>
-                        <div class="actions">
-                            <div class="btn-group btn-group-devided" data-toggle="buttons">
-                                <label class="btn btn-transparent green btn-outline btn-circle btn-sm active">
-                                    <input type="radio" name="options" class="toggle" id="option1">Actions</label>
-                                <label class="btn btn-transparent blue btn-outline btn-circle btn-sm">
-                                    <input type="radio" name="options" class="toggle" id="option2">Settings</label>
-                            </div>
-                            <div class="btn-group">
-                                <a class="btn red btn-outline btn-circle" href="javascript:;" data-toggle="dropdown">
-                                    <i class="fa fa-share"></i>
-                                    <span class="hidden-xs"> Tools </span>
-                                    <i class="fa fa-angle-down"></i>
-                                </a>
-                                <ul class="dropdown-menu pull-right">
-                                    <li>
-                                        <a href="javascript:;"> Export to Excel </a>
-                                    </li>
-                                    <li>
-                                        <a href="javascript:;"> Export to CSV </a>
-                                    </li>
-                                    <li class="divider"> </li>
-                                    <li>
-                                        <a href="javascript:;"> Print Invoices </a>
-                                    </li>
-                                </ul>
-                            </div>
                         </div>
                     </div>
                     <div class="portlet-body">
@@ -190,12 +152,15 @@
                                                 <div class="portlet-title">
                                                     <div class="caption">
                                                         <i class="fa fa-cogs"></i>Billing Address </div>
+                                                    <div class="tools">
+                                                        <a class="expand" href="javascript:;" data-original-title="" title=""> </a>
+                                                    </div>
                                                     <div class="actions">
                                                         <a href="javascript:;" class="btn btn-default btn-sm">
                                                             <i class="fa fa-pencil"></i> Edit </a>
                                                     </div>
                                                 </div>
-                                                <div class="portlet-body">
+                                                <div class="portlet-body"  style="display:none;">
                                                     <div class="row static-info">
                                                         <div class="col-md-12 value" data-title="order_bill_address">
                                                             <br>
@@ -216,12 +181,15 @@
                                                 <div class="portlet-title">
                                                     <div class="caption">
                                                         <i class="fa fa-cogs"></i>Shipping Address </div>
+                                                    <div class="tools">
+                                                        <a class="expand" href="javascript:;" data-original-title="" title=""> </a>
+                                                    </div>
                                                     <div class="actions">
                                                         <a href="javascript:;" class="btn btn-default btn-sm">
                                                             <i class="fa fa-pencil"></i> Edit </a>
                                                     </div>
                                                 </div>
-                                                <div class="portlet-body">
+                                                <div class="portlet-body" style="display:none;">
                                                     <div class="row static-info">
                                                         <div class="col-md-12 value" data-title="order_ship_address">
                                                             <br>
@@ -251,24 +219,26 @@
                                                 </div>
                                                 <div class="portlet-body">
                                                     <div class="table-responsive">
-                                                        <table class="table table-hover table-bordered table-striped" id="order_line_items">
-                                                            <thead>
-                                                            <tr>
-                                                                <th> Product </th>
-                                                                <th> Item Status </th>
-                                                                <th> Cost Price </th>
-                                                                <th> Sell Price </th>
-                                                                <th> Quantity </th>
-                                                                <th> VAT Percentage </th>
-                                                                <th> VAT Amount </th>
-                                                                <th> Discount Amount </th>
-                                                                <th> Total </th>
-                                                            </tr>
-                                                            </thead>
-                                                            <tbody>
+                                                        <form name="all_order_lines" id="all_order_lines" action="{{route('admin/shops/save_new_order')}}" method="post">
+                                                            <table class="table table-hover table-bordered table-striped" id="order_line_items">
+                                                                <thead>
+                                                                <tr>
+                                                                    <th> Product </th>
+                                                                    <th> Item Status </th>
+                                                                    <th> Cost Price </th>
+                                                                    <th> Sell Price </th>
+                                                                    <th> Quantity </th>
+                                                                    <th> VAT Percentage </th>
+                                                                    <th> VAT Amount </th>
+                                                                    <th> Discount Amount </th>
+                                                                    <th> Total </th>
+                                                                </tr>
+                                                                </thead>
+                                                                <tbody>
 
-                                                            </tbody>
-                                                        </table>
+                                                                </tbody>
+                                                            </table>
+                                                        </form>
                                                     </div>
                                                 </div>
                                             </div>
@@ -298,8 +268,8 @@
                                             <div class="form">
                                                 <div class="form-actions right">
                                                     <button class="btn default" type="button">Cancel Order</button>
-                                                    <button class="btn green" type="submit">Save Order</button>
-                                                    <button class="btn blue" type="submit">Pay Order</button>
+                                                    <button class="btn green" type="submit" onclick="$('#all_order_lines').submit()">Save Order</button>
+                                                    <button class="btn blue" type="submit" onclick="$('#all_order_lines').submit()">Pay Order</button>
                                                 </div>
                                             </div>
                                         </div>

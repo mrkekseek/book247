@@ -193,6 +193,11 @@ Route::group(['middleware' => 'web'], function () {
         'as'    => 'admin/shops/employee_work_plan',
         'uses'  => 'ShopController@shops_employee_working_plan'
     ]);
+
+    Route::post('admin/shops/get_all_locations', [
+        'as'    => 'admin/shops/get_all_locations_drop_down',
+        'uses'  => 'ShopController@list_all_locations'
+    ]);
     /** Stop Routes for Shops/Locations */
 
     /** Start Routes for Products Management */
@@ -277,6 +282,11 @@ Route::group(['middleware' => 'web'], function () {
     Route::get('admin/shops/new_order', [
         'as'    => 'admin/shops/add_new_order',
         'uses'  => 'OrderController@add_order'
+    ]);
+
+    Route::post('admin/shops/new_order', [
+        'as'    => 'admin/shops/save_new_order',
+        'uses'  => 'OrderController@save_order'
     ]);
 
     Route::get('admin/shops/list_orders', [
