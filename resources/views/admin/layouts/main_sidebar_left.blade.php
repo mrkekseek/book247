@@ -31,20 +31,27 @@
             </ul>
         </li>
         <li class="heading">
-            <h3 class="uppercase">Front End Users</h3>
+            <h3 class="uppercase">Registered Clients</h3>
         </li>
-        <li class="nav-item  ">
+        <li class="nav-item {{ in_array($in_sidebar, array('admin-frontend-all_members','admin-frontend-user_details_view'))?'active open':'' }}  ">
             <a href="javascript:;" class="nav-link nav-toggle">
                 <i class="icon-layers"></i>
-                <span class="title">Front End Users</span>
+                <span class="title">Front Users/Members</span>
                 <span class="arrow"></span>
             </a>
             <ul class="sub-menu">
-                <li class="nav-item  ">
-                    <a href="layout_blank_page.html" class="nav-link ">
-                        <span class="title">Blank Page</span>
+                <li class="nav-item {{ $in_sidebar=='admin-frontend-all_members'?'active open':'' }} ">
+                    <a href="{{ route('admin/front_users/view_all_members') }}" class="nav-link ">
+                        <span class="title">View All Members</span>
                     </a>
                 </li>
+                @if ($in_sidebar=='admin-frontend-user_details_view')
+                <li class="nav-item {{ $in_sidebar=='admin-frontend-user_details_view'?'active open':'' }} ">
+                    <a class="nav-link ">
+                        <span class="title">Member Overview</span>
+                    </a>
+                </li>
+                @endif
                 <li class="nav-item  ">
                     <a href="layout_language_bar.html" class="nav-link ">
                         <span class="title">Header Language Bar</span>

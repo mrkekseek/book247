@@ -22,13 +22,10 @@
 |
 */
 
-Route::get('/', function () {
-    echo "Homepage default";
-});
-
-Route::get('/roles', [
-        'uses'  => 'User@roles'
-    ]);
+Route::get('/', [
+    'as'    => 'homepage',
+    'uses'  => 'FrontPageController@index'
+]);
 
 Route::group(['middleware' => 'web'], function () {
     // default login/register/forgot password routes
@@ -54,13 +51,14 @@ Route::group(['middleware' => 'web'], function () {
         'uses'  => 'AdminController@logout'
     ]);
 
-    Route::get('/admin/text-auth', 'HomeController@index');
+    //Route::get('/admin/text-auth', 'HomeController@index');
 
     Route::get('/admin', [
         'as'    => 'admin',
         'uses'  => 'AdminController@index'
     ]);
 
+    /** Start - Back end users route */
     Route::get('/admin/back_users/', [
         'as'    =>  'admin/back_users',
         'uses'  =>  'BackEndUserController@index'
@@ -110,6 +108,7 @@ Route::group(['middleware' => 'web'], function () {
         'as' => 'admin/back_user/get_document',
         'uses' => 'BackEndUserController@get_user_account_document'
     ]);
+    //** Start - Back end users route */
 
     Route::post('admin/users/ajax_get_info', [
        'as'     => 'admin/users/ajax_get_info',
@@ -275,7 +274,6 @@ Route::group(['middleware' => 'web'], function () {
         'as'    => 'admin/shops/all_inventory',
         'uses'  => 'ProductController@all_inventory'
     ]);
-
     /** Stop Routes for Products Management */
 
     /** Start Routes for new orders */
@@ -287,6 +285,11 @@ Route::group(['middleware' => 'web'], function () {
     Route::post('admin/shops/new_order', [
         'as'    => 'admin/shops/save_new_order',
         'uses'  => 'OrderController@save_order'
+    ]);
+
+    Route::get('admin/shop/order/{id}/view', [
+        'as'    => 'admin/shops/view_order_details',
+        'uses'  => 'OrderController@view_order',
     ]);
 
     Route::get('admin/shops/list_orders', [
@@ -313,4 +316,37 @@ Route::group(['middleware' => 'web'], function () {
         'as'    => 'admin/shops/orders/add_update_line_items',
         'uses'  => 'OrderController@add_update_line_item'
     ]);
+
+    Route::post('admin/shops/orders/get_all_orders', [
+        'as'    => 'admin/shops/orders/get_all_ajax_orders',
+        'uses'  => 'OrderController@get_all_orders'
+    ]);
+    /** Stop Routes for new orders */
+
+    /** Start Routes for front users in backend */
+    Route::get('admin/front_users/view_all_members', [
+        'as'    => 'admin/front_users/view_all_members',
+        'uses'  => 'FrontEndUserController@index'
+    ]);
+
+    Route::get('admin/front_users/{id}/view_user', [
+        'as'    => 'admin/front_users/view_user',
+        'uses'  => 'FrontEndUserController@show'
+    ]);
+
+    Route::get('admin/front_users/{id}/view_account_settings', [
+        'as'    => 'admin/front_users/view_account_settings',
+        'uses'  => 'FrontEndUserController@show_account_settings'
+    ]);
+
+    Route::get('admin/front_users/{id}/view_bookings', [
+        'as'    => 'admin/front_users/view_bookings',
+        'uses'  => 'FrontEndUserController@show_bookings'
+    ]);
+
+    Route::get('admin/front_users/{id}/view_finance', [
+        'as'    => 'admin/front_users/view_finance',
+        'uses'  => 'FrontEndUserController@show_finance'
+    ]);
+    /** Stop Routes for front users in backend */
 });

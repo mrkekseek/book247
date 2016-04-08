@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Order;
+use App\OrderInvoice;
+use App\OrderInvoiceItem;
 use App\OrderItem;
 use App\Product;
 use Illuminate\Http\Request;
@@ -12,6 +14,8 @@ use App\Http\Controllers\Controller;
 
 use App\User;
 use Auth;
+use DB;
+use Validator;
 use Carbon\Carbon;
 
 class OrderController extends Controller
@@ -53,6 +57,133 @@ class OrderController extends Controller
             'orderID'     => -1,
             'order_date'  => $order_date,
         ]);
+    }
+
+    public function view_order($id){
+        if (!Auth::check()) {
+            return redirect()->intended(route('admin/login'));
+        }
+        else{
+            $user = Auth::user();
+        }
+
+        $order = Order::where('id','=',$id)->get()->first();
+
+        $shops = ShopLocations::all();
+        $order_date = Carbon::now()->format('d-M-Y H:i');
+
+        $breadcrumbs = [
+            'Home'              => route('admin'),
+            'Administration'    => route('admin'),
+            'Back End User'     => route('admin'),
+            'All Backend Users' => '',
+        ];
+        $text_parts  = [
+            'title'     => 'Back-End Users',
+            'subtitle'  => 'view all users',
+            'table_head_text1' => 'Backend User List'
+        ];
+        $sidebar_link= 'admin-backend-shop-new_order';
+
+        return view('admin/shops/add_new_order', [
+            'shops'       => $shops,
+            'breadcrumbs' => $breadcrumbs,
+            'text_parts'  => $text_parts,
+            'in_sidebar'  => $sidebar_link,
+            'orderID'     => -1,
+            'order_date'  => $order_date,
+            'order'       => $order,
+        ]);
+    }
+
+    public function save_order(Request $request, $id = -1){
+        //xdebug_var_dump($request); exit;
+
+        $orderDetails = $request->only('orderLineInfo', 'order_number_id');
+        $order = Order::where('order_number','=',$orderDetails['order_number_id'])->get()->first();
+        if (!$order){
+            return 'false';
+        }
+
+        // find or generate the invoice based on the order lines
+        $orderInvoice = OrderInvoice::firstOrCreate(['order_id'=>$order->id]);
+        if ($orderInvoice->wasRecentlyCreated){
+            // an invoice is already present so we update necessary fields
+        }
+        else{
+            // an invoice will need to be created
+            $orderInvoiceNumber = substr( base64_encode(openssl_random_pseudo_bytes(32)),0 ,63 );
+            $testInvoice = $orderInvoice::where('invoice_number', '=', $orderInvoiceNumber)->get()->first();
+            while ($testInvoice){
+                $orderInvoiceNumber = substr( base64_encode(openssl_random_pseudo_bytes(32)),0 ,63 );
+                $testInvoice = $orderInvoice::where('invoice_number', '=', $orderInvoiceNumber)->get()->first();
+            }
+
+            $orderInvoice->order_id = $order->id;
+            $orderInvoice->invoice_number = $orderInvoiceNumber;
+            $orderInvoice->status = 'pending';
+        }
+        $orderInvoice->save();
+
+        foreach ($orderDetails['orderLineInfo'] as $line){
+            $lineID = $line;
+            $orderItem = OrderItem::where('order_id','=',$order->id)->where('id','=',$lineID)->get()->first();
+            if (!$orderItem){
+                continue;
+            }
+
+            $product = Product::where('id','=',$orderItem->product_id)->get()->first();
+            if (!$product){
+                continue;
+            }
+            $product_entry_price = $product->get_entry_price();
+            $product_list_price = $product->get_list_price();
+            $product_vat = $product->get_vat();
+
+            $lineDiscount   = $request['orderLineDiscount_'.$lineID];
+            $discount       = $request['discount_'.$lineID];
+            $lineSellPrice  = $request['orderLineSellPrice_'.$lineID];
+            $sellPrice      = $request['sell_price_'.$lineID];
+            $lineQuantity   = $request['orderLineQuantity_'.$lineID];
+            $quantity       = $request['quantity_'.$lineID];
+            $lineVAT        = $request['orderLineVAT_'.$lineID];
+
+            if ($lineDiscount!=$discount){
+                // something is wrong
+            }
+            $orderItemFillable = ['quantity'=>$quantity, 'status'=>'ordered', 'order_details'=>json_encode(['discount'=>$discount, 'sell_price'=>$sellPrice])];
+            $orderItem->update($orderItemFillable);
+
+            if ($lineSellPrice!=$sellPrice || $lineQuantity!=$quantity){
+                // something is wrong
+            }
+
+            $total_cost = ($sellPrice*100*$quantity)*((100+$lineVAT)/100);
+            $total_cost = $total_cost - ($total_cost*($discount/100));
+            //var vatAmount = (price*quantity)*(vat/100);
+            //var totalAmount = (price*quantity) + vatAmount;
+            //totalAmount = totalAmount - (totalAmount*(discount/100));
+
+            $total_cost = round($total_cost);
+            //totalAmount = Math.round(totalAmount);
+
+            $invoiceItemFillable = ['invoice_id' => $orderInvoice->id,
+                'order_item_id'         => $lineID,
+                'product_id'            => $product->id,
+                'product_name'          => $product->name,
+                'product_quantity'      => $quantity,
+                'product_cost'          => $product_entry_price->entry_price,
+                'product_price'         => $product_list_price->list_price,
+                'product_manual_price'  => $sellPrice,
+                'product_discount'      => $discount,
+                'product_vat'           => $product_vat->value,
+                'product_total_cost'    => $total_cost/100];
+
+            $invoiceItem = OrderInvoiceItem::firstOrCreate(['invoice_id'=>$orderInvoice->id, 'order_item_id'=>$lineID]);
+            $invoiceItem->update($invoiceItemFillable);
+        }
+
+        return redirect()->intended(route('admin/shops/view_order_details', ['id' => $order->id]));
     }
 
     /**
@@ -245,20 +376,6 @@ class OrderController extends Controller
             );
         }
 
-        /*for($i = $iDisplayStart; $i < $end; $i++) {
-            $status = $status_list[rand(0, 2)];
-            $id = ($i + 1);
-            $records["data"][] = array(
-                $id,
-                '12/09/2013',
-                'Test Customer',
-                'Very nice and useful product. I recommend to this everyone.',
-                '<span class="label label-sm label-'.(key($status)).'">'.(current($status)).'</span>',
-                'Test Users',
-                '<a href="javascript:;" class="btn btn-sm btn-default btn-editable"><i class="fa fa-share"></i> View</a>',
-            );
-        }*/
-
         if (isset($vars["customActionType"]) && $vars["customActionType"] == "group_action") {
             $records["customActionStatus"] = "OK"; // pass custom message(useful for getting status of group actions)
             $records["customActionMessage"] = "Group action successfully has been completed. Well done!"; // pass custom message(useful for getting status of group actions)
@@ -286,7 +403,7 @@ class OrderController extends Controller
 
         $order = Order::where('order_number','=',$id)->get()->first();
         if ($order) {
-            $order_date = Carbon::createFromFormat('Y-m-d', $order->created_at)->format('d-m-Y');
+            $order_date = Carbon::createFromFormat('Y-m-d H:i:s', $order->created_at)->format('d-M-Y');
 
             $order_details = [
                 'order_no' => @$order->id.' <span class="label label-info label-sm"> Email confirmation was sent </span> ',
@@ -319,42 +436,56 @@ class OrderController extends Controller
             $user = Auth::user();
         }
 
-        $items = [  '<tr><td><a href="javascript:;"> Coca Cola Zero </a></td>
-                    <td><span class="label label-sm label-success"> Available </span></td>
-                    <td> 325.50$ </td>
-                    <td> <input type="text" name="sell_price[]" value="345.50" class="form-control input-inline input-xsmall"><span class="help-inline">EUR</span> </td>
-                    <td> <input type="text" name="quantity[]" class="form-control input-xsmall"> </td>
-                    <td> 9% </td>
-                    <td> 22.15 <span class="help-inline">EUR</span> </td>
-                    <td> <input type="text" name="discount[]" class="form-control input-xsmall input-inline"><span class="help-inline">EUR</span> </td>
-                    <td> 631.00$ </td></tr>',
-                    '<tr><td><a href="javascript:;"> Coca Cola Zero </a></td>
-                    <td><span class="label label-sm label-success"> Available </span></td>
-                    <td> 345.50$ </td>
-                    <td> <input type="text" name="sell_price[]" value="345.50" class="form-control input-inline input-xsmall"><span class="help-inline">EUR</span> </td>
-                    <td> <input type="text" name="quantity[]" class="form-control input-xsmall"> </td>
-                    <td> 9% </td>
-                    <td> 22.15 <span class="help-inline">EUR</span> </td>
-                    <td> <input type="text" name="discount[]" class="form-control input-xsmall input-inline"><span class="help-inline">EUR</span> </td>
-                    <td> 591.00$ </td></tr>',
-                    '<tr><td><a href="javascript:;"> Coca Cola Zero </a></td>
-                    <td><span class="label label-sm label-success"> Available </span></td>
-                    <td> 365.50$ </td>
-                    <td> <input type="text" name="sell_price[]" value="345.50" class="form-control input-inline input-xsmall"><span class="help-inline">EUR</span> </td>
-                    <td> <input type="text" name="quantity[]" class="form-control input-xsmall"> </td>
-                    <td> 9% </td>
-                    <td> 225.15 <span class="help-inline">EUR</span> </td>
-                    <td> <input type="text" name="discount[]" class="form-control input-xsmall input-inline"><span class="help-inline">EUR</span> </td>
-                    <td> 657.00$ </td></tr>',
-                    '<tr><td><a href="javascript:;"> Coca Cola Zero </a></td>
-                    <td><span class="label label-sm label-success"> Available </span></td>
-                    <td> 349.50$ </td>
-                    <td> <input type="text" name="sell_price[]" value="345.50" class="form-control input-inline input-xsmall"><span class="help-inline">EUR</span> </td>
-                    <td> <input type="text" name="quantity[]" class="form-control input-xsmall"> </td>
-                    <td> 9% </td>
-                    <td> 22.15 <span class="help-inline">EUR</span> </td>
-                    <td> <input type="text" name="discount[]" class="form-control input-xsmall input-inline"><span class="help-inline">EUR</span> </td>
-                    <td> 699.00$ </td></tr>'];
+        $vars = $request->only('orderID');
+        $order = Order::where('id','=',$id)->where('order_number','=',$vars['orderID'])->get()->first();
+        if (!$order){
+            // no order found
+            return 'error';
+        }
+
+        $orderItems = OrderItem::where('order_id','=',$order->id)->where('status','=','ordered')->get();
+        foreach($orderItems as $orderItem){
+            $orderLine = OrderInvoiceItem::where('order_item_id','=',$orderItem->id)->get()->first();
+
+            if (!$orderLine){
+                continue;
+            }
+            $pid = $orderLine->product_id;
+            $product = Product::where('id','=',$pid)->get()->first();
+            if (!$product){
+                continue;
+            }
+            $product_entry_price = $product->get_entry_price();
+            $product_list_price = $product->get_list_price();
+            $product_vat = $product->get_vat();
+
+            $item = '<tr data-info="'.$orderItem->id.'">
+                <td>
+                    <a href="pepsi-pitesti-mirinda"> '.$orderLine->product_name.' </a> </td>
+                <td>
+                    <span class="label label-sm label-success">15 in Stock</span> </td>
+                <td>
+                    '.$orderLine->product_cost.'<span class="help-inline">BMD</span> </td>
+                <td>
+                    <input type="text" name="sell_price_'.$orderItem->id.'" value="'.$orderLine->product_manual_price.'" class="form-control input-inline input-xsmall lineSellPrice"><span class="help-inline">BMD</span> </td>
+                <td>
+                    <input type="text" value="'.$orderLine->product_quantity.'" name="quantity_'.$orderItem->id.'" class="form-control input-xsmall lineQuantity"> </td>
+                <td>
+                    '.$product_vat->value.'% </td>
+                <td>
+                    <span class="vat_amount">'.(round($orderLine->product_manual_price*$orderLine->product_quantity*$product_vat->value)/100).'</span> <span class="help-inline">BMD</span> </td>
+                <td>
+                    <input type="text" value="'.$orderLine->product_discount.'" name="discount_'.$orderItem->id.'" class="form-control input-xsmall input-inline lineDiscount"><span class="help-inline">%</span> </td>
+                <td>
+                    <span class="total_amount">'.$orderLine->product_total_cost.'</span><span class="help-inline">BMD</span> </td>
+                <input type="hidden" value="'.$orderLine->product_manual_price.'" name="orderLineSellPrice_'.$orderItem->id.'">
+                <input type="hidden" value="'.$orderLine->product_quantity.'" name="orderLineQuantity_'.$orderItem->id.'">
+                <input type="hidden" value="'.$orderLine->product_vat.'" name="orderLineVAT_'.$orderItem->id.'">
+                <input type="hidden" value="'.$orderLine->product_discount.'" name="orderLineDiscount_'.$orderItem->id.'">
+                <input type="hidden" value="'.$orderItem->id.'" name="orderLineInfo[]">
+            </tr>';
+            $items[] = $item;
+        }
 
         return $items;
     }
@@ -372,13 +503,13 @@ class OrderController extends Controller
             $user = Auth::user();
         }
 
-        $vars = $request->only('productID', 'lineID', 'orderID', 'quantity', 'sell_price', 'discount_amount');
+        $vars = $request->only('productID', 'lineID', 'orderID', 'quantity', 'sell_price', 'discount_amount', 'buyerID');
 
         if ($vars['orderID']==-1){
             // need to create a new order
             $order_number = substr( base64_encode(openssl_random_pseudo_bytes(32)),0 ,63 );
             $order_values = ['employee_id'=> $user->id,
-                'buyer_id'      =>0,
+                'buyer_id'      =>$vars['buyerID'],
                 'order_number'  => $order_number,
                 'discount_type' => 1,
                 'discount_amount' => 0,
@@ -434,4 +565,5 @@ class OrderController extends Controller
 
         return $returnVars;
     }
+
 }

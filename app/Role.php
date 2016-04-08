@@ -32,7 +32,7 @@ class Role extends EntrustRole
 
     public function users()
     {
-        return $this->HasMany('App\user');
+        return $this->HasMany('App\User');
     }
 
     public static function rules($method, $id=0){

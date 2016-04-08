@@ -22,39 +22,28 @@
     <link href="{{ asset('assets/global/plugins/bootstrap-switch/css/bootstrap-switch.min.css') }}" rel="stylesheet" type="text/css" />
     <!-- END GLOBAL MANDATORY STYLES -->
     <!-- BEGIN PAGE LEVEL PLUGINS -->
-@yield('pageLevelPlugins')
+    @yield('pageLevelPlugins')
     <!-- END PAGE LEVEL PLUGINS -->
     <!-- BEGIN THEME GLOBAL STYLES -->
-@yield('themeGlobalStyle')
+    @yield('themeGlobalStyle')
     <!-- END THEME GLOBAL STYLES -->
     <!-- BEGIN THEME LAYOUT STYLES -->
-@yield('themeLayoutStyle')
+    @yield('themeLayoutStyle')
+    <link href="{{ asset('assets/layouts/layout3/css/layout.min.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/layouts/layout3/css/themes/default.min.css') }}" rel="stylesheet" type="text/css" id="style_color" />
+    <link href="{{ asset('assets/layouts/layout3/css/custom.min.css') }}" rel="stylesheet" type="text/css" />
     <!-- END THEME LAYOUT STYLES -->
     <link rel="shortcut icon" href="{{ asset('favicon.ico') }}" /> </head>
 <!-- END HEAD -->
 
 <body class=" @yield('pageBodyClass')">
 <!-- BEGIN HEADER -->
-<div class="page-header navbar navbar-fixed-top">
-    <!-- BEGIN HEADER INNER -->
-    @include('admin.layouts.main_head_nav')
-    <!-- END HEADER INNER -->
+<div class="page-header">
+    @include('layouts.main_head_nav')
 </div>
 <!-- END HEADER -->
-<!-- BEGIN HEADER & CONTENT DIVIDER -->
-<div class="clearfix"> </div>
-<!-- END HEADER & CONTENT DIVIDER -->
 <!-- BEGIN CONTAINER -->
 <div class="page-container">
-    <!-- BEGIN SIDEBAR -->
-    <div class="page-sidebar-wrapper">
-        <!-- BEGIN SIDEBAR -->
-        <!-- DOC: Set data-auto-scroll="false" to disable the sidebar from auto scrolling/focusing -->
-        <!-- DOC: Change data-auto-speed="200" to adjust the sub menu slide up/down speed -->
-        @include('admin.layouts.main_sidebar_left')
-        <!-- END SIDEBAR -->
-    </div>
-    <!-- END SIDEBAR -->
     <!-- BEGIN CONTENT -->
     <div class="page-content-wrapper">
         <!-- BEGIN CONTENT BODY -->
@@ -63,12 +52,12 @@
     </div>
     <!-- END CONTENT -->
     <!-- BEGIN QUICK SIDEBAR -->
-    @include('admin.layouts.main_quick_sidebar')
+    @include('layouts.main_quick_sidebar')
     <!-- END QUICK SIDEBAR -->
 </div>
 <!-- END CONTAINER -->
 <!-- BEGIN FOOTER -->
-@include('admin.layouts.footer')
+@include('layouts.footer')
 <!-- END FOOTER -->
 
 <!--[if lt IE 9]>

@@ -2,27 +2,24 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
+
+use App\Http\Requests;
+use App\Http\Controllers\Controller;
+use App\User;
+use App\Role;
 use App\Permission;
 use App\PersonalDetail;
 use App\ProfessionalDetail;
 use App\Address;
 use App\UserAvatars;
 use App\UserDocuments;
-use Illuminate\Http\Response;
-use Illuminate\Http\Request;
-use App\Http\Requests;
-use App\User;
-use Validator;
-use Auth;
-use Hash;
-use Storage;
-use DB;
-use Mockery\CountValidator\Exception;
-use \App\Role;
 use Webpatser\Countries\Countries;
+use Auth;
+use Storage;
 use Carbon\Carbon;
 
-class BackEndUserController extends Controller
+class FrontEndUserController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -44,13 +41,11 @@ class BackEndUserController extends Controller
             $user = Auth::user();
         }
 
-
         $back_users = User::whereHas('roles', function($query){
-            $query->where('name', '!=', 'front-user');
-        })->WhereHas('roles', function($query){
-            $query->where('name', '!=', 'front-member');
+            $query->where('name', 'front-user');
+        })->orWhereHas('roles', function($query){
+            $query->where('name', 'front-member');
         })->get();
-        //$back_users = User::all();
 
         $breadcrumbs = [
             'Home'              => route('admin'),
@@ -63,12 +58,12 @@ class BackEndUserController extends Controller
             'subtitle'  => 'view all users',
             'table_head_text1' => 'Backend User List'
         ];
-        $sidebar_link= 'admin-backend-all_users';
+        $sidebar_link= 'admin-frontend-all_members';
 
         $all_roles = Role::orderBy('name')->get();
         //xdebug_var_dump($all_roles);
 
-        return view('admin/back_users/all_list', [
+        return view('admin/front_users/all_members_list', [
             'users' => $back_users,
             'breadcrumbs' => $breadcrumbs,
             'text_parts'  => $text_parts,
@@ -165,7 +160,6 @@ class BackEndUserController extends Controller
             'subtitle'  => 'view all users',
             'table_head_text1' => 'Backend User List'
         ];
-        $sidebar_link= 'admin-backend-user_details_view';
 
         @$userRole = $back_user->roles[0];
         if (!$userRole){
@@ -215,8 +209,9 @@ class BackEndUserController extends Controller
             'Back End Users'    => route('admin/back_users'),
             $back_user->first_name.' '.$back_user->middle_name.' '.$back_user->last_name => '',
         ];
+        $sidebar_link= 'admin-frontend-user_details_view';
 
-        return view('admin/back_users/user_details', [
+        return view('admin/front_users/view_member_details', [
             'user'      => $back_user,
             'userRole'  => $userRole,
             'professional' => $userProfessional,
@@ -244,6 +239,279 @@ class BackEndUserController extends Controller
     public function edit($id)
     {
         //
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show_account_settings($id)
+    {
+        if (!Auth::check()) {
+            return redirect()->intended(route('admin/login'));
+        }
+        else{
+            $user = Auth::user();
+        }
+        $back_user = User::with('roles')->find($id);
+
+        $text_parts  = [
+            'title'     => 'Back-End Users',
+            'subtitle'  => 'view all users',
+            'table_head_text1' => 'Backend User List'
+        ];
+
+        @$userRole = $back_user->roles[0];
+        if (!$userRole){
+            $defaultRole = Role::where('name','employee')->get();
+            $userRole = $defaultRole[0];
+        }
+        $permissions = Permission::all();
+
+        $userProfessional = $back_user->ProfessionalDetail;
+        if (!isset($userProfessional)){
+            $userProfessional = new ProfessionalDetail();
+        }
+
+        $userPersonal = $back_user->PersonalDetail;
+        if (isset($userPersonal)) {
+            $userPersonal->dob_format = Carbon::createFromFormat('Y-m-d', $userPersonal->date_of_birth)->format('d-m-Y');
+            $userPersonal->dob_to_show = Carbon::createFromFormat('Y-m-d', $userPersonal->date_of_birth)->format('d M Y');
+        }
+        else{
+            $userPersonal = new PersonalDetail();
+        }
+
+        $personalAddress = Address::find($userPersonal->address_id);
+        if (!isset($personalAddress)){
+            $personalAddress = new Address();
+        }
+
+        $roles = Role::all();
+        $countries = Countries::orderBy('name')->get();
+        $userCountry = Countries::find($back_user->country_id);
+
+        $avatar = $back_user->avatar;
+        if (!$avatar) {
+            $avatar = new UserAvatars();
+            $avatar->file_location = 'employees/default/avatars/';
+            $avatar->file_name = 'default.jpg';
+        }
+
+        $avatarContent = Storage::disk('local')->get($avatar->file_location . $avatar->file_name);
+        $avatarType = Storage::disk('local')->mimeType($avatar->file_location . $avatar->file_name);
+
+        $userDocuments = UserDocuments::where('user_id','=',$id)->where('category','=','account_documents')->get();
+
+        $breadcrumbs = [
+            'Home'              => route('admin'),
+            'Administration'    => route('admin'),
+            'Back End Users'    => route('admin/back_users'),
+            $back_user->first_name.' '.$back_user->middle_name.' '.$back_user->last_name => '',
+        ];
+        $sidebar_link= 'admin-frontend-user_details_view';
+
+        return view('admin/front_users/view_member_settings', [
+            'user'      => $back_user,
+            'userRole'  => $userRole,
+            'professional' => $userProfessional,
+            'personal'  => $userPersonal,
+            'personalAddress' => $personalAddress,
+            'countryDetails' => $userCountry,
+            'countries' => $countries,
+            'roles'     => $roles,
+            'breadcrumbs' => $breadcrumbs,
+            'text_parts'  => $text_parts,
+            'in_sidebar'  => $sidebar_link,
+            'avatar'      => $avatarContent,
+            'avatarType'  => $avatarType,
+            'permissions' => $permissions,
+            'documents'   => $userDocuments,
+        ]);
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show_bookings($id)
+    {
+        if (!Auth::check()) {
+            return redirect()->intended(route('admin/login'));
+        }
+        else{
+            $user = Auth::user();
+        }
+        $back_user = User::with('roles')->find($id);
+
+        $text_parts  = [
+            'title'     => 'Back-End Users',
+            'subtitle'  => 'view all users',
+            'table_head_text1' => 'Backend User List'
+        ];
+
+        @$userRole = $back_user->roles[0];
+        if (!$userRole){
+            $defaultRole = Role::where('name','employee')->get();
+            $userRole = $defaultRole[0];
+        }
+        $permissions = Permission::all();
+
+        $userProfessional = $back_user->ProfessionalDetail;
+        if (!isset($userProfessional)){
+            $userProfessional = new ProfessionalDetail();
+        }
+
+        $userPersonal = $back_user->PersonalDetail;
+        if (isset($userPersonal)) {
+            $userPersonal->dob_format = Carbon::createFromFormat('Y-m-d', $userPersonal->date_of_birth)->format('d-m-Y');
+            $userPersonal->dob_to_show = Carbon::createFromFormat('Y-m-d', $userPersonal->date_of_birth)->format('d M Y');
+        }
+        else{
+            $userPersonal = new PersonalDetail();
+        }
+
+        $personalAddress = Address::find($userPersonal->address_id);
+        if (!isset($personalAddress)){
+            $personalAddress = new Address();
+        }
+
+        $roles = Role::all();
+        $countries = Countries::orderBy('name')->get();
+        $userCountry = Countries::find($back_user->country_id);
+
+        $avatar = $back_user->avatar;
+        if (!$avatar) {
+            $avatar = new UserAvatars();
+            $avatar->file_location = 'employees/default/avatars/';
+            $avatar->file_name = 'default.jpg';
+        }
+
+        $avatarContent = Storage::disk('local')->get($avatar->file_location . $avatar->file_name);
+        $avatarType = Storage::disk('local')->mimeType($avatar->file_location . $avatar->file_name);
+
+        $userDocuments = UserDocuments::where('user_id','=',$id)->where('category','=','account_documents')->get();
+
+        $breadcrumbs = [
+            'Home'              => route('admin'),
+            'Administration'    => route('admin'),
+            'Back End Users'    => route('admin/back_users'),
+            $back_user->first_name.' '.$back_user->middle_name.' '.$back_user->last_name => '',
+        ];
+        $sidebar_link= 'admin-frontend-user_details_view';
+
+        return view('admin/front_users/view_member_bookings', [
+            'user'      => $back_user,
+            'userRole'  => $userRole,
+            'professional' => $userProfessional,
+            'personal'  => $userPersonal,
+            'personalAddress' => $personalAddress,
+            'countryDetails' => $userCountry,
+            'countries' => $countries,
+            'roles'     => $roles,
+            'breadcrumbs' => $breadcrumbs,
+            'text_parts'  => $text_parts,
+            'in_sidebar'  => $sidebar_link,
+            'avatar'      => $avatarContent,
+            'avatarType'  => $avatarType,
+            'permissions' => $permissions,
+            'documents'   => $userDocuments,
+        ]);
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show_finance($id)
+    {
+        if (!Auth::check()) {
+            return redirect()->intended(route('admin/login'));
+        }
+        else{
+            $user = Auth::user();
+        }
+        $back_user = User::with('roles')->find($id);
+
+        $text_parts  = [
+            'title'     => 'Back-End Users',
+            'subtitle'  => 'view all users',
+            'table_head_text1' => 'Backend User List'
+        ];
+
+        @$userRole = $back_user->roles[0];
+        if (!$userRole){
+            $defaultRole = Role::where('name','employee')->get();
+            $userRole = $defaultRole[0];
+        }
+        $permissions = Permission::all();
+
+        $userProfessional = $back_user->ProfessionalDetail;
+        if (!isset($userProfessional)){
+            $userProfessional = new ProfessionalDetail();
+        }
+
+        $userPersonal = $back_user->PersonalDetail;
+        if (isset($userPersonal)) {
+            $userPersonal->dob_format = Carbon::createFromFormat('Y-m-d', $userPersonal->date_of_birth)->format('d-m-Y');
+            $userPersonal->dob_to_show = Carbon::createFromFormat('Y-m-d', $userPersonal->date_of_birth)->format('d M Y');
+        }
+        else{
+            $userPersonal = new PersonalDetail();
+        }
+
+        $personalAddress = Address::find($userPersonal->address_id);
+        if (!isset($personalAddress)){
+            $personalAddress = new Address();
+        }
+
+        $roles = Role::all();
+        $countries = Countries::orderBy('name')->get();
+        $userCountry = Countries::find($back_user->country_id);
+
+        $avatar = $back_user->avatar;
+        if (!$avatar) {
+            $avatar = new UserAvatars();
+            $avatar->file_location = 'employees/default/avatars/';
+            $avatar->file_name = 'default.jpg';
+        }
+
+        $avatarContent = Storage::disk('local')->get($avatar->file_location . $avatar->file_name);
+        $avatarType = Storage::disk('local')->mimeType($avatar->file_location . $avatar->file_name);
+
+        $userDocuments = UserDocuments::where('user_id','=',$id)->where('category','=','account_documents')->get();
+
+        $breadcrumbs = [
+            'Home'              => route('admin'),
+            'Administration'    => route('admin'),
+            'Back End Users'    => route('admin/back_users'),
+            $back_user->first_name.' '.$back_user->middle_name.' '.$back_user->last_name => '',
+        ];
+        $sidebar_link= 'admin-frontend-user_details_view';
+
+        return view('admin/front_users/view_member_finance', [
+            'user'      => $back_user,
+            'userRole'  => $userRole,
+            'professional' => $userProfessional,
+            'personal'  => $userPersonal,
+            'personalAddress' => $personalAddress,
+            'countryDetails' => $userCountry,
+            'countries' => $countries,
+            'roles'     => $roles,
+            'breadcrumbs' => $breadcrumbs,
+            'text_parts'  => $text_parts,
+            'in_sidebar'  => $sidebar_link,
+            'avatar'      => $avatarContent,
+            'avatarType'  => $avatarType,
+            'permissions' => $permissions,
+            'documents'   => $userDocuments,
+        ]);
     }
 
     /**
@@ -318,10 +586,10 @@ class BackEndUserController extends Controller
         $vars = $request->only('about_info', 'country_id', 'date_of_birth', 'first_name', 'last_name', 'middle_name', 'mobile_number', 'personal_email', 'bank_acc_no', 'social_sec_no');
 
         $userVars = array(  'first_name'    => $vars["first_name"],
-                            'last_name'     => $vars["last_name"],
-                            'middle_name'   => $vars["middle_name"],
-                            'country_id'    => $vars["country_id"],
-                            'date_of_birth' => $vars["date_of_birth"]);
+            'last_name'     => $vars["last_name"],
+            'middle_name'   => $vars["middle_name"],
+            'country_id'    => $vars["country_id"],
+            'date_of_birth' => $vars["date_of_birth"]);
         $userCh = User::find($id);
 
         $validator = Validator::make($userVars, [
@@ -346,12 +614,12 @@ class BackEndUserController extends Controller
         }
 
         $personalData = array(  'personal_email'=> $vars['personal_email'],
-                                'mobile_number' => $vars['mobile_number'],
-                                'date_of_birth' => $vars['date_of_birth'],
-                                'bank_acc_no'   => $vars['bank_acc_no'],
-                                'social_sec_no' => $vars['social_sec_no'],
-                                'about_info'    => $vars['about_info'],
-                                'user_id'       => $id);
+            'mobile_number' => $vars['mobile_number'],
+            'date_of_birth' => $vars['date_of_birth'],
+            'bank_acc_no'   => $vars['bank_acc_no'],
+            'social_sec_no' => $vars['social_sec_no'],
+            'about_info'    => $vars['about_info'],
+            'user_id'       => $id);
         $personalDetails = PersonalDetail::firstOrNew(array('user_id'=>$id));
         //$personalDetails->personal_email = $personalData['personal_email'];
         //$personalDetails->mobile_number  = $personalData['mobile_number'];
