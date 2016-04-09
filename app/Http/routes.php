@@ -197,6 +197,11 @@ Route::group(['middleware' => 'web'], function () {
         'as'    => 'admin/shops/get_all_locations_drop_down',
         'uses'  => 'ShopController@list_all_locations'
     ]);
+
+    Route::get('admin/shops/cash_terminals', [
+        'as'    => 'admin/shops/cash_terminals',
+        'uses'  => 'ShopController@cash_terminals'
+    ]);
     /** Stop Routes for Shops/Locations */
 
     /** Start Routes for Products Management */

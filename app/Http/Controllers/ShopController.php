@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Address;
+use App\CashTerminal;
 use App\ShopLocations;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -207,5 +208,38 @@ class ShopController extends Controller
         $shop_locations = ShopLocations::orderBy('name')->get();
 
         return $shop_locations;
+    }
+
+    public function cash_terminals(){
+        if (!Auth::check()) {
+            return redirect()->intended(route('admin/login'));
+        }
+        else{
+            $user = Auth::user();
+        }
+
+        $cash_terminals = CashTerminal::all();
+        $shops = ShopLocations::all();
+
+        $breadcrumbs = [
+            'Home'              => route('admin'),
+            'Administration'    => route('admin'),
+            'Back End User'     => route('admin'),
+            'Permissions'        => '',
+        ];
+        $text_parts  = [
+            'title'     => 'All Permissions',
+            'subtitle'  => 'add/edit/view permissions',
+            'table_head_text1' => 'Backend Roles Permissions List'
+        ];
+        $sidebar_link= 'admin-backend-shops-cash_terminals';
+
+        return view('admin/shops/all_cash_terminals', [
+            'breadcrumbs' => $breadcrumbs,
+            'text_parts'  => $text_parts,
+            'in_sidebar'  => $sidebar_link,
+            'cash_terminals' => $cash_terminals,
+            'shops' => $shops,
+        ]);
     }
 }

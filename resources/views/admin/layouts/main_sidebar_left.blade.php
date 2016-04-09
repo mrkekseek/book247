@@ -195,7 +195,7 @@
                 @endif
             </ul>
         </li>
-        <li class="nav-item {{ in_array($in_sidebar, ['admin-backend-shop-locations-list','admin-backend-shop-products-list','admin-backend-shop-products-inventory', 'admin-backend-shop-locations-details-view', 'admin-backend-product-details-view', 'admin-backend-all-products-inventory', 'admin-backend-shops-employees-work-plan', 'admin-backend-shops-add-invoice', 'admin-backend-shop-new_order', 'admin-backend-shop-all_orders'])?'active open':'' }} ">
+        <li class="nav-item {{ in_array($in_sidebar, ['admin-backend-shop-locations-list','admin-backend-shop-products-list','admin-backend-shop-products-inventory', 'admin-backend-shop-locations-details-view', 'admin-backend-product-details-view', 'admin-backend-all-products-inventory', 'admin-backend-shops-employees-work-plan', 'admin-backend-shops-add-invoice', 'admin-backend-shop-new_order', 'admin-backend-shop-all_orders', 'admin-backend-shops-cash_terminals'])?'active open':'' }} ">
             <a href="javascript:;" class="nav-link nav-toggle">
                 <i class="icon-settings"></i>
                 <span class="title">Shops</span>
@@ -239,6 +239,11 @@
                 <li class="nav-item {{ $in_sidebar=='admin-backend-shop-all_orders'?'active open':'' }} ">
                     <a href="{{ route('admin/shops/list_orders') }}" class="nav-link ">
                         <span class="title"> All Orders </span>
+                    </a>
+                </li>
+                <li class="nav-item {{ $in_sidebar=='admin-backend-shops-cash_terminals'?'active open':'' }} ">
+                    <a href="{{ route('admin/shops/cash_terminals') }}" class="nav-link ">
+                        <span class="title"> Cash Terminals </span>
                     </a>
                 </li>
                 <li class="nav-item {{ $in_sidebar=='admin-backend-shops-employees-work-plan'?'active open':'' }} ">
