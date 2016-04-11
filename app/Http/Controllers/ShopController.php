@@ -133,6 +133,16 @@ class ShopController extends Controller
         $addressCountry = Countries::find($shopAddress->country_id);
         $shopAddress->countryName = $addressCountry->name;
 
+        $weekDays = [
+            '1' => 'Sunday',
+            '2' => 'Monday',
+            '3' => 'Tuesday',
+            '4' => 'Wednesday',
+            '5' => 'Thursday',
+            '6' => 'Friday',
+            '7' => 'Saturday',
+        ];
+
         $breadcrumbs = [
             'Home'              => route('admin'),
             'Administration'    => route('admin'),
@@ -150,8 +160,9 @@ class ShopController extends Controller
             'breadcrumbs'   => $breadcrumbs,
             'text_parts'    => $text_parts,
             'in_sidebar'    => $sidebar_link,
-            'shopDetails' => $shopDetails,
-            'shopAddress' => $shopAddress,
+            'shopDetails'   => $shopDetails,
+            'shopAddress'   => $shopAddress,
+            'weekDays'      => $weekDays
         ]);
     }
 
@@ -164,6 +175,61 @@ class ShopController extends Controller
         }
 
 
+    }
+
+    public function update_opening_hours(Request $request, $id){
+        $vars = $request->only('opening_hours','shopID');
+        $opening_hours = $vars['opening_hours'];
+
+        $shopLocation = ShopLocations::findOrFail($id);
+
+        xdebug_var_dump($opening_hours);
+
+        return 'bine';
+    }
+
+    public function store_details_update(Request $request, $id){
+        $shop_vars = $request->only('name', 'bank_acc_no', 'phone', 'fax', 'email', 'registered_no');
+        $shopLocation = ShopLocations::findOrFail($id);
+
+        /** Start - Add shop location to database */
+        $shopValidator = Validator::make($shop_vars, ShopLocations::rules('PATCH',$id), ShopLocations::$validationMessages, ShopLocations::$attributeNames);
+
+        if ($shopValidator->fails()){
+            //return $validator->errors()->all();
+            return array(
+                'success' => false,
+                'errors' => $shopValidator->getMessageBag()->toArray()
+            );
+        }
+        $shopLocation->fill($shop_vars);
+        $shopLocation->save();
+        /** Stop - Add shop location to database */
+
+        return $shop_vars;
+    }
+
+    public function store_address_update(Request $request, $id){
+        $address_vars = $request->only('address1', 'address2', 'city', 'postal_code', 'region');
+        $shopLocation = ShopLocations::findOrFail($id);
+        $shopAddress = Address::findOrFail($shopLocation->address_id);
+        $address_vars['country_id'] = $shopAddress->country_id;
+
+        /** Start - Update address to database */
+        $addressValidator = Validator::make($address_vars, Address::rules('PATCH', $id), Address::$validationMessages, Address::$attributeNames);
+
+        if ($addressValidator->fails()){
+            return array(
+                'success' => false,
+                'errors' => $addressValidator->getMessageBag()->toArray()
+            );
+        }
+
+        $shopAddress->fill($address_vars);
+        $shopAddress->save();
+        /** Stop - Update address to database */
+
+        return $address_vars;
     }
 
     public function shops_employee_working_plan(){
@@ -218,7 +284,7 @@ class ShopController extends Controller
             $user = Auth::user();
         }
 
-        $cash_terminals = CashTerminal::all();
+        $cash_terminals = CashTerminal::with('shopLocation')->get();
         $shops = ShopLocations::all();
 
         $breadcrumbs = [
@@ -241,5 +307,36 @@ class ShopController extends Controller
             'cash_terminals' => $cash_terminals,
             'shops' => $shops,
         ]);
+    }
+
+    public function add_cash_terminal(Request $request){
+        if (!Auth::check()) {
+            return redirect()->intended(route('admin/login'));
+        }
+        else{
+            $user = Auth::user();
+        }
+
+        $cashTerminalVars = $request->only('name', 'bar_code', 'location_id', 'status');
+        $cashTerminalVars['status'] = 'active';
+
+        /** Start - Add shop location to database */
+        $cashTerminalValidator = Validator::make($cashTerminalVars, CashTerminal::rules('POST'), CashTerminal::$validationMessages, CashTerminal::$attributeNames);
+
+        if ($cashTerminalValidator->fails()){
+            //return $validator->errors()->all();
+            return array(
+                'success' => false,
+                'errors' => $cashTerminalValidator->getMessageBag()->toArray()
+            );
+        }
+        else{
+            $cashTerminal = new CashTerminal();
+            $cashTerminal->fill($cashTerminalVars);
+            $cashTerminal->save();
+        }
+        /** Stop - Add shop location to database */
+
+        return $cashTerminalVars;
     }
 }

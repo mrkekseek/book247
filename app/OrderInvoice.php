@@ -44,7 +44,7 @@ class OrderInvoice extends Model
             {
                 return [
                     'order_id'          => 'required|exists:orders,id',
-                    'invoice_number'    => 'required|unique:order_invoices,invoice_number,'.($id ? "$id,id" : ''),
+                    'invoice_number'    => 'required|unique:order_invoices,invoice_number'.($id ? ",$id,id" : ''),
                     'status'            => 'required|in:pending,ordered,processing,completed,cancelled,declined,incomplete,preordered'
                 ];
             }

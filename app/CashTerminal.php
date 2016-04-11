@@ -15,7 +15,7 @@ class CashTerminal extends Model
         'status'        => 'Terminal Status',
     );
 
-    public static $message = array();
+    public static $validationMessages = array();
 
     protected $fillable = [
         'name',
@@ -44,8 +44,8 @@ class CashTerminal extends Model
             case 'PATCH':
             {
                 return [
-                    'name'          => 'required|unique:cash_terminals,name'.($id ? "$id,id" : ''),
-                    'bar_code'      => 'required|unique:cash_terminals,bar_code'.($id ? "$id,id" : ''),
+                    'name'          => 'required|unique:cash_terminals,name'.($id ? ",$id,id" : ''),
+                    'bar_code'      => 'required|unique:cash_terminals,bar_code'.($id ? ",$id,id" : ''),
                     'location_id'   => 'required|exists:shop_locations,id',
                     'status'        => 'required|in:active,suspended,cancelled',
                 ];
@@ -54,11 +54,15 @@ class CashTerminal extends Model
         }
     }
 
-    public function last_cash_in(){
+    public static function last_cash_in(){
         return '1';
     }
 
-    public function last_cash_out(){
+    public static function last_cash_out(){
         return '2';
+    }
+
+    public function shopLocation(){
+        return $this->hasOne('App\ShopLocations', 'id', 'location_id');
     }
 }

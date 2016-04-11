@@ -94,8 +94,8 @@
                                     <td>
                                         <a href="{{ route('admin/back_users/roles_permissions/view',['id' => $terminal->id]) }}"> {{ $terminal->name }} </a>
                                     </td>
-                                    <td> {{ $terminal->display_name }} </td>
-                                    <td> {{ $terminal->description }} </td>
+                                    <td> {{ $terminal->shopLocation->name }} </td>
+                                    <td> {{ $terminal->bar_code }} </td>
                                     <td class="center"> {{ $terminal::last_cash_out() }} </td>
                                     <td class="center"> {{ $terminal::last_cash_in() }} </td>
                                 </tr>
@@ -315,16 +315,16 @@
                     focusInvalid: false, // do not focus the last invalid input
                     ignore: "",  // validate all fields including form hidden input
                     rules: {
-                        permission_name: {
+                        terminal_name: {
                             minlength: 5,
                             required: true
                         },
-                        permission_display_name: {
+                        bar_code: {
                             minlength: 5,
                             required: true
                         },
-                        permission_description: {
-                            minlength: 10,
+                        shop_location: {
+                            minlength: 1,
                             required: true,
                         },
                     },
@@ -386,12 +386,12 @@
 
         function add_new_terminal(){
             $.ajax({
-                url: '{{route('admin/back_users/roles_permissions')}}',
+                url: '{{route('admin/shops/new_cash_terminal')}}',
                 type: "post",
                 data: {
-                    'name':         $('input[name=permission_name]').val(),
-                    'display_name': $('input[name=permission_display_name]').val(),
-                    'description':  $('textarea[name=permission_description]').val()
+                    'name':         $('input[name=terminal_name]').val(),
+                    'location_id':  $('select[name=shop_location]').val(),
+                    'bar_code':     $('textarea[name=bar_code]').val()
                 },
                 success: function(data){
                     alert(data);

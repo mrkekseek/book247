@@ -52,7 +52,7 @@ class Order extends Model
                 return [
                     'employee_id'       => 'required|exists:users,id',
                     'buyer_id'          => 'required|integer',
-                    'order_number'      => 'required|unique:orders,order_number,'.($id ? "$id,id" : ''),
+                    'order_number'      => 'required|unique:orders,order_number'.($id ? ",$id,id" : ''),
                     'discount_type'     => 'exists:discount_types,id',
                     'discount_amount'   => 'numeric|min:1|max:10',
                     'status'            => 'required|in:pending,ordered,processing,completed,cancelled,declined,incomplete,preordered'

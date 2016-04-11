@@ -202,6 +202,26 @@ Route::group(['middleware' => 'web'], function () {
         'as'    => 'admin/shops/cash_terminals',
         'uses'  => 'ShopController@cash_terminals'
     ]);
+
+    Route::post('admin/shops/cash_terminals',[
+        'as'    => 'admin/shops/new_cash_terminal',
+        'uses'  => 'ShopController@add_cash_terminal'
+    ]);
+
+    Route::post('admin/shops/location/{id}/opening_hours_update', [
+        'as'    => 'admin/shops/location/opening_hours_update',
+        'uses'  => 'ShopController@update_opening_hours'
+    ]);
+
+    Route::patch('admin/shops/location/{id}/store_details_update', [
+        'as'    => 'admin/shops/location/store_details_update',
+        'uses'  => 'ShopController@store_details_update'
+    ]);
+
+    Route::patch('admin/shops/location/{id}/store_address_update', [
+        'as'    => 'admin/shops/location/store_address_update',
+        'uses'  => 'ShopController@store_address_update'
+    ]);
     /** Stop Routes for Shops/Locations */
 
     /** Start Routes for Products Management */

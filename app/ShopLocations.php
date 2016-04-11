@@ -57,12 +57,12 @@ class ShopLocations extends Model
             case 'PATCH':
             {
                 return [
-                    'name' => 'required|min:5|max:50|unique:shop_locations,'.($id ? "id, $id," : ''),
+                    'name' => 'required|min:5|max:50|unique:shop_locations,name'.($id ? ','.$id.',id' : ''),
                     'bank_acc_no' => 'required|min:5',
                     'phone' => 'required|min:5',
                     'fax' => 'required|min:5',
                     'email' => 'required|email:true',
-                    'registered_no' => 'required|min:5|unique:shop_locations,'.($id ? "id, $id," : ''),
+                    'registered_no' => 'required|min:5|unique:shop_locations,registered_no'.($id ? ','.$id.',id' : ''),
                 ];
             }
             default:break;
