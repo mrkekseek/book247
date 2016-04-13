@@ -238,7 +238,7 @@
                                     </div>
                                     <div class="col-md-1">
                                         <div class="input-group">
-                                            <input type="text" class="form-control timepicker timepicker-24" value="" name="break_from_{{$key}}">
+                                            <input type="text" class="form-control timepicker timepicker-24" value="0:00" name="break_from_{{$key}}">
                                                 <span class="input-group-btn">
                                                     <button class="btn default" type="button">
                                                         <i class="fa fa-clock-o"></i>
@@ -249,7 +249,7 @@
                                     <label class="control-label col-md-1">To</label>
                                     <div class="col-md-1">
                                         <div class="input-group">
-                                            <input type="text" class="form-control timepicker timepicker-24" value="" name="break_to_{{$key}}">
+                                            <input type="text" class="form-control timepicker timepicker-24" value="0:00" name="break_to_{{$key}}">
                                                 <span class="input-group-btn">
                                                     <button class="btn default" type="button">
                                                         <i class="fa fa-clock-o"></i>

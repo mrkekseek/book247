@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Address;
 use App\CashTerminal;
 use App\ShopLocations;
+use App\ShopOpeningHour;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
@@ -180,10 +181,35 @@ class ShopController extends Controller
     public function update_opening_hours(Request $request, $id){
         $vars = $request->only('opening_hours','shopID');
         $opening_hours = $vars['opening_hours'];
+        $open = [];
+        $close = [];
+        $break_from = [];
+        $break_to = [];
+
+        for ($i=1; $i<8; $i++) {
+            foreach ($opening_hours as $val) {
+                if (     $val['name'] == 'open_'.$i ){
+                    $open[$i] = $val['value'];
+                }
+                if ( $val['name'] == 'close_'.$i ){
+                    $close[$i] = $val['value'];
+                }
+                if ( $val['name'] == 'break_from_'.$i ){
+                    $break_from[$i] = $val['value'];
+                }
+                if ( $val['name'] == 'break_to_'.$i ){
+                    $break_to[$i] = $val['value'];
+                }
+            }
+        }
 
         $shopLocation = ShopLocations::findOrFail($id);
-
-        xdebug_var_dump($opening_hours);
+        for ($i=1; $i<=7; $i++){
+            $openingHour = ShopOpeningHour::firstOrNew(['entry_type'=>'day', 'day_of_week'=>$i, 'location_id'=>$shopLocation->id]);
+            $openingHour->fill(['entry_type'=>'day', 'location_id'=>$id, 'day_of_week'=>$i,
+                                'open_at'=>$open[$i], 'close_at'=>$close[$i], 'break_from'=> $break_from[$i], 'break_to'=> $break_to[$i]]);
+            $openingHour->save();
+        }
 
         return 'bine';
     }
