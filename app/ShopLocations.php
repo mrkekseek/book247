@@ -35,6 +35,10 @@ class ShopLocations extends Model
         return $this->hasOne('App\Address');
     }
 
+    public function opening_hours(){
+        return $this->hasMany('App\ShopOpeningHour', 'location_id', 'id');
+    }
+
     public static function rules($method, $id=0){
         switch($method){
             case 'GET':

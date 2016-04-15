@@ -128,8 +128,20 @@ class ShopController extends Controller
             $user = Auth::user();
         }
 
-        $shopDetails = ShopLocations::find($id);
+        $shopDetails = ShopLocations::with('opening_hours')->find($id);
         $shopAddress = Address::find($shopDetails->address_id);
+        $shopOpeningHours = [];
+        foreach ($shopDetails->opening_hours as $open_hour){
+            if ($open_hour->entry_type=='day'){
+                $shopOpeningHours[$open_hour->day_of_week] = [
+                    'open_at' => $open_hour->open_at,
+                    'close_at' => $open_hour->close_at,
+                    'break_from' => $open_hour->break_from,
+                    'break_to' => $open_hour->break_to,
+                ];
+            }
+        }
+        //xdebug_var_dump($shopOpeningHours);
 
         $addressCountry = Countries::find($shopAddress->country_id);
         $shopAddress->countryName = $addressCountry->name;
@@ -163,7 +175,8 @@ class ShopController extends Controller
             'in_sidebar'    => $sidebar_link,
             'shopDetails'   => $shopDetails,
             'shopAddress'   => $shopAddress,
-            'weekDays'      => $weekDays
+            'weekDays'      => $weekDays,
+            'opening_hours' => $shopOpeningHours
         ]);
     }
 
