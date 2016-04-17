@@ -168,7 +168,7 @@
                                             <div class="form-group">
                                                 <label class="col-md-2 control-label">Cost Price:</label>
                                                 <div class="col-md-10">
-                                                    <span class="btn default disabled" > {{ isset($entry_price)?$entry_price->entry_price." - since ".$entry_price->added_on:'-' }} </span>
+                                                    <span class="btn default disabled" > {{ isset($entry_price)?$entry_price->entry_price." - since ".@$entry_price->added_on:'-' }} </span>
                                                     <span class="help-inline"> ex. VAT </span></div>
                                             </div>
                                             <div class="form-group">
@@ -574,7 +574,7 @@
                                         <div class="col-md-7">
                                             <div class="input-icon right">
                                                 <i class="fa"></i>
-                                                <input class="form-control input-small input-inline" value="{{ $price->list_price }}" readonly disabled />
+                                                <input class="form-control input-small input-inline" value="{{ @$price->list_price }}" readonly disabled />
                                                 <span class="help-inline"> ex. VAT </span></div>
                                         </div>
                                     </div>
@@ -650,7 +650,7 @@
                                         <div class="col-md-7">
                                             <div class="input-icon right">
                                                 <i class="fa"></i>
-                                                <input class="form-control input-small input-inline" value="{{ $price->list_price }}" readonly disabled />
+                                                <input class="form-control input-small input-inline" value="{{ @$price->list_price }}" readonly disabled />
                                                 <span class="help-inline"> ex. VAT </span></div>
                                         </div>
                                     </div>

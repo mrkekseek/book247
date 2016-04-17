@@ -19,5 +19,8 @@ class DatabaseSeeder extends Seeder
 
         //$this->call(VatRatesTableSeeder::class);
         //$this->command->info('VAT added to DB!');
+
+        //$this->call(ShopResourceCategoriesTableSeeder::class);
+        //$this->command->info('Shop Resource category seeded');
     }
 }

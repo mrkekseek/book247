@@ -191,6 +191,56 @@
 
         <div class="row">
             <div class="col-md-12">
+                <div class="portlet box green">
+                    <div class="portlet-title">
+                        <div class="caption">
+                            <i class="fa fa-cogs"></i>Shop Resources </div>
+                        <div class="tools">
+                            <a class="collapse" href="javascript:;" data-original-title="" title=""> </a>
+                        </div>
+                        <div class="actions">
+                            <a class="btn btn-circle btn-default" data-toggle="modal" href="#draggable">
+                                <i class="fa fa-plus"></i> Add Resource </a>
+                        </div>
+                    </div>
+                    <div class="portlet-body flip-scroll">
+                        <table class="table table-bordered table-striped table-condensed flip-content">
+                            <thead class="flip-content">
+                            <tr>
+                                <th width="5%"> Code </th>
+                                <th> Name </th>
+                                <th class="numeric"> Price </th>
+                                <th class="numeric"> Change </th>
+                                <th class="numeric"> Change % </th>
+                                <th class="numeric"> Open </th>
+                                <th class="numeric"> High </th>
+                                <th class="numeric"> Low </th>
+                                <th class="numeric"> Volume </th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            @foreach ($resourceList as $resource)
+                            <tr>
+                                <td> AAC </td>
+                                <td> <b>{{ $resource->name }}</b> </td>
+                                <td class="numeric"> &nbsp; </td>
+                                <td class="numeric"> -0.01 </td>
+                                <td class="numeric"> -0.36% </td>
+                                <td class="numeric"> $1.39 </td>
+                                <td class="numeric"> $1.39 </td>
+                                <td class="numeric"> &nbsp; </td>
+                                <td class="numeric"> 9,395 </td>
+                            </tr>
+                            @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
                 <!-- BEGIN PORTLET-->
                 <div class="portlet box red">
                     <div class="portlet-title">
@@ -208,10 +258,10 @@
                             <div class="form-body form">
                                 @foreach ($weekDays as $key=>$day)
                                 <div class="form-group">
-                                    <div class="control-label col-md-2">
-                                        {{$day}} - Open
+                                    <div class="control-label col-md-1">
+                                        {{$day}} Open
                                     </div>
-                                    <div class="col-md-1">
+                                    <div class="col-md-2">
                                         <div class="input-group">
                                             <input type="text" class="form-control timepicker timepicker-24" name="open_{{$key}}" value="{{@$opening_hours[$key]["open_at"]}}">
                                                 <span class="input-group-btn">
@@ -222,7 +272,7 @@
                                         </div>
                                     </div>
                                     <label class="control-label col-md-1">Close</label>
-                                    <div class="col-md-1">
+                                    <div class="col-md-2">
                                         <div class="input-group">
                                             <input type="text" class="form-control timepicker timepicker-24" name="close_{{$key}}" value="{{@$opening_hours[$key]["close_at"]}}">
                                                 <span class="input-group-btn">
@@ -233,10 +283,10 @@
                                         </div>
                                     </div>
 
-                                    <div class="control-label col-md-3">
-                                        {{$day}} Break From
+                                    <div class="control-label col-md-1">
+                                        Break From
                                     </div>
-                                    <div class="col-md-1">
+                                    <div class="col-md-2">
                                         <div class="input-group">
                                             <input type="text" class="form-control timepicker timepicker-24"  value="{{@$opening_hours[$key]["break_from"]}}" name="break_from_{{$key}}">
                                                 <span class="input-group-btn">
@@ -247,7 +297,7 @@
                                         </div>
                                     </div>
                                     <label class="control-label col-md-1">To</label>
-                                    <div class="col-md-1">
+                                    <div class="col-md-2">
                                         <div class="input-group">
                                             <input type="text" class="form-control timepicker timepicker-24"  value="{{@$opening_hours[$key]["break_to"]}}" name="break_to_{{$key}}">
                                                 <span class="input-group-btn">
@@ -326,94 +376,6 @@
                                 <td class="numeric"> 56,431 </td>
                             </tr>
                             <tr>
-                                <td> AAX </td>
-                                <td> AUSENCO LIMITED </td>
-                                <td class="numeric"> $4.00 </td>
-                                <td class="numeric"> -0.04 </td>
-                                <td class="numeric"> -0.99% </td>
-                                <td class="numeric"> $4.01 </td>
-                                <td class="numeric"> $4.05 </td>
-                                <td class="numeric"> $4.00 </td>
-                                <td class="numeric"> 90,641 </td>
-                            </tr>
-                            <tr>
-                                <td> ABC </td>
-                                <td> ADELAIDE BRIGHTON LIMITED </td>
-                                <td class="numeric"> $3.00 </td>
-                                <td class="numeric"> +0.06 </td>
-                                <td class="numeric"> 2.04% </td>
-                                <td class="numeric"> $2.98 </td>
-                                <td class="numeric"> $3.00 </td>
-                                <td class="numeric"> $2.96 </td>
-                                <td class="numeric"> 862,518 </td>
-                            </tr>
-                            <tr>
-                                <td> ABP </td>
-                                <td> ABACUS PROPERTY GROUP </td>
-                                <td class="numeric"> $1.91 </td>
-                                <td class="numeric"> 0.00 </td>
-                                <td class="numeric"> 0.00% </td>
-                                <td class="numeric"> $1.92 </td>
-                                <td class="numeric"> $1.93 </td>
-                                <td class="numeric"> $1.90 </td>
-                                <td class="numeric"> 595,701 </td>
-                            </tr>
-                            <tr>
-                                <td> ABY </td>
-                                <td> ADITYA BIRLA MINERALS LIMITED </td>
-                                <td class="numeric"> $0.77 </td>
-                                <td class="numeric"> +0.02 </td>
-                                <td class="numeric"> 2.00% </td>
-                                <td class="numeric"> $0.76 </td>
-                                <td class="numeric"> $0.77 </td>
-                                <td class="numeric"> $0.76 </td>
-                                <td class="numeric"> 54,567 </td>
-                            </tr>
-                            <tr>
-                                <td> ACR </td>
-                                <td> ACRUX LIMITED </td>
-                                <td class="numeric"> $3.71 </td>
-                                <td class="numeric"> +0.01 </td>
-                                <td class="numeric"> 0.14% </td>
-                                <td class="numeric"> $3.70 </td>
-                                <td class="numeric"> $3.72 </td>
-                                <td class="numeric"> $3.68 </td>
-                                <td class="numeric"> 191,373 </td>
-                            </tr>
-                            <tr>
-                                <td> ADU </td>
-                                <td> ADAMUS RESOURCES LIMITED </td>
-                                <td class="numeric"> $0.72 </td>
-                                <td class="numeric"> 0.00 </td>
-                                <td class="numeric"> 0.00% </td>
-                                <td class="numeric"> $0.73 </td>
-                                <td class="numeric"> $0.74 </td>
-                                <td class="numeric"> $0.72 </td>
-                                <td class="numeric"> 8,602,291 </td>
-                            </tr>
-                            <tr>
-                                <td> AGG </td>
-                                <td> ANGLOGOLD ASHANTI LIMITED </td>
-                                <td class="numeric"> $7.81 </td>
-                                <td class="numeric"> -0.22 </td>
-                                <td class="numeric"> -2.74% </td>
-                                <td class="numeric"> $7.82 </td>
-                                <td class="numeric"> $7.82 </td>
-                                <td class="numeric"> $7.81 </td>
-                                <td class="numeric"> 148 </td>
-                            </tr>
-                            <tr>
-                                <td> AGK </td>
-                                <td> AGL ENERGY LIMITED </td>
-                                <td class="numeric"> $13.82 </td>
-                                <td class="numeric"> +0.02 </td>
-                                <td class="numeric"> 0.14% </td>
-                                <td class="numeric"> $13.83 </td>
-                                <td class="numeric"> $13.83 </td>
-                                <td class="numeric"> $13.67 </td>
-                                <td class="numeric"> 846,403 </td>
-                            </tr>
-                            <tr>
                                 <td> AGO </td>
                                 <td> ATLAS IRON LIMITED </td>
                                 <td class="numeric"> $3.17 </td>
@@ -431,6 +393,79 @@
             </div>
         </div>
         <!-- END PAGE BASE CONTENT -->
+
+        <div class="modal fade draggable-modal" id="draggable" tabindex="-1" role="basic" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                        <h4 class="modal-title">Add New Shop Resource</h4>
+                    </div>
+                    <div class="modal-body">
+                        <form action="#" id="new_resource" name="new_resource" class="form-horizontal">
+                            <div class="form-body">
+                                <div class="alert alert-danger display-hide">
+                                    <button class="close" data-close="alert"></button> You have some form errors. Please check below. </div>
+                                <div class="alert alert-success display-hide">
+                                    <button class="close" data-close="alert"></button> Your form validation is successful! </div>
+                                <div class="form-group  margin-top-20">
+                                    <label class="control-label col-md-4">Resource Name
+                                        <span class="required"> * </span>
+                                    </label>
+                                    <div class="col-md-7">
+                                        <div class="input-icon right">
+                                            <i class="fa"></i>
+                                            <input type="text" class="form-control input-sm" name="resource_name" id="resource_name" /> </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-4">Shop Location</label>
+                                    <div class="col-md-7">
+                                        <div class="input-icon right">
+                                            <i class="fa"></i>
+                                            <input type="text" class="form-control input-sm" id="resource_location" name="resource_location" readonly disabled value="{{ $shopDetails->name }}" /> </div>
+                                            <input type="hidden" id="resource_location_id" name="resource_location_id" readonly disabled value="{{ $shopDetails->id }}" /> </div>
+                                    </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-4">Category</label>
+                                    <div class="col-md-7">
+                                        <select class="form-control input-sm" name="resource_category" id="resource_category">
+                                            <option value="-1">Select Category...</option>
+                                            @foreach ($resourceCategory as $category)
+                                                <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-4">Color Code</label>
+                                    <div class="col-md-7">
+                                        <div class="input-icon right">
+                                            <i class="fa"></i>
+                                            <input type="text" class="form-control input-sm" id="resource_color" name="resource_color" /> </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-4">Description
+                                    </label>
+                                    <div class="col-md-7">
+                                        <div class="input-icon right">
+                                            <i class="fa"></i>
+                                            <textarea class="form-control input-sm" id="resource_description" name="resource_description"></textarea> </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn dark btn-outline" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn green submit_form_2" onclick="javascript: $('#new_resource').submit();">Save changes</button>
+                    </div>
+                </div>
+                <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+        </div>
     </div>
 @endsection
 
@@ -611,7 +646,7 @@
         var FormValidation = function () {
 
             var handleValidation1 = function() {
-                var form1 = $('#new_shop');
+                var form1 = $('#new_resource');
                 var error1 = $('.alert-danger', form1);
                 var success1 = $('.alert-success', form1);
 
@@ -621,45 +656,24 @@
                     focusInvalid: false, // do not focus the last invalid input
                     ignore: "",  // validate all fields including form hidden input
                     rules: {
-                        shop_name: {
+                        resource_name: {
                             minlength: 3,
                             required: true
                         },
-                        shop_email: {
-                            email: true,
+                        resource_location_id: {
+                            min:1,
                             required: true
                         },
-                        shop_reg_no: {
-                            minlength: 5,
+                        resource_category: {
+                            min:1,
                             required: true,
                         },
-                        shop_bank_acc: {
-                            minlength: 5,
-                            required: true
+                        resource_color: {
+                            minlength: 6,
+                            maxlength: 7,
                         },
-                        shop_phone: {
-                            minlength: 5,
-                            required: true
-                        },
-                        shop_fax: {
-                            minlength: 5,
-                            required: true,
-                        },
-                        shop_address1: {
-                            minlength: 5,
-                            required: true
-                        },
-                        shop_city: {
-                            minlength: 3,
-                            required: true
-                        },
-                        shop_region: {
-                            minlength:2,
-                            required: true
-                        },
-                        shop_postal_code: {
-                            minlength: 2,
-                            required: true
+                        resource_description: {
+                            minlength: 15,
                         },
                     },
 
@@ -693,7 +707,7 @@
                     submitHandler: function (form) {
                         success1.show();
                         error1.hide();
-                        add_new_shop(); // submit the form
+                        add_new_resource(); // submit the form
                     }
                 });
             }
@@ -904,24 +918,16 @@
             FormValidation.init();
         });
 
-        function add_new_shop(){
+        function add_new_resource(){
             $.ajax({
-                url: '{{route('admin/shops/locations/add')}}',
+                url: '{{route('admin/shops/resources/add')}}',
                 type: "post",
                 data: {
-                    'name':         $('input[name=shop_name]').val(),
-                    'bank_acc_no':  $('input[name=shop_bank_acc]').val(),
-                    'phone':        $('input[name=shop_phone]').val(),
-                    'fax':          $('input[name=shop_fax]').val(),
-                    'email':        $('input[name=shop_email]').val(),
-                    'registered_no':$('input[name=shop_reg_no]').val(),
-
-                    'address1':     $('input[name=shop_address1]').val(),
-                    'address2':     $('input[name=shop_address2]').val(),
-                    'city':         $('input[name=shop_city]').val(),
-                    'region':       $('input[name=shop_region]').val(),
-                    'postal_code':  $('input[name=shop_postal_code]').val(),
-                    'country_id':   $('select[name=shop_country]').val(),
+                    'name':         $('input[name=resource_name]').val(),
+                    'location_id':  $('input[name=resource_location_id]').val(),
+                    'color_code':   $('input[name=resource_color]').val(),
+                    'description':  $('textarea[name=resource_description]').val(),
+                    'category_id':  $('select[name=resource_category]').val(),
                 },
                 success: function(data){
                     alert(data);

@@ -126,8 +126,10 @@ class ProductController extends Controller
 
         $price = $this->get_price($id);
         $entry_price = Inventory::select('entry_price','created_at')->where('product_id','=',$id)->orderBy('created_at','desc')->get()->first();
-        $abc = $entry_price->created_at;
-        $entry_price->added_on = $abc->format('d-m-Y');
+        if ($entry_price) {
+            $abc = $entry_price->created_at;
+            $entry_price->added_on = $abc->format('d-m-Y');
+        }
 
         $currencies = Countries::distinct()->
                                 select(array('id', 'currency', 'currency_code'))->
@@ -985,17 +987,18 @@ class ProductController extends Controller
         }
 
         $vars = $request->only('q');
+        $formatSearch = str_replace(' ','%',$vars['q']);
         $items_array = array();
         $items = array();
 
         $query = DB::table('products')
             ->select('products.name','products.alternate_name','products.manufacturer','products.id','product_categories.name as category_name')
             ->join('product_categories','product_categories.id','=','products.category_id')
-            ->where(    'products.name','like','%'.$vars['q'].'%')
-            ->orWhere(  'products.alternate_name','like','%'.$vars['q'].'%')
-            ->orWhere(  'products.brand','like','%'.$vars['q'].'%')
-            ->orWhere(  'products.manufacturer','like','%'.$vars['q'].'%')
-            ->orWhere(  'product_categories.name','like','%'.$vars['q'].'%');
+            ->where(    'products.name','like','%'.$formatSearch.'%')
+            ->orWhere(  'products.alternate_name','like','%'.$formatSearch.'%')
+            ->orWhere(  'products.brand','like','%'.$formatSearch.'%')
+            ->orWhere(  'products.manufacturer','like','%'.$formatSearch.'%')
+            ->orWhere(  'product_categories.name','like','%'.$formatSearch.'%');
 
         $results = $query->get();
         if ($results){
@@ -1010,7 +1013,7 @@ class ProductController extends Controller
                     'manufacturer'=>$result->manufacturer,
                     'category'=>$result->category_name,
                     'list_price'=>$product_price->list_price,
-                    'entry_price'=>$product_entry_price->entry_price,
+                    'entry_price'=>@$product_entry_price->entry_price,
                     'currency'=>$product_price->currency->currency_code,
                     'product_image_url' => asset('assets/pages/img/avatars/team'.rand(1,10).'.jpg')
                 );

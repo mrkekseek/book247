@@ -22,14 +22,14 @@
 |
 */
 
-Route::get('/', [
-    'as'    => 'homepage',
-    'uses'  => 'FrontPageController@index'
-]);
-
 Route::group(['middleware' => 'web'], function () {
     // default login/register/forgot password routes
     Route::auth();
+
+    Route::get('/', [
+        'as'    => 'homepage',
+        'uses'  => 'FrontPageController@index'
+    ]);
 
     Route::get('login-new', function(){
         return view('login');
@@ -222,6 +222,11 @@ Route::group(['middleware' => 'web'], function () {
         'as'    => 'admin/shops/location/store_address_update',
         'uses'  => 'ShopController@store_address_update'
     ]);
+
+    Route::post('admin/shops/resources/add', [
+        'as'    => 'admin/shops/resources/add',
+        'uses'  => 'ShopController@add_new_store_resource'
+    ]);
     /** Stop Routes for Shops/Locations */
 
     /** Start Routes for Products Management */
@@ -374,4 +379,13 @@ Route::group(['middleware' => 'web'], function () {
         'uses'  => 'FrontEndUserController@show_finance'
     ]);
     /** Stop Routes for front users in backend */
+});
+
+Route::group(['prefix'=>'ajax', 'middleware' => 'web'], function(){
+
+    Route::post('get_booking_hours',[
+        'as'    => 'ajax/get_booking_hours',
+        'uses'  => 'FrontPageController@get_booking_hours'
+    ]);
+
 });

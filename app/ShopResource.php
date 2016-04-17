@@ -42,18 +42,18 @@ class ShopResource extends Model
             case 'POST':
             {
                 return [
-                    'location_id'   => 'exists|shop_locations:id',
-                    'name' => 'required|min:5|max:75|unique:shop_resources,name',
-                    'category_id' => 'exists|shop_resource_categories:id',
+                    'location_id'   => 'exists:shop_locations,id',
+                    'name'          => 'required|unique:shop_resources,name|min:5|max:75',
+                    'category_id'   => 'exists:shop_resource_categories,id',
                 ];
             }
             case 'PUT':
             case 'PATCH':
             {
                 return [
-                    'location_id'   => 'exists|shop_locations:id',
-                    'name' => 'required|min:5|max:75|unique:shop_resources,name'.($id ? ','.$id.',id' : ''),
-                    'category_id' => 'exists|shop_resource_categories:id',
+                    'location_id'   => 'exists:shop_locations,id',
+                    'name'          => 'required|min:5|max:75|unique:shop_resources,name'.($id ? ','.$id.',id' : ''),
+                    'category_id'   => 'exists:shop_resource_categories,id',
                 ];
             }
             default:break;

@@ -6,6 +6,8 @@ use App\Address;
 use App\CashTerminal;
 use App\ShopLocations;
 use App\ShopOpeningHour;
+use App\ShopResource;
+use App\ShopResourceCategory;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
@@ -128,7 +130,7 @@ class ShopController extends Controller
             $user = Auth::user();
         }
 
-        $shopDetails = ShopLocations::with('opening_hours')->find($id);
+        $shopDetails = ShopLocations::with('opening_hours')->with('resources')->find($id);
         $shopAddress = Address::find($shopDetails->address_id);
         $shopOpeningHours = [];
         foreach ($shopDetails->opening_hours as $open_hour){
@@ -156,6 +158,9 @@ class ShopController extends Controller
             '7' => 'Saturday',
         ];
 
+        $resourceCategories = ShopResourceCategory::orderBy('name','asc')->get();
+        $shopResources = $shopDetails->resources;
+
         $breadcrumbs = [
             'Home'              => route('admin'),
             'Administration'    => route('admin'),
@@ -176,7 +181,9 @@ class ShopController extends Controller
             'shopDetails'   => $shopDetails,
             'shopAddress'   => $shopAddress,
             'weekDays'      => $weekDays,
-            'opening_hours' => $shopOpeningHours
+            'opening_hours' => $shopOpeningHours,
+            'resourceCategory' => $resourceCategories,
+            'resourceList'  => $shopResources,
         ]);
     }
 
@@ -377,5 +384,35 @@ class ShopController extends Controller
         /** Stop - Add shop location to database */
 
         return $cashTerminalVars;
+    }
+
+    public function add_new_store_resource(Request $request){
+        if (!Auth::check()) {
+            return redirect()->intended(route('admin/login'));
+        }
+        else{
+            $user = Auth::user();
+        }
+
+        $shopResourceVars = $request->only('location_id', 'name', 'description', 'category_id', 'color_code');
+
+        /** Start - Add shop resource to database */
+        $shopResourceValidator = Validator::make($shopResourceVars, ShopResource::rules('POST'), ShopResource::$validationMessages, ShopResource::$attributeNames);
+
+        if ($shopResourceValidator->fails()){
+            //return $validator->errors()->all();
+            return array(
+                'success' => false,
+                'errors' => $shopResourceValidator->getMessageBag()->toArray()
+            );
+        }
+        else{
+            $shopResource = new ShopResource();
+            $shopResource->fill($shopResourceVars);
+            $shopResource->save();
+        }
+        /** Stop - Add shop resource to database */
+
+        return $shopResourceVars;
     }
 }
