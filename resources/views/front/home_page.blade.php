@@ -86,6 +86,32 @@
                                 <div class="portlet-title">
                                     <div class="caption">
                                         <i class="icon-settings font-green-sharp"></i>
+                                        <span class="caption-subject font-green-sharp bold uppercase">Select Booking Type</span>
+                                    </div>
+                                </div>
+                                <div class="portlet-body">
+                                    @foreach($resourceCategories as $category)
+                                        @if (sizeof($category->count)>0)
+                                            <a class="icon-btn" href="javascript:;">
+                                                <i class="fa fa-group"></i>
+                                                <div> {{$category->name}} </div>
+                                                <span class="badge badge-success"> {{$category->count}} </span>
+                                            </a>
+                                        @endif
+                                    @endforeach
+                                    <a class="icon-btn" href="javascript:;">
+                                        <i class="fa fa-calendar"></i>
+                                        <div> All Locations </div>
+                                        <span class="badge badge-success"> 14 </span>
+                                    </a>
+                                    <input type="hidden" name="selected_location" value="-1" />
+                                </div>
+                            </div>
+
+                            <div class="portlet light ">
+                                <div class="portlet-title">
+                                    <div class="caption">
+                                        <i class="icon-settings font-green-sharp"></i>
                                         <span class="caption-subject font-green-sharp bold uppercase">Select date of booking</span>
                                     </div>
                                 </div>
@@ -103,38 +129,7 @@
                                 </div>
                                 <div class="portlet-body util-btn-margin-bottom-5">
                                     <div class="clearfix" id="booking_hours">
-                                        <a class="btn default green-jungle-stripe btn-lg" href="javascript:;"> 07:00 </a>
-                                        <a class="btn default green-jungle-stripe btn-lg" href="javascript:;"> 07:30 </a>
-                                        <a class="btn default green-jungle-stripe btn-lg" href="javascript:;"> 08:00 </a>
-                                        <a class="btn default yellow-saffron-stripe btn-lg" href="javascript:;"> 08:30 </a>
-                                        <a class="btn default red-stripe btn-lg" href="javascript:;"> 09:00 </a>
-                                        <a class="btn default green-jungle-stripe btn-lg" href="javascript:;"> 09:30 </a>
-                                        <a class="btn default yellow-saffron-stripe btn-lg" href="javascript:;"> 10:00 </a>
-                                        <a class="btn default green-jungle-stripe btn-lg" href="javascript:;"> 10:30 </a>
-                                        <a class="btn default green-jungle-stripe btn-lg" href="javascript:;"> 11:00 </a>
-                                        <a class="btn default green-jungle-stripe btn-lg" href="javascript:;"> 11:30 </a>
-                                        <a class="btn default green-jungle-stripe btn-lg" href="javascript:;"> 12:00 </a>
-                                        <a class="btn default green-jungle-stripe btn-lg" href="javascript:;"> 12:30 </a>
-                                        <a class="btn default green-jungle-stripe btn-lg" href="javascript:;"> 13:00 </a>
-                                        <a class="btn default green-jungle-stripe btn-lg" href="javascript:;"> 13:30 </a>
-                                        <a class="btn default yellow-saffron-stripe btn-lg" href="javascript:;"> 14:00 </a>
-                                        <a class="btn default yellow-saffron-stripe btn-lg" href="javascript:;"> 14:30 </a>
-                                        <a class="btn default red-stripe btn-lg" href="javascript:;"> 15:00 </a>
-                                        <a class="btn default red-stripe btn-lg" href="javascript:;"> 15:30 </a>
-                                        <a class="btn default green-jungle-stripe btn-lg" href="javascript:;"> 16:00 </a>
-                                        <a class="btn default green-jungle-stripe btn-lg" href="javascript:;"> 16:30 </a>
-                                        <a class="btn default yellow-saffron-stripe btn-lg" href="javascript:;"> 17:00 </a>
-                                        <a class="btn default yellow-saffron-stripe btn-lg" href="javascript:;"> 17:30 </a>
-                                        <a class="btn default green-jungle-stripe btn-lg" href="javascript:;"> 18:00 </a>
-                                        <a class="btn default green-jungle-stripe btn-lg" href="javascript:;"> 18:30 </a>
-                                        <a class="btn default green-jungle-stripe btn-lg" href="javascript:;"> 19:00 </a>
-                                        <a class="btn default green-jungle-stripe btn-lg" href="javascript:;"> 19:30 </a>
-                                        <a class="btn default green-jungle-stripe btn-lg" href="javascript:;"> 20:00 </a>
-                                        <a class="btn default green-jungle-stripe btn-lg" href="javascript:;"> 20:30 </a>
-                                        <a class="btn default green-jungle-stripe btn-lg" href="javascript:;"> 21:00 </a>
-                                        <a class="btn default green-jungle-stripe btn-lg" href="javascript:;"> 21:30 </a>
-                                        <a class="btn default green-jungle-stripe btn-lg" href="javascript:;"> 22:00 </a>
-                                        <a class="btn default green-jungle-stripe btn-lg" href="javascript:;"> 22:30 </a>
+
                                     </div>
                                 </div>
                             </div>
@@ -640,7 +635,7 @@
                         itemWidth:45,
                         selectedDateFormat:  'Do, MMM YYYY',
                         onSelectedDateChanged: function(event, date) {
-                            alert("Selected date: " + moment(date).format("YYYY-MM-DD"));
+                            //alert("Selected date: " + moment(date).format("YYYY-MM-DD"));
                             get_booking_hours(moment(date).format("YYYY-MM-DD"));
                         }
                     }
@@ -672,7 +667,16 @@
         }
 
         function time_of_booking_format_hours(hours){
+            var all_hours = '';
+            $.each(hours, function(key, value){
+                all_hours+='<a class="btn default '+ value.color_stripe +' btn-lg" href="javascript:;"> '+key+' </a> ';
+            });
 
+            $("#booking_hours").html(all_hours);
         }
+
+        jQuery(document).ready(function() {
+            get_booking_hours('{{ \Carbon\Carbon::now()->format("Y-m-d") }}');
+        });
     </script>
 @endsection
