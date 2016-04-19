@@ -59,21 +59,20 @@
                             <div class="portlet light ">
                                 <div class="portlet-title">
                                     <div class="caption">
-                                        <i class="icon-settings font-green-sharp"></i>
                                         <span class="caption-subject font-green-sharp bold uppercase">Select location</span>
                                     </div>
                                 </div>
                                 <div class="portlet-body">
                                     @foreach($shops as $shop)
                                         @if (sizeof($shop->resources)>0)
-                                        <a class="icon-btn" href="javascript:;">
+                                        <a class="icon-btn location_btn" href="javascript:;" data-id="{{ $shop->id }}">
                                             <i class="fa fa-group hidden-xs"></i>
                                             <div> {{$shop->name}} </div>
                                             <span class="badge badge-success"> {{sizeof($shop->resources)}} </span>
                                         </a>
                                         @endif
                                     @endforeach
-                                    <a class="icon-btn" href="javascript:;">
+                                    <a class="icon-btn location_btn bg-grey-steel" href="javascript:;" data-id="-1">
                                         <i class="fa fa-calendar hidden-xs"></i>
                                         <div> All Locations </div>
                                         <span class="badge badge-success"> 14 </span>
@@ -83,7 +82,7 @@
                             </div>
 
                             <div class="portlet light ">
-                                <dt>Select booking type</dt>
+                                <dt>Select Activity</dt>
                                 <div class="portlet-body">
                                     <div class="clearfix util-btn-margin-bottom-5">
                                         @foreach($resourceCategories as $key=>$category)
@@ -106,13 +105,13 @@
                                 <div class="portlet-body">
                                     <div id="datepaginator_sample_4"> </div>
                                 </div>
+                                <input type="hidden" name="selected_date" value="{{ \Carbon\Carbon::now()->format("Y-m-d") }}" />
                             </div>
 
                             <div class="portlet light " id="tasks-widget">
                                 <div class="portlet-title">
                                     <div class="caption">
                                         <span class="caption-subject font-green-haze bold uppercase">Select time of booking</span>
-                                        <span class="caption-helper">from available hours...</span>
                                     </div>
                                 </div>
                                 <div class="portlet-body util-btn-margin-bottom-5">
@@ -123,9 +122,13 @@
                             </div>
                         </div>
                         <div class="col-md-6 login " style="background-color:transparent!important;">
+
+                        @if (!Auth::check())
                             <div class="content" style="background-color:#ffffff; margin-top:0px;">
                                 <!-- BEGIN LOGIN FORM -->
-                                <form class="login-form portlet light " action="index.html" method="post">
+                                <form class="login-form portlet light " action="{{ url('/login') }}" method="post">
+                                    {!! csrf_field() !!}
+
                                     <div class="portlet-title">
                                         <div class="caption">
                                             <span class="caption-subject font-green-haze bold uppercase">User Login</span>
@@ -139,7 +142,7 @@
                                     <div class="form-group">
                                         <!--ie8, ie9 does not support html5 placeholder, so we just show field title for that-->
                                         <label class="control-label visible-ie8 visible-ie9">Username</label>
-                                        <input class="form-control form-control-solid placeholder-no-fix" type="text" autocomplete="off" placeholder="Username" name="username" /> </div>
+                                        <input class="form-control form-control-solid placeholder-no-fix" type="text" autocomplete="off" placeholder="Email" name="email" /> </div>
                                     <div class="form-group">
                                         <label class="control-label visible-ie8 visible-ie9">Password</label>
                                         <input class="form-control form-control-solid placeholder-no-fix" type="password" autocomplete="off" placeholder="Password" name="password" /> </div>
@@ -221,6 +224,109 @@
                                 </form>
                                 <!-- END REGISTRATION FORM -->
                             </div>
+                        @else
+                            <!-- BEGIN PORTLET -->
+                            <div class="portlet light ">
+                                <div class="portlet-title">
+                                    <div class="caption caption-md">
+                                        <i class="icon-bar-chart theme-font hide"></i>
+                                        <span class="caption-subject font-blue-madison bold uppercase">Friends activity</span>
+                                        <span class="caption-helper">3 new</span>
+                                    </div>
+                                </div>
+                                <div class="portlet-body">
+                                    <div class="scroller" style="height: 305px;" data-always-visible="1" data-rail-visible1="0" data-handle-color="#D7DCE2">
+                                        <div class="general-item-list">
+                                            <div class="item">
+                                                <div class="item-head">
+                                                    <div class="item-details">
+                                                        <img class="item-pic" src="../assets/pages/media/users/avatar4.jpg">
+                                                        <a href="" class="item-name primary-link">Nick Larson</a>
+                                                        <span class="item-label">3 hrs ago</span>
+                                                    </div>
+                                                                    <span class="item-status">
+                                                                        <span class="badge badge-empty badge-success"></span> Open</span>
+                                                </div>
+                                                <div class="item-body"> Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. </div>
+                                            </div>
+                                            <div class="item">
+                                                <div class="item-head">
+                                                    <div class="item-details">
+                                                        <img class="item-pic" src="../assets/pages/media/users/avatar3.jpg">
+                                                        <a href="" class="item-name primary-link">Mark</a>
+                                                        <span class="item-label">5 hrs ago</span>
+                                                    </div>
+                                                                    <span class="item-status">
+                                                                        <span class="badge badge-empty badge-warning"></span> Pending</span>
+                                                </div>
+                                                <div class="item-body"> Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat tincidunt ut laoreet. </div>
+                                            </div>
+                                            <div class="item">
+                                                <div class="item-head">
+                                                    <div class="item-details">
+                                                        <img class="item-pic" src="../assets/pages/media/users/avatar6.jpg">
+                                                        <a href="" class="item-name primary-link">Nick Larson</a>
+                                                        <span class="item-label">8 hrs ago</span>
+                                                    </div>
+                                                                    <span class="item-status">
+                                                                        <span class="badge badge-empty badge-primary"></span> Closed</span>
+                                                </div>
+                                                <div class="item-body"> Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh. </div>
+                                            </div>
+                                            <div class="item">
+                                                <div class="item-head">
+                                                    <div class="item-details">
+                                                        <img class="item-pic" src="../assets/pages/media/users/avatar7.jpg">
+                                                        <a href="" class="item-name primary-link">Nick Larson</a>
+                                                        <span class="item-label">12 hrs ago</span>
+                                                    </div>
+                                                                    <span class="item-status">
+                                                                        <span class="badge badge-empty badge-danger"></span> Pending</span>
+                                                </div>
+                                                <div class="item-body"> Consectetuer adipiscing elit Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. </div>
+                                            </div>
+                                            <div class="item">
+                                                <div class="item-head">
+                                                    <div class="item-details">
+                                                        <img class="item-pic" src="../assets/pages/media/users/avatar9.jpg">
+                                                        <a href="" class="item-name primary-link">Richard Stone</a>
+                                                        <span class="item-label">2 days ago</span>
+                                                    </div>
+                                                                    <span class="item-status">
+                                                                        <span class="badge badge-empty badge-danger"></span> Open</span>
+                                                </div>
+                                                <div class="item-body"> Lorem ipsum dolor sit amet, consectetuer adipiscing elit, ut laoreet dolore magna aliquam erat volutpat. </div>
+                                            </div>
+                                            <div class="item">
+                                                <div class="item-head">
+                                                    <div class="item-details">
+                                                        <img class="item-pic" src="../assets/pages/media/users/avatar8.jpg">
+                                                        <a href="" class="item-name primary-link">Dan</a>
+                                                        <span class="item-label">3 days ago</span>
+                                                    </div>
+                                                                    <span class="item-status">
+                                                                        <span class="badge badge-empty badge-warning"></span> Pending</span>
+                                                </div>
+                                                <div class="item-body"> Lorem ipsum dolor sit amet, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. </div>
+                                            </div>
+                                            <div class="item">
+                                                <div class="item-head">
+                                                    <div class="item-details">
+                                                        <img class="item-pic" src="../assets/pages/media/users/avatar2.jpg">
+                                                        <a href="" class="item-name primary-link">Larry</a>
+                                                        <span class="item-label">4 hrs ago</span>
+                                                    </div>
+                                                                    <span class="item-status">
+                                                                        <span class="badge badge-empty badge-success"></span> Open</span>
+                                                </div>
+                                                <div class="item-body"> Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- END PORTLET -->
+                        @endif
 
                             <div class="portlet light search-page search-content-1 ">
                                 <div class="search-container ">
@@ -724,6 +830,7 @@
                         selectedDateFormat:  'Do, MMM YYYY',
                         onSelectedDateChanged: function(event, date) {
                             //alert("Selected date: " + moment(date).format("YYYY-MM-DD"));
+                            $('input[name=selected_date]').val(moment(date).format("YYYY-MM-DD"));
                             get_booking_hours(moment(date).format("YYYY-MM-DD"));
                         }
                     }
@@ -751,13 +858,23 @@
             $('#book-step-1').modal('show');
         });
 
+        $(document).on('click', '.location_btn', function(){
+            $('.location_btn').removeClass('bg-grey-steel');
+            $(this).addClass('bg-grey-steel');
+
+            $('input[name=selected_location]').val($(this).attr('data-id'));
+        });
+
         function get_booking_hours(selectedDate){
+            selectedDate = typeof selectedDate !== 'undefined' ? selectedDate : $('input[name=selected_date]').val();
+
             $.ajax({
                 url: '{{route('ajax/get_booking_hours')}}',
                 type: "post",
                 data: {
                     'location_selected':    $('input[name=selected_location]').val(),
                     'date_selected':        selectedDate,
+                    'selected_category':    $('input[name=selected_category]').val(),
                 },
                 success: function(data){
                     time_of_booking_format_hours(data);
@@ -775,7 +892,7 @@
         }
 
         jQuery(document).ready(function() {
-            get_booking_hours('{{ \Carbon\Carbon::now()->format("Y-m-d") }}');
+            get_booking_hours();
         });
     </script>
 @endsection

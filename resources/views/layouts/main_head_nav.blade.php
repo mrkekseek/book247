@@ -335,7 +335,7 @@
                                 <i class="icon-lock"></i> Lock Screen </a>
                         </li>
                         <li>
-                            <a href="page_user_login_1.html">
+                            <a href="{{'/logout' }}">
                                 <i class="icon-key"></i> Log Out </a>
                         </li>
                     </ul>
@@ -412,7 +412,7 @@
                         </li>
                     </ul>
                 </li>
-                    <li class="menu-dropdown mega-menu-dropdown">
+                <li class="menu-dropdown mega-menu-dropdown">
                     <a href="javascript:;"> Components
                         <span class="arrow"></span>
                     </a>
@@ -435,7 +435,7 @@
                         </li>
                     </ul>
                 </li>
-                    <li class="menu-dropdown classic-menu-dropdown ">
+                <li class="menu-dropdown classic-menu-dropdown ">
                     <a href="javascript:;"> More
                         <span class="arrow"></span>
                     </a>
@@ -636,7 +636,7 @@
                         </li>
                     </ul>
                 </li>
-                    <li class="menu-dropdown classic-menu-dropdown active">
+                <li class="menu-dropdown classic-menu-dropdown active">
                     <a href="javascript:;">
                         <i class="icon-briefcase"></i> Pages
                         <span class="arrow"></span>

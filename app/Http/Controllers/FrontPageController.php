@@ -81,6 +81,10 @@ class FrontPageController extends Controller
     }
 
     public function get_booking_hours(Request $request){
+        if (Auth::check()) {
+            $user = Auth::user();
+        }
+
         // check if we get today or 10 days from today
         $vars = $request->only('date_selected');
         $dateSelected = Carbon::createFromFormat("Y-m-d", $vars['date_selected']);
@@ -120,7 +124,14 @@ class FrontPageController extends Controller
 
         $occupancy_status = [1=>'green-jungle-stripe', 2=>'yellow-saffron-stripe', 3=>'red-stripe', 4=>'green-jungle-stripe', 5=>'green-jungle-stripe', 6=>'yellow-saffron-stripe'];
         foreach ( $period as $dt ) {
-            $hours[$dt->format( "H:i" )] = ['color_stripe' => $occupancy_status[rand(1,6)]];
+            if (isset($user)){
+                $colorStripe = $occupancy_status[rand(1,6)];
+            }
+            else{
+                $colorStripe = 'green-jungle-stripe';
+            }
+
+            $hours[$dt->format( "H:i" )] = ['color_stripe' => $colorStripe];
         }
 
         return $hours;
