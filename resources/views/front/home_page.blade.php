@@ -67,14 +67,14 @@
                                     @foreach($shops as $shop)
                                         @if (sizeof($shop->resources)>0)
                                         <a class="icon-btn" href="javascript:;">
-                                            <i class="fa fa-group"></i>
+                                            <i class="fa fa-group hidden-xs"></i>
                                             <div> {{$shop->name}} </div>
                                             <span class="badge badge-success"> {{sizeof($shop->resources)}} </span>
                                         </a>
                                         @endif
                                     @endforeach
                                     <a class="icon-btn" href="javascript:;">
-                                        <i class="fa fa-calendar"></i>
+                                        <i class="fa fa-calendar hidden-xs"></i>
                                         <div> All Locations </div>
                                         <span class="badge badge-success"> 14 </span>
                                     </a>
@@ -83,38 +83,26 @@
                             </div>
 
                             <div class="portlet light ">
-                                <div class="portlet-title">
-                                    <div class="caption">
-                                        <i class="icon-settings font-green-sharp"></i>
-                                        <span class="caption-subject font-green-sharp bold uppercase">Select Booking Type</span>
-                                    </div>
-                                </div>
+                                <dt>Select booking type</dt>
                                 <div class="portlet-body">
-                                    @foreach($resourceCategories as $category)
-                                        @if (sizeof($category->count)>0)
-                                            <a class="icon-btn" href="javascript:;">
-                                                <i class="fa fa-group"></i>
-                                                <div> {{$category->name}} </div>
-                                                <span class="badge badge-success"> {{$category->count}} </span>
-                                            </a>
-                                        @endif
-                                    @endforeach
-                                    <a class="icon-btn" href="javascript:;">
-                                        <i class="fa fa-calendar"></i>
-                                        <div> All Locations </div>
-                                        <span class="badge badge-success"> 14 </span>
-                                    </a>
-                                    <input type="hidden" name="selected_location" value="-1" />
+                                    <div class="clearfix util-btn-margin-bottom-5">
+                                        @foreach($resourceCategories as $key=>$category)
+                                            @if ($category['resources_count']>0)
+                                                <a class="btn btn-sm btn-outline blue-steel is_resource" data-id="{{$key}}" href="javascript:;"> {{$category['name']}}
+                                                    <span class="glyphicon glyphicon-cog"> </span>
+                                                </a>
+                                            @endif
+                                        @endforeach
+                                        <a class="btn btn-sm btn-outline blue-steel active is_resource" data-id="-1" href="javascript:;"> All Resources
+                                            <span class="glyphicon glyphicon-cog"> </span>
+                                        </a>
+                                        <input type="hidden" name="selected_category" value="-1" />
+                                    </div>
                                 </div>
                             </div>
 
                             <div class="portlet light ">
-                                <div class="portlet-title">
-                                    <div class="caption">
-                                        <i class="icon-settings font-green-sharp"></i>
-                                        <span class="caption-subject font-green-sharp bold uppercase">Select date of booking</span>
-                                    </div>
-                                </div>
+                                <dt>Select date of booking</dt>
                                 <div class="portlet-body">
                                     <div id="datepaginator_sample_4"> </div>
                                 </div>
@@ -277,6 +265,106 @@
                     </div>
                 </div>
                 <!-- END PAGE CONTENT INNER -->
+            </div>
+
+            <div class="modal fade draggable-modal" id="book-step-1" tabindex="-1" role="basic" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                            <h4 class="modal-title">Add New Product</h4>
+                        </div>
+                        <div class="modal-body">
+                            <form action="#" id="new_product" name="new_shop" class="form-horizontal">
+                                <div class="form-body">
+                                    <div class="alert alert-danger display-hide">
+                                        <button class="close" data-close="alert"></button> You have some form errors. Please check below. </div>
+                                    <div class="alert alert-success display-hide">
+                                        <button class="close" data-close="alert"></button> Your form validation is successful! </div>
+                                    <div class="form-group  margin-top-20">
+                                        <label class="control-label col-md-4">Product Name
+                                            <span class="required"> * </span>
+                                        </label>
+                                        <div class="col-md-7">
+                                            <div class="input-icon right">
+                                                <i class="fa"></i>
+                                                <input type="text" class="form-control input-sm" name="product_name" id="product_name" /> </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label col-md-4">Alternate Name</label>
+                                        <div class="col-md-7">
+                                            <div class="input-icon right">
+                                                <i class="fa"></i>
+                                                <input type="text" class="form-control input-sm" id="product_alternate_name" name="product_alternate_name" /> </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label col-md-4">Category
+                                            <span class="required"> * </span>
+                                        </label>
+                                        <div class="col-md-7">
+                                            <select class="form-control input-sm" name="product_category" id="product_category">
+                                                <option value="-1">Select Product Category</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label col-md-4">Brand
+                                            <span class="required"> * </span>
+                                        </label>
+                                        <div class="col-md-7">
+                                            <div class="input-icon right">
+                                                <i class="fa"></i>
+                                                <input type="text" class="form-control input-sm" id="product_brand" name="product_brand" /> </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label col-md-4">Manufacturer</label>
+                                        <div class="col-md-7">
+                                            <div class="input-icon right">
+                                                <i class="fa"></i>
+                                                <input type="text" class="form-control input-sm" id="product_manufacturer" name="product_manufacturer" /> </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label col-md-4">Bar Code</label>
+                                        <div class="col-md-7">
+                                            <div class="input-icon right">
+                                                <i class="fa"></i>
+                                                <input type="text" class="form-control input-sm" id="product_bar_code" name="product_bar_code" /> </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label col-md-4">Vat Rate
+                                            <span class="required"> * </span>
+                                        </label>
+                                        <div class="col-md-7">
+                                            <select class="form-control input-sm" name="product_vat_rate" id="product_vat_rate">
+                                                <option value="-1">Select VAT rate</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label col-md-4">Description
+                                        </label>
+                                        <div class="col-md-7">
+                                            <div class="input-icon right">
+                                                <i class="fa"></i>
+                                                <textarea class="form-control input-sm" id="product_description" name="product_description"></textarea> </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn dark btn-outline" data-dismiss="modal">Close</button>
+                            <button type="button" class="btn green submit_form_2" onCLick="javascript: $('#new_product').submit();">Save changes</button>
+                        </div>
+                    </div>
+                    <!-- /.modal-content -->
+                </div>
+                <!-- /.modal-dialog -->
             </div>
         </div>
         <!-- END PAGE CONTENT BODY -->
@@ -652,6 +740,17 @@
             UIDatepaginator.init();
         });
 
+        $(document).on('click', '.is_resource', function(){
+            $('.is_resource').removeClass('active');
+            $(this).addClass('active');
+
+            $('input[name=selected_category]').val($(this).attr('data-id'));
+        });
+
+        $(document).on('click', '.book_step', function(){
+            $('#book-step-1').modal('show');
+        });
+
         function get_booking_hours(selectedDate){
             $.ajax({
                 url: '{{route('ajax/get_booking_hours')}}',
@@ -669,7 +768,7 @@
         function time_of_booking_format_hours(hours){
             var all_hours = '';
             $.each(hours, function(key, value){
-                all_hours+='<a class="btn default '+ value.color_stripe +' btn-lg" href="javascript:;"> '+key+' </a> ';
+                all_hours+='<a class="btn default '+ value.color_stripe +' btn-lg book_step" href="javascript:;"> '+key+' </a> ';
             });
 
             $("#booking_hours").html(all_hours);

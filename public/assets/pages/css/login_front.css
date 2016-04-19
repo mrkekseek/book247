@@ -181,6 +181,8 @@ Login page
 
 /* Hour front btn */
 .btn-lg {padding-right:15px;}
+.icon-btn {padding-left:7px;
+    padding-right:7px;}
 
 @media (max-width: 440px) {
     /***
@@ -201,3 +203,13 @@ Login page
         padding-top: 3px; }
     .login .checkbox {
         font-size: 13px; } }
+
+@media (max-width: 767px) {
+    .icon-btn {height:40px;
+        padding-top:10px;}
+    .portlet.light{
+
+    }
+    .portlet{
+        margin-bottom:20px;}
+}

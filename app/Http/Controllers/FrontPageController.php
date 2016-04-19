@@ -41,7 +41,7 @@ class FrontPageController extends Controller
             $nr = DB::table('shop_resources')->where('category_id','=',$category->id)->count();
 
             if ($nr>0){
-                $resourceCategories[$category->id] = ['count'=>$nr, 'name'=>$category->name];
+                $resourceCategories[$category->id] = ['resources_count'=>$nr, 'name'=>$category->name];
             }
         }
 
