@@ -7,6 +7,7 @@ use App\ShopResourceCategory;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Auth;
+use Session;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use App\ShopOpeningHour;
@@ -16,12 +17,34 @@ use DateInterval;
 use DatePeriod;
 use Carbon\CarbonInterval;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\MessageBag;
 
 class FrontPageController extends Controller
 {
     public function __construct()
     {
         //$this->middleware('auth');
+    }
+
+    public function authenticate(Request $request)
+    {
+        if (Auth::attempt(['email' => $request->input('username'), 'password' => $request->input('password')])) {
+            // Authentication passed...
+            return redirect()->intended('/');
+        }
+        else {
+            $errors = new MessageBag([
+                'password' => ['Username and/or password invalid.'],
+                'username' => ['Username and/or password invalid.'],
+                'header' => ['Invalid Login Attempt'],
+                'message_body' => ['Username and/or password invalid.'],
+            ]);
+
+            return  redirect()->intended()
+                ->withInput()
+                ->withErrors($errors)
+                ->with('message', 'Login Failed');
+        }
     }
 
     /**
@@ -31,6 +54,9 @@ class FrontPageController extends Controller
      */
     public function index()
     {
+        $errors = Session::get('errors', new MessageBag);
+        //xdebug_var_dump($errors);
+
         $user = Auth::user();
 
         $shopLocations = ShopLocations::with('opening_hours')->with('resources')->get();
@@ -80,16 +106,10 @@ class FrontPageController extends Controller
         // check requested hour for availability
     }
 
-    public function get_booking_hours(Request $request){
-        if (Auth::check()) {
-            $user = Auth::user();
-        }
-
-        // check if we get today or 10 days from today
-        $vars = $request->only('date_selected');
-        $dateSelected = Carbon::createFromFormat("Y-m-d", $vars['date_selected']);
+    public function get_hours_interval($date_selected, $time_period=30){
+        $dateSelected = Carbon::createFromFormat("Y-m-d", $date_selected);
         if (!$dateSelected){
-            return 'error';
+            return [];
         }
 
         $hours = [];
@@ -119,22 +139,105 @@ class FrontPageController extends Controller
         $end    = Carbon::tomorrow();
         $end->addMinutes(-60);
 
+        $interval   = DateInterval::createFromDateString($time_period.' minutes');
+        $period     = new DatePeriod($begin, $interval, $end);
+
+        foreach ( $period as $dt ) {
+            $hours[$dt->format( "H:i" )] = ['color_stripe' => "blue-dark-stripe"];
+        }
+
+        return $hours;
+    }
+
+    public function get_booking_hours(Request $request){
+        if (Auth::check()) {
+            $user = Auth::user();
+        }
+
+        //$hours = [];
+        $shopResource = [];
+
+        // check if we get today or 10 days from today
+        $vars = $request->only('date_selected','selected_category','location_selected');
+        $dateSelected = Carbon::createFromFormat("Y-m-d", $vars['date_selected']);
+        if (!$dateSelected){
+            return 'error';
+        }
+        else{
+            $hours = FrontPageController::get_hours_interval($vars['date_selected'], 30);
+        }
+
+        /*
+
+        // if selected day = today
+        $currentTimeHour    = Carbon::now()->format('H');
+        $currentTimeMinutes = Carbon::now()->format('i');
+
+        if ($currentTimeMinutes>=0 && $currentTimeMinutes<30){
+            $currentTimeMinutes = 30;
+        }
+        else{
+            $currentTimeMinutes = 0;
+            $currentTimeHour = (int)$currentTimeHour+1;
+        }
+
+        $begin  = Carbon::today();
+        $v1 = $dateSelected->format("Y-m-d");
+        $v2 = Carbon::now()->format("Y-m-d");
+        if ( $v1==$v2) {
+            $begin->addHour($currentTimeHour);
+            $begin->addMinutes($currentTimeMinutes);
+        }
+        else{
+            $begin->addHour(7);
+        }
+        $end    = Carbon::tomorrow();
+        $end->addMinutes(-60);
+
         $interval   = DateInterval::createFromDateString('30 minutes');
         $period     = new DatePeriod($begin, $interval, $end);
 
-        $occupancy_status = [1=>'green-jungle-stripe', 2=>'yellow-saffron-stripe', 3=>'red-stripe', 4=>'green-jungle-stripe', 5=>'green-jungle-stripe', 6=>'yellow-saffron-stripe'];
+        $occupancy_status = [1=>'green-jungle-stripe', 2=>'yellow-saffron-stripe', 3=>'red-stripe', 4=>'green-jungle-stripe', 5=>'green-jungle-stripe', 6=>'yellow-saffron-stripe', 7=>"dark-stripe"];
         foreach ( $period as $dt ) {
             if (isset($user)){
                 $colorStripe = $occupancy_status[rand(1,6)];
             }
             else{
-                $colorStripe = 'green-jungle-stripe';
+                $colorStripe = 'blue-dark-stripe';
             }
 
             $hours[$dt->format( "H:i" )] = ['color_stripe' => $colorStripe];
+        }*/
+
+        $occupancy_status = [1=>'green-jungle-stripe',
+            2=>'yellow-saffron-stripe',
+            3=>'red-stripe',
+            4=>'green-jungle-stripe',
+            5=>'green-jungle-stripe',
+            6=>'yellow-saffron-stripe',
+            7=>"dark-stripe"];
+        if (isset($user)){
+            foreach($hours as $key=>$hour){
+                $colorStripe = $occupancy_status[rand(1,6)];
+                $hours[$key]['color_stripe'] = $colorStripe;
+            }
         }
 
-        return $hours;
+        $resourcesQuery = DB::table('shop_resources')->where('category_id','=',$vars['selected_category']);
+        if ($vars['location_selected']!=-1){
+            $resourcesQuery->where('location_id','=',$vars['location_selected']);
+        }
+        $allResources = $resourcesQuery->get();
+//xdebug_var_dump($allResources); exit;
+        if (sizeof($allResources)>0){
+            foreach($allResources as $resource){
+                $shopResource[] = $resource;
+            }
+        }
+
+        $returnArray = ["hours"=>$hours, "shopResources"=>$shopResource];
+
+        return $returnArray;
     }
 
 }

@@ -56,7 +56,7 @@
                 <div class="page-content-inner">
                     <div class="row">
                         <div class="col-md-6">
-                            <div class="portlet light ">
+                            <div class="portlet light margin-bottom-15">
                                 <div class="portlet-title">
                                     <div class="caption">
                                         <span class="caption-subject font-green-sharp bold uppercase">Select location</span>
@@ -81,26 +81,23 @@
                                 </div>
                             </div>
 
-                            <div class="portlet light ">
+                            <div class="portlet light margin-bottom-15">
                                 <dt>Select Activity</dt>
                                 <div class="portlet-body">
                                     <div class="clearfix util-btn-margin-bottom-5">
                                         @foreach($resourceCategories as $key=>$category)
                                             @if ($category['resources_count']>0)
-                                                <a class="btn btn-sm btn-outline blue-steel is_resource" data-id="{{$key}}" href="javascript:;"> {{$category['name']}}
+                                                <a class="btn btn-sm btn-outline blue-steel is_resource {{ $key==2?'active':'' }}" data-id="{{$key}}" href="javascript:;"> {{$category['name']}}
                                                     <span class="glyphicon glyphicon-cog"> </span>
                                                 </a>
                                             @endif
                                         @endforeach
-                                        <a class="btn btn-sm btn-outline blue-steel active is_resource" data-id="-1" href="javascript:;"> All Resources
-                                            <span class="glyphicon glyphicon-cog"> </span>
-                                        </a>
-                                        <input type="hidden" name="selected_category" value="-1" />
+                                        <input type="hidden" name="selected_category" value="2" />
                                     </div>
                                 </div>
                             </div>
 
-                            <div class="portlet light ">
+                            <div class="portlet light margin-bottom-15">
                                 <dt>Select date of booking</dt>
                                 <div class="portlet-body">
                                     <div id="datepaginator_sample_4"> </div>
@@ -108,7 +105,7 @@
                                 <input type="hidden" name="selected_date" value="{{ \Carbon\Carbon::now()->format("Y-m-d") }}" />
                             </div>
 
-                            <div class="portlet light " id="tasks-widget">
+                            <div class="portlet light margin-bottom-15" id="tasks-widget">
                                 <div class="portlet-title">
                                     <div class="caption">
                                         <span class="caption-subject font-green-haze bold uppercase">Select time of booking</span>
@@ -142,10 +139,10 @@
                                     <div class="form-group">
                                         <!--ie8, ie9 does not support html5 placeholder, so we just show field title for that-->
                                         <label class="control-label visible-ie8 visible-ie9">Username</label>
-                                        <input class="form-control form-control-solid placeholder-no-fix" type="text" autocomplete="off" placeholder="Email" name="email" /> </div>
+                                        <input class="form-control form-control-solid placeholder-no-fix {{ $errors->has('username') ? ' has-error' : '' }}" type="text" autocomplete="off" placeholder="Email" name="username" /> </div>
                                     <div class="form-group">
                                         <label class="control-label visible-ie8 visible-ie9">Password</label>
-                                        <input class="form-control form-control-solid placeholder-no-fix" type="password" autocomplete="off" placeholder="Password" name="password" /> </div>
+                                        <input class="form-control form-control-solid placeholder-no-fix {{ $errors->has('password') ? ' has-error' : '' }}" type="password" autocomplete="off" placeholder="Password" name="password" /> </div>
                                     <div class="form-actions">
                                         <button type="submit" class="btn red btn-block uppercase">Login</button>
                                     </div>
@@ -226,7 +223,7 @@
                             </div>
                         @else
                             <!-- BEGIN PORTLET -->
-                            <div class="portlet light ">
+                            <div class="portlet light margin-bottom-15">
                                 <div class="portlet-title">
                                     <div class="caption caption-md">
                                         <i class="icon-bar-chart theme-font hide"></i>
@@ -327,7 +324,6 @@
                             </div>
                             <!-- END PORTLET -->
                         @endif
-
                             <div class="portlet light search-page search-content-1 ">
                                 <div class="search-container ">
                                     <ul>
@@ -373,12 +369,12 @@
                 <!-- END PAGE CONTENT INNER -->
             </div>
 
-            <div class="modal fade draggable-modal" id="book-step-1" tabindex="-1" role="basic" aria-hidden="true">
+            <div class="modal fade draggable-modal" id="book-step-2" tabindex="-1" role="basic" aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
                             <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
-                            <h4 class="modal-title">Add New Product</h4>
+                            <h4 class="modal-title">Your Booking - <span>Squash</span> Activity</h4>
                         </div>
                         <div class="modal-body">
                             <form action="#" id="new_product" name="new_shop" class="form-horizontal">
@@ -387,77 +383,29 @@
                                         <button class="close" data-close="alert"></button> You have some form errors. Please check below. </div>
                                     <div class="alert alert-success display-hide">
                                         <button class="close" data-close="alert"></button> Your form validation is successful! </div>
-                                    <div class="form-group  margin-top-20">
-                                        <label class="control-label col-md-4">Product Name
-                                            <span class="required"> * </span>
-                                        </label>
-                                        <div class="col-md-7">
-                                            <div class="input-icon right">
-                                                <i class="fa"></i>
-                                                <input type="text" class="form-control input-sm" name="product_name" id="product_name" /> </div>
-                                        </div>
+                                    <div class="form-group">
+                                        <label>Email Address</label>
+                                        <div class="input-group">
+                                                            <span class="input-group-addon">
+                                                                <i class="fa fa-envelope"></i>
+                                                            </span>
+                                            <input type="text" placeholder="Email Address" class="form-control"> </div>
                                     </div>
                                     <div class="form-group">
-                                        <label class="control-label col-md-4">Alternate Name</label>
-                                        <div class="col-md-7">
-                                            <div class="input-icon right">
-                                                <i class="fa"></i>
-                                                <input type="text" class="form-control input-sm" id="product_alternate_name" name="product_alternate_name" /> </div>
-                                        </div>
+                                        <label>Circle Input</label>
+                                        <div class="input-group">
+                                                            <span class="input-group-addon input-circle-left">
+                                                                <i class="fa fa-envelope"></i>
+                                                            </span>
+                                            <input type="text" placeholder="Email Address" class="form-control input-circle-right"> </div>
                                     </div>
                                     <div class="form-group">
-                                        <label class="control-label col-md-4">Category
-                                            <span class="required"> * </span>
-                                        </label>
-                                        <div class="col-md-7">
-                                            <select class="form-control input-sm" name="product_category" id="product_category">
-                                                <option value="-1">Select Product Category</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="control-label col-md-4">Brand
-                                            <span class="required"> * </span>
-                                        </label>
-                                        <div class="col-md-7">
-                                            <div class="input-icon right">
-                                                <i class="fa"></i>
-                                                <input type="text" class="form-control input-sm" id="product_brand" name="product_brand" /> </div>
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="control-label col-md-4">Manufacturer</label>
-                                        <div class="col-md-7">
-                                            <div class="input-icon right">
-                                                <i class="fa"></i>
-                                                <input type="text" class="form-control input-sm" id="product_manufacturer" name="product_manufacturer" /> </div>
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="control-label col-md-4">Bar Code</label>
-                                        <div class="col-md-7">
-                                            <div class="input-icon right">
-                                                <i class="fa"></i>
-                                                <input type="text" class="form-control input-sm" id="product_bar_code" name="product_bar_code" /> </div>
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="control-label col-md-4">Vat Rate
-                                            <span class="required"> * </span>
-                                        </label>
-                                        <div class="col-md-7">
-                                            <select class="form-control input-sm" name="product_vat_rate" id="product_vat_rate">
-                                                <option value="-1">Select VAT rate</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="control-label col-md-4">Description
-                                        </label>
-                                        <div class="col-md-7">
-                                            <div class="input-icon right">
-                                                <i class="fa"></i>
-                                                <textarea class="form-control input-sm" id="product_description" name="product_description"></textarea> </div>
+                                        <label for="exampleInputPassword1">Password</label>
+                                        <div class="input-group">
+                                            <input type="password" placeholder="Password" id="exampleInputPassword1" class="form-control">
+                                                            <span class="input-group-addon">
+                                                                <i class="fa fa-user font-red"></i>
+                                                            </span>
                                         </div>
                                     </div>
                                 </div>
@@ -466,6 +414,60 @@
                         <div class="modal-footer">
                             <button type="button" class="btn dark btn-outline" data-dismiss="modal">Close</button>
                             <button type="button" class="btn green submit_form_2" onCLick="javascript: $('#new_product').submit();">Save changes</button>
+                        </div>
+                    </div>
+                    <!-- /.modal-content -->
+                </div>
+                <!-- /.modal-dialog -->
+            </div>
+
+            <div class="modal fade draggable-modal" id="book-step-1" tabindex="-1" role="basic" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-body form-horizontal">
+                            <div class="portlet light " style="padding-bottom:0px;margin-bottom:0px;">
+                                <div class="portlet-title form-group">
+                                    <div class="caption">
+                                        <i class="icon-social-dribbble font-green"></i>
+                                        <span class="caption-subject font-green bold uppercase">Blockquotes</span>
+                                    </div>
+                                </div>
+                                <div class="portlet-body form">
+                                    <form action="#" id="new_product" role="form" name="new_shop">
+                                        <div class="form-body" style="padding-top:0px; padding-bottom:0px;">
+                                            <div class="alert alert-danger display-hide">
+                                                <button class="close" data-close="alert"></button> You have some form errors. Please check below. </div>
+                                            <div class="alert alert-success display-hide">
+                                                <button class="close" data-close="alert"></button> Your form validation is successful! </div>
+                                            <div class="form-group note note-info margin-bottom-10">
+                                                <label>Select Activity Room</label>
+                                                <select class="form-control" name="resources_rooms" id="resources_rooms">
+                                                    <option>Option 1</option>
+                                                    <option>Option 2</option>
+                                                    <option>Option 3</option>
+                                                    <option>Option 4</option>
+                                                    <option>Option 5</option>
+                                                </select>
+                                            </div>
+                                            <div class="form-group note note-success margin-bottom-10">
+                                                <b3>Booking Time</b3><br />
+                                                <strong>11:25 on 25 May 2016</strong>
+                                            </div>
+                                            <div class="form-group note note-info margin-bottom-10">
+                                                <label>Payment Method</label>
+                                                <div class="radio-list">
+                                                    <label class="radio-inline">
+                                                        <input type="radio" name="optionsRadios" id="optionsRadios4" value="option1" checked> Membership Included Booking </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn dark btn-outline" data-dismiss="modal">Close</button>
+                            <button type="button" class="btn green submit_form_2" onclick="javascript: $('#new_product').submit();">Next Step</button>
                         </div>
                     </div>
                     <!-- /.modal-content -->
@@ -852,6 +854,7 @@
             $(this).addClass('active');
 
             $('input[name=selected_category]').val($(this).attr('data-id'));
+            get_booking_hours();
         });
 
         $(document).on('click', '.book_step', function(){
@@ -863,6 +866,7 @@
             $(this).addClass('bg-grey-steel');
 
             $('input[name=selected_location]').val($(this).attr('data-id'));
+            get_booking_hours();
         });
 
         function get_booking_hours(selectedDate){
@@ -871,13 +875,15 @@
             $.ajax({
                 url: '{{route('ajax/get_booking_hours')}}',
                 type: "post",
+                cache: false,
                 data: {
                     'location_selected':    $('input[name=selected_location]').val(),
                     'date_selected':        selectedDate,
                     'selected_category':    $('input[name=selected_category]').val(),
                 },
                 success: function(data){
-                    time_of_booking_format_hours(data);
+                    time_of_booking_format_hours(data.hours);
+                    place_of_booking_format_rooms(data.shopResources);
                 }
             });
         }
@@ -891,8 +897,39 @@
             $("#booking_hours").html(all_hours);
         }
 
+        function place_of_booking_format_rooms(resources){
+            var all_rooms = '';
+            $.each(resources, function(key, value){
+                all_rooms+='<option value="'+ value.id +'"> '+ value.name +' </option> ';
+            });
+            $('#resources_rooms').html(all_rooms);
+        }
+
         jQuery(document).ready(function() {
             get_booking_hours();
         });
+
+        @if($errors->has('email') || $errors->has('password'))
+        function show_notification(title_heading, message, life, sticky) {
+            var settings = {
+                theme: 'ruby',
+                sticky: sticky,
+                horizontalEdge: 'top',
+                verticalEdge: 'right',
+                life : life,
+            };
+
+            if ($.trim(title_heading) != '') {
+                settings.heading = title_heading;
+            }
+
+            $.notific8('zindex', 11500);
+            $.notific8($.trim(message), settings);
+        }
+
+        setTimeout(function() {
+            show_notification('{{$errors->first('header')}}', '{{$errors->first('message_body')}}', 10000, false);
+        }, 500);
+        @endif
     </script>
 @endsection

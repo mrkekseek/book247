@@ -31,6 +31,11 @@ Route::group(['middleware' => 'web'], function () {
         'uses'  => 'FrontPageController@index'
     ]);
 
+    Route::post('login',[
+        'as'    => 'front_login',
+        'uses'  => 'FrontPageController@authenticate'
+    ]);
+
     Route::get('login-new', function(){
         return view('login');
     });

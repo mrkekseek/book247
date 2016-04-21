@@ -151,7 +151,9 @@ class OrderController extends Controller
             if ($lineDiscount!=$discount){
                 // something is wrong
             }
-            $orderItemFillable = ['quantity'=>$quantity, 'status'=>'ordered', 'order_details'=>json_encode(['discount'=>$discount, 'sell_price'=>$sellPrice])];
+
+            $itemOrderDetails = json_encode(['discount'=>$discount, 'sell_price'=>$sellPrice]); //xdebug_var_dump($itemOrderDetails); exit;
+            $orderItemFillable = ['quantity'=>$quantity, 'status'=>'ordered', 'other_details'=>$itemOrderDetails];
             $orderItem->update($orderItemFillable);
 
             if ($lineSellPrice!=$sellPrice || $lineQuantity!=$quantity){
