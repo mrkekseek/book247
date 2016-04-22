@@ -384,6 +384,10 @@ Route::group(['middleware' => 'web'], function () {
         'uses'  => 'FrontEndUserController@show_finance'
     ]);
     /** Stop Routes for front users in backend */
+
+    /** Start Routes for bookings */
+    Route::resource('booking', 'BookingController');
+    /** Stop Routes for bookings */
 });
 
 Route::group(['prefix'=>'ajax', 'middleware' => 'web'], function(){
@@ -391,6 +395,11 @@ Route::group(['prefix'=>'ajax', 'middleware' => 'web'], function(){
     Route::post('get_booking_hours',[
         'as'    => 'ajax/get_booking_hours',
         'uses'  => 'FrontPageController@get_booking_hours'
+    ]);
+
+    Route::post('book_resource',[
+        'as'    => 'ajax/book_resource',
+        'uses'  => 'FrontPageController@book_resource'
     ]);
 
 });

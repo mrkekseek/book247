@@ -441,23 +441,23 @@
                                                 <button class="close" data-close="alert"></button> Your form validation is successful! </div>
                                             <div class="form-group note note-info margin-bottom-10">
                                                 <label>Select Activity Room</label>
-                                                <select class="form-control" name="resources_rooms" id="resources_rooms">
-                                                    <option>Option 1</option>
-                                                    <option>Option 2</option>
-                                                    <option>Option 3</option>
-                                                    <option>Option 4</option>
-                                                    <option>Option 5</option>
-                                                </select>
+                                                <select class="form-control" name="resources_rooms" id="resources_rooms"></select>
                                             </div>
                                             <div class="form-group note note-success margin-bottom-10">
                                                 <b3>Booking Time</b3><br />
-                                                <strong>11:25 on 25 May 2016</strong>
+                                                <strong>
+                                                    <span class="pre_book_time">11:25</span> on <span class="pre_book_date">25 May 2016</span></strong>
+                                                <input type="hidden" name="selected_time" value="" />
                                             </div>
                                             <div class="form-group note note-info margin-bottom-10">
                                                 <label>Payment Method</label>
                                                 <div class="radio-list">
                                                     <label class="radio-inline">
-                                                        <input type="radio" name="optionsRadios" id="optionsRadios4" value="option1" checked> Membership Included Booking </label>
+                                                        <input type="radio" name="payment_method" id="payment_method" value="membership" checked> Membership Included Booking </label>
+                                                </div>
+                                                <div class="radio-list">
+                                                    <label class="radio-inline">
+                                                        <input type="radio" name="payment_method" id="payment_method" value="cash-card" > Pay on Location Cash/Card </label>
                                                 </div>
                                             </div>
                                         </div>
@@ -467,7 +467,7 @@
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn dark btn-outline" data-dismiss="modal">Close</button>
-                            <button type="button" class="btn green submit_form_2" onclick="javascript: $('#new_product').submit();">Next Step</button>
+                            <button type="button" class="btn green submit_form_2" onclick="save_booking()">Next Step</button>
                         </div>
                     </div>
                     <!-- /.modal-content -->
@@ -858,6 +858,10 @@
         });
 
         $(document).on('click', '.book_step', function(){
+            $('.pre_book_time').html($(this).html());
+            $('input[name=selected_time]').val($(this).html());
+            $('.pre_book_date').html($('.dp-selected').attr('title'));
+
             $('#book-step-1').modal('show');
         });
 
@@ -871,6 +875,7 @@
 
         function get_booking_hours(selectedDate){
             selectedDate = typeof selectedDate !== 'undefined' ? selectedDate : $('input[name=selected_date]').val();
+            $('.pre_book_date').html($('.dp-selected').attr('title'));
 
             $.ajax({
                 url: '{{route('ajax/get_booking_hours')}}',
@@ -891,7 +896,12 @@
         function time_of_booking_format_hours(hours){
             var all_hours = '';
             $.each(hours, function(key, value){
-                all_hours+='<a class="btn default '+ value.color_stripe +' btn-lg book_step" href="javascript:;"> '+key+' </a> ';
+                if (value.color_stripe=='red-stripe'){
+                    all_hours += '<a class="btn default ' + value.color_stripe + ' btn-lg" disabled href="javascript:;"> ' + key + ' </a> ';
+                }
+                else {
+                    all_hours += '<a class="btn default ' + value.color_stripe + ' btn-lg book_step" href="javascript:;"> ' + key + ' </a> ';
+                }
             });
 
             $("#booking_hours").html(all_hours);
@@ -903,6 +913,26 @@
                 all_rooms+='<option value="'+ value.id +'"> '+ value.name +' </option> ';
             });
             $('#resources_rooms').html(all_rooms);
+        }
+
+        function save_booking(){
+            $.ajax({
+                url: '{{route('booking.store')}}',
+                type: "post",
+                cache: false,
+                data: {
+                    'selected_location':    $('input[name=selected_location]').val(),
+                    'selected_activity':    $('input[name=selected_category]').val(),
+                    'selected_date':        $('input[name=selected_date]').val(),
+                    'selected_time':        $('input[name=selected_time]').val(),
+                    'selected_resource':    $('select[name=resources_rooms]').val(),
+                    'selected_payment':     $('input[name=payment_method]:radio:checked').val(),
+
+                },
+                success: function(data){
+                    alert(data);
+                }
+            });
         }
 
         jQuery(document).ready(function() {

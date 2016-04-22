@@ -106,6 +106,26 @@ class FrontPageController extends Controller
         // check requested hour for availability
     }
 
+    public function check_time_availability($date, $time, $resources){
+        $resourceNumber = sizeof($resources);
+        if ($resourceNumber==0){
+            return 100;
+        }
+
+        $resourceIDs = [];
+        foreach($resources as $resource){
+            $resourceIDs[] = $resource->id;
+        }
+
+        $q = DB::table('bookings')->where('resource_id','in',implode(',',$resourceIDs))
+            ->where('date_of_booking','=',$date)
+            ->where('booking_time_start','=',$time);
+        $res = $q->get();
+        $number = sizeof($res);
+
+        return ceil(($number*100)/$resourceNumber);
+    }
+
     public function get_hours_interval($date_selected, $time_period=30){
         $dateSelected = Carbon::createFromFormat("Y-m-d", $date_selected);
         if (!$dateSelected){
@@ -154,8 +174,8 @@ class FrontPageController extends Controller
             $user = Auth::user();
         }
 
-        //$hours = [];
         $shopResource = [];
+        $resourcesAvailability = [];
 
         // check if we get today or 10 days from today
         $vars = $request->only('date_selected','selected_category','location_selected');
@@ -166,48 +186,6 @@ class FrontPageController extends Controller
         else{
             $hours = FrontPageController::get_hours_interval($vars['date_selected'], 30);
         }
-
-        /*
-
-        // if selected day = today
-        $currentTimeHour    = Carbon::now()->format('H');
-        $currentTimeMinutes = Carbon::now()->format('i');
-
-        if ($currentTimeMinutes>=0 && $currentTimeMinutes<30){
-            $currentTimeMinutes = 30;
-        }
-        else{
-            $currentTimeMinutes = 0;
-            $currentTimeHour = (int)$currentTimeHour+1;
-        }
-
-        $begin  = Carbon::today();
-        $v1 = $dateSelected->format("Y-m-d");
-        $v2 = Carbon::now()->format("Y-m-d");
-        if ( $v1==$v2) {
-            $begin->addHour($currentTimeHour);
-            $begin->addMinutes($currentTimeMinutes);
-        }
-        else{
-            $begin->addHour(7);
-        }
-        $end    = Carbon::tomorrow();
-        $end->addMinutes(-60);
-
-        $interval   = DateInterval::createFromDateString('30 minutes');
-        $period     = new DatePeriod($begin, $interval, $end);
-
-        $occupancy_status = [1=>'green-jungle-stripe', 2=>'yellow-saffron-stripe', 3=>'red-stripe', 4=>'green-jungle-stripe', 5=>'green-jungle-stripe', 6=>'yellow-saffron-stripe', 7=>"dark-stripe"];
-        foreach ( $period as $dt ) {
-            if (isset($user)){
-                $colorStripe = $occupancy_status[rand(1,6)];
-            }
-            else{
-                $colorStripe = 'blue-dark-stripe';
-            }
-
-            $hours[$dt->format( "H:i" )] = ['color_stripe' => $colorStripe];
-        }*/
 
         $occupancy_status = [1=>'green-jungle-stripe',
             2=>'yellow-saffron-stripe',
@@ -220,6 +198,7 @@ class FrontPageController extends Controller
             foreach($hours as $key=>$hour){
                 $colorStripe = $occupancy_status[rand(1,6)];
                 $hours[$key]['color_stripe'] = $colorStripe;
+                $resourcesAvailability[$key] = 100;
             }
         }
 
@@ -228,10 +207,30 @@ class FrontPageController extends Controller
             $resourcesQuery->where('location_id','=',$vars['location_selected']);
         }
         $allResources = $resourcesQuery->get();
-//xdebug_var_dump($allResources); exit;
+
         if (sizeof($allResources)>0){
             foreach($allResources as $resource){
                 $shopResource[] = $resource;
+            }
+        }
+
+        if (!isset($user)){
+            foreach($hours as $key=>$val){
+                $hours[$key]['color_stripe'] = 'dark-stripe';
+            }
+        }
+        else{
+            foreach($resourcesAvailability as $key=>$percentage){
+                $resourcesAvailability[$key] = FrontPageController::check_time_availability($vars['date_selected'], $key, $allResources);
+                if($resourcesAvailability[$key]==100){
+                    $hours[$key]['color_stripe'] = 'red-stripe';
+                }
+                elseif($resourcesAvailability[$key]>49){
+                    $hours[$key]['color_stripe'] = 'yellow-saffron-stripe';
+                }
+                else{
+                    $hours[$key]['color_stripe'] = 'green-jungle-stripe';
+                }
             }
         }
 
