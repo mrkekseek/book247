@@ -301,59 +301,7 @@
                 <!-- END PAGE CONTENT INNER -->
             </div>
 
-            <div class="modal fade draggable-modal" id="book-step-2" tabindex="-1" role="basic" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
-                            <h4 class="modal-title">Your Booking - <span>Squash</span> Activity</h4>
-                        </div>
-                        <div class="modal-body">
-                            <form action="#" id="new_product" name="new_shop" class="form-horizontal">
-                                <div class="form-body">
-                                    <div class="alert alert-danger display-hide">
-                                        <button class="close" data-close="alert"></button> You have some form errors. Please check below. </div>
-                                    <div class="alert alert-success display-hide">
-                                        <button class="close" data-close="alert"></button> Your form validation is successful! </div>
-                                    <div class="form-group">
-                                        <label>Email Address</label>
-                                        <div class="input-group">
-                                                            <span class="input-group-addon">
-                                                                <i class="fa fa-envelope"></i>
-                                                            </span>
-                                            <input type="text" placeholder="Email Address" class="form-control"> </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Circle Input</label>
-                                        <div class="input-group">
-                                                            <span class="input-group-addon input-circle-left">
-                                                                <i class="fa fa-envelope"></i>
-                                                            </span>
-                                            <input type="text" placeholder="Email Address" class="form-control input-circle-right"> </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="exampleInputPassword1">Password</label>
-                                        <div class="input-group">
-                                            <input type="password" placeholder="Password" id="exampleInputPassword1" class="form-control">
-                                                            <span class="input-group-addon">
-                                                                <i class="fa fa-user font-red"></i>
-                                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn dark btn-outline" data-dismiss="modal">Close</button>
-                            <button type="button" class="btn green submit_form_2" onCLick="javascript: $('#new_product').submit();">Save changes</button>
-                        </div>
-                    </div>
-                    <!-- /.modal-content -->
-                </div>
-                <!-- /.modal-dialog -->
-            </div>
-
-            <div class="modal fade draggable-modal" id="book-step-1" tabindex="-1" role="basic" aria-hidden="true">
+            <div class="modal fade draggable-modal" id="new_booking_modal" tabindex="-1" role="basic" aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-body form-horizontal">
@@ -365,12 +313,9 @@
                                     </div>
                                 </div>
                                 <div class="portlet-body form">
-                                    <form action="#" id="new_product" role="form" name="new_shop">
+                                    <!-- Booking first step Start -->
+                                    <form action="#" id="booking-step-one" role="form" name="new_booking1">
                                         <div class="form-body" style="padding-top:0px; padding-bottom:0px;">
-                                            <div class="alert alert-danger display-hide">
-                                                <button class="close" data-close="alert"></button> You have some form errors. Please check below. </div>
-                                            <div class="alert alert-success display-hide">
-                                                <button class="close" data-close="alert"></button> Your form validation is successful! </div>
                                             <div class="form-group note note-info margin-bottom-10">
                                                 <label>Select Activity Room</label>
                                                 <select class="form-control" name="resources_rooms" id="resources_rooms"></select>
@@ -378,7 +323,7 @@
                                             <div class="form-group note note-success margin-bottom-10">
                                                 <b3>Booking Time</b3><br />
                                                 <strong>
-                                                    <span class="pre_book_time">11:25</span> on <span class="pre_book_date">25 May 2016</span></strong>
+                                                    <span class="pre_book_time"></span> on <span class="pre_book_date"></span></strong>
                                                 <input type="hidden" name="selected_time" value="" />
                                             </div>
                                             <div class="form-group note note-info margin-bottom-10">
@@ -394,12 +339,47 @@
                                             </div>
                                         </div>
                                     </form>
+                                    <!-- Booking first step End -->
+
+                                    <!-- Booking second step Start -->
+                                    <form action="#" id="booking-step-two" role="form" name="new_booking2" style="display:none;">
+                                        <div class="form-body" style="padding-top:0px; padding-bottom:0px;">
+                                            <div class="alert alert-danger display-hide">
+                                                <button class="close" data-close="alert"></button> You have some form errors. Please check below. </div>
+                                            <div class="alert alert-success display-hide">
+                                                <button class="close" data-close="alert"></button> Your form validation is successful! </div>
+                                            <div class="form-group note note-info margin-bottom-10">
+                                                <label>Select Activity Room</label>
+                                                <span id="selected_resources_rooms"></span>
+                                            </div>
+                                            <div class="form-group note note-success margin-bottom-10">
+                                                <b3>Booking Time</b3><br />
+                                                <strong>
+                                                    <span class="pre_book_time"></span> on <span class="pre_book_date"></span></strong>
+                                                <input type="hidden" name="selected_time" value="" />
+                                            </div>
+                                            <div class="form-group note note-info margin-bottom-10">
+                                                <label>Payment Method</label>
+                                                <div class="radio-list">
+                                                    <label class="radio-inline">
+                                                        <input type="radio" name="payment_method" id="payment_method" value="membership" checked> Membership Included Booking </label>
+                                                </div>
+                                                <div class="radio-list">
+                                                    <label class="radio-inline">
+                                                        <input type="radio" name="payment_method" id="payment_method" value="cash-card" > Pay on Location Cash/Card </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                    <!-- Booking second step End -->
                                 </div>
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn dark btn-outline" data-dismiss="modal">Close</button>
-                            <button type="button" class="btn green submit_form_2" onclick="save_booking()">Next Step</button>
+                            <button type="button" class="btn dark btn-outline submit_form_2" data-dismiss="modal">Close</button>
+                            <button type="button" class="btn green submit_form_2" onclick="booking_step_two()">Next Step</button>
+                            <button type="button" class="btn dark btn-outline submit_form_3" onclick="cancel_booking()" style="display:none;">Cancel Booking</button>
+                            <button type="button" class="btn green submit_form_3" onclick="confirm_booking()" style="display:none;">Confirm Booking</button>
                         </div>
                     </div>
                     <!-- /.modal-content -->
@@ -769,7 +749,7 @@
 
             get_resources_for_hour( $.trim($(this).html()) );
 
-            $('#book-step-1').modal('show');
+            $('#new_booking_modal').modal('show');
         @else
             jQuery('.forget-form').hide();
             jQuery('.register-form').hide();
@@ -872,9 +852,61 @@
                 },
                 success: function(data){
                     get_booking_hours();
-                    $('#book-step-1').modal('hide');
+                    $('#new_booking_modal').modal('hide');
                 }
             });
+        }
+
+        function confirm_booking(){
+            $.ajax({
+                url: '{{route('booking.store')}}',
+                type: "post",
+                cache: false,
+                data: {
+                    'selected_location':    $('input[name=selected_location]').val(),
+                    'selected_activity':    $('input[name=selected_category]').val(),
+                    'selected_date':        $('input[name=selected_date]').val(),
+                    'selected_time':        $('input[name=selected_time]').val(),
+                    'selected_resource':    $('select[name=resources_rooms]').val(),
+                    'selected_payment':     $('input[name=payment_method]:radio:checked').val(),
+
+                },
+                success: function(data){
+                    $('#new_booking_modal').modal('hide');
+                    show_notification('Booking Confirmed', 'Your booking is now confirmed. You can see it in your list of bookings.', 'lemon', 3500, 0);
+                    get_booking_hours();
+                }
+            });
+        }
+
+        function cancel_booking(){
+            $.ajax({
+                url: '{{route('booking.store')}}',
+                type: "post",
+                cache: false,
+                data: {
+                    'selected_location':    $('input[name=selected_location]').val(),
+                    'selected_activity':    $('input[name=selected_category]').val(),
+                    'selected_date':        $('input[name=selected_date]').val(),
+                    'selected_time':        $('input[name=selected_time]').val(),
+                    'selected_resource':    $('select[name=resources_rooms]').val(),
+                    'selected_payment':     $('input[name=payment_method]:radio:checked').val(),
+
+                },
+                success: function(data){
+                    $('#new_booking_modal').modal('hide');
+                    show_notification('Booking Canceled', 'The selected booking is canceled. You can start the booking process again and select another date/time interval.', 'lemon', 3500, 0);
+
+                    get_booking_hours();
+                }
+            });
+        }
+
+        function booking_step_two(){
+            jQuery('#booking-step-one').hide();
+            jQuery('.submit_form_2').hide();
+            jQuery('#booking-step-two').show();
+            jQuery('.submit_form_3').show();
         }
 
         jQuery(document).ready(function() {
@@ -883,7 +915,7 @@
 
         @if($errors->has('email') || $errors->has('password'))
         setTimeout(function() {
-            show_notification('{{$errors->first('header')}}', '{{$errors->first('message_body')}}', 10000, false);
+            show_notification('{{$errors->first('header')}}', '{{$errors->first('message_body')}}', 'ruby', 10000, 1);
         }, 500);
         @endif
 

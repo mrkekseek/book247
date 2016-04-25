@@ -136,4 +136,12 @@ class BookingController extends Controller
     {
         //
     }
+
+    public function confirm_booking(Request $request){
+
+    }
+
+    public function cancel_booking(Request $request){
+
+    }
 }

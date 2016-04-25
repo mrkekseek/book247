@@ -387,6 +387,7 @@ Route::group(['middleware' => 'web'], function () {
 
     /** Start Routes for bookings */
     Route::resource('booking', 'BookingController');
+
     /** Stop Routes for bookings */
 });
 
@@ -405,5 +406,15 @@ Route::group(['prefix'=>'ajax', 'middleware' => 'web'], function(){
     Route::post('resources_available_for_date_time',[
         'as'    => 'ajax/get_resource_date_time',
         'uses'  => 'FrontPageController@get_resource_list_for_date_time'
+    ]);
+
+    Route::post('booking_confirmed', [
+        'as'    => 'ajax/booking-confirm',
+        'uses'  => 'BookingController@confirm_booking'
+    ]);
+
+    Route::post('booking_canceled', [
+        'as'    => 'ajax/booking-canceled',
+        'uses'  => 'BookingController@cancel_booking'
     ]);
 });
