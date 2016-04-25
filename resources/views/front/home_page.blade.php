@@ -16,20 +16,22 @@
 
     <link href="{{ asset('assets/global/plugins/bootstrap-datepicker/css/bootstrap-datepicker3.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('assets/global/plugins/bootstrap-datepaginator/bootstrap-datepaginator.min.css') }}" rel="stylesheet" type="text/css" />
+
+    <link href="{{ asset('assets/global/plugins/jquery-notific8/jquery.notific8.min.css') }}" rel="stylesheet" type="text/css" />
 @endsection
 
 @section('themeGlobalStyle')
     <link href="{{ asset('assets/global/css/components-rounded.min.css') }}" rel="stylesheet" id="style_components" type="text/css" />
     <link href="{{ asset('assets/global/css/plugins.min.css') }}" rel="stylesheet" type="text/css" />
-    <link href="{{ asset('assets/pages/css/login_front.css') }}" rel="stylesheet" type="text/css" />
 @endsection
 
 @section('themeLayoutStyle')
     <meta name="csrf-token" content="{{ csrf_token() }}" />
+    <link href="{{ asset('assets/pages/css/login_front.css') }}" rel="stylesheet" type="text/css" />
 @endsection
 
 @section('title', 'Main Page')
-@section('pageBodyClass','login')
+@section('pageBodyClass','page-container-bg-solid page-boxed login')
 
 @section('pageContentBody')
     <div class="page-content-wrapper">
@@ -139,7 +141,7 @@
                                     <div class="form-group">
                                         <!--ie8, ie9 does not support html5 placeholder, so we just show field title for that-->
                                         <label class="control-label visible-ie8 visible-ie9">Username</label>
-                                        <input class="form-control form-control-solid placeholder-no-fix {{ $errors->has('username') ? ' has-error' : '' }}" type="text" autocomplete="off" placeholder="Email" name="username" /> </div>
+                                        <input class="form-control form-control-solid placeholder-no-fix {{ $errors->has('username') ? ' has-error' : '' }}" type="text" autocomplete="off"  placeholder="Email" name="username" id="username_focus" /> </div>
                                     <div class="form-group">
                                         <label class="control-label visible-ie8 visible-ie9">Password</label>
                                         <input class="form-control form-control-solid placeholder-no-fix {{ $errors->has('password') ? ' has-error' : '' }}" type="password" autocomplete="off" placeholder="Password" name="password" /> </div>
@@ -227,97 +229,27 @@
                                 <div class="portlet-title">
                                     <div class="caption caption-md">
                                         <i class="icon-bar-chart theme-font hide"></i>
-                                        <span class="caption-subject font-blue-madison bold uppercase">Friends activity</span>
+                                        <span class="caption-subject font-blue-madison bold uppercase">Friends & Own Activity</span>
                                         <span class="caption-helper">3 new</span>
                                     </div>
                                 </div>
                                 <div class="portlet-body">
                                     <div class="scroller" style="height: 305px;" data-always-visible="1" data-rail-visible1="0" data-handle-color="#D7DCE2">
                                         <div class="general-item-list">
-                                            <div class="item">
-                                                <div class="item-head">
-                                                    <div class="item-details">
-                                                        <img class="item-pic" src="../assets/pages/media/users/avatar4.jpg">
-                                                        <a href="" class="item-name primary-link">Nick Larson</a>
-                                                        <span class="item-label">3 hrs ago</span>
-                                                    </div>
+                                            @foreach ($meAndFriendsBookings as $knownBooking)
+                                                <div class="item">
+                                                    <div class="item-head">
+                                                        <div class="item-details">
+                                                            <img class="item-pic" src="../assets/pages/media/users/avatar4.jpg">
+                                                            <a href="" class="item-name primary-link">{{ $knownBooking['breated_by'] }}</a>
+                                                            <span class="item-label">{{ $knownBooking['passed_time_since_creation'] }}</span>
+                                                        </div>
                                                                     <span class="item-status">
-                                                                        <span class="badge badge-empty badge-success"></span> Open</span>
-                                                </div>
-                                                <div class="item-body"> Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. </div>
-                                            </div>
-                                            <div class="item">
-                                                <div class="item-head">
-                                                    <div class="item-details">
-                                                        <img class="item-pic" src="../assets/pages/media/users/avatar3.jpg">
-                                                        <a href="" class="item-name primary-link">Mark</a>
-                                                        <span class="item-label">5 hrs ago</span>
+                                                                        <span class="badge badge-empty badge-warning"></span> {{ $knownBooking['status'] }} </span>
                                                     </div>
-                                                                    <span class="item-status">
-                                                                        <span class="badge badge-empty badge-warning"></span> Pending</span>
+                                                    <div class="item-body"> Own booking for <b>{{ $knownBooking['book_date_format'] }}</b> in <b>{{ $knownBooking['on_location'] }}</b> for {{ $knownBooking['categoryName'] }} activity. Reserved resource -  <b>{{ $knownBooking['on_resource'] }}</b> room. </div>
                                                 </div>
-                                                <div class="item-body"> Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat tincidunt ut laoreet. </div>
-                                            </div>
-                                            <div class="item">
-                                                <div class="item-head">
-                                                    <div class="item-details">
-                                                        <img class="item-pic" src="../assets/pages/media/users/avatar6.jpg">
-                                                        <a href="" class="item-name primary-link">Nick Larson</a>
-                                                        <span class="item-label">8 hrs ago</span>
-                                                    </div>
-                                                                    <span class="item-status">
-                                                                        <span class="badge badge-empty badge-primary"></span> Closed</span>
-                                                </div>
-                                                <div class="item-body"> Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh. </div>
-                                            </div>
-                                            <div class="item">
-                                                <div class="item-head">
-                                                    <div class="item-details">
-                                                        <img class="item-pic" src="../assets/pages/media/users/avatar7.jpg">
-                                                        <a href="" class="item-name primary-link">Nick Larson</a>
-                                                        <span class="item-label">12 hrs ago</span>
-                                                    </div>
-                                                                    <span class="item-status">
-                                                                        <span class="badge badge-empty badge-danger"></span> Pending</span>
-                                                </div>
-                                                <div class="item-body"> Consectetuer adipiscing elit Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. </div>
-                                            </div>
-                                            <div class="item">
-                                                <div class="item-head">
-                                                    <div class="item-details">
-                                                        <img class="item-pic" src="../assets/pages/media/users/avatar9.jpg">
-                                                        <a href="" class="item-name primary-link">Richard Stone</a>
-                                                        <span class="item-label">2 days ago</span>
-                                                    </div>
-                                                                    <span class="item-status">
-                                                                        <span class="badge badge-empty badge-danger"></span> Open</span>
-                                                </div>
-                                                <div class="item-body"> Lorem ipsum dolor sit amet, consectetuer adipiscing elit, ut laoreet dolore magna aliquam erat volutpat. </div>
-                                            </div>
-                                            <div class="item">
-                                                <div class="item-head">
-                                                    <div class="item-details">
-                                                        <img class="item-pic" src="../assets/pages/media/users/avatar8.jpg">
-                                                        <a href="" class="item-name primary-link">Dan</a>
-                                                        <span class="item-label">3 days ago</span>
-                                                    </div>
-                                                                    <span class="item-status">
-                                                                        <span class="badge badge-empty badge-warning"></span> Pending</span>
-                                                </div>
-                                                <div class="item-body"> Lorem ipsum dolor sit amet, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. </div>
-                                            </div>
-                                            <div class="item">
-                                                <div class="item-head">
-                                                    <div class="item-details">
-                                                        <img class="item-pic" src="../assets/pages/media/users/avatar2.jpg">
-                                                        <a href="" class="item-name primary-link">Larry</a>
-                                                        <span class="item-label">4 hrs ago</span>
-                                                    </div>
-                                                                    <span class="item-status">
-                                                                        <span class="badge badge-empty badge-success"></span> Open</span>
-                                                </div>
-                                                <div class="item-body"> Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. </div>
-                                            </div>
+                                            @endforeach
                                         </div>
                                     </div>
                                 </div>
@@ -499,6 +431,7 @@
     <script src="{{ asset('assets/global/plugins/moment.min.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/global/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/global/plugins/bootstrap-datepaginator/bootstrap-datepaginator.min.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('assets/global/plugins/jquery-notific8/jquery.notific8.min.js') }}" type="text/javascript"></script>
 @endsection
 
 @section('themeBelowGlobalScripts')
@@ -506,7 +439,7 @@
 @endsection
 
 @section('pageBelowLevelScripts')
-
+    <script src="{{ asset('assets/pages/scripts/ui-notific8.min.js') }}" type="text/javascript"></script>
 @endsection
 
 @section('themeBelowLayoutScripts')
@@ -520,35 +453,6 @@
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             }
-        });
-
-        var UIBlockUI = function() {
-            var handleSample4 = function() {
-
-                $('.yellow-saffron-stripe').click(function() {
-                    App.blockUI({
-                        target: '#tasks-widget',
-                        boxed: true,
-                        message: 'Processing...'
-                    });
-
-                    window.setTimeout(function() {
-                        App.unblockUI('#tasks-widget');
-                    }, 2000);
-                });
-            }
-
-            return {
-                //main function to initiate the module
-                init: function() {
-                    handleSample4();
-                }
-            };
-
-        }();
-
-        jQuery(document).ready(function() {
-            UIBlockUI.init();
         });
 
         var Login = function() {
@@ -858,11 +762,22 @@
         });
 
         $(document).on('click', '.book_step', function(){
-            $('.pre_book_time').html($(this).html());
+        @if (isset($user))
+            $('.pre_book_time').html( $.trim($(this).html()) );
             $('input[name=selected_time]').val($(this).html());
             $('.pre_book_date').html($('.dp-selected').attr('title'));
 
+            get_resources_for_hour( $.trim($(this).html()) );
+
             $('#book-step-1').modal('show');
+        @else
+            jQuery('.forget-form').hide();
+            jQuery('.register-form').hide();
+            jQuery('.login-form').show();
+
+            $('#username_focus').focus();
+            show_notification('Please login', 'You need to login in order to use the booking', 'lemon', 3500, 0);
+        @endif
         });
 
         $(document).on('click', '.location_btn', function(){
@@ -874,6 +789,12 @@
         });
 
         function get_booking_hours(selectedDate){
+            App.blockUI({
+                target: '#tasks-widget',
+                boxed: true,
+                message: 'Processing...'
+            });
+
             selectedDate = typeof selectedDate !== 'undefined' ? selectedDate : $('input[name=selected_date]').val();
             $('.pre_book_date').html($('.dp-selected').attr('title'));
 
@@ -889,6 +810,7 @@
                 success: function(data){
                     time_of_booking_format_hours(data.hours);
                     place_of_booking_format_rooms(data.shopResources);
+                    App.unblockUI('#tasks-widget');
                 }
             });
         }
@@ -915,6 +837,25 @@
             $('#resources_rooms').html(all_rooms);
         }
 
+        function get_resources_for_hour(bookTime){
+            bookDate = $('input[name=selected_date]').val();
+
+            $.ajax({
+                url: '{{route('ajax/get_resource_date_time')}}',
+                type: "post",
+                cache: false,
+                data: {
+                    'location_selected':    $('input[name=selected_location]').val(),
+                    'date_selected':        bookDate,
+                    'time_selected':        bookTime,
+                    'selected_category':    $('input[name=selected_category]').val(),
+                },
+                success: function(data){
+                    place_of_booking_format_rooms(data);
+                }
+            });
+        }
+
         function save_booking(){
             $.ajax({
                 url: '{{route('booking.store')}}',
@@ -930,7 +871,8 @@
 
                 },
                 success: function(data){
-                    alert(data);
+                    get_booking_hours();
+                    $('#book-step-1').modal('hide');
                 }
             });
         }
@@ -940,9 +882,14 @@
         });
 
         @if($errors->has('email') || $errors->has('password'))
-        function show_notification(title_heading, message, life, sticky) {
+        setTimeout(function() {
+            show_notification('{{$errors->first('header')}}', '{{$errors->first('message_body')}}', 10000, false);
+        }, 500);
+        @endif
+
+        function show_notification(title_heading, message, theme, life, sticky) {
             var settings = {
-                theme: 'ruby',
+                theme: theme,
                 sticky: sticky,
                 horizontalEdge: 'top',
                 verticalEdge: 'right',
@@ -956,10 +903,5 @@
             $.notific8('zindex', 11500);
             $.notific8($.trim(message), settings);
         }
-
-        setTimeout(function() {
-            show_notification('{{$errors->first('header')}}', '{{$errors->first('message_body')}}', 10000, false);
-        }, 500);
-        @endif
     </script>
 @endsection

@@ -402,4 +402,8 @@ Route::group(['prefix'=>'ajax', 'middleware' => 'web'], function(){
         'uses'  => 'FrontPageController@book_resource'
     ]);
 
+    Route::post('resources_available_for_date_time',[
+        'as'    => 'ajax/get_resource_date_time',
+        'uses'  => 'FrontPageController@get_resource_list_for_date_time'
+    ]);
 });

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Booking;
 use App\ShopLocations;
 use App\ShopResourceCategory;
 use Carbon\Carbon;
@@ -71,6 +72,10 @@ class FrontPageController extends Controller
             }
         }
 
+        if (isset($user)) {
+            $own_friends_bookings = $this::get_own_and_friends_bookings($user->id);
+//xdebug_var_dump($own_friends_bookings);
+        }
         $breadcrumbs = [
             'Home'      => route('admin'),
             'Dashboard' => '',
@@ -89,8 +94,8 @@ class FrontPageController extends Controller
             'user'  => $user,
             'shops' => $shopLocations,
             'resourceCategories' => $resourceCategories,
+            'meAndFriendsBookings' => @$own_friends_bookings
         ]);
-
     }
 
     /**
@@ -98,7 +103,7 @@ class FrontPageController extends Controller
      * @param $resourceID : -1 for all local resources, 1 and above, numeric, for specific resource
      * @param $requestedHour : hh:mm format, minutes are 00 or 30 by default
      */
-    public function check_booking_hour($locationID, $resourceID, $requestedHour){
+    public function check_booking_hour($locationID, $resourceID, $requestedDate, $requestedHour){
         // check location if locationID!=-1
 
         // check resource if resourceID!=-1
@@ -106,6 +111,39 @@ class FrontPageController extends Controller
         // check requested hour for availability
     }
 
+    public function get_resource_list_for_date_time(Request $request){
+        $vars = $request->only('date_selected', 'location_selected', 'selected_category', 'time_selected');
+
+        $shopResource = [];
+
+        $resourcesQuery = DB::table('shop_resources')->where('category_id','=',$vars['selected_category']);
+        if ($vars['location_selected']!=-1){
+            $resourcesQuery->where('location_id','=',$vars['location_selected']);
+        }
+        $allResources = $resourcesQuery->get();
+
+        if (sizeof($allResources)>0){
+            foreach($allResources as $resource){
+                $shopResource[$resource->id] = ['name' => $resource->name, 'color' => $resource->color_code, 'id' => $resource->id];
+                $resourceIDs[] = $resource->id;
+            }
+
+            $q = DB::table('bookings')->whereIn('resource_id',$resourceIDs)
+                ->where('date_of_booking','=',$vars['date_selected'])
+                ->where('booking_time_start','=',$vars['time_selected']);
+            $bookings = $q->get();
+
+            if (sizeof($bookings)>0){
+                foreach($bookings as $booking){
+                    unset($shopResource[$booking->resource_id]);
+                }
+            }
+        }
+
+        return $shopResource;
+    }
+
+    /** Returns the occupancy level of the resource for the specified time */
     public function check_time_availability($date, $time, $resources){
         $resourceNumber = sizeof($resources);
         if ($resourceNumber==0){
@@ -117,7 +155,7 @@ class FrontPageController extends Controller
             $resourceIDs[] = $resource->id;
         }
 
-        $q = DB::table('bookings')->where('resource_id','in',implode(',',$resourceIDs))
+        $q = DB::table('bookings')->whereIn('resource_id',$resourceIDs)
             ->where('date_of_booking','=',$date)
             ->where('booking_time_start','=',$time);
         $res = $q->get();
@@ -239,4 +277,51 @@ class FrontPageController extends Controller
         return $returnArray;
     }
 
+    public function get_resource_list_for_booking(Request $request){
+
+    }
+
+    public function get_own_and_friends_bookings($userID){
+        if (Auth::check()) {
+            $user = Auth::user();
+        }
+        else{
+            return [];
+        }
+
+        $formatedBookings = [];
+        $me_an_friends = [$userID];
+
+        $bookings = Booking::with('by_user')
+            ->with('for_user')
+            ->with('location')
+            ->with('resource')
+            ->whereIn('by_user_id', $me_an_friends,'or')
+            ->WhereIn('for_user_id',$me_an_friends,'or')
+            ->orderBy('created_at','desc')
+            ->take(10)
+            ->get();
+
+        foreach($bookings as $booking){
+            $createdAt = Carbon::createFromTimeStamp(strtotime($booking->created_at))->diffForHumans();
+            $singleBook = [];
+            $singleBook['passed_time_since_creation'] = $createdAt;
+            $singleBook['breated_by'] = $booking->by_user['first_name'].' '.$booking->by_user['middle_name'].' '.$booking->by_user['last_name'];
+            $singleBook['breated_for'] = $booking->for_user['first_name'].' '.$booking->for_user['middle_name'].' '.$booking->for_user['last_name'];
+            $singleBook['on_location'] = $booking->location['name'];
+            $singleBook['on_resource'] = $booking->resource['name'];
+            $singleBook['status'] = $booking->status;
+
+            // get category name
+            $category = ShopResourceCategory::where('id','=',$booking->resource['category_id'])->get()->first();
+            $singleBook['categoryName'] = $category['name'];
+            $singleBook['book_date_format'] =  Carbon::createFromFormat('Y-m-d',$booking['date_of_booking'])->format('l jS, F Y');  //'Sunday 24th, April 2016';
+            $singleBook['book_time_start'] = $booking->booking_time_start;
+            $singleBook['book_time_end'] = $booking->booking_time_end;
+
+            $formatedBookings[] = $singleBook;
+        }
+
+        return $formatedBookings;
+    }
 }

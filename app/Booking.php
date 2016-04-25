@@ -38,6 +38,22 @@ class Booking extends Model
         'invoice_id'
     ];
 
+    public function by_user(){
+        return $this->belongsTo('App\User', 'by_user_id', 'id');
+    }
+
+    public function for_user(){
+        return $this->belongsTo('App\User', 'for_user_id', 'id');
+    }
+
+    public function location(){
+        return $this->belongsTo('App\ShopLocations', 'location_id', 'id');
+    }
+
+    public function resource(){
+        return $this->belongsTo('App\ShopResource', 'resource_id', 'id');
+    }
+
     public static function rules($method, $id=0){
         switch($method){
             case 'GET':

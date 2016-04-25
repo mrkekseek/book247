@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Booking;
+use App\ShopResource;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -51,6 +52,18 @@ class BookingController extends Controller
 
         /** @var  $vars */
         $vars = $request->only('selected_activity', 'selected_date', 'selected_location', 'selected_payment', 'selected_resource', 'selected_time');
+
+        if ($vars['selected_location']==-1){
+            // the user selected all locations from top so we need to check what location he selected
+            $resource = ShopResource::where('id','=',$vars['selected_resource'])->get()->first();
+            if ($resource){
+                $vars['selected_location'] = $resource->location_id;
+            }
+            else{
+                return 'error';
+            }
+        }
+
         $fillable = [
             'by_user_id'    => $user->id,
             'for_user_id'   => $user->id,
@@ -65,7 +78,6 @@ class BookingController extends Controller
             'invoice_id'    => 1
         ];
         $validator = Validator::make($fillable, Booking::rules('POST'), Booking::$message, Booking::$attributeNames);
-
         if ($validator->fails()){
             return array(
                 'success' => false,
