@@ -65,7 +65,7 @@
                         <!-- END SIDEBAR USERPIC -->
                         <!-- SIDEBAR USER TITLE -->
                         <div class="profile-usertitle">
-                            <div class="profile-usertitle-name"> Marcus Doe </div>
+                            <div class="profile-usertitle-name"> {{$user->first_name.' '.$user->middle_name.' '.$user->last_name}} </div>
                             <div class="profile-usertitle-job"> Developer </div>
                         </div>
                         <!-- END SIDEBAR USER TITLE -->
@@ -136,26 +136,20 @@
                                             <form role="form" action="#">
                                                 <div class="form-group">
                                                     <label class="control-label">First Name</label>
-                                                    <input type="text" placeholder="John" class="form-control" /> </div>
+                                                    <input type="text" name="personalFirstName" id="personalFirstName" placeholder="First Name" value="{{$user->first_name}}" class="form-control" /> </div>
+                                                <div class="form-group">
+                                                    <label class="control-label">Middle Name</label>
+                                                    <input type="text" name="personalMiddleName" id="personalMiddleName" placeholder="Middle Name" value="{{$user->middle_name}}" class="form-control" /> </div>
                                                 <div class="form-group">
                                                     <label class="control-label">Last Name</label>
-                                                    <input type="text" placeholder="Doe" class="form-control" /> </div>
+                                                    <input type="text" name="personalLastName" id="personalLastName" placeholder="Last Name" value="{{$user->last_name}}" class="form-control" /> </div>
                                                 <div class="form-group">
                                                     <label class="control-label">Mobile Number</label>
-                                                    <input type="text" placeholder="+1 646 580 DEMO (6284)" class="form-control" /> </div>
-                                                <div class="form-group">
-                                                    <label class="control-label">Interests</label>
-                                                    <input type="text" placeholder="Design, Web etc." class="form-control" /> </div>
-                                                <div class="form-group">
-                                                    <label class="control-label">Occupation</label>
-                                                    <input type="text" placeholder="Web Developer" class="form-control" /> </div>
+                                                    <input type="text" placeholder="+1 646 580 DEMO (6284)" class="form-control" value="{{@$personal->mobile_number}}" /> </div>
                                                 <div class="form-group">
                                                     <label class="control-label">About</label>
-                                                    <textarea class="form-control" rows="3" placeholder="We are KeenThemes!!!"></textarea>
+                                                    <textarea class="form-control" rows="3" placeholder="We are KeenThemes!!!">{{@$personal->about_info}}</textarea>
                                                 </div>
-                                                <div class="form-group">
-                                                    <label class="control-label">Website Url</label>
-                                                    <input type="text" placeholder="http://www.mywebsite.com" class="form-control" /> </div>
                                                 <div class="margiv-top-10">
                                                     <a href="javascript:;" class="btn green"> Save Changes </a>
                                                     <a href="javascript:;" class="btn default"> Cancel </a>
@@ -167,27 +161,33 @@
                                         <div class="tab-pane" id="tab_1_2">
                                             <p> Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum
                                                 eiusmod. </p>
-                                            <form action="#" role="form">
+                                            <form action="{{ route('admin/back_users/view_user/avatar_image', ['id'=>$user->id]) }}" id="user_picture_upload2" class="form-horizontal" method="post" enctype="multipart/form-data">
+                                                <input type="hidden" name="_token" value="{{ csrf_token() }}">
                                                 <div class="form-group">
-                                                    <div class="fileinput fileinput-new" data-provides="fileinput">
-                                                        <div class="fileinput-new thumbnail" style="width: 200px; height: 150px;">
-                                                            <img src="http://www.placehold.it/200x150/EFEFEF/AAAAAA&amp;text=no+image" alt="" /> </div>
-                                                        <div class="fileinput-preview fileinput-exists thumbnail" style="max-width: 200px; max-height: 150px;"> </div>
+                                                    <div class="fileinput fileinput-{{ (strlen($avatar)>10) ? 'exists':'new' }}" data-provides="fileinput">
+                                                        <div class="fileinput-new thumbnail" style="width: 200px; height: 244px;">
+                                                            <img src="http://www.placehold.it/200x246/EFEFEF/AAAAAA&amp;text=no+image" alt="" /> </div>
+                                                        <div class="fileinput-preview fileinput-exists thumbnail" style="max-width: 200px; max-height: 240px; line-height: 200px;">
+                                                            @if ( strlen($avatar)>10 )
+                                                                <img src="data:{{ $avatarType }};base64,{{ base64_encode($avatar) }}" />
+                                                            @endif
+                                                        </div>
                                                         <div>
-                                                                        <span class="btn default btn-file">
-                                                                            <span class="fileinput-new"> Select image </span>
-                                                                            <span class="fileinput-exists"> Change </span>
-                                                                            <input type="file" name="..."> </span>
+                                                        <span class="btn default btn-file">
+                                                            <span class="fileinput-new"> Select image </span>
+                                                            <span class="fileinput-exists"> Change </span>
+                                                            <input type="file" name="user_avatar" class="user_avatar_select_btn2" /> </span>
                                                             <a href="javascript:;" class="btn default fileinput-exists" data-dismiss="fileinput"> Remove </a>
                                                         </div>
                                                     </div>
                                                     <div class="clearfix margin-top-10">
-                                                        <span class="label label-danger">NOTE! </span>
-                                                        <span>Attached image thumbnail is supported in Latest Firefox, Chrome, Opera, Safari and Internet Explorer 10 only </span>
+                                                        <div class="note note-warning margin-bottom-5">
+                                                            <p> Image preview only works in IE10+, FF3.6+, Safari6.0+, Chrome6.0+ and Opera11.1+. In older browsers the filename is shown instead. </p>
+                                                        </div>
                                                     </div>
                                                 </div>
                                                 <div class="margin-top-10">
-                                                    <a href="javascript:;" class="btn green"> Submit </a>
+                                                    <a href="javascript:;" onclick="javascript: $('#user_picture_upload2').submit();" class="btn green"> Submit </a>
                                                     <a href="javascript:;" class="btn default"> Cancel </a>
                                                 </div>
                                             </form>
@@ -195,18 +195,31 @@
                                         <!-- END CHANGE AVATAR TAB -->
                                         <!-- CHANGE PASSWORD TAB -->
                                         <div class="tab-pane" id="tab_1_3">
-                                            <form action="#">
+                                            <form action="#" id="form_password_update" role="form">
+                                                <div class="alert alert-danger display-hide">
+                                                    <button class="close" data-close="alert"></button> You have some form errors. Please check below. </div>
+                                                <div class="alert alert-success display-hide">
+                                                    <button class="close" data-close="alert"></button> Your form validation is successful! </div>
                                                 <div class="form-group">
-                                                    <label class="control-label">Current Password</label>
-                                                    <input type="password" class="form-control" /> </div>
+                                                    <label class="control-label">Old Password</label>
+                                                    <div class="input-icon">
+                                                        <i class="fa"></i>
+                                                        <input type="password" name="old_password" id="old_password" class="form-control" /> </div>
+                                                </div>
                                                 <div class="form-group">
                                                     <label class="control-label">New Password</label>
-                                                    <input type="password" class="form-control" /> </div>
+                                                    <div class="input-icon">
+                                                        <i class="fa"></i>
+                                                        <input type="password" name="new_password1" id="new_password1" class="form-control" /> </div>
+                                                </div>
                                                 <div class="form-group">
                                                     <label class="control-label">Re-type New Password</label>
-                                                    <input type="password" class="form-control" /> </div>
+                                                    <div class="input-icon">
+                                                        <i class="fa"></i>
+                                                        <input type="password" name="new_password2" id="new_password2" class="form-control" /> </div>
+                                                </div>
                                                 <div class="margin-top-10">
-                                                    <a href="javascript:;" class="btn green"> Change Password </a>
+                                                    <a href="javascript:;" class="btn green" onClick="javascript: $('#form_password_update').submit();"> Change Password </a>
                                                     <a href="javascript:;" class="btn default"> Cancel </a>
                                                 </div>
                                             </form>

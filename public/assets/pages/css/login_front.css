@@ -46,11 +46,11 @@ Login page
     margin: 0px; }
 
 .login .content .form-control {
-    border: none;
+    /*border: none;*/
     background-color: #e9edef;
     height: 43px;
     color: #8290a3;
-    border: 1px solid #dde3ec; }
+    /*border: 1px solid #dde3ec;*/ }
 .login .content .form-control:focus,
 .login .content .form-control:active {
     border: 1px solid #c3ccda; }

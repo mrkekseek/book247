@@ -125,7 +125,7 @@
                         @if (!Auth::check())
                             <div class="content" style="background-color:#ffffff; margin-top:0px;">
                                 <!-- BEGIN LOGIN FORM -->
-                                <form class="login-form portlet light " action="{{ url('/login') }}" method="post">
+                                <form class="login-form portlet light " action="{{ url('/login') }}" method="post" name="user_login_form" id="user_login_form">
                                     {!! csrf_field() !!}
 
                                     <div class="portlet-title">
@@ -136,14 +136,18 @@
                                     </div>
                                     <div class="alert alert-danger display-hide">
                                         <button class="close" data-close="alert"></button>
-                                        <span> Enter any username and password. </span>
+                                        <span> Incorrect username/password combination ... </span>
                                     </div>
                                     <div class="form-group">
                                         <!--ie8, ie9 does not support html5 placeholder, so we just show field title for that-->
-                                        <label class="control-label visible-ie8 visible-ie9">Username</label>
-                                        <input class="form-control form-control-solid placeholder-no-fix {{ $errors->has('username') ? ' has-error' : '' }}" type="text" autocomplete="off"  placeholder="Email" name="username" id="username_focus" /> </div>
+                                        <label class="control-label visible-ie8 visible-ie9">Username
+                                            <span class="required"> * </span>
+                                        </label>
+                                        <input class="form-control form-control-solid placeholder-no-fix {{ $errors->has('username') ? ' has-error' : '' }}" type="text" autocomplete="off" placeholder="Email" name="username" id="username_focus" value="{{ old('username') }}" /> </div>
                                     <div class="form-group">
-                                        <label class="control-label visible-ie8 visible-ie9">Password</label>
+                                        <label class="control-label visible-ie8 visible-ie9">Password
+                                            <span class="required"> * </span>
+                                        </label>
                                         <input class="form-control form-control-solid placeholder-no-fix {{ $errors->has('password') ? ' has-error' : '' }}" type="password" autocomplete="off" placeholder="Password" name="password" /> </div>
                                     <div class="form-actions">
                                         <button type="submit" class="btn red btn-block uppercase">Login</button>
@@ -165,7 +169,7 @@
                                 </form>
                                 <!-- END LOGIN FORM -->
                                 <!-- BEGIN FORGOT PASSWORD FORM -->
-                                <form class="forget-form portlet light " action="index.html" method="post">
+                                <form class="forget-form portlet light " action="index.html" method="post" name="password_reset_form" id="password_reset_form">
                                     <div class="portlet-title">
                                         <div class="caption">
                                             <span class="caption-subject font-green-haze bold uppercase">Forget Password ?</span>
@@ -181,7 +185,7 @@
                                 </form>
                                 <!-- END FORGOT PASSWORD FORM -->
                                 <!-- BEGIN REGISTRATION FORM -->
-                                <form class="register-form portlet light " action="index.html" method="post">
+                                <form class="register-form portlet light " action="index.html" method="post" name="user_registration_form" id="user_registration_form">
                                     <div class="portlet-title">
                                         <div class="caption">
                                             <span class="caption-subject font-green-haze bold uppercase">Sign Up</span>
@@ -190,16 +194,20 @@
                                     </div>
                                     <p class="hint"> Enter your personal details below: </p>
                                     <div class="form-group">
-                                        <label class="control-label visible-ie8 visible-ie9">Full Name</label>
-                                        <input class="form-control placeholder-no-fix" type="text" placeholder="Full Name" name="fullname" /> </div>
+                                        <label class="control-label visible-ie8 visible-ie9">First Name</label>
+                                        <input class="form-control placeholder-no-fix" type="text" placeholder="First Name" name="firstname" /> </div>
+                                    <div class="form-group">
+                                        <label class="control-label visible-ie8 visible-ie9">Last Name</label>
+                                        <input class="form-control placeholder-no-fix" type="text" placeholder="Last Name" name="lastname" /> </div>
+                                    <div class="form-group">
+                                        <label class="control-label visible-ie8 visible-ie9">Phone Number</label>
+                                        <input class="form-control placeholder-no-fix" type="text" placeholder="Phone Number" name="phone" /> </div>
+
+                                    <p class="hint"> Enter your account details below: </p>
                                     <div class="form-group">
                                         <!--ie8, ie9 does not support html5 placeholder, so we just show field title for that-->
                                         <label class="control-label visible-ie8 visible-ie9">Email</label>
                                         <input class="form-control placeholder-no-fix" type="text" placeholder="Email" name="email" /> </div>
-                                    <p class="hint"> Enter your account details below: </p>
-                                    <div class="form-group">
-                                        <label class="control-label visible-ie8 visible-ie9">Username</label>
-                                        <input class="form-control placeholder-no-fix" type="text" autocomplete="off" placeholder="Username" name="username" /> </div>
                                     <div class="form-group">
                                         <label class="control-label visible-ie8 visible-ie9">Password</label>
                                         <input class="form-control placeholder-no-fix" type="password" autocomplete="off" id="register_password" placeholder="Password" name="password" /> </div>
@@ -244,10 +252,11 @@
                                                             <a href="" class="item-name primary-link">{{ $knownBooking['breated_by'] }}</a>
                                                             <span class="item-label">{{ $knownBooking['passed_time_since_creation'] }}</span>
                                                         </div>
-                                                                    <span class="item-status">
-                                                                        <span class="badge badge-empty badge-warning"></span> {{ $knownBooking['status'] }} </span>
+                                                        <span class="item-status">
+                                                            <span class="badge badge-empty badge-warning"></span> {{ $knownBooking['status'] }} </span>
                                                     </div>
-                                                    <div class="item-body"> Own booking for <b>{{ $knownBooking['book_date_format'] }}</b> in <b>{{ $knownBooking['on_location'] }}</b> for {{ $knownBooking['categoryName'] }} activity. Reserved resource -  <b>{{ $knownBooking['on_resource'] }}</b> room. </div>
+                                                    <div class="item-body"> Own booking for <span class="font-blue-hoki">{{ $knownBooking['book_date_format'] }}</span> in <span class="font-purple-sharp">{{ $knownBooking['on_location'] }}</span>
+                                                        for <span class="font-blue-hoki">{{ $knownBooking['categoryName'] }}</span> activity. Reserved resource -  <span class="font-purple-sharp">{{ $knownBooking['on_resource'] }}</span> room. </div>
                                                 </div>
                                             @endforeach
                                         </div>
@@ -319,6 +328,7 @@
                                             <div class="form-group note note-info margin-bottom-10">
                                                 <label>Select Activity Room</label>
                                                 <select class="form-control" name="resources_rooms" id="resources_rooms"></select>
+                                                <small class="help-block"> this room is free to book until 12:30 </small>
                                             </div>
                                             <div class="form-group note note-success margin-bottom-10">
                                                 <b3>Booking Time</b3><br />
@@ -328,10 +338,10 @@
                                             </div>
                                             <div class="form-group note note-info margin-bottom-10">
                                                 <label>Payment Method</label>
-                                                <div class="radio-list">
+                                                <!--<div class="radio-list">
                                                     <label class="radio-inline">
                                                         <input type="radio" name="payment_method" id="payment_method" value="membership" checked> Membership Included Booking </label>
-                                                </div>
+                                                </div>-->
                                                 <div class="radio-list">
                                                     <label class="radio-inline">
                                                         <input type="radio" name="payment_method" id="payment_method" value="cash-card" > Pay on Location Cash/Card </label>
@@ -359,14 +369,13 @@
                                                 <input type="hidden" name="selected_time" value="" />
                                             </div>
                                             <div class="form-group note note-info margin-bottom-10">
-                                                <label>Payment Method</label>
-                                                <div class="radio-list">
+                                                <!--<div class="radio-list">
                                                     <label class="radio-inline">
                                                         <input type="radio" name="payment_method" id="payment_method" value="membership" checked> Membership Included Booking </label>
-                                                </div>
+                                                </div>-->
                                                 <div class="radio-list">
-                                                    <label class="radio-inline">
-                                                        <input type="radio" name="payment_method" id="payment_method" value="cash-card" > Pay on Location Cash/Card </label>
+                                                    <label>Payment Method</label>
+                                                    <span class="text-info">Pay on Location Cash/Card </span>
                                                 </div>
                                             </div>
                                         </div>
@@ -531,7 +540,8 @@
                     },
 
                     errorPlacement: function(error, element) {
-                        error.insertAfter(element.closest('.input-icon'));
+                        /*error.insertAfter(element.closest('.input-icon'));*/
+                        error.insertAfter(element.closest('.form-control'));
                     },
 
                     submitHandler: function(form) {
@@ -562,32 +572,6 @@
 
             var handleRegister = function() {
 
-                function format(state) {
-                    if (!state.id) { return state.text; }
-                    var $state = $(
-                            '<span><img src="../assets/global/img/flags/' + state.element.value.toLowerCase() + '.png" class="img-flag" /> ' + state.text + '</span>'
-                    );
-
-                    return $state;
-                }
-
-                if (jQuery().select2 && $('#country_list').size() > 0) {
-                    $("#country_list").select2({
-                        placeholder: '<i class="fa fa-map-marker"></i>&nbsp;Select a Country',
-                        templateResult: format,
-                        templateSelection: format,
-                        width: 'auto',
-                        escapeMarkup: function(m) {
-                            return m;
-                        }
-                    });
-
-
-                    $('#country_list').change(function() {
-                        $('.register-form').validate().element($(this)); //revalidate the chosen dropdown value and show error or success message for the input
-                    });
-                }
-
                 $('.register-form').validate({
                     errorElement: 'span', //default input error message container
                     errorClass: 'help-block', // default input error message class
@@ -595,21 +579,18 @@
                     ignore: "",
                     rules: {
 
-                        fullname: {
+                        firstname: {
+                            required: true
+                        },
+                        lastname: {
+                            required: true
+                        },
+                        phone: {
                             required: true
                         },
                         email: {
                             required: true,
                             email: true
-                        },
-                        address: {
-                            required: true
-                        },
-                        city: {
-                            required: true
-                        },
-                        country: {
-                            required: true
                         },
 
                         username: {
@@ -874,7 +855,9 @@
                 success: function(data){
                     $('#new_booking_modal').modal('hide');
                     show_notification('Booking Confirmed', 'Your booking is now confirmed. You can see it in your list of bookings.', 'lemon', 3500, 0);
+
                     get_booking_hours();
+                    booking_step_one();
                 }
             });
         }
@@ -898,6 +881,7 @@
                     show_notification('Booking Canceled', 'The selected booking is canceled. You can start the booking process again and select another date/time interval.', 'lemon', 3500, 0);
 
                     get_booking_hours();
+                    booking_step_one();
                 }
             });
         }
@@ -909,13 +893,20 @@
             jQuery('.submit_form_3').show();
         }
 
+        function booking_step_one(){
+            jQuery('#booking-step-one').show();
+            jQuery('.submit_form_2').show();
+            jQuery('#booking-step-two').hide();
+            jQuery('.submit_form_3').hide();
+        }
+
         jQuery(document).ready(function() {
             get_booking_hours();
         });
 
         @if($errors->has('email') || $errors->has('password'))
         setTimeout(function() {
-            show_notification('{{$errors->first('header')}}', '{{$errors->first('message_body')}}', 'ruby', 10000, 1);
+            show_notification('{{$errors->first('header')}}', '{{$errors->first('message_body')}}', 'ruby', 10000, false);
         }, 500);
         @endif
 

@@ -65,7 +65,7 @@
                         <!-- END SIDEBAR USERPIC -->
                         <!-- SIDEBAR USER TITLE -->
                         <div class="profile-usertitle">
-                            <div class="profile-usertitle-name"> Marcus Doe </div>
+                            <div class="profile-usertitle-name"> {{$user->first_name.' '.$user->middle_name.' '.$user->last_name}} </div>
                             <div class="profile-usertitle-job"> Developer </div>
                         </div>
                         <!-- END SIDEBAR USER TITLE -->

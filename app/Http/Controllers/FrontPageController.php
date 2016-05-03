@@ -29,7 +29,14 @@ class FrontPageController extends Controller
 
     public function authenticate(Request $request)
     {
-        if (Auth::attempt(['email' => $request->input('username'), 'password' => $request->input('password')])) {
+        if ( $request->input('remember') ){
+            $remember = true;
+        }
+        else {
+            $remember = false;
+        }
+
+        if (Auth::attempt(['email' => $request->input('username'), 'password' => $request->input('password')], $remember)) {
             // Authentication passed...
             return redirect()->intended('/');
         }
