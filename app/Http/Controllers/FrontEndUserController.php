@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\UserFriends;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -18,6 +19,7 @@ use Webpatser\Countries\Countries;
 use Auth;
 use Storage;
 use Carbon\Carbon;
+use Validator;
 
 class FrontEndUserController extends Controller
 {
@@ -1011,4 +1013,74 @@ class FrontEndUserController extends Controller
         return $user_address;
     }
 
+    public function ajax_get_friends_list($id=-1){
+        if (!Auth::check()) {
+            return [];
+        }
+        else{
+            $user = Auth::user();
+            $user_id = $user->id;
+        }
+
+        $all_friends = [];
+        $friends = UserFriends::where('user_id','=',$user_id)->orWhere('friend_id','=',$user_id)->get();
+        foreach($friends as $friend){
+            $friend_id = $friend->user_id==$user_id?$friend->friend_id:$friend->user_id;
+            $user_details = User::find($friend_id);
+
+            if (!$user_details){ continue; }
+            $all_friends[] = ['name' => $user_details->first_name.' '.$user_details->middle_name.' '.$user_details->last_name, 'id'=>$user_details->id];
+        }
+
+        return $all_friends;
+    }
+
+    public function add_friend_by_phone(Request $request, $id=-1){
+        if (!Auth::check()) {
+            $msg = ['success'=>'false', 'error'=> ['title'=>'An error occured', 'message'=>'Please check the number and add it again. You have a limited number of attempts']];
+            return $msg;
+        }
+        else{
+            $user = Auth::user();
+        }
+
+        $vars = $request->only('phone_no');
+
+        if ($id==-1){
+            $user_id = $user->id;
+        }
+        else{
+            $user_id = $id;
+        }
+
+        $friends = PersonalDetail::where('mobile_number','=',$vars['phone_no'])->get()->first();
+        if (sizeof($friends)==0){
+            $msg = ['success'=>'false', 'error'=> ['title'=>'An error occurred', 'message'=>'Please check the number and add it again. You have a limited number of attempts']];
+        }
+        else {
+            // one friend found
+            //xdebug_var_dump($friends); exit;
+            $friend_fill = ['user_id'=>$user_id, 'friend_id'=>$friends->user_id];
+            $validator = Validator::make($friend_fill, UserFriends::rules('POST'), UserFriends::$message, UserFriends::$attributeNames);
+
+            if ($validator->fails()){
+                $msg = array(
+                    'success' => false,
+                    'error' => [
+                        'validator' => $validator->getMessageBag()->toArray(),
+                        'title' => 'An error occurred',
+                        'message'=>'Please check the number and add it again. You have a limited number of attempts'
+                    ]
+                );
+            }
+            else {
+                $new_friend = UserFriends::firstOrCreate($friend_fill);
+                $new_friend->save();
+
+                $msg = [];
+            }
+        }
+
+        return $msg;
+    }
 }

@@ -59,11 +59,7 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="portlet light margin-bottom-15">
-                                <div class="portlet-title">
-                                    <div class="caption">
-                                        <span class="caption-subject font-green-sharp bold uppercase">Select location</span>
-                                    </div>
-                                </div>
+                                <dt>Select Location</dt>
                                 <div class="portlet-body">
                                     @foreach($shops as $shop)
                                         @if (sizeof($shop->resources)>0)
@@ -107,11 +103,26 @@
                                 <input type="hidden" name="selected_date" value="{{ \Carbon\Carbon::now()->format("Y-m-d") }}" />
                             </div>
 
-                            <div class="portlet light margin-bottom-15" id="tasks-widget">
-                                <div class="portlet-title">
-                                    <div class="caption">
-                                        <span class="caption-subject font-green-haze bold uppercase">Select time of booking</span>
+                            @if (Auth::check())
+                            <div class="portlet light margin-bottom-15 " id="all_friends_men">
+                                <dt>Friends List</dt>
+                                <div class="portlet-body">
+                                    <div class="clearfix util-btn-margin-bottom-5">
+                                        <div id="friends_list">
+
+                                        </div>
+
+                                        <a class="btn btn-sm green-soft " href="javascript:add_new_friend_popup();">
+                                            <span class="icon-user-follow"> </span> Add new friend
+                                        </a>
                                     </div>
+                                </div>
+                            </div>
+                            @endif
+
+                            <div class="portlet light margin-bottom-15" id="tasks-widget">
+                                <div class="portlet-title" style="min-height:27px; margin-bottom:5px;">
+                                    <dt>Select booking start time</dt>
                                 </div>
                                 <div class="portlet-body util-btn-margin-bottom-5">
                                     <div class="clearfix" id="booking_hours">
@@ -310,7 +321,7 @@
                 <!-- END PAGE CONTENT INNER -->
             </div>
 
-            <div class="modal fade draggable-modal" id="new_booking_modal" tabindex="-1" role="basic" aria-hidden="true">
+            <div class="modal fade draggable-modal" id="booking_modal_end_time" tabindex="-1" role="basic" aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-body form-horizontal">
@@ -325,26 +336,72 @@
                                     <!-- Booking first step Start -->
                                     <form action="#" id="booking-step-one" role="form" name="new_booking1">
                                         <div class="form-body" style="padding-top:0px; padding-bottom:0px;">
-                                            <div class="form-group note note-info margin-bottom-10">
-                                                <label>Select Activity Room</label>
-                                                <select class="form-control" name="resources_rooms" id="resources_rooms"></select>
-                                                <small class="help-block"> this room is free to book until 12:30 </small>
+                                            <div class="form-group note note-info" style="padding-top:0px; padding-bottom:0px; margin-bottom:2px;">
+                                                <p class="form-control-static"><strong>Select End Time</strong></p>
+                                                <select class="form-control" name="booking_end_time" id="booking_end_time">
+                                                    <option value="11:00">11:00</option>
+                                                    <option value="11:30">11:30</option>
+                                                </select>
+
+                                                <div class="form-actions right" style="padding-top:5px; padding-bottom:5px;">
+                                                    <button class="btn green" type="submit" style="padding-top:4px; padding-bottom:4px;">Next</button>
+                                                </div>
                                             </div>
-                                            <div class="form-group note note-success margin-bottom-10">
-                                                <b3>Booking Time</b3><br />
-                                                <strong>
-                                                    <span class="pre_book_time"></span> on <span class="pre_book_date"></span></strong>
-                                                <input type="hidden" name="selected_time" value="" />
+                                            <div class="form-group note note-info" style="padding-top:0px; padding-bottom:0px; margin-bottom:2px;">
+                                                <p class="form-control-static"><strong>Own booking - 11:00</strong></p>
+                                                <div style="display:none;">
+                                                    <select class="form-control" name="resources_rooms" id="resources_rooms"></select>
+                                                    <div class="form-actions right" style="padding-top:5px; padding-bottom:5px;">
+                                                        <button class="btn green" type="submit" style="padding-top:4px; padding-bottom:4px;">Back</button>
+                                                        <button class="btn green" type="submit" style="padding-top:4px; padding-bottom:4px;">Next</button>
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <div class="form-group note note-info margin-bottom-10">
-                                                <label>Payment Method</label>
-                                                <!--<div class="radio-list">
-                                                    <label class="radio-inline">
-                                                        <input type="radio" name="payment_method" id="payment_method" value="membership" checked> Membership Included Booking </label>
-                                                </div>-->
-                                                <div class="radio-list">
-                                                    <label class="radio-inline">
-                                                        <input type="radio" name="payment_method" id="payment_method" value="cash-card" > Pay on Location Cash/Card </label>
+                                            <div class="form-group note note-info" style="padding-top:0px; padding-bottom:0px; margin-bottom:2px;">
+                                                <p class="form-control-static"><strong>Friend Booking - 11:30</strong></p>
+
+                                                <div style="display:none;">
+                                                    <label><small>Select Friend</small></label>
+                                                    <select class="form-control margin-bottom-10 input-sm" name="resources_rooms" id="resources_rooms"></select>
+
+                                                    <label><small>Select Room</small></label>
+                                                    <select class="form-control input-sm" name="resources_rooms" id="resources_rooms"></select>
+
+                                                    <div class="form-actions right" style="padding-top:5px; padding-bottom:5px;">
+                                                        <button class="btn green" type="submit" style="padding-top:4px; padding-bottom:4px;">Back</button>
+                                                        <button class="btn green" type="submit" style="padding-top:4px; padding-bottom:4px;">Next</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-group note note-info" style="padding-top:0px; padding-bottom:0px; margin-bottom:2px;">
+                                                <p class="form-control-static"><strong>Friend Booking - 12:00</strong></p>
+
+                                                <div style="display:none;">
+                                                    <label><small>Select Friend</small></label>
+                                                    <select class="form-control margin-bottom-10 input-sm" name="resources_rooms" id="resources_rooms"></select>
+
+                                                    <label><small>Select Room</small></label>
+                                                    <select class="form-control input-sm" name="resources_rooms" id="resources_rooms"></select>
+
+                                                    <div class="form-actions right" style="padding-top:5px; padding-bottom:5px;">
+                                                        <button class="btn green" type="submit" style="padding-top:4px; padding-bottom:4px;">Back</button>
+                                                        <button class="btn green" type="submit" style="padding-top:4px; padding-bottom:4px;">Next</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-group note note-info" style="padding-top:0px; padding-bottom:0px; margin-bottom:2px;">
+                                                <p class="form-control-static"><strong>Payment Method</strong></p>
+
+                                                <div style="display:none;">
+                                                    <!--<div class="radio-list">
+                                                        <label class="radio-inline">
+                                                            <input type="radio" name="payment_method" id="payment_method" value="membership" checked> Membership Included Booking </label>
+                                                    </div>-->
+                                                    <div class="radio-list">
+                                                        <label class="radio-inline">
+                                                            <input type="radio" name="payment_method" id="payment_method" value="cash-card" > Pay on Location Cash/Card </label>
+                                                    </div>
+                                                    <input type="hidden" name="selected_time" value="" />
                                                 </div>
                                             </div>
                                         </div>
@@ -389,6 +446,43 @@
                             <button type="button" class="btn green submit_form_2" onclick="booking_step_two()">Next Step</button>
                             <button type="button" class="btn dark btn-outline submit_form_3" onclick="cancel_booking()" style="display:none;">Cancel Booking</button>
                             <button type="button" class="btn green submit_form_3" onclick="confirm_booking()" style="display:none;">Confirm Booking</button>
+                        </div>
+                    </div>
+                    <!-- /.modal-content -->
+                </div>
+                <!-- /.modal-dialog -->
+            </div>
+
+            <div class="modal fade draggable-modal" id="new_friend_modal" tabindex="-1" role="basic" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-body form-horizontal">
+                            <div class="portlet light " style="padding-bottom:0px;margin-bottom:0px;">
+                                <div class="portlet-title form-group">
+                                    <div class="caption">
+                                        <i class="icon-social-dribbble font-green"></i>
+                                        <span class="caption-subject font-green bold uppercase">Enter friend's phone number</span>
+                                    </div>
+                                </div>
+                                <div class="portlet-body form">
+                                    <form action="#" id="friend_search_form" role="form" name="friend_search_form">
+                                        <div class="form-body" style="padding-top:0px; padding-bottom:0px;">
+                                            <div class="form-group note note-info margin-bottom-10">
+                                                <div class="input-group">
+                                                    <input type="text" placeholder="Phone number..." name="friend_phone_no" class="form-control">
+                                                    <span class="input-group-btn">
+                                                        <button type="submit" class="btn red">Get Friend!</button>
+                                                    </span>
+                                                </div>
+                                                <small class="help-block"> numeric field between 8 and 10 digits </small>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn dark btn-outline submit_form_2" data-dismiss="modal">Close</button>
                         </div>
                     </div>
                     <!-- /.modal-content -->
@@ -677,10 +771,6 @@
 
         }();
 
-        jQuery(document).ready(function() {
-            Login.init();
-        });
-
         var UIDatepaginator = function () {
 
             return {
@@ -710,8 +800,81 @@
 
         }();
 
+        var FormValidation = function () {
+
+            var handleValidation1 = function() {
+                var form1 = $('#friend_search_form');
+                var error1 = $('.alert-danger', form1);
+                var success1 = $('.alert-success', form1);
+
+                form1.validate({
+                    errorElement: 'span', //default input error message container
+                    errorClass: 'help-block help-block-error', // default input error message class
+                    focusInvalid: false, // do not focus the last invalid input
+                    ignore: "",  // validate all fields including form hidden input
+                    rules: {
+                        friend_phone_no: {
+                            minlength: 8,
+                            maxlength: 10,
+                            number:true,
+                            required: true
+                        },
+                    },
+
+                    invalidHandler: function (event, validator) { //display error alert on form submit
+                        success1.hide();
+                        error1.show();
+                        App.scrollTo(error1, -200);
+                    },
+
+                    errorPlacement: function (error, element) { // render error placement for each input type
+                        var icon = $(element).parent('.input-icon').children('i');
+                        icon.removeClass('fa-check').addClass("fa-warning");
+                        icon.attr("data-original-title", error.text()).tooltip({'container': 'body'});
+                    },
+
+                    highlight: function (element) { // hightlight error inputs
+                        $(element)
+                                .closest('.form-group').removeClass("has-success").addClass('has-error'); // set error class to the control group
+                    },
+
+                    unhighlight: function (element) { // revert the change done by hightlight
+
+                    },
+
+                    success: function (label, element) {
+                        var icon = $(element).parent('.input-icon').children('i');
+                        $(element).closest('.form-group').removeClass('has-error').addClass('has-success'); // set success class to the control group
+                        icon.removeClass("fa-warning").addClass("fa-check");
+                    },
+
+                    submitHandler: function (form) {
+                        success1.show();
+                        error1.hide();
+                        search_friend_by_phone($('input[name=friend_phone_no]').val()); // submit the form
+                    }
+                });
+            }
+
+            return {
+                //main function to initiate the module
+                init: function () {
+                    handleValidation1();
+                }
+
+            };
+
+        }();
+
         jQuery(document).ready(function() {
+            // initialize login/register/forgot password part
+            Login.init();
+
+            // initialize the date pagination part
             UIDatepaginator.init();
+
+            // initialize the forms validation part
+            FormValidation.init();
         });
 
         $(document).on('click', '.is_resource', function(){
@@ -730,7 +893,7 @@
 
             get_resources_for_hour( $.trim($(this).html()) );
 
-            $('#new_booking_modal').modal('show');
+            $('#booking_modal_end_time').modal('show');
         @else
             jQuery('.forget-form').hide();
             jQuery('.register-form').hide();
@@ -774,6 +937,40 @@
                     App.unblockUI('#tasks-widget');
                 }
             });
+        }
+
+        function get_friends_list(){
+            App.blockUI({
+                target: '#all_friends_men',
+                boxed: true,
+                message: 'Processing...'
+            });
+
+            $.ajax({
+                url: '{{route('ajax/get_friends_list')}}',
+                type: "post",
+                cache: false,
+                data: {
+                    'limit': 5,
+                },
+                success: function(data){
+                    all_friends_format(data);
+                    App.unblockUI('#all_friends_men');
+                }
+            });
+        }
+
+        function all_friends_format(friends){
+            var all_list = '';
+            $.each(friends, function(key, value){
+                all_list += '<a class="btn btn-sm btn-outline blue-steel is_resource " data-id="'+ value.id +'" href="javascript:;"> '+ value.name +' <span class="icon-user-following"> </span></a> ';
+            });
+
+            if (all_list == ''){
+                all_list = '<p class="font-green-sharp">You have no friends. Add more using the "Add new friend" button under this message.</p>';
+            }
+
+            $("#friends_list").html(all_list);
         }
 
         function time_of_booking_format_hours(hours){
@@ -833,7 +1030,7 @@
                 },
                 success: function(data){
                     get_booking_hours();
-                    $('#new_booking_modal').modal('hide');
+                    $('#booking_modal_end_time').modal('hide');
                 }
             });
         }
@@ -853,7 +1050,7 @@
 
                 },
                 success: function(data){
-                    $('#new_booking_modal').modal('hide');
+                    $('#booking_modal_end_time').modal('hide');
                     show_notification('Booking Confirmed', 'Your booking is now confirmed. You can see it in your list of bookings.', 'lemon', 3500, 0);
 
                     get_booking_hours();
@@ -877,7 +1074,7 @@
 
                 },
                 success: function(data){
-                    $('#new_booking_modal').modal('hide');
+                    $('#booking_modal_end_time').modal('hide');
                     show_notification('Booking Canceled', 'The selected booking is canceled. You can start the booking process again and select another date/time interval.', 'lemon', 3500, 0);
 
                     get_booking_hours();
@@ -900,8 +1097,33 @@
             jQuery('.submit_form_3').hide();
         }
 
+        function add_new_friend_popup(){
+            $('#new_friend_modal').modal('show');
+        }
+
+        function search_friend_by_phone(input_nr){
+            $.ajax({
+                url: '{{route('ajax/add_friend_by_phone')}}',
+                type: "post",
+                cache: false,
+                data: {
+                    'phone_no':    input_nr,
+                },
+                success: function(data){
+                    if (data.success=='true') {
+                        show_notification('Friend Added', 'Your have added ' + data.full_name + ' as a friend. You can now book an activity and include him.', 'lemon', 3500, 0);
+                        $('#new_friend_modal').modal('hide');
+                    }
+                    else{
+                        show_notification(data.error.title, data.error.message, 'lemon', 3500, 0);
+                    }
+                }
+            });
+        }
+
         jQuery(document).ready(function() {
             get_booking_hours();
+            get_friends_list();
         });
 
         @if($errors->has('email') || $errors->has('password'))

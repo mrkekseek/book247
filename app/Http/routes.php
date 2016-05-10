@@ -417,4 +417,14 @@ Route::group(['prefix'=>'ajax', 'middleware' => 'web'], function(){
         'as'    => 'ajax/booking-canceled',
         'uses'  => 'BookingController@cancel_booking'
     ]);
+
+    Route::post('add_friend_by_phone', [
+        'as'    => 'ajax/add_friend_by_phone',
+        'uses'  => 'FrontEndUserController@add_friend_by_phone'
+    ]);
+
+    ROute::post('get_friends_list', [
+        'as'    => 'ajax/get_friends_list',
+        'uses'  => 'FrontEndUserController@ajax_get_friends_list'
+    ]);
 });
