@@ -51,7 +51,8 @@ class BookingController extends Controller
         }
 
         /** @var  $vars */
-        $vars = $request->only('selected_activity', 'selected_date', 'selected_location', 'selected_payment', 'selected_resource', 'selected_time');
+        $vars = $request->only('selected_activity', 'selected_date', 'selected_location', 'selected_payment', 'selected_resource', 'selected_time', 'book_key');
+        $search_key = substr( base64_encode(openssl_random_pseudo_bytes(32)),0 ,63 );
 
         if ($vars['selected_location']==-1){
             // the user selected all locations from top so we need to check what location he selected
@@ -75,7 +76,8 @@ class BookingController extends Controller
             'booking_time_stop'     => trim($vars['selected_time']),
             'payment_type'  => $vars['selected_payment'],
             'membership_id' => 1,
-            'invoice_id'    => 1
+            'invoice_id'    => 1,
+            'search_key'    => $search_key,
         ];
         $validator = Validator::make($fillable, Booking::rules('POST'), Booking::$message, Booking::$attributeNames);
         if ($validator->fails()){
@@ -86,7 +88,22 @@ class BookingController extends Controller
         }
 
         try {
-            Booking::create($fillable);
+            if ($vars['book_key']==""){
+                Booking::create($fillable);
+            }
+            else{
+                $the_booking = Booking::where('search_key', '=', $vars['book_key'])->get()->first();
+                if ($the_booking) {
+                    $fillable['search_key'] = $vars['book_key'];
+                    $the_booking->fill($fillable);
+                    $the_booking->save();
+                }
+                else{
+                    $search_key = $vars['book_key'];
+                }
+            }
+
+            return ['booking_key' => $search_key];
         } catch (Exception $e) {
             return Response::json(['error' => 'Booking Error'], Response::HTTP_CONFLICT);
         }

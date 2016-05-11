@@ -122,6 +122,7 @@ class FrontPageController extends Controller
         $vars = $request->only('date_selected', 'location_selected', 'selected_category', 'time_selected');
 
         $shopResource = [];
+        $next_interval = [];
 
         $resourcesQuery = DB::table('shop_resources')->where('category_id','=',$vars['selected_category']);
         if ($vars['location_selected']!=-1){
@@ -145,9 +146,11 @@ class FrontPageController extends Controller
                     unset($shopResource[$booking->resource_id]);
                 }
             }
+
+            $next_interval = $this->get_next_available_hours($vars);
         }
 
-        return $shopResource;
+        return ['shop_resources' => $shopResource, 'next_interval' => $next_interval];
     }
 
     /** Returns the occupancy level of the resource for the specified time */
@@ -171,7 +174,7 @@ class FrontPageController extends Controller
         return ceil(($number*100)/$resourceNumber);
     }
 
-    public function get_hours_interval($date_selected, $time_period=30){
+    public function get_hours_interval($date_selected, $time_period=30, $show_last = false){
         $dateSelected = Carbon::createFromFormat("Y-m-d", $date_selected);
         if (!$dateSelected){
             return [];
@@ -202,7 +205,12 @@ class FrontPageController extends Controller
             $begin->addHour(7);
         }
         $end    = Carbon::tomorrow();
-        $end->addMinutes(-60);
+        if ($show_last==false){
+            $end->addMinutes(-60);
+        }
+        else{
+            $end->addMinutes(-30);
+        }
 
         $interval   = DateInterval::createFromDateString($time_period.' minutes');
         $period     = new DatePeriod($begin, $interval, $end);
@@ -262,6 +270,7 @@ class FrontPageController extends Controller
         if (!isset($user)){
             foreach($hours as $key=>$val){
                 $hours[$key]['color_stripe'] = 'dark-stripe';
+                $hours[$key]['percent'] = 100;
             }
         }
         else{
@@ -276,12 +285,77 @@ class FrontPageController extends Controller
                 else{
                     $hours[$key]['color_stripe'] = 'green-jungle-stripe';
                 }
+                $hours[$key]['percent'] = $resourcesAvailability[$key];
             }
         }
 
         $returnArray = ["hours"=>$hours, "shopResources"=>$shopResource];
 
         return $returnArray;
+    }
+
+    /**
+     * @param $vars - array('date_selected', 'location_selected', 'selected_category', 'time_selected')
+     * @return array - available hours
+     */
+    public function get_next_available_hours($vars){
+        if (Auth::check()) {
+            $user = Auth::user();
+        }
+
+        // check if we get today or 10 days from today
+        $dateSelected = Carbon::createFromFormat("Y-m-d", $vars['date_selected']);
+        if (!$dateSelected){
+            return 'error';
+        }
+        else{
+            $hours = FrontPageController::get_hours_interval($vars['date_selected'], 30, true);
+        }
+
+        if (isset($user)){
+            foreach($hours as $key=>$hour){
+                $resourcesAvailability[$key] = 100;
+            }
+        }
+
+        $resourcesQuery = DB::table('shop_resources')->where('category_id','=',$vars['selected_category']);
+        if ($vars['location_selected']!=-1){
+            $resourcesQuery->where('location_id','=',$vars['location_selected']);
+        }
+        $allResources = $resourcesQuery->get();
+
+        if (sizeof($allResources)>0){
+            foreach($allResources as $resource){
+                $shopResource[] = $resource;
+            }
+        }
+
+        if (!isset($user)){
+            foreach($hours as $key=>$val){
+                $hours[$key]['color_stripe'] = 'dark-stripe';
+                $hours[$key]['percent'] = 100;
+            }
+        }
+        else{
+            foreach($resourcesAvailability as $key=>$percentage){
+                $hours[$key]['percent'] = FrontPageController::check_time_availability($vars['date_selected'], $key, $allResources);
+            }
+        }
+
+        $available_ones = [];
+        foreach ($hours as $key => $hour){
+            if ($key<=$vars['time_selected']){
+                continue;
+            }
+
+            if ($hour['percent']==100){
+                break;
+            }
+
+            $available_ones[$key] = $hour;
+        }
+
+        return $available_ones;
     }
 
     public function get_resource_list_for_booking(Request $request){

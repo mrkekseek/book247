@@ -20,6 +20,7 @@ class Booking extends Model
         'payment_type'  => 'Payment Type',
         'membership_id' => 'Membership ID',
         'invoice_id'    => 'Invoice ID',
+        'search_key'    => 'Search Key'
     );
 
     public static $message = array();
@@ -35,7 +36,8 @@ class Booking extends Model
         'booking_time_stop',
         'payment_type',
         'membership_id',
-        'invoice_id'
+        'invoice_id',
+        'search_key'
     ];
 
     public function by_user(){
@@ -75,6 +77,7 @@ class Booking extends Model
                     'payment_type'      => 'required|in:cash,membership',
                     'membership_id'     => '',
                     'invoice_id'        => '',
+                    'search_key'        => 'required|unique:bookings,search_key'
                 ];
             }
             case 'PUT':
@@ -92,6 +95,7 @@ class Booking extends Model
                     'payment_type'      => 'required|in:cash,membership',
                     'membership_id'     => '',
                     'invoice_id'        => '',
+                    'search_key'        => 'required|unique:bookings,search_key'.($id ? ",$id,id" : '')
                 ];
             }
             default:break;

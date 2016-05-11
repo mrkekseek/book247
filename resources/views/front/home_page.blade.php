@@ -70,11 +70,6 @@
                                         </a>
                                         @endif
                                     @endforeach
-                                    <a class="icon-btn location_btn bg-grey-steel" href="javascript:;" data-id="-1">
-                                        <i class="fa fa-calendar hidden-xs"></i>
-                                        <div> All Locations </div>
-                                        <span class="badge badge-success"> 14 </span>
-                                    </a>
                                     <input type="hidden" name="selected_location" value="-1" />
                                 </div>
                             </div>
@@ -338,61 +333,33 @@
                                         <div class="form-body" style="padding-top:0px; padding-bottom:0px;">
                                             <div class="form-group note note-info" style="padding-top:0px; padding-bottom:0px; margin-bottom:2px;">
                                                 <p class="form-control-static"><strong>Select End Time</strong></p>
-                                                <select class="form-control" name="booking_end_time" id="booking_end_time">
-                                                    <option value="11:00">11:00</option>
-                                                    <option value="11:30">11:30</option>
-                                                </select>
 
-                                                <div class="form-actions right" style="padding-top:5px; padding-bottom:5px;">
-                                                    <button class="btn green" type="submit" style="padding-top:4px; padding-bottom:4px;">Next</button>
+                                                <div class="booking_step_content" style="display:block;">
+                                                    <select class="form-control" name="booking_end_time" id="booking_end_time"> </select>
+                                                    <div class="form-actions right" style="padding-top:5px; padding-bottom:5px;">
+                                                        <a class="btn blue-hoki booking_step_next" data-id="to_own_booking" style="padding-top:4px; padding-bottom:4px;">Next</a>
+                                                    </div>
                                                 </div>
                                             </div>
-                                            <div class="form-group note note-info" style="padding-top:0px; padding-bottom:0px; margin-bottom:2px;">
-                                                <p class="form-control-static"><strong>Own booking - 11:00</strong></p>
-                                                <div style="display:none;">
-                                                    <select class="form-control" name="resources_rooms" id="resources_rooms"></select>
+                                            <div class="form-group note note-info is_own_booking" style="padding-top:0px; padding-bottom:0px; margin-bottom:2px;">
+                                                <input type="hidden" value="" name="time_book_key" />
+                                                <input type="hidden" value="" name="time_book_hour" />
+                                                <p class="form-control-static"><strong>
+                                                        <span data-id="booking_name">Own Booking</span>
+                                                        <span data-id="start_time"></span>
+                                                        <span data-id="room_booked"></span></strong></p>
+                                                <div class="booking_step_content" style="display:none;">
+                                                    <select class="form-control" name="resources_room" id="resources_rooms"></select>
                                                     <div class="form-actions right" style="padding-top:5px; padding-bottom:5px;">
-                                                        <button class="btn green" type="submit" style="padding-top:4px; padding-bottom:4px;">Back</button>
-                                                        <button class="btn green" type="submit" style="padding-top:4px; padding-bottom:4px;">Next</button>
+                                                        <a class="btn blue-hoki booking_step_back" style="padding-top:4px; padding-bottom:4px;">Back</a>
+                                                        <a class="btn blue-hoki booking_step_next" style="padding-top:4px; padding-bottom:4px;">Next</a>
                                                     </div>
                                                 </div>
                                             </div>
                                             <div class="form-group note note-info" style="padding-top:0px; padding-bottom:0px; margin-bottom:2px;">
-                                                <p class="form-control-static"><strong>Friend Booking - 11:30</strong></p>
+                                                <p class="form-control-static"><strong>Booking Summary</strong></p>
 
-                                                <div style="display:none;">
-                                                    <label><small>Select Friend</small></label>
-                                                    <select class="form-control margin-bottom-10 input-sm" name="resources_rooms" id="resources_rooms"></select>
-
-                                                    <label><small>Select Room</small></label>
-                                                    <select class="form-control input-sm" name="resources_rooms" id="resources_rooms"></select>
-
-                                                    <div class="form-actions right" style="padding-top:5px; padding-bottom:5px;">
-                                                        <button class="btn green" type="submit" style="padding-top:4px; padding-bottom:4px;">Back</button>
-                                                        <button class="btn green" type="submit" style="padding-top:4px; padding-bottom:4px;">Next</button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="form-group note note-info" style="padding-top:0px; padding-bottom:0px; margin-bottom:2px;">
-                                                <p class="form-control-static"><strong>Friend Booking - 12:00</strong></p>
-
-                                                <div style="display:none;">
-                                                    <label><small>Select Friend</small></label>
-                                                    <select class="form-control margin-bottom-10 input-sm" name="resources_rooms" id="resources_rooms"></select>
-
-                                                    <label><small>Select Room</small></label>
-                                                    <select class="form-control input-sm" name="resources_rooms" id="resources_rooms"></select>
-
-                                                    <div class="form-actions right" style="padding-top:5px; padding-bottom:5px;">
-                                                        <button class="btn green" type="submit" style="padding-top:4px; padding-bottom:4px;">Back</button>
-                                                        <button class="btn green" type="submit" style="padding-top:4px; padding-bottom:4px;">Next</button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="form-group note note-info" style="padding-top:0px; padding-bottom:0px; margin-bottom:2px;">
-                                                <p class="form-control-static"><strong>Payment Method</strong></p>
-
-                                                <div style="display:none;">
+                                                <div class="booking_step_content" style="display:none;">
                                                     <!--<div class="radio-list">
                                                         <label class="radio-inline">
                                                             <input type="radio" name="payment_method" id="payment_method" value="membership" checked> Membership Included Booking </label>
@@ -402,6 +369,10 @@
                                                             <input type="radio" name="payment_method" id="payment_method" value="cash-card" > Pay on Location Cash/Card </label>
                                                     </div>
                                                     <input type="hidden" name="selected_time" value="" />
+                                                    <div class="form-actions right" style="padding-top:5px; padding-bottom:5px;">
+                                                        <a class="btn blue-hoki booking_step_back" style="padding-top:4px; padding-bottom:4px;">Back</a>
+                                                        <a class="btn blue-hoki booking_step_next" style="padding-top:4px; padding-bottom:4px;">Confirm</a>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -442,10 +413,7 @@
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn dark btn-outline submit_form_2" data-dismiss="modal">Close</button>
-                            <button type="button" class="btn green submit_form_2" onclick="booking_step_two()">Next Step</button>
-                            <button type="button" class="btn dark btn-outline submit_form_3" onclick="cancel_booking()" style="display:none;">Cancel Booking</button>
-                            <button type="button" class="btn green submit_form_3" onclick="confirm_booking()" style="display:none;">Confirm Booking</button>
+                            <button type="button" class="btn dark btn-outline submit_form_2" data-dismiss="modal">Cancel Booking</button>
                         </div>
                     </div>
                     <!-- /.modal-content -->
@@ -891,6 +859,9 @@
             $('input[name=selected_time]').val($(this).html());
             $('.pre_book_date').html($('.dp-selected').attr('title'));
 
+            $('span[data-id="start_time"]').html(' - ' + $(this).html());
+            $('.is_own_booking').find('input[name="time_book_hour"]').val($.trim($(this).html()));
+
             get_resources_for_hour( $.trim($(this).html()) );
 
             $('#booking_modal_end_time').modal('show');
@@ -910,6 +881,49 @@
 
             $('input[name=selected_location]').val($(this).attr('data-id'));
             get_booking_hours();
+        });
+
+        $(document).on('click', '.booking_step_next', function(){
+            var own_box = $(this).parents('.form-group').first();
+            save_booking(own_box);
+
+            if ($(this).attr('data-id')=="to_own_booking"){
+                var time_intv = new Array('');
+
+                $('.friend_booking').remove();
+                $("#booking_end_time > option").each(function() {
+                    //alert(this.text + ' ' + this.value);
+                    time_intv.push(this.text);
+                });
+
+                add_friends_for_bookings($('#booking_end_time').val()-1, time_intv);
+            }
+
+            var friend_name = own_box.find('select[name="friend_booking"]');
+            if (friend_name.length==0){}
+            else{
+                own_box.find('span[data-id="booking_name"]').html(' ' + friend_name.find(":selected").text());
+            }
+
+            var booked_room = own_box.find('select[name="resources_room"]');
+            own_box.find('span[data-id="room_booked"]').html(' ' + booked_room.find(":selected").text());
+            own_box.find('.booking_step_content').first().hide();
+
+            var own_next = own_box.next('div.form-group');
+            var book_friend_time = own_next.find('input[name="time_book_hour"]').val();
+
+            if (book_friend_time){
+                get_resources_for_hour(book_friend_time, own_next.find('select[name="resources_room"]'));
+            }
+            own_next.find('.booking_step_content').first().show();
+        });
+
+        $(document).on('click', '.booking_step_back', function(){
+            var own_box = $(this).parents('.form-group').first();
+            own_box.find('.booking_step_content').first().hide();
+
+            var own_next = own_box.prev('div.form-group');
+            own_next.find('.booking_step_content').first().show();
         });
 
         function get_booking_hours(selectedDate){
@@ -960,17 +974,47 @@
             });
         }
 
+        var friends_dropd = '';
         function all_friends_format(friends){
             var all_list = '';
             $.each(friends, function(key, value){
                 all_list += '<a class="btn btn-sm btn-outline blue-steel is_resource " data-id="'+ value.id +'" href="javascript:;"> '+ value.name +' <span class="icon-user-following"> </span></a> ';
+                friends_dropd += '<option value="'+value.id+'">'+ value.name +'</option>';
             });
 
             if (all_list == ''){
                 all_list = '<p class="font-green-sharp">You have no friends. Add more using the "Add new friend" button under this message.</p>';
             }
+            else{
+                //add_friends_for_bookings(1, ["","11:30"]);
+            }
 
             $("#friends_list").html(all_list);
+        }
+
+        function add_friends_for_bookings (friends_nr, time_interval){
+            var append_to = '';
+
+            for (var i=1; i<=friends_nr; i++){
+                append_to +=
+                    '<div class="form-group note note-info friend_booking" style="padding-top:0px; padding-bottom:0px; margin-bottom:2px;">' +
+                        '<input type="hidden" name="time_book_hour" value="' + time_interval[i] + '" />' +
+                        '<input type="hidden" name="time_book_key" value="" />' +
+                        '<p class="form-control-static"><strong><span data-id="booking_name">Friend Booking</span> <span data-id="start_time"> - ' + time_interval[i] + '</span> <span data-id="room_booked"></span></strong></p>' +
+                        '<div class="booking_step_content" style="display:none;">' +
+                            '<label><small>Select Friend</small></label>' +
+                            '<select class="form-control margin-bottom-10 input-sm" name="friend_booking">'+ friends_dropd +'</select>' +
+                            '<label><small>Select Room</small></label>' +
+                            '<select class="form-control input-sm" name="resources_room"></select>' +
+                            '<div class="form-actions right" style="padding-top:5px; padding-bottom:5px;">' +
+                                '<a class="btn blue-hoki booking_step_back" style="padding-top:4px; padding-bottom:4px;">Back</a> ' +
+                                '<a class="btn blue-hoki booking_step_next" style="padding-top:4px; padding-bottom:4px;">Next</a>' +
+                            '</div>' +
+                        '</div>' +
+                    '</div>';
+            }
+
+            $('.is_own_booking').after(append_to);
         }
 
         function time_of_booking_format_hours(hours){
@@ -987,15 +1031,32 @@
             $("#booking_hours").html(all_hours);
         }
 
-        function place_of_booking_format_rooms(resources){
+        function place_of_booking_format_rooms(resources, place){
+            place = typeof place !== 'undefined' ? place : $('#resources_rooms');
             var all_rooms = '';
             $.each(resources, function(key, value){
                 all_rooms+='<option value="'+ value.id +'"> '+ value.name +' </option> ';
             });
-            $('#resources_rooms').html(all_rooms);
+            place.html(all_rooms);
         }
 
-        function get_resources_for_hour(bookTime){
+        function end_time_interval_format(intervals){
+            var all_intervals = '';
+            var i = 1;
+
+            $.each(intervals, function(key, value){
+                all_intervals+='<option value="'+ i +'"> '+ key +' </option> ';
+                i++;
+
+                if (i>6){
+                    return false;
+                }
+            });
+
+            $("#booking_end_time").html(all_intervals);
+        }
+
+        function get_resources_for_hour(bookTime, place) {
             bookDate = $('input[name=selected_date]').val();
 
             $.ajax({
@@ -1003,34 +1064,76 @@
                 type: "post",
                 cache: false,
                 data: {
-                    'location_selected':    $('input[name=selected_location]').val(),
-                    'date_selected':        bookDate,
-                    'time_selected':        bookTime,
-                    'selected_category':    $('input[name=selected_category]').val(),
+                    'location_selected': $('input[name=selected_location]').val(),
+                    'date_selected': bookDate,
+                    'time_selected': bookTime,
+                    'selected_category': $('input[name=selected_category]').val(),
                 },
-                success: function(data){
-                    place_of_booking_format_rooms(data);
+                success: function (data) {
+                    place_of_booking_format_rooms(data.shop_resources, place);
+
+                    if ($('#booking_end_time').html().length < 5) {
+                        end_time_interval_format(data.next_interval);
+                    }
                 }
             });
         }
 
-        function save_booking(){
+        function get_resource_for_friend_hour(bookTime){
+            bookDate = $('input[name=selected_date]').val();
+
+            $.ajax({
+                url: '{{route('ajax/get_resource_date_time')}}',
+                type: "post",
+                cache: false,
+                data: {
+                    'location_selected': $('input[name=selected_location]').val(),
+                    'date_selected': bookDate,
+                    'time_selected': bookTime,
+                    'selected_category': $('input[name=selected_category]').val(),
+                },
+                success: function (data) {
+                    place_of_booking_format_rooms(data, place);
+                }
+            });
+        }
+
+        function save_booking(field){
+            field = typeof field !== 'undefined' ? field : "";
+            if (field.hasClass('is_own_booking') || field.hasClass('friend_booking')){
+                var sel_time     = field.find('input[name="time_book_hour"]').val();
+                var sel_resource = field.find('select[name="resources_room"]');
+                    sel_resource = sel_resource.find(":selected").val();
+                var sel_key = field.find('input[name="time_book_key"]').val();
+            }
+            else{
+                //var sel_time     = $('input[name=selected_time]').val();
+                //var sel_resource = $('select[name=resources_rooms]').val();
+
+                return false;
+            }
+            var sel_location = $('input[name=selected_location]').val();
+            var sel_activity = $('input[name=selected_category]').val();
+            var sel_date     = $('input[name=selected_date]').val();
+            //var sel_payment  = $('input[name=payment_method]:radio:checked').val();
+            var sel_payment  = 'cash';
+
             $.ajax({
                 url: '{{route('booking.store')}}',
                 type: "post",
                 cache: false,
                 data: {
-                    'selected_location':    $('input[name=selected_location]').val(),
-                    'selected_activity':    $('input[name=selected_category]').val(),
-                    'selected_date':        $('input[name=selected_date]').val(),
-                    'selected_time':        $('input[name=selected_time]').val(),
-                    'selected_resource':    $('select[name=resources_rooms]').val(),
-                    'selected_payment':     $('input[name=payment_method]:radio:checked').val(),
-
+                    'selected_location':    sel_location,
+                    'selected_activity':    sel_activity,
+                    'selected_date':        sel_date,
+                    'selected_time':        sel_time,
+                    'selected_resource':    sel_resource,
+                    'selected_payment':     sel_payment,
+                    'book_key':             sel_key,
                 },
                 success: function(data){
+                    field.find('input[name="time_book_key"]').val(data.booking_key);
                     get_booking_hours();
-                    $('#booking_modal_end_time').modal('hide');
                 }
             });
         }
@@ -1122,7 +1225,9 @@
         }
 
         jQuery(document).ready(function() {
-            get_booking_hours();
+            $('.location_btn').first().click();
+
+            //get_booking_hours();
             get_friends_list();
         });
 
