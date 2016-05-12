@@ -66,7 +66,6 @@ class FrontPageController extends Controller
         //xdebug_var_dump($errors);
 
         $user = Auth::user();
-
         $shopLocations = ShopLocations::with('opening_hours')->with('resources')->get();
 
         $resourceCategories = [];
@@ -138,6 +137,7 @@ class FrontPageController extends Controller
 
             $q = DB::table('bookings')->whereIn('resource_id',$resourceIDs)
                 ->where('date_of_booking','=',$vars['date_selected'])
+                ->whereIn('status',['pending','active','paid','unpaid','old'])
                 ->where('booking_time_start','=',$vars['time_selected']);
             $bookings = $q->get();
 
@@ -167,6 +167,7 @@ class FrontPageController extends Controller
 
         $q = DB::table('bookings')->whereIn('resource_id',$resourceIDs)
             ->where('date_of_booking','=',$date)
+            ->whereIn('status',['pending','active','paid','unpaid','old'])
             ->where('booking_time_start','=',$time);
         $res = $q->get();
         $number = sizeof($res);
@@ -225,6 +226,7 @@ class FrontPageController extends Controller
     public function get_booking_hours(Request $request){
         if (Auth::check()) {
             $user = Auth::user();
+            BookingController::check_for_expired_pending_bookings();
         }
 
         $shopResource = [];
@@ -301,6 +303,7 @@ class FrontPageController extends Controller
     public function get_next_available_hours($vars){
         if (Auth::check()) {
             $user = Auth::user();
+            BookingController::check_for_expired_pending_bookings();
         }
 
         // check if we get today or 10 days from today
@@ -348,11 +351,11 @@ class FrontPageController extends Controller
                 continue;
             }
 
+            $available_ones[$key] = $hour;
+
             if ($hour['percent']==100){
                 break;
             }
-
-            $available_ones[$key] = $hour;
         }
 
         return $available_ones;

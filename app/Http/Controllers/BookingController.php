@@ -11,6 +11,7 @@ use App\Http\Controllers\Controller;
 use App\User;
 use Validator;
 use Auth;
+use Carbon\Carbon;
 
 class BookingController extends Controller
 {
@@ -51,7 +52,7 @@ class BookingController extends Controller
         }
 
         /** @var  $vars */
-        $vars = $request->only('selected_activity', 'selected_date', 'selected_location', 'selected_payment', 'selected_resource', 'selected_time', 'book_key');
+        $vars = $request->only('selected_activity', 'selected_date', 'selected_location', 'selected_payment', 'selected_resource', 'selected_time', 'book_key', 'player');
         $search_key = substr( base64_encode(openssl_random_pseudo_bytes(32)),0 ,63 );
 
         if ($vars['selected_location']==-1){
@@ -67,7 +68,7 @@ class BookingController extends Controller
 
         $fillable = [
             'by_user_id'    => $user->id,
-            'for_user_id'   => $user->id,
+            'for_user_id'   => isset($vars['player'])?$vars['player']:$user->id,
             'location_id'   => $vars['selected_location'],
             'resource_id'   => $vars['selected_resource'],
             'status'        => 'pending',
@@ -85,6 +86,9 @@ class BookingController extends Controller
                 'success' => false,
                 'errors' => $validator->getMessageBag()->toArray()
             );
+        }
+        else{
+
         }
 
         try {
@@ -160,5 +164,22 @@ class BookingController extends Controller
 
     public function cancel_booking(Request $request){
 
+    }
+
+    public static function get_user_bookings($userID, $status=['pending','active','paid','unpaid','old','canceled']){
+        $bookings = [];
+
+        $all_bookings = Booking::where('for_user_id','=',$userID)->whereIn('status', $status)->get();
+        //xdebug_var_dump($all_bookings);
+        if ($all_bookings){
+            foreach($all_bookings as $booking){
+                $bookings[] = ['id'=>$booking->id, 'status'=>$booking->status];
+            }
+        }
+        return $bookings;
+    }
+
+    public static function check_for_expired_pending_bookings($time = 300){
+        Booking::where('updated_at','<',Carbon::now()->subSeconds($time))->where('status','=','pending')->update(['status'=>'canceled']);
     }
 }

@@ -423,8 +423,13 @@ Route::group(['prefix'=>'ajax', 'middleware' => 'web'], function(){
         'uses'  => 'FrontEndUserController@add_friend_by_phone'
     ]);
 
-    ROute::post('get_friends_list', [
+    Route::post('get_friends_list', [
         'as'    => 'ajax/get_friends_list',
         'uses'  => 'FrontEndUserController@ajax_get_friends_list'
+    ]);
+
+    Route::post('get_friends_players_list', [
+        'as'    => 'ajax/get_players_list',
+        'uses'  => 'FrontEndUserController@ajax_get_available_players_list'
     ]);
 });

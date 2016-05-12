@@ -316,6 +316,7 @@
                 <!-- END PAGE CONTENT INNER -->
             </div>
 
+            @if (Auth::check())
             <div class="modal fade draggable-modal" id="booking_modal_end_time" tabindex="-1" role="basic" aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
@@ -342,10 +343,10 @@
                                                 </div>
                                             </div>
                                             <div class="form-group note note-info is_own_booking" style="padding-top:0px; padding-bottom:0px; margin-bottom:2px;">
-                                                <input type="hidden" value="" name="time_book_key" />
-                                                <input type="hidden" value="" name="time_book_hour" />
+                                                <input type="hidden" autocomplete="off" value="" name="time_book_key" />
+                                                <input type="hidden" autocomplete="off" value="" name="time_book_hour" />
                                                 <p class="form-control-static"><strong>
-                                                        <span data-id="booking_name">Own Booking</span>
+                                                        <span data-id="booking_name">{{ $user->first_name.' '.$user->middle_name.' '.$user->last_name }}</span>
                                                         <span data-id="start_time"></span>
                                                         <span data-id="room_booked"></span></strong></p>
                                                 <div class="booking_step_content" style="display:none;">
@@ -457,6 +458,7 @@
                 </div>
                 <!-- /.modal-dialog -->
             </div>
+            @endif
         </div>
         <!-- END PAGE CONTENT BODY -->
         <!-- END CONTENT BODY -->
@@ -914,6 +916,9 @@
 
             if (book_friend_time){
                 get_resources_for_hour(book_friend_time, own_next.find('select[name="resources_room"]'));
+
+                var players_list_select = own_next.find('select[name="friend_booking"]');
+                get_players_list(players_list_select);
             }
             own_next.find('.booking_step_content').first().show();
         });
@@ -974,12 +979,36 @@
             });
         }
 
-        var friends_dropd = '';
+        function get_players_list(container){
+            App.blockUI({
+                target: '#booking-step-one',
+                boxed: true,
+                message: 'Processing...'
+            });
+
+            $.ajax({
+                url: '{{route('ajax/get_players_list')}}',
+                type: "post",
+                cache: false,
+                data: {
+                    'limit': 5,
+                },
+                success: function(data){
+                    var all_list = "";
+                    $.each(data, function(key, value){
+                        all_list += '<option value="'+ value.id +'">'+ value.name +'</option>';
+                    });
+                    container.html(all_list);
+
+                    App.unblockUI('#booking-step-one');
+                }
+            });
+        }
+
         function all_friends_format(friends){
             var all_list = '';
             $.each(friends, function(key, value){
                 all_list += '<a class="btn btn-sm btn-outline blue-steel is_resource " data-id="'+ value.id +'" href="javascript:;"> '+ value.name +' <span class="icon-user-following"> </span></a> ';
-                friends_dropd += '<option value="'+value.id+'">'+ value.name +'</option>';
             });
 
             if (all_list == ''){
@@ -1000,10 +1029,10 @@
                     '<div class="form-group note note-info friend_booking" style="padding-top:0px; padding-bottom:0px; margin-bottom:2px;">' +
                         '<input type="hidden" name="time_book_hour" value="' + time_interval[i] + '" />' +
                         '<input type="hidden" name="time_book_key" value="" />' +
-                        '<p class="form-control-static"><strong><span data-id="booking_name">Friend Booking</span> <span data-id="start_time"> - ' + time_interval[i] + '</span> <span data-id="room_booked"></span></strong></p>' +
+                        '<p class="form-control-static"><strong><span data-id="booking_name">Next Booking</span> <span data-id="start_time"> - ' + time_interval[i] + '</span> <span data-id="room_booked"></span></strong></p>' +
                         '<div class="booking_step_content" style="display:none;">' +
-                            '<label><small>Select Friend</small></label>' +
-                            '<select class="form-control margin-bottom-10 input-sm" name="friend_booking">'+ friends_dropd +'</select>' +
+                            '<label><small>Select Player</small></label>' +
+                            '<select class="form-control margin-bottom-10 input-sm" name="friend_booking"></select>' +
                             '<label><small>Select Room</small></label>' +
                             '<select class="form-control input-sm" name="resources_room"></select>' +
                             '<div class="form-actions right" style="padding-top:5px; padding-bottom:5px;">' +
@@ -1058,6 +1087,7 @@
 
         function get_resources_for_hour(bookTime, place) {
             bookDate = $('input[name=selected_date]').val();
+            $("#booking_end_time").html('');
 
             $.ajax({
                 url: '{{route('ajax/get_resource_date_time')}}',
@@ -1105,6 +1135,8 @@
                 var sel_resource = field.find('select[name="resources_room"]');
                     sel_resource = sel_resource.find(":selected").val();
                 var sel_key = field.find('input[name="time_book_key"]').val();
+                var player  = field.find('select[name="friend_booking"]');
+                    player = player.find(":selected").val();
             }
             else{
                 //var sel_time     = $('input[name=selected_time]').val();
@@ -1130,6 +1162,7 @@
                     'selected_resource':    sel_resource,
                     'selected_payment':     sel_payment,
                     'book_key':             sel_key,
+                    'player':               player,
                 },
                 success: function(data){
                     field.find('input[name="time_book_key"]').val(data.booking_key);

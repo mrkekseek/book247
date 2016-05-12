@@ -1035,6 +1035,31 @@ class FrontEndUserController extends Controller
         return $all_friends;
     }
 
+    public function ajax_get_available_players_list($id=-1){
+        if (!Auth::check()) {
+            return [];
+        }
+        else{
+            $user = Auth::user();
+            $user_id = $user->id;
+        }
+
+        $all_friends[] = ['name' => $user->first_name.' '.$user->middle_name.' '.$user->last_name, 'id' => $user->id];
+        $friends = UserFriends::where('user_id','=',$user_id)->orWhere('friend_id','=',$user_id)->get();
+        foreach($friends as $friend){
+            $friend_id = $friend->user_id==$user_id?$friend->friend_id:$friend->user_id;
+            $user_details = User::find($friend_id);
+
+            if (!$user_details){ continue; }
+            $bookings = BookingController::get_user_bookings($friend_id,['pending','active']);
+            if (sizeof($bookings)>0){ continue; }
+
+            $all_friends[] = ['name' => $user_details->first_name.' '.$user_details->middle_name.' '.$user_details->last_name, 'id'=>$user_details->id];
+        }
+
+        return $all_friends;
+    }
+
     public function add_friend_by_phone(Request $request, $id=-1){
         if (!Auth::check()) {
             $msg = ['success'=>'false', 'error'=> ['title'=>'An error occured', 'message'=>'Please check the number and add it again. You have a limited number of attempts']];
