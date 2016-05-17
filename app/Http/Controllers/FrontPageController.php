@@ -65,6 +65,9 @@ class FrontPageController extends Controller
         $errors = Session::get('errors', new MessageBag);
         //xdebug_var_dump($errors);
 
+        BookingController::check_for_passed_bookings();
+        BookingController::check_for_expired_pending_bookings();
+
         $user = Auth::user();
         $shopLocations = ShopLocations::with('opening_hours')->with('resources')->get();
 
@@ -381,12 +384,14 @@ class FrontPageController extends Controller
             ->with('location')
             ->with('resource')
             ->whereIn('by_user_id', $me_an_friends,'or')
-            ->WhereIn('for_user_id',$me_an_friends,'or')
+            ->whereIn('for_user_id',$me_an_friends,'or')
             ->orderBy('created_at','desc')
-            ->take(10)
+            ->take(50)
             ->get();
-
         foreach($bookings as $booking){
+            if ( in_array($booking->status,['expired','canceled']) ){ continue; }
+            elseif ( $booking->for_user_id != $user->id && in_array($booking->status, ['paid', 'unpaid', 'no_show']) ){ continue; }
+
             $createdAt = Carbon::createFromTimeStamp(strtotime($booking->created_at))->diffForHumans();
             $singleBook = [];
             $singleBook['passed_time_since_creation'] = $createdAt;
@@ -404,8 +409,15 @@ class FrontPageController extends Controller
             $singleBook['book_time_end'] = $booking->booking_time_end;
 
             $formatedBookings[] = $singleBook;
+            if (sizeof($formatedBookings)>15){ break; }
         }
 
         return $formatedBookings;
+    }
+
+    public function get_bookings_summary(Request $request){
+        $vars = $request->only('selected_bookings');
+
+        return 'bine';
     }
 }

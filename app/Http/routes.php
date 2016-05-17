@@ -387,7 +387,6 @@ Route::group(['middleware' => 'web'], function () {
 
     /** Start Routes for bookings */
     Route::resource('booking', 'BookingController');
-
     /** Stop Routes for bookings */
 });
 
@@ -416,6 +415,21 @@ Route::group(['prefix'=>'ajax', 'middleware' => 'web'], function(){
     Route::post('booking_canceled', [
         'as'    => 'ajax/booking-canceled',
         'uses'  => 'BookingController@cancel_booking'
+    ]);
+
+    Route::post('confirm_many', [
+        'as'    => 'ajax/confirm_bookings',
+        'uses'  => 'BookingController@confirm_bookings'
+    ]);
+
+    Route::post('cancel_many', [
+        'as'    => 'ajax/cancel_bookings',
+        'uses'  => 'BookingController@cancel_bookings'
+    ]);
+
+    Route::post('get_bookings_summary', [
+        'as'    => 'ajax/get_bookings_summary',
+        'uses'  => 'BookingController@bookings_summary',
     ]);
 
     Route::post('add_friend_by_phone', [

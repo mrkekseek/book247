@@ -37,7 +37,8 @@ class Booking extends Model
         'payment_type',
         'membership_id',
         'invoice_id',
-        'search_key'
+        'search_key',
+        'payment_amount',
     ];
 
     public function by_user(){
@@ -77,7 +78,8 @@ class Booking extends Model
                     'payment_type'      => 'required|in:cash,membership',
                     'membership_id'     => '',
                     'invoice_id'        => '',
-                    'search_key'        => 'required|unique:bookings,search_key'
+                    'search_key'        => 'required|unique:bookings,search_key',
+                    'payment_amount'    => 'numeric',
                 ];
             }
             case 'PUT':
@@ -95,7 +97,8 @@ class Booking extends Model
                     'payment_type'      => 'required|in:cash,membership',
                     'membership_id'     => '',
                     'invoice_id'        => '',
-                    'search_key'        => 'required|unique:bookings,search_key'.($id ? ",$id,id" : '')
+                    'search_key'        => 'required|unique:bookings,search_key'.($id ? ",$id,id" : ''),
+                    'payment_amount'    => 'numeric',
                 ];
             }
             default:break;

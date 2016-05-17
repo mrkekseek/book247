@@ -259,7 +259,8 @@
                                                             <span class="item-label">{{ $knownBooking['passed_time_since_creation'] }}</span>
                                                         </div>
                                                         <span class="item-status">
-                                                            <span class="badge badge-empty badge-warning"></span> {{ $knownBooking['status'] }} </span>
+                                                            <span class="badge badge-empty {{ $knownBooking['status']=='active'?'bg-green-jungle':'' }}
+                                                                {{ $knownBooking['status']=='pending'?'bg-red-thunderbird':'' }} "></span> {{ $knownBooking['status'] }} </span>
                                                     </div>
                                                     <div class="item-body"> Own booking for <span class="font-blue-hoki">{{ $knownBooking['book_date_format'] }}</span> in <span class="font-purple-sharp">{{ $knownBooking['on_location'] }}</span>
                                                         for <span class="font-blue-hoki">{{ $knownBooking['categoryName'] }}</span> activity. Reserved resource -  <span class="font-purple-sharp">{{ $knownBooking['on_resource'] }}</span> room. </div>
@@ -327,6 +328,7 @@
                                         <i class="icon-social-dribbble font-green"></i>
                                         <span class="caption-subject font-green bold uppercase">Blockquotes</span>
                                     </div>
+                                    <div style="float:right;" class="caption" id="countdown_60"><span class="minutes"></span>:<span class="seconds"></span></div>
                                 </div>
                                 <div class="portlet-body form">
                                     <!-- Booking first step Start -->
@@ -349,6 +351,7 @@
                                                         <span data-id="booking_name">{{ $user->first_name.' '.$user->middle_name.' '.$user->last_name }}</span>
                                                         <span data-id="start_time"></span>
                                                         <span data-id="room_booked"></span></strong></p>
+                                                <div class="form-control-static fa-item booking_payment_type" style="float:right;"></div>
                                                 <div class="booking_step_content" style="display:none;">
                                                     <select class="form-control" name="resources_room" id="resources_rooms"></select>
                                                     <div class="form-actions right" style="padding-top:5px; padding-bottom:5px;">
@@ -357,22 +360,15 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="form-group note note-info" style="padding-top:0px; padding-bottom:0px; margin-bottom:2px;">
+                                            <div class="form-group note note-info booking_summary_box" style="padding-top:0px; padding-bottom:0px; margin-bottom:2px;">
                                                 <p class="form-control-static"><strong>Booking Summary</strong></p>
 
                                                 <div class="booking_step_content" style="display:none;">
-                                                    <!--<div class="radio-list">
-                                                        <label class="radio-inline">
-                                                            <input type="radio" name="payment_method" id="payment_method" value="membership" checked> Membership Included Booking </label>
-                                                    </div>-->
-                                                    <div class="radio-list">
-                                                        <label class="radio-inline">
-                                                            <input type="radio" name="payment_method" id="payment_method" value="cash-card" > Pay on Location Cash/Card </label>
-                                                    </div>
-                                                    <input type="hidden" name="selected_time" value="" />
+                                                    <div class="booking_summary_price_membership"></div>
                                                     <div class="form-actions right" style="padding-top:5px; padding-bottom:5px;">
                                                         <a class="btn blue-hoki booking_step_back" style="padding-top:4px; padding-bottom:4px;">Back</a>
-                                                        <a class="btn blue-hoki booking_step_next" style="padding-top:4px; padding-bottom:4px;">Confirm</a>
+                                                        <a class="btn blue-hoki " style="padding-top:4px; padding-bottom:4px;" onclick="cancel_booking()">Cancel</a>
+                                                        <a class="btn blue-hoki " style="padding-top:4px; padding-bottom:4px;" onclick="confirm_booking()">Confirm</a>
                                                     </div>
                                                 </div>
                                             </div>
@@ -412,9 +408,6 @@
                                     <!-- Booking second step End -->
                                 </div>
                             </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn dark btn-outline submit_form_2" data-dismiss="modal">Cancel Booking</button>
                         </div>
                     </div>
                     <!-- /.modal-content -->
@@ -855,6 +848,7 @@
             get_booking_hours();
         });
 
+        var timeinterval = ''; /* Interval timer */
         $(document).on('click', '.book_step', function(){
         @if (isset($user))
             $('.pre_book_time').html( $.trim($(this).html()) );
@@ -865,6 +859,12 @@
             $('.is_own_booking').find('input[name="time_book_hour"]').val($.trim($(this).html()));
 
             get_resources_for_hour( $.trim($(this).html()) );
+
+            if(typeof timeinterval !== "undefined"){
+                clearInterval(timeinterval);
+            }
+            var deadline = new Date(Date.parse(new Date()) + 60 * 1000);
+            initializeClock('countdown_60', deadline);
 
             $('#booking_modal_end_time').modal('show');
         @else
@@ -887,7 +887,6 @@
 
         $(document).on('click', '.booking_step_next', function(){
             var own_box = $(this).parents('.form-group').first();
-            save_booking(own_box);
 
             if ($(this).attr('data-id')=="to_own_booking"){
                 var time_intv = new Array('');
@@ -909,19 +908,34 @@
 
             var booked_room = own_box.find('select[name="resources_room"]');
             own_box.find('span[data-id="room_booked"]').html(' ' + booked_room.find(":selected").text());
-            own_box.find('.booking_step_content').first().hide();
 
             var own_next = own_box.next('div.form-group');
             var book_friend_time = own_next.find('input[name="time_book_hour"]').val();
 
             if (book_friend_time){
-                get_resources_for_hour(book_friend_time, own_next.find('select[name="resources_room"]'));
-
                 var players_list_select = own_next.find('select[name="friend_booking"]');
-                get_players_list(players_list_select);
+                //get_players_list(players_list_select);
+                //get_resources_for_hour(book_friend_time, own_next.find('select[name="resources_room"]'));
+                var resource_for_hour = {book_friend_time:book_friend_time, resource_room:own_next.find('select[name="resources_room"]')};
+                save_booking(own_box, resource_for_hour, players_list_select, own_box, own_next);
             }
-            own_next.find('.booking_step_content').first().show();
+            else{
+                save_booking(own_box, 0, 0, own_box, own_next);
+            }
+
+            if (own_next.hasClass('booking_summary_box')){
+                get_booking_summary(own_next);
+            }
+
+            if ($(this).attr('data-id')=="to_own_booking") {
+                own_box.find('.booking_step_content').first().hide();
+                own_next.find('.booking_step_content').first().show();
+            }
         });
+
+        function make_next_step(){
+
+        }
 
         $(document).on('click', '.booking_step_back', function(){
             var own_box = $(this).parents('.form-group').first();
@@ -1030,6 +1044,7 @@
                         '<input type="hidden" name="time_book_hour" value="' + time_interval[i] + '" />' +
                         '<input type="hidden" name="time_book_key" value="" />' +
                         '<p class="form-control-static"><strong><span data-id="booking_name">Next Booking</span> <span data-id="start_time"> - ' + time_interval[i] + '</span> <span data-id="room_booked"></span></strong></p>' +
+                        '<div style="float:right;" class="form-control-static fa-item booking_payment_type"></div>' +
                         '<div class="booking_step_content" style="display:none;">' +
                             '<label><small>Select Player</small></label>' +
                             '<select class="form-control margin-bottom-10 input-sm" name="friend_booking"></select>' +
@@ -1062,9 +1077,12 @@
 
         function place_of_booking_format_rooms(resources, place){
             place = typeof place !== 'undefined' ? place : $('#resources_rooms');
+
+            var default_room = $("#resources_rooms").find(":selected").val();
             var all_rooms = '';
+
             $.each(resources, function(key, value){
-                all_rooms+='<option value="'+ value.id +'"> '+ value.name +' </option> ';
+                all_rooms+='<option '+ (default_room==value.id?' selected="selected" ':'') +' value="'+ value.id +'"> '+ value.name +' </option> ';
             });
             place.html(all_rooms);
         }
@@ -1128,7 +1146,7 @@
             });
         }
 
-        function save_booking(field){
+        function save_booking(field, resource_for_hour, players_list_select, own_box, own_next){
             field = typeof field !== 'undefined' ? field : "";
             if (field.hasClass('is_own_booking') || field.hasClass('friend_booking')){
                 var sel_time     = field.find('input[name="time_book_hour"]').val();
@@ -1165,59 +1183,159 @@
                     'player':               player,
                 },
                 success: function(data){
-                    field.find('input[name="time_book_key"]').val(data.booking_key);
-                    get_booking_hours();
+                    if (data.booking_key==''){
+                        // something went wrong, reload resources for the window
+                    }
+                    else{
+                        field.find('input[name="time_book_key"]').val(data.booking_key);
+
+                        if (resource_for_hour==0 || resource_for_hour==0){
+
+                        }
+                        else{
+                            get_players_list(players_list_select);
+                            get_resources_for_hour(resource_for_hour.book_friend_time, resource_for_hour.resource_room);
+                        }
+
+                        var payment_type_book = own_box.find('.booking_payment_type');
+                        if (data.booking_type == 'membership'){
+                            payment_type_book.html('<i class="fa fa-thumbs-o-up"></i>');
+                        }
+                        else{
+                            payment_type_book.html('<i class="fa fa-credit-card"></i>');
+                        }
+
+                        get_booking_hours();
+                        own_box.find('.booking_step_content').first().hide();
+                        own_next.find('.booking_step_content').first().show();
+                    }
+                }
+            });
+        }
+
+        function get_booking_summary(place){
+            var all_bookings = '';
+            $('input[name="time_book_key"]').each(function(){
+                if ( $(this).val().length > 4 ) {
+                    all_bookings += $(this).val() + ',';
+                }
+            });
+
+            $.ajax({
+                url: '{{route('ajax/get_bookings_summary')}}',
+                type: "post",
+                cache: false,
+                data: {
+                    'all_bookings': all_bookings,
+                },
+                success: function(data){
+                    if (data.success=='true') {
+                        if (data.membership_nr == 0){
+                            var membership_bookings = '<h5>Membership included bookings : <span id="membership_bookings_nr"> None </span></h5>';
+                        }
+                        else{
+                            var membership_bookings = '<h5>Membership included bookings : <span id="membership_bookings_nr">' + data.membership_nr + '</span></h5>';
+                        }
+
+                        if (data.cash_nr == 0){
+                            var cash_bookings = '<h5>Paid bookings : <span id="membership_bookings_nr"> None </span></h5>';
+                        }
+                        else{
+                            var cash_bookings = '<h5>Paid bookings : <span id="membership_bookings_nr">' + data.cash_nr + '</span> of <span>' + data.cash_amount + '</span> in total</h5>';
+                        }
+
+                        $('.booking_summary_price_membership').html(membership_bookings + ' ' + cash_bookings);
+                    }
+                    else {
+                        show_notification(data.error.title, data.error.message, 'lemon', 3500, 0);
+                    }
                 }
             });
         }
 
         function confirm_booking(){
+            var all_bookings = '';
+            $('input[name="time_book_key"]').each(function(){
+                if ( $(this).val().length > 4 ) {
+                    all_bookings += $(this).val() + ',';
+                }
+            });
+
             $.ajax({
-                url: '{{route('booking.store')}}',
+                url: '{{route('ajax/confirm_bookings')}}',
                 type: "post",
                 cache: false,
                 data: {
-                    'selected_location':    $('input[name=selected_location]').val(),
-                    'selected_activity':    $('input[name=selected_category]').val(),
-                    'selected_date':        $('input[name=selected_date]').val(),
-                    'selected_time':        $('input[name=selected_time]').val(),
-                    'selected_resource':    $('select[name=resources_rooms]').val(),
-                    'selected_payment':     $('input[name=payment_method]:radio:checked').val(),
-
+                    'selected_bookings': all_bookings,
                 },
                 success: function(data){
                     $('#booking_modal_end_time').modal('hide');
                     show_notification('Booking Confirmed', 'Your booking is now confirmed. You can see it in your list of bookings.', 'lemon', 3500, 0);
 
                     get_booking_hours();
-                    booking_step_one();
+                    clean_booking_popup();
                 }
             });
         }
 
         function cancel_booking(){
+            var all_bookings = '';
+            $('input[name="time_book_key"]').each(function(){
+                if ( $(this).val().length > 4 ) {
+                    all_bookings += $(this).val() + ',';
+                }
+            });
+
             $.ajax({
-                url: '{{route('booking.store')}}',
+                url: '{{route('ajax/cancel_bookings')}}',
                 type: "post",
                 cache: false,
                 data: {
-                    'selected_location':    $('input[name=selected_location]').val(),
-                    'selected_activity':    $('input[name=selected_category]').val(),
-                    'selected_date':        $('input[name=selected_date]').val(),
-                    'selected_time':        $('input[name=selected_time]').val(),
-                    'selected_resource':    $('select[name=resources_rooms]').val(),
-                    'selected_payment':     $('input[name=payment_method]:radio:checked').val(),
-
+                    'selected_bookings': all_bookings,
                 },
                 success: function(data){
                     $('#booking_modal_end_time').modal('hide');
-                    show_notification('Booking Canceled', 'The selected booking is canceled. You can start the booking process again and select another date/time interval.', 'lemon', 3500, 0);
+                    show_notification('Booking Confirmed', 'The pending bookings were canceled. You can do another booking at any time.', 'lemon', 3500, 0);
 
                     get_booking_hours();
-                    booking_step_one();
+                    clean_booking_popup();
                 }
             });
         }
+
+        function clean_booking_popup(){
+            $('#booking_end_time').html('');
+
+            var nr = 1;
+            $('#booking-step-one > div > div.form-group').each(function(){
+                if (nr==1){
+                    $(this).find('.booking_step_content').first().show();
+                }
+                else{
+                    $(this).find('.booking_step_content').first().hide();
+                }
+
+                if ($(this).hasClass('is_own_booking')){
+                    $(this).find('span[data-id="start_time"]').html('');
+                    $(this).find('span[data-id="room_booked"]').html('');
+                }
+                else if ($(this).hasClass('friend_booking')){
+                    $(this).remove();
+                }
+                nr++;
+            });
+
+            if(typeof timeinterval !== "undefined"){
+                clearInterval(timeinterval);
+            }
+        }
+
+        $('#booking_modal_end_time').on('hidden.bs.modal', function () {
+            if ($('#booking_end_time').html()!=''){
+                show_notification('Booking Operation Was Broken', 'You closed the popup window before the booking was finished. You can always try again.', 'lemon', 3500, 0);
+                clean_booking_popup();
+            }
+        })
 
         function booking_step_two(){
             jQuery('#booking-step-one').hide();
@@ -1257,8 +1375,51 @@
             });
         }
 
+        /* Timer functions - Start */
+        function getTimeRemaining(endtime) {
+            var t = Date.parse(endtime) - Date.parse(new Date());
+            var seconds = Math.floor((t / 1000) % 60);
+            var minutes = Math.floor((t / 1000 / 60) % 60);
+            var hours = Math.floor((t / (1000 * 60 * 60)) % 24);
+            var days = Math.floor(t / (1000 * 60 * 60 * 24));
+            return {
+                'total': t,
+                'days': days,
+                'hours': hours,
+                'minutes': minutes,
+                'seconds': seconds
+            };
+        }
+
+        function initializeClock(id, endtime) {
+            var clock = document.getElementById(id);
+            //var daysSpan = clock.querySelector('.days');
+            //var hoursSpan = clock.querySelector('.hours');
+            var minutesSpan = clock.querySelector('.minutes');
+            var secondsSpan = clock.querySelector('.seconds');
+
+            function updateClock() {
+                var t = getTimeRemaining(endtime);
+
+                //daysSpan.innerHTML = t.days;
+                //hoursSpan.innerHTML = ('0' + t.hours).slice(-2);
+                minutesSpan.innerHTML = ('0' + t.minutes).slice(-2);
+                secondsSpan.innerHTML = ('0' + t.seconds).slice(-2);
+
+                if (t.total <= 0) {
+                    //clearInterval(timeinterval);
+                    $('#booking_modal_end_time').modal('hide');
+                }
+            }
+
+            updateClock();
+            timeinterval = setInterval(updateClock, 1000);
+        }
+        /* Timer function - Stop */
+
         jQuery(document).ready(function() {
-            $('.location_btn').first().click();
+            $('.location_btn[data-id="7"]').click();
+            $('.is_resource[data-id="3"]').click();
 
             //get_booking_hours();
             get_friends_list();

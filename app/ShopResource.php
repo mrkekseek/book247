@@ -14,7 +14,8 @@ class ShopResource extends Model
         'name' => 'Resource Name',
         'description' => 'Description',
         'category_id' => 'Category ID',
-        'color_code' => 'Color Code'
+        'color_code' => 'Color Code',
+        'session_price'=>'Default Session Price'
     );
     public static $validationMessages = array(
 
@@ -26,6 +27,7 @@ class ShopResource extends Model
         'description',
         'category_id',
         'color_code',
+        'session_price'
     );
 
     public function shop_location(){
@@ -45,6 +47,7 @@ class ShopResource extends Model
                     'location_id'   => 'exists:shop_locations,id',
                     'name'          => 'required|unique:shop_resources,name|min:5|max:75',
                     'category_id'   => 'exists:shop_resource_categories,id',
+                    'session_price' => 'numeric',
                 ];
             }
             case 'PUT':
@@ -54,6 +57,7 @@ class ShopResource extends Model
                     'location_id'   => 'exists:shop_locations,id',
                     'name'          => 'required|min:5|max:75|unique:shop_resources,name'.($id ? ','.$id.',id' : ''),
                     'category_id'   => 'exists:shop_resource_categories,id',
+                    'session_price' => 'numeric',
                 ];
             }
             default:break;
