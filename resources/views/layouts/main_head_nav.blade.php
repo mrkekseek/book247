@@ -3,7 +3,7 @@
     <div class="container">
         <!-- BEGIN LOGO -->
         <div class="page-logo">
-            <a href="index.html">
+            <a href="{{ route('homepage') }}">
                 <img height="70" style="height:70px; margin-top:5px;" src="{{ asset('assets/global/img/sqf-logo.png') }}" alt="logo" class="logo-default">
             </a>
         </div>
@@ -387,7 +387,7 @@
                                     <div class="col-md-12">
                                         <ul class="mega-menu-submenu">
                                             <li>
-                                                <a href="ui_colors.html"> Color Library </a>
+                                                <a href="{{ route('front/bookings_archive') }}"> Booking Archive </a>
                                             </li>
                                             <li>
                                                 <a href="ui_general.html"> General Components </a>

@@ -388,6 +388,19 @@ Route::group(['middleware' => 'web'], function () {
     /** Start Routes for bookings */
     Route::resource('booking', 'BookingController');
     /** Stop Routes for bookings */
+
+    /** Start Routes for front end */
+    Route::get('bookings_archive', [
+        'as'    => 'front/bookings_archive',
+        'uses'  => 'BookingController@front_bookings_archive'
+    ]);
+
+    Route::post('bookings_archive', [
+        'as'    => 'front/bookings_archive',
+        'uses'  => 'BookingController@get_user_booking_archive'
+    ]);
+
+    /** Stop Routes for front end */
 });
 
 Route::group(['prefix'=>'ajax', 'middleware' => 'web'], function(){
@@ -427,9 +440,19 @@ Route::group(['prefix'=>'ajax', 'middleware' => 'web'], function(){
         'uses'  => 'BookingController@cancel_bookings'
     ]);
 
+    Route::post('cancel_one', [
+        'as'    => 'ajax/cancel_booking',
+        'uses'  => 'BookingController@cancel_booking'
+    ]);
+
     Route::post('get_bookings_summary', [
         'as'    => 'ajax/get_bookings_summary',
         'uses'  => 'BookingController@bookings_summary',
+    ]);
+
+    Route::post('get_single_booking_details',[
+        'as'    => 'ajax/get_single_booking_details',
+        'uses'  => 'BookingController@single_booking_details'
     ]);
 
     Route::post('add_friend_by_phone', [

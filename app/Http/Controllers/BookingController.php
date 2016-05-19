@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Booking;
 use App\BookingInvoice;
+use App\ShopLocations;
 use App\ShopResource;
+use App\ShopResourceCategory;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -179,10 +181,6 @@ class BookingController extends Controller
 
     public function confirm_booking(Request $request){
         //xdebug_var_dump($request);
-    }
-
-    public function cancel_booking(Request $request){
-
     }
 
     public static function get_user_bookings($userID, $status=['pending','active','paid','unpaid','old','canceled']){
@@ -374,18 +372,37 @@ class BookingController extends Controller
 
         $vars = $request->only('selected_bookings');
         $keys = explode(',',$vars['selected_bookings']);
-
         if (sizeof($keys)>0){
             foreach($keys as $key){
                 if ($key==''){ continue; }
                 Booking::where('status','=','pending')->where('by_user_id','=',$user->id)->where('search_key','=',$key)->update(['status'=>'canceled']);
             }
+
+            return ['success' => 'true', 'message' => 'All is good.'];
         }
         else{
             return ['error' => 'No bookings found to confirm. Please make the booking process again. Remember you have 60 seconds to complete the booking before it expires.'];
         }
+    }
 
-        return 'bine';
+    public function cancel_booking(Request $request){
+        if (!Auth::check()) {
+            //return redirect()->intended(route('admin/login'));
+            return ['error' => 'Authentication Error'];
+        }
+        else{
+            $user = Auth::user();
+        }
+
+        $vars = $request->only('search_key');
+        $booking = Booking::where('for_user_id','=',$user->id)->orWhere('by_user_id','=',$user->id)->where('search_key','=',$vars['search_key'])->get()->first();
+        if ($booking){
+            Booking::whereIn('status',['active', 'pending'])->where('search_key','=',$vars['search_key'])->update(['status'=>'canceled']);
+            return ['success' => 'true', 'message' => 'All is good.'];
+        }
+        else{
+            return ['error' => 'No bookings found to confirm. Please make the booking process again. Remember you have 60 seconds to complete the booking before it expires.'];
+        }
     }
 
     private function validate_booking($fillable, $search_key=''){
@@ -428,4 +445,171 @@ class BookingController extends Controller
 
         return $message;
     }
+
+    public function get_user_booking_archive($userID = -1){
+        if (Auth::check()) {
+            $user = Auth::user();
+        }
+        else{
+            return [];
+        }
+
+        if ($userID == -1){
+            $userID = $user->id;
+        }
+
+        $data = [];
+
+        $allBookings = Booking::where('by_user_id','=',$userID)->orWhere('for_user_id','=',$userID)->whereNotIn('status',['expired'])->get();
+        if ($allBookings){
+            foreach($allBookings as $booking){
+                $format_date = Carbon::createFromFormat('Y-m-d H:i:s', $booking->date_of_booking.' '.$booking->booking_time_start)->format('Y,M j, H:i');
+                $bookingFor = User::find($booking->for_user_id);
+                $location = ShopLocations::find($booking->location_id);
+                $resource = ShopResource::find($booking->resource_id);
+                $activity = ShopResourceCategory::find($resource->category_id);
+                $status = '';
+
+                if ($booking->status != 'active'){
+                    if ($booking->status=="unpaid"){
+                        $status = '<a href="#'.$booking->search_key.'" class="btn green-jungle">Make Payment</a>';
+                    }
+                }
+                else{
+                    if ($this->can_cancel_booking($booking->id)) {
+                        $status = '<span data-id="' . $booking->search_key . '" class="cancel_booking btn red-flamingo">Cancel</span> ';
+                    }
+
+                    if ($booking->by_user_id==$userID) {
+                        $status.= ' <span data-id="' . $booking->search_key . '" class="modify_booking btn blue-steel">Modify</span>';
+                    }
+                }
+
+                $data[] = [
+                    $format_date,
+                    $bookingFor->first_name.' '.$bookingFor->middle_name.' '.$bookingFor->last_name,
+                    $location->name.' - '.$resource->name,
+                    $activity->name,
+                    $booking->status,
+                    $status
+                ];
+            }
+        }
+
+        $bookings = [
+            "data" => $data
+        ];
+
+        return $bookings;
+    }
+
+    public function can_cancel_booking($id, $hours = 8){
+        $booking = Booking::find($id); //exit;
+        //xdebug_var_dump($booking);
+        if ($booking){
+            $bookingStartDateTime = Carbon::createFromFormat('Y-m-d H:i:s', $booking->date_of_booking.' '.$booking->booking_time_start);
+            $actualTime = Carbon::now()->addHours($hours);
+
+            if ($bookingStartDateTime->gte($actualTime)){
+                return true;
+            }
+            else{
+                return false;
+            }
+        }
+        else{
+            return false;
+        }
+    }
+
+    /* Front-End controller functions - Start */
+    public function front_bookings_archive(){
+        if (!Auth::check()) {
+            return redirect()->intended(route('login'));
+        }
+        else{
+            $user = Auth::user();
+        }
+
+        $breadcrumbs = [
+            'Home'      => route('admin'),
+            'Dashboard' => '',
+        ];
+        $text_parts  = [
+            'title'     => 'Home',
+            'subtitle'  => 'users dashboard',
+            'table_head_text1' => 'Dashboard Summary'
+        ];
+        $sidebar_link= 'admin-home_dashboard';
+
+        return view('front\bookings\archive',[
+            'breadcrumbs' => $breadcrumbs,
+            'text_parts'  => $text_parts,
+            'in_sidebar'  => $sidebar_link,
+            'user'  => $user,
+        ]);
+    }
+
+    public function single_booking_details(Request $request){
+        $bookingDetails = [];
+
+        if (Auth::check()) {
+            $user = Auth::user();
+        }
+        else{
+            return $bookingDetails;
+        }
+
+        $vars = $request->only('search_key');
+        $booking = Booking::where('search_key','=',$vars['search_key'])->get()->first();
+        if ($booking){
+            if ($user->id!=$booking->for_user_id && $user->id!=$booking->by_user_id){
+                return $bookingDetails;
+            }
+
+            $location = ShopLocations::find($booking->location_id);
+            $locationName = $location->name;
+            $room = ShopResource::find($booking->resource_id);
+            $roomName = $room->name;
+            $category = ShopResourceCategory::find($room->category_id);
+            $categoryName = $category->name;
+
+            $userBy = User::find($booking->by_user_id);
+            if ($userBy) {
+                $madeBy = $userBy->first_name . ' ' . $userBy->middle_name . ' ' . $userBy->last_name;
+            }
+            $userFor= User::find($booking->for_user_id);
+            if ($userFor) {
+                $madeFor = $userFor->first_name . ' ' . $userFor->middle_name . ' ' . $userFor->last_name;
+            }
+
+            if ($booking->payment_type == 'cash'){
+                $financeDetails = ' Payment of '.$booking->payment_amount;
+            }
+            else{
+                $financeDetails = "Membership included";
+            }
+
+            $bookingDetails = [
+                'bookingDate'   => Carbon::createFromFormat('Y-m-d', $booking->date_of_booking)->format('l, M jS, Y'),
+                'timeStart'     => Carbon::createFromFormat('H:i:s', $booking->booking_time_start)->format('H:i'),
+                'timeStop'      => Carbon::createFromFormat('H:i:s', $booking->booking_time_stop)->format('H:i'),
+                'paymentType'   => $booking->payment_type,
+                'paymentAmount' => $booking->payment_amount,
+                'financialDetails' => $financeDetails,
+                'location'      => $locationName,
+                'room'          => $roomName,
+                'category'      => $categoryName,
+                'byUserName'    => @$madeBy,
+                'forUserName'   => @$madeFor,
+                'forUserID'     => @$booking->for_user_id
+            ];
+
+            return $bookingDetails;
+        }
+        else{
+            return $bookingDetails;
+        }
+    }
+    /* Front-End controller functions - Stop */
 }

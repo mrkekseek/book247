@@ -1318,6 +1318,7 @@
                 if ($(this).hasClass('is_own_booking')){
                     $(this).find('span[data-id="start_time"]').html('');
                     $(this).find('span[data-id="room_booked"]').html('');
+                    $(this).find('.booking_payment_type').html('');
                 }
                 else if ($(this).hasClass('friend_booking')){
                     $(this).remove();

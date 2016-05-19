@@ -340,8 +340,7 @@ class FrontEndUserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show_bookings($id)
-    {
+    public function show_bookings($id){
         if (!Auth::check()) {
             return redirect()->intended(route('admin/login'));
         }
