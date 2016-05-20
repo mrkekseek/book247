@@ -16,6 +16,9 @@ use App\ProfessionalDetail;
 use App\Address;
 use App\UserAvatars;
 use App\UserDocuments;
+use App\ShopLocations;
+use App\ShopResource;
+use App\ShopResourceCategory;
 use Webpatser\Countries\Countries;
 use Auth;
 use Storage;
@@ -356,7 +359,75 @@ class FrontEndUserController extends Controller
             'table_head_text1' => 'Backend User List'
         ];
 
-        $bookings = Booking::where('for_user_id','=',$id)->orWhere('by_user_id','=',$id)->get();
+        $bookingsList = [];
+        $bookings = Booking::where('for_user_id','=',$id)
+                    ->orWhere('by_user_id','=',$id)
+                    ->orderBy('date_of_booking','desc')
+                    ->orderBy('booking_time_start','desc')
+                    ->get();
+        if ($bookings){
+            foreach ($bookings as $booking){
+                $date = Carbon::createFromFormat('Y-m-d', $booking->date_of_booking)->format('l, M jS, Y');
+                $timeInterval = Carbon::createFromFormat('H:i:s', $booking->booking_time_start)->format('H:i').' - '.Carbon::createFromFormat('H:i:s', $booking->booking_time_stop)->format('H:i');
+
+                $userFor= User::find($booking->for_user_id);
+                if ($userFor) {
+                    $madeFor = $userFor->first_name . ' ' . $userFor->middle_name . ' ' . $userFor->last_name;
+                }
+                else{
+                    $madeFor = ' - ';
+                }
+
+                $location = ShopLocations::find($booking->location_id);
+                $locationName = $location->name;
+                $room = ShopResource::find($booking->resource_id);
+                $roomName = $room->name;
+                $category = ShopResourceCategory::find($room->category_id);
+                $categoryName = $category->name;
+
+                $bookingsList[] = [
+                    'date'          => $date,
+                    'timeInterval'  => $timeInterval,
+                    'player_name'   => $madeFor,
+                    'location'      => $locationName,
+                    'room'          => $roomName,
+                    'activity'      => $categoryName,
+                    'status'        => $booking->status,
+                    'last_update'   => $booking->updated_at,
+                    'added_by'      => $booking->by_user_id
+                ];
+            }
+
+            $nr = 1;
+            $index = [];
+            $lastMan = 0;
+            $lastTime = '';
+            $lastTenBookings = [];
+            foreach($bookingsList as $lastOne){
+                if (!isset($lastMan)){ $lastMan = $lastOne['added_by']; }
+                if (!isset($lastTime)){ $lastTime = $lastOne['last_update']; }
+
+                if ($lastMan==$lastOne['added_by'] && $lastTime==$lastOne['last_update']){
+                    $nr++;
+                    $lastOne['colspan'] = 0;
+                }
+                else{
+                    $lastMan  = $lastOne['added_by'];
+                    $lastTime = $lastOne['last_update'];
+
+                    $indexKey = sizeof($index)+1;
+                    $index[$indexKey-1] = $nr;
+
+                    if ($indexKey>10){
+                        break;
+                    }
+                    $nr=1;
+                }
+
+                $lastTenBookings[] = $lastOne;
+            }
+            $index[$indexKey] = $nr;
+        }
 
         $breadcrumbs = [
             'Home'              => route('admin'),
@@ -371,7 +442,9 @@ class FrontEndUserController extends Controller
             'breadcrumbs' => $breadcrumbs,
             'text_parts'  => $text_parts,
             'in_sidebar'  => $sidebar_link,
-            'bookings'    => $bookings,
+            'bookings'    => $bookingsList,
+            'multipleBookingsIndex' => $index,
+            'lastTen' =>  $lastTenBookings
         ]);
     }
 

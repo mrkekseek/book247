@@ -140,52 +140,36 @@
                                                                     <thead>
                                                                     <tr>
                                                                         <th> # </th>
-                                                                        <th> First Name </th>
-                                                                        <th> Last Name </th>
-                                                                        <th> Username </th>
+                                                                        <th> Date </th>
+                                                                        <th> Time Interval </th>
+                                                                        <th> Player </th>
+                                                                        <th> Location </th>
+                                                                        <th> Room </th>
+                                                                        <th> Activity </th>
                                                                         <th> Status </th>
                                                                     </tr>
                                                                     </thead>
                                                                     <tbody>
-                                                                    @foreach($bookings as $booking)
+                                                                    <?php $theNr = 1; ?>
+                                                                    @foreach($lastTen as $booking)
+                                                                        <tr>
+                                                                <?php   if (!isset($booking['colspan'])){
+                                                                            echo '<td rowspan="'.($multipleBookingsIndex[$theNr]).'">'.$theNr.'</td>';
+                                                                            $theNr++;
+                                                                        } else {
 
+                                                                        }
+                                                                ?>          <td> {{$booking['date']}} </td>
+                                                                            <td> {{$booking['timeInterval']}} </td>
+                                                                            <td> {{$booking['player_name']}} </td>
+                                                                            <td> {{$booking['location']}} </td>
+                                                                            <td> {{$booking['room']}} </td>
+                                                                            <td> {{$booking['activity']}} </td>
+                                                                            <td>
+                                                                                <span class="label label-sm label-danger"> Blocked </span>
+                                                                            </td>
+                                                                        </tr>
                                                                     @endforeach
-                                                                    <tr>
-                                                                        <td rowspan="3"> 1 </td>
-                                                                        <td> Mark </td>
-                                                                        <td> Otto </td>
-                                                                        <td> makr124 </td>
-                                                                        <td>
-                                                                            <span class="label label-sm label-success"> Approved </span>
-                                                                        </td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td> Jacob </td>
-                                                                        <td> Nilson </td>
-                                                                        <td> jac123 </td>
-                                                                        <td>
-                                                                            <span class="label label-sm label-info"> Pending </span>
-                                                                        </td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td> Larry </td>
-                                                                        <td> Cooper </td>
-                                                                        <td> lar </td>
-                                                                        <td>
-                                                                            <span class="label label-sm label-warning"> Suspended </span>
-                                                                        </td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td> 3 </td>
-                                                                        <td> Sandy </td>
-                                                                        <td> Lim </td>
-                                                                        <td> sanlim </td>
-                                                                        <td>
-                                                                            <span class="label label-sm label-danger"> Blocked </span>
-                                                                        </td>
-                                                                    </tr>
-
-
                                                                     </tbody>
                                                                 </table>
                                                             </div>
