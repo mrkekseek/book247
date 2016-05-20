@@ -525,7 +525,7 @@ class BookingController extends Controller
     /* Front-End controller functions - Start */
     public function front_bookings_archive(){
         if (!Auth::check()) {
-            return redirect()->intended(route('login'));
+            return redirect()->intended(route('homepage'));
         }
         else{
             $user = Auth::user();

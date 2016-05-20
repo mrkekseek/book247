@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Booking;
 use App\UserFriends;
 use Illuminate\Http\Request;
 
@@ -355,47 +356,7 @@ class FrontEndUserController extends Controller
             'table_head_text1' => 'Backend User List'
         ];
 
-        @$userRole = $back_user->roles[0];
-        if (!$userRole){
-            $defaultRole = Role::where('name','employee')->get();
-            $userRole = $defaultRole[0];
-        }
-        $permissions = Permission::all();
-
-        $userProfessional = $back_user->ProfessionalDetail;
-        if (!isset($userProfessional)){
-            $userProfessional = new ProfessionalDetail();
-        }
-
-        $userPersonal = $back_user->PersonalDetail;
-        if (isset($userPersonal)) {
-            $userPersonal->dob_format = Carbon::createFromFormat('Y-m-d', $userPersonal->date_of_birth)->format('d-m-Y');
-            $userPersonal->dob_to_show = Carbon::createFromFormat('Y-m-d', $userPersonal->date_of_birth)->format('d M Y');
-        }
-        else{
-            $userPersonal = new PersonalDetail();
-        }
-
-        $personalAddress = Address::find($userPersonal->address_id);
-        if (!isset($personalAddress)){
-            $personalAddress = new Address();
-        }
-
-        $roles = Role::all();
-        $countries = Countries::orderBy('name')->get();
-        $userCountry = Countries::find($back_user->country_id);
-
-        $avatar = $back_user->avatar;
-        if (!$avatar) {
-            $avatar = new UserAvatars();
-            $avatar->file_location = 'employees/default/avatars/';
-            $avatar->file_name = 'default.jpg';
-        }
-
-        $avatarContent = Storage::disk('local')->get($avatar->file_location . $avatar->file_name);
-        $avatarType = Storage::disk('local')->mimeType($avatar->file_location . $avatar->file_name);
-
-        $userDocuments = UserDocuments::where('user_id','=',$id)->where('category','=','account_documents')->get();
+        $bookings = Booking::where('for_user_id','=',$id)->orWhere('by_user_id','=',$id)->get();
 
         $breadcrumbs = [
             'Home'              => route('admin'),
@@ -407,20 +368,10 @@ class FrontEndUserController extends Controller
 
         return view('admin/front_users/view_member_bookings', [
             'user'      => $back_user,
-            'userRole'  => $userRole,
-            'professional' => $userProfessional,
-            'personal'  => $userPersonal,
-            'personalAddress' => $personalAddress,
-            'countryDetails' => $userCountry,
-            'countries' => $countries,
-            'roles'     => $roles,
             'breadcrumbs' => $breadcrumbs,
             'text_parts'  => $text_parts,
             'in_sidebar'  => $sidebar_link,
-            'avatar'      => $avatarContent,
-            'avatarType'  => $avatarType,
-            'permissions' => $permissions,
-            'documents'   => $userDocuments,
+            'bookings'    => $bookings,
         ]);
     }
 

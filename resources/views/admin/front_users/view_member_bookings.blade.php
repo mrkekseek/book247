@@ -147,8 +147,11 @@
                                                                     </tr>
                                                                     </thead>
                                                                     <tbody>
+                                                                    @foreach($bookings as $booking)
+
+                                                                    @endforeach
                                                                     <tr>
-                                                                        <td rowspan="2"> 1 </td>
+                                                                        <td rowspan="3"> 1 </td>
                                                                         <td> Mark </td>
                                                                         <td> Otto </td>
                                                                         <td> makr124 </td>
@@ -165,7 +168,6 @@
                                                                         </td>
                                                                     </tr>
                                                                     <tr>
-                                                                        <td> 2 </td>
                                                                         <td> Larry </td>
                                                                         <td> Cooper </td>
                                                                         <td> lar </td>
@@ -183,77 +185,7 @@
                                                                         </td>
                                                                     </tr>
 
-                                                                    <tr>
-                                                                        <td rowspan="2"> 1 </td>
-                                                                        <td> Mark </td>
-                                                                        <td> Otto </td>
-                                                                        <td> makr124 </td>
-                                                                        <td>
-                                                                            <span class="label label-sm label-success"> Approved </span>
-                                                                        </td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td> Jacob </td>
-                                                                        <td> Nilson </td>
-                                                                        <td> jac123 </td>
-                                                                        <td>
-                                                                            <span class="label label-sm label-info"> Pending </span>
-                                                                        </td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td> 2 </td>
-                                                                        <td> Larry </td>
-                                                                        <td> Cooper </td>
-                                                                        <td> lar </td>
-                                                                        <td>
-                                                                            <span class="label label-sm label-warning"> Suspended </span>
-                                                                        </td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td> 3 </td>
-                                                                        <td> Sandy </td>
-                                                                        <td> Lim </td>
-                                                                        <td> sanlim </td>
-                                                                        <td>
-                                                                            <span class="label label-sm label-danger"> Blocked </span>
-                                                                        </td>
-                                                                    </tr>
 
-                                                                    <tr>
-                                                                        <td rowspan="2"> 1 </td>
-                                                                        <td> Mark </td>
-                                                                        <td> Otto </td>
-                                                                        <td> makr124 </td>
-                                                                        <td>
-                                                                            <span class="label label-sm label-success"> Approved </span>
-                                                                        </td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td> Jacob </td>
-                                                                        <td> Nilson </td>
-                                                                        <td> jac123 </td>
-                                                                        <td>
-                                                                            <span class="label label-sm label-info"> Pending </span>
-                                                                        </td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td> 2 </td>
-                                                                        <td> Larry </td>
-                                                                        <td> Cooper </td>
-                                                                        <td> lar </td>
-                                                                        <td>
-                                                                            <span class="label label-sm label-warning"> Suspended </span>
-                                                                        </td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td> 3 </td>
-                                                                        <td> Sandy </td>
-                                                                        <td> Lim </td>
-                                                                        <td> sanlim </td>
-                                                                        <td>
-                                                                            <span class="label label-sm label-danger"> Blocked </span>
-                                                                        </td>
-                                                                    </tr>
                                                                     </tbody>
                                                                 </table>
                                                             </div>
