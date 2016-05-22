@@ -128,51 +128,41 @@
                                                 <div class="col-md-12">
                                                     <!-- BEGIN BORDERED TABLE PORTLET-->
                                                     <div class="portlet light portlet-fit bordered">
-                                                        <div class="portlet-title">
-                                                            <div class="caption">
-                                                                <i class="icon-bubble font-dark"></i>
-                                                                <span class="caption-subject font-dark bold uppercase">Bordered Table</span>
-                                                            </div>
-                                                        </div>
-                                                        <div class="portlet-body">
-                                                            <div class="table-scrollable">
-                                                                <table class="table table-bordered table-hover">
-                                                                    <thead>
+                                                        <div class="table-scrollable">
+                                                            <table class="table table-bordered table-hover">
+                                                                <thead>
+                                                                <tr>
+                                                                    <th> # </th>
+                                                                    <th> Date </th>
+                                                                    <th> Time Interval </th>
+                                                                    <th> Player </th>
+                                                                    <th> Location </th>
+                                                                    <th> Room </th>
+                                                                    <th> Activity </th>
+                                                                    <th> Status </th>
+                                                                </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                <?php $theNr = 1; ?>
+                                                                @foreach($lastTen as $booking)
                                                                     <tr>
-                                                                        <th> # </th>
-                                                                        <th> Date </th>
-                                                                        <th> Time Interval </th>
-                                                                        <th> Player </th>
-                                                                        <th> Location </th>
-                                                                        <th> Room </th>
-                                                                        <th> Activity </th>
-                                                                        <th> Status </th>
+                                                            <?php   if (!isset($booking['colspan'])){
+                                                                        echo '<td rowspan="'.($multipleBookingsIndex[$theNr]).'">'.$theNr.'</td>';
+                                                                        $theNr++;
+                                                                    } else {  } ?>
+                                                                        <td> {{$booking['date']}} </td>
+                                                                        <td> {{$booking['timeInterval']}} </td>
+                                                                        <td> {{$booking['player_name']}} </td>
+                                                                        <td> {{$booking['location']}} </td>
+                                                                        <td> {{$booking['room']}} </td>
+                                                                        <td> {{$booking['activity']}} </td>
+                                                                        <td>
+                                                                            <span class="label label-sm label-danger"> {{$booking['status']}} </span>
+                                                                        </td>
                                                                     </tr>
-                                                                    </thead>
-                                                                    <tbody>
-                                                                    <?php $theNr = 1; ?>
-                                                                    @foreach($lastTen as $booking)
-                                                                        <tr>
-                                                                <?php   if (!isset($booking['colspan'])){
-                                                                            echo '<td rowspan="'.($multipleBookingsIndex[$theNr]).'">'.$theNr.'</td>';
-                                                                            $theNr++;
-                                                                        } else {
-
-                                                                        }
-                                                                ?>          <td> {{$booking['date']}} </td>
-                                                                            <td> {{$booking['timeInterval']}} </td>
-                                                                            <td> {{$booking['player_name']}} </td>
-                                                                            <td> {{$booking['location']}} </td>
-                                                                            <td> {{$booking['room']}} </td>
-                                                                            <td> {{$booking['activity']}} </td>
-                                                                            <td>
-                                                                                <span class="label label-sm label-danger"> Blocked </span>
-                                                                            </td>
-                                                                        </tr>
-                                                                    @endforeach
-                                                                    </tbody>
-                                                                </table>
-                                                            </div>
+                                                                @endforeach
+                                                                </tbody>
+                                                            </table>
                                                         </div>
                                                     </div>
                                                     <!-- END BORDERED TABLE PORTLET-->
@@ -188,79 +178,44 @@
                                                 <div class="col-md-12">
                                                     <!-- BEGIN SAMPLE TABLE PORTLET-->
                                                     <div class="portlet">
-                                                        <div class="portlet-title">
-                                                            <div class="caption">
-                                                                <i class="fa fa-bell-o"></i>Advance Table </div>
-                                                            <div class="tools">
-                                                                <a class="collapse" href="javascript:;" data-original-title="" title=""> </a>
-                                                                <a class="config" data-toggle="modal" href="#portlet-config" data-original-title="" title=""> </a>
-                                                                <a class="reload" href="javascript:;" data-original-title="" title=""> </a>
-                                                                <a class="remove" href="javascript:;" data-original-title="" title=""> </a>
-                                                            </div>
-                                                        </div>
                                                         <div class="portlet-body">
                                                             <div class="table-scrollable">
                                                                 <table class="table table-striped table-bordered table-advance table-hover">
                                                                     <thead>
                                                                     <tr>
                                                                         <th>
-                                                                            <i class="fa fa-briefcase"></i> Company </th>
-                                                                        <th class="hidden-xs">
-                                                                            <i class="fa fa-user"></i> Contact </th>
+                                                                            <i class="fa fa-briefcase"></i> Date </th>
                                                                         <th>
-                                                                            <i class="fa fa-shopping-cart"></i> Total </th>
+                                                                            <i class="fa fa-briefcase"></i> Time </th>
+                                                                        <th>
+                                                                            <i class="fa fa-briefcase"></i> Location - Room </th>
+                                                                        <th class="hidden-xs">
+                                                                            <i class="fa fa-user"></i> Player </th>
+                                                                        <th>
+                                                                            <i class="fa fa-briefcase"></i> Activity </th>
+                                                                        <th>
+                                                                            <i class="fa fa-shopping-cart"></i> Status </th>
                                                                         <th> </th>
                                                                     </tr>
                                                                     </thead>
                                                                     <tbody>
+                                                                    @foreach ($bookings as $booking)
                                                                     <tr>
                                                                         <td class="highlight">
-                                                                            <div class="success"></div>
-                                                                            <a href="javascript:;"> RedBull </a>
+                                                                            <div class="{{ $booking['color_status'] }}"></div>
+                                                                            <a href="javascript:;"> {{ $booking['dateShort'] }} </a>
                                                                         </td>
-                                                                        <td class="hidden-xs"> Mike Nilson </td>
-                                                                        <td> 2560.60$ </td>
+                                                                        <td> {{ $booking['timeInterval'] }} </td>
+                                                                        <td> {{ $booking['location'].' - '.$booking['room'] }} </td>
+                                                                        <td> {{ $booking['player_name'] }} </td>
+                                                                        <td> {{ $booking['activity'] }} </td>
+                                                                        <td> {{ $booking['status'] }} </td>
                                                                         <td>
-                                                                            <a class="btn btn-outline btn-circle btn-sm purple" href="javascript:;">
-                                                                                <i class="fa fa-edit"></i> Edit </a>
+                                                                            <a class="btn {{ $booking['color_button'] }} btn-sm" data-key="{{$booking['search_key']}}" href="javascript:;">
+                                                                                <i class="fa fa-edit"></i> Details </a>
                                                                         </td>
                                                                     </tr>
-                                                                    <tr>
-                                                                        <td class="highlight">
-                                                                            <div class="info"> </div>
-                                                                            <a href="javascript:;"> Google </a>
-                                                                        </td>
-                                                                        <td class="hidden-xs"> Adam Larson </td>
-                                                                        <td> 560.60$ </td>
-                                                                        <td>
-                                                                            <a class="btn btn-outline btn-circle dark btn-sm black" href="javascript:;">
-                                                                                <i class="fa fa-trash-o"></i> Delete </a>
-                                                                        </td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td class="highlight">
-                                                                            <div class="success"> </div>
-                                                                            <a href="javascript:;"> Apple </a>
-                                                                        </td>
-                                                                        <td class="hidden-xs"> Daniel Kim </td>
-                                                                        <td> 3460.60$ </td>
-                                                                        <td>
-                                                                            <a class="btn btn-outline btn-circle green btn-sm purple" href="javascript:;">
-                                                                                <i class="fa fa-edit"></i> Edit </a>
-                                                                        </td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td class="highlight">
-                                                                            <div class="warning"> </div>
-                                                                            <a href="javascript:;"> Microsoft </a>
-                                                                        </td>
-                                                                        <td class="hidden-xs"> Nick </td>
-                                                                        <td> 2560.60$ </td>
-                                                                        <td>
-                                                                            <a class="btn btn-outline btn-circle red btn-sm blue" href="javascript:;">
-                                                                                <i class="fa fa-share"></i> Share </a>
-                                                                        </td>
-                                                                    </tr>
+                                                                    @endforeach
                                                                     </tbody>
                                                                 </table>
                                                             </div>
