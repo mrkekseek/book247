@@ -135,10 +135,10 @@
                                                                     <th> # </th>
                                                                     <th> Date </th>
                                                                     <th> Time Interval </th>
-                                                                    <th> Player </th>
+                                                                    <th class="hidden-xs"> Player </th>
                                                                     <th> Location </th>
-                                                                    <th> Room </th>
-                                                                    <th> Activity </th>
+                                                                    <th class="hidden-xs"> Room </th>
+                                                                    <th class="hidden-xs"> Activity </th>
                                                                     <th> Status </th>
                                                                 </tr>
                                                                 </thead>
@@ -152,12 +152,12 @@
                                                                     } else {  } ?>
                                                                         <td> {{$booking['date']}} </td>
                                                                         <td> {{$booking['timeInterval']}} </td>
-                                                                        <td> {{$booking['player_name']}} </td>
-                                                                        <td> {{$booking['location']}} </td>
+                                                                        <td class="hidden-xs"> <a href="{{ route('admin/front_users/view_user',['id'=>$booking['player_id']])}}" target="_blank">{{$booking['player_name']}}</a> </td>
+                                                                        <td class="hidden-xs"> {{$booking['location']}} </td>
                                                                         <td> {{$booking['room']}} </td>
-                                                                        <td> {{$booking['activity']}} </td>
+                                                                        <td class="hidden-xs"> {{$booking['activity']}} </td>
                                                                         <td>
-                                                                            <span class="label label-sm label-danger"> {{$booking['status']}} </span>
+                                                                            <span class="label label-sm label-danger booking_details_modal" data-key="{{$booking['search_key']}}"> {{$booking['status']}} </span>
                                                                         </td>
                                                                     </tr>
                                                                 @endforeach
@@ -184,15 +184,17 @@
                                                                     <thead>
                                                                     <tr>
                                                                         <th>
-                                                                            <i class="fa fa-briefcase"></i> Date </th>
+                                                                            <i class="fa fa-briefcase"></i> Booking Date </th>
                                                                         <th>
-                                                                            <i class="fa fa-briefcase"></i> Time </th>
+                                                                            <i class="fa fa-briefcase"></i> Booking Time </th>
                                                                         <th>
                                                                             <i class="fa fa-briefcase"></i> Location - Room </th>
                                                                         <th class="hidden-xs">
                                                                             <i class="fa fa-user"></i> Player </th>
                                                                         <th>
                                                                             <i class="fa fa-briefcase"></i> Activity </th>
+                                                                        <th>
+                                                                            <i class="fa fa-briefcase"></i> Added On </th>
                                                                         <th>
                                                                             <i class="fa fa-shopping-cart"></i> Status </th>
                                                                         <th> </th>
@@ -207,11 +209,12 @@
                                                                         </td>
                                                                         <td> {{ $booking['timeInterval'] }} </td>
                                                                         <td> {{ $booking['location'].' - '.$booking['room'] }} </td>
-                                                                        <td> {{ $booking['player_name'] }} </td>
+                                                                        <td class="hidden-xs"> <a href="{{route('admin/front_users/view_user',['id'=>$booking['player_id']])}}" target="_blank">{{$booking['player_name']}}</a> </td>
                                                                         <td> {{ $booking['activity'] }} </td>
+                                                                        <td> {{ $booking['added_on'] }} </td>
                                                                         <td> {{ $booking['status'] }} </td>
                                                                         <td>
-                                                                            <a class="btn {{ $booking['color_button'] }} btn-sm" data-key="{{$booking['search_key']}}" href="javascript:;">
+                                                                            <a class="btn {{ $booking['color_button'] }} btn-sm booking_details_modal" data-key="{{$booking['search_key']}}" href="javascript:;">
                                                                                 <i class="fa fa-edit"></i> Details </a>
                                                                         </td>
                                                                     </tr>
@@ -231,6 +234,65 @@
                             </div>
                         </div>
                     </div>
+                </div>
+
+                <div class="modal fade" id="changeIt" tabindex="-1" role="dialog" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                                <h4 class="modal-title"> Booking Details </h4>
+                            </div>
+                            <div class="modal-body form-horizontal" id="book_main_details_container">
+                                <div class="form-body">
+                                    <div class="form-group">
+                                        <label class="col-md-3 control-label"> Date/Time</label>
+                                        <div class="col-md-9">
+                                            <input type="text" class="form-control input-inline input-large" name="book_date_time" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-3 control-label"> Location</label>
+                                        <div class="col-md-9">
+                                            <input type="text" class="form-control input-inline input-large" name="book_location" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-3 control-label"> Room</label>
+                                        <div class="col-md-9">
+                                            <input class="form-control input-inline input-large" name="book_room" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-3 control-label"> Activity</label>
+                                        <div class="col-md-9">
+                                            <input type="text" class="form-control input-inline input-large" name="book_activity" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-3 control-label"> Player </label>
+                                        <div class="col-md-9">
+                                            <select class="form-control input-inline input-large" name="book_player"></select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-3 control-label"> Financial </label>
+                                        <div class="col-md-9">
+                                            <select class="form-control input-inline input-large" name="book_finance"></select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn green btn_modify_booking" style="display:none;" onclick="javascript:update_booking();">Modify Booking</button>
+                                <button type="button" class="btn green btn_cancel_booking" style="display:none;" onclick="javascript:cancel_booking();">Cancel Booking</button>
+                                <button type="button" class="btn green btn_show_invoice" style="display:none;" onclick="javascript:show_booking_invoice();">Show Invoice</button>
+                                <button type="button" class="btn dark btn-outline" data-dismiss="modal">Return</button>
+                            </div>
+                        </div>
+                        <!-- /.modal-content -->
+                    </div>
+                    <!-- /.modal-dialog -->
                 </div>
                 <!-- END PROFILE CONTENT -->
             </div>
@@ -287,7 +349,6 @@
         );
 
         var FormValidation = function () {
-
             var handleValidation1 = function() {
                 var form1 = $('#form_acc_personal');
                 var error1 = $('.alert-danger', form1);
@@ -352,305 +413,10 @@
                 });
             }
 
-            var handleValidation2 = function() {
-                // for more info visit the official plugin documentation:
-                // http://docs.jquery.com/Plugins/Validation
-                var form2 = $('#form_acc_info');
-                var error2 = $('.alert-danger', form2);
-                var success2 = $('.alert-success', form2);
-
-                form2.validate({
-                    errorElement: 'span', //default input error message container
-                    errorClass: 'help-block help-block-error', // default input error message class
-                    focusInvalid: false, // do not focus the last invalid input
-                    ignore: "",  // validate all fields including form hidden input
-                    rules: {
-                        accountUsername: {
-                            minlength: 3,
-                            required: true
-                        },
-                        accountEmail: {
-                            required: true,
-                            email: true
-                        },
-                    },
-
-                    invalidHandler: function (event, validator) { //display error alert on form submit
-                        success2.hide();
-                        error2.show();
-                        App.scrollTo(error2, -200);
-                    },
-
-                    errorPlacement: function (error, element) { // render error placement for each input type
-                        var icon = $(element).parent('.input-icon').children('i');
-                        icon.removeClass('fa-check').addClass("fa-warning");
-                        icon.attr("data-original-title", error.text()).tooltip({'container': 'body'});
-                    },
-
-                    highlight: function (element) { // hightlight error inputs
-                        $(element)
-                                .closest('.form-group').removeClass("has-success").addClass('has-error'); // set error class to the control group
-                    },
-
-                    unhighlight: function (element) { // revert the change done by hightlight
-
-                    },
-
-                    success: function (label, element) {
-                        var icon = $(element).parent('.input-icon').children('i');
-                        $(element).closest('.form-group').removeClass('has-error').addClass('has-success'); // set success class to the control group
-                        icon.removeClass("fa-warning").addClass("fa-check");
-                    },
-
-                    submitHandler: function (form) {
-                        success2.show();
-                        error2.hide();
-                        store_account_info(); // submit the form
-                    }
-                });
-            }
-
-            var handleValidation3 = function() {
-                var form3 = $('#form_personal_address');
-                var error3 = $('.alert-danger', form3);
-                var success3 = $('.alert-success', form3);
-
-                form3.validate({
-                    errorElement: 'span', //default input error message container
-                    errorClass: 'help-block help-block-error', // default input error message class
-                    focusInvalid: false, // do not focus the last invalid input
-                    ignore: "",  // validate all fields including form hidden input
-                    rules: {
-                        personal_addr1: {
-                            minlength: 5,
-                            required: true
-                        },
-                        personal_addr_city: {
-                            minlength: 3,
-                            required: true
-                        },
-                        personal_addr_region: {
-                            minlength:2,
-                            required: true
-                        },
-                        personal_addr_pcode: {
-                            minlength: 2,
-                            required: true
-                        },
-                    },
-
-                    invalidHandler: function (event, validator) { //display error alert on form submit
-                        success3.hide();
-                        error3.show();
-                        App.scrollTo(error3, -200);
-                    },
-
-                    errorPlacement: function (error, element) { // render error placement for each input type
-                        var icon = $(element).parent('.input-icon').children('i');
-                        icon.removeClass('fa-check').addClass("fa-warning");
-                        icon.attr("data-original-title", error.text()).tooltip({'container': 'body'});
-                    },
-
-                    highlight: function (element) { // hightlight error inputs
-                        $(element)
-                                .closest('.form-group').removeClass("has-success").addClass('has-error'); // set error class to the control group
-                    },
-
-                    unhighlight: function (element) { // revert the change done by hightlight
-
-                    },
-
-                    success: function (label, element) {
-                        var icon = $(element).parent('.input-icon').children('i');
-                        $(element).closest('.form-group').removeClass('has-error').addClass('has-success'); // set success class to the control group
-                        icon.removeClass("fa-warning").addClass("fa-check");
-                    },
-
-                    submitHandler: function (form) {
-                        success3.show();
-                        error3.hide();
-                        update_personal_address(); // submit the form
-                    }
-                });
-            }
-
-            var handleValidation4 = function() {
-                var form4 = $('#form_password_update');
-                var error4 = $('.alert-danger', form4);
-                var success4 = $('.alert-success', form4);
-
-                form4.validate({
-                    errorElement: 'span', //default input error message container
-                    errorClass: 'help-block help-block-error', // default input error message class
-                    focusInvalid: false, // do not focus the last invalid input
-                    ignore: "",  // validate all fields including form hidden input
-                    rules: {
-                        old_password: {
-                            minlength: 8,
-                            required: true,
-                        },
-                        new_password1: {
-                            minlength: 8,
-                            required: true,
-                        },
-                        new_password2: {
-                            minlength: 8,
-                            required: true,
-                            equalTo: '#new_password1',
-                        },
-                    },
-
-                    invalidHandler: function (event, validator) { //display error alert on form submit
-                        success4.hide();
-                        error4.show();
-                        App.scrollTo(error4, -200);
-                    },
-
-                    errorPlacement: function (error, element) { // render error placement for each input type
-                        var icon = $(element).parent('.input-icon').children('i');
-                        icon.removeClass('fa-check').addClass("fa-warning");
-                        icon.attr("data-original-title", error.text()).tooltip({'container': 'body'});
-                    },
-
-                    highlight: function (element) { // hightlight error inputs
-                        $(element)
-                                .closest('.form-group').removeClass("has-success").addClass('has-error'); // set error class to the control group
-                    },
-
-                    unhighlight: function (element) { // revert the change done by hightlight
-
-                    },
-
-                    success: function (label, element) {
-                        var icon = $(element).parent('.input-icon').children('i');
-                        $(element).closest('.form-group').removeClass('has-error').addClass('has-success'); // set success class to the control group
-                        icon.removeClass("fa-warning").addClass("fa-check");
-                    },
-
-                    submitHandler: function (form) {
-                        success4.show();
-                        error4.hide();
-                        update_passwd(); // submit the form
-                    }
-                });
-            }
-
-            var handleValidation5 = function() {
-                var form5 = $('#user_picture_upload1');
-                var error5 = $('.alert-danger', form5);
-                var success5 = $('.alert-success', form5);
-
-                form5.validate({
-                    errorElement: 'span', //default input error message container
-                    errorClass: 'help-block help-block-error', // default input error message class
-                    focusInvalid: false, // do not focus the last invalid input
-                    ignore: "",  // validate all fields including form hidden input
-                    rules: {
-                        user_avatar: {
-                            required: true,
-                            accept: "image/*",
-                            filesize: 1048576,
-                        },
-                    },
-                    messages: {
-                        user_avatar: {
-                            required: "We need your avatar before submitting the form",
-                            accept: "The uploaded file must be an image",
-                            filesize: "File must be JPG, GIF or PNG, less than 1MB",
-                        }
-                    },
-
-                    invalidHandler: function (event, validator) { //display error alert on form submit
-                        success5.hide();
-                        error5.show();
-                        App.scrollTo(error5, -200);
-                    },
-
-                    highlight: function (element) { // hightlight error inputs
-                        $(element)
-                                .closest('.form-group').addClass('has-error'); // set error class to the control group
-                    },
-
-                    unhighlight: function (element) { // revert the change done by hightlight
-                        $(element)
-                                .closest('.form-group').removeClass('has-error'); // set error class to the control group
-                    },
-
-                    success: function (label) {
-                        label
-                                .closest('.form-group').removeClass('has-error'); // set success class to the control group
-                    },
-
-                    submitHandler: function (form) {
-                        success5.show();
-                        error5.hide();
-                        form.submit();
-                    }
-                });
-            }
-
-            var handleValidation6 = function() {
-                var form6 = $('#user_picture_upload2');
-                var error6 = $('.alert-danger', form6);
-                var success6 = $('.alert-success', form6);
-
-                form5.validate({
-                    errorElement: 'span', //default input error message container
-                    errorClass: 'help-block help-block-error', // default input error message class
-                    focusInvalid: false, // do not focus the last invalid input
-                    ignore: "",  // validate all fields including form hidden input
-                    rules: {
-                        user_avatar: {
-                            required: true,
-                            accept: "image/*",
-                            filesize: 1048576,
-                        },
-                    },
-                    messages: {
-                        user_avatar: {
-                            required: "We need your avatar before submitting the form",
-                            accept: "The uploaded file must be an image",
-                            filesize: "File must be JPG, GIF or PNG, less than 1MB",
-                        }
-                    },
-
-                    invalidHandler: function (event, validator) { //display error alert on form submit
-                        success6.hide();
-                        error6.show();
-                        App.scrollTo(error6, -200);
-                    },
-
-                    highlight: function (element) { // hightlight error inputs
-                        $(element)
-                                .closest('.form-group').addClass('has-error'); // set error class to the control group
-                    },
-
-                    unhighlight: function (element) { // revert the change done by hightlight
-                        $(element)
-                                .closest('.form-group').removeClass('has-error'); // set error class to the control group
-                    },
-
-                    success: function (label) {
-                        label
-                                .closest('.form-group').removeClass('has-error'); // set success class to the control group
-                    },
-
-                    submitHandler: function (form) {
-                        success6.show();
-                        error6.hide();
-                        form.submit();
-                    }
-                });
-            }
-
             return {
                 //main function to initiate the module
                 init: function () {
                     handleValidation1();
-                    handleValidation2();
-                    handleValidation3();
-                    handleValidation4();
-                    handleValidation5();
                 }
             };
         }();
@@ -659,104 +425,87 @@
             FormValidation.init();
         });
 
-        function store_account_info(){
+        $(document).on('click', '.booking_details_modal', function(){
+            modify_booking_details($(this).attr('data-key'));
+            $('#changeIt').modal('show');
+        });
+
+        function modify_booking_details(key){
             $.ajax({
-                url: '{{route('admin/back_users/view_user/acc_info', ['id'=>$user->id])}}',
+                url: '{{route('ajax/get_single_booking_details')}}',
                 type: "post",
+                cache: false,
                 data: {
-                    'accountUsername': $('input[name=accountUsername]').val(),
-                    'accountEmail': $('input[name=accountEmail]').val(),
-                    'accountJobTitle': $('input[name=accountJobTitle]').val(),
-                    'accountProfession': $('input[name=accountProfession]').val(),
-                    'accountDescription': $('textarea[name=accountDescription]').val(),
-                    'employeeRole': $('select[name=employeeRole]').val(),
-                    '_method': 'post',
+                    'search_key': key,
+                    'the_user': "{{ $user->id }}"
                 },
-                success: function(data){
-                    alert(data);
+                success: function (data) {
+                    $('input[name="book_date_time"]').val(data.bookingDate + ', ' + data.timeStart + ' - ' + data.timeStop);
+                    $('input[name="book_location"]').val(data.location);
+                    $('input[name="book_room"]').val(data.room);
+                    $('input[name="book_activity"]').val(data.category);
+                    get_players_list($('select[name="book_player"]'), data.forUserName, data.forUserID);
+
+                    if (data.paymentType=='cash'){
+                        var book_finance = '<option value="cash" selected="selected">' + data.financialDetails + '</option>' +
+                                '<option value="membership">Membership</option>';
+                    }
+                    else{
+                        var book_finance = '<option value="cash"> Payment of ' + data.paymentAmount + ' </option>' +
+                                '<option value="membership" selected="selected">Membership</option>';
+                    }
+                    $('select[name="book_finance"]').html(book_finance);
+
+                    if (data.canCancel=="1"){
+                        $('.btn_cancel_booking').show();
+                    }
+                    else{
+                        $('.btn_cancel_booking').hide();
+                    }
+
+                    if (data.canModify=="1"){   $('.btn_modify_booking').show(); }
+                    else{                       $('.btn_modify_booking').hide(); }
+                    if (data.canModify=="1"){   $('.btn_modify_booking').show(); }
+                    else{                       $('.btn_modify_booking').hide(); }
+                    if (data.invoiceLink!="0"){
+                        $('.btn_show_invoice').show();
+                        $('.btn_show_invoice').attr({'data-id':data.invoiceLink});
+                    }
+                    else{
+                        $('.btn_show_invoice').hide();
+                        $('.btn_show_invoice').attr({'data-id':''});
+                    }
                 }
             });
         }
 
-        function store_account_personal(){
-            $.ajax({
-                url: '{{route('admin/back_users/view_user/personal_info', ['id'=>$user->id])}}',
-                type: "post",
-                data: {
-                    'first_name':       $('input[name=personalFirstName]').val(),
-                    'middle_name':      $('input[name=personalMiddleName]').val(),
-                    'last_name':        $('input[name=personalLastName]').val(),
-                    'date_of_birth':    $('input[name=personalDOB]').val(),
-                    'personal_email':   $('input[name=personalEmail]').val(),
-                    'mobile_number':    $('input[name=personalPhone]').val(),
-                    'bank_acc_no':      $('input[name=personalBankAcc]').val(),
-                    'social_sec_no':    $('input[name=personalSSN]').val(),
-                    'about_info':       $('textarea[name=personalAbout]').val(),
-                    'country_id':       $('select[name=personalCountry]').val(),
-                    '_method': 'post',
-                },
-                success: function(data){
-                    alert(data);
-                }
-            });
-        }
-
-        function update_personal_address(){
-            $.ajax({
-                url: '{{route('admin/back_users/view_user/personal_address', ['id'=>$user->id])}}',
-                type: "post",
-                data: {
-                    'address1':     $('input[name=personal_addr1]').val(),
-                    'address2':     $('input[name=personal_addr2]').val(),
-                    'city':         $('input[name=personal_addr_city]').val(),
-                    'region':       $('input[name=personal_addr_region]').val(),
-                    'postal_code':  $('input[name=personal_addr_pcode]').val(),
-                    'country_id':   $('select[name=personal_addr_country]').val(),
-                    '_method': 'post',
-                },
-                success: function(data){
-                    alert(data);
-                }
-            });
-        }
-
-        function update_passwd(){
-            $.ajax({
-                url: '{{route('admin/back_users/view_user/password_update', ['id'=>$user->id])}}',
-                type: "post",
-                data: {
-                    'old_password': $('input[name=old_password]').val(),
-                    'password1':    $('input[name=new_password1]').val(),
-                    'password2':    $('input[name=new_password2]').val(),
-                    '_method': 'post',
-                },
-                success: function(data){
-                    alert(data);
-                }
-            });
-        }
-
-        $(".user_avatar_select_btn1").on("click", function(){
+        function get_players_list(container, player_name, player_id){
             App.blockUI({
-                target: '#user_picture_upload1',
-                boxed: true
+                target: '#book_main_details_container',
+                boxed: true,
+                message: 'Processing...'
             });
-        });
 
-        $(".user_avatar_select_btn1").on("change", function(){
-            App.unblockUI('#user_picture_upload1');
-        });
+            $.ajax({
+                url: '{{route('ajax/get_players_list')}}',
+                type: "post",
+                cache: false,
+                data: {
+                    'limit': 5,
+                },
+                success: function(data){
+                    var all_list = '<option value="'+ player_id +'" selected="selected">'+ player_name +'</option>';
+                    $.each(data, function(key, value){
+                        if (value.id != player_id) {
+                            all_list += '<option value="' + value.id + '">' + value.name + '</option>';
+                        }
+                    });
+                    container.html(all_list);
 
-        $(".user_avatar_select_btn2").on("click", function(){
-            App.blockUI({
-                target: '#user_picture_upload2',
-                boxed: true
+                    App.unblockUI('#book_main_details_container');
+                }
             });
-        });
-
-        $(".user_avatar_select_btn2").on("change", function(){
-            App.unblockUI('#user_picture_upload2');
-        });
+        }
 
         function show_notification(title_heading, message, theme, life, sticky) {
             var settings = {

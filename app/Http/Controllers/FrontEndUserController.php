@@ -376,7 +376,7 @@ class FrontEndUserController extends Controller
                         break;
                     case 'expired' :
                         $colorStatus = 'warning';
-                        $buttons = 'red-intense';
+                        $buttons = 'grey-salsa';
                         break;
                     case'active' :
                         $colorStatus = 'success';
@@ -388,7 +388,7 @@ class FrontEndUserController extends Controller
                         break;
                     case 'unpaid' :
                         $colorStatus = 'danger';
-                        $buttons = 'red-thunderbird';
+                        $buttons = 'yellow-gold';
                         break;
                     case 'noshow' :
                         $colorStatus = 'danger';
@@ -396,18 +396,20 @@ class FrontEndUserController extends Controller
                         break;
                     case 'old' :
                         $colorStatus = 'success';
-                        $buttons = 'green-jungle';
+                        $buttons = 'green-meadow';
                         break;
                     case 'canceled' :
                         $colorStatus = 'success';
-                        $buttons = 'green-jungle';
+                        $buttons = 'yellow-lemon';
                         break;
                 }
 
-                $date = Carbon::createFromFormat('Y-m-d', $booking->date_of_booking)->format('l, M jS, Y');
-                $dateSmall = Carbon::createFromFormat('Y-m-d', $booking->date_of_booking)->format('j/m/Y');
+                $date       = Carbon::createFromFormat('Y-m-d', $booking->date_of_booking)->format('l, M jS, Y');
+                $addedOn    = Carbon::createFromFormat('Y-m-d H:i:s', $booking->updated_at)->format('j/m/Y H:i');
+                $dateSmall  = Carbon::createFromFormat('Y-m-d', $booking->date_of_booking)->format('j/m/Y');
                 $timeInterval = Carbon::createFromFormat('H:i:s', $booking->booking_time_start)->format('H:i').' - '.Carbon::createFromFormat('H:i:s', $booking->booking_time_stop)->format('H:i');
 
+                $madeForID = $booking->for_user_id;
                 $userFor= User::find($booking->for_user_id);
                 if ($userFor) {
                     $madeFor = $userFor->first_name . ' ' . $userFor->middle_name . ' ' . $userFor->last_name;
@@ -428,6 +430,7 @@ class FrontEndUserController extends Controller
                     'date'          => $date,
                     'timeInterval'  => $timeInterval,
                     'player_name'   => $madeFor,
+                    'player_id'     => $madeForID,
                     'location'      => $locationName,
                     'room'          => $roomName,
                     'activity'      => $categoryName,
@@ -436,7 +439,8 @@ class FrontEndUserController extends Controller
                     'color_button'  => $buttons,
                     'last_update'   => $booking->updated_at,
                     'added_by'      => $booking->by_user_id,
-                    'search_key'    => $booking->search_key
+                    'search_key'    => $booking->search_key,
+                    'added_on'      => $addedOn
                 ];
             }
 

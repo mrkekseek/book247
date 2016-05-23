@@ -13,6 +13,7 @@ use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use App\User;
 use Validator;
+use Zizaco\Entrust\EntrustRole;
 use Auth;
 use Carbon\Carbon;
 
@@ -560,17 +561,47 @@ class BookingController extends Controller
             return $bookingDetails;
         }
 
-        $vars = $request->only('search_key');
+        $vars = $request->only('search_key','the_user');
         $booking = Booking::where('search_key','=',$vars['search_key'])->get()->first();
         if ($booking){
-            if ($user->id!=$booking->for_user_id && $user->id!=$booking->by_user_id){
+            // the logged in user is : the player or the person that did the booking or an employee with booking edit options
+            if ( $user->id!=$booking->for_user_id && $user->id!=$booking->by_user_id && $user->can('booking-change-update') == false ){
                 return $bookingDetails;
+            }
+
+            $canCancel  = '0';
+            $canModify  = '0';
+            $invoiceLink = '0';
+            if ($user->can('booking-change-update')){
+                switch ($booking->status) {
+                    case'active' :
+                        $canCancel  = '1';
+                        $canModify  = '1';
+                        break;
+                    case 'paid' :
+                        $invoiceLink = '1';
+                        break;
+                    case 'unpaid' :
+                        $canModify  = '1';
+                        $invoiceLink = '1';
+                        break;
+                    case 'noshow' :
+                        $canModify  = '1';
+                        break;
+                    case 'pending' :
+                    case 'expired' :
+                    case 'old' :
+                    case 'canceled' :
+                    default:
+                        break;
+                }
             }
 
             $location = ShopLocations::find($booking->location_id);
             $locationName = $location->name;
             $room = ShopResource::find($booking->resource_id);
             $roomName = $room->name;
+            $roomPrice= $room->session_price;
             $category = ShopResourceCategory::find($room->category_id);
             $categoryName = $category->name;
 
@@ -599,10 +630,14 @@ class BookingController extends Controller
                 'financialDetails' => $financeDetails,
                 'location'      => $locationName,
                 'room'          => $roomName,
+                'roomPrice'     => $roomPrice,
                 'category'      => $categoryName,
                 'byUserName'    => @$madeBy,
                 'forUserName'   => @$madeFor,
-                'forUserID'     => @$booking->for_user_id
+                'forUserID'     => @$booking->for_user_id,
+                'canCancel'     => $canCancel,
+                'canModify'     => $canModify,
+                'invoiceLink'   => $invoiceLink
             ];
 
             return $bookingDetails;

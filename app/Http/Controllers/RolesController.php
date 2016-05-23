@@ -293,12 +293,11 @@ class RolesController extends Controller
             return 'Error';
         }
 
-        $vars = $request->only('name', 'display_name', 'description', 'assign_roles');
+        $vars = $request->only('name', 'display_name', 'description');
         $vars['name'] = trim($vars['name']);
         $message = array(
             'name.unique' => 'Duplicate Permission name in the database.',
         );
-
         $validator = Validator::make($vars, Permission::rules('PUT', $id), $message, Permission::$attributeNames);
 
         if ($validator->fails()){
@@ -315,6 +314,7 @@ class RolesController extends Controller
         $permission->save();
 
         /** update permissions roles */
+        $vars = $request->only('assign_roles');
         $permission_roles = Role::all();
         foreach($permission_roles as $perm_role){
             $perm_role->detachPermission($id);
