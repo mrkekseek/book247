@@ -184,6 +184,102 @@ class BookingController extends Controller
         //xdebug_var_dump($request);
     }
 
+    public function cancel_booking(Request $request){
+        if (!Auth::check()) {
+            //return redirect()->intended(route('admin/login'));
+            return ['error' => 'Authentication Error'];
+        }
+        else{
+            $user = Auth::user();
+        }
+
+        $vars = $request->only('search_key');
+        if ($user->can('booking-change-update')){
+            $booking = Booking::where('search_key','=',$vars['search_key'])->get()->first();
+        }
+        else {
+            $booking = Booking::where('for_user_id','=',$user->id)->orWhere('by_user_id','=',$user->id)->where('search_key','=',$vars['search_key'])->get()->first();
+        }
+
+        if ($booking){
+            if (in_array($booking->status,['active','pending'])){
+                $booking->status = 'canceled';
+                $booking->save();
+            }
+            //Booking::whereIn('status',['active', 'pending'])->where('search_key','=',$vars['search_key'])->update(['status'=>'canceled']);
+            return ['success' => 'true', 'message' => 'All is good.'];
+        }
+        else{
+            return ['error' => 'No bookings found to confirm. Please make the booking process again. Remember you have 60 seconds to complete the booking before it expires.'];
+        }
+    }
+
+    public function change_booking_player(Request $request){
+        if (!Auth::check()) {
+            //return redirect()->intended(route('admin/login'));
+            return ['error' => 'Authentication Error'];
+        }
+        else{
+            $user = Auth::user();
+        }
+
+        $vars = $request->only('search_key', 'player');
+        $booking = Booking::where('search_key','=',$vars['search_key'])->get()->first();
+        if ($booking){
+            if (FrontEndUserController::are_friends($vars['player'], $booking->by_user_id) || $booking->by_user_id==$vars['player']) {
+                Booking::whereIn('status', ['active', 'pending'])->where('search_key', '=', $vars['search_key'])->update(['for_user_id' => $vars['player']]);
+                return ['success' => 'true', 'message' => 'All is good.'];
+            }
+            else{
+                return ['error' => 'No bookings found to confirm. Please make the booking process again. Remember you have 60 seconds to complete the booking before it expires.'];
+            }
+        }
+        else{
+            return ['error' => 'No bookings found to confirm. Please make the booking process again. Remember you have 60 seconds to complete the booking before it expires.'];
+        }
+    }
+
+    private function validate_booking($fillable, $search_key=''){
+        $message = ['status'=>true, 'payment'=>'membership'];
+        if (Auth::check()) {
+            $user = Auth::user();
+        }
+
+        // check for open bookings
+        $ownBookings = Booking::whereIn('status',['pending','active'])
+            ->where('for_user_id','=',$fillable['for_user_id'])
+            ->where('search_key','!=',$search_key)
+            ->get();
+        if (sizeof($ownBookings)==0){
+            // no open bookings except the search key
+            $message['payment'] = 'membership';
+        }
+        else if (sizeof($ownBookings)>0 && @$user->id==$fillable['for_user_id']){
+            // more than the current pending booking and the user is the logged in user
+            $message['payment'] = 'cash';
+        }
+        else{
+            // at least one booking found and the user is not the logged in one
+            $message['status'] = false;
+            return $message;
+        }
+
+        // check for existing booking on the same resurce
+        $openBookings = Booking::whereIn('status',['pending','active'])
+            ->where('resource_id','=',$fillable['resource_id'])
+            ->where('location_id','=',$fillable['location_id'])
+            ->where('date_of_booking','=',$fillable['date_of_booking'])
+            ->where('booking_time_start','=',$fillable['booking_time_start'])
+            ->where('search_key','!=',$search_key)
+            ->get();
+        if (sizeof($openBookings)>0){
+            // we have another booking with the same details
+            $message['status'] = false;
+        }
+
+        return $message;
+    }
+
     public static function get_user_bookings($userID, $status=['pending','active','paid','unpaid','old','canceled']){
         $bookings = [];
 
@@ -386,67 +482,6 @@ class BookingController extends Controller
         }
     }
 
-    public function cancel_booking(Request $request){
-        if (!Auth::check()) {
-            //return redirect()->intended(route('admin/login'));
-            return ['error' => 'Authentication Error'];
-        }
-        else{
-            $user = Auth::user();
-        }
-
-        $vars = $request->only('search_key');
-        $booking = Booking::where('for_user_id','=',$user->id)->orWhere('by_user_id','=',$user->id)->where('search_key','=',$vars['search_key'])->get()->first();
-        if ($booking){
-            Booking::whereIn('status',['active', 'pending'])->where('search_key','=',$vars['search_key'])->update(['status'=>'canceled']);
-            return ['success' => 'true', 'message' => 'All is good.'];
-        }
-        else{
-            return ['error' => 'No bookings found to confirm. Please make the booking process again. Remember you have 60 seconds to complete the booking before it expires.'];
-        }
-    }
-
-    private function validate_booking($fillable, $search_key=''){
-        $message = ['status'=>true, 'payment'=>'membership'];
-        if (Auth::check()) {
-            $user = Auth::user();
-        }
-
-        // check for open bookings
-        $ownBookings = Booking::whereIn('status',['pending','active'])
-                                ->where('for_user_id','=',$fillable['for_user_id'])
-                                ->where('search_key','!=',$search_key)
-                                ->get();
-        if (sizeof($ownBookings)==0){
-            // no open bookings except the search key
-            $message['payment'] = 'membership';
-        }
-        else if (sizeof($ownBookings)>0 && @$user->id==$fillable['for_user_id']){
-            // more than the current pending booking and the user is the logged in user
-            $message['payment'] = 'cash';
-        }
-        else{
-            // at least one booking found and the user is not the logged in one
-            $message['status'] = false;
-            return $message;
-        }
-
-        // check for existing booking on the same resurce
-        $openBookings = Booking::whereIn('status',['pending','active'])
-                                ->where('resource_id','=',$fillable['resource_id'])
-                                ->where('location_id','=',$fillable['location_id'])
-                                ->where('date_of_booking','=',$fillable['date_of_booking'])
-                                ->where('booking_time_start','=',$fillable['booking_time_start'])
-                                ->where('search_key','!=',$search_key)
-                                ->get();
-        if (sizeof($openBookings)>0){
-            // we have another booking with the same details
-            $message['status'] = false;
-        }
-
-        return $message;
-    }
-
     public function get_user_booking_archive($userID = -1){
         if (Auth::check()) {
             $user = Auth::user();
@@ -523,6 +558,33 @@ class BookingController extends Controller
         }
     }
 
+    public function add_invoice_to_booking(Request $request){
+        if (!Auth::check()) {
+            //return redirect()->intended(route('admin/login'));
+            return ['error' => 'Authentication Error'];
+        }
+        else{
+            $user = Auth::user();
+        }
+
+        $vars = $request->only('search_key', 'status');
+        $booking = Booking::where('search_key','=',$vars['search_key'])->get()->first();
+        if ($booking){
+            $booking->add_invoice();
+
+            $booking->status = $vars['status'];
+            $booking->save();
+
+            //Booking::where('search_key','=',$vars['search_key'])->update(['status'=>$vars['status']]);
+            return ['success' => 'true', 'message' => 'All is good.'];
+        }
+        else{
+            return ['error' => 'No bookings found to confirm. Please make the booking process again. Remember you have 60 seconds to complete the booking before it expires.'];
+        }
+
+        return 'bine';
+    }
+
     /* Front-End controller functions - Start */
     public function front_bookings_archive(){
         if (!Auth::check()) {
@@ -572,21 +634,28 @@ class BookingController extends Controller
             $canCancel  = '0';
             $canModify  = '0';
             $invoiceLink = '0';
+            $noShow = '0';
             if ($user->can('booking-change-update')){
                 switch ($booking->status) {
                     case'active' :
                         $canCancel  = '1';
                         $canModify  = '1';
+                        // if time of booking is less than current time + a time limit of x days
+                        $noShow = '1';
                         break;
                     case 'paid' :
                         $invoiceLink = '1';
+                        // if time of booking is less than current time + a time limit of x days
+                        $noShow = '1';
                         break;
                     case 'unpaid' :
                         $canModify  = '1';
                         $invoiceLink = '1';
+                        // if time of booking is less than current time + a time limit of x days
+                        $noShow = '1';
                         break;
                     case 'noshow' :
-                        $canModify  = '1';
+                        $invoiceLink = '1';
                         break;
                     case 'pending' :
                     case 'expired' :
@@ -637,7 +706,8 @@ class BookingController extends Controller
                 'forUserID'     => @$booking->for_user_id,
                 'canCancel'     => $canCancel,
                 'canModify'     => $canModify,
-                'invoiceLink'   => $invoiceLink
+                'invoiceLink'   => $invoiceLink,
+                'canNoShow'     => $noShow
             ];
 
             return $bookingDetails;

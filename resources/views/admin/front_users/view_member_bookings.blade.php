@@ -278,16 +278,78 @@
                                     <div class="form-group">
                                         <label class="col-md-3 control-label"> Financial </label>
                                         <div class="col-md-9">
-                                            <select class="form-control input-inline input-large" name="book_finance"></select>
+                                            <input class="form-control input-inline input-large" name="book_finance" readonly />
+                                            <!--<select class="form-control input-inline input-large" name="book_finance"></select>-->
                                         </div>
                                     </div>
                                 </div>
                             </div>
                             <div class="modal-footer">
-                                <button type="button" class="btn green btn_modify_booking" style="display:none;" onclick="javascript:update_booking();">Modify Booking</button>
-                                <button type="button" class="btn green btn_cancel_booking" style="display:none;" onclick="javascript:cancel_booking();">Cancel Booking</button>
+                                <button type="button" class="btn green btn_no_show" data-toggle="modal" href="#not_show_confirm_box" style="display:none;" >Not show up</button>
+                                <button type="button" class="btn green btn_modify_booking" style="display:none;" onclick="javascript:change_booking_player();">Modify Booking</button>
+                                <button type="button" class="btn green btn_cancel_booking" data-toggle="modal" href="#cancel_confirm_box" style="display:none;">Cancel Booking</button>
                                 <button type="button" class="btn green btn_show_invoice" style="display:none;" onclick="javascript:show_booking_invoice();">Show Invoice</button>
                                 <button type="button" class="btn dark btn-outline" data-dismiss="modal">Return</button>
+                                <input type="hidden" value="" name="search_key_selected" />
+                            </div>
+                        </div>
+                        <!-- /.modal-content -->
+                    </div>
+                    <!-- /.modal-dialog -->
+                </div>
+
+                <div class="modal fade" id="not_show_confirm_box" tabindex="-1" role="dialog" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                                <h4 class="modal-title"> Not Show Status Change </h4>
+                            </div>
+                            <div class="modal-body form-horizontal" id="book_main_details_container">
+                                <div class="form-body">
+                                    <div class="form-group">
+                                        <label class="col-md-3 control-label"> Message to Player</label>
+                                        <div class="col-md-9">
+                                            <select class="form-control input-inline input-large" name="default_player_messages">
+                                                <option value="">Select default message</option>
+                                                <option value="">First time not show</option>
+                                                <option value="">Second time not show</option>
+                                                <option value="">Three and up times not show</option>
+                                            </select>
+                                            <h5 class="font-blue-steel"> or send Custom Message</h5>
+                                            <textarea type="text" class="form-control input-inline input-large" name="custom_player_message"></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-3 control-label"> Player Observations </label>
+                                        <div class="col-md-9">
+                                            <textarea type="text" class="form-control input-inline input-large" name="book_location"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn green btn_no_show" style="display:none;" onclick="javascript:not_show_invoice();">Invoice Customer</button>
+                                <button type="button" class="btn green btn_modify_booking" style="display:none;" onclick="javascript:not_show_warning();">Send Warning</button>
+                                <button type="button" class="btn dark btn-outline" data-dismiss="modal">Return</button>
+                            </div>
+                        </div>
+                        <!-- /.modal-content -->
+                    </div>
+                    <!-- /.modal-dialog -->
+                </div>
+
+                <div class="modal fade bs-modal-sm" id="cancel_confirm_box" tabindex="-1" role="dialog" aria-hidden="true">
+                    <div class="modal-dialog modal-sm">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                                <h4 class="modal-title">Do you want to cancel?</h4>
+                            </div>
+                            <div class="modal-body"> By clicking "Cancel Booking" this booking will be canceled and the player notified. Do you want to proceed with the cancelation? </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn dark btn-outline" data-dismiss="modal">No, Go Back</button>
+                                <button type="button" class="btn green" onclick="javascript:cancel_booking();">Yes, Cancel</button>
                             </div>
                         </div>
                         <!-- /.modal-content -->
@@ -430,6 +492,7 @@
             $('#changeIt').modal('show');
         });
 
+        // adds the information to the popup with bookings details
         function modify_booking_details(key){
             $.ajax({
                 url: '{{route('ajax/get_single_booking_details')}}',
@@ -454,19 +517,15 @@
                         var book_finance = '<option value="cash"> Payment of ' + data.paymentAmount + ' </option>' +
                                 '<option value="membership" selected="selected">Membership</option>';
                     }
-                    $('select[name="book_finance"]').html(book_finance);
+                    //$('select[name="book_finance"]').html(book_finance);
+                    $('input[name="book_finance"]').val(data.financialDetails);
 
-                    if (data.canCancel=="1"){
-                        $('.btn_cancel_booking').show();
-                    }
-                    else{
-                        $('.btn_cancel_booking').hide();
-                    }
-
+                    if (data.canCancel=="1"){   $('.btn_cancel_booking').show(); }
+                    else{                       $('.btn_cancel_booking').hide(); }
                     if (data.canModify=="1"){   $('.btn_modify_booking').show(); }
                     else{                       $('.btn_modify_booking').hide(); }
-                    if (data.canModify=="1"){   $('.btn_modify_booking').show(); }
-                    else{                       $('.btn_modify_booking').hide(); }
+                    if (data.canNoShow=="1"){   $('.btn_no_show').show(); }
+                    else{                       $('.btn_no_show').hide(); }
                     if (data.invoiceLink!="0"){
                         $('.btn_show_invoice').show();
                         $('.btn_show_invoice').attr({'data-id':data.invoiceLink});
@@ -475,6 +534,91 @@
                         $('.btn_show_invoice').hide();
                         $('.btn_show_invoice').attr({'data-id':''});
                     }
+
+                    $('input[name="search_key_selected"]').val(key);
+                }
+            });
+        }
+
+        function cancel_booking() {
+            var search_key = $('input[name="search_key_selected"]').val();
+
+            $.ajax({
+                url: '{{route('ajax/cancel_booking')}}',
+                type: "post",
+                cache: false,
+                data: {
+                    'search_key': search_key
+                },
+                success: function (data) {
+                    show_notification('Booking Canceled', 'The selected booking was canceled.', 'lemon', 3500, 0);
+                    //$('#small').find('.book_details_cancel_place').html('');
+                    $('#cancel_confirm_box').modal('hide');
+                    $('#changeIt').modal('hide');
+                }
+            });
+        }
+
+        function change_booking_player(){
+            var search_key = $('input[name="search_key_selected"]').val();
+            var new_player = $('select[name="book_player"]').val();
+            var new_player_name = $('select[name="book_player"] option:selected').text();
+
+            $.ajax({
+                url: '{{route('ajax/change_booking_player')}}',
+                type: "post",
+                cache: false,
+                data: {
+                    'search_key' : search_key,
+                    'player'     : new_player
+                },
+                success: function (data) {
+                    show_notification('Booking Updated', 'The new player : '+new_player_name+' was added to the selected booking.', 'lemon', 3500, 0);
+
+                    //$('#changeIt').find('.book_details_cancel_place').html('');
+                    $('#changeIt').modal('hide');
+                }
+            });
+        }
+
+        function show_invoice(){
+            alert('Redirect to invoice page!');
+        }
+
+        function not_show_invoice(){
+            var search_key = $('input[name="search_key_selected"]').val();
+            $.ajax({
+                url: '{{route('ajax/add_invoice_for_booking')}}',
+                type: "post",
+                cache: false,
+                data: {
+                    'search_key': search_key,
+                    'status':'noshow'
+                },
+                success: function (data) {
+                    show_notification('Status Changed - invoice created', 'Booking status changed to - Not Show. Invoice created for the booking and available in client account.', 'lemon', 3500, 0);
+                    //$('#small').find('.book_details_cancel_place').html('');
+                    $('#not_show_confirm_box').modal('hide');
+                    $('#changeIt').modal('hide');
+                }
+            });
+        }
+
+        function not_show_warning(){
+            var search_key = $('input[name="search_key_selected"]').val();
+
+            $.ajax({
+                url: '{{route('ajax/cancel_booking')}}',
+                type: "post",
+                cache: false,
+                data: {
+                    'search_key': search_key
+                },
+                success: function (data) {
+                    show_notification('Booking Canceled', 'The selected booking was canceled.', 'lemon', 3500, 0);
+                    //$('#small').find('.book_details_cancel_place').html('');
+                    $('#not_show_confirm_box').modal('hide');
+                    $('#changeIt').modal('hide');
                 }
             });
         }
@@ -492,6 +636,7 @@
                 cache: false,
                 data: {
                     'limit': 5,
+                    'userID': {{ $user->id }},
                 },
                 success: function(data){
                     var all_list = '<option value="'+ player_id +'" selected="selected">'+ player_name +'</option>';

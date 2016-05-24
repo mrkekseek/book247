@@ -57,6 +57,11 @@ class Booking extends Model
         return $this->belongsTo('App\ShopResource', 'resource_id', 'id');
     }
 
+    public function add_invoice(){
+
+        return true;
+    }
+
     public static function rules($method, $id=0){
         switch($method){
             case 'GET':

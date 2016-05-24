@@ -450,9 +450,19 @@ Route::group(['prefix'=>'ajax', 'middleware' => 'web'], function(){
         'uses'  => 'BookingController@bookings_summary',
     ]);
 
+    Route::post('change_booking_player', [
+        'as'    => 'ajax/change_booking_player',
+        'uses'  => 'BookingController@change_booking_player'
+    ]);
+
     Route::post('get_single_booking_details',[
         'as'    => 'ajax/get_single_booking_details',
         'uses'  => 'BookingController@single_booking_details'
+    ]);
+
+    Route::post('add_invoice_to_booking',[
+        'as'    => 'ajax/add_invoice_for_booking',
+        'uses'  => 'BookingController@add_invoice_to_booking'
     ]);
 
     Route::post('add_friend_by_phone', [

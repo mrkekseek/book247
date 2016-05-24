@@ -24,6 +24,7 @@ use Auth;
 use Storage;
 use Carbon\Carbon;
 use Validator;
+use DB;
 
 class FrontEndUserController extends Controller
 {
@@ -1104,13 +1105,26 @@ class FrontEndUserController extends Controller
         return $all_friends;
     }
 
-    public function ajax_get_available_players_list($id=-1){
+    public function ajax_get_available_players_list(Request $request){
         if (!Auth::check()) {
             return [];
         }
         else{
             $user = Auth::user();
             $user_id = $user->id;
+        }
+
+        $vars = $request->only('userID');
+        if (isset($vars['userID'])){
+            if ($user_id!=$vars['userID']){
+                $user = User::find($vars['userID']);
+                if ($user) {
+                    $user_id = $user->id;
+                }
+                else{
+                    return [];
+                }
+            }
         }
 
         $all_friends[] = ['name' => $user->first_name.' '.$user->middle_name.' '.$user->last_name, 'id' => $user->id];
@@ -1176,5 +1190,15 @@ class FrontEndUserController extends Controller
         }
 
         return $msg;
+    }
+
+    public static function are_friends($user1, $user2){
+        $friends = DB::select('select id from user_friends where (user_id=? and friend_id=?) or (user_id=? and friend_id=?)', [$user1, $user2, $user2, $user1]);
+        if ($friends){
+            return true;
+        }
+        else{
+            return false;
+        }
     }
 }
