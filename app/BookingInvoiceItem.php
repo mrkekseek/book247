@@ -6,11 +6,20 @@ use Illuminate\Database\Eloquent\Model;
 
 class BookingInvoiceItem extends Model
 {
-    protected $table = 'order_invoice_items';
+    protected $table = 'booking_invoice_items';
 
     public static $attributeNames = array(
         'booking_invoice_id'=> 'Invoice ID',
-        'booking_id'        => 'Order Item ID',
+        'booking_id'        => 'Invoice Booking ID',
+        'location_name' => 'Location Name',
+        'resource_name' => 'Resource Name',
+        'quantity'      => 'Quantity',
+        'booking_date'  => 'Booking Date',
+        'booking_time_interval' => 'Booking Time Interval',
+        'price'         => 'Price',
+        'vat'           => 'VAT',
+        'discount'      => 'Discount',
+        'total_price'   => 'Total Price'
     );
 
     public static $message = array();
@@ -18,6 +27,15 @@ class BookingInvoiceItem extends Model
     protected $fillable = [
         'booking_invoice_id',
         'booking_id',
+        'location_name',
+        'resource_name',
+        'quantity',
+        'booking_date',
+        'booking_time_interval',
+        'price',
+        'vat',
+        'discount',
+        'total_price'
     ];
 
     public static function rules($method, $id=0){
@@ -32,6 +50,15 @@ class BookingInvoiceItem extends Model
                 return [
                     'booking_invoice_id'    => 'required|exists:booking_invoices,id',
                     'booking_id'            => 'required|exists:bookings,id',
+                    'location_name'         => 'required',
+                    'resource_name'         => 'required',
+                    'quantity'              => 'required|integer',
+                    'booking_date'          => 'required|date',
+                    'booking_time_interval' => 'required',
+                    'price'                 => 'required|numeric',
+                    'vat'                   => 'required|integer',
+                    'discount'              => 'required|integer',
+                    'total_price'           => 'required|numeric'
                 ];
             }
             case 'PUT':
@@ -40,6 +67,15 @@ class BookingInvoiceItem extends Model
                 return [
                     'booking_invoice_id'    => 'required|exists:booking_invoices,id',
                     'booking_id'            => 'required|exists:bookings,id',
+                    'location_name'         => 'required',
+                    'resource_name'         => 'required',
+                    'quantity'              => 'required|integer',
+                    'booking_date'          => 'required|date',
+                    'booking_time_interval' => 'required',
+                    'price'                 => 'required|numeric',
+                    'vat'                   => 'required|integer',
+                    'discount'              => 'required|integer',
+                    'total_price'           => 'required|numeric'
                 ];
             }
             default:break;

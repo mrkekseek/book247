@@ -460,9 +460,9 @@ Route::group(['prefix'=>'ajax', 'middleware' => 'web'], function(){
         'uses'  => 'BookingController@single_booking_details'
     ]);
 
-    Route::post('add_invoice_to_booking',[
-        'as'    => 'ajax/add_invoice_for_booking',
-        'uses'  => 'BookingController@add_invoice_to_booking'
+    Route::post('not_show_note_to_booking',[
+        'as'    => 'ajax/booking_not_show_change_status',
+        'uses'  => 'BookingController@not_show_status_change'
     ]);
 
     Route::post('add_friend_by_phone', [

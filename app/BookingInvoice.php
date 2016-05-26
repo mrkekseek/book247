@@ -24,6 +24,16 @@ class BookingInvoice extends Model
         'status',
     ];
 
+    public static function next_invoice_number(){
+        $booking = BookingInvoice::select('invoice_number')->orderBy('invoice_number', 'desc')->get()->first();
+        if ($booking){
+            return ($booking->invoice_number+1);
+        }
+        else{
+            return 1100;
+        }
+    }
+
     public static function rules($method, $id=0){
         switch($method){
             case 'GET':

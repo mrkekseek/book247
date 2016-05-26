@@ -308,8 +308,8 @@
                             <div class="modal-body form-horizontal" id="book_main_details_container">
                                 <div class="form-body">
                                     <div class="form-group">
-                                        <label class="col-md-3 control-label"> Message to Player</label>
-                                        <div class="col-md-9">
+                                        <label class="col-md-4 control-label"> Booking Note<br /><small>for external use</small></label>
+                                        <div class="col-md-8">
                                             <select class="form-control input-inline input-large" name="default_player_messages">
                                                 <option value="">Select default message</option>
                                                 <option value="">First time not show</option>
@@ -321,9 +321,9 @@
                                         </div>
                                     </div>
                                     <div class="form-group">
-                                        <label class="col-md-3 control-label"> Player Observations </label>
-                                        <div class="col-md-9">
-                                            <textarea type="text" class="form-control input-inline input-large" name="book_location"></textarea>
+                                        <label class="col-md-4 control-label"> Internal Note<br /><small>for internal use</small> </label>
+                                        <div class="col-md-8">
+                                            <textarea type="text" class="form-control input-inline input-large" name="private_player_message"></textarea>
                                         </div>
                                     </div>
                                 </div>
@@ -587,36 +587,28 @@
 
         function not_show_invoice(){
             var search_key = $('input[name="search_key_selected"]').val();
-            $.ajax({
-                url: '{{route('ajax/add_invoice_for_booking')}}',
-                type: "post",
-                cache: false,
-                data: {
-                    'search_key': search_key,
-                    'status':'noshow'
-                },
-                success: function (data) {
-                    show_notification('Status Changed - invoice created', 'Booking status changed to - Not Show. Invoice created for the booking and available in client account.', 'lemon', 3500, 0);
-                    //$('#small').find('.book_details_cancel_place').html('');
-                    $('#not_show_confirm_box').modal('hide');
-                    $('#changeIt').modal('hide');
-                }
-            });
+            add_note_to_booking(search_key, 1);
         }
 
         function not_show_warning(){
             var search_key = $('input[name="search_key_selected"]').val();
+            add_note_to_booking(search_key, 0);
+        }
 
+        function add_note_to_booking(search_key, add_invoice){
             $.ajax({
-                url: '{{route('ajax/cancel_booking')}}',
+                url: '{{route('ajax/booking_not_show_change_status')}}',
                 type: "post",
                 cache: false,
                 data: {
-                    'search_key': search_key
+                    'search_key': search_key,
+                    'add_invoice': add_invoice,
+                    'default_message': $('select[name="default_player_messages"]  :selected').val(),
+                    'custom_message': $('textarea[name="custom_player_message"]').val(),
+                    'private_message': $('textarea[name="private_player_message"]').val()
                 },
                 success: function (data) {
-                    show_notification('Booking Canceled', 'The selected booking was canceled.', 'lemon', 3500, 0);
-                    //$('#small').find('.book_details_cancel_place').html('');
+                    show_notification(data.message_title, data.message_body, 'lemon', 3500, 0);
                     $('#not_show_confirm_box').modal('hide');
                     $('#changeIt').modal('hide');
                 }

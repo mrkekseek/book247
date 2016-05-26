@@ -558,7 +558,7 @@ class BookingController extends Controller
         }
     }
 
-    public function add_invoice_to_booking(Request $request){
+    public function add_invoice_to_booking($fillable, $booking){
         if (!Auth::check()) {
             //return redirect()->intended(route('admin/login'));
             return ['error' => 'Authentication Error'];
@@ -583,6 +583,103 @@ class BookingController extends Controller
         }
 
         return 'bine';
+    }
+
+    public function add_note_to_booking($fillable, $booking){
+        if (!Auth::check()) {
+            //return redirect()->intended(route('admin/login'));
+            return ['error' => 'Authentication Error'];
+        }
+        else{
+            $user = Auth::user();
+        }
+
+        $vars = $request->only('search_key', 'default_player_messages', 'custom_player_message', 'private_player_message');
+        $booking = Booking::where('search_key','=',$vars['search_key'])->get()->first();
+        if ($booking){
+            $fillable = [
+                'by_user_id' => $user->id,
+                'note_title' => '',
+                'note_body'  => '',
+                'note_type'  => '',
+                'privacy'    => '',
+                'status'     => ''
+            ];
+            $booking->add_note($fillable);
+
+            return ['success' => 'true', 'message' => 'All is good.'];
+        }
+        else{
+            return ['error' => 'No bookings found to confirm. Please make the booking process again. Remember you have 60 seconds to complete the booking before it expires.'];
+        }
+    }
+
+    public function not_show_status_change(Request $request){
+        if (!Auth::check()) {
+            //return redirect()->intended(route('admin/login'));
+            return ['error' => 'Authentication Error'];
+        }
+        else{
+            $user = Auth::user();
+        }
+
+        $vars = $request->only('search_key', 'add_invoice', 'custom_message', 'default_message', 'private_message');
+        $booking = Booking::where('search_key','=',$vars['search_key'])->get()->first();
+        if ($booking){
+            $fillable_visible = [
+                'by_user_id' => $user->id,
+                'note_title' => '',
+                'note_body'  => '',
+                'note_type'  => 'booking_status_changed_to_noshow',
+                'privacy'    => 'everyone',
+                'status'     => 'unread'
+            ];
+
+            if ($vars['default_message']==-1){
+                // we have custom message
+                $fillable_visible['note_title'] = 'Booking status changed to NoShow';
+                $fillable_visible['note_body'] = $vars['default_message'];
+            }
+            else{
+                // we have default message
+                // $message = get_default_message();
+                $message = ['body'=>'Default message body', 'title'=>'Default message title'];
+                $fillable_visible['note_body'] = $message['body'];
+                $fillable_visible['note_title'] = $message['title'];
+            }
+            $a = $booking->add_note($fillable_visible);
+            //xdebug_var_dump($a); exit;
+
+            if (strlen($vars['private_message'])>5) {
+                $system_user = User::where('username','=','sysagent')->get()->first();
+
+                $fillable_private = [
+                    'by_user_id' => $system_user->id,
+                    'note_title' => 'Booking status - not shown',
+                    'note_body' => $vars['private_message'],
+                    'note_type' => 'booking_status_changed_to_noshow',
+                    'privacy' => 'employees',
+                    'status' => 'unread'
+                ];
+
+                $booking->add_note($fillable_private);
+            }
+
+            if ($vars['add_invoice']==1){
+                $booking_invoice = $booking->add_invoice();
+                if ($booking_invoice){
+                    xdebug_var_dump($booking_invoice);
+                    $booking->invoice_id = $booking_invoice->id;
+                }
+            }
+            $booking->status = 'not_show';
+            $booking->save();
+
+            return ['success' => 'true', 'message' => 'All is good.'];
+        }
+        else{
+            return ['error' => 'No bookings found to confirm. Please make the booking process again. Remember you have 60 seconds to complete the booking before it expires.'];
+        }
     }
 
     /* Front-End controller functions - Start */
