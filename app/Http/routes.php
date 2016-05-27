@@ -232,6 +232,11 @@ Route::group(['middleware' => 'web'], function () {
         'as'    => 'admin/shops/resources/add',
         'uses'  => 'ShopController@add_new_store_resource'
     ]);
+
+    Route::get('admin/shops/inventory_and_transfer', [
+        'as'    => 'admin/shops/inventory_and_transfer',
+        'uses'  => 'ShopController@all_inventory_make_transfer'
+    ]);
     /** Stop Routes for Shops/Locations */
 
     /** Start Routes for Products Management */

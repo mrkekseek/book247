@@ -507,7 +507,11 @@
                     $('input[name="book_location"]').val(data.location);
                     $('input[name="book_room"]').val(data.room);
                     $('input[name="book_activity"]').val(data.category);
-                    get_players_list($('select[name="book_player"]'), data.forUserName, data.forUserID);
+                    var players_dropd = $('select[name="book_player"]');
+                    players_dropd.removeAttr('disabled');
+                    players_dropd.removeAttr('readonly');
+
+                    get_players_list(players_dropd, data.forUserName, data.forUserID);
 
                     if (data.paymentType=='cash'){
                         var book_finance = '<option value="cash" selected="selected">' + data.financialDetails + '</option>' +
@@ -520,12 +524,28 @@
                     //$('select[name="book_finance"]').html(book_finance);
                     $('input[name="book_finance"]').val(data.financialDetails);
 
-                    if (data.canCancel=="1"){   $('.btn_cancel_booking').show(); }
-                    else{                       $('.btn_cancel_booking').hide(); }
-                    if (data.canModify=="1"){   $('.btn_modify_booking').show(); }
-                    else{                       $('.btn_modify_booking').hide(); }
-                    if (data.canNoShow=="1"){   $('.btn_no_show').show(); }
-                    else{                       $('.btn_no_show').hide(); }
+                    if (data.canCancel=="1"){
+                        $('.btn_cancel_booking').show();
+                    }
+                    else{
+                        $('.btn_cancel_booking').hide();
+                    }
+                    if (data.canModify=="1"){
+                        $('.btn_modify_booking').show();
+                    }
+                    else{
+                        players_dropd.attr('disabled','disabled');
+                        players_dropd.attr('readonly','readonly');
+                        $('.btn_modify_booking').hide();
+                    }
+                    if (data.canNoShow=="1"){
+                        $('.btn_no_show').show();
+                        //players_dropd.attr('disabled','disabled');
+                        //players_dropd.attr('readonly','readonly');
+                    }
+                    else{
+                        $('.btn_no_show').hide();
+                    }
                     if (data.invoiceLink!="0"){
                         $('.btn_show_invoice').show();
                         $('.btn_show_invoice').attr({'data-id':data.invoiceLink});

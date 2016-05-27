@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Address;
 use App\CashTerminal;
+use App\Product;
+use App\ProductCategories;
 use App\ShopLocations;
 use App\ShopOpeningHour;
 use App\ShopResource;
@@ -414,5 +416,73 @@ class ShopController extends Controller
         /** Stop - Add shop resource to database */
 
         return $shopResourceVars;
+    }
+
+    public function all_inventory_make_transfer(){
+        if (!Auth::check()) {
+            return redirect()->intended(route('admin/login'));
+        }
+        else{
+            $user = Auth::user();
+        }
+
+        $shop_locations = ShopLocations::get();
+        foreach($shop_locations as $shop_loc){
+            $var_addr = Address::find($shop_loc->address_id);
+            if (isset($var_addr)){
+                $all_address_fields = array(
+                    $var_addr['attributes']['address1'],
+                    $var_addr['attributes']['address2'],
+                    $var_addr['attributes']['city'],
+                    $var_addr['attributes']['postal_code'],
+                    '<br />'.$var_addr['attributes']['region'],
+                );
+
+                $var_country = Countries::find($var_addr['attributes']['country_id']);
+                $all_address_fields[] = $var_country->name;
+
+                $shop_loc->full_address = implode(', ',$all_address_fields);
+            }
+        }
+
+        $all_products = Product::orderBy('category_id')->get();
+        $products = [];
+        if ($all_products) {
+            foreach ($all_products as $product) {
+                $products[] = [
+                    'name' => $product->name,
+                    'id'   => $product->id,
+                    'category_id' => $product->category_id
+                ];
+            }
+        }
+
+        $all_categories = ProductCategories::orderBy('name')->get();
+        $categories = [];
+        foreach($all_categories as $category){
+            $categories[$category->id] = $category->name;
+        }
+
+        $breadcrumbs = [
+            'Home'              => route('admin'),
+            'Administration'    => route('admin'),
+            'Shop'              => route('admin'),
+            'Shop Locations'    => '',
+        ];
+        $text_parts  = [
+            'title'     => 'Shop Locations',
+            'subtitle'  => 'add/edit/view locations',
+            'table_head_text1' => 'Backend Shop Locations List'
+        ];
+        $sidebar_link= 'admin-backend-inventory-and-transfers';
+
+        return view('admin/shops/stock_and_transfer', [
+            'breadcrumbs'   => $breadcrumbs,
+            'text_parts'    => $text_parts,
+            'in_sidebar'    => $sidebar_link,
+            'shopLocations' => $shop_locations,
+            'products'      => $products,
+            'categories'    => $categories
+        ]);
     }
 }

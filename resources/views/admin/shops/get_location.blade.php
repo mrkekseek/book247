@@ -196,14 +196,14 @@
                         <div class="caption">
                             <i class="fa fa-cogs"></i>Shop Resources </div>
                         <div class="tools">
-                            <a class="collapse" href="javascript:;" data-original-title="" title=""> </a>
+                            <a class="expand" href="javascript:;" data-original-title="" title=""> </a>
                         </div>
                         <div class="actions">
                             <a class="btn btn-circle btn-default" data-toggle="modal" href="#draggable">
                                 <i class="fa fa-plus"></i> Add Resource </a>
                         </div>
                     </div>
-                    <div class="portlet-body flip-scroll">
+                    <div class="portlet-body flip-scroll" style="display:none;">
                         <table class="table table-bordered table-striped table-condensed flip-content">
                             <thead class="flip-content">
                             <tr>
@@ -247,12 +247,12 @@
                         <div class="caption">
                             <i class="fa fa-gift"></i>Opening Hours </div>
                         <div class="tools">
-                            <a href="javascript:;" class="collapse"> </a>
+                            <a href="javascript:;" class="expand"> </a>
                             <a href="javascript:;" class="reload"> </a>
                             <a href="javascript:;" class="remove"> </a>
                         </div>
                     </div>
-                    <div class="portlet-body form">
+                    <div class="portlet-body form" style="display:none;">
                         <!-- BEGIN FORM-->
                         <form action="" class="form-horizontal form-bordered" name="opening_hours" id="opening_hours">
                             <div class="form-body form">
@@ -332,12 +332,216 @@
                         <div class="caption">
                             <i class="fa fa-cogs"></i>Cash flow log </div>
                         <div class="tools">
-                            <a class="collapse" href="javascript:;" data-original-title="" title=""> </a>
+                            <a class="expand" href="javascript:;" data-original-title="" title=""> </a>
                             <a class="reload" href="javascript:;" data-original-title="" title=""> </a>
                             <a class="remove" href="javascript:;" data-original-title="" title=""> </a>
                         </div>
                     </div>
-                    <div class="portlet-body flip-scroll">
+                    <div class="portlet-body flip-scroll" style="display: none;">
+                        <table class="table table-bordered table-striped table-condensed flip-content">
+                            <thead class="flip-content">
+                            <tr>
+                                <th width="20%"> Code </th>
+                                <th> Company </th>
+                                <th class="numeric"> Price </th>
+                                <th class="numeric"> Change </th>
+                                <th class="numeric"> Change % </th>
+                                <th class="numeric"> Open </th>
+                                <th class="numeric"> High </th>
+                                <th class="numeric"> Low </th>
+                                <th class="numeric"> Volume </th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td> AAC </td>
+                                <td> AUSTRALIAN AGRICULTURAL COMPANY LIMITED. </td>
+                                <td class="numeric"> &nbsp; </td>
+                                <td class="numeric"> -0.01 </td>
+                                <td class="numeric"> -0.36% </td>
+                                <td class="numeric"> $1.39 </td>
+                                <td class="numeric"> $1.39 </td>
+                                <td class="numeric"> &nbsp; </td>
+                                <td class="numeric"> 9,395 </td>
+                            </tr>
+                            <tr>
+                                <td> AAD </td>
+                                <td> ARDENT LEISURE GROUP </td>
+                                <td class="numeric"> $1.15 </td>
+                                <td class="numeric"> +0.02 </td>
+                                <td class="numeric"> 1.32% </td>
+                                <td class="numeric"> $1.14 </td>
+                                <td class="numeric"> $1.15 </td>
+                                <td class="numeric"> $1.13 </td>
+                                <td class="numeric"> 56,431 </td>
+                            </tr>
+                            <tr>
+                                <td> AGO </td>
+                                <td> ATLAS IRON LIMITED </td>
+                                <td class="numeric"> $3.17 </td>
+                                <td class="numeric"> -0.02 </td>
+                                <td class="numeric"> -0.47% </td>
+                                <td class="numeric"> $3.11 </td>
+                                <td class="numeric"> $3.22 </td>
+                                <td class="numeric"> $3.10 </td>
+                                <td class="numeric"> 5,416,303 </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="portlet box green">
+                    <div class="portlet-title">
+                        <div class="caption">
+                            <i class="fa fa-cogs"></i>Incoming Products </div>
+                        <div class="tools">
+                            <a class="expand" href="javascript:;" data-original-title="" title=""> </a>
+                            <a class="reload" href="javascript:;" data-original-title="" title=""> </a>
+                            <a class="remove" href="javascript:;" data-original-title="" title=""> </a>
+                        </div>
+                    </div>
+                    <div class="portlet-body flip-scroll" style="display: none;">
+                        <table class="table table-bordered table-striped table-condensed flip-content">
+                            <thead class="flip-content">
+                            <tr>
+                                <th width="20%"> Code </th>
+                                <th> Company </th>
+                                <th class="numeric"> Price </th>
+                                <th class="numeric"> Change </th>
+                                <th class="numeric"> Change % </th>
+                                <th class="numeric"> Open </th>
+                                <th class="numeric"> High </th>
+                                <th class="numeric"> Low </th>
+                                <th class="numeric"> Volume </th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td> AAC </td>
+                                <td> AUSTRALIAN AGRICULTURAL COMPANY LIMITED. </td>
+                                <td class="numeric"> &nbsp; </td>
+                                <td class="numeric"> -0.01 </td>
+                                <td class="numeric"> -0.36% </td>
+                                <td class="numeric"> $1.39 </td>
+                                <td class="numeric"> $1.39 </td>
+                                <td class="numeric"> &nbsp; </td>
+                                <td class="numeric"> 9,395 </td>
+                            </tr>
+                            <tr>
+                                <td> AAD </td>
+                                <td> ARDENT LEISURE GROUP </td>
+                                <td class="numeric"> $1.15 </td>
+                                <td class="numeric"> +0.02 </td>
+                                <td class="numeric"> 1.32% </td>
+                                <td class="numeric"> $1.14 </td>
+                                <td class="numeric"> $1.15 </td>
+                                <td class="numeric"> $1.13 </td>
+                                <td class="numeric"> 56,431 </td>
+                            </tr>
+                            <tr>
+                                <td> AGO </td>
+                                <td> ATLAS IRON LIMITED </td>
+                                <td class="numeric"> $3.17 </td>
+                                <td class="numeric"> -0.02 </td>
+                                <td class="numeric"> -0.47% </td>
+                                <td class="numeric"> $3.11 </td>
+                                <td class="numeric"> $3.22 </td>
+                                <td class="numeric"> $3.10 </td>
+                                <td class="numeric"> 5,416,303 </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="portlet box green">
+                    <div class="portlet-title">
+                        <div class="caption">
+                            <i class="fa fa-cogs"></i>Outgoing Products </div>
+                        <div class="tools">
+                            <a class="expand" href="javascript:;" data-original-title="" title=""> </a>
+                            <a class="reload" href="javascript:;" data-original-title="" title=""> </a>
+                            <a class="remove" href="javascript:;" data-original-title="" title=""> </a>
+                        </div>
+                    </div>
+                    <div class="portlet-body flip-scroll" style="display: none;">
+                        <table class="table table-bordered table-striped table-condensed flip-content">
+                            <thead class="flip-content">
+                            <tr>
+                                <th width="20%"> Code </th>
+                                <th> Company </th>
+                                <th class="numeric"> Price </th>
+                                <th class="numeric"> Change </th>
+                                <th class="numeric"> Change % </th>
+                                <th class="numeric"> Open </th>
+                                <th class="numeric"> High </th>
+                                <th class="numeric"> Low </th>
+                                <th class="numeric"> Volume </th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td> AAC </td>
+                                <td> AUSTRALIAN AGRICULTURAL COMPANY LIMITED. </td>
+                                <td class="numeric"> &nbsp; </td>
+                                <td class="numeric"> -0.01 </td>
+                                <td class="numeric"> -0.36% </td>
+                                <td class="numeric"> $1.39 </td>
+                                <td class="numeric"> $1.39 </td>
+                                <td class="numeric"> &nbsp; </td>
+                                <td class="numeric"> 9,395 </td>
+                            </tr>
+                            <tr>
+                                <td> AAD </td>
+                                <td> ARDENT LEISURE GROUP </td>
+                                <td class="numeric"> $1.15 </td>
+                                <td class="numeric"> +0.02 </td>
+                                <td class="numeric"> 1.32% </td>
+                                <td class="numeric"> $1.14 </td>
+                                <td class="numeric"> $1.15 </td>
+                                <td class="numeric"> $1.13 </td>
+                                <td class="numeric"> 56,431 </td>
+                            </tr>
+                            <tr>
+                                <td> AGO </td>
+                                <td> ATLAS IRON LIMITED </td>
+                                <td class="numeric"> $3.17 </td>
+                                <td class="numeric"> -0.02 </td>
+                                <td class="numeric"> -0.47% </td>
+                                <td class="numeric"> $3.11 </td>
+                                <td class="numeric"> $3.22 </td>
+                                <td class="numeric"> $3.10 </td>
+                                <td class="numeric"> 5,416,303 </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="portlet box green">
+                    <div class="portlet-title">
+                        <div class="caption">
+                            <i class="fa fa-cogs"></i>Current Inventory </div>
+                        <div class="tools">
+                            <a class="expand" href="javascript:;" data-original-title="" title=""> </a>
+                            <a class="reload" href="javascript:;" data-original-title="" title=""> </a>
+                            <a class="remove" href="javascript:;" data-original-title="" title=""> </a>
+                        </div>
+                    </div>
+                    <div class="portlet-body flip-scroll" style="display: none;">
                         <table class="table table-bordered table-striped table-condensed flip-content">
                             <thead class="flip-content">
                             <tr>

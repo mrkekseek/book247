@@ -672,7 +672,7 @@ class BookingController extends Controller
                     $booking->invoice_id = $booking_invoice->id;
                 }
             }
-            $booking->status = 'not_show';
+            $booking->status = 'noshow';
             $booking->save();
 
             return ['success' => 'true', 'message' => 'All is good.'];

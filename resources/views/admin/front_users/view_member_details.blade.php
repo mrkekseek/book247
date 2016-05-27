@@ -262,14 +262,14 @@
                                 <div class="portlet-title tabbable-line">
                                     <div class="caption caption-md">
                                         <i class="icon-globe theme-font hide"></i>
-                                        <span class="caption-subject font-blue-madison bold uppercase">Feeds</span>
+                                        <span class="caption-subject font-blue-madison bold uppercase">User Actions</span>
                                     </div>
                                     <ul class="nav nav-tabs">
                                         <li class="active">
-                                            <a href="#tab_1_1" data-toggle="tab"> System </a>
+                                            <a href="#tab_1_1" data-toggle="tab"> All Actions </a>
                                         </li>
                                         <li>
-                                            <a href="#tab_1_2" data-toggle="tab"> Activities </a>
+                                            <a href="#tab_1_2" data-toggle="tab"> Red Flagged </a>
                                         </li>
                                     </ul>
                                 </div>
@@ -808,7 +808,7 @@
                                 <div class="portlet-title">
                                     <div class="caption caption-md">
                                         <i class="icon-bar-chart theme-font hide"></i>
-                                        <span class="caption-subject font-blue-madison bold uppercase">Customer Support</span>
+                                        <span class="caption-subject font-blue-madison bold uppercase">User Messages</span>
                                         <span class="caption-helper">45 pending</span>
                                     </div>
                                     <div class="inputs">
@@ -918,7 +918,7 @@
                                 <div class="portlet-title">
                                     <div class="caption caption-md">
                                         <i class="icon-bar-chart theme-font hide"></i>
-                                        <span class="caption-subject font-blue-madison bold uppercase">Tasks</span>
+                                        <span class="caption-subject font-blue-madison bold uppercase">Internal Messages</span>
                                         <span class="caption-helper">16 pending</span>
                                     </div>
                                     <div class="inputs">
