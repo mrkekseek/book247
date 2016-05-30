@@ -77,7 +77,7 @@
                         </div>
                     </div>
 
-                    <div class="modal fade" id="small" tabindex="-1" role="dialog" aria-hidden="true">
+                    <div class="modal fade" id="small_cancel" tabindex="-1" role="dialog" aria-hidden="true">
                         <div class="modal-dialog">
                             <div class="modal-content">
                                 <div class="modal-header">
@@ -91,6 +91,26 @@
                                 <div class="modal-footer">
                                     <button type="button" class="btn dark btn-outline" data-dismiss="modal">No - return</button>
                                     <button type="button" class="btn green" onclick="javascript:cancel_booking();">Yes - cancel</button>
+                                </div>
+                            </div>
+                            <!-- /.modal-content -->
+                        </div>
+                        <!-- /.modal-dialog -->
+                    </div>
+
+                    <div class="modal fade" id="small_details" tabindex="-1" role="dialog" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                                    <h4 class="modal-title">Booking Details</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <h4>You are seeing here the booking details and the available notes :</h4>
+                                    <div class="book_details_cancel_place" style="padding:0px 15px;"></div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn dark btn-outline" data-dismiss="modal">Back to list</button>
                                 </div>
                             </div>
                             <!-- /.modal-content -->
@@ -142,6 +162,10 @@
                                             <div class="col-md-9">
                                                 <input type="text" class="form-control input-inline input-large" name="book_finance" readonly>
                                             </div>
+                                        </div>
+                                        <div class="form-group" id="all_booking_notes" style="display:none; margin-bottom:0px;">
+                                            <label class="col-md-3 text-right"> Notes </label>
+                                            <div class="col-md-9"> </div>
                                         </div>
                                     </div>
                                 </div>
@@ -303,8 +327,8 @@
         $(document).on('click', '.cancel_booking', function(){
             //alert('Cancel Booking' + $(this).attr('data-id'));
 
-            get_booking_details($(this).attr('data-id'), $('#small'));
-            $('#small').modal('show');
+            get_booking_details($(this).attr('data-id'), $('#small_cancel'));
+            $('#small_cancel').modal('show');
         });
 
         function get_booking_details(key, container){
@@ -316,14 +340,29 @@
                     'search_key': key,
                 },
                 success: function (data) {
-                    var book_details = '<div class="row margin-bottom-5"><div class="col-md-5 bg-grey-salt bg-font-grey-salt"> Booking date </div><div class="col-md-7 bg-grey-steel bg-font-grey-steel"> ' + data.bookingDate + ' </div></div>' +
-                            '<div class="row margin-bottom-5"><div class="col-md-5 bg-grey-salt bg-font-grey-salt"> Time of booking </div><div class="col-md-7 bg-grey-steel bg-font-grey-steel"> ' + data.timeStart + ' - ' + data.timeStop + ' </div></div>' +
-                            '<div class="row margin-bottom-5"><div class="col-md-5 bg-grey-salt bg-font-grey-salt"> Booking Location </div><div class="col-md-7 bg-grey-steel bg-font-grey-steel"> ' + data.location + ' </div></div>' +
-                            '<div class="row margin-bottom-5"><div class="col-md-5 bg-grey-salt bg-font-grey-salt"> Booking Room </div><div class="col-md-7 bg-grey-steel bg-font-grey-steel"> ' + data.room + ' </div></div>' +
-                            '<div class="row margin-bottom-5"><div class="col-md-5 bg-grey-salt bg-font-grey-salt"> Booking Activity </div><div class="col-md-7 bg-grey-steel bg-font-grey-steel"> ' + data.category + ' </div></div>' +
-                            '<div class="row margin-bottom-5"><div class="col-md-5 bg-grey-salt bg-font-grey-salt"> Booking Made By </div><div class="col-md-7 bg-grey-steel bg-font-grey-steel"> ' + data.byUserName + ' </div></div>' +
-                            '<div class="row margin-bottom-5"><div class="col-md-5 bg-grey-salt bg-font-grey-salt"> Booking Made For </div><div class="col-md-7 bg-grey-steel bg-font-grey-steel"> ' + data.forUserName + ' </div></div>' +
-                            '<div class="row margin-bottom-5"><div class="col-md-5 bg-grey-salt bg-font-grey-salt"> Booking Financial </div><div class="col-md-7 bg-grey-steel bg-font-grey-steel"> ' + data.financialDetails + ' </div></div>' +
+                    var booking_notes = '';
+                    /* Get booking notes */
+                    if (data.bookingNotes.length !=0){
+                        var booking_notes = '<small>';
+                        $.each(data.bookingNotes, function(key, value){
+                            booking_notes+= '<dl style="margin-bottom:7px;"><dt class="font-grey-mint"><span>' + value.created_at + '</span> ' +
+                                    'by <span> ' + value.added_by + '</span></dt>' +
+                                    '<dd> <span class="font-blue-steel"> ' + value.note_title + ' </span> : ' +
+                                    '<span class="font-blue-dark">' + value.note_body + '</span></dd></dl>';
+                        });
+                        booking_notes+='</small>';
+                    }
+
+                    var book_details =
+                            '<div class="row margin-bottom-5"><div class="col-md-4 bg-grey-salt bg-font-grey-salt"> Booking Date </div><div class="col-md-8 bg-grey-steel bg-font-grey-steel"> ' + data.bookingDate + ' </div></div>' +
+                            '<div class="row margin-bottom-5"><div class="col-md-4 bg-grey-salt bg-font-grey-salt"> Time of booking </div><div class="col-md-8 bg-grey-steel bg-font-grey-steel"> ' + data.timeStart + ' - ' + data.timeStop + ' </div></div>' +
+                            '<div class="row margin-bottom-5"><div class="col-md-4 bg-grey-salt bg-font-grey-salt"> Booking Location </div><div class="col-md-8 bg-grey-steel bg-font-grey-steel"> ' + data.location + ' </div></div>' +
+                            '<div class="row margin-bottom-5"><div class="col-md-4 bg-grey-salt bg-font-grey-salt"> Booking Room </div><div class="col-md-8 bg-grey-steel bg-font-grey-steel"> ' + data.room + ' </div></div>' +
+                            '<div class="row margin-bottom-5"><div class="col-md-4 bg-grey-salt bg-font-grey-salt"> Activity </div><div class="col-md-8 bg-grey-steel bg-font-grey-steel"> ' + data.category + ' </div></div>' +
+                            '<div class="row margin-bottom-5"><div class="col-md-4 bg-grey-salt bg-font-grey-salt"> Created By </div><div class="col-md-8 bg-grey-steel bg-font-grey-steel"> ' + data.byUserName + ' </div></div>' +
+                            '<div class="row margin-bottom-5"><div class="col-md-4 bg-grey-salt bg-font-grey-salt"> Player </div><div class="col-md-8 bg-grey-steel bg-font-grey-steel"> ' + data.forUserName + ' </div></div>' +
+                            '<div class="row margin-bottom-5"><div class="col-md-4 bg-grey-salt bg-font-grey-salt"> Finance </div><div class="col-md-8 bg-grey-steel bg-font-grey-steel"> ' + data.financialDetails + ' </div></div>' +
+                            '<div class="row margin-bottom-5"><div class="col-md-4 bg-grey-salt bg-font-grey-salt"> Notes </div><div class="col-md-8 bg-grey-steel bg-font-grey-steel"> ' + booking_notes + ' </div></div>' +
                             '<input type="hidden" value="' + key + '" name="search_key_selected" />';
 
                     container.find('.book_details_cancel_place').html(book_details);
@@ -344,8 +383,8 @@
                 success: function (data) {
                     show_notification('Booking Canceled', 'The selected booking was canceled.', 'lemon', 3500, 0);
 
-                    $('#small').find('.book_details_cancel_place').html('');
-                    $('#small').modal('hide');
+                    $('#small_cancel').find('.book_details_cancel_place').html('');
+                    $('#small_cancel').modal('hide');
                 }
             });
         }
@@ -365,6 +404,22 @@
                     $('input[name="book_activity"]').val(data.category);
                     //$('select[name="book_player"]').html(data.forUserName);
                     get_players_list($('select[name="book_player"]'), data.forUserName, data.forUserID);
+
+                    /* Get booking notes */
+                    if (data.bookingNotes.length !=0){
+                        var notesPlace = $('#all_booking_notes').find('.col-md-9').first();
+                        var allNotes = '<small>';
+                        $.each(data.bookingNotes, function(key, value){
+                            allNotes+= '<dl style="margin-bottom:7px;"><dt class="font-grey-mint"><span>' + value.created_at + '</span> ' +
+                                    'by <span> ' + value.added_by + '</span></dt>' +
+                                    '<dd> <span class="font-blue-steel"> ' + value.note_title + ' </span> : ' +
+                                    '<span class="font-blue-dark">' + value.note_body + '</span></dd></dl>';
+                        });
+                        allNotes+='</small>';
+                        notesPlace.html(allNotes);
+                        $('#all_booking_notes').show();
+                    }
+
                     $('input[name="book_finance"]').val(data.financialDetails);
                 }
             });
@@ -401,6 +456,11 @@
         $(document).on('click', '.modify_booking', function(){
             modify_booking_details($(this).attr('data-id'));
             $('#changeIt').modal('show');
+        });
+
+        $(document).on('click', '.details_booking', function(){
+            get_booking_details($(this).attr('data-id'), $('#small_details'));
+            $('#small_details').modal('show');
         });
 
         function show_notification(title_heading, message, theme, life, sticky) {

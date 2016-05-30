@@ -392,6 +392,11 @@ Route::group(['middleware' => 'web'], function () {
 
     /** Start Routes for bookings */
     Route::resource('booking', 'BookingController');
+
+    Route::get('bookings/location_calendar_day_view/{day}/',[
+        'as'    => 'bookings/location_calendar_day_view',
+        'uses'  => 'BookingController@location_calendar_day_view'
+    ]);
     /** Stop Routes for bookings */
 
     /** Start Routes for front end */

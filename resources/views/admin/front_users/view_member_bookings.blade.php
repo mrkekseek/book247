@@ -157,7 +157,7 @@
                                                                         <td> {{$booking['room']}} </td>
                                                                         <td class="hidden-xs"> {{$booking['activity']}} </td>
                                                                         <td>
-                                                                            <span class="label label-sm label-danger booking_details_modal" data-key="{{$booking['search_key']}}"> {{$booking['status']}} </span>
+                                                                            <span class="label label-sm {{$booking['status-color']}} booking_details_modal" data-key="{{$booking['search_key']}}"> {{$booking['status']}} </span>
                                                                         </td>
                                                                     </tr>
                                                                 @endforeach
@@ -248,39 +248,43 @@
                                     <div class="form-group">
                                         <label class="col-md-3 control-label"> Date/Time</label>
                                         <div class="col-md-9">
-                                            <input type="text" class="form-control input-inline input-large" name="book_date_time" readonly>
+                                            <input type="text" class="form-control input-sm" name="book_date_time" readonly>
                                         </div>
                                     </div>
                                     <div class="form-group">
                                         <label class="col-md-3 control-label"> Location</label>
                                         <div class="col-md-9">
-                                            <input type="text" class="form-control input-inline input-large" name="book_location" readonly>
+                                            <input type="text" class="form-control input-sm" name="book_location" readonly>
                                         </div>
                                     </div>
                                     <div class="form-group">
                                         <label class="col-md-3 control-label"> Room</label>
                                         <div class="col-md-9">
-                                            <input class="form-control input-inline input-large" name="book_room" readonly>
+                                            <input class="form-control input-sm" name="book_room" readonly>
                                         </div>
                                     </div>
                                     <div class="form-group">
                                         <label class="col-md-3 control-label"> Activity</label>
                                         <div class="col-md-9">
-                                            <input type="text" class="form-control input-inline input-large" name="book_activity" readonly>
+                                            <input type="text" class="form-control input-sm" name="book_activity" readonly>
                                         </div>
                                     </div>
                                     <div class="form-group">
                                         <label class="col-md-3 control-label"> Player </label>
                                         <div class="col-md-9">
-                                            <select class="form-control input-inline input-large" name="book_player"></select>
+                                            <select class="form-control input-sm" name="book_player"></select>
                                         </div>
                                     </div>
                                     <div class="form-group">
                                         <label class="col-md-3 control-label"> Financial </label>
                                         <div class="col-md-9">
-                                            <input class="form-control input-inline input-large" name="book_finance" readonly />
+                                            <input class="form-control input-sm" name="book_finance" readonly />
                                             <!--<select class="form-control input-inline input-large" name="book_finance"></select>-->
                                         </div>
+                                    </div>
+                                    <div class="form-group" id="all_booking_notes" style="display:none; margin-bottom:0px;">
+                                        <label class="col-md-3 text-right"> Notes </label>
+                                        <div class="col-md-9"> </div>
                                     </div>
                                 </div>
                             </div>
@@ -556,6 +560,21 @@
                     }
 
                     $('input[name="search_key_selected"]').val(key);
+
+                    /* Get booking notes */
+                    if (data.bookingNotes.length !=0){
+                        var notesPlace = $('#all_booking_notes').find('.col-md-9').first();
+                        var allNotes = '<small>';
+                        $.each(data.bookingNotes, function(key, value){
+                            allNotes+= '<dl style="margin-bottom:7px;"><dt class="font-grey-mint"><span>' + value.created_at + '</span> ' +
+                                    'by <span> ' + value.added_by + '</span></dt>' +
+                                    '<dd> <span class="font-blue-steel"> ' + value.note_title + ' </span> : ' +
+                                    '<span class="font-blue-dark">' + value.note_body + '</span></dd></dl>';
+                        });
+                        allNotes+='</small>';
+                        notesPlace.html(allNotes);
+                        $('#all_booking_notes').show();
+                    }
                 }
             });
         }
@@ -663,6 +682,21 @@
                 }
             });
         }
+
+        $('#changeIt').on('hidden.bs.modal', function () {
+            $('.btn_no_show').hide();
+            $('.btn_modify_booking').hide();
+            $('.btn_cancel_booking').hide();
+            $('.btn_show_invoice').hide();
+            $('.btn_show_invoice').attr('data-id','-1');
+            $('input[name="search_key_selected"]').val('');
+
+            $('#book_main_details_container').find('input').val('');
+            $('#book_main_details_container').find('select').html('');
+
+            $('#all_booking_notes').find('.col-md-9').first().html('');
+            $('#all_booking_notes').hide();
+        });
 
         function show_notification(title_heading, message, theme, life, sticky) {
             var settings = {

@@ -164,7 +164,7 @@ class Booking extends Model
     }
 
     public function notes(){
-        return $this->hasMany('App\BookingNote', 'booking_id', 'id');
+        return $this->hasMany('App\BookingNote', 'booking_id', 'id')->orderBy('booking_notes.created_at','asc');
     }
 
     public static function rules($method, $id=0){

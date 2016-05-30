@@ -496,7 +496,7 @@ class BookingController extends Controller
 
         $data = [];
 
-        $allBookings = Booking::where('by_user_id','=',$userID)->orWhere('for_user_id','=',$userID)->whereNotIn('status',['expired'])->get();
+        $allBookings = Booking::with('notes')->where('by_user_id','=',$userID)->orWhere('for_user_id','=',$userID)->whereNotIn('status',['expired'])->get();
         if ($allBookings){
             foreach($allBookings as $booking){
                 $format_date = Carbon::createFromFormat('Y-m-d H:i:s', $booking->date_of_booking.' '.$booking->booking_time_start)->format('Y,M j, H:i');
@@ -508,12 +508,19 @@ class BookingController extends Controller
 
                 if ($booking->status != 'active'){
                     if ($booking->status=="unpaid"){
-                        $status = '<a href="#'.$booking->search_key.'" class="btn green-jungle">Make Payment</a>';
+                        $status = '<a href="#'.$booking->search_key.'" class="btn yellow-gold">Pay Invoice</a>';
+                    }
+                    elseif ($booking->status=="paid"){
+                        $status = '<a href="#'.$booking->search_key.'" class="btn green-turquoise">Invoice</a>';
+                    }
+
+                    if (sizeof($booking->notes)>0){
+                        $status.= '<span data-id="' . $booking->search_key . '" class="details_booking btn blue-sharp">Details</span> ';;
                     }
                 }
                 else{
                     if ($this->can_cancel_booking($booking->id)) {
-                        $status = '<span data-id="' . $booking->search_key . '" class="cancel_booking btn red-flamingo">Cancel</span> ';
+                        $status = '<span data-id="' . $booking->search_key . '" class="cancel_booking btn grey-silver">Cancel</span> ';
                     }
 
                     if ($booking->by_user_id==$userID) {
@@ -668,7 +675,7 @@ class BookingController extends Controller
             if ($vars['add_invoice']==1){
                 $booking_invoice = $booking->add_invoice();
                 if ($booking_invoice){
-                    xdebug_var_dump($booking_invoice);
+                    //xdebug_var_dump($booking_invoice);
                     $booking->invoice_id = $booking_invoice->id;
                 }
             }
@@ -680,6 +687,33 @@ class BookingController extends Controller
         else{
             return ['error' => 'No bookings found to confirm. Please make the booking process again. Remember you have 60 seconds to complete the booking before it expires.'];
         }
+    }
+
+    public function location_calendar_day_view($date){
+        if (!Auth::check()) {
+            return redirect()->intended(route('admin/login'));
+        }
+        else{
+            $user = Auth::user();
+        }
+
+        $breadcrumbs = [
+            'Home'              => route('admin'),
+            'Administration'    => route('admin'),
+            'Back End Users'    => route('admin/back_users'),
+            $back_user->first_name.' '.$back_user->middle_name.' '.$back_user->last_name => '',
+        ];
+        $sidebar_link= 'admin-frontend-user_details_view';
+
+        return view('admin/front_users/view_member_bookings', [
+            'user'      => $back_user,
+            'breadcrumbs' => $breadcrumbs,
+            'text_parts'  => $text_parts,
+            'in_sidebar'  => $sidebar_link,
+            'bookings'    => $bookingsList,
+            'multipleBookingsIndex' => $index,
+            'lastTen' =>  $lastTenBookings
+        ]);
     }
 
     /* Front-End controller functions - Start */
@@ -715,16 +749,17 @@ class BookingController extends Controller
 
         if (Auth::check()) {
             $user = Auth::user();
+            $is_backend_employee = $user->can('booking-change-update');
         }
         else{
             return $bookingDetails;
         }
 
         $vars = $request->only('search_key','the_user');
-        $booking = Booking::where('search_key','=',$vars['search_key'])->get()->first();
+        $booking = Booking::with('notes')->where('search_key','=',$vars['search_key'])->get()->first();
         if ($booking){
             // the logged in user is : the player or the person that did the booking or an employee with booking edit options
-            if ( $user->id!=$booking->for_user_id && $user->id!=$booking->by_user_id && $user->can('booking-change-update') == false ){
+            if ( $user->id!=$booking->for_user_id && $user->id!=$booking->by_user_id && $is_backend_employee == false ){
                 return $bookingDetails;
             }
 
@@ -787,6 +822,28 @@ class BookingController extends Controller
                 $financeDetails = "Membership included";
             }
 
+            $allNotes = [];
+            if (sizeof($booking->notes)>0){
+                foreach($booking->notes as $note){
+                    $a_note = [];
+                    if ($note->privacy!='everyone' && $is_backend_employee==false ){
+                        continue;
+                    }
+                    if ($note->privacy!='admin' && $note->status=='deleted'){
+                        continue;
+                    }
+
+                    $a_note['note_title'] = $note->note_title;
+                    $a_note['note_body']  = $note->note_body;
+                    $a_note['created_at'] = Carbon::createFromFormat('Y-m-d H:i:s', $note->created_at)->format('H:s - M jS, Y');
+
+                    $notePerson = User::select('first_name','middle_name','last_name')->where('id','=',$note->by_user_id)->get()->first();
+                    $a_note['added_by'] = $notePerson->first_name.' '.$notePerson->middle_name.' '.$notePerson->last_name;
+
+                    $allNotes[] = $a_note;
+                }
+            }
+
             $bookingDetails = [
                 'bookingDate'   => Carbon::createFromFormat('Y-m-d', $booking->date_of_booking)->format('l, M jS, Y'),
                 'timeStart'     => Carbon::createFromFormat('H:i:s', $booking->booking_time_start)->format('H:i'),
@@ -804,7 +861,8 @@ class BookingController extends Controller
                 'canCancel'     => $canCancel,
                 'canModify'     => $canModify,
                 'invoiceLink'   => $invoiceLink,
-                'canNoShow'     => $noShow
+                'canNoShow'     => $noShow,
+                'bookingNotes'  => $allNotes,
             ];
 
             return $bookingDetails;

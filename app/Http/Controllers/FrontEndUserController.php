@@ -372,11 +372,11 @@ class FrontEndUserController extends Controller
             foreach ($bookings as $booking){
                 switch ($booking->status) {
                     case 'pending' :
-                        $colorStatus = 'info';
+                        $colorStatus = 'warning';
                         $buttons = 'yellow-gold';
                         break;
                     case 'expired' :
-                        $colorStatus = 'warning';
+                        $colorStatus = 'info';
                         $buttons = 'grey-salsa';
                         break;
                     case'active' :
@@ -388,7 +388,7 @@ class FrontEndUserController extends Controller
                         $buttons = 'green-jungle';
                         break;
                     case 'unpaid' :
-                        $colorStatus = 'danger';
+                        $colorStatus = 'warning';
                         $buttons = 'yellow-gold';
                         break;
                     case 'noshow' :
@@ -396,11 +396,11 @@ class FrontEndUserController extends Controller
                         $buttons = 'red-thunderbird';
                         break;
                     case 'old' :
-                        $colorStatus = 'success';
+                        $colorStatus = 'info';
                         $buttons = 'green-meadow';
                         break;
                     case 'canceled' :
-                        $colorStatus = 'success';
+                        $colorStatus = 'warning';
                         $buttons = 'yellow-lemon';
                         break;
                 }
@@ -471,6 +471,33 @@ class FrontEndUserController extends Controller
                     $nr=1;
                 }
 
+                switch ($lastOne['status']) {
+                    case 'pending' :
+                        $colorStatus = 'label-warning';
+                        break;
+                    case 'expired' :
+                        $colorStatus = 'label-default';
+                        break;
+                    case 'active' :
+                        $colorStatus = 'label-success';
+                        break;
+                    case 'paid' :
+                        $colorStatus = 'label-success';
+                        break;
+                    case 'unpaid' :
+                        $colorStatus = 'label-danger';
+                        break;
+                    case 'noshow' :
+                        $colorStatus = 'label-danger';
+                        break;
+                    case 'old' :
+                        $colorStatus = 'label-info';
+                        break;
+                    case 'canceled' :
+                        $colorStatus = 'label-default';
+                        break;
+                }
+                $lastOne['status-color'] = $colorStatus;
                 $lastTenBookings[] = $lastOne;
             }
             $index[$indexKey] = $nr;

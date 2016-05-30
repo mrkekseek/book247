@@ -77,7 +77,7 @@
             </a>
             <ul class="sub-menu">
                 <li class="nav-item  ">
-                    <a href="layout_sidebar_menu_hover.html" class="nav-link ">
+                    <a href="{{ route('bookings/location_calendar_day_view',['day'=>\Carbon\Carbon::now()->toDateString()]) }}" class="nav-link ">
                         <span class="title">Hover Sidebar Menu</span>
                     </a>
                 </li>
