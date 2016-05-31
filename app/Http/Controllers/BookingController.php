@@ -16,6 +16,9 @@ use Validator;
 use Zizaco\Entrust\EntrustRole;
 use Auth;
 use Carbon\Carbon;
+use DateInterval;
+use DatePeriod;
+use DB;
 
 class BookingController extends Controller
 {
@@ -565,6 +568,8 @@ class BookingController extends Controller
         }
     }
 
+// This was moved to booking controller
+/*
     public function add_invoice_to_booking($fillable, $booking){
         if (!Auth::check()) {
             //return redirect()->intended(route('admin/login'));
@@ -620,6 +625,7 @@ class BookingController extends Controller
             return ['error' => 'No bookings found to confirm. Please make the booking process again. Remember you have 60 seconds to complete the booking before it expires.'];
         }
     }
+*/
 
     public function not_show_status_change(Request $request){
         if (!Auth::check()) {
@@ -689,7 +695,7 @@ class BookingController extends Controller
         }
     }
 
-    public function location_calendar_day_view($date){
+    public function location_calendar_day_view($date_selected = 0){
         if (!Auth::check()) {
             return redirect()->intended(route('admin/login'));
         }
@@ -697,23 +703,186 @@ class BookingController extends Controller
             $user = Auth::user();
         }
 
+        if ($date_selected==0){
+            $date_selected = Carbon::now()->format('Y-m-d');
+        }
+
+        $default_location = 7;
+        $location = ShopLocations::select('id','name')->where('id','=',$default_location)->get()->first();
+        $default_activity = 3;
+        $activity = ShopResourceCategory::where('id','=',$default_activity)->get()->first();
+
+        $resources = ShopResource::where('location_id','=',$location->id)->where('category_id','=',$activity->id)->get();
+        xdebug_var_dump($resources);
+
+        $hours_interval = $this->make_hours_interval($date_selected, '07:00', '23:00', 30, true, false);
+        xdebug_var_dump($hours_interval);
+
+        $location_bookings = $this->get_location_bookings($date_selected, $activity->id, $location->id, $hours_interval);
+        xdebug_var_dump($location_bookings);
+
         $breadcrumbs = [
             'Home'              => route('admin'),
             'Administration'    => route('admin'),
             'Back End Users'    => route('admin/back_users'),
-            $back_user->first_name.' '.$back_user->middle_name.' '.$back_user->last_name => '',
         ];
         $sidebar_link= 'admin-frontend-user_details_view';
 
-        return view('admin/front_users/view_member_bookings', [
-            'user'      => $back_user,
+        return view('admin/bookings/calendar_location_per_day', [
             'breadcrumbs' => $breadcrumbs,
-            'text_parts'  => $text_parts,
             'in_sidebar'  => $sidebar_link,
-            'bookings'    => $bookingsList,
-            'multipleBookingsIndex' => $index,
-            'lastTen' =>  $lastTenBookings
         ]);
+    }
+
+    public function make_hours_interval($date_selected, $start_time='07:00', $end_time='23:00', $time_period=30, $show_all = false, $show_last = false){
+        $dateSelected = Carbon::createFromFormat("Y-m-d", $date_selected);
+        if (!$dateSelected){
+            return [];
+        }
+
+        $hours = [];
+
+        // if selected day = today
+        if ( $show_all == false ) {
+            $currentTimeHour    = Carbon::now()->format('H');
+            $currentTimeMinutes = Carbon::now()->format('i');
+        }
+        else {
+            $currentTimeHour    = Carbon::createFromTime(7)->format('H');
+            $currentTimeMinutes = Carbon::createFromTime(0,0)->format('i');
+        }
+
+        if ($currentTimeMinutes>=0 && $currentTimeMinutes<30){
+            $currentTimeMinutes = 30;
+        }
+        else{
+            $currentTimeMinutes = 0;
+            $currentTimeHour = (int)$currentTimeHour+1;
+        }
+
+        $begin  = Carbon::today();
+        $v1 = $dateSelected->format("Y-m-d");
+        $v2 = Carbon::now()->format("Y-m-d");
+        if ( $v1==$v2) {
+            $begin->addHour($currentTimeHour);
+            $begin->addMinutes($currentTimeMinutes);
+        }
+        else{
+            $begin->addHour(7);
+        }
+        $end    = Carbon::tomorrow();
+        if ($show_last==false){
+            $end->addMinutes(-60);
+        }
+        else{
+            $end->addMinutes(-30);
+        }
+
+        $interval   = DateInterval::createFromDateString($time_period.' minutes');
+        $period     = new DatePeriod($begin, $interval, $end);
+
+        $current_time = Carbon::now()->format( "H:i" );
+        foreach ( $period as $dt ) {
+            $key = $dt->format( "H:i" );
+            if ($key<$current_time) {
+                $hours[$key] = ['color_stripe' => "bg-grey-salt bg-font-grey-salt"];
+            }
+            else{
+                $hours[$key] = ['color_stripe' => ""];
+            }
+        }
+
+        return $hours;
+    }
+
+    public function get_location_bookings($date_selected, $activity, $location, $hours){
+        if (Auth::check()) {
+            $user = Auth::user();
+            BookingController::check_for_expired_pending_bookings();
+        }
+
+        $shopResource = [];
+        $resourcesAvailability = [];
+
+        // check if we get today or 10 days from today
+        $dateSelected = Carbon::createFromFormat("Y-m-d", $date_selected);
+        if (!$dateSelected){
+            return 'error';
+        }
+
+        $occupancy_status = [1=>'green-jungle-stripe',
+            2=>'yellow-saffron-stripe',
+            3=>'red-stripe',
+            4=>'green-jungle-stripe',
+            5=>'green-jungle-stripe',
+            6=>'yellow-saffron-stripe',
+            7=>"dark-stripe"];
+        if (isset($user)){
+            foreach($hours as $key=>$hour){
+                $colorStripe = $occupancy_status[rand(1,6)];
+                $hours[$key]['color_stripe'] = $colorStripe;
+                $resourcesAvailability[$key] = 100;
+            }
+        }
+
+        $resourcesQuery = DB::table('shop_resources')->where('category_id','=',$activity);
+        if ($location!=-1){
+            $resourcesQuery->where('location_id','=',$location);
+        }
+        $allResources = $resourcesQuery->get();
+
+        if (sizeof($allResources)>0){
+            foreach($allResources as $resource){
+                $shopResource[] = $resource;
+            }
+        }
+
+        if (!isset($user)){
+            foreach($hours as $key=>$val){
+                $hours[$key]['color_stripe'] = 'dark-stripe';
+                $hours[$key]['percent'] = 100;
+            }
+        }
+        else{
+            foreach($resourcesAvailability as $key=>$percentage){
+                $resourcesAvailability[$key] = $this->check_time_availability($date_selected, $key, $allResources);
+                if($resourcesAvailability[$key]==100){
+                    $hours[$key]['color_stripe'] = 'red-stripe';
+                }
+                elseif($resourcesAvailability[$key]>49){
+                    $hours[$key]['color_stripe'] = 'yellow-saffron-stripe';
+                }
+                else{
+                    $hours[$key]['color_stripe'] = 'green-jungle-stripe';
+                }
+                $hours[$key]['percent'] = $resourcesAvailability[$key];
+            }
+        }
+
+        $returnArray = ["hours"=>$hours, "shopResources"=>$shopResource];
+
+        return $returnArray;
+    }
+
+    public function check_time_availability($date, $time, $resources){
+        $resourceNumber = sizeof($resources);
+        if ($resourceNumber==0){
+            return 100;
+        }
+
+        $resourceIDs = [];
+        foreach($resources as $resource){
+            $resourceIDs[] = $resource->id;
+        }
+
+        $q = DB::table('bookings')->whereIn('resource_id',$resourceIDs)
+            ->where('date_of_booking','=',$date)
+            ->whereIn('status',['pending','active','paid','unpaid','old'])
+            ->where('booking_time_start','=',$time);
+        $res = $q->get();
+        $number = sizeof($res);
+
+        return ceil(($number*100)/$resourceNumber);
     }
 
     /* Front-End controller functions - Start */
