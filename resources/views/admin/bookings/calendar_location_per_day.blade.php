@@ -72,237 +72,37 @@
                             <thead class="flip-content">
                             <tr>
                                 <th width="10%"> Time Interval </th>
-                                <th width="22%"> Bærum Squash & Fitness </th>
-                                <th width="22%"> Lysaker Squash </th>
-                                <th width="22%"> Sagene Squashsenter </th>
-                                <th> Sagene Squashsenter </th>
+                                @foreach ($resources as $resource)
+                                    <th>{{ $resource['name'] }}</th>
+                                @endforeach
                             </tr>
                             </thead>
                             <tbody>
+                            @foreach ($time_intervals as $key=>$hour)
                             <tr>
-                                <th> 07:00 </th>
-                                <td class="bg-grey-salt bg-font-grey-salt"> &nbsp; </td>
-                                <td class="bg-grey-salt bg-font-grey-salt"> &nbsp; </td>
-                                <td class="bg-grey-salt bg-font-grey-salt"> &nbsp; </td>
-                                <td class="bg-grey-salt bg-font-grey-salt"> &nbsp; </td>
+                                <td >{{ $key }}</td>
+                                @foreach ($resources as $resource)
+                                    <td class="{{ isset($location_bookings[$key][$resource['id']]['color_stripe'])?$location_bookings[$key][$resource['id']]['color_stripe']:$hour['color_stripe'] }}" style="padding:4px 8px;">
+                                        @if ( isset($location_bookings[$key][$resource['id']]) )
+                                        <a class="font-white" href="">{{ @$location_bookings[$key][$resource['id']]['player_name'] }}</a>
+                                        <div class="actions" style="float:right;">
+                                            <a style="height:26px; width:26px; padding-top:4px;" href="javascript:;" class="btn btn-circle btn-icon-only btn-default">
+                                                <i class="icon-cloud-upload"></i>
+                                            </a>
+                                            <a style="height:26px; width:26px; padding-top:4px;" href="javascript:;" class="btn btn-circle btn-icon-only btn-default">
+                                                <i class="icon-wrench"></i>
+                                            </a>
+                                            <a style="height:26px; width:26px; padding-top:4px;" href="javascript:;" class="btn btn-circle btn-icon-only btn-default">
+                                                <i class="icon-trash"></i>
+                                            </a>
+                                        </div>
+                                        @else
+                                            &nbsp;
+                                        @endif
+                                    </td>
+                                @endforeach
                             </tr>
-                            <tr>
-                                <th> 07:30 </th>
-                                <td class="bg-grey-salt bg-font-grey-salt"> &nbsp; </td>
-                                <td class="bg-yellow-gold bg-font-yellow-gold"> <small><a href="" class="font-white">John Snow</a><br /></small> </td>
-                                <td class="bg-grey-salt bg-font-grey-salt"> &nbsp; </td>
-                                <td class="bg-grey-salt bg-font-grey-salt"> &nbsp; </td>
-                            </tr>
-                            <tr>
-                                <th> 08:00 </th>
-                                <td class="bg-grey-salt bg-font-grey-salt"> &nbsp; </td>
-                                <td class="bg-grey-salt bg-font-grey-salt"> &nbsp; </td>
-                                <td class="bg-grey-salt bg-font-grey-salt"> &nbsp; </td>
-                                <td class="bg-grey-salt bg-font-grey-salt"> &nbsp; </td>
-                            </tr>
-                            <tr>
-                                <th> 08:30 </th>
-                                <td class="bg-grey-salt bg-font-grey-salt"> &nbsp; </td>
-                                <td class="bg-grey-salt bg-font-grey-salt"> &nbsp; </td>
-                                <td class="bg-grey-salt bg-font-grey-salt"> &nbsp; </td>
-                                <td class="bg-grey-salt bg-font-grey-salt"> &nbsp; </td>
-                            </tr>
-                            <tr>
-                                <th> 09:00 </th>
-                                <td class="bg-grey-salt bg-font-grey-salt"> &nbsp; </td>
-                                <td class="bg-grey-salt bg-font-grey-salt"> &nbsp; </td>
-                                <td class="bg-grey-salt bg-font-grey-salt"> &nbsp; </td>
-                                <td class="bg-grey-salt bg-font-grey-salt"> &nbsp; </td>
-                            </tr>
-                            <tr>
-                                <th> 09:30 </th>
-                                <td> &nbsp; </td>
-                                <td> &nbsp; </td>
-                                <td> &nbsp; </td>
-                                <td> &nbsp; </td>
-                            </tr>
-                            <tr>
-                                <th> 10:00 </th>
-                                <td> &nbsp; </td>
-                                <td> &nbsp; </td>
-                                <td> &nbsp; </td>
-                                <td> &nbsp; </td>
-                            </tr>
-                            <tr>
-                                <th> 10:30 </th>
-                                <td> &nbsp; </td>
-                                <td> &nbsp; </td>
-                                <td> &nbsp; </td>
-                                <td> &nbsp; </td>
-                            </tr>
-                            <tr>
-                                <th> 11:00 </th>
-                                <td> &nbsp; </td>
-                                <td> &nbsp; </td>
-                                <td> &nbsp; </td>
-                                <td> &nbsp; </td>
-                            </tr>
-                            <tr>
-                                <th> 11:30 </th>
-                                <td class="bg-purple-seance bg-font-purple-seance"> <small><a href="" class="font-white">John Snow</a><br /></small> </td>
-                                <td class="bg-purple-seance bg-font-purple-seance"> <small><a href="" class="font-white">John Snow</a><br /></small> </td>
-                                <td> &nbsp; </td>
-                                <td> &nbsp; </td>
-                            </tr>
-                            <tr>
-                                <th> 12:00 </th>
-                                <td> &nbsp; </td>
-                                <td> &nbsp; </td>
-                                <td class="bg-purple-seance bg-font-purple-seance"> <small><a href="" class="font-white">John Snow</a><br /></small> </td>
-                                <td> &nbsp; </td>
-                            </tr>
-                            <tr>
-                                <th> 12:30 </th>
-                                <td> &nbsp; </td>
-                                <td> &nbsp; </td>
-                                <td class="bg-yellow-gold bg-font-yellow-gold"> <small><a href="" class="font-white">John Snow</a><br /></small> </td>
-                                <td> &nbsp; </td>
-                            </tr>
-                            <tr>
-                                <th> 13:00 </th>
-                                <td> &nbsp; </td>
-                                <td> &nbsp; </td>
-                                <td class="bg-yellow-gold bg-font-yellow-gold"> <small><a href="" class="font-white">John Snow</a><br /></small> </td>
-                                <td> &nbsp; </td>
-                            </tr>
-                            <tr>
-                                <th> 13:30 </th>
-                                <td> &nbsp; </td>
-                                <td class="bg-purple-seance bg-font-purple-seance"> <small><a href="" class="font-white">John Snow</a><br /></small> </td>
-                                <td class="bg-yellow-gold bg-font-yellow-gold"> <small><a href="" class="font-white">John Snow</a><br /></small> </td>
-                                <td> &nbsp; </td>
-                            </tr>
-                            <tr>
-                                <th> 14:00 </th>
-                                <td> &nbsp; </td>
-                                <td> &nbsp; </td>
-                                <td class="bg-yellow-gold bg-font-yellow-gold"> <small><a href="" class="font-white">John Snow</a><br /></small> </td>
-                                <td> &nbsp; </td>
-                            </tr>
-                            <tr>
-                                <th> 14:30 </th>
-                                <td> &nbsp; </td>
-                                <td> &nbsp; </td>
-                                <td> &nbsp; </td>
-                                <td> &nbsp; </td>
-                            </tr>
-                            <tr>
-                                <th> 15:00 </th>
-                                <td> &nbsp; </td>
-                                <td> &nbsp; </td>
-                                <td> &nbsp; </td>
-                                <td> &nbsp; </td>
-                            </tr>
-                            <tr>
-                                <th> 15:30 </th>
-                                <td> &nbsp; </td>
-                                <td class="bg-purple-seance bg-font-purple-seance"> <small><a href="" class="font-white">John Snow</a><br /></small> </td>
-                                <td> &nbsp; </td>
-                                <td> &nbsp; </td>
-                            </tr>
-                            <tr>
-                                <th> 16:00 </th>
-                                <td> &nbsp; </td>
-                                <td> &nbsp; </td>
-                                <td> &nbsp; </td>
-                                <td> &nbsp; </td>
-                            </tr>
-                            <tr>
-                                <th> 16:30 </th>
-                                <td> &nbsp; </td>
-                                <td> &nbsp; </td>
-                                <td> &nbsp; </td>
-                                <td> &nbsp; </td>
-                            </tr>
-                            <tr>
-                                <th> 17:00 </th>
-                                <td> &nbsp; </td>
-                                <td> &nbsp; </td>
-                                <td> &nbsp; </td>
-                                <td> &nbsp; </td>
-                            </tr>
-                            <tr>
-                                <th> 17:30 </th>
-                                <td> &nbsp; </td>
-                                <td> &nbsp; </td>
-                                <td> &nbsp; </td>
-                                <td> &nbsp; </td>
-                            </tr>
-                            <tr>
-                                <th> 18:00 </th>
-                                <td> &nbsp; </td>
-                                <td> &nbsp; </td>
-                                <td> &nbsp; </td>
-                                <td> &nbsp; </td>
-                            </tr>
-                            <tr>
-                                <th> 18:30 </th>
-                                <td> &nbsp; </td>
-                                <td> &nbsp; </td>
-                                <td> &nbsp; </td>
-                                <td> &nbsp; </td>
-                            </tr>
-                            <tr>
-                                <th> 19:00 </th>
-                                <td> &nbsp; </td>
-                                <td> &nbsp; </td>
-                                <td> &nbsp; </td>
-                                <td> &nbsp; </td>
-                            </tr>
-                            <tr>
-                                <th> 19:30 </th>
-                                <td> &nbsp; </td>
-                                <td> &nbsp; </td>
-                                <td> &nbsp; </td>
-                                <td> &nbsp; </td>
-                            </tr>
-                            <tr>
-                                <th> 20:00 </th>
-                                <td> &nbsp; </td>
-                                <td> &nbsp; </td>
-                                <td> &nbsp; </td>
-                                <td> &nbsp; </td>
-                            </tr>
-                            <tr>
-                                <th> 20:30 </th>
-                                <td> &nbsp; </td>
-                                <td> &nbsp; </td>
-                                <td> &nbsp; </td>
-                                <td> &nbsp; </td>
-                            </tr>
-                            <tr>
-                                <th> 21:00 </th>
-                                <td> &nbsp; </td>
-                                <td> &nbsp; </td>
-                                <td> &nbsp; </td>
-                                <td> &nbsp; </td>
-                            </tr>
-                            <tr>
-                                <th> 21:30 </th>
-                                <td> &nbsp; </td>
-                                <td> &nbsp; </td>
-                                <td> &nbsp; </td>
-                                <td> &nbsp; </td>
-                            </tr>
-                            <tr>
-                                <th> 22:00 </th>
-                                <td> &nbsp; </td>
-                                <td> &nbsp; </td>
-                                <td> &nbsp; </td>
-                                <td> &nbsp; </td>
-                            </tr>
-                            <tr>
-                                <th> 22:30 </th>
-                                <td> &nbsp; </td>
-                                <td> &nbsp; </td>
-                                <td> &nbsp; </td>
-                                <td> &nbsp; </td>
-                            </tr>
+                            @endforeach
                             </tbody>
                         </table>
                     </div>

@@ -713,13 +713,24 @@ class BookingController extends Controller
         $activity = ShopResourceCategory::where('id','=',$default_activity)->get()->first();
 
         $resources = ShopResource::where('location_id','=',$location->id)->where('category_id','=',$activity->id)->get();
-        xdebug_var_dump($resources);
-
+        if ($resources){
+            foreach($resources as $resource){
+                $resources_ids[] = $resource->id;
+            }
+        }
+        else{
+            $resources_ids = [];
+        }
+        //xdebug_var_dump($resources);
         $hours_interval = $this->make_hours_interval($date_selected, '07:00', '23:00', 30, true, false);
-        xdebug_var_dump($hours_interval);
+        //xdebug_var_dump($hours_interval);
+        $location_bookings = $this->get_location_bookings($date_selected, $location->id, $resources_ids, $hours_interval);
+        //xdebug_var_dump($location_bookings['hours']['09:00']);
 
-        $location_bookings = $this->get_location_bookings($date_selected, $activity->id, $location->id, $hours_interval);
-        xdebug_var_dump($location_bookings);
+        $resources_ids = [];
+        foreach($resources as $resource){
+            $resources_ids[] = ['name'=>$resource->name, 'id'=>$resource->id];
+        }
 
         $breadcrumbs = [
             'Home'              => route('admin'),
@@ -731,6 +742,9 @@ class BookingController extends Controller
         return view('admin/bookings/calendar_location_per_day', [
             'breadcrumbs' => $breadcrumbs,
             'in_sidebar'  => $sidebar_link,
+            'time_intervals' => $hours_interval,
+            'location_bookings' => $location_bookings['hours'],
+            'resources' => $resources_ids
         ]);
     }
 
@@ -748,8 +762,8 @@ class BookingController extends Controller
             $currentTimeMinutes = Carbon::now()->format('i');
         }
         else {
-            $currentTimeHour    = Carbon::createFromTime(7)->format('H');
-            $currentTimeMinutes = Carbon::createFromTime(0,0)->format('i');
+            $currentTimeHour    = Carbon::createFromTime(6)->format('H');
+            $currentTimeMinutes = Carbon::createFromTime(0,59)->format('i');
         }
 
         if ($currentTimeMinutes>=0 && $currentTimeMinutes<30){
@@ -784,7 +798,7 @@ class BookingController extends Controller
         $current_time = Carbon::now()->format( "H:i" );
         foreach ( $period as $dt ) {
             $key = $dt->format( "H:i" );
-            if ($key<$current_time) {
+            if ( ($key<$current_time && $v1==$v2) || ($v1<$v2) ) {
                 $hours[$key] = ['color_stripe' => "bg-grey-salt bg-font-grey-salt"];
             }
             else{
@@ -795,94 +809,78 @@ class BookingController extends Controller
         return $hours;
     }
 
-    public function get_location_bookings($date_selected, $activity, $location, $hours){
+    public function get_location_bookings($date_selected, $location, $resources, $hours){
         if (Auth::check()) {
             $user = Auth::user();
             BookingController::check_for_expired_pending_bookings();
         }
 
-        $shopResource = [];
-        $resourcesAvailability = [];
-
+        $bookings = [];
         // check if we get today or 10 days from today
         $dateSelected = Carbon::createFromFormat("Y-m-d", $date_selected);
         if (!$dateSelected){
-            return 'error';
+            return [];
         }
 
-        $occupancy_status = [1=>'green-jungle-stripe',
-            2=>'yellow-saffron-stripe',
-            3=>'red-stripe',
-            4=>'green-jungle-stripe',
-            5=>'green-jungle-stripe',
-            6=>'yellow-saffron-stripe',
-            7=>"dark-stripe"];
-        if (isset($user)){
-            foreach($hours as $key=>$hour){
-                $colorStripe = $occupancy_status[rand(1,6)];
-                $hours[$key]['color_stripe'] = $colorStripe;
-                $resourcesAvailability[$key] = 100;
-            }
+        foreach($hours as $key=>$hour){
+            $hours[$key] = $this->check_date_time_bookings($date_selected, $key, $location, $resources, true);
         }
 
-        $resourcesQuery = DB::table('shop_resources')->where('category_id','=',$activity);
-        if ($location!=-1){
-            $resourcesQuery->where('location_id','=',$location);
-        }
-        $allResources = $resourcesQuery->get();
-
-        if (sizeof($allResources)>0){
-            foreach($allResources as $resource){
-                $shopResource[] = $resource;
-            }
-        }
-
-        if (!isset($user)){
-            foreach($hours as $key=>$val){
-                $hours[$key]['color_stripe'] = 'dark-stripe';
-                $hours[$key]['percent'] = 100;
-            }
-        }
-        else{
-            foreach($resourcesAvailability as $key=>$percentage){
-                $resourcesAvailability[$key] = $this->check_time_availability($date_selected, $key, $allResources);
-                if($resourcesAvailability[$key]==100){
-                    $hours[$key]['color_stripe'] = 'red-stripe';
-                }
-                elseif($resourcesAvailability[$key]>49){
-                    $hours[$key]['color_stripe'] = 'yellow-saffron-stripe';
-                }
-                else{
-                    $hours[$key]['color_stripe'] = 'green-jungle-stripe';
-                }
-                $hours[$key]['percent'] = $resourcesAvailability[$key];
-            }
-        }
-
-        $returnArray = ["hours"=>$hours, "shopResources"=>$shopResource];
+        $returnArray = ["hours"=>$hours, "bookings"=>$bookings];
 
         return $returnArray;
     }
 
-    public function check_time_availability($date, $time, $resources){
-        $resourceNumber = sizeof($resources);
-        if ($resourceNumber==0){
-            return 100;
+    public function check_date_time_bookings($date, $time, $location, $resource, $show_more=false){
+        $booking_details = [];
+
+        $q = DB::table('bookings');
+        if (is_array($location)){
+            $q->whereIn('location_id', $location);
+        }
+        else{
+            $q->where('location_id','=',$location);
         }
 
-        $resourceIDs = [];
-        foreach($resources as $resource){
-            $resourceIDs[] = $resource->id;
+        if (is_array($resource)){
+            $q->whereIn('resource_id', $resource);
         }
+        else{
+            $q->where('resource_id','=',$resource);
+        }
+        $q->where('date_of_booking','=',$date)
+          ->whereIn('status',['pending','active','paid','unpaid','old','no_show'])
+          ->where('booking_time_start','=',$time);
+        $bookings = $q->get();
 
-        $q = DB::table('bookings')->whereIn('resource_id',$resourceIDs)
-            ->where('date_of_booking','=',$date)
-            ->whereIn('status',['pending','active','paid','unpaid','old'])
-            ->where('booking_time_start','=',$time);
-        $res = $q->get();
-        $number = sizeof($res);
+        if ($bookings){
+            foreach ($bookings as $booking){
+                $formatted_booking = [
+                    'id' => $booking->id,
+                    'location' => $booking->location_id,
+                    'resource' => $booking->resource_id,
+                    'status'   => $booking->status,
+                    'color_stripe' => 'bg-red-flamingo bg-font-red-flamingo'];
 
-        return ceil(($number*100)/$resourceNumber);
+                if ($show_more){
+                    $player = User::find($booking->for_user_id);
+                    $formatted_booking['payment_type'] = $booking->payment_type;
+                    $formatted_booking['payment_amount'] = $booking->payment_amount;
+                    $formatted_booking['invoice'] = $booking->invoice_id;
+                    $formatted_booking['player_name'] = $player->first_name.' '.$player->middle_name.' '.$player->last_name;
+
+                    if ($formatted_booking['payment_type'] == 'membership'){
+                        $formatted_booking['color_stripe'] = 'bg-green-haze bg-font-green-haze';
+                    }
+                    else{
+                        $formatted_booking['color_stripe'] = 'bg-yellow-gold bg-font-yellow-gold';
+                    }
+                }
+
+                $booking_details[$booking->resource_id] = $formatted_booking;
+            }
+        }
+        return $booking_details;
     }
 
     /* Front-End controller functions - Start */
