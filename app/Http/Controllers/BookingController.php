@@ -856,7 +856,7 @@ class BookingController extends Controller
         if ($bookings){
             foreach ($bookings as $booking){
                 $formatted_booking = [
-                    'id' => $booking->id,
+                    'search_key' => $booking->search_key,
                     'location' => $booking->location_id,
                     'resource' => $booking->resource_id,
                     'status'   => $booking->status,
@@ -868,6 +868,7 @@ class BookingController extends Controller
                     $formatted_booking['payment_amount'] = $booking->payment_amount;
                     $formatted_booking['invoice'] = $booking->invoice_id;
                     $formatted_booking['player_name'] = $player->first_name.' '.$player->middle_name.' '.$player->last_name;
+                    $formatted_booking['id'] = $booking->id;
 
                     if ($formatted_booking['payment_type'] == 'membership'){
                         $formatted_booking['color_stripe'] = 'bg-green-haze bg-font-green-haze';

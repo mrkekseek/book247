@@ -57,7 +57,7 @@
       <file leaf-file-name="FrontPageController.php" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/Http/Controllers/FrontPageController.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-14.538462">
+            <state vertical-scroll-proportion="0.0">
               <caret line="159" column="68" selection-start-line="159" selection-start-column="44" selection-end-line="159" selection-end-column="68" />
               <folding>
                 <element signature="e#40#56#0#PHP" expanded="true" />
@@ -90,11 +90,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="BookingController.php" pinned="false" current-in-tab="true">
+      <file leaf-file-name="BookingController.php" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/Http/Controllers/BookingController.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.74242425">
-              <caret line="872" column="91" selection-start-line="872" selection-start-column="91" selection-end-line="872" selection-end-column="91" />
+            <state vertical-scroll-proportion="-28.26923">
+              <caret line="870" column="60" selection-start-line="870" selection-start-column="60" selection-end-line="870" selection-end-column="60" />
               <folding>
                 <element signature="e#40#56#0#PHP" expanded="true" />
                 <element signature="e#428#529#0#PHP" expanded="false" />
@@ -148,6 +148,7 @@
                 <element signature="e#25360#25512#0#PHP" expanded="false" />
                 <element signature="e#25463#25512#0#PHP" expanded="false" />
                 <element signature="e#26156#26204#0#PHP" expanded="false" />
+                <element signature="e#27334#29320#0#PHP" expanded="false" />
                 <element signature="e#27686#28023#0#PHP" expanded="false" />
                 <element signature="e#27856#28023#0#PHP" expanded="false" />
                 <element signature="e#28033#28252#0#PHP" expanded="false" />
@@ -158,8 +159,8 @@
                 <element signature="e#30307#30374#0#PHP" expanded="false" />
                 <element signature="e#30384#30546#0#PHP" expanded="false" />
                 <element signature="e#30479#30546#0#PHP" expanded="false" />
-                <element signature="e#32177#32930#0#PHP" expanded="false" />
-                <element signature="e#32936#38407#0#PHP" expanded="false" />
+                <element signature="e#32254#33007#0#PHP" expanded="false" />
+                <element signature="e#33013#38484#0#PHP" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -168,7 +169,7 @@
       <file leaf-file-name="Booking.php" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/Booking.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-0.65384614">
+            <state vertical-scroll-proportion="0.0">
               <caret line="44" column="48" selection-start-line="44" selection-start-column="48" selection-end-line="44" selection-end-column="48" />
               <folding>
                 <element signature="e#181#715#0#PHP" expanded="false" />
@@ -191,7 +192,7 @@
       <file leaf-file-name="FrontEndUserController.php" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/Http/Controllers/FrontEndUserController.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-9.961538">
+            <state vertical-scroll-proportion="0.0">
               <caret line="664" column="0" selection-start-line="664" selection-start-column="0" selection-end-line="664" selection-end-column="0" />
               <folding>
                 <element signature="e#40#56#0#PHP" expanded="true" />
@@ -416,23 +417,70 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="calendar_location_per_day.blade.php" pinned="false" current-in-tab="false">
+      <file leaf-file-name="calendar_location_per_day.blade.php" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/resources/views/admin/bookings/calendar_location_per_day.blade.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-21.576923">
-              <caret line="81" column="32" selection-start-line="81" selection-start-column="32" selection-end-line="81" selection-end-column="32" />
+            <state vertical-scroll-proportion="0.6905966">
+              <caret line="261" column="80" selection-start-line="261" selection-start-column="80" selection-end-line="261" selection-end-column="80" />
               <folding>
-                <element signature="e#4090#4114#0#HTML" expanded="true" />
-                <element signature="e#4412#4432#0#HTML" expanded="true" />
-                <element signature="e#4481#4530#0#HTML" expanded="true" />
-                <element signature="e#4779#4828#0#HTML" expanded="true" />
-                <element signature="e#5071#5120#0#HTML" expanded="true" />
-                <marker date="1464817161772" expanded="true" signature="6918:7233" placeholder="..." />
-                <marker date="1464817161772" expanded="true" signature="6995:7158" placeholder="..." />
-                <marker date="1464817161772" expanded="true" signature="7267:7696" placeholder="..." />
-                <marker date="1464817161772" expanded="true" signature="7345:7623" placeholder="..." />
-                <marker date="1464817161772" expanded="true" signature="7781:8208" placeholder="..." />
-                <marker date="1464817161772" expanded="true" signature="8042:8105" placeholder="..." />
+                <element signature="e#1351#1639#0#HTML" expanded="false" />
+                <element signature="e#1717#2191#0#HTML" expanded="false" />
+                <element signature="e#2443#2489#0#HTML" expanded="true" />
+                <element signature="e#2349#4509#0#HTML" expanded="false" />
+                <element signature="e#2538#2582#0#HTML" expanded="true" />
+                <element signature="e#2641#2667#0#HTML" expanded="true" />
+                <element signature="e#2838#3437#0#HTML" expanded="false" />
+                <element signature="e#3561#3587#0#HTML" expanded="true" />
+                <element signature="e#3866#3892#0#HTML" expanded="true" />
+                <element signature="e#4286#4312#0#HTML" expanded="true" />
+                <element signature="e#6620#6640#0#HTML" expanded="true" />
+                <element signature="e#6763#6834#0#HTML" expanded="true" />
+                <element signature="e#7100#7201#0#HTML" expanded="true" />
+                <element signature="e#7831#7898#0#HTML" expanded="true" />
+                <element signature="e#8858#11524#0#HTML" expanded="false" />
+                <element signature="e#11046#11067#0#HTML" expanded="true" />
+                <element signature="e#11218#11239#0#HTML" expanded="true" />
+                <element signature="e#15403#25228#0#HTML" expanded="false" />
+                <element signature="e#15454#16024#0#HTML" expanded="false" />
+                <element signature="e#16074#17096#0#HTML" expanded="false" />
+                <element signature="e#17151#22506#0#HTML" expanded="false" />
+                <element signature="e#22559#23840#0#HTML" expanded="false" />
+                <element signature="e#23899#24849#0#HTML" expanded="false" />
+                <element signature="e#24870#25216#0#HTML" expanded="false" />
+                <element signature="e#25277#25402#0#HTML" expanded="false" />
+                <marker date="1464888779469" expanded="false" signature="12962:13277" placeholder="..." />
+                <marker date="1464888779469" expanded="true" signature="13039:13202" placeholder="..." />
+                <marker date="1464888779469" expanded="false" signature="13311:13740" placeholder="..." />
+                <marker date="1464888779469" expanded="true" signature="13389:13667" placeholder="..." />
+                <marker date="1464888779469" expanded="false" signature="25485:25912" placeholder="..." />
+                <marker date="1464888779469" expanded="true" signature="25746:25809" placeholder="..." />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="view_member_bookings.blade.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/resources/views/admin/front_users/view_member_bookings.blade.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-20.5">
+              <caret line="493" column="68" selection-start-line="493" selection-start-column="68" selection-end-line="493" selection-end-column="68" />
+              <folding>
+                <element signature="e#24828#26045#0#HTML" expanded="false" />
+                <element signature="e#27604#27729#0#HTML" expanded="false" />
+                <element signature="e#27839#28004#0#HTML" expanded="false" />
+                <element signature="e#28189#28469#0#HTML" expanded="false" />
+                <element signature="e#28586#31765#0#HTML" expanded="false" />
+                <element signature="e#31806#31852#0#HTML" expanded="false" />
+                <element signature="e#32154#36204#0#HTML" expanded="false" />
+                <element signature="e#36240#36934#0#HTML" expanded="false" />
+                <element signature="e#36976#37863#0#HTML" expanded="false" />
+                <element signature="e#37896#37955#0#HTML" expanded="false" />
+                <element signature="e#37992#38126#0#HTML" expanded="false" />
+                <element signature="e#38163#38297#0#HTML" expanded="false" />
+                <element signature="e#38360#39227#0#HTML" expanded="false" />
+                <element signature="e#39297#40307#0#HTML" expanded="false" />
+                <element signature="e#40366#40923#0#HTML" expanded="false" />
+                <element signature="e#41007#41436#0#HTML" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -504,8 +552,8 @@
         <option value="$PROJECT_DIR$/app/Http/Controllers/FrontEndUserController.php" />
         <option value="$PROJECT_DIR$/app/Http/routes.php" />
         <option value="$PROJECT_DIR$/resources/views/admin/layouts/main_sidebar_left.blade.php" />
-        <option value="$PROJECT_DIR$/resources/views/admin/bookings/calendar_location_per_day.blade.php" />
         <option value="$PROJECT_DIR$/app/Http/Controllers/BookingController.php" />
+        <option value="$PROJECT_DIR$/resources/views/admin/bookings/calendar_location_per_day.blade.php" />
       </list>
     </option>
   </component>
@@ -555,7 +603,6 @@
     </navigator>
     <panes>
       <pane id="Scratches" />
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -571,60 +618,6 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="bookingsys" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="bookingsys" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="bookingsys" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="storage" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="bookingsys" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="bookingsys" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="storage" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="framework" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="bookingsys" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="bookingsys" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="storage" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="framework" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="views" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -665,6 +658,32 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="admin" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="bookingsys" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="bookingsys" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="resources" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="views" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="admin" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="front_users" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -718,12 +737,123 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
+              <option name="myItemId" value="public" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="bookingsys" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="bookingsys" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="public" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="assets" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="bookingsys" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="bookingsys" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="public" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="assets" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="global" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="bookingsys" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="bookingsys" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="public" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="assets" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="global" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="plugins" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="bookingsys" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="bookingsys" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="public" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="assets" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="global" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="plugins" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="bootstrap-confirmation-2-2" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="bookingsys" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="bookingsys" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
               <option name="myItemId" value="app" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -801,10 +931,11 @@
     <editor active="false" />
     <layout>
       <window_info id="Gulp" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.18656716" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.19616205" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32950193" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32502398" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
@@ -815,7 +946,6 @@
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32502398" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.39941972" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
     </layout>
@@ -863,34 +993,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/database/migrations/2016_04_21_100323_create_bookings_table.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.3265925">
-          <caret line="20" column="71" selection-start-line="20" selection-start-column="35" selection-end-line="20" selection-end-column="71" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/database/migrations/2016_05_12_074006_add_more_status_options_for_bookings_table.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.39534885">
-          <caret line="24" column="188" selection-start-line="15" selection-start-column="12" selection-end-line="24" selection-end-column="188" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/database/migrations/2016_05_13_130641_add_enum_values_to_status.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.65252525">
-          <caret line="39" column="11" selection-start-line="39" selection-start-column="11" selection-end-line="39" selection-end-column="11" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/database/migrations/2016_05_11_153502_add_key_to_bookings_table.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.22323233">
-          <caret line="14" column="8" selection-start-line="14" selection-start-column="8" selection-end-line="16" selection-end-column="11" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/OrderInvoiceItem.php">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.7343434">
@@ -1162,13 +1264,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/resources/views/admin/front_users/view_member_bookings.blade.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.01718908">
-          <caret line="636" column="25" selection-start-line="636" selection-start-column="17" selection-end-line="636" selection-end-column="36" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/Http/Controllers/HomeController.php">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -1210,16 +1305,12 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.017171716">
           <caret line="341" column="42" selection-start-line="341" selection-start-column="42" selection-end-line="341" selection-end-column="42" />
-          <folding>
-            <marker date="1464615445134" expanded="true" signature="18726:18744" placeholder="..." />
-            <marker date="1464615445134" expanded="true" signature="23461:23479" placeholder="..." />
-          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/Http/Controllers/FrontPageController.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-14.538462">
+        <state vertical-scroll-proportion="0.0">
           <caret line="159" column="68" selection-start-line="159" selection-start-column="44" selection-end-line="159" selection-end-column="68" />
           <folding>
             <element signature="e#40#56#0#PHP" expanded="true" />
@@ -1253,7 +1344,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/app/Booking.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-0.65384614">
+        <state vertical-scroll-proportion="0.0">
           <caret line="44" column="48" selection-start-line="44" selection-start-column="48" selection-end-line="44" selection-end-column="48" />
           <folding>
             <element signature="e#181#715#0#PHP" expanded="false" />
@@ -1274,7 +1365,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/app/Http/Controllers/FrontEndUserController.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-9.961538">
+        <state vertical-scroll-proportion="0.0">
           <caret line="664" column="0" selection-start-line="664" selection-start-column="0" selection-end-line="664" selection-end-column="0" />
           <folding>
             <element signature="e#40#56#0#PHP" expanded="true" />
@@ -1498,30 +1589,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/resources/views/admin/bookings/calendar_location_per_day.blade.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-21.576923">
-          <caret line="81" column="32" selection-start-line="81" selection-start-column="32" selection-end-line="81" selection-end-column="32" />
-          <folding>
-            <element signature="e#4090#4114#0#HTML" expanded="true" />
-            <element signature="e#4412#4432#0#HTML" expanded="true" />
-            <element signature="e#4481#4530#0#HTML" expanded="true" />
-            <element signature="e#4779#4828#0#HTML" expanded="true" />
-            <element signature="e#5071#5120#0#HTML" expanded="true" />
-            <marker date="1464817161772" expanded="true" signature="6918:7233" placeholder="..." />
-            <marker date="1464817161772" expanded="true" signature="6995:7158" placeholder="..." />
-            <marker date="1464817161772" expanded="true" signature="7267:7696" placeholder="..." />
-            <marker date="1464817161772" expanded="true" signature="7345:7623" placeholder="..." />
-            <marker date="1464817161772" expanded="true" signature="7781:8208" placeholder="..." />
-            <marker date="1464817161772" expanded="true" signature="8042:8105" placeholder="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/Http/Controllers/BookingController.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.74242425">
-          <caret line="872" column="91" selection-start-line="872" selection-start-column="91" selection-end-line="872" selection-end-column="91" />
+        <state vertical-scroll-proportion="-28.26923">
+          <caret line="870" column="60" selection-start-line="870" selection-start-column="60" selection-end-line="870" selection-end-column="60" />
           <folding>
             <element signature="e#40#56#0#PHP" expanded="true" />
             <element signature="e#428#529#0#PHP" expanded="false" />
@@ -1575,6 +1646,7 @@
             <element signature="e#25360#25512#0#PHP" expanded="false" />
             <element signature="e#25463#25512#0#PHP" expanded="false" />
             <element signature="e#26156#26204#0#PHP" expanded="false" />
+            <element signature="e#27334#29320#0#PHP" expanded="false" />
             <element signature="e#27686#28023#0#PHP" expanded="false" />
             <element signature="e#27856#28023#0#PHP" expanded="false" />
             <element signature="e#28033#28252#0#PHP" expanded="false" />
@@ -1585,8 +1657,109 @@
             <element signature="e#30307#30374#0#PHP" expanded="false" />
             <element signature="e#30384#30546#0#PHP" expanded="false" />
             <element signature="e#30479#30546#0#PHP" expanded="false" />
-            <element signature="e#32177#32930#0#PHP" expanded="false" />
-            <element signature="e#32936#38407#0#PHP" expanded="false" />
+            <element signature="e#32254#33007#0#PHP" expanded="false" />
+            <element signature="e#33013#38484#0#PHP" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/resources/views/admin/front_users/view_member_bookings.blade.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-20.5">
+          <caret line="493" column="68" selection-start-line="493" selection-start-column="68" selection-end-line="493" selection-end-column="68" />
+          <folding>
+            <element signature="e#24828#26045#0#HTML" expanded="false" />
+            <element signature="e#27604#27729#0#HTML" expanded="false" />
+            <element signature="e#27839#28004#0#HTML" expanded="false" />
+            <element signature="e#28189#28469#0#HTML" expanded="false" />
+            <element signature="e#28586#31765#0#HTML" expanded="false" />
+            <element signature="e#31806#31852#0#HTML" expanded="false" />
+            <element signature="e#32154#36204#0#HTML" expanded="false" />
+            <element signature="e#36240#36934#0#HTML" expanded="false" />
+            <element signature="e#36976#37863#0#HTML" expanded="false" />
+            <element signature="e#37896#37955#0#HTML" expanded="false" />
+            <element signature="e#37992#38126#0#HTML" expanded="false" />
+            <element signature="e#38163#38297#0#HTML" expanded="false" />
+            <element signature="e#38360#39227#0#HTML" expanded="false" />
+            <element signature="e#39297#40307#0#HTML" expanded="false" />
+            <element signature="e#40366#40923#0#HTML" expanded="false" />
+            <element signature="e#41007#41436#0#HTML" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/public/assets/global/plugins/bootstrap-confirmation/README.md">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/public/assets/global/plugins/bootstrap-confirmation/bootstrap-confirmation.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-0.9537402">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="n#!!doc" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/public/assets/global/plugins/bootstrap-confirmation-2-2/bootstrap-confirmation.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.6035503">
+          <caret line="147" column="16" selection-start-line="147" selection-start-column="16" selection-end-line="147" selection-end-column="16" />
+          <folding>
+            <element signature="n#!!doc" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/public/assets/global/scripts/app.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.2719212">
+          <caret line="327" column="68" selection-start-line="327" selection-start-column="53" selection-end-line="327" selection-end-column="152" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/resources/views/admin/bookings/calendar_location_per_day.blade.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.6905966">
+          <caret line="261" column="80" selection-start-line="261" selection-start-column="80" selection-end-line="261" selection-end-column="80" />
+          <folding>
+            <element signature="e#1351#1639#0#HTML" expanded="false" />
+            <element signature="e#1717#2191#0#HTML" expanded="false" />
+            <element signature="e#2443#2489#0#HTML" expanded="true" />
+            <element signature="e#2349#4509#0#HTML" expanded="false" />
+            <element signature="e#2538#2582#0#HTML" expanded="true" />
+            <element signature="e#2641#2667#0#HTML" expanded="true" />
+            <element signature="e#2838#3437#0#HTML" expanded="false" />
+            <element signature="e#3561#3587#0#HTML" expanded="true" />
+            <element signature="e#3866#3892#0#HTML" expanded="true" />
+            <element signature="e#4286#4312#0#HTML" expanded="true" />
+            <element signature="e#6620#6640#0#HTML" expanded="true" />
+            <element signature="e#6763#6834#0#HTML" expanded="true" />
+            <element signature="e#7100#7201#0#HTML" expanded="true" />
+            <element signature="e#7831#7898#0#HTML" expanded="true" />
+            <element signature="e#8858#11524#0#HTML" expanded="false" />
+            <element signature="e#11046#11067#0#HTML" expanded="true" />
+            <element signature="e#11218#11239#0#HTML" expanded="true" />
+            <element signature="e#15403#25228#0#HTML" expanded="false" />
+            <element signature="e#15454#16024#0#HTML" expanded="false" />
+            <element signature="e#16074#17096#0#HTML" expanded="false" />
+            <element signature="e#17151#22506#0#HTML" expanded="false" />
+            <element signature="e#22559#23840#0#HTML" expanded="false" />
+            <element signature="e#23899#24849#0#HTML" expanded="false" />
+            <element signature="e#24870#25216#0#HTML" expanded="false" />
+            <element signature="e#25277#25402#0#HTML" expanded="false" />
+            <marker date="1464888779469" expanded="false" signature="12962:13277" placeholder="..." />
+            <marker date="1464888779469" expanded="true" signature="13039:13202" placeholder="..." />
+            <marker date="1464888779469" expanded="false" signature="13311:13740" placeholder="..." />
+            <marker date="1464888779469" expanded="true" signature="13389:13667" placeholder="..." />
+            <marker date="1464888779469" expanded="false" signature="25485:25912" placeholder="..." />
+            <marker date="1464888779469" expanded="true" signature="25746:25809" placeholder="..." />
           </folding>
         </state>
       </provider>
