@@ -833,6 +833,17 @@ class BookingController extends Controller
 
     public function check_date_time_bookings($date, $time, $location, $resource, $show_more=false){
         $booking_details = [];
+        $buttons_color = [
+            'is_show'       => 'bg-green-jungle bg-font-green-jungle',
+            'is_no_show'    => 'bg-purple-seance bg-font-purple-seance',
+            'show_btn_active'   => 'btn-default border-white',
+            'is_disabled'   => 'bg-default bg-font-default',
+            'is_paid'       => 'bg-green-jungle bg-font-green-jungle',
+            'is_not_paid'   => 'bg-purple-medium bg-font-purple-medium',
+            'payment_issues'=> 'bg-red-thunderbird bg-font-red-thunderbird',
+            'payment_btn_active'=>'btn-default border-white',
+            'more_btn_active'   => 'btn-default border-white',
+        ];
 
         $q = DB::table('bookings');
         if (is_array($location)){
@@ -875,6 +886,76 @@ class BookingController extends Controller
                     }
                     else{
                         $formatted_booking['color_stripe'] = 'bg-yellow-gold bg-font-yellow-gold';
+                    }
+
+                    $formatted_booking['button_show'] = 'is_disabled';
+                    $formatted_booking['button_finance'] = 'is_disabled';
+                    $formatted_booking['button_more'] = 'more_btn_active';
+                    switch ($booking->status) {
+                        case 'pending' :
+                            // all disabled
+                            break;
+                        case 'active' :
+                            $formatted_booking['button_show'] = 'show_btn_active';
+                            if ($booking->payment_type=="cash"){
+                                $invoice = BookingInvoice::find($booking->invoice_id);
+                                if ($invoice){
+                                    $formatted_booking['invoice_status'] = $invoice->status;
+                                    switch ($invoice->status){
+                                        case 'pending' :
+                                            // the invoice is new and there was no payment tried for the amount
+                                            $formatted_booking['button_finance'] = 'on';
+                                            break;
+                                        case 'ordered' :
+                                            // we'll not use it
+                                            break;
+                                        case 'processing' :
+                                            // a payment process started and the result is waiting
+                                            $formatted_booking['button_finance'] = 'on';
+                                            break;
+                                        case 'completed' :
+                                            // payment was done successfully
+                                            $formatted_booking['button_finance'] = 'on';
+                                            break;
+                                        case 'cancelled' :
+                                            // invoice was canceled
+                                            break;
+                                        case 'declined' :
+                                            // payment was declined
+                                            $formatted_booking['button_finance'] = 'on';
+                                            break;
+                                        case 'incomplete' :
+                                            // payment was incomplete
+                                            $formatted_booking['button_finance'] = 'on';
+                                            break;
+                                        case 'preordered' :
+                                            // we'll not use it
+                                            break;
+                                    }
+                                }
+                                else{
+                                    $formatted_booking['button_finance'] = 'on';
+                                }
+                            }
+                            break;
+                        case 'paid' :
+                            // show button was clicked
+                            $formatted_booking['button_show'] = 'is_show';
+                            $formatted_booking['invoice_status'] = 'completed';
+                            break;
+                        case 'unpaid' :
+                            // show button was clicked
+                            $formatted_booking['button_show'] = 'is_show';
+                            $formatted_booking['invoice_status'] = 'pending';
+                            break;
+                        case 'old' :
+                            // show button was clicked
+                            $formatted_booking['button_show'] = 'is_show';
+                            break;
+                        case 'no_show' :
+                            // the player is no show
+                            $formatted_booking['button_show'] = 'is_no_show';
+                            break;
                     }
                 }
 
