@@ -115,15 +115,30 @@
                                         @if ( isset($location_bookings[$key][$resource['id']]) )
                                         <a class="font-white" href="">{{ @$location_bookings[$key][$resource['id']]['player_name'] }}</a>
                                         <div class="actions" search-key="{{ $location_bookings[$key][$resource['id']]['search_key'] }}" style="float:right;">
-                                            <a class="btn btn-circle btn-icon-only btn-default border-white check_as_in" style="height:30px; width:30px; padding:4px 3px 0 0; margin-right:1px;" href="javascript:;" data-status="{{ $location_bookings[$key][$resource['id']]['status'] }}" >
-                                                <i class="icon-login"></i>
-                                            </a>
-                                            <a style="height:30px; width:30px; padding-top:0px; margin-right:1px; font-size:20px; line-height:26px;" href="javascript:;"
-                                               data-key="{{ $location_bookings[$key][$resource['id']]['search_key'] }}"
-                                               class="btn btn-circle btn-icon-only btn-default border-white invoice_cash_card"
-                                               data-toggle="confirmation" data-original-title="How would you pay?"
-                                               data-btn-ok-label="CASH" data-btn-ok-icon=""
-                                               data-btn-cancel-label="CARD" data-btn-cancel-icon=""> $ </a>
+                                            @if ($location_bookings[$key][$resource['id']]['button_show'] == 'is_disabled')
+                                                <a class="btn btn-circle btn-icon-only {{ $button_color['is_disabled'] }} border-white" style="height:30px; width:30px; padding:4px 3px 0 0; margin-right:1px; cursor:default;" href="javascript:;"
+                                                    data-status="{{ $location_bookings[$key][$resource['id']]['status'] }}" >
+                                                    <i class="icon-login"></i>
+                                                </a>
+                                            @else
+                                                <a class="btn btn-circle btn-icon-only {{ $button_color[$location_bookings[$key][$resource['id']]['button_show']] }} border-white check_as_in" style="height:30px; width:30px; padding:4px 3px 0 0; margin-right:1px;" href="javascript:;"
+                                                    data-status="{{ $location_bookings[$key][$resource['id']]['status'] }}" >
+                                                    <i class="icon-login"></i>
+                                                </a>
+                                            @endif
+
+                                            @if ($location_bookings[$key][$resource['id']]['button_finance'] == 'is_disabled')
+                                                <a style="height:30px; width:30px; padding-top:0px; margin-right:1px; font-size:20px; line-height:26px; cursor:default;" href="javascript:;" class="btn btn-circle btn-icon-only {{ $button_color['is_disabled'] }} border-white "> $ </a>
+                                            @else
+                                                <a style="height:30px; width:30px; padding-top:0px; margin-right:1px; font-size:20px; line-height:26px;" href="javascript:;"
+                                                   data-key="{{ $location_bookings[$key][$resource['id']]['search_key'] }}"
+                                                   class="btn btn-circle btn-icon-only {{ $button_color[$location_bookings[$key][$resource['id']]['button_finance']] }} border-white invoice_cash_card"
+                                                   data-toggle="confirmation" data-original-title="How would you pay?"
+                                                   data-btn-ok-label="CASH" data-btn-ok-icon=""
+                                                   data-btn-cancel-label="CARD" data-btn-cancel-icon=""> $ </a>
+                                            @endif
+
+
                                             <a style="height:30px; width:30px; padding-top:4px; margin-right:4px;" href="javascript:;" class="btn btn-circle btn-icon-only btn-default border-white open_more_options">
                                                 <i class="icon-speech"></i>
                                             </a>
@@ -241,21 +256,42 @@
         });
 
         $('.check_as_in').on('click', function(){
-            if ($(this).hasClass('bg-purple-medium')){
-                $(this).removeClass('bg-purple-medium');
-                $(this).removeClass('bg-font-purple-medium');
+            var book_key = $(this).parent().attr('search-key');
+console.log(book_key);
+            if ($(this).hasClass('{{ $button_color['is_show'] }}')){
+                $(this).removeClass('{{ $button_color['is_show'] }}');
+                $(this).addClass('{{ $button_color['show_btn_active'] }}');
             }
             else{
-                $(this).addClass('bg-purple-medium');
-                $(this).addClass('bg-font-purple-medium');
+                $(this).addClass('{{ $button_color['is_show'] }}');
+                $(this).removeClass('{{ $button_color['show_btn_active'] }}');
             }
+            player_is_show(book_key);
         });
+
+        function player_is_show(booking_key){
+            $.ajax({
+                url: '{{route('ajax/booking_action_player_show')}}',
+                type: "post",
+                cache: false,
+                data: {
+                    'search_key': booking_key
+                },
+                success: function (data) {
+                    show_notification('Booking Canceled', 'The selected booking was canceled.', 'lemon', 3500, 0);
+                    //$('#small').find('.book_details_cancel_place').html('');
+                    $('#cancel_confirm_box').modal('hide');
+                    $('#changeIt').modal('hide');
+                }
+            });
+        }
 
         $('[data-toggle=confirmation]').on('confirmed.bs.confirmation', function () {
             var alink = $('div[search-key="' + $(this).attr('data-key') + '"]');
             alink.find('a[data-key="' + $(this).attr('data-key') + '"]').addClass('bg-purple-seance');
             alink.find('a[data-key="' + $(this).attr('data-key') + '"]').addClass('bg-font-purple-seance');
 
+            mark_invoice_as_paid($(this).attr('data-key'), 'cash');
             console.log("Cash for : " + $(this).attr('data-key'));
         });
 
@@ -264,8 +300,27 @@
             alink.find('a[data-key="' + $(this).attr('data-key') + '"]').addClass('bg-font-blue-steel');
             alink.find('a[data-key="' + $(this).attr('data-key') + '"]').addClass('bg-blue-steel');
 
+            mark_invoice_as_paid($(this).attr('data-key'), 'card');
             console.log(" Card for :" + $(this).attr('data-key'));
         });
+
+        function mark_invoice_as_paid(booking_key, payment_type){
+            $.ajax({
+                url: '{{route('ajax/booking_action_invoice_paid')}}',
+                type: "post",
+                cache: false,
+                data: {
+                    'search_key': booking_key,
+                    'method': payment_type
+                },
+                success: function (data) {
+                    show_notification('Booking Canceled', 'The selected booking was canceled.', 'lemon', 3500, 0);
+                    //$('#small').find('.book_details_cancel_place').html('');
+                    $('#cancel_confirm_box').modal('hide');
+                    $('#changeIt').modal('hide');
+                }
+            });
+        }
 
         var ComponentsDateTimePickers = function () {
 

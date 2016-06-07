@@ -489,4 +489,14 @@ Route::group(['prefix'=>'ajax', 'middleware' => 'web'], function(){
         'as'    => 'ajax/get_players_list',
         'uses'  => 'FrontEndUserController@ajax_get_available_players_list'
     ]);
+
+    Route::post('booking_action_player_show', [
+        'as'    => 'ajax/booking_action_player_show',
+        'uses'  => 'BookingController@booking_action_player_show',
+    ]);
+
+    Route::post('booking_action_invoice_paid', [
+        'as'    => 'ajax/booking_action_invoice_paid',
+        'uses'  => 'BookingController@booking_action_pay_invoice',
+    ]);
 });

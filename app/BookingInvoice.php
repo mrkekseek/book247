@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Validator;
 
 class BookingInvoice extends Model
 {
@@ -31,6 +32,40 @@ class BookingInvoice extends Model
         }
         else{
             return 1100;
+        }
+    }
+
+    public function add_transaction($fillable){
+        $fillable['booking_invoice_id'] = $this->id;
+
+        $validator = Validator::make($fillable, BookingFinancialTransaction::rules('POST'), BookingFinancialTransaction::$message, BookingFinancialTransaction::$attributeNames);
+        if ($validator->fails()){
+            return [
+                'success' => false,
+                'errors' => $validator->getMessageBag()->toArray()];
+        }
+
+        $transaction = BookingFinancialTransaction::
+            where('booking_invoice_id','=',$this->booking_invoice_id)
+            ->whereIn('status',['pending','processing'])
+            ->orderBy('created_at','DESC')->get()->first();
+        if ($transaction){
+            // we cancel pending and processing transactions and add the new one
+            $transaction->status='cancelled';
+            $transaction->save();
+        }
+
+        try {
+            $newTransaction = BookingFinancialTransaction::create($fillable);
+            return [
+                'success'=>true,
+                'transaction_id' => $newTransaction->id,
+                'transaction_status' => $newTransaction->status];
+        }
+        catch (Exception $e) {
+            return [
+                'success' => false,
+                'errors' => 'Error Creating Transaction!'];
         }
     }
 

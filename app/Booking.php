@@ -135,6 +135,9 @@ class Booking extends Model
             $the_invoice_item = BookingInvoiceItem::create($fillable);
 
             if ($the_invoice_item){
+                $this->invoice_id = $the_invoice_item->id;
+                $this->save();
+
                 return $the_invoice;
             }
             else{

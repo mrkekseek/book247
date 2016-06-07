@@ -65,7 +65,7 @@ class FrontPageController extends Controller
         $errors = Session::get('errors', new MessageBag);
         //xdebug_var_dump($errors);
 
-        BookingController::check_for_passed_bookings();
+        //BookingController::check_for_passed_bookings();
         BookingController::check_for_expired_pending_bookings();
 
         $user = Auth::user();
