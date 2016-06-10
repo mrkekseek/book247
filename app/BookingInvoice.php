@@ -96,4 +96,9 @@ class BookingInvoice extends Model
             default:break;
         }
     }
+
+    public function financial_transaction(){
+        return $this->hasMany('App\BookingFinancialTransaction', 'booking_invoice_id', 'id')->orderBy('created_at','DESC');
+    }
+
 }

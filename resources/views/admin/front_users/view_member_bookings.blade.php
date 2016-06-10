@@ -350,7 +350,7 @@
                                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
                                 <h4 class="modal-title">Do you want to cancel?</h4>
                             </div>
-                            <div class="modal-body"> By clicking "Cancel Booking" this booking will be canceled and the player notified. Do you want to proceed with the cancelation? </div>
+                            <div class="modal-body"> By clicking "Cancel Booking" this booking will be canceled and the player notified. Do you want to proceed with the cancellation? </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn dark btn-outline" data-dismiss="modal">No, Go Back</button>
                                 <button type="button" class="btn green" onclick="javascript:cancel_booking();">Yes, Cancel</button>

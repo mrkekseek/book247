@@ -55,30 +55,46 @@
             <div class="col-md-12">
                 <div class="portlet light form-fit bordered form-horizontal bg-green-haze bg-font-green-haze" style="border-radius:5px; margin-bottom:10px;">
                     <div class="portlet-title" style="padding-top:7px; padding-bottom:7px;">
-                        <div class="form-group col-md-4" style="margin-bottom:0px;">
-                            <label class="control-label col-md-3">Select Date</label>
-                            <div class="col-md-9">
-                                <div class="input-group input-medium date date-picker" data-date="12-02-2012" data-date-format="dd-mm-yyyy" data-date-viewmode="years">
-                                    <input type="text" class="form-control" readonly>
-                                        <span class="input-group-btn">
-                                            <button class="btn default" type="button">
-                                                <i class="fa fa-calendar"></i>
-                                            </button>
-                                        </span>
+                        <div class="col-md-4">
+                            <div class="form-group" style="margin-bottom:0px;">
+                                <label class="control-label col-md-4">Select Date</label>
+                                <div class="col-md-7">
+                                    <div class="input-group input-small date date-picker" data-date="{{ $header_vals['date_selected'] }}" data-date-format="dd-mm-yyyy" data-date-viewmode="years">
+                                        <input type="text" id="header_date_selected" class="form-control reload_calendar_page" value="{{ \Carbon\Carbon::now()->format('d-m-Y') }}" readonly>
+                                            <span class="input-group-btn">
+                                                <button class="btn default" type="button">
+                                                    <i class="fa fa-calendar"></i>
+                                                </button>
+                                            </span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="form-group col-md-8" style="margin-bottom:0px;">
-                            <label class="control-label col-md-2">Select Location</label>
-                            <div class="col-md-4">
-                                <div class="input-group input-medium">
-                                    <select class="form-control" style="border-radius:4px;"><option>Select Location</option></select>
+                        <div class="col-md-4">
+                            <div class="form-group" style="margin-bottom:0px;">
+                                <label class="control-label col-md-4">Select Location</label>
+                                <div class="col-md-8">
+                                    <div class="input-group input-medium">
+                                        <select id="header_location_selected" class="form-control reload_calendar_page" style="border-radius:4px;">
+                                            @foreach($all_locations as $a_location)
+                                                <option value="{{ $a_location->id }}" {{ $a_location->id==$header_vals['selected_location']?" selected ":'' }} >{{ $a_location->name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
                                 </div>
                             </div>
-                            <label class="control-label col-md-2">Select Activity</label>
-                            <div class="col-md-4">
-                                <div class="input-group input-medium">
-                                    <select class="form-control" style="border-radius:4px;"><option>Select Activity</option></select>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group" style="margin-bottom:0px;">
+                                <label class="control-label col-md-4">Select Activity</label>
+                                <div class="col-md-8">
+                                    <div class="input-group input-medium">
+                                        <select id="header_activity_selected" class="form-control reload_calendar_page" style="border-radius:4px;">
+                                            @foreach($all_activities as $an_activity)
+                                                <option value="{{ $an_activity->id }}" {{ $an_activity->id==$header_vals['selected_activity']?" selected ":'' }} >{{ $an_activity->name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -89,11 +105,10 @@
                     <div class="portlet-title">
                         <div class="caption">
                             <i class="fa fa-cogs"></i>Responsive Flip Scroll Tables </div>
-                        <div class="tools">
-                            <a href="javascript:;" class="collapse"> </a>
-                            <a href="#portlet-config" data-toggle="modal" class="config"> </a>
-                            <a href="javascript:;" class="reload"> </a>
-                            <a href="javascript:;" class="remove"> </a>
+                        <div class="tools ">
+                            <a href="{{ route('bookings/location_calendar_day_view_all', ['day'=>$header_vals['prev_date'],'location'=>$header_vals['selected_location'],'activity'=>$header_vals['selected_activity']]) }}" class="bs-glyphicons font-white" style="margin-bottom:0px;"> <span class="glyphicon glyphicon-chevron-left"> </span> Prev </a>
+                            <a href="javascript:;" class="bs-glyphicons font-white" style="margin-bottom:0px;"> <span class="glyphicon glyphicon-repeat"> </span> Reload </a>
+                            <a href="{{ route('bookings/location_calendar_day_view_all', ['day'=>$header_vals['next_date'],'location'=>$header_vals['selected_location'],'activity'=>$header_vals['selected_activity']]) }}" class="bs-glyphicons font-white" style="margin-bottom:0px;"> Next <span class="glyphicon glyphicon-chevron-right"> </span> </a>
                         </div>
                     </div>
                     <div class="portlet-body flip-scroll">
@@ -116,19 +131,30 @@
                                         <a class="font-white" href="">{{ @$location_bookings[$key][$resource['id']]['player_name'] }}</a>
                                         <div class="actions" search-key="{{ $location_bookings[$key][$resource['id']]['search_key'] }}" style="float:right;">
                                             @if ($location_bookings[$key][$resource['id']]['button_show'] == 'is_disabled')
-                                                <a class="btn btn-circle btn-icon-only {{ $button_color['is_disabled'] }} border-white" style="height:30px; width:30px; padding:4px 3px 0 0; margin-right:1px; cursor:default;" href="javascript:;"
-                                                    data-status="{{ $location_bookings[$key][$resource['id']]['status'] }}" >
-                                                    <i class="icon-login"></i>
+                                                <a class="btn btn-circle btn-icon-only {{ $button_color['is_disabled'] }} border-white"
+                                                   style="height:30px; width:30px; padding:4px 3px 0 0; margin-right:1px; cursor:default;" href="javascript:;"
+                                                   data-status="{{ $location_bookings[$key][$resource['id']]['status'] }}" >
+                                                   <i class="icon-login"></i>
+                                                </a>
+                                            @elseif ($location_bookings[$key][$resource['id']]['button_show'] == 'is_no_show')
+                                                <a class="btn btn-circle btn-icon-only {{ $button_color[$location_bookings[$key][$resource['id']]['button_show']] }} border-white"
+                                                   style="height:30px; width:30px; padding:4px 3px 0 0; margin-right:1px; cursor:default;" href="javascript:;"
+                                                   data-status="{{ $location_bookings[$key][$resource['id']]['status'] }}" >
+                                                   <i class="icon-login"></i>
                                                 </a>
                                             @else
                                                 <a class="btn btn-circle btn-icon-only {{ $button_color[$location_bookings[$key][$resource['id']]['button_show']] }} border-white check_as_in" style="height:30px; width:30px; padding:4px 3px 0 0; margin-right:1px;" href="javascript:;"
-                                                    data-status="{{ $location_bookings[$key][$resource['id']]['status'] }}" >
-                                                    <i class="icon-login"></i>
+                                                   data-status="{{ $location_bookings[$key][$resource['id']]['status'] }}" >
+                                                   <i class="icon-login"></i>
                                                 </a>
                                             @endif
 
                                             @if ($location_bookings[$key][$resource['id']]['button_finance'] == 'is_disabled')
-                                                <a style="height:30px; width:30px; padding-top:0px; margin-right:1px; font-size:20px; line-height:26px; cursor:default;" href="javascript:;" class="btn btn-circle btn-icon-only {{ $button_color['is_disabled'] }} border-white "> $ </a>
+                                                <a style="height:30px; width:30px; padding-top:0px; margin-right:1px; font-size:20px; line-height:26px; cursor:default;" href="javascript:;"
+                                                   class="btn btn-circle btn-icon-only {{ $button_color['is_disabled'] }} border-white "> $ </a>
+                                            @elseif ($location_bookings[$key][$resource['id']]['button_finance'] == 'is_paid_cash' || $location_bookings[$key][$resource['id']]['button_finance'] == 'is_paid_card' || $location_bookings[$key][$resource['id']]['button_finance'] == 'is_paid_online')
+                                                <a style="height:30px; width:30px; padding-top:0px; margin-right:1px; font-size:20px; line-height:26px; cursor:default;" href="javascript:;"
+                                                   class="btn btn-circle btn-icon-only {{ $button_color[$location_bookings[$key][$resource['id']]['button_finance']] }} border-white "> $ </a>
                                             @else
                                                 <a style="height:30px; width:30px; padding-top:0px; margin-right:1px; font-size:20px; line-height:26px;" href="javascript:;"
                                                    data-key="{{ $location_bookings[$key][$resource['id']]['search_key'] }}"
@@ -138,10 +164,16 @@
                                                    data-btn-cancel-label="CARD" data-btn-cancel-icon=""> $ </a>
                                             @endif
 
-
-                                            <a style="height:30px; width:30px; padding-top:4px; margin-right:4px;" href="javascript:;" class="btn btn-circle btn-icon-only btn-default border-white open_more_options">
-                                                <i class="icon-speech"></i>
-                                            </a>
+                                            @if ($location_bookings[$key][$resource['id']]['button_more'] == 'is_disabled')
+                                                <a style="height:30px; width:30px; padding-top:4px; margin-right:4px; cursor:default;" href="javascript:;"
+                                                   class="btn btn-circle btn-icon-only {{ $button_color['is_disabled'] }} border-white">
+                                                    <i class="icon-speech"></i>
+                                                </a>
+                                            @else
+                                                <a style="height:30px; width:30px; padding-top:4px; margin-right:4px;" href="javascript:;" class="btn btn-circle btn-icon-only btn-default border-white open_more_options">
+                                                    <i class="icon-speech"></i>
+                                                </a>
+                                            @endif
                                         </div>
                                         @else
                                             &nbsp;
@@ -156,51 +188,115 @@
                 </div>
                 <!-- END SAMPLE TABLE PORTLET-->
             </div>
-        </div>
 
-        <!-- BEGIN More Options modal window show -->
-        <div class="modal fade" id="more_options_bookings_show" tabindex="-1" role="dialog" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
-                        <h4 class="modal-title"> Not Show Status Change </h4>
-                    </div>
-                    <div class="modal-body form-horizontal" id="book_main_details_container">
-                        <div class="form-body">
-                            <div class="form-group">
-                                <label class="col-md-4 control-label"> Booking Note<br /><small>for external use</small></label>
-                                <div class="col-md-8">
-                                    <select class="form-control input-inline input-large" name="default_player_messages">
-                                        <option value="">Select default message</option>
-                                        <option value="">First time not show</option>
-                                        <option value="">Second time not show</option>
-                                        <option value="">Three and up times not show</option>
-                                    </select>
-                                    <h5 class="font-blue-steel"> or send Custom Message</h5>
-                                    <textarea type="text" class="form-control input-inline input-large" name="custom_player_message"></textarea>
+            <!-- BEGIN More Options modal window show -->
+            <div class="modal fade" id="more_options_bookings_show" tabindex="-1" role="dialog" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                            <!--<h4 class="modal-title">More Options</h4>-->
+                        </div>
+                        <div class="modal-body">
+                            <div id="player_summary_stats" class="personal_details_view row">
+                                <div class="col-md-4 text-center">
+                                    <img src="" class="player_avatar_img" style="max-width:150px; max-height:150px;" />
+                                </div>
+                                <div class="col-md-8" style="font-size:15px;">
+                                    <span class="item-box">
+                                        <span class="item font-green-jungle">
+                                            <span class="icon-like" aria-hidden="true"></span> &nbsp;<span class="show_bookings">-</span> : Show bookings </span>
+                                    </span><br />
+                                    <span class="item-box">
+                                        <span class="item font-red-thunderbird">
+                                            <span class="icon-dislike" aria-hidden="true"></span> &nbsp;<span class="no_show_bookings">-</span> : No-Show bookings </span>
+                                    </span><br />
+                                    <span class="item-box">
+                                        <span class="item font-yellow-mint">
+                                            <span class="icon-close" aria-hidden="true"></span> &nbsp;<span class="cancel_bookings">-</span> : Cancelled bookings </span>
+                                    </span>
+
+                                    <blockquote class="bg-grey-cararra bg-font-grey-cararra player_short_note" style="padding:5px; margin:7px 0; font-size:14px;"> - </blockquote>
                                 </div>
                             </div>
-                            <div class="form-group">
-                                <label class="col-md-4 control-label"> Internal Note<br /><small>for internal use</small> </label>
-                                <div class="col-md-8">
-                                    <textarea type="text" class="form-control input-inline input-large" name="private_player_message"></textarea>
+                            <div class="book_details_cancel_place" style="padding:0px 15px; margin-top:5px; clear:both;"></div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn green btn_cancel_booking" data-toggle="modal" href="#not_show_confirm_box">No show options</button>
+                            <button type="button" class="btn green btn_cancel_booking" data-toggle="modal" href="#cancel_confirm_box">Cancel Booking</button>
+                            <button type="button" class="btn dark btn-outline" data-dismiss="modal">Return</button>
+                        </div>
+                    </div>
+                    <!-- /.modal-content -->
+                </div>
+                <!-- /.modal-dialog -->
+            </div>
+            <!-- END More Options modal window show -->
+
+            <!-- BEGIN No Show modal window -->
+            <div class="modal fade" id="not_show_confirm_box" tabindex="-1" role="dialog" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                            <h4 class="modal-title"> Not Show Status Change </h4>
+                        </div>
+                        <div class="modal-body form-horizontal" id="book_main_details_container">
+                            <div class="form-body">
+                                <div class="form-group">
+                                    <label class="col-md-4 control-label"> Booking Note<br /><small>for external use</small></label>
+                                    <div class="col-md-8">
+                                        <select class="form-control input-inline input-large" name="default_player_messages">
+                                            <option value="">Select default message</option>
+                                            <option value="">First time not show</option>
+                                            <option value="">Second time not show</option>
+                                            <option value="">Three and up times not show</option>
+                                        </select>
+                                        <h5 class="font-blue-steel"> or send Custom Message</h5>
+                                        <textarea type="text" class="form-control input-inline input-large" name="custom_player_message"></textarea>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-md-4 control-label"> Internal Note<br /><small>for internal use</small> </label>
+                                    <div class="col-md-8">
+                                        <textarea type="text" class="form-control input-inline input-large" name="private_player_message"></textarea>
+                                    </div>
                                 </div>
                             </div>
                         </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn green btn_no_show" onclick="javascript:not_show_invoice();">Invoice Customer</button>
+                            <button type="button" class="btn green btn_modify_booking" onclick="javascript:not_show_warning();">Send Warning</button>
+                            <button type="button" class="btn dark btn-outline" data-dismiss="modal">Return</button>
+                        </div>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn green btn_no_show" style="display:none;" onclick="javascript:not_show_invoice();">Invoice Customer</button>
-                        <button type="button" class="btn green btn_modify_booking" style="display:none;" onclick="javascript:not_show_warning();">Send Warning</button>
-                        <button type="button" class="btn dark btn-outline" data-dismiss="modal">Return</button>
-                    </div>
+                    <!-- /.modal-content -->
                 </div>
-                <!-- /.modal-content -->
+                <!-- /.modal-dialog -->
             </div>
-            <!-- /.modal-dialog -->
-        </div>
-        <!-- END More Options modal window show -->
+            <!-- END No Show modal window -->
 
+            <!-- BEGIN Cancel Confirm modal window show -->
+            <div class="modal fade bs-modal-sm" id="cancel_confirm_box" tabindex="-1" role="dialog" aria-hidden="true">
+                <div class="modal-dialog modal-sm">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                            <h4 class="modal-title">Do you want to cancel?</h4>
+                        </div>
+                        <div class="modal-body"> By clicking "Cancel Booking" this booking will be canceled and the player notified. Do you want to proceed with the cancellation? </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn dark btn-outline" data-dismiss="modal">No, Go Back</button>
+                            <button type="button" class="btn green" onclick="javascript:cancel_booking();">Yes, Cancel</button>
+                        </div>
+                    </div>
+                    <!-- /.modal-content -->
+                </div>
+                <!-- /.modal-dialog -->
+            </div>
+            <!-- END Cancel Confirm modal window show -->
+
+        </div>
         <!-- END PAGE BASE CONTENT -->
     </div>
 @endsection
@@ -249,79 +345,6 @@
                 "File must be JPG, GIF or PNG, less than 1MB"
         );
 
-        $('[data-toggle=confirmation]').confirmation({ container: 'body', btnOkClass: 'btn btn-sm blue', btnCancelClass: 'btn purple btn-sm', copyAttributes: 'data-key'});
-
-        $('.open_more_options').on('click', function(){
-            $('#more_options_bookings_show').modal('show');
-        });
-
-        $('.check_as_in').on('click', function(){
-            var book_key = $(this).parent().attr('search-key');
-console.log(book_key);
-            if ($(this).hasClass('{{ $button_color['is_show'] }}')){
-                $(this).removeClass('{{ $button_color['is_show'] }}');
-                $(this).addClass('{{ $button_color['show_btn_active'] }}');
-            }
-            else{
-                $(this).addClass('{{ $button_color['is_show'] }}');
-                $(this).removeClass('{{ $button_color['show_btn_active'] }}');
-            }
-            player_is_show(book_key);
-        });
-
-        function player_is_show(booking_key){
-            $.ajax({
-                url: '{{route('ajax/booking_action_player_show')}}',
-                type: "post",
-                cache: false,
-                data: {
-                    'search_key': booking_key
-                },
-                success: function (data) {
-                    show_notification('Booking Canceled', 'The selected booking was canceled.', 'lemon', 3500, 0);
-                    //$('#small').find('.book_details_cancel_place').html('');
-                    $('#cancel_confirm_box').modal('hide');
-                    $('#changeIt').modal('hide');
-                }
-            });
-        }
-
-        $('[data-toggle=confirmation]').on('confirmed.bs.confirmation', function () {
-            var alink = $('div[search-key="' + $(this).attr('data-key') + '"]');
-            alink.find('a[data-key="' + $(this).attr('data-key') + '"]').addClass('bg-purple-seance');
-            alink.find('a[data-key="' + $(this).attr('data-key') + '"]').addClass('bg-font-purple-seance');
-
-            mark_invoice_as_paid($(this).attr('data-key'), 'cash');
-            console.log("Cash for : " + $(this).attr('data-key'));
-        });
-
-        $('[data-toggle=confirmation]').on('canceled.bs.confirmation', function () {
-            var alink = $('div[search-key="' + $(this).attr('data-key') + '"]');
-            alink.find('a[data-key="' + $(this).attr('data-key') + '"]').addClass('bg-font-blue-steel');
-            alink.find('a[data-key="' + $(this).attr('data-key') + '"]').addClass('bg-blue-steel');
-
-            mark_invoice_as_paid($(this).attr('data-key'), 'card');
-            console.log(" Card for :" + $(this).attr('data-key'));
-        });
-
-        function mark_invoice_as_paid(booking_key, payment_type){
-            $.ajax({
-                url: '{{route('ajax/booking_action_invoice_paid')}}',
-                type: "post",
-                cache: false,
-                data: {
-                    'search_key': booking_key,
-                    'method': payment_type
-                },
-                success: function (data) {
-                    show_notification('Booking Canceled', 'The selected booking was canceled.', 'lemon', 3500, 0);
-                    //$('#small').find('.book_details_cancel_place').html('');
-                    $('#cancel_confirm_box').modal('hide');
-                    $('#changeIt').modal('hide');
-                }
-            });
-        }
-
         var ComponentsDateTimePickers = function () {
 
             var handleDatePickers = function () {
@@ -352,6 +375,245 @@ console.log(book_key);
                 ComponentsDateTimePickers.init();
             });
         }
+
+        $('[data-toggle=confirmation]').confirmation({ container: 'body', btnOkClass: 'btn btn-sm blue', btnCancelClass: 'btn purple btn-sm', copyAttributes: 'data-key'});
+
+        $('.check_as_in').on('click', function(){
+            var book_key = $(this).parent().attr('search-key');
+
+            if ($(this).hasClass('{{ $button_color['is_show'] }}')){
+                $(this).removeClass('{{ $button_color['is_show'] }}');
+                $(this).addClass('{{ $button_color['show_btn_active'] }}');
+            }
+            else{
+                $(this).removeClass('{{ $button_color['show_btn_active'] }}');
+                $(this).addClass('{{ $button_color['is_show'] }}');
+            }
+            player_is_show(book_key);
+        });
+
+        function player_is_show(booking_key){
+            $.ajax({
+                url: '{{route('ajax/booking_action_player_show')}}',
+                type: "post",
+                cache: false,
+                data: {
+                    'search_key': booking_key
+                },
+                success: function (data) {
+                    show_notification('Booking Canceled', 'The selected booking was canceled.', 'lemon', 3500, 0);
+                    //$('#small').find('.book_details_cancel_place').html('');
+                    $('#cancel_confirm_box').modal('hide');
+                    $('#changeIt').modal('hide');
+                }
+            });
+        }
+
+        $('[data-toggle=confirmation]').on('confirmed.bs.confirmation', function () {
+            var alink = $('div[search-key="' + $(this).attr('data-key') + '"]');
+            var abutton = alink.find('a[data-key="' + $(this).attr('data-key') + '"]');
+            abutton.addClass('{{ $button_color['is_paid_cash'] }}');
+
+            abutton.confirmation('destroy');
+            abutton.css('cursor','default');
+            mark_invoice_as_paid($(this).attr('data-key'), 'cash');
+            //console.log("Cash for : " + $(this).attr('data-key'));
+        });
+
+        $('[data-toggle=confirmation]').on('canceled.bs.confirmation', function () {
+            var alink = $('div[search-key="' + $(this).attr('data-key') + '"]');
+            var abutton = alink.find('a[data-key="' + $(this).attr('data-key') + '"]');
+            abutton.addClass('{{ $button_color['is_paid_card'] }}');
+
+            abutton.confirmation('destroy');
+            abutton.css('cursor','default');
+            mark_invoice_as_paid($(this).attr('data-key'), 'card');
+            //console.log(" Card for :" + $(this).attr('data-key'));
+        });
+
+        function mark_invoice_as_paid(booking_key, payment_type){
+            $.ajax({
+                url: '{{route('ajax/booking_action_invoice_paid')}}',
+                type: "post",
+                cache: false,
+                data: {
+                    'search_key': booking_key,
+                    'method': payment_type
+                },
+                success: function (data) {
+                    show_notification('Booking Canceled', 'The selected booking was canceled.', 'lemon', 3500, 0);
+                    //$('#small').find('.book_details_cancel_place').html('');
+                    $('#cancel_confirm_box').modal('hide');
+                    $('#changeIt').modal('hide');
+                }
+            });
+        }
+
+        $(document).on('click', '.open_more_options', function(){
+            //alert('Cancel Booking' + $(this).attr('data-id'));
+            var search_key = $(this).parent().attr('search-key');
+
+            get_player_statistics(search_key, $('#player_summary_stats'));
+            get_booking_details(search_key, $('#more_options_bookings_show'));
+            $('#more_options_bookings_show').modal('show');
+        });
+
+        function get_player_statistics(key, div_container){
+            $.ajax({
+                url: '{{route('ajax/simple_player_bookings_statistic')}}',
+                type: "post",
+                cache: false,
+                data: {
+                    'search_key': key,
+                },
+                success: function (data) {
+                    $('.cancel_bookings').html(data.booking_cancel);
+                    $('.no_show_bookings').html(data.booking_no_show);
+                    $('.show_bookings').html(data.booking_show);
+                    $('.player_short_note').html(data.player_about);
+                    $('.player_avatar_img').attr('src', data.player_avatar);
+
+                    return true;
+
+                    var booking_notes = 'No Notes';
+                    /* Get booking notes */
+                    if (data.bookingNotes.length !=0){
+                        var booking_notes = '<small>';
+                        $.each(data.bookingNotes, function(key, value){
+                            booking_notes+= '<dl style="margin-bottom:7px;"><dt class="font-grey-mint"><span>' + value.created_at + '</span> ' +
+                                    'by <span> ' + value.added_by + '</span></dt>' +
+                                    '<dd> <span class="font-blue-steel"> ' + value.note_title + ' </span> : ' +
+                                    '<span class="font-blue-dark">' + value.note_body + '</span></dd></dl>';
+                        });
+                        booking_notes+='</small>';
+                    }
+
+                    var book_details =
+                            '<div class="row margin-bottom-5"><div class="col-md-4 bg-grey-salt bg-font-grey-salt"> Booking Date </div><div class="col-md-8 bg-grey-steel bg-font-grey-steel"> ' + data.bookingDate + ' </div></div>' +
+                            '<div class="row margin-bottom-5"><div class="col-md-4 bg-grey-salt bg-font-grey-salt"> Time of booking </div><div class="col-md-8 bg-grey-steel bg-font-grey-steel"> ' + data.timeStart + ' - ' + data.timeStop + ' </div></div>' +
+                            '<div class="row margin-bottom-5"><div class="col-md-4 bg-grey-salt bg-font-grey-salt"> Booking Location </div><div class="col-md-8 bg-grey-steel bg-font-grey-steel"> ' + data.location + ' - ' + data.room + ' </div></div>' +
+                            '<div class="row margin-bottom-5"><div class="col-md-4 bg-grey-salt bg-font-grey-salt"> Activity </div><div class="col-md-8 bg-grey-steel bg-font-grey-steel"> ' + data.category + ' </div></div>' +
+                            '<div class="row margin-bottom-5"><div class="col-md-4 bg-grey-salt bg-font-grey-salt"> Player </div><div class="col-md-8 bg-grey-steel bg-font-grey-steel"> ' + data.forUserName + ' </div></div>' +
+                            '<div class="row margin-bottom-5"><div class="col-md-4 bg-grey-salt bg-font-grey-salt"> Finance </div><div class="col-md-8 bg-grey-steel bg-font-grey-steel"> ' + data.financialDetails + ' </div></div>' +
+                            '<div class="row margin-bottom-5"><div class="col-md-4 bg-grey-salt bg-font-grey-salt"> Notes </div><div class="col-md-8 bg-grey-steel bg-font-grey-steel"> ' + booking_notes + ' </div></div>' +
+                            '<input type="hidden" value="' + key + '" name="search_key_selected" />';
+
+                    container.find('.book_details_cancel_place').html(book_details);
+                }
+            });
+        }
+
+        function get_booking_details(key, container){
+            $.ajax({
+                url: '{{route('ajax/get_single_booking_details')}}',
+                type: "post",
+                cache: false,
+                data: {
+                    'search_key': key,
+                },
+                success: function (data) {
+                    var booking_notes = 'No Notes';
+                    /* Get booking notes */
+                    if (data.bookingNotes.length !=0){
+                        var booking_notes = '<small>';
+                        $.each(data.bookingNotes, function(key, value){
+                            booking_notes+= '<dl style="margin-bottom:7px;"><dt class="font-grey-mint"><span>' + value.created_at + '</span> ' +
+                                    'by <span> ' + value.added_by + '</span></dt>' +
+                                    '<dd> <span class="font-blue-steel"> ' + value.note_title + ' </span> : ' +
+                                    '<span class="font-blue-dark">' + value.note_body + '</span></dd></dl>';
+                        });
+                        booking_notes+='</small>';
+                    }
+
+                    var book_details =
+                            '<div class="row margin-bottom-5"><div class="col-md-4 bg-grey-salt bg-font-grey-salt"> Booking Date </div><div class="col-md-8 bg-grey-steel bg-font-grey-steel"> ' + data.bookingDate + ' </div></div>' +
+                            '<div class="row margin-bottom-5"><div class="col-md-4 bg-grey-salt bg-font-grey-salt"> Time of booking </div><div class="col-md-8 bg-grey-steel bg-font-grey-steel"> ' + data.timeStart + ' - ' + data.timeStop + ' </div></div>' +
+                            '<div class="row margin-bottom-5"><div class="col-md-4 bg-grey-salt bg-font-grey-salt"> Booking Location </div><div class="col-md-8 bg-grey-steel bg-font-grey-steel"> ' + data.location + ' - ' + data.room + ' </div></div>' +
+                            '<div class="row margin-bottom-5"><div class="col-md-4 bg-grey-salt bg-font-grey-salt"> Activity </div><div class="col-md-8 bg-grey-steel bg-font-grey-steel"> ' + data.category + ' </div></div>' +
+                            '<div class="row margin-bottom-5"><div class="col-md-4 bg-grey-salt bg-font-grey-salt"> Player </div><div class="col-md-8 bg-grey-steel bg-font-grey-steel"> ' + data.forUserName + ' </div></div>' +
+                            '<div class="row margin-bottom-5"><div class="col-md-4 bg-grey-salt bg-font-grey-salt"> Finance </div><div class="col-md-8 bg-grey-steel bg-font-grey-steel"> ' + data.financialDetails + ' </div></div>' +
+                            '<div class="row margin-bottom-5"><div class="col-md-4 bg-grey-salt bg-font-grey-salt"> Notes </div><div class="col-md-8 bg-grey-steel bg-font-grey-steel"> ' + booking_notes + ' </div></div>' +
+                            '<input type="hidden" value="' + key + '" name="search_key_selected" />';
+
+                    container.find('.book_details_cancel_place').html(book_details);
+                }
+            });
+        }
+
+        function cancel_booking() {
+            var search_key = $('input[name="search_key_selected"]').val();
+
+            $.ajax({
+                url: '{{route('ajax/cancel_booking')}}',
+                type: "post",
+                cache: false,
+                data: {
+                    'search_key': search_key
+                },
+                success: function (data) {
+                    show_notification('Booking Canceled', 'The selected booking was canceled.', 'lemon', 3500, 0);
+
+                    var action_buttons = $('div[search-key="'+search_key+'"]');
+                    action_buttons.css('display','none');
+                    action_buttons.after(' - canceled');
+                    action_buttons.parent().removeClass();
+                    action_buttons.parent().addClass('bg-yellow-saffron bg-font-yellow-saffron');
+
+                    $('#cancel_confirm_box').modal('hide');
+                    $('#more_options_bookings_show').modal('hide');
+                    draw_booking_box();
+                }
+            });
+        }
+
+        function not_show_invoice(){
+            var search_key = $('input[name="search_key_selected"]').val();
+            add_note_to_booking(search_key, 1);
+        }
+
+        function not_show_warning(){
+            var search_key = $('input[name="search_key_selected"]').val();
+            add_note_to_booking(search_key, 0);
+        }
+
+        function add_note_to_booking(search_key, add_invoice){
+            $.ajax({
+                url: '{{route('ajax/booking_not_show_change_status')}}',
+                type: "post",
+                cache: false,
+                data: {
+                    'search_key': search_key,
+                    'add_invoice': add_invoice,
+                    'default_message': $('select[name="default_player_messages"]  :selected').val(),
+                    'custom_message':  $('textarea[name="custom_player_message"]').val(),
+                    'private_message': $('textarea[name="private_player_message"]').val()
+                },
+                success: function (data) {
+                    show_notification(data.message_title, data.message_body, 'lemon', 3500, 0);
+                    $('#not_show_confirm_box').modal('hide');
+                    $('#more_options_bookings_show').modal('hide');
+
+                    draw_booking_box();
+                }
+            });
+        }
+
+        function draw_booking_box(){
+            location.reload();
+        }
+
+        $('.reload_calendar_page').on('change', function(){
+            var date = $('#header_date_selected').val();
+            var location = $('#header_location_selected').val();
+            var activity = $('#header_activity_selected').val();
+
+            var the_link = '{{ route('bookings/location_calendar_day_view_all',['day'=>'##day##', 'location'=>'##location##', 'activity'=>'##activity##']) }}';
+            the_link = the_link.replace('##day##',date);
+            the_link = the_link.replace('##location##',location);
+            the_link = the_link.replace('##activity##',activity);
+
+            window.location.href = the_link;
+        });
 
         function show_notification(title_heading, message, theme, life, sticky) {
             var settings = {

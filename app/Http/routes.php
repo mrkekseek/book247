@@ -388,6 +388,11 @@ Route::group(['middleware' => 'web'], function () {
         'as'    => 'admin/front_users/view_finance',
         'uses'  => 'FrontEndUserController@show_finance'
     ]);
+
+    Route::get('admin/front_users/{id}/bookings_statistic', [
+        'as'    => 'ajax/player_bookings_statistic',
+        'uses'  => 'BookingController@get_player_statistics'
+    ]);
     /** Stop Routes for front users in backend */
 
     /** Start Routes for bookings */
@@ -395,6 +400,11 @@ Route::group(['middleware' => 'web'], function () {
 
     Route::get('bookings/location_calendar_day_view/{day}/',[
         'as'    => 'bookings/location_calendar_day_view',
+        'uses'  => 'BookingController@location_calendar_day_view'
+    ]);
+
+    Route::get('bookings/location_calendar_day_view/{day}/{location}/{activity}/',[
+        'as'    => 'bookings/location_calendar_day_view_all',
         'uses'  => 'BookingController@location_calendar_day_view'
     ]);
     /** Stop Routes for bookings */
@@ -498,5 +508,10 @@ Route::group(['prefix'=>'ajax', 'middleware' => 'web'], function(){
     Route::post('booking_action_invoice_paid', [
         'as'    => 'ajax/booking_action_invoice_paid',
         'uses'  => 'BookingController@booking_action_pay_invoice',
+    ]);
+
+    Route::post('simple_player_bookings_statistic', [
+        'as'    => 'ajax/simple_player_bookings_statistic',
+        'uses'  => 'BookingController@get_simple_player_statistics'
     ]);
 });
