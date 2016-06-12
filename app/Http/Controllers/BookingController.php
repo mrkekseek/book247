@@ -272,16 +272,18 @@ class BookingController extends Controller
             $user = Auth::user();
         }
 
+        $free_open_bookings = 5;
+
         // check for open bookings
         $ownBookings = Booking::whereIn('status',['pending','active'])
             ->where('for_user_id','=',$fillable['for_user_id'])
             ->where('search_key','!=',$search_key)
             ->get();
-        if (sizeof($ownBookings)==0){
+        if (sizeof($ownBookings)<$free_open_bookings){
             // no open bookings except the search key
             $message['payment'] = 'membership';
         }
-        else if (sizeof($ownBookings)>0 && @$user->id==$fillable['for_user_id']){
+        else if (sizeof($ownBookings)>=$free_open_bookings && @$user->id==$fillable['for_user_id']){
             // more than the current pending booking and the user is the logged in user
             $message['payment'] = 'cash';
         }
@@ -1083,7 +1085,8 @@ class BookingController extends Controller
                                 }
                             }
                             break;
-                        case 'paid' :
+                        case 'paid'   :
+                        case 'unpaid' :
                             // show button was clicked
                             $formatted_booking['button_show'] = 'is_show';
                             $invoice = BookingInvoice::with('financial_transaction')->find($booking->invoice_id);
@@ -1136,7 +1139,7 @@ class BookingController extends Controller
                             }
                             $formatted_booking['invoice_status'] = 'completed';
                             break;
-                        case 'unpaid' :
+                        case 'unpaid2' :
                             // show button was clicked
                             $formatted_booking['button_show'] = 'is_show';
                             $formatted_booking['invoice_status'] = 'pending';
@@ -1275,7 +1278,7 @@ class BookingController extends Controller
         }
 
         $vars = $request->only('search_key', 'method', 'status', 'other_details');
-        $booking = Booking::where('search_key','=',$vars['search_key'])->whereIn('status', ['active', 'paid', 'unpaid', 'old'])->get()->first();
+        $booking = Booking::where('search_key','=',$vars['search_key'])->whereIn('status', ['active', 'unpaid', 'old', 'noshow'])->get()->first();
         if ($booking && $booking->payment_type=='cash'){
             $invoice = BookingInvoice::find($booking->invoice_id);
             $invoiceItems = BookingInvoiceItem::where('booking_invoice_id','=',$invoice->id)->get();
@@ -1346,7 +1349,7 @@ class BookingController extends Controller
         $bshows = Booking::where('for_user_id','=',$booking->for_user_id)->whereIn('status',['paid','unpaid','old'])->count();
 
         // bookings no_show : no_show
-        $bnoshows = Booking::where('for_user_id','=',$booking->for_user_id)->whereIn('status',['no_show'])->count();
+        $bnoshows = Booking::where('for_user_id','=',$booking->for_user_id)->whereIn('status',['noshow'])->count();
 
         // bookings canceled : canceled
         $bcancel = Booking::where('for_user_id','=',$booking->for_user_id)->whereIn('status',['canceled'])->count();

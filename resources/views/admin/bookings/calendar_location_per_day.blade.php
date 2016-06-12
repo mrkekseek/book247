@@ -11,6 +11,8 @@
 @endsection
 
 @section('themeLayoutStyle')
+    <link href="{{ asset('assets/pages/css/location_calendar_day_view.css') }}" rel="stylesheet" type="text/css" />
+
     <link href="{{ asset('assets/layouts/layout4/css/layout.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('assets/layouts/layout4/css/themes/light.min.css') }}" rel="stylesheet" type="text/css" id="style_color" />
     <link href="{{ asset('assets/layouts/layout4/css/custom.min.css') }}" rel="stylesheet" type="text/css" />
@@ -112,7 +114,7 @@
                         </div>
                     </div>
                     <div class="portlet-body flip-scroll">
-                        <table class="table table-striped table-bordered table-hover">
+                        <table class="table table-striped table-bordered table-hover" id="bookings_calendar_view_admin">
                             <thead class="flip-content">
                             <tr>
                                 <th width="10%"> Time Interval </th>
@@ -124,9 +126,9 @@
                             <tbody>
                             @foreach ($time_intervals as $key=>$hour)
                             <tr>
-                                <td >{{ $key }}</td>
+                                <td >{{ $key }} <a class="btn btn-circle btn-icon-only border-white bg-green-meadow bg-font-green-meadow add_custom_bookings_btn" href="javascript:;"> + </a></td>
                                 @foreach ($resources as $resource)
-                                    <td class="{{ isset($location_bookings[$key][$resource['id']]['color_stripe'])?$location_bookings[$key][$resource['id']]['color_stripe']:$hour['color_stripe'] }}" style="padding:4px 8px;">
+                                    <td class="{{ isset($location_bookings[$key][$resource['id']]['color_stripe'])?$location_bookings[$key][$resource['id']]['color_stripe']:$hour['color_stripe'] }}  {{ $hour['color_stripe']==''?' isfreetime':'' }}" style="padding:4px 8px;">
                                         @if ( isset($location_bookings[$key][$resource['id']]) )
                                         <a class="font-white" href="">{{ @$location_bookings[$key][$resource['id']]['player_name'] }}</a>
                                         <div class="actions" search-key="{{ $location_bookings[$key][$resource['id']]['search_key'] }}" style="float:right;">
@@ -295,6 +297,74 @@
                 <!-- /.modal-dialog -->
             </div>
             <!-- END Cancel Confirm modal window show -->
+
+            <!-- BEGIN Custom booking modal window show -->
+            <div class="modal fade draggable-modal" id="booking_modal_end_time" tabindex="-1" role="basic" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-body form-horizontal">
+                            <div class="portlet light " style="padding-bottom:0px;margin-bottom:0px;">
+                                <div class="portlet-title form-group">
+                                    <div class="caption">
+                                        <i class="icon-social-dribbble font-green"></i>
+                                        <span class="caption-subject font-green bold uppercase">Blockquotes</span>
+                                    </div>
+                                    <div style="float:right;" class="caption" id="countdown_60"><span class="minutes"></span>:<span class="seconds"></span></div>
+                                </div>
+                                <div class="portlet-body form">
+                                    <!-- Booking first step Start -->
+                                    <form action="#" id="booking-step-one" role="form" name="new_booking1">
+                                        <div class="form-body" style="padding-top:0px; padding-bottom:0px;">
+                                            <div class="form-group note note-info" style="padding-top:0px; padding-bottom:0px; margin-bottom:2px;">
+                                                <p class="form-control-static"><strong>Select End Time</strong></p>
+
+                                                <div class="booking_step_content" style="display:block;">
+                                                    <select class="form-control" name="booking_end_time" id="booking_end_time"> </select>
+                                                    <div class="form-actions right" style="padding-top:5px; padding-bottom:5px;">
+                                                        <a class="btn blue-hoki booking_step_next" data-id="to_own_booking" style="padding-top:4px; padding-bottom:4px;">Next</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-group note note-info is_own_booking" style="padding-top:0px; padding-bottom:0px; margin-bottom:2px;">
+                                                <input type="hidden" autocomplete="off" value="" name="time_book_key" />
+                                                <input type="hidden" autocomplete="off" value="" name="time_book_hour" />
+                                                <p class="form-control-static"><strong>
+                                                        <span data-id="booking_name"> The Name </span>
+                                                        <span data-id="start_time"></span>
+                                                        <span data-id="room_booked"></span></strong></p>
+                                                <div class="form-control-static fa-item booking_payment_type" style="float:right;"></div>
+                                                <div class="booking_step_content" style="display:none;">
+                                                    <select class="form-control" name="resources_room" id="resources_rooms"></select>
+                                                    <div class="form-actions right" style="padding-top:5px; padding-bottom:5px;">
+                                                        <a class="btn blue-hoki booking_step_back" style="padding-top:4px; padding-bottom:4px;">Back</a>
+                                                        <a class="btn blue-hoki booking_step_next" style="padding-top:4px; padding-bottom:4px;">Next</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-group note note-info booking_summary_box" style="padding-top:0px; padding-bottom:0px; margin-bottom:2px;">
+                                                <p class="form-control-static"><strong>Booking Summary</strong></p>
+
+                                                <div class="booking_step_content" style="display:none;">
+                                                    <div class="booking_summary_price_membership"></div>
+                                                    <div class="form-actions right" style="padding-top:5px; padding-bottom:5px;">
+                                                        <a class="btn blue-hoki booking_step_back" style="padding-top:4px; padding-bottom:4px;">Back</a>
+                                                        <a class="btn blue-hoki " style="padding-top:4px; padding-bottom:4px;" onclick="cancel_booking()">Cancel</a>
+                                                        <a class="btn blue-hoki " style="padding-top:4px; padding-bottom:4px;" onclick="confirm_booking()">Confirm</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                    <!-- Booking first step End -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /.modal-content -->
+                </div>
+                <!-- /.modal-dialog -->
+            </div>
+            <!-- END Custom booking modal window show -->
 
         </div>
         <!-- END PAGE BASE CONTENT -->
@@ -613,6 +683,53 @@
             the_link = the_link.replace('##activity##',activity);
 
             window.location.href = the_link;
+        });
+
+        $(document).on('click', '.add_custom_bookings_btn', function(){
+            $('#booking_modal_end_time').modal('show');
+        });
+
+        $(function () {
+            var is_btn_show = false;
+            var isMouseDown = false,
+                    isHighlighted;
+            $("#bookings_calendar_view_admin td.isfreetime")
+                    .mousedown(function () {
+                        if ($(".add_custom_bookings_btn:visible").length==0){
+                            $(this).parent().find('.add_custom_bookings_btn').css('display','block');
+                        }
+
+                        isMouseDown = true;
+                        $(this).toggleClass("bg-purple-medium bg-font-purple-medium prebook");
+                        isHighlighted = $(this).hasClass("bg-purple-medium bg-font-purple-medium prebook");
+
+                        if ($(".prebook").length==0){
+                            $('.add_custom_bookings_btn').css('display','none');
+                        }
+
+                        return false; // prevent text selection
+                    })
+                    .mouseover(function () {
+                        if (isMouseDown) {
+                            $(this).toggleClass("bg-purple-medium bg-font-purple-medium prebook", isHighlighted);
+
+                            if ($(".prebook").length==0){
+                                $('.add_custom_bookings_btn').css('display','none');
+                            }
+                        }
+                    })
+                    .bind("selectstart", function () {
+                        if ($(".prebook").length==0){
+                            $('.add_custom_bookings_btn').css('display','none');
+                        }
+
+                        return false;
+                    })
+
+            $(document)
+                    .mouseup(function () {
+                        isMouseDown = false;
+                    });
         });
 
         function show_notification(title_heading, message, theme, life, sticky) {

@@ -1,0 +1,5 @@
+table td.highlighted {
+    background-color:#999;
+}
+
+.add_custom_bookings_btn { display:none; height: 30px; width: 30px; font-weight: bold; margin-right: 1px; float: right; font-size: 24px; line-height: 20px !important; padding: 4px 3px 0px; }

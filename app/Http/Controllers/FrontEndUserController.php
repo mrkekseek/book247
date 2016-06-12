@@ -1141,6 +1141,8 @@ class FrontEndUserController extends Controller
             $user_id = $user->id;
         }
 
+        $free_open_bookings = 5;
+
         $vars = $request->only('userID');
         if (isset($vars['userID'])){
             if ($user_id!=$vars['userID']){
@@ -1162,7 +1164,7 @@ class FrontEndUserController extends Controller
 
             if (!$user_details){ continue; }
             $bookings = BookingController::get_user_bookings($friend_id,['pending','active']);
-            if (sizeof($bookings)>0){ continue; }
+            if (sizeof($bookings)>=$free_open_bookings){ continue; }
 
             $all_friends[] = ['name' => $user_details->first_name.' '.$user_details->middle_name.' '.$user_details->last_name, 'id'=>$user_details->id];
         }
