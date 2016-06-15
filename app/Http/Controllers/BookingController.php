@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use App\User;
+use App\Role;
 use Validator;
 use Zizaco\Entrust\EntrustRole;
 use Auth;
@@ -60,9 +61,8 @@ class BookingController extends Controller
             $user = Auth::user();
         }
 
-        /** @var  $vars */
         $vars = $request->only('selected_activity', 'selected_date', 'selected_location', 'selected_payment', 'selected_resource', 'selected_time', 'book_key', 'player');
-        $search_key = substr( base64_encode(openssl_random_pseudo_bytes(32)),0 ,63 );
+        $search_key = Booking::new_search_key();
 
         if ($vars['selected_location']==-1){
             // the user selected all locations from top so we need to check what location he selected
@@ -322,8 +322,25 @@ class BookingController extends Controller
         return $bookings;
     }
 
-    public static function check_for_expired_pending_bookings($time = 60){
-        Booking::where('updated_at','<',Carbon::now()->subSeconds($time))->where('status','=','pending')->update(['status'=>'expired']);
+    public static function check_for_expired_pending_bookings($time = 60, $admin_time = 300){
+        $now_time = Carbon::now();
+        $open_bookings = Booking::where('status','=','pending')->get();
+        if ($open_bookings){
+            foreach ($open_bookings as $booking){
+                $by_user = User::where('id','=',$booking->by_user_id)->first();
+
+                $updatedAt = Carbon::createFromFormat('Y-m-d H:i:s', $booking->updated_at);
+                $dif = $now_time->diffInSeconds($updatedAt);
+                if ($by_user->hasRole('front-user') && $dif>$time){
+                    $booking->status = 'expired';
+                    $booking->save();
+                }
+                elseif ($dif>$admin_time){
+                    $booking->status = 'expired';
+                    $booking->save();
+                }
+            }
+        }
     }
 
     /*
@@ -792,14 +809,12 @@ class BookingController extends Controller
         $location = ShopLocations::select('id','name')->where('id','=',$default_location)->get()->first();
         $activity = ShopResourceCategory::where('id','=',$default_activity)->get()->first();
 
+        $resources_ids = [];
         $resources = ShopResource::where('location_id','=',$location->id)->where('category_id','=',$activity->id)->get();
         if ($resources){
             foreach($resources as $resource){
                 $resources_ids[] = $resource->id;
             }
-        }
-        else{
-            $resources_ids = [];
         }
         //xdebug_var_dump($resources);
         $hours_interval = $this->make_hours_interval($date_selected, '07:00', '23:00', 30, true, false);
@@ -1213,6 +1228,117 @@ class BookingController extends Controller
             }
         }
         return $booking_details;
+    }
+
+    /**
+     * after the employee selects the boxes on the calendar and open the popup for booking details
+     * the selected time intervals are saved and kept on the employee name until the booking is completed
+     * @param Request $request
+     * @return bool
+     */
+    public function calendar_booking_keep_selected(Request $request){
+        if (Auth::check()) {
+            $user = Auth::user();
+        }
+        else{
+            return [];
+        }
+
+        $vars = $request->only('date','location','resources','time_interval','userID');
+        if (isset($vars['userID']) && $vars['userID']!=-1){
+            // search the user
+            $bookingUser = User::find($vars['userID']);
+            if (!$bookingUser){
+                return [];
+            }
+        }
+        else{
+            $bookingUser = $user;
+        }
+
+        $location = ShopLocations::where('id','=',$vars['location'])->get()->first();
+        if (!$location){
+            return [];
+        }
+
+        $intervalDuration = 30;
+        $selected_date = Carbon::createFromFormat('d-m-Y', trim($vars['date']))->format('Y-m-d');
+
+        $booking_return = [];
+        foreach ($vars['resources'] as $key=>$val){
+            $booking_start_time = trim($vars['time_interval'][$key]);
+            $booking_end_time   = Carbon::createFromFormat('G:i', $booking_start_time)->addMinutes($intervalDuration)->format('G:i');
+
+            $fillable = [
+                'by_user_id'            => $user->id,
+                'for_user_id'           => $bookingUser->id,
+                'location_id'           => $location->id,
+                'resource_id'           => $val,
+                'status'                => 'pending',
+                'date_of_booking'       => $selected_date,
+                'booking_time_start'    => $booking_start_time,
+                'booking_time_stop'     => $booking_end_time,
+                'payment_type'          => 'membership',
+                'payment_amount'        => 0,
+                'membership_id'         => -1,
+                'invoice_id'            => -1,
+                'search_key'            => '',
+            ];
+            $msg = $this->add_single_calendar_booking($fillable);
+            $booking_return[] = $msg;
+        }
+        return $booking_return;
+    }
+
+    public function calendar_booking_save_selected(Request $request){
+
+        return 1;
+    }
+
+    private function add_single_calendar_booking($fillable){
+        $search_key = Booking::new_search_key();
+        $fillable['search_key'] = $search_key;
+
+        $canBook = BookingController::validate_booking($fillable, $fillable['search_key']);
+        if ($canBook['status']==false){
+            return ['booking_key' => ''];
+        }
+        else{
+            $fillable['payment_type'] = $canBook['payment'];
+
+            $book_price = ShopResource::find($fillable['resource_id']);
+            if ($book_price){
+                $fillable['payment_amount'] = $book_price->session_price;
+            }
+            else{
+                return ['booking_key' => ''];
+            }
+        }
+
+        $validator = Validator::make($fillable, Booking::rules('POST'), Booking::$message, Booking::$attributeNames);
+        if ($validator->fails()){
+            return array(
+                'success' => false,
+                'errors' => $validator->getMessageBag()->toArray()
+            );
+        }
+
+        try {
+            $the_booking = Booking::create($fillable);
+            if ($the_booking->payment_type=='cash'){
+                $the_booking->add_invoice();
+            }
+
+            return [
+                'booking_resource'  => $the_booking->resource_id,
+                'booking_start_time'=> $the_booking->booking_time_start,
+                'booking_key'       => $the_booking->search_key,
+                'booking_type'      => $the_booking->payment_type,
+                'booking_price'     => $the_booking->payment_amount];
+        }
+        catch (Exception $e) {
+            return Response::json(['error' => 'Booking Error'], Response::HTTP_CONFLICT);
+        }
     }
 
     /* Single Booking - quick actions START */

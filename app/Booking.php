@@ -42,6 +42,17 @@ class Booking extends Model
         'payment_amount',
     ];
 
+    public static function new_search_key(){
+        $search_key = substr( base64_encode(openssl_random_pseudo_bytes(32)),0 ,63 );
+        $exists = Booking::where('search_key','=',$search_key)->get()->first();
+        while ($exists){
+            $search_key = substr( base64_encode(openssl_random_pseudo_bytes(32)),0 ,63 );
+            $exists = Booking::where('search_key','=',$search_key)->get()->first();
+        }
+
+        return $search_key;
+    }
+
     public function add_note($fillable, $id=-1){
         $fillable['booking_id'] = $this->id;
 

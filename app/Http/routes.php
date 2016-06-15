@@ -514,4 +514,15 @@ Route::group(['prefix'=>'ajax', 'middleware' => 'web'], function(){
         'as'    => 'ajax/simple_player_bookings_statistic',
         'uses'  => 'BookingController@get_simple_player_statistics'
     ]);
+
+    Route::post('calendar_booking_keep_selected', [
+        'as'    => 'ajax/calendar_booking_keep_selected',
+        'uses'  => 'BookingController@calendar_booking_keep_selected'
+    ]);
+
+    Route::post('calendar_booking_save_selected', [
+        'as'    => 'ajax/calendar_booking_save_selected',
+        'uses'  => 'BookingController@calendar_booking_save_selected'
+    ]);
+
 });

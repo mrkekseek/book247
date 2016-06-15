@@ -2,6 +2,9 @@
 
 @section('pageLevelPlugins')
     <link href="{{ asset('assets/global/plugins/bootstrap-datepicker/css/bootstrap-datepicker3.min.css') }}" rel="stylesheet" type="text/css" />
+
+    <link href="{{ asset('assets/global/plugins/select2/css/select2.min.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/global/plugins/select2/css/select2-bootstrap.min.css') }}" rel="stylesheet" type="text/css" />
 @endsection
 
 @section('themeGlobalStyle')
@@ -62,7 +65,7 @@
                                 <label class="control-label col-md-4">Select Date</label>
                                 <div class="col-md-7">
                                     <div class="input-group input-small date date-picker" data-date="{{ $header_vals['date_selected'] }}" data-date-format="dd-mm-yyyy" data-date-viewmode="years">
-                                        <input type="text" id="header_date_selected" class="form-control reload_calendar_page" value="{{ \Carbon\Carbon::now()->format('d-m-Y') }}" readonly>
+                                        <input type="text" id="header_date_selected" class="form-control reload_calendar_page" value="{{ $header_vals['date_selected'] }}" readonly>
                                             <span class="input-group-btn">
                                                 <button class="btn default" type="button">
                                                     <i class="fa fa-calendar"></i>
@@ -178,7 +181,7 @@
                                             @endif
                                         </div>
                                         @else
-                                            &nbsp;
+                                            <span data-resource="{{ $resource['id'] }}" data-time="{{ $key }}">&nbsp;</span>
                                         @endif
                                     </td>
                                 @endforeach
@@ -299,41 +302,70 @@
             <!-- END Cancel Confirm modal window show -->
 
             <!-- BEGIN Custom booking modal window show -->
-            <div class="modal fade draggable-modal" id="booking_modal_end_time" tabindex="-1" role="basic" aria-hidden="true">
+            <div class="modal fade draggable-modal" id="booking_modal_end_time" tabindex="-1" role="basic" aria-hidden="true" data-backdrop="static">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-body form-horizontal">
-                            <div class="portlet light " style="padding-bottom:0px;margin-bottom:0px;">
-                                <div class="portlet-title form-group">
-                                    <div class="caption">
+                            <div class="portlet light " style="margin-bottom:0px; padding:0px 20px;">
+                                <div class="portlet-title form-group" style="min-height:30px;">
+                                    <button aria-hidden="true" data-dismiss="modal" class="close" type="button"></button>
+                                    <div class="caption" style="padding-top:0px;">
                                         <i class="icon-social-dribbble font-green"></i>
-                                        <span class="caption-subject font-green bold uppercase">Blockquotes</span>
+                                        <span class="caption-subject font-green bold uppercase">Save Bookings</span>
                                     </div>
-                                    <div style="float:right;" class="caption" id="countdown_60"><span class="minutes"></span>:<span class="seconds"></span></div>
+                                    <div style="float:right; margin-right:40px; padding-top:0px; font-size:16px;" class="caption" id="countdown_60">Time Left - <span class="minutes"></span>:<span class="seconds"></span></div>
                                 </div>
                                 <div class="portlet-body form">
-                                    <!-- Booking first step Start -->
-                                    <form action="#" id="booking-step-one" role="form" name="new_booking1">
-                                        <div class="form-body" style="padding-top:0px; padding-bottom:0px;">
+                                    <!-- Start : Search for player -->
+                                    <form action="#" id="search_for_player" name="search_for_player" class="form-horizontal">
+                                        <div class="form-body" style="padding-top:0px; padding-bottom:0px; margin-bottom:2px;">
                                             <div class="form-group note note-info" style="padding-top:0px; padding-bottom:0px; margin-bottom:2px;">
-                                                <p class="form-control-static"><strong>Select End Time</strong></p>
-
+                                                <p class="form-control-static">
+                                                    <strong class="booking_made_by">
+                                                        <span class="font-blue-steel">Search for Player</span> or
+                                                        <a class="font-green-jungle" href="">REGISTER NEW</a></strong>
+                                                </p>
                                                 <div class="booking_step_content" style="display:block;">
-                                                    <select class="form-control" name="booking_end_time" id="booking_end_time"> </select>
-                                                    <div class="form-actions right" style="padding-top:5px; padding-bottom:5px;">
-                                                        <a class="btn blue-hoki booking_step_next" data-id="to_own_booking" style="padding-top:4px; padding-bottom:4px;">Next</a>
+                                                    <select id="find_customer_name" name="find_customer_name" class="form-control js-data-users-ajax">
+                                                        <option value="" selected="selected">Select...</option>
+                                                    </select>
+                                                    <div class="form-actions left" style="padding-top:5px; padding-bottom:10px;">
+                                                        <a class="btn blue-hoki booking_type_next" data-id="play_with_friends_booking" style="padding-top:4px; padding-bottom:4px; display:none;">Play with Friends</a>
+                                                        <a class="btn blue-hoki booking_type_next" data-id="play_alone_booking" style="padding-top:4px; padding-bottom:4px; display:none;">Play Alone</a>
+                                                        <a class="btn blue-hoki booking_type_next" data-id="is_recurring_booking" style="padding-top:4px; padding-bottom:4px; display:none;">Recurring Booking</a>
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="form-group note note-info is_own_booking" style="padding-top:0px; padding-bottom:0px; margin-bottom:2px;">
-                                                <input type="hidden" autocomplete="off" value="" name="time_book_key" />
-                                                <input type="hidden" autocomplete="off" value="" name="time_book_hour" />
+                                        </div>
+
+                                        <input type="hidden" name="booking_made_by" />
+                                    </form>
+                                    <!-- Stop : Search for player -->
+
+                                    <!-- Booking first step Start -->
+                                    <form action="#" id="booking_form_option" role="form" name="booking_form_option">
+                                        <div class="form-body" style="padding-top:0px; padding-bottom:0px;">
+                                            <div class="form-group note note-info is_recurring_booking" style="padding-top:0px; padding-bottom:0px; margin-bottom:2px;  display:none;">
                                                 <p class="form-control-static"><strong>
                                                         <span data-id="booking_name"> The Name </span>
                                                         <span data-id="start_time"></span>
                                                         <span data-id="room_booked"></span></strong></p>
                                                 <div class="form-control-static fa-item booking_payment_type" style="float:right;"></div>
-                                                <div class="booking_step_content" style="display:none;">
+                                                <div class="booking_step_content" style="display:block;">
+                                                    <select class="form-control" name="resources_room" id="resources_rooms"></select>
+                                                    <div class="form-actions right" style="padding-top:5px; padding-bottom:5px;">
+                                                        <a class="btn blue-hoki booking_step_back" style="padding-top:4px; padding-bottom:4px;">Back</a>
+                                                        <a class="btn blue-hoki booking_step_next" style="padding-top:4px; padding-bottom:4px;">Next</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-group note note-info play_alone_booking" style="padding-top:0px; padding-bottom:0px; margin-bottom:2px; display:none;">
+                                                <p class="form-control-static"><strong>
+                                                        <span data-id="booking_name"> The Name </span>
+                                                        <span data-id="start_time"></span>
+                                                        <span data-id="room_booked"></span></strong></p>
+                                                <div class="form-control-static fa-item booking_payment_type" style="float:right;"></div>
+                                                <div class="booking_step_content" style="display:block;">
                                                     <select class="form-control" name="resources_room" id="resources_rooms"></select>
                                                     <div class="form-actions right" style="padding-top:5px; padding-bottom:5px;">
                                                         <a class="btn blue-hoki booking_step_back" style="padding-top:4px; padding-bottom:4px;">Back</a>
@@ -343,7 +375,6 @@
                                             </div>
                                             <div class="form-group note note-info booking_summary_box" style="padding-top:0px; padding-bottom:0px; margin-bottom:2px;">
                                                 <p class="form-control-static"><strong>Booking Summary</strong></p>
-
                                                 <div class="booking_step_content" style="display:none;">
                                                     <div class="booking_summary_price_membership"></div>
                                                     <div class="form-actions right" style="padding-top:5px; padding-bottom:5px;">
@@ -375,6 +406,7 @@
     <script src="{{ asset('assets/global/plugins/jquery-validation/js/jquery.validate.min.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/global/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/global/plugins/bootstrap-confirmation-2-2/bootstrap-confirmation.min.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('assets/global/plugins/select2/js/select2.full.min.js') }}" type="text/javascript"></script>
 @endsection
 
 @section('pageBelowLevelScripts')
@@ -414,6 +446,165 @@
                 },
                 "File must be JPG, GIF or PNG, less than 1MB"
         );
+
+        var timeinterval = ''; /* Interval timer */
+        var resourceName = {
+        @foreach($all_locations as $a_location)
+            {{ $a_location->id }} : '{{ $a_location->name }}',
+        @endforeach
+        };
+
+        var ComponentsSelect2 = function() {
+
+            var handleDemo = function() {
+
+                // Set the "bootstrap" theme as the default theme for all Select2
+                // widgets.
+                //
+                // @see https://github.com/select2/select2/issues/2927
+                $.fn.select2.defaults.set("theme", "bootstrap");
+                $.fn.modal.Constructor.prototype.enforceFocus = function() {};
+
+                var placeholder = "Select a State";
+
+                $(".select2, .select2-multiple").select2({
+                    placeholder: placeholder,
+                    width: null
+                });
+
+                $(".select2-allow-clear").select2({
+                    allowClear: true,
+                    placeholder: placeholder,
+                    width: null
+                });
+
+                function formatUserData(repo) {
+                    if (repo.loading) return repo.text;
+
+                    var markup = "<div class='select2-result-repository clearfix'>" +
+                            "<div class='select2-result-repository__avatar'><img src='" + repo.product_image_url + "' /></div>" +
+                            "<div class='select2-result-repository__meta'>" +
+                            "<div class='select2-result-repository__title'>" + repo.first_name + " " + repo.middle_name + " " + repo.last_name + "</div> ";
+
+                    if (repo.description) {
+                        //markup += "<div class='select2-result-repository__description'>" + repo.description + "</div>";
+                    }
+
+                    markup += "<div class='select2-result-repository__statistics'>";
+                    if (repo.email) {
+                        markup += " <div class='select2-result-repository__forks'><span class='fa fa-envelope-square'></span> " + repo.email + "</div> ";
+                    }
+                    if (repo.phone) {
+                        markup += " <div class='select2-result-repository__forks'><span class='fa fa-phone-square'></span> " + repo.phone + "</div> ";
+                    }
+                    markup += '<br />';
+
+                    if (repo.city || repo.region) {
+                        markup += "<div class='select2-result-repository__stargazers'><span class='fa fa-map-o'></span> " + repo.city + ", " + repo.region + "</div>";
+                    }
+
+                    markup += "</div>" +
+                            "</div></div>";
+
+                    return markup;
+                }
+
+                function formatUserDataSelection(repo) {
+                    // we add product price to the form
+                    //$('input[name=inventory_list_price]').val(repo.list_price);
+                    //$('input[name=inventory_entry_price]').val(repo.entry_price);
+                    //$('.price_currency').html(repo.currency);
+
+                    if (repo.first_name==null && repo.first_name==null && repo.first_name==null){
+                        var full_name = null;
+                    }
+                    else{
+                        var full_name = repo.first_name + " " + repo.middle_name + " " + repo.last_name;
+                        $('input[name="booking_made_by"]').val(repo.id).trigger('change');
+                        $('span[data-id="booking_name"]').html(full_name);
+                    }
+
+                    return full_name || repo.text;
+                }
+
+                $(".js-data-users-ajax").select2({
+                    width: "off",
+                    ajax: {
+                        url: "{{ route('admin/users/ajax_get_users') }}",
+                        type: "post",
+                        dataType: 'json',
+                        delay: 250,
+                        data: function(params) {
+                            return {
+                                q: params.term, // search term
+                                page: params.page
+                            };
+                        },
+                        processResults: function(data, page) {
+                            // parse the results into the format expected by Select2.
+                            // since we are using custom formatting functions we do not need to
+                            // alter the remote JSON data
+                            return {
+                                results: data.items
+                            };
+                        },
+                        cache: true
+                    },
+                    escapeMarkup: function(markup) {
+                        return markup;
+                    }, // let our custom formatter work
+                    minimumInputLength: 1,
+                    templateResult: formatUserData,
+                    templateSelection: formatUserDataSelection
+                });
+
+                $("button[data-select2-open]").click(function() {
+                    $("#" + $(this).data("select2-open")).select2("open");
+                });
+
+                $(":checkbox").on("click", function() {
+                    $(this).parent().nextAll("select").prop("disabled", !this.checked);
+                });
+
+                // copy Bootstrap validation states to Select2 dropdown
+                //
+                // add .has-waring, .has-error, .has-succes to the Select2 dropdown
+                // (was #select2-drop in Select2 v3.x, in Select2 v4 can be selected via
+                // body > .select2-container) if _any_ of the opened Select2's parents
+                // has one of these forementioned classes (YUCK! ;-))
+                $(".select2, .select2-multiple, .select2-allow-clear, .js-data-example-ajax, .js-data-users-ajax").on("select2:open", function() {
+                    if ($(this).parents("[class*='has-']").length) {
+                        var classNames = $(this).parents("[class*='has-']")[0].className.split(/\s+/);
+
+                        for (var i = 0; i < classNames.length; ++i) {
+                            if (classNames[i].match("has-")) {
+                                $("body > .select2-container").addClass(classNames[i]);
+                            }
+                        }
+                    }
+                });
+
+                $(".js-btn-set-scaling-classes").on("click", function() {
+                    $("#select2-multiple-input-sm, #select2-single-input-sm").next(".select2-container--bootstrap").addClass("input-sm");
+                    $("#select2-multiple-input-lg, #select2-single-input-lg").next(".select2-container--bootstrap").addClass("input-lg");
+                    $(this).removeClass("btn-primary btn-outline").prop("disabled", true);
+                });
+            }
+
+            return {
+                //main function to initiate the module
+                init: function() {
+                    handleDemo();
+                }
+            };
+
+        }();
+
+        if (App.isAngularJsApp() === false) {
+            jQuery(document).ready(function() {
+                ComponentsSelect2.init();
+            });
+        }
 
         var ComponentsDateTimePickers = function () {
 
@@ -686,11 +877,41 @@
         });
 
         $(document).on('click', '.add_custom_bookings_btn', function(){
-            $('#booking_modal_end_time').modal('show');
+            // add temporary bookings on the employee name until the other names are set up
+            var resources = new Array();
+            var time_intervals = new Array();
+
+            $('.prebook').each(function(key, value){
+                resources.push($(this).find('span').attr('data-resource'));
+                time_intervals.push($(this).find('span').attr('data-time'));
+            });
+
+            $.ajax({
+                url: '{{route('ajax/calendar_booking_keep_selected')}}',
+                type: "post",
+                cache: false,
+                data: {
+                    'date': $('#header_date_selected').val(),
+                    'location': $('#header_location_selected').val(),
+                    'userID': -1,
+                    'resources': resources,
+                    'time_interval': time_intervals,
+                },
+                success: function(data){
+                    $('#booking_modal_end_time').modal('show');
+
+                    if(typeof timeinterval !== "undefined"){
+                        clearInterval(timeinterval);
+                    }
+                    var deadline = new Date(Date.parse(new Date()) + 300 * 1000);
+                    initializeClock('countdown_60', deadline);
+                }
+            });
         });
 
         $(function () {
             var is_btn_show = false;
+            var sel_classes = 'bg-yellow-saffron bg-font-yellow-saffron prebook';
             var isMouseDown = false,
                     isHighlighted;
             $("#bookings_calendar_view_admin td.isfreetime")
@@ -700,8 +921,8 @@
                         }
 
                         isMouseDown = true;
-                        $(this).toggleClass("bg-purple-medium bg-font-purple-medium prebook");
-                        isHighlighted = $(this).hasClass("bg-purple-medium bg-font-purple-medium prebook");
+                        $(this).toggleClass(sel_classes);
+                        isHighlighted = $(this).hasClass(sel_classes);
 
                         if ($(".prebook").length==0){
                             $('.add_custom_bookings_btn').css('display','none');
@@ -711,7 +932,7 @@
                     })
                     .mouseover(function () {
                         if (isMouseDown) {
-                            $(this).toggleClass("bg-purple-medium bg-font-purple-medium prebook", isHighlighted);
+                            $(this).toggleClass(sel_classes, isHighlighted);
 
                             if ($(".prebook").length==0){
                                 $('.add_custom_bookings_btn').css('display','none');
@@ -731,6 +952,166 @@
                         isMouseDown = false;
                     });
         });
+
+        $('.booking_type_next').on('click', function(){
+            $('.'+$(this).attr('data-id')).slideToggle('slow');
+            $('#find_customer_name').parent().slideToggle('slow');
+
+            if ($(this).attr('data-id')=="play_with_friends_booking"){
+                show_play_with_friends();
+            }
+            else if ($(this).attr('data-id')=="is_recurring_booking") {
+                show_is_recurring_booking();
+            }
+            else{
+                show_is_single_booking();
+            }
+        });
+
+        $('input[name="booking_made_by"]').on('change', function(){
+            if ($(this).val()==''){
+                // hide buttons
+                $('.booking_type_next').hide();
+            }
+            else{
+                // show buttons
+                $('.booking_type_next').show();
+            }
+        });
+
+        /* Start Play with friends part */
+        function show_play_with_friends(){
+            var time_intv = new Array('');
+            var resource = new Array('');
+
+            $(".prebook").each(function() {
+                resource.push( $(this).find('span').attr('data-resource'));
+                time_intv.push( $(this).find('span').attr('data-time'));
+            });
+
+            add_friends_for_bookings(resource, time_intv);
+            var first_booking_box = $('.friend_booking:first').find('.booking_step_content');
+            var select_container = first_booking_box.find('select[name="friend_booking"]');
+            first_booking_box.show();
+            get_players_list(select_container);
+        }
+
+        function hide_play_with_friends(){
+
+        }
+
+        function add_friends_for_bookings (resource, time_interval){
+            var append_to = '';
+            var nr_bookings = resource.length;
+
+            for (var i=1; i<nr_bookings; i++){
+                append_to +=
+                '<div class="form-group note note-info friend_booking" style="padding-top:0px; padding-bottom:0px; margin-bottom:2px;">' +
+                    '<input type="hidden" name="time_book_hour" value="' + time_interval[i] + '" />' +
+                    '<input type="hidden" name="time_book_key" value="" />' +
+                    '<p class="form-control-static">' +
+                        '<strong><span data-id="booking_name">' + resourceName.resource[i] + '</span> ' +
+                        '<span data-id="start_time"> - ' + time_interval[i] + '</span> ' +
+                        '<span data-id="room_booked"></span></strong>' +
+                    '</p>' +
+                    '<div style="float:right;" class="form-control-static fa-item booking_payment_type"></div>' +
+                    '<div class="booking_step_content" style="display:none;">' +
+                        '<label><small>Select Player</small></label>' +
+                        '<select class="form-control margin-bottom-5 input-sm" name="friend_booking"></select>' +
+                        '<div class="form-actions right" style="padding-top:5px; padding-bottom:5px; border-top:none;">';
+                if (i>1){
+                    append_to += '<a class="btn blue-hoki booking_step_back" style="padding-top:4px; padding-bottom:4px;">Back</a> ';
+                }
+                append_to += '<a class="btn blue-hoki booking_step_next" style="padding-top:4px; padding-bottom:4px;">Next</a>' +
+                        '</div>' +
+                    '</div>' +
+                '</div>';
+            }
+
+            $('.booking_summary_box').before(append_to);
+        }
+
+        function get_players_list(container){
+            App.blockUI({
+                target: '#booking_form_option',
+                boxed: true,
+                message: 'Processing...'
+            });
+
+            $.ajax({
+                url: '{{route('ajax/get_players_list')}}',
+                type: "post",
+                cache: false,
+                data: {
+                    'limit': 5,
+                    'userID': $('input[name="booking_made_by"]').val()
+                },
+                success: function(data){
+                    var all_list = "";
+                    $.each(data, function(key, value){
+                        all_list += '<option value="'+ value.id +'">'+ value.name +'</option>';
+                    });
+                    container.html(all_list);
+
+                    App.unblockUI('#booking_form_option');
+                }
+            });
+        }
+        /* Stop Play with friends part */
+
+        /* Start Recurring Booking */
+        function show_is_recurring_booking(){
+
+        }
+        /* Stop Recurring Booking */
+
+        /* Start Single invoice booking */
+        function show_is_single_booking(){
+
+        }
+        /* Stop Single invoice booking */
+
+        /* Timer functions - Start */
+        function getTimeRemaining(endtime) {
+            var t = Date.parse(endtime) - Date.parse(new Date());
+            var seconds = Math.floor((t / 1000) % 60);
+            var minutes = Math.floor((t / 1000 / 60) % 60);
+            var hours = Math.floor((t / (1000 * 60 * 60)) % 24);
+            var days = Math.floor(t / (1000 * 60 * 60 * 24));
+            return {
+                'total': t,
+                'days': days,
+                'hours': hours,
+                'minutes': minutes,
+                'seconds': seconds
+            };
+        }
+
+        function initializeClock(id, endtime) {
+            var clock = document.getElementById(id);
+            //var daysSpan = clock.querySelector('.days');
+            //var hoursSpan = clock.querySelector('.hours');
+            var minutesSpan = clock.querySelector('.minutes');
+            var secondsSpan = clock.querySelector('.seconds');
+
+            function updateClock() {
+                var t = getTimeRemaining(endtime);
+
+                //daysSpan.innerHTML = t.days;
+                //hoursSpan.innerHTML = ('0' + t.hours).slice(-2);
+                minutesSpan.innerHTML = ('0' + t.minutes).slice(-2);
+                secondsSpan.innerHTML = ('0' + t.seconds).slice(-2);
+
+                if (t.total <= 0) {
+                    //clearInterval(timeinterval);
+                    $('#booking_modal_end_time').modal('hide');
+                }
+            }
+
+            updateClock();
+            timeinterval = setInterval(updateClock, 1000);
+        }
+        /* Timer function - Stop */
 
         function show_notification(title_heading, message, theme, life, sticky) {
             var settings = {
