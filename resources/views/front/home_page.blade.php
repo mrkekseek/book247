@@ -1336,7 +1336,7 @@
                 show_notification('Booking Operation Was Broken', 'You closed the popup window before the booking was finished. You can always try again.', 'lemon', 3500, 0);
                 clean_booking_popup();
             }
-        })
+        });
 
         function booking_step_two(){
             jQuery('#booking-step-one').hide();

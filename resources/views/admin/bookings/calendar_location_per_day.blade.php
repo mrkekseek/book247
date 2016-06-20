@@ -131,7 +131,8 @@
                             <tr>
                                 <td >{{ $key }} <a class="btn btn-circle btn-icon-only border-white bg-green-meadow bg-font-green-meadow add_custom_bookings_btn" href="javascript:;"> + </a></td>
                                 @foreach ($resources as $resource)
-                                    <td class="{{ isset($location_bookings[$key][$resource['id']]['color_stripe'])?$location_bookings[$key][$resource['id']]['color_stripe']:$hour['color_stripe'] }}  {{ $hour['color_stripe']==''?' isfreetime':'' }}" style="padding:4px 8px;">
+                                    <td class="{{ isset($location_bookings[$key][$resource['id']]['color_stripe'])?$location_bookings[$key][$resource['id']]['color_stripe']:$hour['color_stripe'] }}
+                                        {{ ( $hour['color_stripe']=='' && !isset($location_bookings[$key][$resource['id']]['color_stripe']) )?' isfreetime':'' }}" style="padding:4px 8px;">
                                         @if ( isset($location_bookings[$key][$resource['id']]) )
                                         <a class="font-white" href="">{{ @$location_bookings[$key][$resource['id']]['player_name'] }}</a>
                                         <div class="actions" search-key="{{ $location_bookings[$key][$resource['id']]['search_key'] }}" style="float:right;">
@@ -449,8 +450,8 @@
 
         var timeinterval = ''; /* Interval timer */
         var resourceName = {
-        @foreach($all_locations as $a_location)
-            {{ $a_location->id }} : '{{ $a_location->name }}',
+        @foreach($resources as $resource)
+            {{ $resource['id'] }} : '{{ $resource['name'] }}',
         @endforeach
         };
 
@@ -898,6 +899,10 @@
                     'time_interval': time_intervals,
                 },
                 success: function(data){
+                    $.each(data, function(index, value){
+                        $('span[data-time="'+ value.booking_start_time +'"][data-resource="'+ value.booking_resource +'"]').attr({ 'booking-key':value.booking_key });
+                    });
+
                     $('#booking_modal_end_time').modal('show');
 
                     if(typeof timeinterval !== "undefined"){
@@ -908,6 +913,126 @@
                 }
             });
         });
+
+        $('#booking_modal_end_time').on('hidden.bs.modal', function () {
+
+            if ($('input[name="booking_made_by"]').val()!=''){
+                show_notification('Booking Operation Was Broken', 'You closed the popup window before the booking was finished. You can always try again.', 'lemon', 3500, 0);
+                cancel_booking_keys();
+                clean_booking_popup();
+            }
+        });
+
+        function save_calendar_booking(own_box, search_key, by_player, for_player){
+            $.ajax({
+                url: '{{route('ajax/calendar_booking_save_selected')}}',
+                type: "post",
+                cache: false,
+                data: {
+                    'book_key':     search_key,
+                    'for_player':   for_player,
+                    'by_player':    by_player
+                },
+                success: function(data){
+                    if (data.booking_key==''){
+                        // something went wrong, reload resources for the window
+                    }
+                    else{
+                        //field.find('input[name="time_book_key"]').val(data.booking_key);
+
+                        //if (resource_for_hour==0 || resource_for_hour==0){ }
+                        //else{
+                        //   get_players_list(players_list_select);
+                        //    get_resources_for_hour(resource_for_hour.book_friend_time, resource_for_hour.resource_room);
+                        //}
+
+                        var payment_type_book = own_box.find('.booking_payment_type');
+                        if (data.booking_type == 'membership'){
+                            payment_type_book.html('<i class="fa fa-thumbs-o-up"></i>');
+                        }
+                        else{
+                            payment_type_book.html('<i class="fa fa-credit-card"></i>');
+                        }
+                        console.log(payment_type_book);
+
+                        //get_booking_hours();
+                        //own_box.find('.booking_step_content').first().hide();
+                        //own_next.find('.booking_step_content').first().show();
+                    }
+                }
+            });
+        }
+
+        function cancel_booking_keys(){
+            var all_bookings = '';
+            $('.prebook').each(function(index, elem) {
+                var search_key = $(this).find('span').attr('booking-key');
+                if (search_key.length > 4) {
+                    all_bookings += search_key + ',';
+                }
+            });
+
+            $.ajax({
+                url: '{{route('ajax/cancel_bookings')}}',
+                type: "post",
+                cache: false,
+                data: {
+                    'selected_bookings': all_bookings,
+                },
+                success: function(data){
+                    $('#booking_modal_end_time').modal('hide');
+                    show_notification('Booking Canceled', 'The pending bookings were canceled. You can do another booking at any time.', 'lemon', 3500, 0);
+                    $('input[name="booking_made_by"]').val('');
+                }
+            });
+        }
+
+        function clean_booking_popup(){
+            var all_bookings = '';
+            $('.prebook').each(function(index, elem){
+                //var search_key = $(this).find('span').attr('booking-key');
+                //if ( search_key.length > 4 ) {
+                //    all_bookings += search_key + ',';
+                //}
+                $(this).find('span').removeAttr('booking-key');
+            });
+
+            $('.booking_summary_price_membership').html('');
+            $('.friend_booking').remove();
+
+            $('.booking_step_content').hide();
+            $('#search_for_player').find('.booking_step_content').show();
+
+            $("#find_customer_name").val('').trigger('change');
+        }
+
+        function confirm_booking(){
+            var all_bookings = '';
+            $('input[name="time_book_key"]').each(function(){
+                if ( $(this).val().length > 4 ) {
+                    all_bookings += $(this).val() + ',';
+                }
+            });
+
+            $.ajax({
+                url: '{{route('ajax/confirm_bookings')}}',
+                type: "post",
+                cache: false,
+                data: {
+                    'selected_bookings': all_bookings,
+                },
+                success: function(data){
+                    $('#booking_modal_end_time').modal('hide');
+                    show_notification('Booking Confirmed', 'Your booking is now confirmed. You can see it in your list of bookings.', 'lemon', 3500, 0);
+                    clean_booking_popup();
+                    $('input[name="booking_made_by"]').val('');
+
+                    setTimeout(function(){
+                        location.reload();
+                    },1000);
+                }
+            });
+        }
 
         $(function () {
             var is_btn_show = false;
@@ -1003,16 +1128,18 @@
         function add_friends_for_bookings (resource, time_interval){
             var append_to = '';
             var nr_bookings = resource.length;
+            var book_key = '';
 
             for (var i=1; i<nr_bookings; i++){
+                book_key = $('span[data-time="'+ time_interval[i] +'"][data-resource="'+ resource[i] +'"]').attr('booking-key');
+
                 append_to +=
                 '<div class="form-group note note-info friend_booking" style="padding-top:0px; padding-bottom:0px; margin-bottom:2px;">' +
-                    '<input type="hidden" name="time_book_hour" value="' + time_interval[i] + '" />' +
-                    '<input type="hidden" name="time_book_key" value="" />' +
+                    '<input type="hidden" name="time_book_key" value="'+ book_key +'" />' +
                     '<p class="form-control-static">' +
-                        '<strong><span data-id="booking_name">' + resourceName.resource[i] + '</span> ' +
+                        '<strong><span data-id="booking_name">  </span> ' +
                         '<span data-id="start_time"> - ' + time_interval[i] + '</span> ' +
-                        '<span data-id="room_booked"></span></strong>' +
+                        '<span data-id="room_booked">' + resourceName[resource[i]] + '</span></strong>' +
                     '</p>' +
                     '<div style="float:right;" class="form-control-static fa-item booking_payment_type"></div>' +
                     '<div class="booking_step_content" style="display:none;">' +
@@ -1057,6 +1184,83 @@
                 }
             });
         }
+
+        function get_booking_summary(place){
+            var all_bookings = '';
+            $('input[name="time_book_key"]').each(function(){
+                if ( $(this).val().length > 4 ) {
+                    all_bookings += $(this).val() + ',';
+                }
+            });
+
+            $.ajax({
+                url: '{{route('ajax/get_bookings_summary')}}',
+                type: "post",
+                cache: false,
+                data: {
+                    'all_bookings': all_bookings,
+                },
+                success: function(data){
+                    if (data.success=='true') {
+                        if (data.membership_nr == 0){
+                            var membership_bookings = '<h5>Membership included bookings : <span id="membership_bookings_nr"> None </span></h5>';
+                        }
+                        else{
+                            var membership_bookings = '<h5>Membership included bookings : <span id="membership_bookings_nr">' + data.membership_nr + '</span></h5>';
+                        }
+
+                        if (data.cash_nr == 0){
+                            var cash_bookings = '<h5>Paid bookings : <span id="membership_bookings_nr"> None </span></h5>';
+                        }
+                        else{
+                            var cash_bookings = '<h5>Paid bookings : <span id="membership_bookings_nr">' + data.cash_nr + '</span> of <span>' + data.cash_amount + '</span> in total</h5>';
+                        }
+
+                        $('.booking_summary_price_membership').html(membership_bookings + ' ' + cash_bookings);
+                    }
+                    else {
+                        show_notification(data.error.title, data.error.message, 'lemon', 3500, 0);
+                    }
+                }
+            });
+        }
+
+        $(document).on('click', '.booking_step_next', function(){
+            var own_box = $(this).parents('.form-group').first();
+
+            var friend_name = own_box.find('select[name="friend_booking"]');
+            if (friend_name.length==0){}
+            else{
+                own_box.find('span[data-id="booking_name"]').html(' ' + friend_name.find(":selected").text());
+            }
+
+            var own_next = own_box.next('div.form-group');
+            //get_resources_for_hour(book_friend_time, own_next.find('select[name="resources_room"]'));
+            //var resource_for_hour = {book_friend_time:book_friend_time, resource_room:own_next.find('select[name="resources_room"]')};
+            var search_key = own_box.find('input[name="time_book_key"]').val();
+            var by_player  = $('#find_customer_name').val();
+            var for_player = own_box.find('select[name="friend_booking"]').val();
+            save_calendar_booking(own_box, search_key, by_player, for_player);
+
+            if (own_next.hasClass('friend_booking')) {
+                var players_list_select = own_next.find('select[name="friend_booking"]');
+                get_players_list(players_list_select);
+            }
+            else if (own_next.hasClass('booking_summary_box')){
+                get_booking_summary(own_next);
+            }
+
+            own_box.find('.booking_step_content').first().hide();
+            own_next.find('.booking_step_content').first().show();
+        });
+
+        $(document).on('click', '.booking_step_back', function(){
+            var own_box = $(this).parents('.form-group').first();
+            own_box.find('.booking_step_content').first().hide();
+
+            var own_next = own_box.prev('div.form-group');
+            own_next.find('.booking_step_content').first().show();
+        });
         /* Stop Play with friends part */
 
         /* Start Recurring Booking */
