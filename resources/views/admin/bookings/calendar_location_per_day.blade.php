@@ -346,34 +346,57 @@
                                     <!-- Booking first step Start -->
                                     <form action="#" id="booking_form_option" role="form" name="booking_form_option">
                                         <div class="form-body" style="padding-top:0px; padding-bottom:0px;">
+
                                             <div class="form-group note note-info is_recurring_booking" style="padding-top:0px; padding-bottom:0px; margin-bottom:2px;  display:none;">
                                                 <p class="form-control-static"><strong>
                                                         <span data-id="booking_name"> The Name </span>
-                                                        <span data-id="start_time"></span>
-                                                        <span data-id="room_booked"></span></strong></p>
+                                                        - Recurring booking</strong></p>
                                                 <div class="form-control-static fa-item booking_payment_type" style="float:right;"></div>
                                                 <div class="booking_step_content" style="display:block;">
-                                                    <select class="form-control" name="resources_room" id="resources_rooms"></select>
-                                                    <div class="form-actions right" style="padding-top:5px; padding-bottom:5px;">
-                                                        <a class="btn blue-hoki booking_step_back" style="padding-top:4px; padding-bottom:4px;">Back</a>
-                                                        <a class="btn blue-hoki booking_step_next" style="padding-top:4px; padding-bottom:4px;">Next</a>
+                                                    <label><small>Select Interval for recurrence</small></label>
+                                                    <select class="form-control input-large" name="recurrence_time" id="recurrence_time">
+                                                        <option value="1">Daily</option>
+                                                        <option value="2">Once per week</option>
+                                                        <option value="3">Once every two weeks</option>
+                                                        <option value="4">Once per month</option>
+                                                    </select>
+
+                                                    <label><small>Select End Date</small></label>
+                                                    <div data-date-start-date="+0d" data-date-format="dd-mm-yyyy" class="input-group input-medium date date-picker input-large">
+                                                        <input type="text" readonly="" class="form-control bg-white bg-font-white">
+                                                        <span class="input-group-btn">
+                                                            <button type="button" class="btn default">
+                                                                <i class="fa fa-calendar"></i>
+                                                            </button>
+                                                        </span>
+                                                    </div>
+
+                                                    <div class="form-actions right" style="padding-top:5px; padding-bottom:5px; margin-top:10px;">
+                                                        <a class="btn blue-hoki recurring_step_next" style="padding-top:4px; padding-bottom:4px;">Next</a>
                                                     </div>
                                                 </div>
                                             </div>
+                                            <div class="form-group note note-info is_recurring_booking" style="padding-top:0px; padding-bottom:0px; margin-bottom:2px; display:none;">
+                                                <p class="form-control-static"><strong>List of Bookings</strong></p>
+                                                <div class="booking_step_content" style="display:none;">
+                                                    <div class="booking_summary_single_play"></div>
+                                                    <div class="form-actions right" style="padding-top:5px; padding-bottom:5px;">
+                                                        <a class="btn blue-hoki recurring_step_back" style="padding-top:4px; padding-bottom:4px;">Back</a>
+                                                        <a class="btn blue-hoki recurring_step_next" style="padding-top:4px; padding-bottom:4px;">Next</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+
                                             <div class="form-group note note-info play_alone_booking" style="padding-top:0px; padding-bottom:0px; margin-bottom:2px; display:none;">
-                                                <p class="form-control-static"><strong>
-                                                        <span data-id="booking_name"> The Name </span>
-                                                        <span data-id="start_time"></span>
-                                                        <span data-id="room_booked"></span></strong></p>
-                                                <div class="form-control-static fa-item booking_payment_type" style="float:right;"></div>
-                                                <div class="booking_step_content" style="display:block;">
-                                                    <select class="form-control" name="resources_room" id="resources_rooms"></select>
+                                                <p class="form-control-static"><strong>List of Bookings</strong></p>
+                                                <div class="booking_step_content">
+                                                    <div class="booking_summary_single_play"></div>
                                                     <div class="form-actions right" style="padding-top:5px; padding-bottom:5px;">
-                                                        <a class="btn blue-hoki booking_step_back" style="padding-top:4px; padding-bottom:4px;">Back</a>
                                                         <a class="btn blue-hoki booking_step_next" style="padding-top:4px; padding-bottom:4px;">Next</a>
                                                     </div>
                                                 </div>
                                             </div>
+
                                             <div class="form-group note note-info booking_summary_box" style="padding-top:0px; padding-bottom:0px; margin-bottom:2px;">
                                                 <p class="form-control-static"><strong>Booking Summary</strong></p>
                                                 <div class="booking_step_content" style="display:none;">
@@ -938,14 +961,6 @@
                         // something went wrong, reload resources for the window
                     }
                     else{
-                        //field.find('input[name="time_book_key"]').val(data.booking_key);
-
-                        //if (resource_for_hour==0 || resource_for_hour==0){ }
-                        //else{
-                        //   get_players_list(players_list_select);
-                        //    get_resources_for_hour(resource_for_hour.book_friend_time, resource_for_hour.resource_room);
-                        //}
-
                         var payment_type_book = own_box.find('.booking_payment_type');
                         if (data.booking_type == 'membership'){
                             payment_type_book.html('<i class="fa fa-thumbs-o-up"></i>');
@@ -953,11 +968,6 @@
                         else{
                             payment_type_book.html('<i class="fa fa-credit-card"></i>');
                         }
-                        console.log(payment_type_book);
-
-                        //get_booking_hours();
-                        //own_box.find('.booking_step_content').first().hide();
-                        //own_next.find('.booking_step_content').first().show();
                     }
                 }
             });
@@ -999,11 +1009,18 @@
 
             $('.booking_summary_price_membership').html('');
             $('.friend_booking').remove();
-
             $('.booking_step_content').hide();
-            $('#search_for_player').find('.booking_step_content').show();
 
+            $('input[name="time_book_key"]').remove();
+            $('.play_alone_booking').css('display','none');
+
+            $('.is_recurring_booking').css('display','none');
+
+            $('#search_for_player').find('.booking_step_content').show();
             $("#find_customer_name").val('').trigger('change');
+
+            //$('#search_for_player > .form-body > .note-info > .booking_step_content > .form-actions').hide();
+            //console.log($('#search_for_player').find('.form-actions').html());
         }
 
         function confirm_booking(){
@@ -1086,6 +1103,7 @@
                 show_play_with_friends();
             }
             else if ($(this).attr('data-id')=="is_recurring_booking") {
+                $('.is_recurring_booking').first().find('.booking_step_content').show();
                 show_is_recurring_booking();
             }
             else{
@@ -1267,11 +1285,110 @@
         function show_is_recurring_booking(){
 
         }
+
+        $(document).on('click', '.recurring_step_next', function(){
+            var own_box = $(this).parents('.form-group').first();
+            var own_next = own_box.next('div.form-group');
+
+            if (own_box.hasClass('date_and_time_recurrence')){
+                var end_time = '';
+                var occurrence = '';
+
+                var abc = save_recurrence_bookings(end_time, occurrence);
+            }
+
+            if (own_next.hasClass('booking_summary_box')){
+                get_booking_summary(own_next);
+            }
+
+            own_box.find('.booking_step_content').first().hide();
+            own_next.find('.booking_step_content').first().show();
+        });
+
+        $(document).on('click', '.recurring_step_back', function(){
+            var own_box = $(this).parents('.form-group').first();
+            own_box.find('.booking_step_content').first().hide();
+
+            var own_next = own_box.prev('div.form-group');
+            own_next.find('.booking_step_content').first().show();
+        });
         /* Stop Recurring Booking */
 
         /* Start Single invoice booking */
-        function show_is_single_booking(){
+        function save_single_bookings(own_box){
+            var bookings = '';
+            $('input[name="time_book_key"]').each(function(key, val){
+                bookings+=$(this).val()+',';
+            });
+            var for_player = $('input[name="booking_made_by"]').first().val();
 
+            $.ajax({
+                url: '{{route('ajax/calendar_booking_save_play_alone')}}',
+                type: "post",
+                cache: false,
+                data: {
+                    'book_keys':     bookings,
+                    'for_player':   for_player,
+                    'by_player':    for_player,
+                },
+                success: function(data){
+                    var booking_list = '';
+                    if (data.booking_key==''){
+                        // something went wrong, reload resources for the window
+                    }
+                    else{
+                        var payment_type_book = own_box.find('.booking_summary_single_play');
+                        if (data.booking_type == 'membership'){
+                            payment_type_book.html('<i class="fa fa-thumbs-o-up"></i>');
+                        }
+                        else{
+                            payment_type_book.html('<i class="fa fa-credit-card"></i>');
+                        }
+                    }
+
+                    $.each(data.keys, function(key, val){
+                        var book_box_val = $('span[booking-key="'+val.booking_key+'"]');
+
+                        booking_list+=
+                        '<div style="padding:0px 5px; margin:1px 0px;" class="form-group note note-info">' +
+                            '<p class="form-control-static" style="margin:0px; padding:0px; min-height:20px;">' +
+                                '<span data-id="booking_name">' + $('#select2-find_customer_name-container').html() + '</span> ' +
+                                '<span data-id="start_time"> - '+ book_box_val.attr('data-time') + '</span> at ' +
+                                '<span data-id="room_booked">'+resourceName[book_box_val.attr('data-resource')]+'</span>' +
+                            '</p>' +
+                            '<div class="form-control-static fa-item booking_payment_type" style="float: right; margin: 5px 0px 0px; padding: 0px; min-height: 16px;">';
+
+                        if (data.booking_type == 'membership'){
+                            booking_list+= '<i class="fa fa-thumbs-o-up"></i>';
+                        }
+                        else{
+                            booking_list+= '<i class="fa fa-credit-card"></i>';
+                        }
+
+                        booking_list+='</div></div>';
+                    });
+
+                    own_box.find('.booking_summary_single_play').html(booking_list);
+                }
+            });
+        }
+
+        function show_is_single_booking(){
+            var box_container = $(".play_alone_booking");
+            var bookings = '';
+
+            $("td.prebook span[booking-key]").each(function(key, val){
+                console.log(key);
+                console.log(val);
+                bookings += ' <input type="hidden" value="' + $(this).attr('booking-key') + '" name="time_book_key"> ';
+            });
+            box_container.append(bookings);
+            save_single_bookings(box_container);
+            $('.play_alone_booking').show();
+
+            //var place = $('.booking_summary_box');
+            //get_booking_summary(place);
+            //place.find('.booking_step_content').first().show();
         }
         /* Stop Single invoice booking */
 

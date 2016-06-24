@@ -534,6 +534,10 @@ class BookingController extends Controller
             $user = Auth::user();
         }
 
+        $is_staff = false;
+        if (!$user->hasRole(['front-member','front-user'])){
+            $is_staff = true;
+        }
         $this->check_for_expired_pending_bookings();
 
         $vars = $request->only('selected_bookings');
@@ -541,7 +545,12 @@ class BookingController extends Controller
         if (sizeof($keys)>0){
             foreach($keys as $key){
                 if ($key==''){ continue; }
-                Booking::where('status','=','pending')->where('by_user_id','=',$user->id)->where('search_key','=',$key)->update(['status'=>'canceled']);
+                if ($is_staff){
+                    Booking::where('status','=','pending')->where('search_key','=',$key)->update(['status'=>'canceled']);
+                }
+                else{
+                    Booking::where('status','=','pending')->where('by_user_id','=',$user->id)->where('search_key','=',$key)->update(['status'=>'canceled']);
+                }
             }
 
             return ['success' => 'true', 'message' => 'All is good.'];
@@ -1378,6 +1387,103 @@ class BookingController extends Controller
             'booking_key'   => $booking->search_key,
             'booking_type'  => $booking->payment_type,
             'booking_price' => $booking->payment_amount];
+    }
+
+    public function calendar_booking_save_play_alone(Request $request){
+        if (!Auth::check()) {
+            return [];
+        }
+        else{
+            $user = Auth::user();
+        }
+
+        $vars = $request->only('book_keys', 'by_player', 'for_player');
+        $return_bookings = [];
+        $keys = explode(',',$vars['book_keys']);
+        if (sizeof($keys)>0){
+            foreach($keys as $key) {
+                if ($key == '') {
+                    continue;
+                }
+
+                // check if booking exists
+                $booking = Booking::where('search_key','=',$key)->where('status','=','pending')->get()->first();
+                if (!$booking){
+                    $return_bookings[] = [
+                        'booking_key'   => $key,
+                        'error'         => true,
+                        'message'       => 'Booking not found'];
+                    continue;
+                }
+
+                // check if the member that makes the booking exists
+                $by_user = User::where('id','=',$vars['by_player'])->get()->first();
+                if (!$by_user){
+                    return [
+                        'success' => false,
+                        'errors' => 'Member not found or can\'t have more bookings'];
+                }
+
+                // check if the player that the booking is made for exists
+                $for_user = User::where('id','=',$vars['for_player'])->get()->first();
+                if (!$for_user){
+                    return [
+                        'success' => false,
+                        'errors' => 'Player not found or can\'t book on behalf of him'];
+                }
+
+                // check if the player can book
+                $fillable = [
+                    'for_user_id' => $booking->for_user_id,
+                    'resource_id' => $booking->resource_id,
+                    'location_id' => $booking->location_id,
+                    'date_of_booking' => $booking->date_of_booking,
+                    'booking_time_start' => $booking->booking_time_start,
+                    'search_key' => $booking->search_key
+                ];
+                $canBook = BookingController::validate_booking($fillable, $key);
+                if ($canBook['status']==false){
+                    $return_bookings[] = [
+                        'booking_key'   => $booking->search_key,
+                        'error'         => true,
+                        'message'       => 'Can\'t change player or can\'t book on the location/time you selected'];
+                    continue;
+                }
+                else{
+                    $fillable['payment_type'] = $canBook['payment'];
+
+                    $book_price = ShopResource::find($fillable['resource_id']);
+                    if ($book_price){
+                        $fillable['payment_amount'] = $book_price->session_price;
+                    }
+                    else{
+                        $return_bookings[] = [
+                            'booking_key'   => $booking->search_key,
+                            'error'         => true,
+                            'message'       => 'Error getting resource information!!!'];
+                        continue;
+                    }
+                }
+
+                $booking->by_user_id = $by_user->id;
+                $booking->for_user_id = $for_user->id;
+                $booking->save();
+
+                $return_bookings[] = [
+                    'booking_key'   => $booking->search_key,
+                    'booking_type'  => $booking->payment_type,
+                    'booking_price' => $booking->payment_amount
+                ];
+            }
+        }
+        else{
+            $return_bookings = [
+                'error' => true,
+                'message' => 'No bookings transmitted'
+            ];
+        }
+
+        return [ 'keys' => $return_bookings];
     }
 
     public function calendar_booking_confirm_selected(Request $request){

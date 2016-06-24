@@ -525,4 +525,9 @@ Route::group(['prefix'=>'ajax', 'middleware' => 'web'], function(){
         'uses'  => 'BookingController@calendar_booking_save_selected'
     ]);
 
+    Route::post('calendar_booking_save_play_alone', [
+        'as'    => 'ajax/calendar_booking_save_play_alone',
+        'uses'  => 'BookingController@calendar_booking_save_play_alone'
+    ]);
+
 });

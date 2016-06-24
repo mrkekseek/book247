@@ -228,4 +228,7 @@ class Booking extends Model
             default:break;
         }
     }
+
+
+
 }
