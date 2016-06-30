@@ -22,7 +22,7 @@ class CreateBookingsTable extends Migration
             $table->date('date_of_booking');
             $table->time('booking_time_start');
             $table->time('booking_time_stop');
-            $table->enum('payment_type',['cash','membership']);
+            $table->enum('payment_type',['cash','membership','recurring']);
             $table->integer('membership_id');
             $table->integer('invoice_id');
             $table->timestamps();

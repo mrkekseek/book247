@@ -198,6 +198,10 @@
                                             <span class="caption-helper"></span>
                                         </div>
                                     </div>
+                                    <div class="alert alert-danger display-hide">
+                                        <button class="close" data-close="alert"></button> You have some errors in the form. Please check below. </div>
+                                    <div class="alert alert-success display-hide">
+                                        <button class="close" data-close="alert"></button> Information is valid, please wait! </div>
                                     <p class="hint"> Enter your personal details below: </p>
                                     <div class="form-group">
                                         <label class="control-label visible-ie8 visible-ie9">First Name</label>
@@ -819,10 +823,106 @@
                 });
             }
 
+            var handleValidation2 = function() {
+                var form2 = $('#user_registration_form');
+                var error2 = $('.alert-danger', form2);
+                var success2 = $('.alert-success', form2);
+
+                form2.validate({
+                    errorElement: 'span', //default input error message container
+                    errorClass: 'help-block help-block-error', // default input error message class
+                    focusInvalid: false, // do not focus the last invalid input
+                    ignore: "",  // validate all fields including form hidden input
+                    rules: {
+                        firstname: {
+                            minlength: 2,
+                            maxlength: 150,
+                            required: true
+                        },
+                        lastname: {
+                            minlength: 2,
+                            maxlength: 150,
+                            required: true
+                        },
+                        phone: {
+                            number: true,
+                            required: true,
+                            remote: {
+                                url: "{{ route('ajax/check_phone_for_member_registration') }}",
+                                type: "post",
+                                data: {
+                                    phone: function() {
+                                        return $( "input[name='phone']" ).val();
+                                    }
+                                }
+                            }
+                        },
+                        email: {
+                            email: true,
+                            required: true,
+                            remote: {
+                                url: "{{ route('ajax/check_email_for_member_registration') }}",
+                                type: "post",
+                                data: {
+                                    email: function() {
+                                        return $( "input[name='email']" ).val();
+                                    }
+                                }
+                            }
+                        },
+                        password: {
+                            required:true,
+                            minlength: 5,
+                            maxlength: 150,
+                        },
+                        rpassword: {
+                            required:true,
+                            minlength: 5,
+                            maxlength: 150,
+                            equalTo:"#register_password"
+                        },
+                    },
+
+                    invalidHandler: function (event, validator) { //display error alert on form submit
+                        success2.hide();
+                        error2.show();
+                        App.scrollTo(error1, -200);
+                    },
+
+                    errorPlacement: function (error, element) { // render error placement for each input type
+                        var icon = $(element).parent('.input-icon').children('i');
+                        icon.removeClass('fa-check').addClass("fa-warning");
+                        icon.attr("data-original-title", error.text()).tooltip({'container': 'body'});
+                    },
+
+                    highlight: function (element) { // hightlight error inputs
+                        $(element)
+                                .closest('.form-group').removeClass("has-success").addClass('has-error'); // set error class to the control group
+                    },
+
+                    unhighlight: function (element) { // revert the change done by hightlight
+
+                    },
+
+                    success: function (label, element) {
+                        var icon = $(element).parent('.input-icon').children('i');
+                        $(element).closest('.form-group').removeClass('has-error').addClass('has-success'); // set success class to the control group
+                        icon.removeClass("fa-warning").addClass("fa-check");
+                    },
+
+                    submitHandler: function (form) {
+                        success2.show();
+                        error2.hide();
+                        register_member(); // submit the form
+                    }
+                });
+            }
+
             return {
                 //main function to initiate the module
                 init: function () {
                     handleValidation1();
+                    handleValidation2();
                 }
 
             };

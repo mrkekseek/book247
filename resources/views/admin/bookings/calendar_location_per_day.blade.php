@@ -195,7 +195,7 @@
                 <!-- END SAMPLE TABLE PORTLET-->
             </div>
 
-            <!-- BEGIN More Options modal window show -->
+            <!-- BEGIN Booking More Options modal window show -->
             <div class="modal fade" id="more_options_bookings_show" tabindex="-1" role="dialog" aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
@@ -239,7 +239,7 @@
             </div>
             <!-- END More Options modal window show -->
 
-            <!-- BEGIN No Show modal window -->
+            <!-- BEGIN Booking No Show modal window -->
             <div class="modal fade" id="not_show_confirm_box" tabindex="-1" role="dialog" aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
@@ -282,7 +282,7 @@
             </div>
             <!-- END No Show modal window -->
 
-            <!-- BEGIN Cancel Confirm modal window show -->
+            <!-- BEGIN Booking Cancel Confirm modal window show -->
             <div class="modal fade bs-modal-sm" id="cancel_confirm_box" tabindex="-1" role="dialog" aria-hidden="true">
                 <div class="modal-dialog modal-sm">
                     <div class="modal-content">
@@ -324,7 +324,7 @@
                                                 <p class="form-control-static">
                                                     <strong class="booking_made_by">
                                                         <span class="font-blue-steel">Search for Player</span> or
-                                                        <a class="font-green-jungle" href="">REGISTER NEW</a></strong>
+                                                        <a class="font-green-jungle" data-toggle="modal" href="#register_new_user_popup">REGISTER NEW</a></strong>
                                                 </p>
                                                 <div class="booking_step_content" style="display:block;">
                                                     <select id="find_customer_name" name="find_customer_name" class="form-control js-data-users-ajax">
@@ -346,7 +346,6 @@
                                     <!-- Booking first step Start -->
                                     <form action="#" id="booking_form_option" role="form" name="booking_form_option">
                                         <div class="form-body" style="padding-top:0px; padding-bottom:0px;">
-
                                             <div class="form-group note note-info is_recurring_booking" style="padding-top:0px; padding-bottom:0px; margin-bottom:2px;  display:none;">
                                                 <p class="form-control-static"><strong>
                                                         <span data-id="booking_name"> The Name </span>
@@ -356,14 +355,15 @@
                                                     <label><small>Select Interval for recurrence</small></label>
                                                     <select class="form-control input-large" name="recurrence_time" id="recurrence_time">
                                                         <option value="1">Daily</option>
-                                                        <option value="2">Once per week</option>
-                                                        <option value="3">Once every two weeks</option>
-                                                        <option value="4">Once per month</option>
+                                                        <option value="7">Once per week</option>
+                                                        <option value="14">Once every 2 weeks</option>
+                                                        <option value="21">Once every 3 weeks</option>
+                                                        <option value="28">Once every 4 weeks</option>
                                                     </select>
 
                                                     <label><small>Select End Date</small></label>
                                                     <div data-date-start-date="+0d" data-date-format="dd-mm-yyyy" class="input-group input-medium date date-picker input-large">
-                                                        <input type="text" readonly="" class="form-control bg-white bg-font-white">
+                                                        <input type="text" name="recurrence_end_date" readonly="" class="form-control bg-white bg-font-white">
                                                         <span class="input-group-btn">
                                                             <button type="button" class="btn default">
                                                                 <i class="fa fa-calendar"></i>
@@ -372,14 +372,14 @@
                                                     </div>
 
                                                     <div class="form-actions right" style="padding-top:5px; padding-bottom:5px; margin-top:10px;">
-                                                        <a class="btn blue-hoki recurring_step_next" style="padding-top:4px; padding-bottom:4px;">Next</a>
+                                                        <a class="btn blue-hoki recurring_step_next date_and_time_recurrence" style="padding-top:4px; padding-bottom:4px;">Next</a>
                                                     </div>
                                                 </div>
                                             </div>
                                             <div class="form-group note note-info is_recurring_booking" style="padding-top:0px; padding-bottom:0px; margin-bottom:2px; display:none;">
                                                 <p class="form-control-static"><strong>List of Bookings</strong></p>
                                                 <div class="booking_step_content" style="display:none;">
-                                                    <div class="booking_summary_single_play"></div>
+                                                    <div class="booking_summary_recurring_play" style="max-height:220px; overflow:auto;"></div>
                                                     <div class="form-actions right" style="padding-top:5px; padding-bottom:5px;">
                                                         <a class="btn blue-hoki recurring_step_back" style="padding-top:4px; padding-bottom:4px;">Back</a>
                                                         <a class="btn blue-hoki recurring_step_next" style="padding-top:4px; padding-bottom:4px;">Next</a>
@@ -421,6 +421,54 @@
             </div>
             <!-- END Custom booking modal window show -->
 
+            <!-- BEGIN REGISTRATION FORM -->
+            <div class="modal fade" id="register_new_user_popup" tabindex="-1" role="dialog" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                            <h4 class="modal-title">New User Registration</h4>
+                        </div>
+                        <div class="modal-body">
+                            <form class="register-form" method="post" name="user_registration_form" id="user_registration_form">
+                                <div class="alert alert-danger display-hide">
+                                    <button class="close" data-close="alert"></button> You have some errors in the form. Please check below. </div>
+                                <div class="alert alert-success display-hide">
+                                    <button class="close" data-close="alert"></button> Information is valid, please wait! </div>
+                                <p class="hint" style="margin:5px 0;"> Enter personal details below: </p>
+                                <div class="form-group">
+                                    <label class="control-label visible-ie8 visible-ie9">First Name</label>
+                                    <input class="form-control placeholder-no-fix" type="text" placeholder="First Name" name="firstname" /> </div>
+                                <div class="form-group">
+                                    <label class="control-label visible-ie8 visible-ie9">Last Name</label>
+                                    <input class="form-control placeholder-no-fix" type="text" placeholder="Last Name" name="lastname" /> </div>
+                                <div class="form-group">
+                                    <label class="control-label visible-ie8 visible-ie9">Phone Number</label>
+                                    <input class="form-control placeholder-no-fix" type="text" placeholder="Phone Number" name="phone" /> </div>
+
+                                <p class="hint" style="margin:5px 0;"> Enter account details below: </p>
+                                <div class="form-group">
+                                    <!--ie8, ie9 does not support html5 placeholder, so we just show field title for that-->
+                                    <label class="control-label visible-ie8 visible-ie9">Email</label>
+                                    <input class="form-control placeholder-no-fix" type="text" placeholder="Email" name="email" /> </div>
+                                <div class="form-group">
+                                    <label class="control-label visible-ie8 visible-ie9">Password</label>
+                                    <input class="form-control placeholder-no-fix" type="password" autocomplete="off" id="register_password" placeholder="Password" name="password" /> </div>
+                                <div class="form-group">
+                                    <label class="control-label visible-ie8 visible-ie9">Re-type Your Password</label>
+                                    <input class="form-control placeholder-no-fix" type="password" autocomplete="off" placeholder="Re-type Your Password" name="rpassword" /> </div>
+                                <div class="form-actions">
+                                    <button type="button" data-dismiss="modal" class="btn grey-steel">Back</button>
+                                    <button type="submit" id="register-submit-btn" class="btn red uppercase pull-right">Submit</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <!-- /.modal-content -->
+                </div>
+                <!-- /.modal-dialog -->
+            </div>
+            <!-- END REGISTRATION FORM -->
         </div>
         <!-- END PAGE BASE CONTENT -->
     </div>
@@ -478,6 +526,7 @@
         @endforeach
         };
 
+        /* Members search using select drop-down */
         var ComponentsSelect2 = function() {
 
             var handleDemo = function() {
@@ -621,15 +670,9 @@
                     handleDemo();
                 }
             };
-
         }();
 
-        if (App.isAngularJsApp() === false) {
-            jQuery(document).ready(function() {
-                ComponentsSelect2.init();
-            });
-        }
-
+        /* Calendar view dropdown */
         var ComponentsDateTimePickers = function () {
 
             var handleDatePickers = function () {
@@ -655,10 +698,125 @@
 
         }();
 
+        /* Forms validation codes */
+        var FormValidation = function () {
+
+            var handleValidation1 = function() {
+                var form1 = $('#user_registration_form');
+                var error1 = $('.alert-danger', form1);
+                var success1 = $('.alert-success', form1);
+
+                form1.validate({
+                    errorElement: 'span', //default input error message container
+                    errorClass: 'help-block help-block-error', // default input error message class
+                    focusInvalid: false, // do not focus the last invalid input
+                    ignore: "",  // validate all fields including form hidden input
+                    rules: {
+                        firstname: {
+                            minlength: 2,
+                            maxlength: 150,
+                            required: true
+                        },
+                        lastname: {
+                            minlength: 2,
+                            maxlength: 150,
+                            required: true
+                        },
+                        phone: {
+                            number: true,
+                            required: true,
+                            remote: {
+                                url: "{{ route('ajax/check_phone_for_member_registration') }}",
+                                type: "post",
+                                data: {
+                                    phone: function() {
+                                        return $( "input[name='phone']" ).val();
+                                    }
+                                }
+                            }
+                        },
+                        email: {
+                            email: true,
+                            required: true,
+                            remote: {
+                                url: "{{ route('ajax/check_email_for_member_registration') }}",
+                                type: "post",
+                                data: {
+                                    email: function() {
+                                        return $( "input[name='email']" ).val();
+                                    }
+                                }
+                            }
+                        },
+                        password: {
+                            minlength: 5,
+                            maxlength: 150,
+                        },
+                        rpassword: {
+                            minlength: 5,
+                            maxlength: 150,
+                            equalTo:"#register_password"
+                        },
+                    },
+
+                    invalidHandler: function (event, validator) { //display error alert on form submit
+                        success1.hide();
+                        error1.show();
+                        App.scrollTo(error1, -200);
+                    },
+
+                    errorPlacement: function (error, element) { // render error placement for each input type
+                        var icon = $(element).parent('.input-icon').children('i');
+                        icon.removeClass('fa-check').addClass("fa-warning");
+                        icon.attr("data-original-title", error.text()).tooltip({'container': 'body'});
+                    },
+
+                    highlight: function (element) { // hightlight error inputs
+                        $(element)
+                                .closest('.form-group').removeClass("has-success").addClass('has-error'); // set error class to the control group
+                    },
+
+                    unhighlight: function (element) { // revert the change done by hightlight
+
+                    },
+
+                    success: function (label, element) {
+                        var icon = $(element).parent('.input-icon').children('i');
+                        $(element).closest('.form-group').removeClass('has-error').addClass('has-success'); // set success class to the control group
+                        icon.removeClass("fa-warning").addClass("fa-check");
+                    },
+
+                    submitHandler: function (form) {
+                        success1.show();
+                        error1.hide();
+                        register_member(); // submit the form
+                    }
+                });
+            }
+
+            return {
+                //main function to initiate the module
+                init: function () {
+                    handleValidation1();
+                }
+
+            };
+
+        }();
+
         if (App.isAngularJsApp() === false) {
-            jQuery(document).ready(function() {
+            jQuery(document).ready(function () {
+                // initialize select2 drop downs
+                ComponentsSelect2.init();
+                // initialize date/time pickersz
                 ComponentsDateTimePickers.init();
+                // initialize the forms validation part
+                FormValidation.init();
             });
+        }
+
+        function register_member(){
+
         }
 
         $('[data-toggle=confirmation]').confirmation({ container: 'body', btnOkClass: 'btn btn-sm blue', btnCancelClass: 'btn purple btn-sm', copyAttributes: 'data-key'});
@@ -836,7 +994,7 @@
                     'search_key': search_key
                 },
                 success: function (data) {
-                    show_notification('Booking Canceled', 'The selected booking was canceled.', 'lemon', 3500, 0);
+                    show_notification('Booking Canceled', 'The selected bookings were canceled.', 'lemon', 3500, 0);
 
                     var action_buttons = $('div[search-key="'+search_key+'"]');
                     action_buttons.css('display','none');
@@ -941,8 +1099,34 @@
 
             if ($('input[name="booking_made_by"]').val()!=''){
                 show_notification('Booking Operation Was Broken', 'You closed the popup window before the booking was finished. You can always try again.', 'lemon', 3500, 0);
-                cancel_booking_keys();
+
+                var all_bookings = '';
+                $('.prebook').each(function(index, elem) {
+                    var search_key = $(this).find('span').attr('booking-key');
+                    if (search_key.length > 4) {
+                        all_bookings += search_key + ',';
+                    }
+                });
+                cancel_booking_keys(all_bookings);
+
                 clean_booking_popup();
+            }
+            else if ($('.prebook').length > 0){
+                var all_bookings = '';
+                $('.prebook').each(function(key, val){
+                    var search_key = $(this).find('span').first().attr('booking-key');
+
+                    if (search_key.length > 4) {
+                        all_bookings += search_key + ',';
+                        $(this).find('span').first().removeAttr('booking-key');
+                        $(this).removeClass();
+                        $(this).addClass('is_free_time');
+                    }
+                });
+                cancel_booking_keys(all_bookings);
+                $('.add_custom_bookings_btn').hide();
+
+                show_notification('Booking Operation Was Broken', 'You closed the popup window before the booking was finished. You can always try again.', 'lemon', 3500, 0);
             }
         });
 
@@ -973,15 +1157,7 @@
             });
         }
 
-        function cancel_booking_keys(){
-            var all_bookings = '';
-            $('.prebook').each(function(index, elem) {
-                var search_key = $(this).find('span').attr('booking-key');
-                if (search_key.length > 4) {
-                    all_bookings += search_key + ',';
-                }
-            });
-
+        function cancel_booking_keys(all_bookings){
             $.ajax({
                 url: '{{route('ajax/cancel_bookings')}}',
                 type: "post",
@@ -998,6 +1174,7 @@
         }
 
         function clean_booking_popup(){
+            //console.log('here');
             var all_bookings = '';
             $('.prebook').each(function(index, elem){
                 //var search_key = $(this).find('span').attr('booking-key');
@@ -1018,6 +1195,11 @@
 
             $('#search_for_player').find('.booking_step_content').show();
             $("#find_customer_name").val('').trigger('change');
+
+            $('span[data-id="booking_name"]').html('');
+            $('.booking_summary_recurring_play').html('');
+
+            $('#register_new_user_popup').modal('hide');
 
             //$('#search_for_player > .form-body > .note-info > .booking_step_content > .form-actions').hide();
             //console.log($('#search_for_player').find('.form-actions').html());
@@ -1227,14 +1409,22 @@
                             var membership_bookings = '<h5>Membership included bookings : <span id="membership_bookings_nr">' + data.membership_nr + '</span></h5>';
                         }
 
-                        if (data.cash_nr == 0){
+                        if (data.cash_nr == 0 && data.recurring_nr == 0){
                             var cash_bookings = '<h5>Paid bookings : <span id="membership_bookings_nr"> None </span></h5>';
                         }
-                        else{
+                        else if (data.cash_nr > 0 && data.recurring_nr == 0){
                             var cash_bookings = '<h5>Paid bookings : <span id="membership_bookings_nr">' + data.cash_nr + '</span> of <span>' + data.cash_amount + '</span> in total</h5>';
                         }
+                        else{
+                            var cash_bookings = '';
+                        }
 
-                        $('.booking_summary_price_membership').html(membership_bookings + ' ' + cash_bookings);
+                        var recurring = '';
+                        if (data.recurring_nr > 0){
+                            recurring = '<h5>Recurring bookings : <span id="membership_bookings_nr">' + data.recurring_nr + '</span> bookings of <span>' + data.recurring_cash + '</span> in total</h5>';
+                        }
+
+                        $('.booking_summary_price_membership').html(membership_bookings + ' ' + cash_bookings + ' ' + recurring);
                     }
                     else {
                         show_notification(data.error.title, data.error.message, 'lemon', 3500, 0);
@@ -1286,17 +1476,73 @@
 
         }
 
+        $('.date_and_time_recurrence').on('click', function(){
+            var end_time = $('input[name="recurrence_end_date"]').val();
+            var occurrence = $('#recurrence_time').val();
+            var for_player = $('input[name="booking_made_by"]').first().val();
+
+            var all_bookings = '';
+            $('.prebook').each(function(index, elem) {
+                var search_key = $(this).find('span').attr('booking-key');
+                if (search_key.length > 4) {
+                    all_bookings += search_key + ',';
+                }
+            });
+
+            $.ajax({
+                url: '{{route('ajax/calendar_booking_save_recurring')}}',
+                type: "post",
+                cache: false,
+                data: {
+                    'booking_key':  all_bookings,
+                    'occurrence':   occurrence,
+                    'end_time':     end_time,
+                    'for_player':   for_player,
+                    'by_player':    for_player,
+                },
+                success: function(data){
+                    var booking_list = '';
+                    var bookings = '';
+                    if (data.booking_key==''){
+                        // something went wrong, reload resources for the window
+                    }
+
+                    $.each(data.keys, function(key, val){
+                        booking_list+=
+                                '<div style="padding:0px 5px; margin:1px 0px;" class="form-group note note-info">' +
+                                '<p class="form-control-static" style="margin:0px; padding:0px; min-height:20px;">' +
+                                '<span data-id="booking_name">' + val.booking_date + '</span> ' +
+                                '<span data-id="start_time"> - '+ val.booking_time + '</span> at ' +
+                                '<span data-id="room_booked">'+resourceName[val.booking_resource]+'</span>' +
+                                '</p>' +
+                                '<div class="form-control-static fa-item booking_payment_type" style="float: right; margin: 5px 0px 0px; padding: 0px; min-height: 16px;">';
+
+                        if (data.is_alternative == 0){
+                            booking_list+= '<i class="fa fa-history"></i>';
+                        }
+                        else{
+                            booking_list+= '<i class="fa fa-copy"></i>';
+                        }
+                        booking_list+='</div></div>';
+
+                        bookings += ' <input type="hidden" value="' + val.booking_key + '" name="time_book_key"> ';
+                    });
+
+                    $('.booking_summary_recurring_play').html(booking_list);
+                    $('.booking_summary_recurring_play').append(bookings);
+
+                    //get_booking_summary();
+                }
+            });
+        });
+
         $(document).on('click', '.recurring_step_next', function(){
             var own_box = $(this).parents('.form-group').first();
             var own_next = own_box.next('div.form-group');
 
-            if (own_box.hasClass('date_and_time_recurrence')){
-                var end_time = '';
-                var occurrence = '';
-
-                var abc = save_recurrence_bookings(end_time, occurrence);
+            if (own_next.hasClass('play_alone_booking')){
+                own_next = own_next.next('div.form-group');
             }
-
             if (own_next.hasClass('booking_summary_box')){
                 get_booking_summary(own_next);
             }

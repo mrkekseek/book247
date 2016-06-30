@@ -530,4 +530,24 @@ Route::group(['prefix'=>'ajax', 'middleware' => 'web'], function(){
         'uses'  => 'BookingController@calendar_booking_save_play_alone'
     ]);
 
+    Route::post('calendar_booking_save_recurring', [
+        'as'    => 'ajax/calendar_booking_save_recurring',
+        'uses'  => 'BookingController@calendar_booking_save_recurring'
+    ]);
+
+    Route::post('calendar_booking_save_recurring', [
+        'as'    => 'ajax/calendar_booking_save_recurring',
+        'uses'  => 'BookingController@calendar_booking_save_recurring'
+    ]);
+
+    Route::post('validate_phone_number_for_registration', [
+        'as'    => 'ajax/check_phone_for_member_registration',
+        'uses'  => 'FrontEndUserController@validate_phone_for_member'
+    ]);
+
+    Route::post('validate_email_for_registration', [
+        'as'    => 'ajax/check_email_for_member_registration',
+        'uses'  => 'FrontEndUserController@validate_email_for_member'
+    ]);
+
 });

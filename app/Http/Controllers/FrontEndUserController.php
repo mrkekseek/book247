@@ -1230,4 +1230,72 @@ class FrontEndUserController extends Controller
             return false;
         }
     }
+
+    public function new_member_registration(Request $request){
+        $vars = $request->only('first_name', 'last_name', 'email', 'phone_number', 'password');
+        $messages = array(
+            'email.unique' => 'Please use an email that is not in the database',
+        );
+        $attributeNames = array(
+            'email' => 'Email address',
+            'username' => 'Username',
+            'first_name' => 'First Name',
+            'last_name' => 'Last Name',
+            'password'  => 'Password',
+        );
+        $validator = Validator::make($vars, [
+            'first_name' => 'required|min:4|max:150',
+            'last_name' => 'required|min:4|max:150',
+            'username' => 'required|min:6|max:30|unique:users,username',
+            'password' => 'required|min:8',
+            'email' => 'required|email|email|unique:users',
+            'user_type' => 'required|exists:roles,id',
+        ], $messages, $attributeNames);
+
+        if ($validator->fails()){
+            //return $validator->errors()->all();
+            return array(
+                'success' => false,
+                'errors' => $validator->getMessageBag()->toArray()
+            );
+        }
+
+        $credentials = $vars;
+        $credentials['password'] = bcrypt($credentials['password']);
+        try {
+            $user = User::create($credentials);
+            // attach the roles to the new created user
+            $user->attachRole($vars['user_type']);
+
+        } catch (Exception $e) {
+            return Response::json(['error' => 'User already exists.'], Response::HTTP_CONFLICT);
+        }
+
+        return [
+            'member_id'     => 4,
+            'member_name'   => 'New Name',
+        ];
+    }
+
+    public function validate_phone_for_member(Request $request){
+        $vars = $request->only('phone');
+        $user = PersonalDetail::where('mobile_number','=',$vars['phone'])->get()->first();
+        if ($user){
+            return 'false';
+        }
+        else{
+            return 'true';
+        }
+    }
+
+    public function validate_email_for_member(Request $request){
+        $vars = $request->only('email');
+        $user = User::where('email','=',$vars['email'])->get()->first();
+        if ($user){
+            return 'false';
+        }
+        else{
+            return 'true';
+        }
+    }
 }

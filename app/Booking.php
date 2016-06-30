@@ -199,7 +199,7 @@ class Booking extends Model
                     'date_of_booking'   => 'required|date',
                     'booking_time_start'=> 'required|date_format:"H:i"',
                     'booking_time_stop' => 'required|date_format:"H:i',
-                    'payment_type'      => 'required|in:cash,membership',
+                    'payment_type'      => 'required|in:cash,membership,recurring',
                     'membership_id'     => '',
                     'invoice_id'        => '',
                     'search_key'        => 'required|unique:bookings,search_key',
@@ -218,7 +218,7 @@ class Booking extends Model
                     'date_of_booking'   => 'required|date',
                     'booking_time_start'=> 'required|time',
                     'booking_time_stop' => 'required|time',
-                    'payment_type'      => 'required|in:cash,membership',
+                    'payment_type'      => 'required|in:cash,membership,recurring',
                     'membership_id'     => '',
                     'invoice_id'        => '',
                     'search_key'        => 'required|unique:bookings,search_key'.($id ? ",$id,id" : ''),
@@ -228,7 +228,4 @@ class Booking extends Model
             default:break;
         }
     }
-
-
-
 }

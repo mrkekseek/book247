@@ -35,6 +35,67 @@ class BookingInvoice extends Model
         }
     }
 
+    public function add_invoice_item($fillable){
+        $fillable['booking_invoice_id'] = $this->id;
+
+        $validator = Validator::make($fillable, BookingInvoiceItem::rules('POST'), BookingInvoiceItem::$message, BookingInvoiceItem::$attributeNames);
+        if ($validator->fails()){
+            return array(
+                'success' => false,
+                'errors' => $validator->getMessageBag()->toArray()
+            );
+        }
+
+        try {
+            $the_invoice_item = BookingInvoiceItem::create($fillable);
+
+            if ($the_invoice_item){
+                return ['success' => true, 'message' => 'Item Added'];
+            }
+            else{
+                return ['success' => false, 'errors' => 'Error adding item'];
+            }
+        } catch (Exception $e) {
+            return ['success' => false, 'errors' => 'Error while adding item'];
+        }
+    }
+
+    public function get_invoice_total(){
+        $invoiceItems = BookingInvoiceItem::where('booking_invoice_id','=',$this->id)->get();
+        if ($invoiceItems){
+            $total = [
+                'vat'       => [],
+                'total_vat'      => 0,
+                'total_discount' => 0,
+                'total_price'    => 0,
+                'total_sum'      => 0,
+            ];
+            foreach($invoiceItems as $item){
+                $tdisc = (($item->discount * $item->price) / 100) * $item->quantity;
+                $total['total_discount'] += $tdisc;
+
+                $tprice = $item->price * $item->quantity;
+                $total['total_price'] += $tprice;
+
+                $tvat = (($tprice - $tdisc) * $item->vat) / 100;
+                $total['total_vat'] += $tvat;
+                if (isset($total['vat'][$item->vat])){
+                    $total['vat'][$item->vat] += $tvat;
+                }
+                else{
+                    $total['vat'][$item->vat] = $tvat;
+                }
+
+                $total['total_sum'] += ($tprice - $tdisc) + $tvat;
+            }
+
+            return $total;
+        }
+        else{
+            return 0;
+        }
+    }
+
     public function add_transaction($fillable){
         $fillable['booking_invoice_id'] = $this->id;
 

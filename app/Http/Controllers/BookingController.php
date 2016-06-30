@@ -15,6 +15,7 @@ use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use App\User;
 use App\Role;
+use App\VatRate;
 use Validator;
 use Zizaco\Entrust\EntrustRole;
 use Auth;
@@ -266,20 +267,29 @@ class BookingController extends Controller
         }
     }
 
-    private function validate_booking($fillable, $search_key=''){
+    private function validate_booking($fillable, $search_key='', $recurring = false){
         $message = ['status'=>true, 'payment'=>'membership'];
         if (Auth::check()) {
             $user = Auth::user();
         }
 
-        $free_open_bookings = 5;
+        if ($recurring==true){
+            $free_open_bookings = 999;
+            $message['payment'] = 'recurring';
+        }
+        else{
+            $free_open_bookings = 5;
+        }
 
         // check for open bookings
         $ownBookings = Booking::whereIn('status',['pending','active'])
             ->where('for_user_id','=',$fillable['for_user_id'])
             ->where('search_key','!=',$search_key)
             ->get();
-        if (sizeof($ownBookings)<$free_open_bookings){
+        if ($recurring==true){
+
+        }
+        else if (sizeof($ownBookings)<$free_open_bookings){
             // no open bookings except the search key
             $message['payment'] = 'membership';
         }
@@ -453,6 +463,8 @@ class BookingController extends Controller
         $membership_nr = 0;
         $cash_nr = 0;
         $cash_amount = 0;
+        $recurring_nr = 0;
+        $recurring_cash = 0;
 
         if (sizeof($keys)>0){
             foreach($keys as $key){
@@ -473,13 +485,22 @@ class BookingController extends Controller
                         $cash_nr+=1;
                         $cash_amount+= $booking['payment_amount'];
                     }
+                    elseif ($booking['payment_type']=='recurring'){
+                        $recurring_nr++;
+                        $recurring_cash+=$booking['payment_amount'];
+                    }
                     else{
                         $membership_nr+=1;
                     }
                 }
             }
 
-            return ['success' => 'true', 'membership_nr' => $membership_nr, 'cash_nr' => $cash_nr, 'cash_amount' => $cash_amount.' NOK' ];
+            return ['success' => 'true',
+                    'membership_nr' => $membership_nr,
+                    'recurring_nr' => $recurring_nr,
+                    'recurring_cash' => $recurring_cash,
+                    'cash_nr' => $cash_nr,
+                    'cash_amount' => $cash_amount.' NOK' ];
         }
         else{
             return ['error' => 'No bookings found to confirm. Please make the booking process again. Remember you have 60 seconds to complete the booking before it expires.'];
@@ -1061,6 +1082,9 @@ class BookingController extends Controller
                     elseif ($formatted_booking['payment_type'] == 'cash' && $booking->status!='pending'){
                         $formatted_booking['color_stripe'] = 'bg-yellow-gold bg-font-yellow-gold';
                     }
+                    elseif ($formatted_booking['payment_type'] == 'recurring' && $booking->status!='pending'){
+                        $formatted_booking['color_stripe'] = 'bg-purple-wisteria bg-font-purple-wisteria';
+                    }
                     elseif($booking->status=='pending'){
                         $formatted_booking['color_stripe'] = 'bg-yellow-soft bg-font-yellow-soft';
                     }
@@ -1486,18 +1510,229 @@ class BookingController extends Controller
         return [ 'keys' => $return_bookings];
     }
 
+    public function calendar_booking_save_recurring(Request $request){
+        if (!Auth::check()) {
+            return [];
+        }
+        else{
+            $user = Auth::user();
+        }
+
+        $vars = $request->only('booking_key','occurrence','end_time','for_player','by_player');
+        $keys = explode(',',$vars['booking_key']);
+        $booking_return = [];
+
+        if (sizeof($keys)>0) {
+            foreach ($keys as $key) {
+                if ($key == '') {
+                    continue;
+                }
+
+                // check if booking exists
+                $booking = Booking::where('search_key', '=', $key)->where('status', '=', 'pending')->get()->first();
+                if (!$booking) {
+                    $booking_return[] = [
+                        'booking_key' => $key,
+                        'error' => true,
+                        'message' => 'Booking not found'];
+                    continue;
+                }
+                else{
+                    $booking->payment_type = 'recurring';
+                    $booking->save();
+                    $price_per_booking = $booking->payment_amount;
+
+                    $booking_return[] = ['booking_key' => $booking->search_key,
+                        'booking_date'  => $booking->date_of_booking,
+                        'booking_time'  => $booking->booking_time_start,
+                        'booking_resource'  => $booking->resource_id,
+                        'is_alternative'    => -1,
+                    ];
+                }
+
+                // check if the member that makes the booking exists
+                $by_user = User::where('id', '=', $vars['by_player'])->get()->first();
+                if (!$by_user) {
+                    $booking_return[] = [
+                        'booking_key'   => $key,
+                        'success'       => false,
+                        'errors'        => 'Member not found or can\'t have more bookings'];
+                    continue;
+                }
+
+                // check if the player that the booking is made for exists
+                $for_user = User::where('id', '=', $vars['for_player'])->get()->first();
+                if (!$for_user) {
+                    $booking_return[] = [
+                        'booking_key'   => $key,
+                        'success'       => false,
+                        'errors' => 'Player not found or can\'t book on behalf of him'];
+                    continue;
+                }
+
+                // interval duration
+                $intervalDuration = 30;
+
+                $booking->by_user_id = $by_user->id;
+                $booking->for_user_id = $for_user->id;
+                $booking->save();
+
+                $theInvoice = BookingInvoice::where('id','=',$booking->invoice_id)->get()->first();
+                if (!$theInvoice){
+                    $invoiceID = -1;
+                }
+                else{
+                    $invoiceID = $theInvoice->id;
+                }
+
+                $firstBookingDay = Carbon::createFromFormat('Y-m-d', $booking->date_of_booking);
+                switch ($vars['occurrence']){
+                    case 7 :
+                        $nextBookingDay = $firstBookingDay->addDays(7);
+                        break;
+                    case 14:
+                        $nextBookingDay = $firstBookingDay->addDays(14);
+                        break;
+                    case 21:
+                        $nextBookingDay = $firstBookingDay->addMonth(21);
+                        break;
+                    case 28:
+                        $nextBookingDay = $firstBookingDay->addDays(28);
+                        break;
+                    default:
+                        $nextBookingDay = $firstBookingDay->addDays(28);
+                        break;
+                }
+
+                $booking_start_time = Carbon::createFromFormat('G:i:s', $booking->booking_time_start)->format('G:i');
+                $booking_end_time   = Carbon::createFromFormat('G:i:s', $booking->booking_time_start)->addMinutes($intervalDuration)->format('G:i');
+                $endDate = Carbon::createFromFormat('d-m-Y',$vars['end_time']);
+                while ($endDate->diffInDays($nextBookingDay, false) < 0){
+                    $fillable = [
+                        'by_user_id'            => $by_user->id,
+                        'for_user_id'           => $for_user->id,
+                        'location_id'           => $booking->location_id,
+                        'resource_id'           => $booking->resource_id,
+                        'status'                => 'pending',
+                        'date_of_booking'       => $nextBookingDay,
+                        'booking_time_start'    => $booking_start_time,
+                        'booking_time_stop'     => $booking_end_time,
+                        'payment_type'          => 'recurring',
+                        'payment_amount'        => $price_per_booking,
+                        'membership_id'         => -1,
+                        'invoice_id'            => $invoiceID,
+                        'search_key'            => '',
+                    ];
+
+                    /*
+                     * we check here if the automatic date/time calculated is good and can be booked,
+                     * else we search for other resources in the same location at the same time
+                     */
+                    $tries = 1;
+                    $valid_msg = $this->validate_booking($fillable,'',true);
+                    while ( $valid_msg['status'] == false ){
+                        $fillable = $this->get_booking_alternative($fillable);
+                        $valid_msg = $this->validate_booking($fillable,'',true);
+                        $tries++;
+                        if ($tries>9){
+                            break;
+                        }
+                    }
+
+                    $msg = $this->add_single_calendar_booking($fillable, true);
+                    if ($msg['booking_key']!='') {
+                        $justBooked = Booking::where('search_key','=',$msg['booking_key'])->get()->first();
+
+                        $loc = ShopLocations::where('id','=',$justBooked->location_id)->get()->first();
+                        $location_name = $loc->name;
+                        $resource = ShopResource::where('id','=',$justBooked->resource_id)->get()->first();
+                        $resource_name = $resource->name;
+                        $booking_date = $justBooked->date_of_booking;
+                        $booking_time_interval = $justBooked->booking_time_start.' - '.$justBooked->booking_time_stop;
+                        $booking_price = $justBooked->payment_amount;
+                        $vat = VatRate::orderBy('id','asc')->get()->first();
+                        $vat_value = $vat->value;
+                        $total_price = $booking_price + (($booking_price*$vat_value)/100);
+
+                        if ($invoiceID!=-1){
+                            $invoice_item_fill = [
+                                'booking_invoice_id'=> $invoiceID,
+                                'booking_id'        => $justBooked->id,
+                                'location_name'     => $location_name,
+                                'resource_name'     => $resource_name,
+                                'quantity'          => 1,
+                                'booking_date'      => $booking_date,
+                                'booking_time_interval' => $booking_time_interval,
+                                'price'             => $booking_price,
+                                'vat'               => $vat_value,
+                                'discount'          => 0,
+                                'total_price'       => $total_price
+                            ];
+                            $theInvoice->add_invoice_item($invoice_item_fill);
+                        }
+
+                        $booking_return[] = ['booking_key' => $msg['booking_key'],
+                            'booking_date'  => $nextBookingDay->format('d-m-Y'),
+                            'booking_time'  => $booking_start_time,
+                            'booking_resource'  => $booking->resource_id,
+                            'is_alternative'    => $tries==1?0:1,
+                        ];
+                    }
+                    else{
+                        // error
+                        $booking_return[] = ['booking_key' => $msg['booking_key'],
+                            'booking_date'  => $nextBookingDay->format('d-m-Y'),
+                            'booking_time'  => $booking_start_time,
+                            'booking_resource'  => $booking->resource_id,
+                            'is_alternative'    => -1
+                        ];
+                    }
+
+                    switch ($vars['occurrence']){
+                        case 7 :
+                            $nextBookingDay = $firstBookingDay->addDays(7);
+                            break;
+                        case 14:
+                            $nextBookingDay = $firstBookingDay->addDays(14);
+                            break;
+                        case 21:
+                            $nextBookingDay = $firstBookingDay->addMonth(21);
+                            break;
+                        case 28:
+                            $nextBookingDay = $firstBookingDay->addDays(28);
+                            break;
+                        default:
+                            $nextBookingDay = $firstBookingDay->addDays(28);
+                            break;
+                    }
+                }
+            }
+
+            return ['keys' => $booking_return, 'status_msg' => 'all OK - '.implode('@#@#',$keys)];
+        }
+        else{
+            return ['keys' => $booking_return, 'status_msg' => 'no keys found : '.$vars['booking_key']];
+        }
+    }
+
+    public function calendar_booking_create_recurring(){
+
+
+        return 'fie';
+    }
+
     public function calendar_booking_confirm_selected(Request $request){
 
         return [];
     }
 
-    private function add_single_calendar_booking($fillable){
+    private function add_single_calendar_booking($fillable, $recurring = false){
         $search_key = Booking::new_search_key();
         $fillable['search_key'] = $search_key;
 
-        $canBook = BookingController::validate_booking($fillable, $fillable['search_key']);
+        $canBook = BookingController::validate_booking($fillable, $fillable['search_key'], $recurring);
         if ($canBook['status']==false){
-            return ['booking_key' => ''];
+            return ['booking_key' => '', 'error_msg' => 'booking date unavailable or outside membership range'];
         }
         else{
             $fillable['payment_type'] = $canBook['payment'];
@@ -1507,7 +1742,7 @@ class BookingController extends Controller
                 $fillable['payment_amount'] = $book_price->session_price;
             }
             else{
-                return ['booking_key' => ''];
+                return ['booking_key' => '', 'error_msg' => 'could not determin book price'];
             }
         }
 
@@ -1700,6 +1935,28 @@ class BookingController extends Controller
 
     }
 
+    public function get_booking_alternative($fillable){
+        // try booking at the same hour/day in different resource room
+        $resource = ShopResource::where('id','=',$fillable['resource_id'])->get()->first();
+        $categoryID = $resource->category_id;
+
+        $resources = ShopResource::where('location_id','=',$fillable['location_id'])->where('category_id','=',$categoryID)->get();
+        if ($resources){
+            foreach ($resources as $var) {
+                $hasBooking = Booking::where('resource_id', '=', $var->id)->
+                    where('date_of_booking','=',$fillable['date_of_booking'])->
+                    where('booking_time_start','=',$fillable['booking_time_start'])->
+                    whereNotIn('status',['canceled','expired'])->
+                    get()->first();
+                if (!$hasBooking){
+                    $fillable['resource_id'] = $var->id;
+                    return $fillable;
+                }
+            }
+        }
+
+        return $fillable;
+    }
     /* Single Booking - quick actions END */
 
     /* Front-End controller functions - Start */
