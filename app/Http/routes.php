@@ -550,4 +550,8 @@ Route::group(['prefix'=>'ajax', 'middleware' => 'web'], function(){
         'uses'  => 'FrontEndUserController@validate_email_for_member'
     ]);
 
+    Route::post('register_new_user_front', [
+        'as'    => 'ajax/register_new_member',
+        'uses'  => 'FrontEndUserController@new_member_registration'
+    ]);
 });

@@ -816,7 +816,31 @@
         }
 
         function register_member(){
+            $.ajax({
+                url: '{{route('ajax/register_new_member')}}',
+                type: "post",
+                cache: false,
+                data: {
+                    'first_name': $('input[name="firstname"]').val(),
+                    'last_name': $('input[name="lastname"]').val(),
+                    'email': $('input[name="email"]').val(),
+                    'phone_number': $('input[name="phone"]').val(),
+                    'password': $('input[name="password"]').val(),
+                },
+                success: function (data) {
+                    if (data.success==1) {
+                        show_notification('New user registration', 'New user registered and selected. You can continue with the booking.', 'lemon', 3500, 0);
+                        $('input[name="booking_made_by"]').val(data.member_id);
+                        $('input[name="booking_made_by"]').trigger('change');
+                        $('#select2-find_customer_name-container').html(data.member_name);
 
+                        $('#register_new_user_popup').modal('hide');
+                    }
+                    else{
+                        show_notification('User registration ERROR', 'Something went wrong with the registration. Try changing the email/phone number or try reloading the page', 'lemon', 3500, 0);
+                    }
+                }
+            });
         }
 
         $('[data-toggle=confirmation]').confirmation({ container: 'body', btnOkClass: 'btn btn-sm blue', btnCancelClass: 'btn purple btn-sm', copyAttributes: 'data-key'});

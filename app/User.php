@@ -15,8 +15,26 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'first_name', 'middle_name', 'last_name', 'username', 'email', 'password',
+        'first_name',
+        'middle_name',
+        'last_name',
+        'username',
+        'email',
+        'password',
     ];
+
+    public static $messages = [
+        'email.unique' => 'Please use an email that is not in the database',
+    ];
+
+    public static $attributeNames = [
+        'email'         => 'Email address',
+        'username'      => 'Username',
+        'first_name'    => 'First Name',
+        'middle_name'   => 'First Name',
+        'last_name'     => 'Last Name',
+        'password'      => 'Password',
+        ];
 
     /**
      * The attributes excluded from the model's JSON form.
@@ -70,38 +88,24 @@ class User extends Authenticatable
             case 'POST':
             {
                 return [
-                    'first_name' => 'required|min:4|max:150',
-                    'last_name' => 'required|min:4|max:150',
-                    'username' => 'required|min:6|max:30|unique:users,username',
-                    'password' => 'required|min:8',
-                    'email' => 'required|email|email|unique:users',
-                    'user_type' => 'required|exists:roles,id',
+                    'first_name'    => 'required|min:4|max:150',
+                    'last_name'     => 'required|min:4|max:150',
+                    'username'      => 'required|min:6|max:30|unique:users,username',
+                    'password'      => 'required|min:8',
+                    'email'         => 'required|email|email|unique:users',
+                    'user_type'     => 'required|exists:roles,id',
                 ];
             }
             case 'PUT':
             case 'PATCH':
             {
                 return [
-                    'first_name' => 'required|min:4|max:150',
+                    'first_name'=> 'required|min:4|max:150',
                     'last_name' => 'required|min:4|max:150',
-                    'username' => 'required|min:6|max:30|unique:users,username',
-                    'password' => 'required|min:8',
-                    'email' => 'required|email|email|unique:users',
+                    'username'  => 'required|min:6|max:30|unique:users,username'.($id ? ",$id,id" : ''),
+                    'password'  => 'required|min:8',
+                    'email'     => 'required|email|email|unique:users,email'.($id ? ",$id,id" : ''),
                     'user_type' => 'required|exists:roles,id',
-
-                    'by_user_id'        => 'required|exists:users,id',
-                    'for_user_id'       => 'required|exists:users,id',
-                    'location_id'       => 'required|exists:shop_locations,id',
-                    'resource_id'       => 'required|exists:shop_resources,id',
-                    'status'            => 'required|in:pending,active,paid,canceled',
-                    'date_of_booking'   => 'required|date',
-                    'booking_time_start'=> 'required|time',
-                    'booking_time_stop' => 'required|time',
-                    'payment_type'      => 'required|in:cash,membership,recurring',
-                    'membership_id'     => '',
-                    'invoice_id'        => '',
-                    'search_key'        => 'required|unique:bookings,search_key'.($id ? ",$id,id" : ''),
-                    'payment_amount'    => 'numeric',
                 ];
             }
             default:break;

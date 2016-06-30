@@ -175,7 +175,7 @@
                                 </form>
                                 <!-- END LOGIN FORM -->
                                 <!-- BEGIN FORGOT PASSWORD FORM -->
-                                <form class="forget-form portlet light " action="index.html" method="post" name="password_reset_form" id="password_reset_form">
+                                <form class="forget-form portlet light " method="post" name="password_reset_form" id="password_reset_form">
                                     <div class="portlet-title">
                                         <div class="caption">
                                             <span class="caption-subject font-green-haze bold uppercase">Forget Password ?</span>
@@ -191,7 +191,7 @@
                                 </form>
                                 <!-- END FORGOT PASSWORD FORM -->
                                 <!-- BEGIN REGISTRATION FORM -->
-                                <form class="register-form portlet light " action="index.html" method="post" name="user_registration_form" id="user_registration_form">
+                                <form class="register-form portlet light " method="post" name="user_registration_form" id="user_registration_form">
                                     <div class="portlet-title">
                                         <div class="caption">
                                             <span class="caption-subject font-green-haze bold uppercase">Sign Up</span>
@@ -217,7 +217,7 @@
                                     <div class="form-group">
                                         <!--ie8, ie9 does not support html5 placeholder, so we just show field title for that-->
                                         <label class="control-label visible-ie8 visible-ie9">Email</label>
-                                        <input class="form-control placeholder-no-fix" type="text" placeholder="Email" name="email" /> </div>
+                                        <input class="form-control placeholder-no-fix" type="text" placeholder="Email" name="reg_email" /> </div>
                                     <div class="form-group">
                                         <label class="control-label visible-ie8 visible-ie9">Password</label>
                                         <input class="form-control placeholder-no-fix" type="password" autocomplete="off" id="register_password" placeholder="Password" name="password" /> </div>
@@ -236,7 +236,7 @@
                                     </div>
                                     <div class="form-actions">
                                         <button type="button" id="register-back-btn" class="btn grey-steel">Back</button>
-                                        <button type="submit" id="register-submit-btn" class="btn red uppercase pull-right">Submit</button>
+                                        <button type="submit" class="btn red uppercase pull-right">Submit</button>
                                     </div>
                                 </form>
                                 <!-- END REGISTRATION FORM -->
@@ -632,87 +632,6 @@
             }
 
             var handleRegister = function() {
-
-                $('.register-form').validate({
-                    errorElement: 'span', //default input error message container
-                    errorClass: 'help-block', // default input error message class
-                    focusInvalid: false, // do not focus the last invalid input
-                    ignore: "",
-                    rules: {
-
-                        firstname: {
-                            required: true
-                        },
-                        lastname: {
-                            required: true
-                        },
-                        phone: {
-                            required: true
-                        },
-                        email: {
-                            required: true,
-                            email: true
-                        },
-
-                        username: {
-                            required: true
-                        },
-                        password: {
-                            required: true
-                        },
-                        rpassword: {
-                            equalTo: "#register_password"
-                        },
-
-                        tnc: {
-                            required: true
-                        }
-                    },
-
-                    messages: { // custom messages for radio buttons and checkboxes
-                        tnc: {
-                            required: "Please accept TNC first."
-                        }
-                    },
-
-                    invalidHandler: function(event, validator) { //display error alert on form submit
-
-                    },
-
-                    highlight: function(element) { // hightlight error inputs
-                        $(element)
-                                .closest('.form-group').addClass('has-error'); // set error class to the control group
-                    },
-
-                    success: function(label) {
-                        label.closest('.form-group').removeClass('has-error');
-                        label.remove();
-                    },
-
-                    errorPlacement: function(error, element) {
-                        if (element.attr("name") == "tnc") { // insert checkbox errors after the container
-                            error.insertAfter($('#register_tnc_error'));
-                        } else if (element.closest('.input-icon').size() === 1) {
-                            error.insertAfter(element.closest('.input-icon'));
-                        } else {
-                            error.insertAfter(element);
-                        }
-                    },
-
-                    submitHandler: function(form) {
-                        form.submit();
-                    }
-                });
-
-                $('.register-form input').keypress(function(e) {
-                    if (e.which == 13) {
-                        if ($('.register-form').validate().form()) {
-                            $('.register-form').submit();
-                        }
-                        return false;
-                    }
-                });
-
                 jQuery('#register-btn').click(function() {
                     jQuery('.login-form').hide();
                     jQuery('.register-form').show();
@@ -881,6 +800,15 @@
                             maxlength: 150,
                             equalTo:"#register_password"
                         },
+                        tnc: {
+                            required: true
+                        }
+                    },
+
+                    messages: { // custom messages for radio buttons and checkboxes
+                        tnc: {
+                            required: "Please accept TNC first."
+                        }
                     },
 
                     invalidHandler: function (event, validator) { //display error alert on form submit
@@ -939,6 +867,32 @@
             // initialize the forms validation part
             FormValidation.init();
         });
+
+        function register_member(){
+            $.ajax({
+                url: '{{route('ajax/register_new_member')}}',
+                type: "post",
+                cache: false,
+                data: {
+                    'first_name': $('input[name="firstname"]').val(),
+                    'last_name': $('input[name="lastname"]').val(),
+                    'email': $('input[name="reg_email"]').val(),
+                    'phone_number': $('input[name="phone"]').val(),
+                    'password': $('input[name="password"]').val(),
+                },
+                success: function (data) {
+                    if (data.success==1) {
+                        show_notification('You are now registered', 'After page reload, use the email/password combination you used for registration and login', 'lemon', 3500, 0);
+                        setTimeout(function(){
+                            window.location.reload(true);
+                        },2500);
+                    }
+                    else{
+                        show_notification('User registration ERROR', 'Something went wrong with the registration. Try changing the email/phone number or try reloading the page', 'lemon', 3500, 0);
+                    }
+                }
+            });
+        }
 
         $(document).on('click', '.is_resource', function(){
             $('.is_resource').removeClass('active');

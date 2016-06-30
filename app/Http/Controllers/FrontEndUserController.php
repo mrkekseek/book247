@@ -1233,48 +1233,52 @@ class FrontEndUserController extends Controller
 
     public function new_member_registration(Request $request){
         $vars = $request->only('first_name', 'last_name', 'email', 'phone_number', 'password');
-        $messages = array(
-            'email.unique' => 'Please use an email that is not in the database',
-        );
-        $attributeNames = array(
-            'email' => 'Email address',
-            'username' => 'Username',
-            'first_name' => 'First Name',
-            'last_name' => 'Last Name',
-            'password'  => 'Password',
-        );
-        $validator = Validator::make($vars, [
-            'first_name' => 'required|min:4|max:150',
-            'last_name' => 'required|min:4|max:150',
-            'username' => 'required|min:6|max:30|unique:users,username',
-            'password' => 'required|min:8',
-            'email' => 'required|email|email|unique:users',
-            'user_type' => 'required|exists:roles,id',
-        ], $messages, $attributeNames);
+        $vars['middle_name'] = '';
+        $vars['username'] = $vars['email'];
+        $vars['user_type'] = Role::where('name','=','front-user')->get()->first()->id;
+
+        $validator = Validator::make($vars, User::rules('POST'), User::$messages, User::$attributeNames);
 
         if ($validator->fails()){
             //return $validator->errors()->all();
             return array(
-                'success' => false,
-                'errors' => $validator->getMessageBag()->toArray()
+                'success'   => false,
+                'errors'    => $validator->getMessageBag()->toArray()
             );
         }
 
         $credentials = $vars;
         $credentials['password'] = bcrypt($credentials['password']);
+
         try {
             $user = User::create($credentials);
-            // attach the roles to the new created user
             $user->attachRole($vars['user_type']);
 
-        } catch (Exception $e) {
-            return Response::json(['error' => 'User already exists.'], Response::HTTP_CONFLICT);
-        }
+            $personalData = [
+                'personal_email'=> $vars['email'],
+                'mobile_number' => $vars['phone_number'],
+                'bank_acc_no'   => 0,
+                'social_sec_no' => 0,
+                'about_info'    => '',
+                'user_id'       => $user->id
+            ];
+            $personalDetails = PersonalDetail::firstOrNew(['user_id'=>$user->id]);
+            $personalData['date_of_birth'] = Carbon::today()->toDateString();
+            $personalDetails->fill($personalData);
+            $personalDetails->save();
 
-        return [
-            'member_id'     => 4,
-            'member_name'   => 'New Name',
-        ];
+            return [
+                'success'       => true,
+                'member_id'     => $user->id,
+                'member_name'   => $user->first_name.' '.$user->last_name,
+            ];
+        }
+        catch (Exception $e) {
+            return [
+                'success'   => false,
+                'error'     => 'User already exists.'
+            ];
+        }
     }
 
     public function validate_phone_for_member(Request $request){
