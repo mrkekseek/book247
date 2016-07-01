@@ -340,6 +340,7 @@
                                         </div>
 
                                         <input type="hidden" name="booking_made_by" />
+                                        <input type="hidden" name="booking_made_for" value="0" />
                                     </form>
                                     <!-- Stop : Search for player -->
 
@@ -1087,6 +1088,9 @@
             var resources = new Array();
             var time_intervals = new Array();
 
+            $('input[name="booking_made_by"]').removeAttr('value');
+            $('input[name="booking_made_for"]').val('0');
+
             $('.prebook').each(function(key, value){
                 resources.push($(this).find('span').attr('data-resource'));
                 time_intervals.push($(this).find('span').attr('data-time'));
@@ -1121,36 +1125,35 @@
 
         $('#booking_modal_end_time').on('hidden.bs.modal', function () {
 
-            if ($('input[name="booking_made_by"]').val()!=''){
-                show_notification('Booking Operation Was Broken', 'You closed the popup window before the booking was finished.', 'tangerine', 3500, 0);
+            if ($('input[name="booking_made_for"]').val()==1){
+                console.log('1');
+            }
+            else if ($('input[name="booking_made_by"]').val()!=''){
+                console.log('2');
+                var all_bookings = select_all_booking_keys();
 
-                var all_bookings = '';
-                $('.prebook').each(function(index, elem) {
-                    var search_key = $(this).find('span').attr('booking-key');
-                    if (search_key.length > 4) {
-                        all_bookings += search_key + ',';
-                    }
-                });
-                cancel_booking_keys(all_bookings);
-
-                clean_booking_popup();
+                if ($('input[name="booking_made_for"]').val()==0) {
+                    cancel_booking_keys(all_bookings);
+                    clean_booking_popup();
+                    show_notification('Booking Operation Was Broken', 'You closed the popup window before the booking was finished.', 'tangerine', 3500, 0);
+                }
             }
             else if ($('.prebook').length > 0){
-                var all_bookings = '';
-                $('.prebook').each(function(key, val){
-                    var search_key = $(this).find('span').first().attr('booking-key');
+                console.log('3');
+                var all_bookings = select_all_booking_keys();
 
-                    if (search_key.length > 4) {
-                        all_bookings += search_key + ',';
+                if ($('input[name="booking_made_for"]').val()==0) {
+                    $('.prebook').each(function(key, val){
                         $(this).find('span').first().removeAttr('booking-key');
                         $(this).removeClass();
                         $(this).addClass('is_free_time');
-                    }
-                });
-                cancel_booking_keys(all_bookings);
-                $('.add_custom_bookings_btn').hide();
+                    });
 
-                show_notification('Booking Operation Was Broken', 'You closed the popup window before the booking was finished.', 'tangerine', 3500, 0);
+                    cancel_booking_keys(all_bookings);
+                    show_notification('Booking Operation Was Broken', 'You closed the popup window before the booking was finished.', 'tangerine', 3500, 0);
+                }
+
+                $('.add_custom_bookings_btn').hide();
             }
         });
 
@@ -1182,6 +1185,11 @@
         }
 
         function cancel_booking_keys(all_bookings){
+            console.log(all_bookings);
+            if (all_bookings==-1){
+                all_bookings = select_all_booking_keys();
+            }
+
             $.ajax({
                 url: '{{route('ajax/cancel_bookings')}}',
                 type: "post",
@@ -1195,6 +1203,22 @@
                     $('input[name="booking_made_by"]').val('');
                 }
             });
+        }
+
+        function select_all_booking_keys(){
+            var all_keys = '';
+            $('.prebook').each(function(index, elem) {
+                var search_key = $(this).find('span').attr('booking-key');
+
+                if (typeof search_key === "undefined"){
+
+                }
+                else if (search_key.length > 4) {
+                    all_keys += search_key + ',';
+                }
+            });
+
+            return all_keys;
         }
 
         function clean_booking_popup(){
@@ -1245,14 +1269,17 @@
                     'selected_bookings': all_bookings,
                 },
                 success: function(data){
+                    $('input[name="booking_made_for"]').val(1);
                     $('#booking_modal_end_time').modal('hide');
-                    show_notification('Booking Confirmed', 'Your booking is now confirmed. You can see it in the calendar view.', 'lime', 3500, 0);
-                    clean_booking_popup();
+
+                    show_notification('Booking Confirmed', 'Your booking is now confirmed. You can see it in the calendar view.', 'lime', 2000, 0);
+
+                    //clean_booking_popup();
                     $('input[name="booking_made_by"]').val('');
 
                     setTimeout(function(){
                         location.reload();
-                    },1000);
+                    },1500);
                 }
             });
         }
@@ -1656,8 +1683,6 @@
             var bookings = '';
 
             $("td.prebook span[booking-key]").each(function(key, val){
-                console.log(key);
-                console.log(val);
                 bookings += ' <input type="hidden" value="' + $(this).attr('booking-key') + '" name="time_book_key"> ';
             });
             box_container.append(bookings);

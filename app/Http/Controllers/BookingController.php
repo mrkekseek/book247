@@ -1543,8 +1543,8 @@ class BookingController extends Controller
                     $price_per_booking = $booking->payment_amount;
 
                     $booking_return[] = ['booking_key' => $booking->search_key,
-                        'booking_date'  => $booking->date_of_booking,
-                        'booking_time'  => $booking->booking_time_start,
+                        'booking_date'  => Carbon::createFromFormat('Y-m-d',$booking->date_of_booking)->format('d-m-Y'),
+                        'booking_time'  => Carbon::createFromFormat('G:i:s',$booking->booking_time_start)->format('G:i'),
                         'booking_resource'  => $booking->resource_id,
                         'is_alternative'    => -1,
                     ];
