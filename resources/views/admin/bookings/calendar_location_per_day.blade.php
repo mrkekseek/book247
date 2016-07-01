@@ -829,7 +829,7 @@
                 },
                 success: function (data) {
                     if (data.success==1) {
-                        show_notification('New user registration', 'New user registered and selected. You can continue with the booking.', 'lemon', 3500, 0);
+                        show_notification('New user registration', 'New user registered and selected. You can continue with the booking.', 'lime', 3500, 0);
                         $('input[name="booking_made_by"]').val(data.member_id);
                         $('input[name="booking_made_by"]').trigger('change');
                         $('#select2-find_customer_name-container').html(data.member_name);
@@ -837,7 +837,7 @@
                         $('#register_new_user_popup').modal('hide');
                     }
                     else{
-                        show_notification('User registration ERROR', 'Something went wrong with the registration. Try changing the email/phone number or try reloading the page', 'lemon', 3500, 0);
+                        show_notification('User registration ERROR', 'Something went wrong with the registration. Try changing the email/phone number or try reloading the page', 'ruby', 3500, 0);
                     }
                 }
             });
@@ -868,7 +868,7 @@
                     'search_key': booking_key
                 },
                 success: function (data) {
-                    show_notification('Booking Canceled', 'The selected booking was canceled.', 'lemon', 3500, 0);
+                    show_notification('Booking Show Confirmation', 'The player is marked as "show for the booking".', 'lime', 3500, 0);
                     //$('#small').find('.book_details_cancel_place').html('');
                     $('#cancel_confirm_box').modal('hide');
                     $('#changeIt').modal('hide');
@@ -908,7 +908,7 @@
                     'method': payment_type
                 },
                 success: function (data) {
-                    show_notification('Booking Canceled', 'The selected booking was canceled.', 'lemon', 3500, 0);
+                    show_notification('Booking Paid', 'Selected booking marked as paid', 'lime', 3500, 0);
                     //$('#small').find('.book_details_cancel_place').html('');
                     $('#cancel_confirm_box').modal('hide');
                     $('#changeIt').modal('hide');
@@ -1122,7 +1122,7 @@
         $('#booking_modal_end_time').on('hidden.bs.modal', function () {
 
             if ($('input[name="booking_made_by"]').val()!=''){
-                show_notification('Booking Operation Was Broken', 'You closed the popup window before the booking was finished. You can always try again.', 'lemon', 3500, 0);
+                show_notification('Booking Operation Was Broken', 'You closed the popup window before the booking was finished.', 'tangerine', 3500, 0);
 
                 var all_bookings = '';
                 $('.prebook').each(function(index, elem) {
@@ -1150,7 +1150,7 @@
                 cancel_booking_keys(all_bookings);
                 $('.add_custom_bookings_btn').hide();
 
-                show_notification('Booking Operation Was Broken', 'You closed the popup window before the booking was finished. You can always try again.', 'lemon', 3500, 0);
+                show_notification('Booking Operation Was Broken', 'You closed the popup window before the booking was finished.', 'tangerine', 3500, 0);
             }
         });
 
@@ -1191,7 +1191,7 @@
                 },
                 success: function(data){
                     $('#booking_modal_end_time').modal('hide');
-                    show_notification('Booking Canceled', 'The pending bookings were canceled. You can do another booking at any time.', 'lemon', 3500, 0);
+                    show_notification('Booking Canceled', 'The pending bookings were canceled.', 'lemon', 3500, 0);
                     $('input[name="booking_made_by"]').val('');
                 }
             });
@@ -1246,7 +1246,7 @@
                 },
                 success: function(data){
                     $('#booking_modal_end_time').modal('hide');
-                    show_notification('Booking Confirmed', 'Your booking is now confirmed. You can see it in your list of bookings.', 'lemon', 3500, 0);
+                    show_notification('Booking Confirmed', 'Your booking is now confirmed. You can see it in the calendar view.', 'lime', 3500, 0);
                     clean_booking_popup();
                     $('input[name="booking_made_by"]').val('');
 
@@ -1268,6 +1268,10 @@
                             $(this).parent().find('.add_custom_bookings_btn').css('display','block');
                         }
 
+                        if ($(this).hasClass(sel_classes)==false && $(".prebook").length > 20){
+                            return false;
+                        }
+
                         isMouseDown = true;
                         $(this).toggleClass(sel_classes);
                         isHighlighted = $(this).hasClass(sel_classes);
@@ -1280,6 +1284,10 @@
                     })
                     .mouseover(function () {
                         if (isMouseDown) {
+                            if ($(this).hasClass(sel_classes)==false && $(".prebook").length > 20){
+                                return false;
+                            }
+
                             $(this).toggleClass(sel_classes, isHighlighted);
 
                             if ($(".prebook").length==0){
