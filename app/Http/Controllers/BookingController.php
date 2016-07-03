@@ -23,6 +23,7 @@ use Carbon\Carbon;
 use DateInterval;
 use DatePeriod;
 use DB;
+use Regulus\ActivityLog\Models\Activity;
 
 class BookingController extends Controller
 {
@@ -122,8 +123,27 @@ class BookingController extends Controller
         try {
             if ($vars['book_key']==""){
                 $the_booking = Booking::create($fillable);
+
+                Activity::log([
+                    'contentId'     => $user->id,
+                    'contentType'   => 'bookings',
+                    'action'        => 'New Booking',
+                    'description'   => 'New booking created : '.$the_booking->id,
+                    'details'       => 'User Email : '.$user->email,
+                    'updated'       => false,
+                ]);
+
                 if ($the_booking->payment_type=='cash'){
-                    $the_booking->add_invoice();
+                    $the_invoice = $the_booking->add_invoice();
+
+                    Activity::log([
+                        'contentId'     => $user->id,
+                        'contentType'   => 'booking_invoices',
+                        'action'        => 'New Booking Invoice',
+                        'description'   => 'New booking invoice created with id : '.$the_invoice->id,
+                        'details'       => 'Booking ID : '.$the_booking->id,
+                        'updated'       => false,
+                    ]);
                 }
             }
             else{
@@ -133,19 +153,55 @@ class BookingController extends Controller
                     $the_booking->fill($fillable);
                     $the_booking->save();
 
+                    Activity::log([
+                        'contentId'     => $user->id,
+                        'contentType'   => 'bookings',
+                        'action'        => 'New Booking',
+                        'description'   => 'New booking created : '.$the_booking->id,
+                        'details'       => 'User Email : '.$user->email,
+                        'updated'       => false,
+                    ]);
+
                     if ($the_booking->payment_type=='cash' && $the_booking->invoice_id==1){
                         // we have no invoice
-                        $the_booking->add_invoice();
+                        $the_invoice = $the_booking->add_invoice();
+
+                        Activity::log([
+                            'contentId'     => $user->id,
+                            'contentType'   => 'booking_invoices',
+                            'action'        => 'New Booking Invoice',
+                            'description'   => 'New booking invoice created with id : '.$the_invoice->id,
+                            'details'       => 'Booking ID : '.$the_booking->id,
+                            'updated'       => false,
+                        ]);
                     }
                     elseif ($the_booking->payment_type=='membership' && $the_booking->invoice_id!=1){
                         $the_invoice = BookingInvoice::find($the_booking->invoice_id);
                         if ($the_invoice){
                             $the_invoice->status = 'cancelled';
                             $the_invoice->save();
+
+                            Activity::log([
+                                'contentId'     => $user->id,
+                                'contentType'   => 'booking_invoices',
+                                'action'        => 'Cancel Booking Invoice',
+                                'description'   => 'Booking invoice cancelled with id : '.$the_invoice->id,
+                                'details'       => 'Booking ID : '.$the_booking->id,
+                                'updated'       => true,
+                            ]);
                         }
 
                         $the_booking->invoice_id = 1;
                         $the_booking->save();
+
+                        Activity::log([
+                            'contentId'     => $user->id,
+                            'contentType'   => 'bookings',
+                            'action'        => 'Update Booking',
+                            'description'   => 'Remove invoice and link no invoice to the selected booking',
+                            'details'       => 'User Email : '.$user->email,
+                            'updated'       => true,
+                        ]);
                     }
                 }
                 else{
@@ -233,6 +289,15 @@ class BookingController extends Controller
             if (in_array($booking->status,['active','pending'])){
                 $booking->status = 'canceled';
                 $booking->save();
+
+                Activity::log([
+                    'contentId'     => $user->id,
+                    'contentType'   => 'bookings',
+                    'action'        => 'Cancel Booking',
+                    'description'   => 'Booking cancelled with the ID : '.$booking->id,
+                    'details'       => 'User Email : '.$user->email,
+                    'updated'       => true,
+                ]);
             }
             //Booking::whereIn('status',['active', 'pending'])->where('search_key','=',$vars['search_key'])->update(['status'=>'canceled']);
             return ['success' => 'true', 'message' => 'All is good.'];
@@ -256,6 +321,16 @@ class BookingController extends Controller
         if ($booking){
             if (FrontEndUserController::are_friends($vars['player'], $booking->by_user_id) || $booking->by_user_id==$vars['player']) {
                 Booking::whereIn('status', ['active', 'pending'])->where('search_key', '=', $vars['search_key'])->update(['for_user_id' => $vars['player']]);
+
+                Activity::log([
+                    'contentId'     => $user->id,
+                    'contentType'   => 'bookings',
+                    'action'        => 'Change Booking Player',
+                    'description'   => 'booking player changed to : '.$booking->for_user_id,
+                    'details'       => 'User Email : '.$user->email,
+                    'updated'       => true,
+                ]);
+
                 return ['success' => 'true', 'message' => 'All is good.'];
             }
             else{
@@ -533,9 +608,27 @@ class BookingController extends Controller
                 $return_key[] = $key;
                 if ($is_staff) {
                     Booking::where('status', '=', 'pending')->where('search_key', '=', $key)->update(['status' => 'active']);
+
+                    Activity::log([
+                        'contentId'     => $user->id,
+                        'contentType'   => 'bookings',
+                        'action'        => 'Confirm Booking - by staff',
+                        'description'   => 'Booking confirmed for booking key : '.$key,
+                        'details'       => 'User Email : '.$user->email,
+                        'updated'       => true,
+                    ]);
                 }
                 else{
                     Booking::where('status', '=', 'pending')->where('by_user_id', '=', $user->id)->where('search_key', '=', $key)->update(['status' => 'active']);
+
+                    Activity::log([
+                        'contentId'     => $user->id,
+                        'contentType'   => 'bookings',
+                        'action'        => 'Confirm Booking - by member',
+                        'description'   => 'Booking confirmed for booking key : '.$key,
+                        'details'       => 'User Email : '.$user->email,
+                        'updated'       => true,
+                    ]);
                 }
             }
         }
@@ -568,9 +661,27 @@ class BookingController extends Controller
                 if ($key==''){ continue; }
                 if ($is_staff){
                     Booking::where('status','=','pending')->where('search_key','=',$key)->update(['status'=>'canceled']);
+
+                    Activity::log([
+                        'contentId'     => $user->id,
+                        'contentType'   => 'bookings',
+                        'action'        => 'Confirm Booking - by staff',
+                        'description'   => 'Booking confirmed for booking key : '.$key,
+                        'details'       => 'User Email : '.$user->email,
+                        'updated'       => true,
+                    ]);
                 }
                 else{
                     Booking::where('status','=','pending')->where('by_user_id','=',$user->id)->where('search_key','=',$key)->update(['status'=>'canceled']);
+
+                    Activity::log([
+                        'contentId'     => $user->id,
+                        'contentType'   => 'bookings',
+                        'action'        => 'Confirm Booking - by member',
+                        'description'   => 'Booking confirmed for booking key : '.$key,
+                        'details'       => 'User Email : '.$user->email,
+                        'updated'       => true,
+                    ]);
                 }
             }
 
@@ -756,11 +867,9 @@ class BookingController extends Controller
                 $fillable_visible['note_body'] = $message['body'];
                 $fillable_visible['note_title'] = $message['title'];
             }
-            $a = $booking->add_note($fillable_visible);
-            //xdebug_var_dump($a); exit;
 
+            $a = $booking->add_note($fillable_visible);
             if (strlen($vars['private_message'])>5) {
-                //$system_user = User::where('username','=','sysagent')->get()->first();
                 $fillable_private = [
                     'by_user_id' => $user->id,
                     'note_title' => 'Booking status - not shown',
@@ -769,19 +878,44 @@ class BookingController extends Controller
                     'privacy' => 'employees',
                     'status' => 'unread'
                 ];
-
                 $booking->add_note($fillable_private);
+
+                Activity::log([
+                    'contentId'     => $user->id,
+                    'contentType'   => 'booking_notes',
+                    'action'        => 'Add note to Booking',
+                    'description'   => 'New booking note : '.$vars['private_message'],
+                    'details'       => 'User Email : '.$user->email,
+                    'updated'       => false,
+                ]);
             }
 
             if ($vars['add_invoice']==1){
                 $booking_invoice = $booking->add_invoice();
                 if ($booking_invoice){
-                    //xdebug_var_dump($booking_invoice);
                     $booking->invoice_id = $booking_invoice->id;
+
+                    Activity::log([
+                        'contentId'     => $user->id,
+                        'contentType'   => 'booking_invoices',
+                        'action'        => 'Add invoice to booking',
+                        'description'   => 'New booking invoice created : booking ID '.$booking_invoice->id,
+                        'details'       => 'User Email : '.$user->email,
+                        'updated'       => false,
+                    ]);
                 }
             }
             $booking->status = 'noshow';
             $booking->save();
+
+            Activity::log([
+                'contentId'     => $user->id,
+                'contentType'   => 'bookings',
+                'action'        => 'Update Booking',
+                'description'   => 'No show status change for booking ID : '.$booking->id,
+                'details'       => 'User Email : '.$user->email,
+                'updated'       => false,
+            ]);
 
             return ['success' => 'true', 'message' => 'All is good.'];
         }
@@ -1407,6 +1541,15 @@ class BookingController extends Controller
         $booking->for_user_id = $for_user->id;
         $booking->save();
 
+        Activity::log([
+            'contentId'     => $user->id,
+            'contentType'   => 'bookings',
+            'action'        => 'Save Selected Booking',
+            'description'   => 'Set the player and the member that created the booking',
+            'details'       => 'User Email : '.$user->email,
+            'updated'       => true,
+        ]);
+
         return [
             'booking_key'   => $booking->search_key,
             'booking_type'  => $booking->payment_type,
@@ -1493,6 +1636,15 @@ class BookingController extends Controller
                 $booking->for_user_id = $for_user->id;
                 $booking->save();
 
+                Activity::log([
+                    'contentId'     => $user->id,
+                    'contentType'   => 'bookings',
+                    'action'        => 'Save Booking',
+                    'description'   => 'Calendar bookings play alone save',
+                    'details'       => 'User Email : '.$user->email,
+                    'updated'       => true,
+                ]);
+
                 $return_bookings[] = [
                     'booking_key'   => $booking->search_key,
                     'booking_type'  => $booking->payment_type,
@@ -1576,6 +1728,14 @@ class BookingController extends Controller
                 $booking->by_user_id = $by_user->id;
                 $booking->for_user_id = $for_user->id;
                 $booking->save();
+                Activity::log([
+                    'contentId'     => $user->id,
+                    'contentType'   => 'bookings',
+                    'action'        => 'Save Booking',
+                    'description'   => 'save player booking recurring membership',
+                    'details'       => 'User Email : '.$user->email,
+                    'updated'       => true,
+                ]);
 
                 $theInvoice = BookingInvoice::where('id','=',$booking->invoice_id)->get()->first();
                 if (!$theInvoice){
@@ -1669,6 +1829,15 @@ class BookingController extends Controller
                                 'total_price'       => $total_price
                             ];
                             $theInvoice->add_invoice_item($invoice_item_fill);
+
+                            Activity::log([
+                                'contentId'     => $user->id,
+                                'contentType'   => 'booking_invoices',
+                                'action'        => 'Booking Invoice Update',
+                                'description'   => 'New invoice item added to booking invoice',
+                                'details'       => 'User Email : '.$user->email,
+                                'updated'       => true,
+                            ]);
                         }
 
                         $booking_return[] = ['booking_key' => $msg['booking_key'],
@@ -1727,6 +1896,13 @@ class BookingController extends Controller
     }
 
     private function add_single_calendar_booking($fillable, $recurring = false){
+        if (!Auth::check()) {
+            return [];
+        }
+        else{
+            $user = Auth::user();
+        }
+
         $search_key = Booking::new_search_key();
         $fillable['search_key'] = $search_key;
 
@@ -1756,8 +1932,27 @@ class BookingController extends Controller
 
         try {
             $the_booking = Booking::create($fillable);
+
+            Activity::log([
+                'contentId'     => $user->id,
+                'contentType'   => 'bookings',
+                'action'        => 'New Booking',
+                'description'   => 'New booking created',
+                'details'       => 'User Email : '.$user->email,
+                'updated'       => false,
+            ]);
+
             if ($the_booking->payment_type=='cash'){
                 $the_booking->add_invoice();
+
+                Activity::log([
+                    'contentId'     => $user->id,
+                    'contentType'   => 'booking_invoices',
+                    'action'        => 'New Booking Invoice',
+                    'description'   => 'New booking invoice created for booking ID : '.$the_booking->id,
+                    'details'       => 'User Email : '.$user->email,
+                    'updated'       => false,
+                ]);
             }
 
             return [
@@ -1869,6 +2064,16 @@ class BookingController extends Controller
             if ($message['success']==true){
                 $invoice->status = $message['transaction_status'];
                 $invoice->save();
+
+                Activity::log([
+                    'contentId'     => $user->id,
+                    'contentType'   => 'booking_invoices',
+                    'action'        => 'Invoice transaction update',
+                    'description'   => 'New transaction recorded for the invoice',
+                    'details'       => 'User Email : '.$user->email,
+                    'updated'       => true,
+                ]);
+
                 return [
                     'success' => true,
                     'message' => 'Transaction successfully registered.'];
