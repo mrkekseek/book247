@@ -25,6 +25,7 @@ use Storage;
 use Carbon\Carbon;
 use Validator;
 use DB;
+use Snowfire\Beautymail\Beautymail;
 
 class FrontEndUserController extends Controller
 {
@@ -1248,6 +1249,7 @@ class FrontEndUserController extends Controller
         }
 
         $credentials = $vars;
+        $text_psw    = $vars['password'];
         $credentials['password'] = bcrypt($credentials['password']);
 
         try {
@@ -1266,6 +1268,16 @@ class FrontEndUserController extends Controller
             $personalData['date_of_birth'] = Carbon::today()->toDateString();
             $personalDetails->fill($personalData);
             $personalDetails->save();
+
+            $beautymail = app()->make(Beautymail::class);
+            $beautymail->send('emails.new_user_registration', ['user'=>$user, 'personal_details'=>$personalDetails, 'raw_password' => $text_psw], function($message) use ($user)
+            {
+                $message
+                    ->from('bogdan@bestintest.eu')
+                    //->to($user->email, '')
+                    ->to('stefan.bogdan@ymail.com', $user->first_name.' '.$user->middle_name.' '.$user->last_name)
+                    ->subject('Booking System - You are registered!');
+            });
 
             return [
                 'success'       => true,

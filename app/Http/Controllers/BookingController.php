@@ -49,6 +49,7 @@ class BookingController extends Controller
 
     /**
      * Store a newly created resource in storage.
+     * Used on front end for user bookings on homepage
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
@@ -268,6 +269,9 @@ class BookingController extends Controller
         //xdebug_var_dump($request);
     }
 
+    /*
+     * Cancel an active or pending booking
+     */
     public function cancel_booking(Request $request){
         if (!Auth::check()) {
             //return redirect()->intended(route('admin/login'));
@@ -287,8 +291,13 @@ class BookingController extends Controller
 
         if ($booking){
             if (in_array($booking->status,['active','pending'])){
+                $old_status = $booking->status;
                 $booking->status = 'canceled';
                 $booking->save();
+
+                if ($old_status=='active'){
+                    // send_email_to_user
+                }
 
                 Activity::log([
                     'contentId'     => $user->id,
@@ -307,6 +316,11 @@ class BookingController extends Controller
         }
     }
 
+    /**
+     * Change the player for a selected booking based on search_key
+     * @param Request $request - [search_key,player]
+     * @return array
+     */
     public function change_booking_player(Request $request){
         if (!Auth::check()) {
             //return redirect()->intended(route('admin/login'));
@@ -342,6 +356,13 @@ class BookingController extends Controller
         }
     }
 
+    /**
+     * Check if the booking fillable can be transformed into a booking
+     * @param $fillable
+     * @param string $search_key
+     * @param bool $recurring
+     * @return array
+     */
     private function validate_booking($fillable, $search_key='', $recurring = false){
         $message = ['status'=>true, 'payment'=>'membership'];
         if (Auth::check()) {
@@ -394,6 +415,12 @@ class BookingController extends Controller
         return $message;
     }
 
+    /**
+     * Get user bookings with selected statuses
+     * @param $userID
+     * @param array $status
+     * @return array
+     */
     public static function get_user_bookings($userID, $status=['pending','active','paid','unpaid','old','canceled']){
         $bookings = [];
 
@@ -407,6 +434,11 @@ class BookingController extends Controller
         return $bookings;
     }
 
+    /**
+     * Check for expired pending bookings
+     * @param int $time
+     * @param int $admin_time
+     */
     public static function check_for_expired_pending_bookings($time = 60, $admin_time = 300){
         $now_time = Carbon::now();
         $open_bookings = Booking::where('status','=','pending')->get();
@@ -428,8 +460,9 @@ class BookingController extends Controller
         }
     }
 
-    /*
-     *
+    /**
+     * Checked for passed bookings that are still open/active
+     * @return array
      */
     public static function check_for_passed_bookings(){
         /* Need to add resource and different time intervals or time period for each booking based on resource */
@@ -517,6 +550,11 @@ class BookingController extends Controller
         return ['success'=>true];
     }
 
+    /**
+     * Get booking summary for the selected search_key
+     * @param Request $request
+     * @return array
+     */
     public function bookings_summary(Request $request){
         if (!Auth::check()) {
             //return redirect()->intended(route('admin/login'));
@@ -582,6 +620,11 @@ class BookingController extends Controller
         }
     }
 
+    /**
+     * Confirm the bookings sent using selected_bookings variable
+     * @param Request $request
+     * @return array
+     */
     public function confirm_bookings(Request $request){
         if (!Auth::check()) {
             //return redirect()->intended(route('admin/login'));
@@ -603,6 +646,8 @@ class BookingController extends Controller
         $return_key = [];
 
         if (sizeof($keys)>0){
+            $email_confirm = [];
+
             foreach($keys as $key){
                 if ( strlen($key)<5 ){ continue; }
                 $return_key[] = $key;
@@ -630,6 +675,8 @@ class BookingController extends Controller
                         'updated'       => true,
                     ]);
                 }
+
+                // send_email_to_user
             }
         }
         else{
@@ -639,6 +686,11 @@ class BookingController extends Controller
         return $return_key;
     }
 
+    /**
+     * Cancel pending bookings, using selected_bookings variable sent via POST
+     * @param Request $request
+     * @return array
+     */
     public function cancel_bookings(Request $request){
         if (!Auth::check()) {
             //return redirect()->intended(route('admin/login'));
@@ -692,6 +744,11 @@ class BookingController extends Controller
         }
     }
 
+    /**
+     * Get all bookings for specific user with status different than expired
+     * @param int $userID
+     * @return array
+     */
     public function get_user_booking_archive($userID = -1){
         if (Auth::check()) {
             $user = Auth::user();
@@ -756,6 +813,12 @@ class BookingController extends Controller
         return $bookings;
     }
 
+    /**
+     * Check if an active booking can be canceled
+     * @param $id
+     * @param int $hours
+     * @return bool
+     */
     public function can_cancel_booking($id, $hours = 8){
         $booking = Booking::find($id); //exit;
         //xdebug_var_dump($booking);
@@ -775,65 +838,11 @@ class BookingController extends Controller
         }
     }
 
-// This was moved to booking controller
-/*
-    public function add_invoice_to_booking($fillable, $booking){
-        if (!Auth::check()) {
-            //return redirect()->intended(route('admin/login'));
-            return ['error' => 'Authentication Error'];
-        }
-        else{
-            $user = Auth::user();
-        }
-
-        $vars = $request->only('search_key', 'status');
-        $booking = Booking::where('search_key','=',$vars['search_key'])->get()->first();
-        if ($booking){
-            $booking->add_invoice();
-
-            $booking->status = $vars['status'];
-            $booking->save();
-
-            //Booking::where('search_key','=',$vars['search_key'])->update(['status'=>$vars['status']]);
-            return ['success' => 'true', 'message' => 'All is good.'];
-        }
-        else{
-            return ['error' => 'No bookings found to confirm. Please make the booking process again. Remember you have 60 seconds to complete the booking before it expires.'];
-        }
-
-        return 'bine';
-    }
-
-    public function add_note_to_booking($fillable, $booking){
-        if (!Auth::check()) {
-            //return redirect()->intended(route('admin/login'));
-            return ['error' => 'Authentication Error'];
-        }
-        else{
-            $user = Auth::user();
-        }
-
-        $vars = $request->only('search_key', 'default_player_messages', 'custom_player_message', 'private_player_message');
-        $booking = Booking::where('search_key','=',$vars['search_key'])->get()->first();
-        if ($booking){
-            $fillable = [
-                'by_user_id' => $user->id,
-                'note_title' => '',
-                'note_body'  => '',
-                'note_type'  => '',
-                'privacy'    => '',
-                'status'     => ''
-            ];
-            $booking->add_note($fillable);
-
-            return ['success' => 'true', 'message' => 'All is good.'];
-        }
-        else{
-            return ['error' => 'No bookings found to confirm. Please make the booking process again. Remember you have 60 seconds to complete the booking before it expires.'];
-        }
-    }
-*/
-
+    /**
+     * Change status of booking to no_show and send emails if requested
+     * @param Request $request
+     * @return array
+     */
     public function not_show_status_change(Request $request){
         if (!Auth::check()) {
             //return redirect()->intended(route('admin/login'));
@@ -1478,6 +1487,12 @@ class BookingController extends Controller
         return $booking_return;
     }
 
+    /**
+     * Save the pre-kept booking with the player and member details;
+     * Booking was kept on the employee name until the player/member were selected
+     * @param Request $request
+     * @return array
+     */
     public function calendar_booking_save_selected(Request $request){
         if (!Auth::check()) {
             return [];
@@ -1556,6 +1571,11 @@ class BookingController extends Controller
             'booking_price' => $booking->payment_amount];
     }
 
+    /**
+     * Save all the pre-kept bookings with the player being the member; play alone option
+     * @param Request $request
+     * @return array
+     */
     public function calendar_booking_save_play_alone(Request $request){
         if (!Auth::check()) {
             return [];
@@ -1662,6 +1682,11 @@ class BookingController extends Controller
         return [ 'keys' => $return_bookings];
     }
 
+    /**
+     * Create a pending recurring calendar booking for each selected time period
+     * @param Request $request
+     * @return array
+     */
     public function calendar_booking_save_recurring(Request $request){
         if (!Auth::check()) {
             return [];
@@ -1884,17 +1909,12 @@ class BookingController extends Controller
         }
     }
 
-    public function calendar_booking_create_recurring(){
-
-
-        return 'fie';
-    }
-
-    public function calendar_booking_confirm_selected(Request $request){
-
-        return [];
-    }
-
+    /**
+     * Create a single calendar booking using fillable
+     * @param $fillable
+     * @param bool $recurring
+     * @return array
+     */
     private function add_single_calendar_booking($fillable, $recurring = false){
         if (!Auth::check()) {
             return [];
@@ -2091,6 +2111,11 @@ class BookingController extends Controller
         }
     }
 
+    /**
+     * Get player statistics for booking more options popup window
+     * @param Request $request
+     * @return array
+     */
     public function get_simple_player_statistics(Request $request){
         if (!Auth::check()) {
             return [
@@ -2127,6 +2152,11 @@ class BookingController extends Controller
         return $stats;
     }
 
+    /**
+     * Ongoing work
+     * @param $playerID
+     * @return array
+     */
     public function get_player_statistics($playerID){
         if (!Auth::check()) {
             return [
@@ -2140,6 +2170,11 @@ class BookingController extends Controller
 
     }
 
+    /**
+     * Used to get alternative bookings for recurring memberships
+     * @param $fillable
+     * @return mixed
+     */
     public function get_booking_alternative($fillable){
         // try booking at the same hour/day in different resource room
         $resource = ShopResource::where('id','=',$fillable['resource_id'])->get()->first();
