@@ -14,9 +14,9 @@
     <tr>
         <td class="paragraph">
             @if (!isset($booking['bookingDate']))
-                The following bookings were created on your name :
+                The following bookings were canceled :
             @else
-                Your booking for {{$booking['bookingDate']}} - {{$booking['timeStart']}} to {{$booking['timeStop']}} was created.
+                Your booking for {{$booking['bookingDate']}} - {{$booking['timeStart']}} to {{$booking['timeStop']}} was canceled.
                 Below you can check the full booking summary :
             @endif
         </td>
@@ -44,7 +44,7 @@
     </tr>
     <tr>
         <td class="paragraph">
-            You can view this information in your account by accessing your <strong>Bookings > Booking Archive</strong> menu.
+        You can view this information in your account by accessing your <strong>Bookings > Booking Archive</strong> menu.
         </td>
     </tr>
     <tr>

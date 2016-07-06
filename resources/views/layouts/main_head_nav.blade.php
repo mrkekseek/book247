@@ -364,20 +364,26 @@
             <ul class="nav navbar-nav">
                 @if (Auth::check())
                 <li class="menu-dropdown classic-menu-dropdown active">
-                    <a href="javascript:;"> Dashboard
+                    <a href="javascript:;"> Squash Fitness
                         <span class="arrow"></span>
                     </a>
                     <ul class="dropdown-menu pull-left">
                         <li class=" ">
-                            <a href="index.html" class="nav-link  ">
-                                <i class="icon-bar-chart"></i> Default Dashboard
+                            <a href="{{ route('homepage') }}" class="nav-link  ">
+                                <i class="icon-bar-chart"></i> Booking Homepage
+                                <span class="badge badge-success">1</span>
+                            </a>
+                        </li>
+                        <li class=" ">
+                            <a href="{{ route('front_calendar_booking') }}" class="nav-link  ">
+                                <i class="icon-bar-chart"></i> Booking Calendar
                                 <span class="badge badge-success">1</span>
                             </a>
                         </li>
                     </ul>
                 </li>
                 <li class="menu-dropdown mega-menu-dropdown  ">
-                    <a href="javascript:;"> Bookings
+                    <a href="javascript:;"> My Bookings
                         <span class="arrow"></span>
                     </a>
                     <ul class="dropdown-menu" style="min-width: 310px">
@@ -390,7 +396,7 @@
                                                 <a href="{{ route('front/bookings_archive') }}"> Booking Archive </a>
                                             </li>
                                             <li>
-                                                <a href="ui_general.html"> General Components </a>
+                                                <a href="#"> Active Membership [not finished] </a>
                                             </li>
                                         </ul>
                                     </div>
@@ -405,10 +411,10 @@
                     </a>
                     <ul class="dropdown-menu pull-left">
                         <li class=" ">
-                            <a href="layout_mega_menu_light.html" class="nav-link  "> Light Mega Menu </a>
+                            <a href="#" class="nav-link  "> Invoices [not finished] </a>
                         </li>
                         <li class=" ">
-                            <a href="layout_top_bar_light.html" class="nav-link  "> Light Top Bar Dropdowns </a>
+                            <a href="#" class="nav-link  "> Financial Settings [not finished] </a>
                         </li>
                     </ul>
                 </li>
@@ -423,10 +429,10 @@
                                     <div class="col-md-12">
                                         <ul class="mega-menu-submenu">
                                             <li>
-                                                <h3>Components 1</h3>
+                                                <a href="#"> Account Settings [not finished] </a>
                                             </li>
                                             <li>
-                                                <a href="components_date_time_pickers.html"> Date & Time Pickers </a>
+                                                <a href="#"> Personal Settings [not finished] </a>
                                             </li>
                                         </ul>
                                     </div>
@@ -437,7 +443,7 @@
                 </li>
                 @else
                     <li class="menu-dropdown classic-menu-dropdown ">
-                        <a href="javascript:;"> User Dashboard
+                        <a href="javascript:;"> Squash Fitness
                             <span class="arrow"></span>
                         </a>
                         <ul class="dropdown-menu pull-left">

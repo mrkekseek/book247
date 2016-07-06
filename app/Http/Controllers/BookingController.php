@@ -24,6 +24,7 @@ use DateInterval;
 use DatePeriod;
 use DB;
 use Regulus\ActivityLog\Models\Activity;
+use Snowfire\Beautymail\Beautymail;
 
 class BookingController extends Controller
 {
@@ -297,6 +298,18 @@ class BookingController extends Controller
 
                 if ($old_status=='active'){
                     // send_email_to_user
+                    $player = User::where('id','=',$booking->for_user_id)->get()->first();
+                    $booking_details = $booking->get_summary_details(false);
+
+                    $beautymail = app()->make(Beautymail::class);
+                    $beautymail->send('emails.booking.cancel_booking', ['player'=>$player, 'booking'=>$booking_details, 'logo' => ['path' => 'http://sqf.se/wp-content/uploads/2012/12/sqf-logo.png']], function($message) use ($player, $booking_details)
+                    {
+                        $message
+                            ->from('bogdan@bestintest.eu')
+                            //->to($player->email, $player->first_name.' '.$player->middle_name.' '.$player->last_name)
+                            ->to('stefan.bogdan@ymail.com', $player->first_name.' '.$player->middle_name.' '.$player->last_name)
+                            ->subject('Booking System - Your booking for '.$booking_details["bookingDate"].' was canceled');
+                    });
                 }
 
                 Activity::log([
@@ -647,12 +660,14 @@ class BookingController extends Controller
 
         if (sizeof($keys)>0){
             $email_confirm = [];
-
             foreach($keys as $key){
                 if ( strlen($key)<5 ){ continue; }
                 $return_key[] = $key;
                 if ($is_staff) {
-                    Booking::where('status', '=', 'pending')->where('search_key', '=', $key)->update(['status' => 'active']);
+                    $booking = Booking::where('status', '=', 'pending')->where('search_key', '=', $key)->get()->first();
+                    if (!$booking){
+                        continue;
+                    }
 
                     Activity::log([
                         'contentId'     => $user->id,
@@ -664,7 +679,10 @@ class BookingController extends Controller
                     ]);
                 }
                 else{
-                    Booking::where('status', '=', 'pending')->where('by_user_id', '=', $user->id)->where('search_key', '=', $key)->update(['status' => 'active']);
+                    $booking = Booking::where('status', '=', 'pending')->where('by_user_id', '=', $user->id)->where('search_key', '=', $key)->get()->first();
+                    if (!$booking){
+                        continue;
+                    }
 
                     Activity::log([
                         'contentId'     => $user->id,
@@ -676,7 +694,32 @@ class BookingController extends Controller
                     ]);
                 }
 
+                $booking->status = 'active';
+                $booking->save();
+
+                $booking_details = $booking->get_summary_details(false);
+                $email_confirm[$booking->for_user_id][] = $booking_details;
+            }
+
+            foreach($email_confirm as $player_id=>$booking_details) {
                 // send_email_to_user
+                $player = User::where('id', '=', $player_id)->get()->first();
+                if (sizeof($booking_details)>1){
+                    $email_title = 'Booking System - Several bookings were created';
+                }
+                else{
+                    $booking_details = $booking_details[0];
+                    $email_title = 'Booking System - Your booking for ' . $booking_details["bookingDate"] . ' was created';
+                }
+
+                $beautymail = app()->make(Beautymail::class);
+                $beautymail->send('emails.booking.new_booking', ['player' => $player, 'booking' => $booking_details, 'logo' => ['path' => 'http://sqf.se/wp-content/uploads/2012/12/sqf-logo.png']], function ($message) use ($player, $email_title) {
+                    $message
+                        ->from('bogdan@bestintest.eu')
+                        //->to($player->email, $player->first_name.' '.$player->middle_name.' '.$player->last_name)
+                        ->to('stefan.bogdan@ymail.com', $player->first_name . ' ' . $player->middle_name . ' ' . $player->last_name)
+                        ->subject($email_title);
+                });
             }
         }
         else{
@@ -2227,6 +2270,123 @@ class BookingController extends Controller
         ]);
     }
 
+    public function front_bookings_calendar_view($date_selected = 0, $selected_location = 0, $selected_activity = 0){
+        if (!Auth::check()) {
+            return redirect()->intended(route('admin/login'));
+        }
+        else{
+            $user = Auth::user();
+        }
+
+        // Date validation and variables assignation
+        if ($date_selected==0){
+            $date_selected = Carbon::now()->format('Y-m-d');
+        }
+        else{
+            $date_selected = Carbon::createFromFormat('d-m-Y',$date_selected)->format('Y-m-d');
+        }
+        $header_vals['date_selected'] = Carbon::createFromFormat('Y-m-d',$date_selected)->format('d-m-Y');
+        $header_vals['next_date'] = Carbon::createFromFormat('Y-m-d',$date_selected)->addDay(1)->format('d-m-Y');
+        $header_vals['prev_date'] = Carbon::createFromFormat('Y-m-d',$date_selected)->addDay(-1)->format('d-m-Y');
+
+        // location validation and variables assignation
+        if ($selected_location==0){
+            $default_location = 7;
+        }
+        else{
+            $default_location = $selected_location;
+        }
+        $location_found = false;
+        $all_locations = ShopLocations::select('id','name')->orderBy('name','ASC')->get();
+        foreach ($all_locations as $location){
+            if ($location->id==$default_location){
+                $location_found=true;
+            }
+        }
+        if ($location_found==false){
+            // redirect not found
+            $default_location = 7;
+        }
+        unset($location);
+        $header_vals['selected_location'] = $default_location;
+
+        // activity/category validation and variables assignation
+        if ($selected_activity==0){
+            $default_activity = 3;
+        }
+        else{
+            $default_activity = $selected_activity;
+        }
+        $activity_found = false;
+        $all_activities = ShopResourceCategory::select('id','name')->orderBy('name','ASC')->get();
+        foreach ($all_activities as $activity){
+            if ($activity->id==$default_activity){
+                $activity_found=true;
+            }
+        }
+        if ($activity_found==false){
+            // redirect not found
+            $default_activity = 3;
+        }
+        unset($activity);
+        $header_vals['selected_activity'] = $default_activity;
+
+        $location = ShopLocations::select('id','name')->where('id','=',$default_location)->get()->first();
+        $activity = ShopResourceCategory::where('id','=',$default_activity)->get()->first();
+
+        $resources_ids = [];
+        $resources = ShopResource::where('location_id','=',$location->id)->where('category_id','=',$activity->id)->get();
+        if ($resources){
+            foreach($resources as $resource){
+                $resources_ids[] = $resource->id;
+            }
+        }
+        //xdebug_var_dump($resources);
+        $hours_interval = $this->make_hours_interval($date_selected, '07:00', '23:00', 30, true, false);
+        //xdebug_var_dump($hours_interval);
+        $location_bookings = $this->get_location_bookings($date_selected, $location->id, $resources_ids, $hours_interval);
+        //xdebug_var_dump($location_bookings['hours']['09:00']);
+
+        $resources_ids = [];
+        foreach($resources as $resource){
+            $resources_ids[] = ['name'=>$resource->name, 'id'=>$resource->id];
+        }
+
+        $buttons_color = [
+            'is_show'           => 'bg-green-jungle bg-font-green-jungle',
+            'is_no_show'        => 'bg-red-thunderbird bg-font-red-thunderbird',
+            'show_btn_active'   => 'btn-default',
+
+            'is_paid_cash'      => 'bg-blue bg-font-blue',
+            'is_paid_card'      => 'bg-purple bg-font-purple',
+            'is_paid_online'    => 'bg-yellow-haze bg-font-yellow-haze',
+            'payment_issues'    => 'bg-red-thunderbird bg-font-red-thunderbird',
+            'payment_btn_active'=> 'btn-default',
+
+            'more_btn_active'   => 'btn-default',
+
+            'is_disabled'       => 'bg-default bg-font-default',
+        ];
+
+        $breadcrumbs = [
+            'Home'              => route('admin'),
+            'Administration'    => route('admin'),
+            'Back End Users'    => route('admin/back_users'),
+        ];
+        $sidebar_link= 'admin-frontend-user_details_view';
+        return view('front/booking_calendar', [
+            'breadcrumbs'   => $breadcrumbs,
+            'in_sidebar'    => $sidebar_link,
+            'time_intervals'    => $hours_interval,
+            'location_bookings' => $location_bookings['hours'],
+            'resources'     => $resources_ids,
+            'button_color'  => $buttons_color,
+            'header_vals'   => $header_vals,
+            'all_locations' => $all_locations,
+            'all_activities'=> $all_activities
+        ]);
+    }
+
     public function single_booking_details(Request $request){
         $bookingDetails = [];
 
@@ -2245,8 +2405,8 @@ class BookingController extends Controller
             if ( $user->id!=$booking->for_user_id && $user->id!=$booking->by_user_id && $is_backend_employee == false ){
                 return $bookingDetails;
             }
-
-            $canCancel  = '0';
+            $bookingDetails = $booking->get_summary_details($is_backend_employee);
+            /*$canCancel  = '0';
             $canModify  = '0';
             $invoiceLink = '0';
             $noShow = '0';
@@ -2346,7 +2506,7 @@ class BookingController extends Controller
                 'invoiceLink'   => $invoiceLink,
                 'canNoShow'     => $noShow,
                 'bookingNotes'  => $allNotes,
-            ];
+            ];*/
 
             return $bookingDetails;
         }

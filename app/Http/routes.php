@@ -423,6 +423,13 @@ Route::group(['middleware' => 'web'], function () {
     /** Stop Routes for front end */
 });
 
+Route::group(['prefix'=>'front', 'middleware'=>'web'], function(){
+    Route::get('calendar_booking',[
+        'as'    => 'front_calendar_booking',
+        'uses'  => 'BookingController@front_bookings_calendar_view'
+    ]);
+});
+
 Route::group(['prefix'=>'ajax', 'middleware' => 'web'], function(){
 
     Route::post('get_booking_hours',[
