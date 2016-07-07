@@ -1081,11 +1081,11 @@ class BookingController extends Controller
         ];
 
         $breadcrumbs = [
-            'Home'              => route('admin'),
-            'Administration'    => route('admin'),
-            'Back End Users'    => route('admin/back_users'),
+            'Home'          => route('admin'),
+            'Bookings'      => route('admin'),
+            'Calendar view' => route('bookings/location_calendar_day_view', ['day'=>\Carbon\Carbon::now()->format('d-m-Y')]),
         ];
-        $sidebar_link= 'admin-frontend-user_details_view';
+        $sidebar_link= 'admin-bookings-calendar_view';
         return view('admin/bookings/calendar_location_per_day', [
             'breadcrumbs'   => $breadcrumbs,
             'in_sidebar'    => $sidebar_link,
@@ -2270,6 +2270,13 @@ class BookingController extends Controller
         ]);
     }
 
+    /**
+     * Booking calendar - Front member view
+     * @param int $date_selected
+     * @param int $selected_location
+     * @param int $selected_activity
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
     public function front_bookings_calendar_view($date_selected = 0, $selected_location = 0, $selected_activity = 0){
         if (!Auth::check()) {
             return redirect()->intended(route('admin/login'));
@@ -2341,32 +2348,20 @@ class BookingController extends Controller
                 $resources_ids[] = $resource->id;
             }
         }
-        //xdebug_var_dump($resources);
-        $hours_interval = $this->make_hours_interval($date_selected, '07:00', '23:00', 30, true, false);
-        //xdebug_var_dump($hours_interval);
-        $location_bookings = $this->get_location_bookings($date_selected, $location->id, $resources_ids, $hours_interval);
-        //xdebug_var_dump($location_bookings['hours']['09:00']);
+
+        $opening_hour = '07:00';
+        if ( Carbon::now()->format('Y-m-d')==$date_selected ){
+            $opening_hour = Carbon::now()->format('H:i');
+        }
+        $closing_hour = '23:00';
+
+        $hours_interval = $this->make_hours_interval($date_selected, $opening_hour, $closing_hour, 30, false, false);
+        $location_bookings = $this->player_get_location_bookings($date_selected, $location->id, $resources_ids, $hours_interval);
 
         $resources_ids = [];
         foreach($resources as $resource){
             $resources_ids[] = ['name'=>$resource->name, 'id'=>$resource->id];
         }
-
-        $buttons_color = [
-            'is_show'           => 'bg-green-jungle bg-font-green-jungle',
-            'is_no_show'        => 'bg-red-thunderbird bg-font-red-thunderbird',
-            'show_btn_active'   => 'btn-default',
-
-            'is_paid_cash'      => 'bg-blue bg-font-blue',
-            'is_paid_card'      => 'bg-purple bg-font-purple',
-            'is_paid_online'    => 'bg-yellow-haze bg-font-yellow-haze',
-            'payment_issues'    => 'bg-red-thunderbird bg-font-red-thunderbird',
-            'payment_btn_active'=> 'btn-default',
-
-            'more_btn_active'   => 'btn-default',
-
-            'is_disabled'       => 'bg-default bg-font-default',
-        ];
 
         $breadcrumbs = [
             'Home'              => route('admin'),
@@ -2380,11 +2375,310 @@ class BookingController extends Controller
             'time_intervals'    => $hours_interval,
             'location_bookings' => $location_bookings['hours'],
             'resources'     => $resources_ids,
-            'button_color'  => $buttons_color,
             'header_vals'   => $header_vals,
             'all_locations' => $all_locations,
             'all_activities'=> $all_activities
         ]);
+    }
+
+    /**
+     * Player front view - Get location bookings based on location, resources, time intervals
+     * @param $date_selected - date variable in dd-mm-yyyy format
+     * @param $location - array of IDs or single id for ShopLocations
+     * @param $resources - array of IDs or id for shopResources
+     * @param $hours - array of hours interval (start of booking times)
+     * @return array - returns 'hours' array and 'bookings' array
+     *               - hours - intervals with colors for booked or free colors
+     *               - bookings - individual bookings for time interval keys
+     */
+    public function player_get_location_bookings($date_selected, $location, $resources, $hours){
+        if (Auth::check()) {
+            $user = Auth::user();
+            BookingController::check_for_expired_pending_bookings();
+        }
+
+        $bookings = [];
+        // check if we get today or 10 days from today
+        $dateSelected = Carbon::createFromFormat("Y-m-d", $date_selected);
+        if (!$dateSelected){
+            return [];
+        }
+
+        foreach($hours as $key=>$hour){
+            $hours[$key] = $this->player_check_date_time_bookings($date_selected, $key, $location, $resources, false);
+        }
+
+        $returnArray = ["hours"=>$hours, "bookings"=>$bookings];
+
+        return $returnArray;
+    }
+
+    /**
+     * Player front view - Returns bookings for specified data and time for a location's/resource's
+     * @param $date = date in dd-mm-yyyy format
+     * @param $time = start time of booking in hh:mm format
+     * @param $location = array of ShopLocation IDs or single id
+     * @param $resource = array of ShopResource IDs or single id
+     * @param bool $show_more = shows more information on the admin calendar view
+     * @return array = array of bookings for data/time/resource specified at the beginning
+     */
+    public function player_check_date_time_bookings($date, $time, $location, $resource, $show_more=false){
+        $booking_details = [];
+        $buttons_color = [
+            'is_show'           => '',
+            'is_no_show'        => '',
+            'show_btn_active'   => '',
+            'is_paid_cash'      => '',
+            'is_paid_card'      => '',
+            'is_paid_online'    => '',
+            'payment_issues'    => '',
+            'payment_btn_active'=> '',
+            'more_btn_active'   => '',
+            'is_disabled'       => '',
+        ];
+
+        $q = DB::table('bookings');
+        if (is_array($location)){
+            $q->whereIn('location_id', $location);
+        }
+        else{
+            $q->where('location_id','=',$location);
+        }
+
+        if (is_array($resource)){
+            $q->whereIn('resource_id', $resource);
+        }
+        else{
+            $q->where('resource_id','=',$resource);
+        }
+        $q->where('date_of_booking','=',$date)
+            ->whereIn('status',['pending','active','paid','unpaid','old','noshow'])
+            ->where('booking_time_start','=',$time);
+        $bookings = $q->get();
+
+        if ($bookings){
+            foreach ($bookings as $booking){
+                $formatted_booking = [
+                    'search_key' => $booking->search_key,
+                    'location' => $booking->location_id,
+                    'resource' => $booking->resource_id,
+                    'status'   => $booking->status,
+                    'color_stripe' => 'bg-red-flamingo bg-font-red-flamingo'];
+
+                if ($show_more){
+                    $player = User::find($booking->for_user_id);
+                    $formatted_booking['payment_type'] = $booking->payment_type;
+                    $formatted_booking['payment_amount'] = $booking->payment_amount;
+                    $formatted_booking['invoice'] = $booking->invoice_id;
+                    $formatted_booking['player_name'] = $player->first_name.' '.$player->middle_name.' '.$player->last_name;
+                    $formatted_booking['id'] = $booking->id;
+
+                    if ($formatted_booking['payment_type'] == 'membership' && $booking->status!='pending'){
+                        $formatted_booking['color_stripe'] = 'bg-green-haze bg-font-green-haze';
+                    }
+                    elseif ($formatted_booking['payment_type'] == 'cash' && $booking->status!='pending'){
+                        $formatted_booking['color_stripe'] = 'bg-yellow-gold bg-font-yellow-gold';
+                    }
+                    elseif ($formatted_booking['payment_type'] == 'recurring' && $booking->status!='pending'){
+                        $formatted_booking['color_stripe'] = 'bg-purple-wisteria bg-font-purple-wisteria';
+                    }
+                    elseif($booking->status=='pending'){
+                        $formatted_booking['color_stripe'] = 'bg-yellow-soft bg-font-yellow-soft';
+                    }
+
+                    $formatted_booking['button_show'] = 'is_disabled';
+                    $formatted_booking['button_finance'] = 'is_disabled';
+                    $formatted_booking['button_more'] = 'more_btn_active';
+                    switch ($booking->status) {
+                        case 'pending' :
+                            // all disabled
+                            $formatted_booking['button_more'] = 'is_disabled';
+                            break;
+                        case 'active' :
+                            $formatted_booking['button_show'] = 'show_btn_active';
+                            if ($booking->payment_type=="cash"){
+                                $invoice = BookingInvoice::with('financial_transaction')->find($booking->invoice_id);
+                                if ($invoice){
+                                    foreach ($invoice->financial_transaction as $ab) {
+                                        $transaction = $ab;
+                                        break;
+                                    }
+
+                                    $formatted_booking['invoice_status'] = $invoice->status;
+                                    switch ($invoice->status){
+                                        case 'pending' :
+                                            // the invoice is new and there was no payment tried for the amount
+                                            $formatted_booking['button_finance'] = 'payment_btn_active';
+                                            break;
+                                        case 'ordered' :
+                                            // we'll not use it
+                                            break;
+                                        case 'processing' :
+                                            // a payment process started and the result is waiting
+                                        case 'completed' :
+                                            // payment was done successfully
+                                            switch($transaction->transaction_type){
+                                                case 'cash' :
+                                                    $formatted_booking['button_finance'] = 'is_paid_cash';
+                                                    break;
+                                                case 'card' :
+                                                    $formatted_booking['button_finance'] = 'is_paid_card';
+                                                    break;
+                                                default :
+                                                    $formatted_booking['button_finance'] = 'is_paid_online';
+                                                    break;
+                                            }
+                                            break;
+                                        case 'cancelled' :
+                                            // invoice was canceled
+                                            break;
+                                        case 'declined' :
+                                            // payment was declined
+                                            $formatted_booking['button_finance'] = 'payment_btn_active';
+                                            break;
+                                        case 'incomplete' :
+                                            // payment was incomplete
+                                            $formatted_booking['button_finance'] = 'payment_issues';
+                                            break;
+                                        case 'preordered' :
+                                            // we'll not use it
+                                            break;
+                                    }
+                                }
+                                else{
+                                    // no invoice so the button is active and can be paid
+                                    $formatted_booking['button_finance'] = 'payment_btn_active';
+                                }
+                            }
+                            break;
+                        case 'paid'   :
+                        case 'unpaid' :
+                            // show button was clicked
+                            $formatted_booking['button_show'] = 'is_show';
+                            $invoice = BookingInvoice::with('financial_transaction')->find($booking->invoice_id);
+                            if ($invoice){
+                                foreach ($invoice->financial_transaction as $ab) {
+                                    $transaction = $ab;
+                                    break;
+                                }
+
+                                $formatted_booking['invoice_status'] = $invoice->status;
+                                switch ($invoice->status){
+                                    case 'pending' :
+                                        // the invoice is new and there was no payment tried for the amount
+                                        $formatted_booking['button_finance'] = 'payment_btn_active';
+                                        break;
+                                    case 'ordered' :
+                                        // we'll not use it
+                                        break;
+                                    case 'processing' :
+                                        // payment was done successfully
+                                    case 'completed' :
+                                        // payment was done successfully
+                                        switch($transaction->transaction_type){
+                                            case 'cash' :
+                                                $formatted_booking['button_finance'] = 'is_paid_cash';
+                                                break;
+                                            case 'card' :
+                                                $formatted_booking['button_finance'] = 'is_paid_card';
+                                                break;
+                                            default :
+                                                $formatted_booking['button_finance'] = 'is_paid_online';
+                                                break;
+                                        }
+                                        break;
+                                    case 'cancelled' :
+                                        // invoice was canceled
+                                        break;
+                                    case 'declined' :
+                                        // payment was declined
+                                        $formatted_booking['button_finance'] = 'payment_btn_active';
+                                        break;
+                                    case 'incomplete' :
+                                        // payment was incomplete
+                                        $formatted_booking['button_finance'] = 'payment_issues';
+                                        break;
+                                    case 'preordered' :
+                                        // we'll not use it
+                                        break;
+                                }
+                            }
+                            $formatted_booking['invoice_status'] = 'completed';
+                            break;
+                        case 'unpaid2' :
+                            // show button was clicked
+                            $formatted_booking['button_show'] = 'is_show';
+                            $formatted_booking['invoice_status'] = 'pending';
+                            break;
+                        case 'old' :
+                            // show button was clicked, player is show
+                            $formatted_booking['button_show'] = 'is_show';
+                            break;
+                        case 'noshow' :
+                            // the player is no show
+                            $formatted_booking['button_show'] = 'is_no_show';
+                            if ($booking->payment_type=="cash"){
+                                $invoice = BookingInvoice::find($booking->invoice_id);
+                                if ($invoice){
+                                    foreach ($invoice->financial_transaction as $ab) {
+                                        $transaction = $ab;
+                                        break;
+                                    }
+
+                                    $formatted_booking['invoice_status'] = $invoice->status;
+                                    switch ($invoice->status){
+                                        case 'pending' :
+                                            // the invoice is new and there was no payment tried for the amount
+                                            $formatted_booking['button_finance'] = 'payment_btn_active';
+                                            break;
+                                        case 'ordered' :
+                                            // we'll not use it
+                                            break;
+                                        case 'processing' :
+                                            // payment was done successfully
+                                        case 'completed' :
+                                            // payment was done successfully
+                                            switch($transaction->transaction_type){
+                                                case 'cash' :
+                                                    $formatted_booking['button_finance'] = 'is_paid_cash';
+                                                    break;
+                                                case 'card' :
+                                                    $formatted_booking['button_finance'] = 'is_paid_card';
+                                                    break;
+                                                default :
+                                                    $formatted_booking['button_finance'] = 'is_paid_online';
+                                                    break;
+                                            }
+                                            break;
+                                        case 'cancelled' :
+                                            // invoice was canceled
+                                            break;
+                                        case 'declined' :
+                                            // payment was declined
+                                            $formatted_booking['button_finance'] = 'payment_btn_active';
+                                            break;
+                                        case 'incomplete' :
+                                            // payment was incomplete
+                                            $formatted_booking['button_finance'] = 'payment_issues';
+                                            break;
+                                        case 'preordered' :
+                                            // we'll not use it
+                                            break;
+                                    }
+                                }
+                                else{
+                                    $formatted_booking['button_finance'] = 'payment_btn_active';
+                                }
+                            }
+                            break;
+                    }
+                }
+
+                $booking_details[$booking->resource_id] = $formatted_booking;
+                unset($transaction);
+            }
+        }
+        return $booking_details;
     }
 
     public function single_booking_details(Request $request){

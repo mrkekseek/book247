@@ -375,7 +375,7 @@
                             </a>
                         </li>
                         <li class=" ">
-                            <a href="{{ route('front_calendar_booking') }}" class="nav-link  ">
+                            <a href="{{ route('front_calendar_booking',['day'=>\Carbon\Carbon::now()->format('d-m-Y')]) }}" class="nav-link  ">
                                 <i class="icon-bar-chart"></i> Booking Calendar
                                 <span class="badge badge-success">1</span>
                             </a>

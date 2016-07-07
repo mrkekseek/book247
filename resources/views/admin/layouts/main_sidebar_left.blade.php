@@ -33,7 +33,7 @@
         <li class="heading">
             <h3 class="uppercase">Registered Clients</h3>
         </li>
-        <li class="nav-item {{ in_array($in_sidebar, array('admin-frontend-all_members','admin-frontend-user_details_view'))?'active open':'' }}  ">
+        <li class="nav-item {{ in_array($in_sidebar, array('admin-frontend-all_members','admin-frontend-user_details_view'))?'active open':'' }}">
             <a href="javascript:;" class="nav-link nav-toggle">
                 <i class="icon-layers"></i>
                 <span class="title">Front Users/Members</span>
@@ -52,48 +52,18 @@
                     </a>
                 </li>
                 @endif
-                <li class="nav-item  ">
-                    <a href="layout_language_bar.html" class="nav-link ">
-                        <span class="title">Header Language Bar</span>
-                    </a>
-                </li>
-                <li class="nav-item  ">
-                    <a href="layout_footer_fixed.html" class="nav-link ">
-                        <span class="title">Fixed Footer</span>
-                    </a>
-                </li>
-                <li class="nav-item  ">
-                    <a href="layout_boxed_page.html" class="nav-link ">
-                        <span class="title">Boxed Page</span>
-                    </a>
-                </li>
             </ul>
         </li>
-        <li class="nav-item  ">
+        <li class="nav-item {{ in_array($in_sidebar, array('admin-bookings-calendar_view'))?'active open':'' }}  ">
             <a href="javascript:;" class="nav-link nav-toggle">
                 <i class="icon-feed"></i>
                 <span class="title">Bookings</span>
                 <span class="arrow"></span>
             </a>
             <ul class="sub-menu">
-                <li class="nav-item  ">
+                <li class="nav-item {{ $in_sidebar=='admin-bookings-calendar_view'?'active open':'' }} ">
                     <a href="{{ route('bookings/location_calendar_day_view',['day'=>\Carbon\Carbon::now()->format('d-m-Y')]) }}" class="nav-link ">
-                        <span class="title">Hover Sidebar Menu</span>
-                    </a>
-                </li>
-                <li class="nav-item  ">
-                    <a href="layout_sidebar_reversed.html" class="nav-link ">
-                        <span class="title">Reversed Sidebar Page</span>
-                    </a>
-                </li>
-                <li class="nav-item  ">
-                    <a href="layout_sidebar_fixed.html" class="nav-link ">
-                        <span class="title">Fixed Sidebar Layout</span>
-                    </a>
-                </li>
-                <li class="nav-item  ">
-                    <a href="layout_sidebar_closed.html" class="nav-link ">
-                        <span class="title">Closed Sidebar Layout</span>
+                        <span class="title">Calendar View</span>
                     </a>
                 </li>
             </ul>

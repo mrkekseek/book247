@@ -750,11 +750,11 @@
                             }
                         },
                         password: {
-                            minlength: 5,
+                            minlength: 8,
                             maxlength: 150,
                         },
                         rpassword: {
-                            minlength: 5,
+                            minlength: 8,
                             maxlength: 150,
                             equalTo:"#register_password"
                         },

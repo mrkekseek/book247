@@ -1238,6 +1238,10 @@ class FrontEndUserController extends Controller
         $vars['username'] = $vars['email'];
         $vars['user_type'] = Role::where('name','=','front-user')->get()->first()->id;
 
+        if ($vars['password']==""){
+            $vars['password'] = substr(bcrypt(str_random(12)),0,8);
+        }
+
         $validator = Validator::make($vars, User::rules('POST'), User::$messages, User::$attributeNames);
 
         if ($validator->fails()){
@@ -1270,11 +1274,11 @@ class FrontEndUserController extends Controller
             $personalDetails->save();
 
             $beautymail = app()->make(Beautymail::class);
-            $beautymail->send('emails.new_user_registration', ['user'=>$user, 'personal_details'=>$personalDetails, 'raw_password' => $text_psw], function($message) use ($user)
+            $beautymail->send('emails.new_user_registration', ['user'=>$user, 'personal_details'=>$personalDetails, 'raw_password' => $text_psw, 'logo' => ['path' => 'http://sqf.se/wp-content/uploads/2012/12/sqf-logo.png']], function($message) use ($user)
             {
                 $message
                     ->from('bogdan@bestintest.eu')
-                    //->to($user->email, '')
+                    //->to($user->email, $user->first_name.' '.$user->middle_name.' '.$user->last_name)
                     ->to('stefan.bogdan@ymail.com', $user->first_name.' '.$user->middle_name.' '.$user->last_name)
                     ->subject('Booking System - You are registered!');
             });

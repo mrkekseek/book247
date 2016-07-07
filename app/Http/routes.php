@@ -424,8 +424,13 @@ Route::group(['middleware' => 'web'], function () {
 });
 
 Route::group(['prefix'=>'front', 'middleware'=>'web'], function(){
-    Route::get('calendar_booking',[
+    Route::get('calendar_booking/{day}/',[
         'as'    => 'front_calendar_booking',
+        'uses'  => 'BookingController@front_bookings_calendar_view'
+    ]);
+
+    Route::get('calendar_booking/{day}/{location}/{activity}/',[
+        'as'    => 'front_calendar_booking_all',
         'uses'  => 'BookingController@front_bookings_calendar_view'
     ]);
 });
