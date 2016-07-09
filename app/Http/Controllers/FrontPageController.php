@@ -96,7 +96,7 @@ class FrontPageController extends Controller
         ];
         $sidebar_link= 'admin-home_dashboard';
 
-        return view('front\home_page',[
+        return view('front/home_page',[
             'breadcrumbs' => $breadcrumbs,
             'text_parts'  => $text_parts,
             'in_sidebar'  => $sidebar_link,
