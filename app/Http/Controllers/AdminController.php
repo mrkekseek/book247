@@ -39,7 +39,7 @@ class AdminController extends Controller
             ];
             $sidebar_link= 'admin-home_dashboard';
 
-            return view('admin\main_page',[
+            return view('admin/main_page',[
                 'breadcrumbs' => $breadcrumbs,
                 'text_parts'  => $text_parts,
                 'in_sidebar'  => $sidebar_link,

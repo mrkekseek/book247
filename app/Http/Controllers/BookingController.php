@@ -2262,7 +2262,7 @@ class BookingController extends Controller
         ];
         $sidebar_link= 'admin-home_dashboard';
 
-        return view('front\bookings\archive',[
+        return view('front/bookings/archive',[
             'breadcrumbs' => $breadcrumbs,
             'text_parts'  => $text_parts,
             'in_sidebar'  => $sidebar_link,
