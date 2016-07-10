@@ -1203,7 +1203,7 @@ class FrontEndUserController extends Controller
 
             if ($validator->fails()){
                 $msg = array(
-                    'success' => false,
+                    'success' => 'false',
                     'error' => [
                         'validator' => $validator->getMessageBag()->toArray(),
                         'title' => 'An error occurred',
@@ -1215,7 +1215,8 @@ class FrontEndUserController extends Controller
                 $new_friend = UserFriends::firstOrCreate($friend_fill);
                 $new_friend->save();
 
-                $msg = [];
+                $friend = User::where('id','=',$friends->user_id)->get()->first();
+                $msg = ['success'=>'true', 'message' => 'You have a new friend', 'full_name' => $friend->first_name.' '.$friend->middle_name.' '.$friend->last_name ];
             }
         }
 

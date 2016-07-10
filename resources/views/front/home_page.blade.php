@@ -977,10 +977,6 @@
                 save_booking(own_box, 0, 0, own_box, own_next);
             }
 
-            if (own_next.hasClass('booking_summary_box')){
-                get_booking_summary(own_next);
-            }
-
             if ($(this).attr('data-id')=="to_own_booking") {
                 own_box.find('.booking_step_content').first().hide();
                 own_next.find('.booking_step_content').first().show();
@@ -1076,7 +1072,7 @@
         function all_friends_format(friends){
             var all_list = '';
             $.each(friends, function(key, value){
-                all_list += '<a class="btn btn-sm btn-outline blue-steel is_resource " data-id="'+ value.id +'" href="javascript:;"> '+ value.name +' <span class="icon-user-following"> </span></a> ';
+                all_list += '<a class="btn btn-sm btn-outline blue-steel " href="javascript:;"> '+ value.name +' <span class="icon-user-following"> </span></a> ';
             });
 
             if (all_list == ''){
@@ -1260,6 +1256,11 @@
                         }
 
                         get_booking_hours();
+
+                        if (own_next.hasClass('booking_summary_box')){
+                            get_booking_summary(own_next);
+                        }
+
                         own_box.find('.booking_step_content').first().hide();
                         own_next.find('.booking_step_content').first().show();
                     }
@@ -1270,6 +1271,7 @@
         function get_booking_summary(place){
             var all_bookings = '';
             $('input[name="time_book_key"]').each(function(){
+                console.log($(this).val());
                 if ( $(this).val().length > 4 ) {
                     all_bookings += $(this).val() + ',';
                 }
@@ -1420,6 +1422,8 @@
                 },
                 success: function(data){
                     if (data.success=='true') {
+                        $('#friends_list').append('<a class="btn btn-sm btn-outline blue-steel " href="javascript:;"> '+ data.full_name +' <span class="icon-user-following"> </span></a>');
+
                         show_notification('Friend Added', 'Your have added ' + data.full_name + ' as a friend. You can now book an activity and include him.', 'lemon', 3500, 0);
                         $('#new_friend_modal').modal('hide');
                     }
