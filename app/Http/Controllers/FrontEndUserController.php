@@ -1278,8 +1278,8 @@ class FrontEndUserController extends Controller
             {
                 $message
                     ->from('bogdan@bestintest.eu')
-                    //->to($user->email, $user->first_name.' '.$user->middle_name.' '.$user->last_name)
-                    ->to('stefan.bogdan@ymail.com', $user->first_name.' '.$user->middle_name.' '.$user->last_name)
+                    ->to($user->email, $user->first_name.' '.$user->middle_name.' '.$user->last_name)
+                    //->to('stefan.bogdan@ymail.com', $user->first_name.' '.$user->middle_name.' '.$user->last_name)
                     ->subject('Booking System - You are registered!');
             });
 

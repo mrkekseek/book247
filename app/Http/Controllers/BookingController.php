@@ -306,8 +306,8 @@ class BookingController extends Controller
                     {
                         $message
                             ->from('bogdan@bestintest.eu')
-                            //->to($player->email, $player->first_name.' '.$player->middle_name.' '.$player->last_name)
-                            ->to('stefan.bogdan@ymail.com', $player->first_name.' '.$player->middle_name.' '.$player->last_name)
+                            ->to($player->email, $player->first_name.' '.$player->middle_name.' '.$player->last_name)
+                            //->to('stefan.bogdan@ymail.com', $player->first_name.' '.$player->middle_name.' '.$player->last_name)
                             ->subject('Booking System - Your booking for '.$booking_details["bookingDate"].' was canceled');
                     });
                 }
@@ -716,8 +716,8 @@ class BookingController extends Controller
                 $beautymail->send('emails.booking.new_booking', ['player' => $player, 'booking' => $booking_details, 'logo' => ['path' => 'http://sqf.se/wp-content/uploads/2012/12/sqf-logo.png']], function ($message) use ($player, $email_title) {
                     $message
                         ->from('bogdan@bestintest.eu')
-                        //->to($player->email, $player->first_name.' '.$player->middle_name.' '.$player->last_name)
-                        ->to('stefan.bogdan@ymail.com', $player->first_name . ' ' . $player->middle_name . ' ' . $player->last_name)
+                        ->to($player->email, $player->first_name.' '.$player->middle_name.' '.$player->last_name)
+                        //->to('stefan.bogdan@ymail.com', $player->first_name . ' ' . $player->middle_name . ' ' . $player->last_name)
                         ->subject($email_title);
                 });
             }

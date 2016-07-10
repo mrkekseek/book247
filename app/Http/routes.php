@@ -398,12 +398,12 @@ Route::group(['middleware' => 'web'], function () {
     /** Start Routes for bookings */
     Route::resource('booking', 'BookingController');
 
-    Route::get('bookings/location_calendar_day_view/{day}/',[
+    Route::get('admin/bookings/location_calendar_day_view/{day}/',[
         'as'    => 'bookings/location_calendar_day_view',
         'uses'  => 'BookingController@location_calendar_day_view'
     ]);
 
-    Route::get('bookings/location_calendar_day_view/{day}/{location}/{activity}/',[
+    Route::get('admin/bookings/location_calendar_day_view/{day}/{location}/{activity}/',[
         'as'    => 'bookings/location_calendar_day_view_all',
         'uses'  => 'BookingController@location_calendar_day_view'
     ]);
