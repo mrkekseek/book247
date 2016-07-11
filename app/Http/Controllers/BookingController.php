@@ -806,9 +806,13 @@ class BookingController extends Controller
 
         $data = [];
 
-        $allBookings = Booking::with('notes')->where('by_user_id','=',$userID)->orWhere('for_user_id','=',$userID)->whereNotIn('status',['expired'])->get();
+        $allBookings = Booking::with('notes')->where('by_user_id','=',$userID)->orWhere('for_user_id','=',$userID)->get();
         if ($allBookings){
             foreach($allBookings as $booking){
+                if ($booking->status == 'expired'){
+                    continue;
+                }
+
                 $format_date = Carbon::createFromFormat('Y-m-d H:i:s', $booking->date_of_booking.' '.$booking->booking_time_start)->format('Y,M j, H:i');
                 $bookingFor = User::find($booking->for_user_id);
                 $location = ShopLocations::find($booking->location_id);

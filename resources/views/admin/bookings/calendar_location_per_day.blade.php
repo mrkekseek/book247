@@ -211,11 +211,11 @@
                                 <div class="col-md-8" style="font-size:15px;">
                                     <span class="item-box">
                                         <span class="item font-green-jungle">
-                                            <span class="icon-like" aria-hidden="true"></span> &nbsp;<span class="show_bookings">-</span> : Show bookings </span>
+                                            <span class="icon-like" aria-hidden="true"></span> &nbsp;<span class="show_bookings">-</span> : Show On bookings </span>
                                     </span><br />
                                     <span class="item-box">
                                         <span class="item font-red-thunderbird">
-                                            <span class="icon-dislike" aria-hidden="true"></span> &nbsp;<span class="no_show_bookings">-</span> : No-Show bookings </span>
+                                            <span class="icon-dislike" aria-hidden="true"></span> &nbsp;<span class="no_show_bookings">-</span> : No Show bookings </span>
                                     </span><br />
                                     <span class="item-box">
                                         <span class="item font-yellow-mint">
@@ -228,8 +228,8 @@
                             <div class="book_details_cancel_place" style="padding:0px 15px; margin-top:5px; clear:both;"></div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn green btn_cancel_booking" data-toggle="modal" href="#not_show_confirm_box">No show options</button>
-                            <button type="button" class="btn green btn_cancel_booking" data-toggle="modal" href="#cancel_confirm_box">Cancel Booking</button>
+                            <button type="button" class="btn green no_show_booking_btn" data-toggle="modal" href="#not_show_confirm_box">No show options</button>
+                            <button type="button" class="btn green cancel_booking_btn" data-toggle="modal" href="#cancel_confirm_box">Cancel Booking</button>
                             <button type="button" class="btn dark btn-outline" data-dismiss="modal">Return</button>
                         </div>
                     </div>
@@ -404,7 +404,7 @@
                                                     <div class="booking_summary_price_membership"></div>
                                                     <div class="form-actions right" style="padding-top:5px; padding-bottom:5px;">
                                                         <a class="btn blue-hoki booking_step_back" style="padding-top:4px; padding-bottom:4px;">Back</a>
-                                                        <a class="btn blue-hoki " style="padding-top:4px; padding-bottom:4px;" onclick="cancel_booking()">Cancel</a>
+                                                        <a class="btn blue-hoki " style="padding-top:4px; padding-bottom:4px;" data-dismiss="modal">Cancel</a>
                                                         <a class="btn blue-hoki " style="padding-top:4px; padding-bottom:4px;" onclick="confirm_booking()">Confirm</a>
                                                     </div>
                                                 </div>
@@ -919,6 +919,21 @@
 
         $(document).on('click', '.open_more_options', function(){
             //alert('Cancel Booking' + $(this).attr('data-id'));
+            var booking_status = $(this).parent().find('a').first().attr('data-status');
+            if (booking_status == 'old'){
+                // hide no show and cancel
+                $('#more_options_bookings_show').find('.no_show_booking_btn').hide();
+                $('#more_options_bookings_show').find('.cancel_booking_btn').hide();
+            }
+            else if (booking_status == "noshow"){
+                $('#more_options_bookings_show').find('.no_show_booking_btn').hide();
+                $('#more_options_bookings_show').find('.cancel_booking_btn').show();
+            }
+            else{
+                $('#more_options_bookings_show').find('.no_show_booking_btn').show();
+                $('#more_options_bookings_show').find('.cancel_booking_btn').show();
+            }
+
             var search_key = $(this).parent().attr('search-key');
 
             get_player_statistics(search_key, $('#player_summary_stats'));
