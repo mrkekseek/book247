@@ -143,7 +143,7 @@ class BookingController extends Controller
                             'contentId'     => $user->id,
                             'contentType'   => 'booking_invoices',
                             'action'        => 'New Booking Invoice',
-                            'description'   => 'New booking invoice failed with message : '.json_encode($the_invoice['errors']),
+                            'description'   => 'New booking invoice failed with message : '.json_encode($the_invoice['errors']).' |-| '.json_encode($fillable),
                             'details'       => 'Booking ID : '.$the_booking->id,
                             'updated'       => false,
                         ]);
