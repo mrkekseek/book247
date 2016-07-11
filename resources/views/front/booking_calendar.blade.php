@@ -54,84 +54,38 @@
                 <!-- BEGIN PAGE CONTENT INNER -->
                 <div class="page-content-inner">
                     <div class="row">
-                        <div class="col-md-4">
-                            <label class="control-label">Select Date</label>
-                            <div class="input-group input-small date date-picker" data-date="{{ $header_vals['date_selected'] }}" data-date-format="dd-mm-yyyy" data-date-viewmode="years">
-                                <input type="text" id="header_date_selected" class="form-control reload_calendar_page" value="{{ $header_vals['date_selected'] }}" readonly>
+                        <div class="col-md-12">
+                            <div class="portlet light form-fit bordered form-horizontal bg-green-haze bg-font-green-haze" style="border-radius:5px; margin-bottom:10px;">
+                                <div class="portlet-title" style="padding-top:7px; padding-bottom:7px;">
+                                    <div class="col-md-4">
+                                        <label class="control-label">Select Date</label>
+                                        <div class="input-group input-medium date date-picker" data-date="{{ $header_vals['date_selected'] }}" data-date-format="dd-mm-yyyy" data-date-viewmode="years">
+                                            <input type="text" id="header_date_selected" class="form-control reload_calendar_page" value="{{ $header_vals['date_selected'] }}" readonly>
                                 <span class="input-group-btn">
                                     <button class="btn default" type="button">
                                         <i class="fa fa-calendar"></i>
                                     </button>
                                 </span>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <label class="control-label">Select Location</label>
-                            <div class="input-group input-medium">
-                                <select id="header_location_selected" class="form-control reload_calendar_page" style="border-radius:4px;">
-                                    @foreach($all_locations as $a_location)
-                                        <option value="{{ $a_location->id }}" {{ $a_location->id==$header_vals['selected_location']?" selected ":'' }} >{{ $a_location->name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <label class="control-label">Select Activity</label>
-                            <div class="input-group input-medium">
-                                <select id="header_activity_selected" class="form-control reload_calendar_page" style="border-radius:4px;">
-                                    @foreach($all_activities as $an_activity)
-                                        <option value="{{ $an_activity->id }}" {{ $an_activity->id==$header_vals['selected_activity']?" selected ":'' }} >{{ $an_activity->name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="portlet light form-fit bordered form-horizontal bg-green-haze bg-font-green-haze" style="border-radius:5px; margin-bottom:10px;">
-                                <div class="portlet-title" style="padding-top:7px; padding-bottom:7px;">
-                                    <div class="col-md-4">
-                                        <div class="form-group" style="margin-bottom:0px;">
-                                            <label class="control-label col-md-4">Select Date</label>
-                                            <div class="col-md-7">
-                                                <div class="input-group input-small date date-picker" data-date="{{ $header_vals['date_selected'] }}" data-date-format="dd-mm-yyyy" data-date-viewmode="years">
-                                                    <input type="text" id="header_date_selected" class="form-control reload_calendar_page" value="{{ $header_vals['date_selected'] }}" readonly>
-                                            <span class="input-group-btn">
-                                                <button class="btn default" type="button">
-                                                    <i class="fa fa-calendar"></i>
-                                                </button>
-                                            </span>
-                                                </div>
-                                            </div>
                                         </div>
                                     </div>
                                     <div class="col-md-4">
-                                        <div class="form-group" style="margin-bottom:0px;">
-                                            <label class="control-label col-md-4">Select Location</label>
-                                            <div class="col-md-8">
-                                                <div class="input-group input-medium">
-                                                    <select id="header_location_selected" class="form-control reload_calendar_page" style="border-radius:4px;">
-                                                        @foreach($all_locations as $a_location)
-                                                            <option value="{{ $a_location->id }}" {{ $a_location->id==$header_vals['selected_location']?" selected ":'' }} >{{ $a_location->name }}</option>
-                                                        @endforeach
-                                                    </select>
-                                                </div>
-                                            </div>
+                                        <label class="control-label">Select Location</label>
+                                        <div class="input-group input-medium">
+                                            <select id="header_location_selected" class="form-control reload_calendar_page" style="border-radius:4px;">
+                                                @foreach($all_locations as $a_location)
+                                                    <option value="{{ $a_location->id }}" {{ $a_location->id==$header_vals['selected_location']?" selected ":'' }} >{{ $a_location->name }}</option>
+                                                @endforeach
+                                            </select>
                                         </div>
                                     </div>
                                     <div class="col-md-4">
-                                        <div class="form-group" style="margin-bottom:0px;">
-                                            <label class="control-label col-md-4">Select Activity</label>
-                                            <div class="col-md-8">
-                                                <div class="input-group input-medium">
-                                                    <select id="header_activity_selected" class="form-control reload_calendar_page" style="border-radius:4px;">
-                                                        @foreach($all_activities as $an_activity)
-                                                            <option value="{{ $an_activity->id }}" {{ $an_activity->id==$header_vals['selected_activity']?" selected ":'' }} >{{ $an_activity->name }}</option>
-                                                        @endforeach
-                                                    </select>
-                                                </div>
-                                            </div>
+                                        <label class="control-label">Select Activity</label>
+                                        <div class="input-group input-medium">
+                                            <select id="header_activity_selected" class="form-control reload_calendar_page" style="border-radius:4px;">
+                                                @foreach($all_activities as $an_activity)
+                                                    <option value="{{ $an_activity->id }}" {{ $an_activity->id==$header_vals['selected_activity']?" selected ":'' }} >{{ $an_activity->name }}</option>
+                                                @endforeach
+                                            </select>
                                         </div>
                                     </div>
                                 </div>
@@ -140,7 +94,7 @@
                             <div class="portlet box green">
                                 <div class="portlet-title">
                                     <div class="caption">
-                                        <i class="fa fa-cogs"></i>Booking Calendar for {{\Carbon\Carbon::now()->format('d-m-Y')}} </div>
+                                        <i class="fa fa-cogs"></i>Booking Calendar for {{$header_vals['date_selected']}} </div>
                                     <div class="tools ">
                                         <a href="{{ route('front_calendar_booking_all', ['day'=>$header_vals['prev_date'],'location'=>$header_vals['selected_location'],'activity'=>$header_vals['selected_activity']]) }}" class="bs-glyphicons font-white" style="margin-bottom:0px;"> <span class="glyphicon glyphicon-chevron-left"> </span> Prev </a>
                                         <a href="javascript:;" class="bs-glyphicons font-white" style="margin-bottom:0px;"> <span class="glyphicon glyphicon-repeat"> </span> Reload </a>

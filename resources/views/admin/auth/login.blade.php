@@ -54,7 +54,7 @@ License: You must have a valid license purchased only from themeforest(the above
     <div class="row bs-reset">
         <div class="col-md-6 bs-reset">
             <div class="login-bg" style="background-image:url(../assets/pages/img/login/bg1.jpg)">
-                <img class="login-logo" src="../assets/pages/img/login/logo.png" /> </div>
+                <img class="login-logo" src="../assets/pages/img/login/logo_sqf.png" /> </div>
         </div>
         <div class="col-md-6 login-container bs-reset">
             <div class="login-content">
@@ -124,7 +124,7 @@ License: You must have a valid license purchased only from themeforest(the above
                     </div>
                     <div class="col-xs-7 bs-reset">
                         <div class="login-copyright text-right">
-                            <p>Copyright &copy; Keenthemes 2015</p>
+                            <p>Copyright &copy; BookingSystem 2015</p>
                         </div>
                     </div>
                 </div>
