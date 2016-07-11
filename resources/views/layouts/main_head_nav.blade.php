@@ -448,8 +448,13 @@
                         </a>
                         <ul class="dropdown-menu pull-left">
                             <li class=" ">
-                                <a href="index.html" class="nav-link  ">
-                                    <i class="icon-bar-chart"></i> Login
+                                <a href="#" class=" ">
+                                    <i class="icon-bar-chart"></i> Membership Types
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" class=" ">
+                                    <i class="icon-bar-chart"></i> Locations
                                 </a>
                             </li>
                         </ul>

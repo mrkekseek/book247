@@ -39,15 +39,11 @@
                 <!-- BEGIN PAGE BREADCRUMBS -->
                 <ul class="page-breadcrumb breadcrumb">
                     <li>
-                        <a href="index.html">Home</a>
+                        <a href="{{route('homepage')}}">Home</a>
                         <i class="fa fa-circle"></i>
                     </li>
                     <li>
-                        <a href="#">Pages</a>
-                        <i class="fa fa-circle"></i>
-                    </li>
-                    <li>
-                        <span>eCommerce</span>
+                        <span>SQF Calendar Booking</span>
                     </li>
                 </ul>
                 <!-- END PAGE BREADCRUMBS -->
