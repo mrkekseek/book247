@@ -138,14 +138,26 @@ class BookingController extends Controller
                 if ($the_booking->payment_type=='cash'){
                     $the_invoice = $the_booking->add_invoice();
 
-                    Activity::log([
-                        'contentId'     => $user->id,
-                        'contentType'   => 'booking_invoices',
-                        'action'        => 'New Booking Invoice',
-                        'description'   => 'New booking invoice created with id : '.$the_invoice->id,
-                        'details'       => 'Booking ID : '.$the_booking->id,
-                        'updated'       => false,
-                    ]);
+                    if (isset($the_invoice['success'])){
+                        Activity::log([
+                            'contentId'     => $user->id,
+                            'contentType'   => 'booking_invoices',
+                            'action'        => 'New Booking Invoice',
+                            'description'   => 'New booking invoice failed with message : '.json_encode($the_invoice['errors']),
+                            'details'       => 'Booking ID : '.$the_booking->id,
+                            'updated'       => false,
+                        ]);
+                    }
+                    else{
+                        Activity::log([
+                            'contentId'     => $user->id,
+                            'contentType'   => 'booking_invoices',
+                            'action'        => 'New Booking Invoice',
+                            'description'   => 'New booking invoice created with id : '.@$the_invoice->id,
+                            'details'       => 'Booking ID : '.$the_booking->id,
+                            'updated'       => false,
+                        ]);
+                    }
                 }
             }
             else{

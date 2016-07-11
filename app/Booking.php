@@ -244,7 +244,7 @@ class Booking extends Model
         try {
             $the_invoice = BookingInvoice::create($fillable);
         } catch (Exception $e) {
-            return ['success' => false, 'errors' => 'Booking Error'];
+            return ['success' => false, 'errors' => 'Booking adding invoice to selected booking'];
         }
 
         $loc = ShopLocations::where('id','=',$this->location_id)->get()->first();
