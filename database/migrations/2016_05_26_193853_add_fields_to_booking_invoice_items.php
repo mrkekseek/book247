@@ -19,8 +19,8 @@ class AddFieldsToBookingInvoiceItems extends Migration
             $table->date('booking_date')->after('quantity');
             $table->string('booking_time_interval', 50)->after('booking_date');
             $table->float('price')->after('booking_time_interval');
-            $table->tinyInteger('vat')->after('price');
-            $table->tinyInteger('discount')->after('vat');
+            $table->float('vat')->after('price');
+            $table->float('discount')->after('vat');
             $table->float('total_price')->after('discount');
         });
     }

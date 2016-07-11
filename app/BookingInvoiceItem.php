@@ -56,8 +56,8 @@ class BookingInvoiceItem extends Model
                     'booking_date'          => 'required|date',
                     'booking_time_interval' => 'required',
                     'price'                 => 'required|numeric',
-                    'vat'                   => 'required|integer',
-                    'discount'              => 'required|integer',
+                    'vat'                   => 'required|numeric',
+                    'discount'              => 'required|numeric',
                     'total_price'           => 'required|numeric'
                 ];
             }
@@ -73,8 +73,8 @@ class BookingInvoiceItem extends Model
                     'booking_date'          => 'required|date',
                     'booking_time_interval' => 'required',
                     'price'                 => 'required|numeric',
-                    'vat'                   => 'required|integer',
-                    'discount'              => 'required|integer',
+                    'vat'                   => 'required|numeric',
+                    'discount'              => 'required|numeric',
                     'total_price'           => 'required|numeric'
                 ];
             }
