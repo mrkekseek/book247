@@ -590,7 +590,6 @@
                 cache: false,
                 data: {
                     'limit': 5,
-                    'userID': $('input[name="booking_made_by"]').val()
                 },
                 success: function(data){
                     var all_list = "";

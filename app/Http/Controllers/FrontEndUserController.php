@@ -1142,11 +1142,15 @@ class FrontEndUserController extends Controller
             $user_id = $user->id;
         }
 
+        $is_staff = false;
+        if (!$user->hasRole(['front-member','front-user'])){
+            $is_staff = true;
+        }
         $free_open_bookings = 5;
 
         $vars = $request->only('userID');
         if (isset($vars['userID'])){
-            if ($user_id!=$vars['userID']){
+            if ($user_id!=$vars['userID'] && $is_staff==true){
                 $user = User::find($vars['userID']);
                 if ($user) {
                     $user_id = $user->id;
