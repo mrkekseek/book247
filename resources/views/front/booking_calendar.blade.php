@@ -156,7 +156,7 @@
                                                                 <div class="booking_summary_price_membership"></div>
                                                                 <div class="form-actions right" style="padding-top:5px; padding-bottom:5px;">
                                                                     <a class="btn blue-hoki booking_step_back" style="padding-top:4px; padding-bottom:4px;">Back</a>
-                                                                    <a class="btn blue-hoki " style="padding-top:4px; padding-bottom:4px;" onclick="cancel_booking()">Cancel</a>
+                                                                    <a class="btn blue-hoki " style="padding-top:4px; padding-bottom:4px;" onclick="cancel_booking_keys(-1)">Cancel</a>
                                                                     <a class="btn blue-hoki " style="padding-top:4px; padding-bottom:4px;" onclick="confirm_booking()">Confirm</a>
                                                                 </div>
                                                             </div>

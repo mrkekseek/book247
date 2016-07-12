@@ -1571,11 +1571,16 @@ class BookingController extends Controller
         }
 
         // check if the member that makes the booking exists
-        $by_user = User::where('id','=',$vars['by_player'])->get()->first();
-        if (!$by_user){
-            return [
-                'success' => false,
-                'errors' => 'Member not found or can\'t have more bookings'];
+        if (!isset($vars['by_player'])){
+            $by_user = $user;
+        }
+        else{
+            $by_user = User::where('id','=',$vars['by_player'])->get()->first();
+            if (!$by_user){
+                return [
+                    'success' => false,
+                    'errors' => 'Member not found or can\'t have more bookings'];
+            }
         }
 
         // check if the player that the booking is made for exists
