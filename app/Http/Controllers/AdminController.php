@@ -7,6 +7,7 @@ use App\Role;
 use Illuminate\Http\Request;
 use Auth;
 use Illuminate\Support\MessageBag;
+use Carbon\Carbon;
 
 class AdminController extends Controller
 {
@@ -54,7 +55,13 @@ class AdminController extends Controller
     {
         if (Auth::attempt(['email' => $request->input('username'), 'password' => $request->input('password')])) {
             // Authentication passed...
-            return redirect()->intended('admin');
+            $user = Auth::user();
+            if ($user->hasRole(['owner','manager'])){
+                return redirect()->route('bookings/location_calendar_day_view',['day'=>\Carbon\Carbon::now()->format('d-m-Y')]);
+            }
+            else{
+                return redirect()->intended('admin');
+            }
         }
         else {
             $errors = new MessageBag([

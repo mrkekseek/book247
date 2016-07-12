@@ -159,6 +159,7 @@ return [
         Webpatser\Countries\CountriesServiceProvider::class,
         Snowfire\Beautymail\BeautymailServiceProvider::class,
         Regulus\ActivityLog\ActivityLogServiceProvider::class,
+        Barryvdh\Debugbar\ServiceProvider::class,
 
     ],
 
@@ -208,6 +209,7 @@ return [
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View'      => Illuminate\Support\Facades\View::class,
         'Activity'  => Regulus\ActivityLog\Models\Activity::class,
+        'Debugbar' => Barryvdh\Debugbar\Facade::class,
     ],
 
 ];

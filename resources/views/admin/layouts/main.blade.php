@@ -33,7 +33,7 @@
     <link rel="shortcut icon" href="{{ asset('favicon.ico') }}" /> </head>
 <!-- END HEAD -->
 
-<body class=" @yield('pageBodyClass')">
+<body class=" @yield('pageBodyClass') ">
 <!-- BEGIN HEADER -->
 <div class="page-header navbar navbar-fixed-top">
     <!-- BEGIN HEADER INNER -->

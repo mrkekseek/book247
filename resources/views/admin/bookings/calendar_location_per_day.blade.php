@@ -23,39 +23,11 @@
 @endsection
 
 @section('title', 'Back-end bookings - Calendar View per Location')
-@section('pageBodyClass','page-container-bg-solid page-header-fixed page-sidebar-closed-hide-logo')
+@section('pageBodyClass','page-container-bg-solid page-header-fixed page-sidebar-closed-hide-logo page-sidebar-closed')
 
 @section('pageContentBody')
     <div class="page-content">
-        <!-- BEGIN PAGE HEAD-->
-        <div class="page-head">
-            <!-- BEGIN PAGE TITLE -->
-            <div class="page-title">
-                <h1>Bookings - Calendar View
-                    <small>for specified day</small>
-                </h1>
-            </div>
-            <!-- END PAGE TITLE -->
-        </div>
-        <!-- END PAGE HEAD-->
-        <!-- BEGIN PAGE BREADCRUMB -->
-        <ul class="page-breadcrumb breadcrumb">
-            @foreach($breadcrumbs as $key=>$val)
-                @if ($val=='')
-                    <li>
-                        <span class="active">{{$key}}</span>
-                    </li>
-                @else
-                    <li>
-                        <a href="{{$val}}">{{$key}}</a>
-                        <i class="fa fa-circle"></i>
-                    </li>
-                @endif
-            @endforeach
-        </ul>
-        <!-- END PAGE BREADCRUMB -->
         <!-- BEGIN PAGE BASE CONTENT -->
-
         <div class="row">
             <div class="col-md-12">
                 <div class="portlet light form-fit bordered form-horizontal bg-green-haze bg-font-green-haze" style="border-radius:5px; margin-bottom:10px;">
@@ -109,7 +81,7 @@
                 <div class="portlet box green">
                     <div class="portlet-title">
                         <div class="caption">
-                            <i class="fa fa-cogs"></i>Responsive Flip Scroll Tables </div>
+                            <i class="fa fa-cogs"></i>Calendar view Bookings for {{ $header_vals['date_selected'] }} </div>
                         <div class="tools ">
                             <a href="{{ route('bookings/location_calendar_day_view_all', ['day'=>$header_vals['prev_date'],'location'=>$header_vals['selected_location'],'activity'=>$header_vals['selected_activity']]) }}" class="bs-glyphicons font-white" style="margin-bottom:0px;"> <span class="glyphicon glyphicon-chevron-left"> </span> Prev </a>
                             <a href="javascript:;" class="bs-glyphicons font-white" style="margin-bottom:0px;"> <span class="glyphicon glyphicon-repeat"> </span> Reload </a>
@@ -134,7 +106,7 @@
                                     <td class="{{ isset($location_bookings[$key][$resource['id']]['color_stripe'])?$location_bookings[$key][$resource['id']]['color_stripe']:$hour['color_stripe'] }}
                                         {{ ( $hour['color_stripe']=='' && !isset($location_bookings[$key][$resource['id']]['color_stripe']) )?' isfreetime':'' }}" style="padding:4px 8px;">
                                         @if ( isset($location_bookings[$key][$resource['id']]) )
-                                        <a class="font-white" href="">{{ @$location_bookings[$key][$resource['id']]['player_name'] }}</a>
+                                        <a class="font-white" href="{{ @$location_bookings[$key][$resource['id']]['player_link'] }}">{{ @$location_bookings[$key][$resource['id']]['player_name'] }}</a>
                                         <div class="actions" search-key="{{ $location_bookings[$key][$resource['id']]['search_key'] }}" style="float:right;">
                                             @if ($location_bookings[$key][$resource['id']]['button_show'] == 'is_disabled')
                                                 <a class="btn btn-circle btn-icon-only {{ $button_color['is_disabled'] }} border-white"
@@ -211,11 +183,11 @@
                                 <div class="col-md-8" style="font-size:15px;">
                                     <span class="item-box">
                                         <span class="item font-green-jungle">
-                                            <span class="icon-like" aria-hidden="true"></span> &nbsp;<span class="show_bookings">-</span> : Show On bookings </span>
+                                            <span class="icon-like" aria-hidden="true"></span> &nbsp;<span class="show_bookings">-</span> : Showed Up </span>
                                     </span><br />
                                     <span class="item-box">
                                         <span class="item font-red-thunderbird">
-                                            <span class="icon-dislike" aria-hidden="true"></span> &nbsp;<span class="no_show_bookings">-</span> : No Show bookings </span>
+                                            <span class="icon-dislike" aria-hidden="true"></span> &nbsp;<span class="no_show_bookings">-</span> : No Show  </span>
                                     </span><br />
                                     <span class="item-box">
                                         <span class="item font-yellow-mint">

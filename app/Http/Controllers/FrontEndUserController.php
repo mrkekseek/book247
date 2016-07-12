@@ -367,7 +367,7 @@ class FrontEndUserController extends Controller
                     ->orderBy('date_of_booking','desc')
                     ->orderBy('booking_time_start','desc')
                     ->get();
-        if ($bookings){
+        if (sizeof($bookings)>0){
             $buttons = [];
             $colorStatus = '';
             foreach ($bookings as $booking){
@@ -446,6 +446,8 @@ class FrontEndUserController extends Controller
                 ];
             }
 
+            unset($bookings); unset($booking);
+
             $nr = 1;
             $index = [];
             $lastMan = 0;
@@ -518,8 +520,8 @@ class FrontEndUserController extends Controller
             'text_parts'  => $text_parts,
             'in_sidebar'  => $sidebar_link,
             'bookings'    => $bookingsList,
-            'multipleBookingsIndex' => $index,
-            'lastTen' =>  $lastTenBookings
+            'multipleBookingsIndex' => isset($index)?$index:[],
+            'lastTen' =>  isset($lastTenBookings)?$lastTenBookings:[]
         ]);
     }
 

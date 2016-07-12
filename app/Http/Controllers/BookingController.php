@@ -1111,7 +1111,8 @@ class BookingController extends Controller
             'button_color'  => $buttons_color,
             'header_vals'   => $header_vals,
             'all_locations' => $all_locations,
-            'all_activities'=> $all_activities
+            'all_activities'=> $all_activities,
+            'is_close_menu' => true
         ]);
     }
 

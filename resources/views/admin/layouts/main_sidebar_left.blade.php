@@ -6,7 +6,7 @@
     <!-- DOC: Set data-auto-scroll="false" to disable the sidebar from auto scrolling/focusing -->
     <!-- DOC: Set data-keep-expand="true" to keep the submenues expanded -->
     <!-- DOC: Set data-auto-speed="200" to adjust the sub menu slide up/down speed -->
-    <ul class="page-sidebar-menu" data-keep-expanded="false" data-auto-scroll="true" data-slide-speed="200">
+    <ul class="page-sidebar-menu {{isset($is_close_menu)?'page-sidebar-menu-closed':''}} " data-keep-expanded="false" data-auto-scroll="true" data-slide-speed="200">
         <li class="nav-item start {{ $in_sidebar=='admin-home_dashboard'?'active open':'' }}">
             <a href="javascript:;" class="nav-link nav-toggle ">
                 <i class="icon-home"></i>
@@ -15,10 +15,10 @@
                 <span class="arrow open"></span>
             </a>
             <ul class="sub-menu">
-                <li class="nav-item start {{ $in_sidebar=='admin-home_dashboard'?'active open':'' }}">
-                    <a href="{{route('admin')}}" class="nav-link ">
+                <li class="nav-item start">
+                    <a href="{{route('bookings/location_calendar_day_view',['day'=>\Carbon\Carbon::now()->format('d-m-Y')])}}" class="nav-link ">
                         <i class="icon-bar-chart"></i>
-                        <span class="title">Home Screen</span>
+                        <span class="title">Bookings Calendar View</span>
                     </a>
                 </li>
                 <li class="nav-item start">
@@ -54,76 +54,17 @@
                 @endif
             </ul>
         </li>
-        <li class="nav-item {{ in_array($in_sidebar, array('admin-bookings-calendar_view'))?'active open':'' }}  ">
-            <a href="javascript:;" class="nav-link nav-toggle">
-                <i class="icon-feed"></i>
-                <span class="title">Bookings</span>
-                <span class="arrow"></span>
-            </a>
-            <ul class="sub-menu">
-                <li class="nav-item {{ $in_sidebar=='admin-bookings-calendar_view'?'active open':'' }} ">
-                    <a href="{{ route('bookings/location_calendar_day_view',['day'=>\Carbon\Carbon::now()->format('d-m-Y')]) }}" class="nav-link ">
-                        <span class="title">Calendar View</span>
-                    </a>
-                </li>
-            </ul>
-        </li>
-        <li class="nav-item  ">
-            <a href="javascript:;" class="nav-link nav-toggle">
-                <i class=" icon-wrench"></i>
-                <span class="title">Custom Layouts</span>
-                <span class="arrow"></span>
-            </a>
-            <ul class="sub-menu">
-                <li class="nav-item  ">
-                    <a href="layout_disabled_menu.html" class="nav-link ">
-                        <span class="title">Disabled Menu Links</span>
-                    </a>
-                </li>
-            </ul>
-        </li>
+
         <li class="heading">
-            <h3 class="uppercase">Finance</h3>
+            <h3 class="uppercase">Bookings</h3>
         </li>
-        <li class="nav-item  ">
-            <a href="javascript:;" class="nav-link nav-toggle">
-                <i class="icon-basket"></i>
-                <span class="title">eCommerce</span>
-                <span class="arrow"></span>
+        <li class="nav-item {{ in_array($in_sidebar, array('admin-bookings-calendar_view'))?'active open':'' }}  ">
+            <a href="{{ route('bookings/location_calendar_day_view',['day'=>\Carbon\Carbon::now()->format('d-m-Y')]) }}" class="nav-link nav-toggle">
+                <i class="icon-feed"></i>
+                <span class="title">Calendar View</span>
             </a>
-            <ul class="sub-menu">
-                <li class="nav-item  ">
-                    <a href="ecommerce_index.html" class="nav-link ">
-                        <i class="icon-home"></i>
-                        <span class="title">Dashboard</span>
-                    </a>
-                </li>
-                <li class="nav-item  ">
-                    <a href="ecommerce_orders.html" class="nav-link ">
-                        <i class="icon-basket"></i>
-                        <span class="title">Orders</span>
-                    </a>
-                </li>
-                <li class="nav-item  ">
-                    <a href="ecommerce_orders_view.html" class="nav-link ">
-                        <i class="icon-tag"></i>
-                        <span class="title">Order View</span>
-                    </a>
-                </li>
-                <li class="nav-item  ">
-                    <a href="ecommerce_products.html" class="nav-link ">
-                        <i class="icon-graph"></i>
-                        <span class="title">Products</span>
-                    </a>
-                </li>
-                <li class="nav-item  ">
-                    <a href="ecommerce_products_edit.html" class="nav-link ">
-                        <i class="icon-graph"></i>
-                        <span class="title">Product Edit</span>
-                    </a>
-                </li>
-            </ul>
         </li>
+
         <li class="heading">
             <h3 class="uppercase">Administration</h3>
         </li>
