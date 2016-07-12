@@ -25,6 +25,7 @@ use DatePeriod;
 use DB;
 use Regulus\ActivityLog\Models\Activity;
 use Snowfire\Beautymail\Beautymail;
+use Cache;
 
 class BookingController extends Controller
 {
@@ -1263,6 +1264,14 @@ class BookingController extends Controller
         $bookings = $q->get();
 
         if ($bookings){
+            /*$value = Cache::remember('users', 60, function() {
+                return DB::table('users')->get();
+            });
+
+            foreach($value as $k=>$a){
+                Cache::put('user-'.$a->id,$a,60);
+            }*/
+
             foreach ($bookings as $booking){
                 $formatted_booking = [
                     'search_key' => $booking->search_key,
@@ -1272,11 +1281,20 @@ class BookingController extends Controller
                     'color_stripe' => 'bg-red-flamingo bg-font-red-flamingo'];
 
                 if ($show_more){
-                    $player = User::find($booking->for_user_id);
+                    $player = User::where('id','=',$booking->for_user_id)->get()->first();
+                    //$player = Cache::get('user-'.$booking->for_user_id);
+                    if ($player->hasRole(['front-user','front-member'])){
+                        $player_link = route('admin/front_users/view_user',['id'=>$player->id]);
+                    }
+                    else{
+                        $player_link = route('admin/back_users/view_user/',['id'=>$player->id]);
+                    }
+
                     $formatted_booking['payment_type'] = $booking->payment_type;
                     $formatted_booking['payment_amount'] = $booking->payment_amount;
                     $formatted_booking['invoice'] = $booking->invoice_id;
                     $formatted_booking['player_name'] = $player->first_name.' '.$player->middle_name.' '.$player->last_name;
+                    $formatted_booking['player_link'] = $player_link;
                     $formatted_booking['id'] = $booking->id;
 
                     if ($formatted_booking['payment_type'] == 'membership' && $booking->status!='pending'){

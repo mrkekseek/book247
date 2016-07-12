@@ -106,7 +106,7 @@
                                     <td class="{{ isset($location_bookings[$key][$resource['id']]['color_stripe'])?$location_bookings[$key][$resource['id']]['color_stripe']:$hour['color_stripe'] }}
                                         {{ ( $hour['color_stripe']=='' && !isset($location_bookings[$key][$resource['id']]['color_stripe']) )?' isfreetime':'' }}" style="padding:4px 8px;">
                                         @if ( isset($location_bookings[$key][$resource['id']]) )
-                                        <a class="font-white" href="{{ @$location_bookings[$key][$resource['id']]['player_link'] }}">{{ @$location_bookings[$key][$resource['id']]['player_name'] }}</a>
+                                        <a class="font-white" href="{{ @$location_bookings[$key][$resource['id']]['player_link'] }}" target="_blank">{{ @$location_bookings[$key][$resource['id']]['player_name'] }}</a>
                                         <div class="actions" search-key="{{ $location_bookings[$key][$resource['id']]['search_key'] }}" style="float:right;">
                                             @if ($location_bookings[$key][$resource['id']]['button_show'] == 'is_disabled')
                                                 <a class="btn btn-circle btn-icon-only {{ $button_color['is_disabled'] }} border-white"
