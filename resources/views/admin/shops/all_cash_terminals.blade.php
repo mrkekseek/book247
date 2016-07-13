@@ -34,33 +34,11 @@
             <!-- END PAGE TITLE -->
         </div>
         <!-- END PAGE HEAD-->
-        <!-- BEGIN PAGE BREADCRUMB -->
-        <ul class="page-breadcrumb breadcrumb">
-            @foreach($breadcrumbs as $key=>$val)
-                @if ($val=='')
-                    <li>
-                        <span class="active">{{$key}}</span>
-                    </li>
-                @else
-                    <li>
-                        <a href="{{$val}}">{{$key}}</a>
-                        <i class="fa fa-circle"></i>
-                    </li>
-                @endif
-            @endforeach
-        </ul>
-        <!-- END PAGE BREADCRUMB -->
         <!-- BEGIN PAGE BASE CONTENT -->
         <div class="row">
             <div class="col-md-12">
                 <!-- BEGIN EXAMPLE TABLE PORTLET-->
                 <div class="portlet light bordered">
-                    <div class="portlet-title">
-                        <div class="caption font-dark">
-                            <i class="icon-settings font-dark"></i>
-                            <span class="caption-subject bold uppercase"> Managed Table</span>
-                        </div>
-                    </div>
                     <div class="portlet-body">
                         <div class="table-toolbar">
                             <div class="row">
@@ -399,6 +377,13 @@
             });
         }
 
+        /* Start - All admin scripts */
+        function booking_calendar_view_redirect(selected_date){
+            var calendar_book = "{{route('bookings/location_calendar_day_view',['day'=>'##day##'])}}";
+            the_link = calendar_book.replace('##day##', $('#calendar_booking_top_menu').data('datepicker').getFormattedDate('dd-mm-yyyy'));
+            window.location.href = the_link;
+        }
+
         function show_notification(title_heading, message, theme, life, sticky) {
             var settings = {
                 theme: theme,
@@ -415,5 +400,6 @@
             $.notific8('zindex', 11500);
             $.notific8($.trim(message), settings);
         }
+        /* Stop - All admin scripts */
     </script>
 @endsection

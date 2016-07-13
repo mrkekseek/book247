@@ -32,22 +32,6 @@
             <!-- END PAGE TITLE -->
         </div>
         <!-- END PAGE HEAD-->
-        <!-- BEGIN PAGE BREADCRUMB -->
-        <ul class="page-breadcrumb breadcrumb">
-            @foreach($breadcrumbs as $key=>$val)
-                @if ($val=='')
-                    <li>
-                        <span class="active">{{$key}}</span>
-                    </li>
-                @else
-                    <li>
-                        <a href="{{$val}}">{{$key}}</a>
-                        <i class="fa fa-circle"></i>
-                    </li>
-                @endif
-            @endforeach
-        </ul>
-        <!-- END PAGE BREADCRUMB -->
         <!-- BEGIN PAGE BASE CONTENT -->
         <div class="row">
             <div class="col-md-12">
@@ -106,7 +90,7 @@
                     <div class="modal-content">
                         <div class="modal-header">
                             <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
-                            <h4 class="modal-title">Start Dragging Here</h4>
+                            <h4 class="modal-title">Add new Front User/Customer</h4>
                         </div>
                         <div class="modal-body">
                             <form action="#" id="form_sample_2" class="form-horizontal">
@@ -174,21 +158,7 @@
                                                 <input type="text" class="form-control" name="email" /> </div>
                                         </div>
                                     </div>
-                                    <div class="form-group">
-                                        <label class="control-label col-md-4">User Type
-                                            <span class="required"> * </span>
-                                        </label>
-                                        <div class="col-md-4">
-                                            <div class="input-icon right">
-                                                <i class="fa"></i>
-                                                <select class="form-control" name="user_type">
-                                                    @foreach($all_roles as $role)
-                                                        <option value="{{$role->id}}">{{$role->name}}</option>
-                                                    @endforeach
-                                                </select> </div>
-                                            <span class="help-block"> e.g: 5500 0000 0000 0004 </span>
-                                        </div>
-                                    </div>
+                                    <input type="hidden" name="user_type" value="{{$role->id}}" />
                                 </div>
                                 {!! csrf_field() !!}
                                 <input type="hidden" name="_method" value="put" />
@@ -371,5 +341,30 @@
         $(document).ready(function(){
             FormValidation.init();
         });
+
+        /* Start - All admin scripts */
+        function booking_calendar_view_redirect(selected_date){
+            var calendar_book = "{{route('bookings/location_calendar_day_view',['day'=>'##day##'])}}";
+            the_link = calendar_book.replace('##day##', $('#calendar_booking_top_menu').data('datepicker').getFormattedDate('dd-mm-yyyy'));
+            window.location.href = the_link;
+        }
+
+        function show_notification(title_heading, message, theme, life, sticky) {
+            var settings = {
+                theme: theme,
+                sticky: sticky,
+                horizontalEdge: 'top',
+                verticalEdge: 'right',
+                life : life,
+            };
+
+            if ($.trim(title_heading) != '') {
+                settings.heading = title_heading;
+            }
+
+            $.notific8('zindex', 11500);
+            $.notific8($.trim(message), settings);
+        }
+        /* Stop - All admin scripts */
     </script>
 @endsection

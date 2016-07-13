@@ -24,34 +24,7 @@
 @section('pageBodyClass','page-container-bg-solid page-header-fixed page-sidebar-closed-hide-logo')
 
 @section('pageContentBody')
-    <div class="page-content">
-        <!-- BEGIN PAGE HEAD-->
-        <div class="page-head">
-            <!-- BEGIN PAGE TITLE -->
-            <div class="page-title">
-                <h1>{!!$text_parts['title']!!}
-                    <small>{!!$text_parts['subtitle']!!}</small>
-                </h1>
-            </div>
-            <!-- END PAGE TITLE -->
-        </div>
-        <!-- END PAGE HEAD-->
-        <!-- BEGIN PAGE BREADCRUMB -->
-        <ul class="page-breadcrumb breadcrumb">
-            @foreach($breadcrumbs as $key=>$val)
-                @if ($val=='')
-                    <li>
-                        <span class="active">{{$key}}</span>
-                    </li>
-                @else
-                    <li>
-                        <a href="{{$val}}">{{$key}}</a>
-                        <i class="fa fa-circle"></i>
-                    </li>
-                @endif
-            @endforeach
-        </ul>
-        <!-- END PAGE BREADCRUMB -->
+    <div class="page-content fix_padding_top_0">
         <!-- BEGIN PAGE BASE CONTENT -->
         <div class="row">
             <div class="col-md-12">
@@ -698,6 +671,13 @@
             $('#all_booking_notes').hide();
         });
 
+        /* Start - All admin scripts */
+        function booking_calendar_view_redirect(selected_date){
+            var calendar_book = "{{route('bookings/location_calendar_day_view',['day'=>'##day##'])}}";
+            the_link = calendar_book.replace('##day##', $('#calendar_booking_top_menu').data('datepicker').getFormattedDate('dd-mm-yyyy'));
+            window.location.href = the_link;
+        }
+
         function show_notification(title_heading, message, theme, life, sticky) {
             var settings = {
                 theme: theme,
@@ -714,5 +694,6 @@
             $.notific8('zindex', 11500);
             $.notific8($.trim(message), settings);
         }
+        /* Stop - All admin scripts */
     </script>
 @endsection

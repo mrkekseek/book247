@@ -26,7 +26,7 @@
 @section('pageBodyClass','page-container-bg-solid page-header-fixed page-sidebar-closed-hide-logo page-sidebar-closed')
 
 @section('pageContentBody')
-    <div class="page-content">
+    <div class="page-content fix_padding_top_0">
         <!-- BEGIN PAGE BASE CONTENT -->
         <div class="row">
             <div class="col-md-12">
@@ -1724,6 +1724,13 @@
         }
         /* Timer function - Stop */
 
+        /* Start - All admin scripts */
+        function booking_calendar_view_redirect(selected_date){
+            var calendar_book = "{{route('bookings/location_calendar_day_view',['day'=>'##day##'])}}";
+            the_link = calendar_book.replace('##day##', $('#calendar_booking_top_menu').data('datepicker').getFormattedDate('dd-mm-yyyy'));
+            window.location.href = the_link;
+        }
+
         function show_notification(title_heading, message, theme, life, sticky) {
             var settings = {
                 theme: theme,
@@ -1740,5 +1747,6 @@
             $.notific8('zindex', 11500);
             $.notific8($.trim(message), settings);
         }
+        /* Stop - All admin scripts */
     </script>
 @endsection

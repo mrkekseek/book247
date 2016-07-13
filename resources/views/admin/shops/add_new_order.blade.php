@@ -27,22 +27,6 @@
 
 @section('pageContentBody')
     <div class="page-content">
-        <!-- BEGIN PAGE BREADCRUMB -->
-        <ul class="page-breadcrumb breadcrumb">
-            @foreach($breadcrumbs as $key=>$val)
-                @if ($val=='')
-                    <li>
-                        <span class="active">{{$key}}</span>
-                    </li>
-                @else
-                    <li>
-                        <a href="{{$val}}">{{$key}}</a>
-                        <i class="fa fa-circle"></i>
-                    </li>
-                @endif
-            @endforeach
-        </ul>
-        <!-- END PAGE BREADCRUMB -->
         <!-- BEGIN PAGE BASE CONTENT -->
         <div class="row">
             <div class="col-md-12">
@@ -532,15 +516,6 @@
             </div>
         </div>
         <!-- END PAGE BASE CONTENT -->
-    </div>
-@endsection
-
-@section('pageFooterInner')
-    <div class="page-footer-inner"> 2014 &copy; Metronic by keenthemes.
-        <a href="http://themeforest.net/item/metronic-responsive-admin-dashboard-template/4021469?ref=keenthemes" title="Purchase Metronic just for 27$ and get lifetime updates for free" target="_blank">Purchase Metronic!</a>
-    </div>
-    <div class="scroll-to-top">
-        <i class="icon-arrow-up"></i>
     </div>
 @endsection
 
@@ -1144,6 +1119,13 @@
             $(".all_total_paid").html(totalPaid);
         }
 
+        /* Start - All admin scripts */
+        function booking_calendar_view_redirect(selected_date){
+            var calendar_book = "{{route('bookings/location_calendar_day_view',['day'=>'##day##'])}}";
+            the_link = calendar_book.replace('##day##', $('#calendar_booking_top_menu').data('datepicker').getFormattedDate('dd-mm-yyyy'));
+            window.location.href = the_link;
+        }
+
         function show_notification(title_heading, message, theme, life, sticky) {
             var settings = {
                 theme: theme,
@@ -1160,5 +1142,6 @@
             $.notific8('zindex', 11500);
             $.notific8($.trim(message), settings);
         }
+        /* Stop - All admin scripts */
     </script>
 @endsection

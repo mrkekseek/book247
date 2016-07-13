@@ -446,13 +446,20 @@
             FormValidation.init();
         });
 
-        function show_notification(title_heading, message, theme, life, sticky, reload) {
+        /* Start - All admin scripts */
+        function booking_calendar_view_redirect(selected_date){
+            var calendar_book = "{{route('bookings/location_calendar_day_view',['day'=>'##day##'])}}";
+            the_link = calendar_book.replace('##day##', $('#calendar_booking_top_menu').data('datepicker').getFormattedDate('dd-mm-yyyy'));
+            window.location.href = the_link;
+        }
+
+        function show_notification(title_heading, message, theme, life, sticky) {
             var settings = {
                 theme: theme,
                 sticky: sticky,
                 horizontalEdge: 'top',
                 verticalEdge: 'right',
-                life : life-500,
+                life : life,
             };
 
             if ($.trim(title_heading) != '') {
@@ -461,11 +468,7 @@
 
             $.notific8('zindex', 11500);
             $.notific8($.trim(message), settings);
-            if (reload) {
-                setTimeout(function () {
-                    location.reload();
-                }, life + 500);
-            }
         }
+        /* Stop - All admin scripts */
     </script>
 @endsection

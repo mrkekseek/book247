@@ -342,8 +342,8 @@ class ShopController extends Controller
             'Permissions'        => '',
         ];
         $text_parts  = [
-            'title'     => 'All Permissions',
-            'subtitle'  => 'add/edit/view permissions',
+            'title'     => 'All Cash Terminals',
+            'subtitle'  => 'add/edit/view terminals',
             'table_head_text1' => 'Backend Roles Permissions List'
         ];
         $sidebar_link= 'admin-backend-shops-cash_terminals';
@@ -470,8 +470,8 @@ class ShopController extends Controller
             'Shop Locations'    => '',
         ];
         $text_parts  = [
-            'title'     => 'Shop Locations',
-            'subtitle'  => 'add/edit/view locations',
+            'title'     => 'Warehouse Inventory',
+            'subtitle'  => 'stock and transfers',
             'table_head_text1' => 'Backend Shop Locations List'
         ];
         $sidebar_link= 'admin-backend-inventory-and-transfers';

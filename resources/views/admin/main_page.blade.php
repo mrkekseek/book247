@@ -925,3 +925,38 @@
     <script src="../assets/layouts/layout4/scripts/demo.min.js" type="text/javascript"></script>
     <script src="../assets/layouts/global/scripts/quick-sidebar.min.js" type="text/javascript"></script>
 @endsection
+
+@section('pageCustomJScripts')
+    <script type="text/javascript">
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+
+        /* Start - All admin scripts */
+        function booking_calendar_view_redirect(selected_date){
+            var calendar_book = "{{route('bookings/location_calendar_day_view',['day'=>'##day##'])}}";
+            the_link = calendar_book.replace('##day##', $('#calendar_booking_top_menu').data('datepicker').getFormattedDate('dd-mm-yyyy'));
+            window.location.href = the_link;
+        }
+
+        function show_notification(title_heading, message, theme, life, sticky) {
+            var settings = {
+                theme: theme,
+                sticky: sticky,
+                horizontalEdge: 'top',
+                verticalEdge: 'right',
+                life : life,
+            };
+
+            if ($.trim(title_heading) != '') {
+                settings.heading = title_heading;
+            }
+
+            $.notific8('zindex', 11500);
+            $.notific8($.trim(message), settings);
+        }
+        /* Stop - All admin scripts */
+    </script>
+@endsection

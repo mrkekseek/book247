@@ -59,8 +59,8 @@ class ProductController extends Controller
             'All Backend Users' => '',
         ];
         $text_parts  = [
-            'title'     => 'Back-End Users',
-            'subtitle'  => 'view all users',
+            'title'     => 'Products',
+            'subtitle'  => 'view all system products',
             'table_head_text1' => 'Backend User List'
         ];
         $sidebar_link= 'admin-backend-shop-products-list';
@@ -785,7 +785,7 @@ class ProductController extends Controller
             'Inventory'         => '',
         ];
         $text_parts  = [
-            'title'     => 'Company Inventory',
+            'title'     => 'Products Inventory Log',
             'subtitle'  => 'in / out',
             'table_head_text' => 'Inventory',
         ];

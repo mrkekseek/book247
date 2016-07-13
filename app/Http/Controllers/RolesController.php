@@ -264,7 +264,7 @@ class RolesController extends Controller
         ];
         $text_parts  = [
             'title'     => 'All Permissions',
-            'subtitle'  => 'add/edit/view permissions',
+            'subtitle'  => $permission->name,
             'table_head_text1' => 'Backend Roles Permissions - '.$permission->display_name
         ];
         $sidebar_link= 'admin-backend-permission_details_view';

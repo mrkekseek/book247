@@ -20,6 +20,8 @@
     <link href="{{ asset('assets/global/plugins/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('assets/global/plugins/uniform/css/uniform.default.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('assets/global/plugins/bootstrap-switch/css/bootstrap-switch.min.css') }}" rel="stylesheet" type="text/css" />
+
+    <link href="{{ asset('assets/global/plugins/bootstrap-datepicker/css/bootstrap-datepicker3.min.css') }}" rel="stylesheet" type="text/css" />
     <!-- END GLOBAL MANDATORY STYLES -->
     <!-- BEGIN PAGE LEVEL PLUGINS -->
 @yield('pageLevelPlugins')
@@ -31,6 +33,7 @@
 @yield('themeLayoutStyle')
     <!-- END THEME LAYOUT STYLES -->
     <link rel="shortcut icon" href="{{ asset('favicon.ico') }}" /> </head>
+    <link href="{{ asset('assets/apps/css/admin_custom.css') }}" rel="stylesheet" type="text/css" />
 <!-- END HEAD -->
 
 <body class=" @yield('pageBodyClass') ">
@@ -86,6 +89,7 @@
 <script src="{{ asset('assets/global/plugins/bootstrap-switch/js/bootstrap-switch.min.js') }}" type="text/javascript"></script>
 <!-- END CORE PLUGINS -->
 <!-- BEGIN PAGE LEVEL PLUGINS -->
+<script src="{{ asset('assets/global/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}" type="text/javascript"></script>
 @yield('pageBelowLevelPlugins')
 <!-- END PAGE LEVEL PLUGINS -->
 <!-- BEGIN THEME GLOBAL SCRIPTS -->
@@ -101,6 +105,7 @@
 
 <!-- BEGIN THEME LAYOUT SCRIPTS -->
 @yield('pageCustomJScripts')
+<script src="{{ asset('assets/global/scripts/backend_app.js') }}" type="text/javascript"></script>
 <!-- END THEME LAYOUT SCRIPTS -->
 
 </body>

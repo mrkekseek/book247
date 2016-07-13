@@ -160,13 +160,6 @@ class BackEndUserController extends Controller
         }
         $back_user = User::with('roles')->find($id);
 
-        $text_parts  = [
-            'title'     => 'Back-End Users',
-            'subtitle'  => 'view all users',
-            'table_head_text1' => 'Backend User List'
-        ];
-        $sidebar_link= 'admin-backend-user_details_view';
-
         @$userRole = $back_user->roles[0];
         if (!$userRole){
             $defaultRole = Role::where('name','employee')->get();
@@ -208,6 +201,13 @@ class BackEndUserController extends Controller
         $avatarType = Storage::disk('local')->mimeType($avatar->file_location . $avatar->file_name);
 
         $userDocuments = UserDocuments::where('user_id','=',$id)->where('category','=','account_documents')->get();
+
+        $text_parts  = [
+            'title'     => 'Back-End Users',
+            'subtitle'  => $back_user->first_name.' '.$back_user->middle_name.' '.$back_user->last_name,
+            'table_head_text1' => 'Backend User List'
+        ];
+        $sidebar_link= 'admin-backend-user_details_view';
 
         $breadcrumbs = [
             'Home'              => route('admin'),

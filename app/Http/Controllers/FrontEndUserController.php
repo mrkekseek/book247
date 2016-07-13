@@ -62,13 +62,13 @@ class FrontEndUserController extends Controller
             'All Backend Users' => '',
         ];
         $text_parts  = [
-            'title'     => 'Back-End Users',
-            'subtitle'  => 'view all users',
+            'title'     => 'Front-End Users/Members',
+            'subtitle'  => 'list all',
             'table_head_text1' => 'Backend User List'
         ];
         $sidebar_link= 'admin-frontend-all_members';
 
-        $all_roles = Role::orderBy('name')->get();
+        $role = Role::where('name','=','front-user')->get()->first();
         //xdebug_var_dump($all_roles);
 
         return view('admin/front_users/all_members_list', [
@@ -76,7 +76,7 @@ class FrontEndUserController extends Controller
             'breadcrumbs' => $breadcrumbs,
             'text_parts'  => $text_parts,
             'in_sidebar'  => $sidebar_link,
-            'all_roles'   => $all_roles,
+            'role'   => $role,
         ]);
     }
 
@@ -163,12 +163,6 @@ class FrontEndUserController extends Controller
         }
         $back_user = User::with('roles')->find($id);
 
-        $text_parts  = [
-            'title'     => 'Back-End Users',
-            'subtitle'  => 'view all users',
-            'table_head_text1' => 'Backend User List'
-        ];
-
         @$userRole = $back_user->roles[0];
         if (!$userRole){
             $defaultRole = Role::where('name','employee')->get();
@@ -210,6 +204,12 @@ class FrontEndUserController extends Controller
         $avatarType = Storage::disk('local')->mimeType($avatar->file_location . $avatar->file_name);
 
         $userDocuments = UserDocuments::where('user_id','=',$id)->where('category','=','account_documents')->get();
+
+        $text_parts  = [
+            'title'     => 'Back-End Users',
+            'subtitle'  => 'view all users',
+            'table_head_text1' => 'Backend User List'
+        ];
 
         $breadcrumbs = [
             'Home'              => route('admin'),
