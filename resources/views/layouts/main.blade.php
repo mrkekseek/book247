@@ -12,7 +12,7 @@
     <meta content="width=device-width, initial-scale=1" name="viewport" />
     <meta content="@yield('description')" name="description" />
     <meta content="@yield('author')" name="author" />
-    <base href="http://bookingsys/" />
+    <base href="{{$_ENV['MY_SERVER_URL']}}" />
     <!-- BEGIN GLOBAL MANDATORY STYLES -->
     <link href="http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700&subset=all" rel="stylesheet" type="text/css" />
     <link href="{{ asset('assets/global/plugins/font-awesome/css/font-awesome.min.css') }}" rel="stylesheet" type="text/css" />

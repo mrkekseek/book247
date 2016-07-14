@@ -4,7 +4,7 @@
         <!-- BEGIN LOGO -->
         <div class="page-logo">
             <a href="{{ route('homepage') }}">
-                <img height="70" style="height:70px; margin-top:5px;" src="{{ asset('assets/global/img/sqf-logo.png') }}" alt="logo" class="logo-default">
+                <img height="65" style="height: 65px;margin-bottom: 4px;margin-top: 6px;" src="{{ asset('assets/global/img/sqf-logo.png') }}" alt="logo" class="logo-default">
             </a>
         </div>
         <!-- END LOGO -->
