@@ -12,7 +12,7 @@
         <a href="javascript:;" class="menu-toggler"></a>
         <!-- END RESPONSIVE MENU TOGGLER -->
         <!-- BEGIN TOP NAVIGATION MENU -->
-        <div class="top-menu">
+        <div class="top-menu hidden-xs">
             @if (Auth::check())
             <ul class="nav navbar-nav pull-right">
                 <!-- BEGIN NOTIFICATION DROPDOWN -->

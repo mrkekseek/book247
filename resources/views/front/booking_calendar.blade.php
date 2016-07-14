@@ -41,11 +41,11 @@
                     <div class="row">
                         <div class="col-md-12">
                             <!-- BEGIN SAMPLE TABLE PORTLET-->
-                            <div class="portlet box blue-steel">
+                            <div class="portlet box blue-steel hidden-xs">
                                 <div class="portlet-title">
                                     <div class="caption">
                                         <div class="form-inline" style="margin-bottom:0px;">
-                                            <div class="input-group input-medium date date-picker" data-date="{{ $header_vals['date_selected'] }}" data-date-start-date="+0d" data-date-end-date="+6d" data-date-format="dd-mm-yyyy" data-date-viewmode="years">
+                                            <div class="input-group input-small date date-picker" data-date="{{ $header_vals['date_selected'] }}" data-date-start-date="+0d" data-date-end-date="+6d" data-date-format="dd-mm-yyyy" data-date-viewmode="years">
                                                 <input type="text" id="header_date_selected" class="form-control reload_calendar_page" value="{{ $header_vals['date_selected'] }}" readonly>
                                             <span class="input-group-btn">
                                                 <button class="btn default" type="button">
@@ -60,7 +60,7 @@
                                                     @endforeach
                                                 </select>
                                             </div>
-                                            <div class="input-group input-medium">
+                                            <div class="input-group input-small">
                                                 <select id="header_activity_selected" class="form-control reload_calendar_page" style="border-radius:4px;">
                                                     @foreach($all_activities as $an_activity)
                                                         <option value="{{ $an_activity->id }}" {{ $an_activity->id==$header_vals['selected_activity']?" selected ":'' }} >{{ $an_activity->name }}</option>
@@ -103,6 +103,25 @@
                                         @endforeach
                                         </tbody>
                                     </table>
+                                </div>
+                            </div>
+
+                            <div class="portlet light bordered  visible-xs margin-top-20">
+                                <div class="portlet-title">
+                                    <div class="caption">
+                                        <i class="icon-edit font-dark"></i>
+                                        <span class="caption-subject font-dark bold uppercase">System Message</span>
+                                    </div>
+                                </div>
+                                <div class="portlet-body">
+                                    <div class="note note-warning">
+                                        <h4 class="block">This page is viewed better on large screen devices</h4>
+                                        <p> You are viewing this page on a device with a smaller than recommended screen size. For a proper functionality of this page please use it on a bigger screen device or
+                                            use the link for the mobile optimized page (the link at the bottom of this message). Thank you for understanding and we wish you have a great game and a great user experience.</p>
+                                        <p class="margin-top-10">
+                                            <a href="{{route('homepage')}}" class="btn purple"> Mobile Optimized Booking Page </a>
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
                             <!-- END SAMPLE TABLE PORTLET-->
