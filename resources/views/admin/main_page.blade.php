@@ -366,8 +366,6 @@
         });
 
         /* Start - All admin scripts */
-
-        /* Members search using select drop-down */
         var UserTopAjaxSearch = function() {
 
             var handleDemo = function() {
@@ -433,6 +431,7 @@
                         var full_name = null;
                     }
                     else{
+                        var full_name = repo.first_name + " " + repo.middle_name + " " + repo.last_name;
                         location.href = repo.user_link_details;
                     }
 

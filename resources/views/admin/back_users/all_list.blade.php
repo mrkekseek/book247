@@ -365,7 +365,6 @@
         });
 
         /* Start - All admin scripts */
-        /* Members search using select drop-down */
         var UserTopAjaxSearch = function() {
 
             var handleDemo = function() {
@@ -393,7 +392,7 @@
                 function formatUserData(repo) {
                     if (repo.loading) return repo.text;
 
-                    var markup = "<div class='select2-result-repository clearfix'>" +
+                    var markup = "<div class='select2-result-repository clearfix' >" +
                             "<div class='select2-result-repository__avatar'><img src='" + repo.product_image_url + "' /></div>" +
                             "<div class='select2-result-repository__meta'>" +
                             "<div class='select2-result-repository__title'>" + repo.first_name + " " + repo.middle_name + " " + repo.last_name + "</div> ";
@@ -432,8 +431,7 @@
                     }
                     else{
                         var full_name = repo.first_name + " " + repo.middle_name + " " + repo.last_name;
-                        $('input[name="booking_made_by"]').val(repo.id).trigger('change');
-                        $('span[data-id="booking_name"]').html(full_name);
+                        location.href = repo.user_link_details;
                     }
 
                     return full_name || repo.text;

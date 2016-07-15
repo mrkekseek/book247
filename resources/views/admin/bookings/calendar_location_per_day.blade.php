@@ -2,9 +2,6 @@
 
 @section('pageLevelPlugins')
     <link href="{{ asset('assets/global/plugins/bootstrap-datepicker/css/bootstrap-datepicker3.min.css') }}" rel="stylesheet" type="text/css" />
-
-    <link href="{{ asset('assets/global/plugins/select2/css/select2.min.css') }}" rel="stylesheet" type="text/css" />
-    <link href="{{ asset('assets/global/plugins/select2/css/select2-bootstrap.min.css') }}" rel="stylesheet" type="text/css" />
 @endsection
 
 @section('themeGlobalStyle')
@@ -276,7 +273,7 @@
                                                         <a class="font-green-jungle" data-toggle="modal" href="#register_new_user_popup">REGISTER NEW</a></strong>
                                                 </p>
                                                 <div class="booking_step_content" style="display:block;">
-                                                    <select id="find_customer_name" name="find_customer_name" class="form-control js-data-users-ajax">
+                                                    <select id="find_customer_name" name="find_customer_name" class="form-control js-data-members-ajax">
                                                         <option value="" selected="selected">Select...</option>
                                                     </select>
                                                     <div class="form-actions left" style="padding-top:5px; padding-bottom:10px;">
@@ -428,7 +425,6 @@
     <script src="{{ asset('assets/global/plugins/jquery-validation/js/jquery.validate.min.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/global/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/global/plugins/bootstrap-confirmation-2-2/bootstrap-confirmation.min.js') }}" type="text/javascript"></script>
-    <script src="{{ asset('assets/global/plugins/select2/js/select2.full.min.js') }}" type="text/javascript"></script>
 @endsection
 
 @section('pageBelowLevelScripts')
@@ -501,10 +497,90 @@
                     width: null
                 });
 
-                function formatUserData(repo) {
+                function formatMemberData(repo) {
                     if (repo.loading) return repo.text;
 
                     var markup = "<div class='select2-result-repository clearfix'>" +
+                            "<div class='select2-result-repository__avatar'><img src='" + repo.product_image_url + "' /></div>" +
+                            "<div class='select2-result-repository__meta'>" +
+                            "<div class='select2-result-repository__title'>" + repo.first_name + " " + repo.middle_name + " " + repo.last_name + "</div> ";
+
+                    if (repo.description) {
+                        //markup += "<div class='select2-result-repository__description'>" + repo.description + "</div>";
+                    }
+
+                    markup += "<div class='select2-result-repository__statistics'>";
+                    if (repo.email) {
+                        markup += " <div class='select2-result-repository__forks'><span class='fa fa-envelope-square'></span> " + repo.email + "</div> ";
+                    }
+                    if (repo.phone) {
+                        markup += " <div class='select2-result-repository__forks'><span class='fa fa-phone-square'></span> " + repo.phone + "</div> ";
+                    }
+                    markup += '<br />';
+
+                    if (repo.city || repo.region) {
+                        markup += "<div class='select2-result-repository__stargazers'><span class='fa fa-map-o'></span> " + repo.city + ", " + repo.region + "</div>";
+                    }
+
+                    markup += "</div>" +
+                            "</div></div>";
+
+                    return markup;
+                }
+
+                function formatMemberDataSelection(repo) {
+                    // we add product price to the form
+                    //$('input[name=inventory_list_price]').val(repo.list_price);
+                    //$('input[name=inventory_entry_price]').val(repo.entry_price);
+                    //$('.price_currency').html(repo.currency);
+
+                    if (repo.first_name==null && repo.first_name==null && repo.first_name==null){
+                        var full_name = null;
+                    }
+                    else{
+                        var full_name = repo.first_name + " " + repo.middle_name + " " + repo.last_name;
+                        $('input[name="booking_made_by"]').val(repo.id).trigger('change');
+                        $('span[data-id="booking_name"]').html(full_name);
+                    }
+
+                    return full_name || repo.text;
+                }
+
+                $(".js-data-members-ajax").select2({
+                    width: "off",
+                    ajax: {
+                        url: "{{ route('admin/users/ajax_get_users') }}",
+                        type: "post",
+                        dataType: 'json',
+                        delay: 250,
+                        data: function(params) {
+                            return {
+                                q: params.term, // search term
+                                page: params.page
+                            };
+                        },
+                        processResults: function(data, page) {
+                            // parse the results into the format expected by Select2.
+                            // since we are using custom formatting functions we do not need to
+                            // alter the remote JSON data
+                            return {
+                                results: data.items
+                            };
+                        },
+                        cache: true
+                    },
+                    escapeMarkup: function(markup) {
+                        return markup;
+                    }, // let our custom formatter work
+                    minimumInputLength: 1,
+                    templateResult: formatMemberData,
+                    templateSelection: formatMemberDataSelection
+                });
+
+                function formatUserData(repo) {
+                    if (repo.loading) return repo.text;
+
+                    var markup = "<div class='select2-result-repository clearfix' >" +
                             "<div class='select2-result-repository__avatar'><img src='" + repo.product_image_url + "' /></div>" +
                             "<div class='select2-result-repository__meta'>" +
                             "<div class='select2-result-repository__title'>" + repo.first_name + " " + repo.middle_name + " " + repo.last_name + "</div> ";
@@ -543,8 +619,7 @@
                     }
                     else{
                         var full_name = repo.first_name + " " + repo.middle_name + " " + repo.last_name;
-                        $('input[name="booking_made_by"]').val(repo.id).trigger('change');
-                        $('span[data-id="booking_name"]').html(full_name);
+                        location.href = repo.user_link_details;
                     }
 
                     return full_name || repo.text;
@@ -595,7 +670,7 @@
                 // (was #select2-drop in Select2 v3.x, in Select2 v4 can be selected via
                 // body > .select2-container) if _any_ of the opened Select2's parents
                 // has one of these forementioned classes (YUCK! ;-))
-                $(".select2, .select2-multiple, .select2-allow-clear, .js-data-example-ajax, .js-data-users-ajax").on("select2:open", function() {
+                $(".select2, .select2-multiple, .select2-allow-clear, .js-data-example-ajax, .js-data-members-ajax, .js-data-users-ajax").on("select2:open", function() {
                     if ($(this).parents("[class*='has-']").length) {
                         var classNames = $(this).parents("[class*='has-']")[0].className.split(/\s+/);
 
@@ -1700,8 +1775,6 @@
             timeinterval = setInterval(updateClock, 1000);
         }
         /* Timer function - Stop */
-
-        /* Start - All admin scripts */
         function booking_calendar_view_redirect(selected_date){
             var calendar_book = "{{route('bookings/location_calendar_day_view',['day'=>'##day##'])}}";
             the_link = calendar_book.replace('##day##', $('#calendar_booking_top_menu').data('datepicker').getFormattedDate('dd-mm-yyyy'));
