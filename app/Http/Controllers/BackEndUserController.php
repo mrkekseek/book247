@@ -605,6 +605,14 @@ class BackEndUserController extends Controller
         $results = $query->get();
         if ($results){
             foreach($results as $result){
+                $user_temp = User::where('id','=',$result->id)->get()->first();
+                if ($user_temp->hasRole(['front-member','front-user'])){
+                    $user_link = route('admin/front_users/view_user',['id'=>$user_temp->id]);
+                }
+                else{
+                    $user_link = route('admin/back_users/view_user/',['id'=>$user_temp->id]);
+                }
+
                 $items[] = array('id'=>$result->id,
                     'first_name' => $result->first_name,
                     'middle_name' => $result->middle_name,
@@ -613,7 +621,9 @@ class BackEndUserController extends Controller
                     'phone'=>$result->mobile_number,
                     'city'=>$result->city,
                     'region'=>$result->region,
-                    'product_image_url' => asset('assets/pages/img/avatars/team'.rand(1,10).'.jpg')
+                    'product_image_url' => asset('assets/pages/img/avatars/team'.rand(1,10).'.jpg'),
+                    'user_profile_img' => asset('assets/pages/img/avatars/team'.rand(1,10).'.jpg'),
+                    'user_link_details' => $user_link
                 );
             }
         }

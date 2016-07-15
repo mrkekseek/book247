@@ -4,8 +4,8 @@
 <div class="page-header-inner ">
     <!-- BEGIN LOGO -->
     <div class="page-logo">
-        <a href="index.html">
-            <img src="{{ asset('assets/layouts/layout4/img/logo-light.png') }}" alt="logo" class="logo-default" /> </a>
+        <a href="{{ route('admin') }}">
+            <img height="55" style="height: 55px;margin-bottom: 4px;margin-top: 11px;"  src="{{ asset('assets/global/img/sqf-logo.png') }}" alt="logo" class="logo-default" /> </a>
         <div class="menu-toggler sidebar-toggler">
             <!-- DOC: Remove the above "hide" to enable the sidebar toggler button on header -->
         </div>
@@ -44,16 +44,11 @@
     <div class="page-top">
         <!-- BEGIN HEADER SEARCH BOX -->
         <!-- DOC: Apply "search-form-expanded" right after the "search-form" class to have half expanded search box -->
-        <form class="search-form" action="page_general_search_2.html" method="GET">
-            <div class="input-group">
-                <input type="text" class="form-control input-sm" placeholder="Search..." name="query">
-                    <span class="input-group-btn">
-                        <a href="javascript:;" class="btn submit">
-                            <i class="icon-magnifier"></i>
-                        </a>
-                    </span>
-            </div>
-        </form>
+        <div class="input-group" style="width:320px; display:inline-block; float:left; margin-top:21px; margin-right:5px;">
+            <select id="header_search_member" name="header_search_member" class="form-control js-data-users-ajax">
+                <option value="" selected="selected">Select...</option>
+            </select>
+        </div>
         <!-- END HEADER SEARCH BOX -->
         <!-- BEGIN TOP NAVIGATION MENU -->
         <div class="top-menu">
