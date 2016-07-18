@@ -84,6 +84,11 @@ Route::group(['middleware' => 'web'], function () {
         'uses' => 'BackEndUserController@update_account_info',
     ]);
 
+    Route::post('admin/front_users/view_user/{id}/personal_info', [
+        'as' => 'admin/front_users/view_user/personal_info',
+        'uses' => 'FrontEndUserController@update_personal_info',
+    ]);
+
     Route::post('admin/back_users/view_user/{id}/personal_info', [
         'as' => 'admin/back_users/view_user/personal_info',
         'uses' => 'BackEndUserController@update_personal_info',

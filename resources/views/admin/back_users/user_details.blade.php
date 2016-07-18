@@ -372,7 +372,7 @@
                                                     </select> </div>
                                             </div>
                                             <div class="margiv-top-10">
-                                                <a href="javascript:;" onCLick="javascript: $('#form_acc_info').submit();" class="btn green"> Save Changes </a>
+                                                <a href="javascript:;" onclick="javascript: $('#form_acc_info').submit();" class="btn green"> Save Changes </a>
                                                 <a href="javascript:;" class="btn default"> Cancel </a>
                                             </div>
                                         </form>

@@ -34,7 +34,12 @@
                     <div class="portlet light profile-sidebar-portlet bordered">
                         <!-- SIDEBAR USERPIC -->
                         <div class="profile-userpic">
-                            <img src="../assets/pages/media/profile/profile_user.jpg" class="img-responsive" alt=""> </div>
+                            @if ( strlen($avatar)>10 )
+                                <img src="data:{{ $avatarType }};base64,{{ base64_encode($avatar) }}" class="img-responsive" alt="" />
+                            @else
+                                <img src="../assets/pages/media/profile/profile_user.jpg" class="img-responsive" alt="" />
+                            @endif
+                        </div>
                         <!-- END SIDEBAR USERPIC -->
                         <!-- SIDEBAR USER TITLE -->
                         <div class="profile-usertitle">
@@ -106,7 +111,11 @@
                                     <div class="tab-content">
                                         <!-- PERSONAL INFO TAB -->
                                         <div class="tab-pane active" id="tab_1_1">
-                                            <form role="form" action="#">
+                                            <form role="form" id="form_acc_personal" action="#">
+                                                <div class="alert alert-danger display-hide">
+                                                    <button class="close" data-close="alert"></button> You have some form errors. Please check below. </div>
+                                                <div class="alert alert-success display-hide">
+                                                    <button class="close" data-close="alert"></button> Your form validation is successful! </div>
                                                 <div class="form-group">
                                                     <label class="control-label">First Name</label>
                                                     <input type="text" name="personalFirstName" id="personalFirstName" placeholder="First Name" value="{{$user->first_name}}" class="form-control" /> </div>
@@ -117,14 +126,37 @@
                                                     <label class="control-label">Last Name</label>
                                                     <input type="text" name="personalLastName" id="personalLastName" placeholder="Last Name" value="{{$user->last_name}}" class="form-control" /> </div>
                                                 <div class="form-group">
-                                                    <label class="control-label">Mobile Number</label>
-                                                    <input type="text" placeholder="+1 646 580 DEMO (6284)" class="form-control" value="{{@$personal->mobile_number}}" /> </div>
+                                                    <label class="control-label">Citizenship</label>
+                                                    <select name="personalCountry" id="personalCountry" class="form-control">
+                                                        @foreach ($countries as $country)
+                                                            <option value="{{ $country->id }}" {!! ($country->id==$user->country_id ? ' selected="selected" ' : '') !!}>{{ $country->citizenship }}</option>
+                                                        @endforeach
+                                                    </select></div>
+                                                <div class="form-group">
+                                                    <label class="control-label">Date of Birth</label>
+                                                    <div class="control-label">
+                                                        <div class="input-group input-medium date date-picker" data-date="{{ @$personal->dob_format }}" data-date-format="dd-mm-yyyy" data-date-viewmode="years">
+                                                            <input type="text" class="form-control" name="personalDOB" id="personalDOB" value="{{ @$personal->dob_format }}" readonly>
+                                                        <span class="input-group-btn">
+                                                            <button class="btn default" type="button">
+                                                                <i class="fa fa-calendar"></i>
+                                                            </button>
+                                                        </span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="control-label">Personal Email</label>
+                                                    <input type="text" name="personalEmail" id="personalEmail" placeholder="Personal Email Address" class="form-control" value="{{@$personal->personal_email}}" /> </div>
+                                                <div class="form-group">
+                                                    <label class="control-label">Mobile Phone Number</label>
+                                                    <input type="text" name="personalPhone" id="personalPhone" placeholder="+1 234 567 8910 (6284)" class="form-control" value="{{@$personal->mobile_number}}" /> </div>
                                                 <div class="form-group">
                                                     <label class="control-label">About</label>
-                                                    <textarea class="form-control" rows="3" placeholder="We are KeenThemes!!!">{{@$personal->about_info}}</textarea>
+                                                    <textarea class="form-control" rows="3" placeholder="About Me!!!" id="personalAbout" name="personalAbout">{{@$personal->about_info}}</textarea>
                                                 </div>
                                                 <div class="margiv-top-10">
-                                                    <a href="javascript:;" class="btn green"> Save Changes </a>
+                                                    <a href="javascript:;" onclick="javascript: $('#form_acc_personal').submit();" class="btn green"> Update Details </a>
                                                     <a href="javascript:;" class="btn default"> Cancel </a>
                                                 </div>
                                             </form>
@@ -134,34 +166,43 @@
                                         <div class="tab-pane" id="tab_1_2">
                                             <p> Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum
                                                 eiusmod. </p>
-                                            <form action="{{ route('admin/back_users/view_user/avatar_image', ['id'=>$user->id]) }}" id="user_picture_upload2" class="form-horizontal" method="post" enctype="multipart/form-data">
+                                            <form action="{{ route('admin/back_users/view_user/avatar_image', ['id'=>$user->id]) }}" id="user_picture_upload1" class="form-horizontal" method="post" enctype="multipart/form-data">
                                                 <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                                                <div class="form-group">
-                                                    <div class="fileinput fileinput-{{ (strlen($avatar)>10) ? 'exists':'new' }}" data-provides="fileinput">
-                                                        <div class="fileinput-new thumbnail" style="width: 200px; height: 244px;">
-                                                            <img src="http://www.placehold.it/200x246/EFEFEF/AAAAAA&amp;text=no+image" alt="" /> </div>
-                                                        <div class="fileinput-preview fileinput-exists thumbnail" style="max-width: 200px; max-height: 240px; line-height: 200px;">
-                                                            @if ( strlen($avatar)>10 )
-                                                                <img src="data:{{ $avatarType }};base64,{{ base64_encode($avatar) }}" />
-                                                            @endif
-                                                        </div>
-                                                        <div>
-                                                        <span class="btn default btn-file">
-                                                            <span class="fileinput-new"> Select image </span>
-                                                            <span class="fileinput-exists"> Change </span>
-                                                            <input type="file" name="user_avatar" class="user_avatar_select_btn2" /> </span>
-                                                            <a href="javascript:;" class="btn default fileinput-exists" data-dismiss="fileinput"> Remove </a>
+                                                <div class="form-body">
+                                                    <div class="alert alert-danger display-hide">
+                                                        <button class="close" data-close="alert"></button> You have some form errors. Please check below. </div>
+                                                    <div class="alert alert-success display-hide">
+                                                        <button class="close" data-close="alert"></button> Your form validation is successful! </div>
+                                                    <div class="form-group last">
+                                                        <label class="control-label col-md-3">User Avatar</label>
+                                                        <div class="col-md-9">
+                                                            <div class="fileinput fileinput-{{ (strlen($avatar)>10) ? 'exists':'new' }} " data-provides="fileinput">
+                                                                <div class="fileinput-new thumbnail" style="width: 200px; height: 244px;">
+                                                                    <img src="http://www.placehold.it/200x246/EFEFEF/AAAAAA&amp;text=no+image" alt="" /> </div>
+                                                                <div class="fileinput-preview fileinput-exists thumbnail" style="max-width: 200px; max-height: 240px;">
+                                                                    @if ( strlen($avatar)>10 )
+                                                                        <img src="data:{{ $avatarType }};base64,{{ base64_encode($avatar) }}" />
+                                                                    @endif
+                                                                </div>
+                                                                <div>
+                                                                    <span class="btn default btn-file">
+                                                                        <span class="fileinput-new"> Select image </span>
+                                                                        <span class="fileinput-exists"> Change </span>
+                                                                        <input type="file" name="user_avatar" class="user_avatar_select_btn1" /> </span>
+                                                                    <a href="javascript:;" class="btn red fileinput-exists" data-dismiss="fileinput"> Remove </a>
+                                                                </div>
+                                                            </div>
+                                                            <div class="clearfix margin-top-10">
+                                                                <div class="note note-warning margin-bottom-5">
+                                                                    <p> Image preview only works in IE10+, FF3.6+, Safari6.0+, Chrome6.0+ and Opera11.1+. In older browsers the filename is shown instead. </p>
+                                                                </div>
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                    <div class="clearfix margin-top-10">
-                                                        <div class="note note-warning margin-bottom-5">
-                                                            <p> Image preview only works in IE10+, FF3.6+, Safari6.0+, Chrome6.0+ and Opera11.1+. In older browsers the filename is shown instead. </p>
-                                                        </div>
+                                                    <div class="margin-top-10">
+                                                        <a class="btn green" onclick="javascript: $('#user_picture_upload1').submit();" href="javascript:;"> Submit </a>
+                                                        <a class="btn default" href="javascript:;"> Cancel </a>
                                                     </div>
-                                                </div>
-                                                <div class="margin-top-10">
-                                                    <a href="javascript:;" onclick="javascript: $('#user_picture_upload2').submit();" class="btn green"> Submit </a>
-                                                    <a href="javascript:;" class="btn default"> Cancel </a>
                                                 </div>
                                             </form>
                                         </div>
@@ -335,6 +376,37 @@
             }
         });
 
+        var ComponentsDateTimePickers = function () {
+
+            var handleDatePickers = function () {
+
+                if (jQuery().datepicker) {
+                    $('.date-picker').datepicker({
+                        rtl: App.isRTL(),
+                        orientation: "left",
+                        autoclose: true
+                    });
+                    //$('body').removeClass("modal-open"); // fix bug when inline picker is used in modal
+                }
+
+                /* Workaround to restrict daterange past date select: http://stackoverflow.com/questions/11933173/how-to-restrict-the-selectable-date-ranges-in-bootstrap-datepicker */
+            }
+
+            return {
+                //main function to initiate the module
+                init: function () {
+                    handleDatePickers();
+                }
+            };
+
+        }();
+
+        if (App.isAngularJsApp() === false) {
+            jQuery(document).ready(function() {
+                ComponentsDateTimePickers.init();
+            });
+        }
+
         $.validator.addMethod(
                 "datePickerDate",
                 function(value, element) {
@@ -383,6 +455,12 @@
                         personalEmail: {
                             required: true,
                             email: true
+                        },
+                        personalPhone: {
+                            required: true,
+                            digits: true,
+                            minlength:4,
+                            maxlength:12
                         },
                     },
 
@@ -728,28 +806,9 @@
             FormValidation.init();
         });
 
-        function store_account_info(){
-            $.ajax({
-                url: '{{route('admin/back_users/view_user/acc_info', ['id'=>$user->id])}}',
-                type: "post",
-                data: {
-                    'accountUsername': $('input[name=accountUsername]').val(),
-                    'accountEmail': $('input[name=accountEmail]').val(),
-                    'accountJobTitle': $('input[name=accountJobTitle]').val(),
-                    'accountProfession': $('input[name=accountProfession]').val(),
-                    'accountDescription': $('textarea[name=accountDescription]').val(),
-                    'employeeRole': $('select[name=employeeRole]').val(),
-                    '_method': 'post',
-                },
-                success: function(data){
-                    alert(data);
-                }
-            });
-        }
-
         function store_account_personal(){
             $.ajax({
-                url: '{{route('admin/back_users/view_user/personal_info', ['id'=>$user->id])}}',
+                url: '{{route('admin/front_users/view_user/personal_info', ['id'=>$user->id])}}',
                 type: "post",
                 data: {
                     'first_name':       $('input[name=personalFirstName]').val(),
@@ -758,11 +817,8 @@
                     'date_of_birth':    $('input[name=personalDOB]').val(),
                     'personal_email':   $('input[name=personalEmail]').val(),
                     'mobile_number':    $('input[name=personalPhone]').val(),
-                    'bank_acc_no':      $('input[name=personalBankAcc]').val(),
-                    'social_sec_no':    $('input[name=personalSSN]').val(),
                     'about_info':       $('textarea[name=personalAbout]').val(),
                     'country_id':       $('select[name=personalCountry]').val(),
-                    '_method': 'post',
                 },
                 success: function(data){
                     alert(data);

@@ -616,66 +616,17 @@ class FrontEndUserController extends Controller
         ]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update_account_info(Request $request, $id)
-    {
-        if (!Auth::check()) {
-            return redirect()->intended(route('admin/login'));
-        }
-        else{
-            $user = Auth::user();
-        }
-
-        $vars = $request->only('accountDescription', 'accountJobTitle', 'accountProfession', 'accountEmail', 'accountUsername', 'employeeRole');
-        $userVars = array('username'=>$vars["accountUsername"], 'email'=>$vars["accountEmail"]);
-        $userCh = User::with('roles')->find($id);
-
-        $validator = Validator::make($userVars, [
-            'username' => 'required|min:6|max:30|unique:users,username,'.$id.',id',
-            'email' => 'required|email|email|unique:users,email,'.$id.',id',
-        ]);
-
-        if ($validator->fails()){
-            //return array(
-            //    'success' => false,
-            //    'errors' => $validator->getMessageBag()->toArray()
-            //);
-        }
-        else{
-            $userCh->username = $vars["accountUsername"];
-            $userCh->email    = $vars["accountEmail"];
-            @$userCh->detachRoles($userCh->roles);
-            $userCh->attachRole($vars['employeeRole']);
-
-            $userCh->save();
-        }
-
-        $professionData = array('job_title'=>$vars['accountJobTitle'], 'profession'=>$vars['accountProfession'], 'description'=>$vars['accountDescription'], 'user_id'=>$id);
-        $professionalDetails = ProfessionalDetail::firstOrNew(array('user_id'=>$id));
-        $professionalDetails->job_title   = $professionData['job_title'];
-        $professionalDetails->profession  = $professionData['profession'];
-        $professionalDetails->description = $professionData['description'];
-        $professionalDetails->save();
-
-        return "bine";
-    }
-
     public function update_account_avatar(Request $request, $id)
     {
         //
     }
 
-    public function update_account_permission(Request $request, $id)
-    {
-        //
-    }
-
+    /**
+     * Update member/user personal details - needs updated
+     * @param Request $request
+     * @param $id
+     * @return \Illuminate\Http\RedirectResponse|string
+     */
     public function update_personal_info(Request $request, $id)
     {
         if (!Auth::check()) {
@@ -685,7 +636,7 @@ class FrontEndUserController extends Controller
             $user = Auth::user();
         }
 
-        $vars = $request->only('about_info', 'country_id', 'date_of_birth', 'first_name', 'last_name', 'middle_name', 'mobile_number', 'personal_email', 'bank_acc_no', 'social_sec_no');
+        $vars = $request->only('about_info', 'country_id', 'date_of_birth', 'first_name', 'last_name', 'middle_name', 'mobile_number', 'personal_email');
 
         $userVars = array(  'first_name'    => $vars["first_name"],
             'last_name'     => $vars["last_name"],
@@ -718,18 +669,9 @@ class FrontEndUserController extends Controller
         $personalData = array(  'personal_email'=> $vars['personal_email'],
             'mobile_number' => $vars['mobile_number'],
             'date_of_birth' => $vars['date_of_birth'],
-            'bank_acc_no'   => $vars['bank_acc_no'],
-            'social_sec_no' => $vars['social_sec_no'],
             'about_info'    => $vars['about_info'],
             'user_id'       => $id);
         $personalDetails = PersonalDetail::firstOrNew(array('user_id'=>$id));
-        //$personalDetails->personal_email = $personalData['personal_email'];
-        //$personalDetails->mobile_number  = $personalData['mobile_number'];
-        //$personalDetails->date_of_birth  = Carbon::createFromFormat('d-m-Y', $personalData['date_of_birth'])->toDateString();
-        //$personalDetails->bank_acc_no    = $personalData['bank_acc_no'];
-        //$personalDetails->social_sec_no  = $personalData['social_sec_no'];
-        //$personalDetails->about_info     = $personalData['about_info'];
-        //$personalDetails->user_id        = $personalData['user_id'];
         $personalData['date_of_birth'] = Carbon::createFromFormat('d-m-Y', $personalData['date_of_birth'])->toDateString();
         $personalDetails->fill($personalData);
         $personalDetails->save();
