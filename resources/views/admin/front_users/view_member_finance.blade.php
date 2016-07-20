@@ -34,12 +34,17 @@
                     <div class="portlet light profile-sidebar-portlet bordered">
                         <!-- SIDEBAR USERPIC -->
                         <div class="profile-userpic">
-                            <img src="../assets/pages/media/profile/profile_user.jpg" class="img-responsive" alt=""> </div>
+                            @if ( strlen($avatar)>10 )
+                                <img src="data:{{ $avatarType }};base64,{{ base64_encode($avatar) }}" class="img-responsive" alt="" />
+                            @else
+                                <img src="{{asset('assets/pages/media/profile/profile_user.jpg')}}" class="img-responsive" alt="" />
+                            @endif
+                        </div>
                         <!-- END SIDEBAR USERPIC -->
                         <!-- SIDEBAR USER TITLE -->
                         <div class="profile-usertitle">
-                            <div class="profile-usertitle-name"> Marcus Doe </div>
-                            <div class="profile-usertitle-job"> Developer </div>
+                            <div class="profile-usertitle-name"> {{$user->first_name.' '.$user->middle_name.' '.$user->last_name}} </div>
+                            <div class="profile-usertitle-job"> Normal User </div>
                         </div>
                         <!-- END SIDEBAR USER TITLE -->
                         <!-- SIDEBAR BUTTONS -->
@@ -101,135 +106,41 @@
                                                 <div class="col-md-12">
                                                     <!-- BEGIN BORDERED TABLE PORTLET-->
                                                     <div class="portlet light portlet-fit bordered">
-                                                        <div class="portlet-title">
-                                                            <div class="caption">
-                                                                <i class="icon-bubble font-dark"></i>
-                                                                <span class="caption-subject font-dark bold uppercase">Bordered Table</span>
-                                                            </div>
-                                                        </div>
-                                                        <div class="portlet-body">
-                                                            <div class="table-scrollable">
-                                                                <table class="table table-bordered table-hover">
-                                                                    <thead>
+                                                        <div class="table-scrollable">
+                                                            <table class="table table-bordered table-hover">
+                                                                <thead>
+                                                                <tr>
+                                                                    <th> # </th>
+                                                                    <th> Date </th>
+                                                                    <th> Time Interval </th>
+                                                                    <th class="hidden-xs"> Player </th>
+                                                                    <th> Location </th>
+                                                                    <th class="hidden-xs"> Room </th>
+                                                                    <th class="hidden-xs"> Activity </th>
+                                                                    <th> Status </th>
+                                                                </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                <?php $theNr = 1; ?>
+                                                                @foreach($lastTen as $invoice)
                                                                     <tr>
-                                                                        <th> # </th>
-                                                                        <th> First Name </th>
-                                                                        <th> Last Name </th>
-                                                                        <th> Username </th>
-                                                                        <th> Status </th>
-                                                                    </tr>
-                                                                    </thead>
-                                                                    <tbody>
-                                                                    <tr>
-                                                                        <td rowspan="2"> 1 </td>
-                                                                        <td> Mark </td>
-                                                                        <td> Otto </td>
-                                                                        <td> makr124 </td>
+                                                                        <?php   if (!isset($invoice['colspan'])){
+                                                                            echo '<td rowspan="'.($multipleBookingsIndex[$theNr]).'">'.$theNr.'</td>';
+                                                                            $theNr++;
+                                                                        } else {  } ?>
+                                                                        <td> {{$invoice['date']}} </td>
+                                                                        <td> {{$invoice['timeInterval']}} </td>
+                                                                        <td class="hidden-xs"> <a href="{{ route('admin/front_users/view_user',['id'=>$invoice['player_id']])}}" target="_blank">{{$invoice['player_name']}}</a> </td>
+                                                                        <td class="hidden-xs"> {{$invoice['location']}} </td>
+                                                                        <td> {{$invoice['room']}} </td>
+                                                                        <td class="hidden-xs"> {{$invoice['activity']}} </td>
                                                                         <td>
-                                                                            <span class="label label-sm label-success"> Approved </span>
+                                                                            <span class="label label-sm {{$invoice['status-color']}} booking_details_modal" data-key="{{$invoice['search_key']}}"> {{$invoice['status']}} </span>
                                                                         </td>
                                                                     </tr>
-                                                                    <tr>
-                                                                        <td> Jacob </td>
-                                                                        <td> Nilson </td>
-                                                                        <td> jac123 </td>
-                                                                        <td>
-                                                                            <span class="label label-sm label-info"> Pending </span>
-                                                                        </td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td> 2 </td>
-                                                                        <td> Larry </td>
-                                                                        <td> Cooper </td>
-                                                                        <td> lar </td>
-                                                                        <td>
-                                                                            <span class="label label-sm label-warning"> Suspended </span>
-                                                                        </td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td> 3 </td>
-                                                                        <td> Sandy </td>
-                                                                        <td> Lim </td>
-                                                                        <td> sanlim </td>
-                                                                        <td>
-                                                                            <span class="label label-sm label-danger"> Blocked </span>
-                                                                        </td>
-                                                                    </tr>
-
-                                                                    <tr>
-                                                                        <td rowspan="2"> 1 </td>
-                                                                        <td> Mark </td>
-                                                                        <td> Otto </td>
-                                                                        <td> makr124 </td>
-                                                                        <td>
-                                                                            <span class="label label-sm label-success"> Approved </span>
-                                                                        </td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td> Jacob </td>
-                                                                        <td> Nilson </td>
-                                                                        <td> jac123 </td>
-                                                                        <td>
-                                                                            <span class="label label-sm label-info"> Pending </span>
-                                                                        </td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td> 2 </td>
-                                                                        <td> Larry </td>
-                                                                        <td> Cooper </td>
-                                                                        <td> lar </td>
-                                                                        <td>
-                                                                            <span class="label label-sm label-warning"> Suspended </span>
-                                                                        </td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td> 3 </td>
-                                                                        <td> Sandy </td>
-                                                                        <td> Lim </td>
-                                                                        <td> sanlim </td>
-                                                                        <td>
-                                                                            <span class="label label-sm label-danger"> Blocked </span>
-                                                                        </td>
-                                                                    </tr>
-
-                                                                    <tr>
-                                                                        <td rowspan="2"> 1 </td>
-                                                                        <td> Mark </td>
-                                                                        <td> Otto </td>
-                                                                        <td> makr124 </td>
-                                                                        <td>
-                                                                            <span class="label label-sm label-success"> Approved </span>
-                                                                        </td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td> Jacob </td>
-                                                                        <td> Nilson </td>
-                                                                        <td> jac123 </td>
-                                                                        <td>
-                                                                            <span class="label label-sm label-info"> Pending </span>
-                                                                        </td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td> 2 </td>
-                                                                        <td> Larry </td>
-                                                                        <td> Cooper </td>
-                                                                        <td> lar </td>
-                                                                        <td>
-                                                                            <span class="label label-sm label-warning"> Suspended </span>
-                                                                        </td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td> 3 </td>
-                                                                        <td> Sandy </td>
-                                                                        <td> Lim </td>
-                                                                        <td> sanlim </td>
-                                                                        <td>
-                                                                            <span class="label label-sm label-danger"> Blocked </span>
-                                                                        </td>
-                                                                    </tr>
-                                                                    </tbody>
-                                                                </table>
-                                                            </div>
+                                                                @endforeach
+                                                                </tbody>
+                                                            </table>
                                                         </div>
                                                     </div>
                                                     <!-- END BORDERED TABLE PORTLET-->
@@ -245,79 +156,44 @@
                                                 <div class="col-md-12">
                                                     <!-- BEGIN SAMPLE TABLE PORTLET-->
                                                     <div class="portlet">
-                                                        <div class="portlet-title">
-                                                            <div class="caption">
-                                                                <i class="fa fa-bell-o"></i>Advance Table </div>
-                                                            <div class="tools">
-                                                                <a class="collapse" href="javascript:;" data-original-title="" title=""> </a>
-                                                                <a class="config" data-toggle="modal" href="#portlet-config" data-original-title="" title=""> </a>
-                                                                <a class="reload" href="javascript:;" data-original-title="" title=""> </a>
-                                                                <a class="remove" href="javascript:;" data-original-title="" title=""> </a>
-                                                            </div>
-                                                        </div>
                                                         <div class="portlet-body">
                                                             <div class="table-scrollable">
                                                                 <table class="table table-striped table-bordered table-advance table-hover">
                                                                     <thead>
                                                                     <tr>
                                                                         <th>
-                                                                            <i class="fa fa-briefcase"></i> Company </th>
-                                                                        <th class="hidden-xs">
-                                                                            <i class="fa fa-user"></i> Contact </th>
+                                                                            <i class="fa fa-briefcase"></i> Invoice Number </th>
                                                                         <th>
-                                                                            <i class="fa fa-shopping-cart"></i> Total </th>
+                                                                            <i class="fa fa-briefcase"></i> Booking Location </th>
+                                                                        <th>
+                                                                            <i class="fa fa-briefcase"></i> Invoice Items </th>
+                                                                        <th>
+                                                                            <i class="fa fa-briefcase"></i> Price </th>
+                                                                        <th>
+                                                                            <i class="fa fa-briefcase"></i> Added On </th>
+                                                                        <th>
+                                                                            <i class="fa fa-shopping-cart"></i> Status </th>
                                                                         <th> </th>
                                                                     </tr>
                                                                     </thead>
                                                                     <tbody>
-                                                                    <tr>
-                                                                        <td class="highlight">
-                                                                            <div class="success"></div>
-                                                                            <a href="javascript:;"> RedBull </a>
-                                                                        </td>
-                                                                        <td class="hidden-xs"> Mike Nilson </td>
-                                                                        <td> 2560.60$ </td>
-                                                                        <td>
-                                                                            <a class="btn btn-outline btn-circle btn-sm purple" href="javascript:;">
-                                                                                <i class="fa fa-edit"></i> Edit </a>
-                                                                        </td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td class="highlight">
-                                                                            <div class="info"> </div>
-                                                                            <a href="javascript:;"> Google </a>
-                                                                        </td>
-                                                                        <td class="hidden-xs"> Adam Larson </td>
-                                                                        <td> 560.60$ </td>
-                                                                        <td>
-                                                                            <a class="btn btn-outline btn-circle dark btn-sm black" href="javascript:;">
-                                                                                <i class="fa fa-trash-o"></i> Delete </a>
-                                                                        </td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td class="highlight">
-                                                                            <div class="success"> </div>
-                                                                            <a href="javascript:;"> Apple </a>
-                                                                        </td>
-                                                                        <td class="hidden-xs"> Daniel Kim </td>
-                                                                        <td> 3460.60$ </td>
-                                                                        <td>
-                                                                            <a class="btn btn-outline btn-circle green btn-sm purple" href="javascript:;">
-                                                                                <i class="fa fa-edit"></i> Edit </a>
-                                                                        </td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td class="highlight">
-                                                                            <div class="warning"> </div>
-                                                                            <a href="javascript:;"> Microsoft </a>
-                                                                        </td>
-                                                                        <td class="hidden-xs"> Nick </td>
-                                                                        <td> 2560.60$ </td>
-                                                                        <td>
-                                                                            <a class="btn btn-outline btn-circle red btn-sm blue" href="javascript:;">
-                                                                                <i class="fa fa-share"></i> Share </a>
-                                                                        </td>
-                                                                    </tr>
+                                                                    @foreach ($invoices as $invoice)
+                                                                        <tr>
+                                                                            <td class="highlight">
+                                                                                <div class="{{ $invoice['color_status'] }}"></div>
+                                                                                <a href="javascript:;"> {{$invoice['invoice_no']}} </a>
+                                                                            </td>
+                                                                            <td> {{ $invoice['location'] }} </td>
+                                                                            <td> {{ $invoice['items'] }} </td>
+                                                                            <td> {{ $invoice['price_to_pay'] }} </td>
+                                                                            <td> {{ $invoice['date'] }} </td>
+                                                                            <td> {{ $invoice['status'] }} </td>
+                                                                            <td>
+                                                                                <a class="btn {{ $invoice['color_button'] }} btn-sm booking_details_modal" data-key="{{$invoice['invoice_no']}}" href="javascript:;">
+                                                                                    <i class="fa fa-edit"></i> Details </a>
+                                                                            </td>
+                                                                        </tr>
+                                                                    @endforeach
                                                                     </tbody>
                                                                 </table>
                                                             </div>

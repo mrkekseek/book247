@@ -241,6 +241,8 @@ class Booking extends Model
             );
         }
 
+        usleep(1000);
+
         try {
             $the_invoice = BookingInvoice::create($fillable);
         } catch (Exception $e) {
@@ -294,8 +296,6 @@ class Booking extends Model
         } catch (Exception $e) {
             return ['success' => false, 'errors' => 'Booking Error'];
         }
-
-        return true;
     }
 
     public function by_user(){
@@ -316,6 +316,10 @@ class Booking extends Model
 
     public function notes(){
         return $this->hasMany('App\BookingNote', 'booking_id', 'id')->orderBy('booking_notes.created_at','asc');
+    }
+
+    public function invoice(){
+        return $this->hasMany('App\BookingInvoice', 'booking_id', 'id')->orderBy('booking_invoices.created_at','asc');
     }
 
     public static function rules($method, $id=0){

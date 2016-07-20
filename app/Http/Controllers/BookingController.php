@@ -389,15 +389,24 @@ class BookingController extends Controller
      * @param bool $recurring
      * @return array
      */
-    private function validate_booking($fillable, $search_key='', $recurring = false){
-        $message = ['status'=>true, 'payment'=>'membership'];
-        if (Auth::check()) {
+    private function validate_booking($fillable, $search_key='', $recurring = false, $is_employee = false){
+        if (!Auth::check()) {
+            $message['status'] = false;
+            return $message;
+        }
+        else{
             $user = Auth::user();
         }
+
+        $message = ['status'=>true, 'payment'=>'membership'];
+        usleep(1000);
 
         if ($recurring==true){
             $free_open_bookings = 999;
             $message['payment'] = 'recurring';
+        }
+        elseif ($is_employee==true && $user->id != $fillable['for_user_id']){
+            $free_open_bookings = 999;
         }
         else{
             $free_open_bookings = 5;
@@ -408,21 +417,29 @@ class BookingController extends Controller
             ->where('for_user_id','=',$fillable['for_user_id'])
             ->where('search_key','!=',$search_key)
             ->get();
-        if ($recurring==true){
 
+        Activity::log([
+            'contentId'     => $user->id,
+            'contentType'   => 'bookings',
+            'action'        => 'Validate Booking',
+            'description'   => 'Validate booking details : nr of open bookings '.sizeof($ownBookings).' and recurrent - '.($recurring==true?"1":"0").' is employee - '.($is_employee==true?"1":"0"),
+            'details'       => 'User Booking : '.serialize($fillable),
+            'updated'       => false,
+        ]);
+
+        if ($recurring==true){
+            // is a recurrent booking
+        }
+        else if($is_employee==true && $user->id != $fillable['for_user_id']){
+            // is a booking created by an employee in the backend
         }
         else if (sizeof($ownBookings)<$free_open_bookings){
             // no open bookings except the search key
             $message['payment'] = 'membership';
         }
-        else if (sizeof($ownBookings)>=$free_open_bookings && @$user->id==$fillable['for_user_id']){
+        else {
             // more than the current pending booking and the user is the logged in user
             $message['payment'] = 'cash';
-        }
-        else{
-            // at least one booking found and the user is not the logged in one
-            $message['status'] = false;
-            return $message;
         }
 
         // check for existing booking on the same resurce
@@ -750,7 +767,7 @@ class BookingController extends Controller
     public function cancel_bookings(Request $request){
         if (!Auth::check()) {
             //return redirect()->intended(route('admin/login'));
-            return ['error' => 'Authentication Error'];
+            return ['success'=>false, 'title'=>'Credentials error', 'errors' => 'Please refresh the page and try again'];
         }
         else{
             $user = Auth::user();
@@ -1612,7 +1629,7 @@ class BookingController extends Controller
 
         // check if the player can book
         $fillable = [
-            'for_user_id' => $booking->for_user_id,
+            'for_user_id' => $for_user->id,
             'resource_id' => $booking->resource_id,
             'location_id' => $booking->location_id,
             'date_of_booking' => $booking->date_of_booking,
@@ -1624,11 +1641,11 @@ class BookingController extends Controller
             return ['booking_key' => ''];
         }
         else{
-            $fillable['payment_type'] = $canBook['payment'];
+            $booking->payment_type = $canBook['payment'];
 
             $book_price = ShopResource::find($fillable['resource_id']);
             if ($book_price){
-                $fillable['payment_amount'] = $book_price->session_price;
+                $booking->payment_amount = $book_price->session_price;
             }
             else{
                 return ['booking_key' => ''];
@@ -1647,6 +1664,7 @@ class BookingController extends Controller
             'details'       => 'User Email : '.$user->email,
             'updated'       => true,
         ]);
+        usleep(5000);
 
         return [
             'booking_key'   => $booking->search_key,
@@ -1704,14 +1722,15 @@ class BookingController extends Controller
 
                 // check if the player can book
                 $fillable = [
-                    'for_user_id' => $booking->for_user_id,
-                    'resource_id' => $booking->resource_id,
-                    'location_id' => $booking->location_id,
-                    'date_of_booking' => $booking->date_of_booking,
+                    'for_user_id'   => $for_user->id,
+                    'resource_id'   => $booking->resource_id,
+                    'location_id'   => $booking->location_id,
+                    'date_of_booking'    => $booking->date_of_booking,
                     'booking_time_start' => $booking->booking_time_start,
-                    'search_key' => $booking->search_key
+                    'search_key'    => $booking->search_key
                 ];
                 $canBook = BookingController::validate_booking($fillable, $key);
+
                 if ($canBook['status']==false){
                     $return_bookings[] = [
                         'booking_key'   => $booking->search_key,
@@ -1720,11 +1739,11 @@ class BookingController extends Controller
                     continue;
                 }
                 else{
-                    $fillable['payment_type'] = $canBook['payment'];
+                    $booking->payment_type = $canBook['payment'];
 
                     $book_price = ShopResource::find($fillable['resource_id']);
                     if ($book_price){
-                        $fillable['payment_amount'] = $book_price->session_price;
+                        $booking->payment_amount = $book_price->session_price;
                     }
                     else{
                         $return_bookings[] = [
@@ -1738,6 +1757,7 @@ class BookingController extends Controller
                 $booking->by_user_id = $by_user->id;
                 $booking->for_user_id = $for_user->id;
                 $booking->save();
+                usleep(1000);
 
                 Activity::log([
                     'contentId'     => $user->id,
@@ -1847,7 +1867,19 @@ class BookingController extends Controller
 
                 $theInvoice = BookingInvoice::where('id','=',$booking->invoice_id)->get()->first();
                 if (!$theInvoice){
-                    $invoiceID = -1;
+                    // create new invoice
+                    $invoice = $booking->add_invoice();
+                    if (isset($invoice->id)) {
+                        $invoiceID = $invoice->id;
+                        $theInvoice = BookingInvoice::where('id','=',$invoiceID)->get()->first();
+                    }
+                    else{
+                        $booking_return[] = [
+                            'booking_key'   => $key,
+                            'success'       => false,
+                            'errors'        => 'Could not generate invoice...'];
+                        continue;
+                    }
                 }
                 else{
                     $invoiceID = $theInvoice->id;
@@ -2006,10 +2038,15 @@ class BookingController extends Controller
             $user = Auth::user();
         }
 
+        $is_staff = false;
+        if (!$user->hasRole(['front-member','front-user'])){
+            $is_staff = true;
+        }
+
         $search_key = Booking::new_search_key();
         $fillable['search_key'] = $search_key;
 
-        $canBook = BookingController::validate_booking($fillable, $fillable['search_key'], $recurring);
+        $canBook = BookingController::validate_booking($fillable, $fillable['search_key'], $recurring, $is_staff);
         if ($canBook['status']==false){
             return ['booking_key' => '', 'error_msg' => 'booking date unavailable or outside membership range'];
         }
@@ -2035,6 +2072,7 @@ class BookingController extends Controller
 
         try {
             $the_booking = Booking::create($fillable);
+            usleep(1000);
 
             Activity::log([
                 'contentId'     => $user->id,
@@ -2136,6 +2174,12 @@ class BookingController extends Controller
         $booking = Booking::where('search_key','=',$vars['search_key'])->whereIn('status', ['active', 'unpaid', 'old', 'noshow'])->get()->first();
         if ($booking && $booking->payment_type=='cash'){
             $invoice = BookingInvoice::find($booking->invoice_id);
+            if (!$invoice){
+                return [
+                    'success' => false,
+                    'errors' => 'Error Getting Invoice...'];
+            }
+
             $invoiceItems = BookingInvoiceItem::where('booking_invoice_id','=',$invoice->id)->get();
             $totalAmount = 0;
             if ($invoiceItems){

@@ -162,4 +162,7 @@ class BookingInvoice extends Model
         return $this->hasMany('App\BookingFinancialTransaction', 'booking_invoice_id', 'id')->orderBy('created_at','DESC');
     }
 
+    public function invoice_items(){
+        return $this->hasMany('App\BookingInvoiceItem', 'booking_invoice_id', 'id')->orderBy('created_at','DESC');
+    }
 }

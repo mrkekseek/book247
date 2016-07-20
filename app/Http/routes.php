@@ -99,6 +99,11 @@ Route::group(['middleware' => 'web'], function () {
         'uses' => 'BackEndUserController@updatePassword',
     ]);
 
+    Route::post('admin/front_users/view_user/{id}/password_update', [
+        'as' => 'admin/front_users/view_user/password_update',
+        'uses' => 'FrontEndUserController@updatePassword',
+    ]);
+
     Route::post('admin/back_users/view_user/{id}/personal_address', [
         'as' => 'admin/back_users/view_user/personal_address',
         'uses' => 'BackEndUserController@update_personal_address',
@@ -109,14 +114,29 @@ Route::group(['middleware' => 'web'], function () {
         'uses' => 'BackEndUserController@update_personal_avatar',
     ]);
 
+    Route::post('admin/front_users/view_user/{id}/avatar_image', [
+        'as' => 'admin/front_users/view_user/avatar_image',
+        'uses' => 'FrontEndUserController@update_account_avatar',
+    ]);
+
     Route::post('admin/back_users/view_user/{id}/add_document', [
         'as' => 'admin/back_users/view_user/add_document',
         'uses' => 'BackEndUserController@add_account_document',
     ]);
 
+    Route::post('admin/front_users/view_user/{id}/add_document', [
+        'as' => 'admin/front_users/view_user/add_document',
+        'uses' => 'FrontEndUserController@add_account_document',
+    ]);
+
     Route::get('admin/back_users/{id}/get_document/{document_name}',[
         'as' => 'admin/back_user/get_document',
         'uses' => 'BackEndUserController@get_user_account_document'
+    ]);
+
+    Route::get('admin/front_users/{id}/get_document/{document_name}',[
+        'as' => 'admin/front_user/get_document',
+        'uses' => 'FrontEndUserController@get_user_account_document'
     ]);
     //** Start - Back end users route */
 

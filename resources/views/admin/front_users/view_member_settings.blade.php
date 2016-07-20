@@ -1,6 +1,8 @@
 @extends('admin.layouts.main')
 
 @section('pageLevelPlugins')
+    <link href="{{ asset('assets/global/plugins/dropzone/dropzone.min.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/global/plugins/dropzone/basic.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('assets/global/plugins/bootstrap-fileinput/bootstrap-fileinput.css') }}" rel="stylesheet" type="text/css" />
 @endsection
 
@@ -37,14 +39,14 @@
                             @if ( strlen($avatar)>10 )
                                 <img src="data:{{ $avatarType }};base64,{{ base64_encode($avatar) }}" class="img-responsive" alt="" />
                             @else
-                                <img src="../assets/pages/media/profile/profile_user.jpg" class="img-responsive" alt="" />
+                                <img src="{{asset('assets/pages/media/profile/profile_user.jpg')}}" class="img-responsive" alt="" />
                             @endif
                         </div>
                         <!-- END SIDEBAR USERPIC -->
                         <!-- SIDEBAR USER TITLE -->
                         <div class="profile-usertitle">
                             <div class="profile-usertitle-name"> {{$user->first_name.' '.$user->middle_name.' '.$user->last_name}} </div>
-                            <div class="profile-usertitle-job"> Developer </div>
+                            <div class="profile-usertitle-job"> Normal User </div>
                         </div>
                         <!-- END SIDEBAR USER TITLE -->
                         <!-- SIDEBAR BUTTONS -->
@@ -101,9 +103,6 @@
                                         </li>
                                         <li>
                                             <a href="#tab_1_4" data-toggle="tab">Documents</a>
-                                        </li>
-                                        <li>
-                                            <a href="#tab_1_5" data-toggle="tab">Privacy Settings</a>
                                         </li>
                                     </ul>
                                 </div>
@@ -164,9 +163,7 @@
                                         <!-- END PERSONAL INFO TAB -->
                                         <!-- CHANGE AVATAR TAB -->
                                         <div class="tab-pane" id="tab_1_2">
-                                            <p> Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum
-                                                eiusmod. </p>
-                                            <form action="{{ route('admin/back_users/view_user/avatar_image', ['id'=>$user->id]) }}" id="user_picture_upload1" class="form-horizontal" method="post" enctype="multipart/form-data">
+                                            <form action="{{ route('admin/front_users/view_user/avatar_image', ['id'=>$user->id]) }}" id="user_picture_upload1" class="form-horizontal" method="post" enctype="multipart/form-data">
                                                 <input type="hidden" name="_token" value="{{ csrf_token() }}">
                                                 <div class="form-body">
                                                     <div class="alert alert-danger display-hide">
@@ -174,7 +171,7 @@
                                                     <div class="alert alert-success display-hide">
                                                         <button class="close" data-close="alert"></button> Your form validation is successful! </div>
                                                     <div class="form-group last">
-                                                        <label class="control-label col-md-3">User Avatar</label>
+                                                        <label class="control-label col-md-2">Member Avatar</label>
                                                         <div class="col-md-9">
                                                             <div class="fileinput fileinput-{{ (strlen($avatar)>10) ? 'exists':'new' }} " data-provides="fileinput">
                                                                 <div class="fileinput-new thumbnail" style="width: 200px; height: 244px;">
@@ -197,11 +194,11 @@
                                                                     <p> Image preview only works in IE10+, FF3.6+, Safari6.0+, Chrome6.0+ and Opera11.1+. In older browsers the filename is shown instead. </p>
                                                                 </div>
                                                             </div>
+                                                            <div class="clearfix margin-top-10">
+                                                                <a class="btn green" onclick="javascript: $('#user_picture_upload1').submit();" href="javascript:;"> Update avatar </a>
+                                                                <a class="btn default" href="javascript:;"> Cancel </a>
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                    <div class="margin-top-10">
-                                                        <a class="btn green" onclick="javascript: $('#user_picture_upload1').submit();" href="javascript:;"> Submit </a>
-                                                        <a class="btn default" href="javascript:;"> Cancel </a>
                                                     </div>
                                                 </div>
                                             </form>
@@ -214,12 +211,6 @@
                                                     <button class="close" data-close="alert"></button> You have some form errors. Please check below. </div>
                                                 <div class="alert alert-success display-hide">
                                                     <button class="close" data-close="alert"></button> Your form validation is successful! </div>
-                                                <div class="form-group">
-                                                    <label class="control-label">Old Password</label>
-                                                    <div class="input-icon">
-                                                        <i class="fa"></i>
-                                                        <input type="password" name="old_password" id="old_password" class="form-control" /> </div>
-                                                </div>
                                                 <div class="form-group">
                                                     <label class="control-label">New Password</label>
                                                     <div class="input-icon">
@@ -254,7 +245,7 @@
                                                         <h3>Documents Dropzone</h3>
                                                         <p> Select the documents you want to add, documents related to this specific user, and upload them once you added all of them to the dropbox area. </p>
                                                     </div>
-                                                    <form action="{{ route('admin/back_users/view_user/add_document', ['id'=>$user->id]) }}" class="dropzone dropzone-file-area" id="my-dropzone" style="width: 500px; margin-top: 50px;">
+                                                    <form action="{{ route('admin/front_users/view_user/add_document', ['id'=>$user->id]) }}" class="dropzone dropzone-file-area" id="my-dropzone" style="width: 500px; margin-top: 50px;">
                                                         <h3 class="sbold">Drop files here or click to upload</h3>
                                                         <p> This is just a demo dropzone. Selected files are not actually uploaded. </p>
                                                     </form>
@@ -281,7 +272,7 @@
                                                                         <div class="list-datetime"> {{ $document->created_at->format('m/d/y') }} </div>
                                                                         <div class="list-item-content">
                                                                             <h3 class="uppercase">
-                                                                                <a href="{{ route('admin/back_user/get_document', [ 'id' => $user->id , 'document_name'=> $document->file_name ]) }}" target="_blank">{{ $document->file_name }}</a>
+                                                                                <a href="{{ route('admin/front_user/get_document', [ 'id' => $user->id , 'document_name'=> $document->file_name ]) }}" target="_blank">{{ $document->file_name }}</a>
                                                                             </h3>
                                                                         </div>
                                                                     </li>
@@ -293,49 +284,6 @@
                                             </div>
                                         </div>
                                         <!-- END DOCUMENTS TAB -->
-                                        <!-- PRIVACY SETTINGS TAB -->
-                                        <div class="tab-pane" id="tab_1_5">
-                                            <form action="#">
-                                                <table class="table table-light table-hover">
-                                                    <tr>
-                                                        <td> Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus.. </td>
-                                                        <td>
-                                                            <label class="uniform-inline">
-                                                                <input type="radio" name="optionsRadios1" value="option1" /> Yes </label>
-                                                            <label class="uniform-inline">
-                                                                <input type="radio" name="optionsRadios1" value="option2" checked/> No </label>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td> Enim eiusmod high life accusamus terry richardson ad squid wolf moon </td>
-                                                        <td>
-                                                            <label class="uniform-inline">
-                                                                <input type="checkbox" value="" /> Yes </label>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td> Enim eiusmod high life accusamus terry richardson ad squid wolf moon </td>
-                                                        <td>
-                                                            <label class="uniform-inline">
-                                                                <input type="checkbox" value="" /> Yes </label>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td> Enim eiusmod high life accusamus terry richardson ad squid wolf moon </td>
-                                                        <td>
-                                                            <label class="uniform-inline">
-                                                                <input type="checkbox" value="" /> Yes </label>
-                                                        </td>
-                                                    </tr>
-                                                </table>
-                                                <!--end profile-settings-->
-                                                <div class="margin-top-10">
-                                                    <a href="javascript:;" class="btn red"> Save Changes </a>
-                                                    <a href="javascript:;" class="btn default"> Cancel </a>
-                                                </div>
-                                            </form>
-                                        </div>
-                                        <!-- END PRIVACY SETTINGS TAB -->
                                     </div>
                                 </div>
                             </div>
@@ -360,6 +308,7 @@
     <script src="{{ asset('assets/global/plugins/jquery-notific8/jquery.notific8.min.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/global/plugins/jquery.blockui.min.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/pages/scripts/profile.min.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('assets/global/plugins/dropzone/dropzone.min.js') }}" type="text/javascript"></script>
 @endsection
 
 @section('themeBelowLayoutScripts')
@@ -401,11 +350,9 @@
 
         }();
 
-        if (App.isAngularJsApp() === false) {
-            jQuery(document).ready(function() {
-                ComponentsDateTimePickers.init();
-            });
-        }
+        jQuery(document).ready(function() {
+            ComponentsDateTimePickers.init();
+        });
 
         $.validator.addMethod(
                 "datePickerDate",
@@ -428,7 +375,7 @@
         );
 
         var FormValidation = function () {
-
+            /* Personal Info */
             var handleValidation1 = function() {
                 var form1 = $('#form_acc_personal');
                 var error1 = $('.alert-danger', form1);
@@ -620,7 +567,7 @@
                     }
                 });
             }
-
+            /* Change Password */
             var handleValidation4 = function() {
                 var form4 = $('#form_password_update');
                 var error4 = $('.alert-danger', form4);
@@ -632,10 +579,6 @@
                     focusInvalid: false, // do not focus the last invalid input
                     ignore: "",  // validate all fields including form hidden input
                     rules: {
-                        old_password: {
-                            minlength: 8,
-                            required: true,
-                        },
                         new_password1: {
                             minlength: 8,
                             required: true,
@@ -806,6 +749,7 @@
             FormValidation.init();
         });
 
+        /* Done */
         function store_account_personal(){
             $.ajax({
                 url: '{{route('admin/front_users/view_user/personal_info', ['id'=>$user->id])}}',
@@ -821,42 +765,37 @@
                     'country_id':       $('select[name=personalCountry]').val(),
                 },
                 success: function(data){
-                    alert(data);
+                    if (data.success) {
+                        show_notification(data.title, data.message, 'lime', 3500, 0);
+                    }
+                    else{
+                        show_notification(data.title, data.errors, 'tangerine', 3500, 0);
+                    }
                 }
             });
         }
 
-        function update_personal_address(){
-            $.ajax({
-                url: '{{route('admin/back_users/view_user/personal_address', ['id'=>$user->id])}}',
-                type: "post",
-                data: {
-                    'address1':     $('input[name=personal_addr1]').val(),
-                    'address2':     $('input[name=personal_addr2]').val(),
-                    'city':         $('input[name=personal_addr_city]').val(),
-                    'region':       $('input[name=personal_addr_region]').val(),
-                    'postal_code':  $('input[name=personal_addr_pcode]').val(),
-                    'country_id':   $('select[name=personal_addr_country]').val(),
-                    '_method': 'post',
-                },
-                success: function(data){
-                    alert(data);
-                }
-            });
-        }
-
+        /* Done */
         function update_passwd(){
             $.ajax({
-                url: '{{route('admin/back_users/view_user/password_update', ['id'=>$user->id])}}',
+                url: '{{route('admin/front_users/view_user/password_update', ['id'=>$user->id])}}',
                 type: "post",
                 data: {
-                    'old_password': $('input[name=old_password]').val(),
                     'password1':    $('input[name=new_password1]').val(),
                     'password2':    $('input[name=new_password2]').val(),
-                    '_method': 'post',
                 },
                 success: function(data){
-                    alert(data);
+                    if (data.success) {
+                        show_notification(data.title, data.message, 'lime', 3500, 0);
+                        $('#form_password_update').find('.alert').css('display','none');
+                        $('#form_password_update').find('i.fa').removeClass('fa-check');
+
+                        $('#new_password1').val('');
+                        $('#new_password2').val('');
+                    }
+                    else{
+                        show_notification(data.title, data.errors, 'tangerine', 3500, 0);
+                    }
                 }
             });
         }
@@ -881,6 +820,53 @@
 
         $(".user_avatar_select_btn2").on("change", function(){
             App.unblockUI('#user_picture_upload2');
+        });
+
+        var FormDropzone = function () {
+            return {
+                //main function to initiate the module
+                init: function () {
+
+                    Dropzone.options.myDropzone = {
+                        paramName: "user_doc", // The name that will be used to transfer the file
+                        maxFilesize: 20, // MB
+                        acceptedFiles: "image/jpeg,image/png,application/pdf,.psd,.doc,.docx,.xls,.xlsx,.JPG",
+                        dictDefaultMessage: '',
+                        dictResponseError: 'Error uploading file!',
+                        init: function() {
+                            this.on("sending", function(file, xhr, data) {
+                                data.append("_token", '{{ csrf_token() }}');
+                            });
+                            this.on("addedfile", function(file) {
+                                // Create the remove button
+                                var removeButton = Dropzone.createElement("<a href='javascript:;'' class='btn red btn-sm btn-block'>Remove</a>");
+
+                                // Capture the Dropzone instance as closure.
+                                var _this = this;
+
+                                // Listen to the click event
+                                removeButton.addEventListener("click", function(e) {
+                                    // Make sure the button click doesn't submit the form:
+                                    e.preventDefault();
+                                    e.stopPropagation();
+
+                                    // Remove the file preview.
+                                    _this.removeFile(file);
+                                    // If you want to the delete the file on the server as well,
+                                    // you can do the AJAX request here.
+                                });
+
+                                // Add the button to the file preview element.
+                                file.previewElement.appendChild(removeButton);
+                            });
+                        }
+                    }
+                }
+            };
+        }();
+
+        $(document).ready(function(){
+            FormDropzone.init();
         });
 
         /* Start - All admin scripts */

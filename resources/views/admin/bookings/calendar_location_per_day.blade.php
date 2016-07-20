@@ -933,7 +933,13 @@
                     'method': payment_type
                 },
                 success: function (data) {
-                    show_notification('Booking Paid', 'Selected booking marked as paid', 'lime', 3500, 0);
+                    if(data.success){
+                        show_notification('Booking Paid', data.message, 'lime', 3500, 0);
+                    }
+                    else{
+                        show_notification('Error marking Paiment', data.errors, 'ruby', 3500, 0);
+                    }
+
                     //$('#small').find('.book_details_cancel_place').html('');
                     $('#cancel_confirm_box').modal('hide');
                     $('#changeIt').modal('hide');

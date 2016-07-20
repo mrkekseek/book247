@@ -3,9 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Booking;
+use App\BookingInvoice;
+use App\BookingInvoiceItem;
 use App\UserFriends;
 use Illuminate\Http\Request;
 
+use Illuminate\Http\Response;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use App\User;
@@ -21,6 +24,7 @@ use App\ShopResource;
 use App\ShopResourceCategory;
 use Webpatser\Countries\Countries;
 use Auth;
+use Hash;
 use Storage;
 use Carbon\Carbon;
 use Validator;
@@ -304,7 +308,7 @@ class FrontEndUserController extends Controller
         $avatar = $back_user->avatar;
         if (!$avatar) {
             $avatar = new UserAvatars();
-            $avatar->file_location = 'employees/default/avatars/';
+            $avatar->file_location = 'members/default/avatars/';
             $avatar->file_name = 'default.jpg';
         }
 
@@ -506,6 +510,16 @@ class FrontEndUserController extends Controller
             $index[$indexKey] = $nr;
         }
 
+        $avatar = $back_user->avatar;
+        if (!$avatar) {
+            $avatar = new UserAvatars();
+            $avatar->file_location = 'members/default/avatars/';
+            $avatar->file_name = 'default.jpg';
+        }
+
+        $avatarContent = Storage::disk('local')->get($avatar->file_location . $avatar->file_name);
+        $avatarType = Storage::disk('local')->mimeType($avatar->file_location . $avatar->file_name);
+
         $breadcrumbs = [
             'Home'              => route('admin'),
             'Administration'    => route('admin'),
@@ -519,6 +533,8 @@ class FrontEndUserController extends Controller
             'breadcrumbs' => $breadcrumbs,
             'text_parts'  => $text_parts,
             'in_sidebar'  => $sidebar_link,
+            'avatar'      => $avatarContent,
+            'avatarType'  => $avatarType,
             'bookings'    => $bookingsList,
             'multipleBookingsIndex' => isset($index)?$index:[],
             'lastTen' =>  isset($lastTenBookings)?$lastTenBookings:[]
@@ -539,56 +555,158 @@ class FrontEndUserController extends Controller
         else{
             $user = Auth::user();
         }
-        $back_user = User::with('roles')->find($id);
+        $back_user = User::find($id);
+        if (!$back_user){
+            return redirect()->intended(route('admin/login'));
+        }
+
+        $invoicesList = [];
+        $bookings = Booking::with('invoice')
+            ->where('by_user_id','=',$id)
+            ->where('invoice_id','!=',-1)
+            ->orderBy('created_at','desc')
+            ->get();
+        //xdebug_var_dump($bookings); exit;
+
+        if (sizeof($bookings)>0){
+            $buttons = [];
+            $colorStatus = '';
+            foreach ($bookings as $booking){
+                if (isset($booking->invoice[0])) {
+                    $the_invoice = $booking->invoice[0];
+                    switch ($the_invoice->status) {
+                        case 'pending':
+                            $colorStatus = 'warning';
+                            $buttons = 'yellow-gold';
+                            break;
+                        case 'ordered':
+                        case 'processing':
+                            $colorStatus = 'info';
+                            $buttons = 'green-meadow';
+                            break;
+                        case 'completed':
+                            $colorStatus = 'success';
+                            $buttons = 'green-jungle';
+                            break;
+                        case 'cancelled':
+                            $colorStatus = 'warning';
+                            $buttons = 'yellow-lemon';
+                            break;
+                        case 'declined':
+                        case 'incomplete':
+                            $colorStatus = 'danger';
+                            $buttons = 'red-thunderbird';
+                            break;
+                        case 'preordered':
+                            $colorStatus = 'info';
+                            $buttons = 'green-meadow';
+                            break;
+                    }
+
+                    $price = 0;
+                    $items = 0;
+                    $location = '';
+                    $invoiceItems = BookingInvoiceItem::where('booking_invoice_id','=',$the_invoice->id)->get();
+                    if ($invoiceItems){
+                        foreach ($invoiceItems as $invItem){
+                            $price+=$invItem->total_price;
+                            $items++;
+                            if ($location==''){
+                                $location = $invItem->location_name;
+                            }
+                        }
+                    }
+                }
+                else{
+                    continue;
+                }
+
+                $addedOn    = Carbon::createFromFormat('Y-m-d H:i:s', $booking->created_at)->format('j/m/Y');
+                $invoicesList[] = [
+                    'invoice_no'    => $the_invoice->invoice_number,
+                    'date'          => $addedOn,
+                    'status'        => $the_invoice->status,
+                    'color_status'  => $colorStatus,
+                    'color_button'  => $buttons,
+                    'price_to_pay'  => $price,
+                    'items'         => $items,
+                    'location'      => $location
+                ];
+            }
+
+            unset($bookings); unset($booking);
+
+            $nr = 1;
+            $index = [];
+            $lastMan = 0;
+            $lastTime = '';
+            $lastTenInvoices = [];
+            foreach($invoicesList as $lastOne){
+                if (!isset($lastMan)){ $lastMan = $lastOne['invoice_no']; }
+
+                if ($lastMan==$lastOne['invoice_no']){
+                    $nr++;
+                    $lastOne['colspan'] = 0;
+                }
+                else{
+                    $lastMan  = $lastOne['invoice_no'];
+
+                    $indexKey = sizeof($index)+1;
+                    $index[$indexKey-1] = $nr;
+
+                    if ($indexKey>10){
+                        break;
+                    }
+                    $nr=1;
+                }
+
+                switch ($lastOne['status']) {
+                    case 'pending' :
+                        $colorStatus = 'label-warning';
+                        break;
+                    case 'expired' :
+                        $colorStatus = 'label-default';
+                        break;
+                    case 'active' :
+                        $colorStatus = 'label-success';
+                        break;
+                    case 'paid' :
+                        $colorStatus = 'label-success';
+                        break;
+                    case 'unpaid' :
+                        $colorStatus = 'label-danger';
+                        break;
+                    case 'noshow' :
+                        $colorStatus = 'label-danger';
+                        break;
+                    case 'old' :
+                        $colorStatus = 'label-info';
+                        break;
+                    case 'canceled' :
+                        $colorStatus = 'label-default';
+                        break;
+                }
+                $lastOne['status-color'] = $colorStatus;
+                $lastTenInvoices[] = $lastOne;
+            }
+            $index[$indexKey] = $nr;
+        }
+        //exit;
+
+        $avatar = $back_user->avatar;
+        if (!$avatar) {
+            $avatar = new UserAvatars();
+            $avatar->file_location = 'members/default/avatars/';
+            $avatar->file_name = 'default.jpg';
+        }
+        $avatarContent = Storage::disk('local')->get($avatar->file_location . $avatar->file_name);
+        $avatarType = Storage::disk('local')->mimeType($avatar->file_location . $avatar->file_name);
 
         $text_parts  = [
             'title'     => 'Back-End Users',
             'subtitle'  => 'view all users',
             'table_head_text1' => 'Backend User List'
         ];
-
-        @$userRole = $back_user->roles[0];
-        if (!$userRole){
-            $defaultRole = Role::where('name','employee')->get();
-            $userRole = $defaultRole[0];
-        }
-        $permissions = Permission::all();
-
-        $userProfessional = $back_user->ProfessionalDetail;
-        if (!isset($userProfessional)){
-            $userProfessional = new ProfessionalDetail();
-        }
-
-        $userPersonal = $back_user->PersonalDetail;
-        if (isset($userPersonal)) {
-            $userPersonal->dob_format = Carbon::createFromFormat('Y-m-d', $userPersonal->date_of_birth)->format('d-m-Y');
-            $userPersonal->dob_to_show = Carbon::createFromFormat('Y-m-d', $userPersonal->date_of_birth)->format('d M Y');
-        }
-        else{
-            $userPersonal = new PersonalDetail();
-        }
-
-        $personalAddress = Address::find($userPersonal->address_id);
-        if (!isset($personalAddress)){
-            $personalAddress = new Address();
-        }
-
-        $roles = Role::all();
-        $countries = Countries::orderBy('name')->get();
-        $userCountry = Countries::find($back_user->country_id);
-
-        $avatar = $back_user->avatar;
-        if (!$avatar) {
-            $avatar = new UserAvatars();
-            $avatar->file_location = 'employees/default/avatars/';
-            $avatar->file_name = 'default.jpg';
-        }
-
-        $avatarContent = Storage::disk('local')->get($avatar->file_location . $avatar->file_name);
-        $avatarType = Storage::disk('local')->mimeType($avatar->file_location . $avatar->file_name);
-
-        $userDocuments = UserDocuments::where('user_id','=',$id)->where('category','=','account_documents')->get();
-
         $breadcrumbs = [
             'Home'              => route('admin'),
             'Administration'    => route('admin'),
@@ -599,26 +717,55 @@ class FrontEndUserController extends Controller
 
         return view('admin/front_users/view_member_finance', [
             'user'      => $back_user,
-            'userRole'  => $userRole,
-            'professional' => $userProfessional,
-            'personal'  => $userPersonal,
-            'personalAddress' => $personalAddress,
-            'countryDetails' => $userCountry,
-            'countries' => $countries,
-            'roles'     => $roles,
             'breadcrumbs' => $breadcrumbs,
             'text_parts'  => $text_parts,
             'in_sidebar'  => $sidebar_link,
             'avatar'      => $avatarContent,
             'avatarType'  => $avatarType,
-            'permissions' => $permissions,
-            'documents'   => $userDocuments,
+            'invoices'    => $invoicesList,
+            'lastTen'     => $lastTenInvoices
         ]);
     }
 
-    public function update_account_avatar(Request $request, $id)
-    {
-        //
+    public function update_account_avatar(Request $request, $id){
+        if (!Auth::check()) {
+            return redirect()->intended(route('admin/login'));
+        }
+        else{
+            $user = Auth::user();
+        }
+
+        //$user = User::findOrFail($id);
+
+        $avatarLocation = 'members/'.$id.'/avatars/';
+        $avatarFilename = $user->username.'.'.$request->file('user_avatar')->getClientOriginalExtension();
+        $exists = Storage::disk('local')->exists($avatarLocation . $avatarFilename);
+        if ($exists){
+            Storage::disk('local')->move( $avatarLocation . $avatarFilename, $avatarLocation . time().'-'.$avatarFilename.'.old');
+        }
+
+        $avatarData = [
+            'user_id'   => $id,
+            'file_name' => $avatarFilename,
+            'file_location' => $avatarLocation,
+            'width' => 0,
+            'height'=> 0
+        ];
+
+        $avatar = UserAvatars::find(['user_id' => $id])->first();
+        if (!$avatar) {
+            $avatar = new UserAvatars();
+        }
+        $avatar->fill($avatarData);
+        $avatar->save();
+
+        Storage::disk('local')->put(
+            $avatarLocation . $avatarFilename,
+            file_get_contents($request->file('user_avatar')->getRealPath())
+        );
+
+        //return redirect('admin/back_users/view_user/'.$id);
+        return redirect()->intended(route('admin/front_users/view_account_settings', ['id' => $id]));
     }
 
     /**
@@ -630,10 +777,27 @@ class FrontEndUserController extends Controller
     public function update_personal_info(Request $request, $id)
     {
         if (!Auth::check()) {
-            return redirect()->intended(route('admin/login'));
+            return ['success' => false,
+                'title'   => 'Authentication Error',
+                'errors'  => 'Please reload the page and try again'];
         }
         else{
             $user = Auth::user();
+        }
+
+        $is_staff = false;
+        if (!$user->hasRole(['front-member','front-user'])){
+            $is_staff = true;
+        }
+
+        if ($id!=$user->id && $is_staff) {
+            // an employee is updating a member details
+            $user = User::findOrFail($id);
+        }
+        else{
+            return ['success' => false,
+                'title'   => 'Authentication Error',
+                'errors'  => 'Please reload the page and try again'];
         }
 
         $vars = $request->only('about_info', 'country_id', 'date_of_birth', 'first_name', 'last_name', 'middle_name', 'mobile_number', 'personal_email');
@@ -643,7 +807,6 @@ class FrontEndUserController extends Controller
             'middle_name'   => $vars["middle_name"],
             'country_id'    => $vars["country_id"],
             'date_of_birth' => $vars["date_of_birth"]);
-        $userCh = User::find($id);
 
         $validator = Validator::make($userVars, [
             'first_name'    => 'required|min:4|max:150',
@@ -653,30 +816,33 @@ class FrontEndUserController extends Controller
         ]);
 
         if ($validator->fails()){
-            //return array(
-            //    'success' => false,
-            //    'errors' => $validator->getMessageBag()->toArray()
-            //);
+            return array(
+                'success' => false,
+                'title'   => 'Validation Error',
+                'errors'  => $validator->getMessageBag()->toArray()
+            );
         }
         else{
-            $userCh->first_name  = $vars["first_name"];
-            $userCh->last_name   = $vars["last_name"];
-            $userCh->middle_name = $vars["middle_name"];
-            $userCh->country_id  = $vars["country_id"];
-            $userCh->save();
+            $user->first_name  = $vars["first_name"];
+            $user->last_name   = $vars["last_name"];
+            $user->middle_name = $vars["middle_name"];
+            $user->country_id  = $vars["country_id"];
+            $user->save();
         }
 
         $personalData = array(  'personal_email'=> $vars['personal_email'],
             'mobile_number' => $vars['mobile_number'],
             'date_of_birth' => $vars['date_of_birth'],
             'about_info'    => $vars['about_info'],
-            'user_id'       => $id);
-        $personalDetails = PersonalDetail::firstOrNew(array('user_id'=>$id));
+            'user_id'       => $user->id);
+        $personalDetails = PersonalDetail::firstOrNew(array('user_id'=>$user->id));
         $personalData['date_of_birth'] = Carbon::createFromFormat('d-m-Y', $personalData['date_of_birth'])->toDateString();
         $personalDetails->fill($personalData);
         $personalDetails->save();
 
-        return "bine";
+        return ['success' => true,
+            'title'   => 'Information Updated',
+            'message' => 'Member/user information successfully updated'];
     }
 
     public function update_personal_address(Request $request, $id)
@@ -749,41 +915,75 @@ class FrontEndUserController extends Controller
     public function updatePassword(Request $request, $id)
     {
         if (!Auth::check()) {
-            return redirect()->intended(route('admin/login'));
+            return ['success' => false,
+                'title'   => 'Authentication Error',
+                'errors'  => 'Please reload the page and try again'];
         }
         else{
             $user = Auth::user();
         }
 
-        $user = User::findOrFail($id);
-        $userVars = $request->only('old_password','password1','password2');
+        $is_staff = false;
+        if (!$user->hasRole(['front-member','front-user'])){
+            $is_staff = true;
+        }
 
-        // Validate the new password length...
-        $validator = Validator::make($userVars, [
-            'old_password'  => 'required|min:8',
-            'password1'     => 'required|min:8',
-            'password2'     => 'required|min:8|same:password1',
-        ]);
+        if ($id!=$user->id && $is_staff) {
+            // an employee is updating a member password
+            $user = User::findOrFail($id);
 
-        if ($validator->fails()){
-            //return array(
-            //    'success' => false,
-            //    'errors' => $validator->getMessageBag()->toArray()
-            //);
+            $userVars = $request->only('password1','password2');
+            // Validate the new password length...
+            $validator = Validator::make($userVars, [
+                'password1'     => 'required|min:8',
+                'password2'     => 'required|min:8|same:password1',
+            ]);
         }
         else {
-            $auth = auth();
-            if ($auth->attempt([ 'id' => $id, 'password' => $userVars['old_password'] ])) {
+            $userVars = $request->only('old_password','password1','password2');
+            // Validate the new password length and require old password...
+            $validator = Validator::make($userVars, [
+                'old_password'  => 'required|min:8',
+                'password1'     => 'required|min:8',
+                'password2'     => 'required|min:8|same:password1',
+            ]);
+        }
+
+        if ($validator->fails()){
+            return array(
+                'success' => false,
+                'title'   => 'New password validation failed',
+                'errors'  => $validator->getMessageBag()->toArray()
+            );
+        }
+        else {
+            if ($is_staff){
                 $user->fill([
                     'password' => Hash::make($request->password1)
                 ])->save();
+
+                return ['success' => true,
+                    'title' => 'Password updated',
+                    'message' => 'Old password changed ... user updated'];
             }
             else{
-                return 'Old password mismatch';
+                $auth = auth();
+                if ($auth->attempt([ 'id' => $id, 'password' => $userVars['old_password'] ])) {
+                    $user->fill([
+                        'password' => Hash::make($request->password1)
+                    ])->save();
+
+                    return ['success' => true,
+                        'title' => 'Password updated',
+                        'message' => 'Old password changed ... user updated'];
+                }
+                else{
+                    return ['success' => false,
+                        'title'  => 'Error updating password',
+                        'errors' => 'Old password mismatch'];
+                }
             }
         }
-
-        return 'bine';
     }
 
     public function update_personal_avatar(Request $request, $id){
@@ -796,7 +996,7 @@ class FrontEndUserController extends Controller
 
         $user = User::findOrFail($id);
 
-        $avatarLocation = 'employees/'.$id.'/avatars/';
+        $avatarLocation = 'members/'.$id.'/avatars/';
         $avatarFilename = $user->username.'.'.$request->file('user_avatar')->getClientOriginalExtension();
         $exists = Storage::disk('local')->exists($avatarLocation . $avatarFilename);
         if ($exists){
@@ -836,8 +1036,8 @@ class FrontEndUserController extends Controller
         }
 
         $user = User::findOrFail($id);
-//xdebug_var_dump($request); exit;
-        $documentLocation = 'employees/'.$id.'/documents/';
+
+        $documentLocation = 'members/'.$id.'/documents/';
         $documentFilename = $request->file('user_doc')->getClientOriginalName();
         $exists = Storage::disk('local')->exists($documentLocation . $documentFilename);
         if ($exists){
@@ -877,7 +1077,7 @@ class FrontEndUserController extends Controller
         $back_user = User::findOrFail($id);
         $entry = UserDocuments::where('user_id',$back_user->id)->where('file_name', $document_name)->where('category', 'account_documents')->firstOrFail();
 
-        $file_path = 'employees/'.$id.'/documents/'. $document_name;
+        $file_path = 'members/'.$id.'/documents/'. $document_name;
         $exists = Storage::disk('local')->exists($file_path);
         if ($exists) {
             $file = Storage::disk('local')->get($file_path);
