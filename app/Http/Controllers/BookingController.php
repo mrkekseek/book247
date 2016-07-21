@@ -1703,7 +1703,6 @@ class BookingController extends Controller
                         'message'       => 'Booking not found'];
                     continue;
                 }
-
                 // check if the member that makes the booking exists
                 $by_user = User::where('id','=',$vars['by_player'])->get()->first();
                 if (!$by_user){
@@ -1752,6 +1751,21 @@ class BookingController extends Controller
                             'message'       => 'Error getting resource information!!!'];
                         continue;
                     }
+                }
+
+                if ($canBook['payment']=='cash' && !isset($book_invoice)){
+                    // check for invoice
+                    if ($booking->invoice_id==-1){
+                        // add invoice
+                        $book_invoice = $booking->add_invoice();
+                    }
+                    else{
+                        // get invoice
+                        $book_invoice = BookingInvoice::where('id','=',$booking->invoice_id)->get()->first();
+                    }
+
+                    // check invoice items
+                    //$book_invoice->add_invoice_item($invoice_item_fill);
                 }
 
                 $booking->by_user_id = $by_user->id;

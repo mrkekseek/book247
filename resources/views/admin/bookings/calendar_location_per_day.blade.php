@@ -1551,7 +1551,12 @@
             //var resource_for_hour = {book_friend_time:book_friend_time, resource_room:own_next.find('select[name="resources_room"]')};
             var search_key = own_box.find('input[name="time_book_key"]').val();
             var by_player  = $('#find_customer_name').val();
+
             var for_player = own_box.find('select[name="friend_booking"]').val();
+            if (typeof for_player === "undefined") {
+                for_player = by_player;
+            }
+
             save_calendar_booking(own_box, search_key, by_player, for_player);
 
             if (own_next.hasClass('friend_booking')) {

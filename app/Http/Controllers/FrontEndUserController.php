@@ -561,6 +561,7 @@ class FrontEndUserController extends Controller
         }
 
         $invoicesList = [];
+        $lastTenInvoices = [];
         $bookings = Booking::with('invoice')
             ->where('by_user_id','=',$id)
             ->where('invoice_id','!=',-1)
@@ -623,6 +624,7 @@ class FrontEndUserController extends Controller
 
                 $addedOn    = Carbon::createFromFormat('Y-m-d H:i:s', $booking->created_at)->format('j/m/Y');
                 $invoicesList[] = [
+                    'invoice_id'    => $the_invoice->id,
                     'invoice_no'    => $the_invoice->invoice_number,
                     'date'          => $addedOn,
                     'status'        => $the_invoice->status,
@@ -633,34 +635,46 @@ class FrontEndUserController extends Controller
                     'location'      => $location
                 ];
             }
-
             unset($bookings); unset($booking);
 
-            $nr = 1;
-            $index = [];
-            $lastMan = 0;
-            $lastTime = '';
-            $lastTenInvoices = [];
-            foreach($invoicesList as $lastOne){
-                if (!isset($lastMan)){ $lastMan = $lastOne['invoice_no']; }
-
-                if ($lastMan==$lastOne['invoice_no']){
-                    $nr++;
-                    $lastOne['colspan'] = 0;
+            $nr = 0;
+            foreach($invoicesList as $invoice){
+                if ($nr>10){
+                    break;
                 }
-                else{
-                    $lastMan  = $lastOne['invoice_no'];
 
-                    $indexKey = sizeof($index)+1;
-                    $index[$indexKey-1] = $nr;
+                $sum_price = 0;
+                $sum_discount = 0;
+                $sum_total = 0;
+                $is_first = 0;
 
-                    if ($indexKey>10){
-                        break;
+                $invoiceItems = BookingInvoiceItem::where('booking_invoice_id','=',$invoice['invoice_id'])->get();
+                if (sizeof($invoiceItems)>0){
+                    foreach($invoiceItems as $item){
+                        $new_set = [
+                            'location'  => $item->location_name,
+                            'resource_name' => $item->resource_name,
+                            'booking_date'  => $item->booking_date,
+                            'booking_time_interval' => $item->booking_time_interval,
+                            'price'     => $item->price,
+                            'discount'  => $item->discount,
+                            'total'     => $item->total_price,
+                        ];
+                        if ($is_first==0){
+                            $is_first=1;
+                            $new_set['colspan'] = sizeof($invoiceItems)+1;
+                            $new_set['invoice_id'] = $invoice['invoice_id'];
+                        }
+
+                        $lastTenInvoices[] = $new_set;
+
+                        $sum_price+= $item->price;
+                        $sum_discount+= $item->discount;
+                        $sum_total+= $item->total_price;
                     }
-                    $nr=1;
                 }
 
-                switch ($lastOne['status']) {
+                switch ($invoice['status']) {
                     case 'pending' :
                         $colorStatus = 'label-warning';
                         break;
@@ -686,12 +700,22 @@ class FrontEndUserController extends Controller
                         $colorStatus = 'label-default';
                         break;
                 }
-                $lastOne['status-color'] = $colorStatus;
-                $lastTenInvoices[] = $lastOne;
+
+                $lastTenInvoices[] = [
+                    'location'  => '',
+                    'resource_name' => '',
+                    'booking_date'  => '',
+                    'booking_time_interval' => '',
+                    'status'        => $invoice['status'],
+                    'color_status'  => $colorStatus,
+                    'price'     => $sum_price,
+                    'discount'  => $sum_discount,
+                    'total'     => $sum_total,
+                    'date' => $invoice['date'],
+                ];
+                $nr++;
             }
-            $index[$indexKey] = $nr;
         }
-        //exit;
 
         $avatar = $back_user->avatar;
         if (!$avatar) {
@@ -723,7 +747,8 @@ class FrontEndUserController extends Controller
             'avatar'      => $avatarContent,
             'avatarType'  => $avatarType,
             'invoices'    => $invoicesList,
-            'lastTen'     => $lastTenInvoices
+            'lastTen'     => $lastTenInvoices,
+            'multipleBookingsIndex' => isset($index)?$index:[],
         ]);
     }
 

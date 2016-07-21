@@ -110,34 +110,43 @@
                                                             <table class="table table-bordered table-hover">
                                                                 <thead>
                                                                 <tr>
-                                                                    <th> # </th>
-                                                                    <th> Date </th>
+                                                                    <th> #ID </th>
+                                                                    <th> Booking Date </th>
+                                                                    <th> Location / Room </th>
                                                                     <th> Time Interval </th>
-                                                                    <th class="hidden-xs"> Player </th>
-                                                                    <th> Location </th>
-                                                                    <th class="hidden-xs"> Room </th>
-                                                                    <th class="hidden-xs"> Activity </th>
+                                                                    <th class="hidden-xs"> Price </th>
+                                                                    <th class="hidden-xs"> Discount </th>
+                                                                    <th> Total </th>
                                                                     <th> Status </th>
                                                                 </tr>
                                                                 </thead>
                                                                 <tbody>
                                                                 <?php $theNr = 1; ?>
                                                                 @foreach($lastTen as $invoice)
+                                                                    @if ($invoice['location']!='' && $invoice['resource_name']!='')
                                                                     <tr>
-                                                                        <?php   if (!isset($invoice['colspan'])){
-                                                                            echo '<td rowspan="'.($multipleBookingsIndex[$theNr]).'">'.$theNr.'</td>';
-                                                                            $theNr++;
-                                                                        } else {  } ?>
-                                                                        <td> {{$invoice['date']}} </td>
-                                                                        <td> {{$invoice['timeInterval']}} </td>
-                                                                        <td class="hidden-xs"> <a href="{{ route('admin/front_users/view_user',['id'=>$invoice['player_id']])}}" target="_blank">{{$invoice['player_name']}}</a> </td>
-                                                                        <td class="hidden-xs"> {{$invoice['location']}} </td>
-                                                                        <td> {{$invoice['room']}} </td>
-                                                                        <td class="hidden-xs"> {{$invoice['activity']}} </td>
-                                                                        <td>
-                                                                            <span class="label label-sm {{$invoice['status-color']}} booking_details_modal" data-key="{{$invoice['search_key']}}"> {{$invoice['status']}} </span>
-                                                                        </td>
+                                                                        @if (isset($invoice['colspan']))
+                                                                            <td rowspan="{{$invoice['colspan']}}">{{$invoice['invoice_id']}}</td>
+                                                                        @endif
+                                                                        <td> {{$invoice['booking_date']}} </td>
+                                                                        <td> {{$invoice['location']}} / {{$invoice['resource_name']}} </td>
+                                                                        <td class="hidden-xs"> {{$invoice['booking_time_interval']}} </td>
+                                                                        <td class="hidden-xs"> {{$invoice['price']}} </td>
+                                                                        <td class="hidden-xs"> {{$invoice['discount']}} </td>
+                                                                        <td> {{$invoice['total']}} </td>
+                                                                        <td> </td>
                                                                     </tr>
+                                                                    @else
+                                                                        <tr>
+                                                                            <td colspan="3"><b>Total Items Value and Invoice Status</b></td>
+                                                                            <td class="hidden-xs"> <b> {{$invoice['price']}} </b> </td>
+                                                                            <td class="hidden-xs"> <b> {{$invoice['discount']}} </b> </td>
+                                                                            <td> <b>{{$invoice['total']}} </b> </td>
+                                                                            <td>
+                                                                                <span class="label label-sm {{$invoice['color_status']}} booking_details_modal" > {{$invoice['status']}} </span>
+                                                                            </td>
+                                                                        </tr>
+                                                                    @endif
                                                                 @endforeach
                                                                 </tbody>
                                                             </table>
