@@ -4,6 +4,10 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use Validator;
+use App\ShopLocations;
+use App\ShopResource;
+use App\VatRate;
+use Carbon\Carbon;
 
 class BookingInvoice extends Model
 {
@@ -35,8 +39,49 @@ class BookingInvoice extends Model
         }
     }
 
-    public function add_invoice_item($fillable){
-        $fillable['booking_invoice_id'] = $this->id;
+    public function add_invoice_item($bookingID, $update_assigned_invoice = false){
+        // check if the bookingID is linked to any invoice/invoice_item
+        $item = BookingInvoiceItem::where('booking_id','=',$bookingID)->get()->first();
+        if ($item && $update_assigned_invoice==true){
+            // delete the invoice item
+            BookingInvoiceItem::where('booking_id','=',$bookingID)->delete();
+        }
+        elseif ($item){
+            // return error
+            return ['success' => false, 'errors' => 'Booking already assigned to an invoice #'.$item->booking_id];
+        }
+
+        $theBooking = Booking::where('id','=',$bookingID)->get()->first();
+
+        $loc = ShopLocations::where('id','=',$theBooking->location_id)->get()->first();
+        $location_name = $loc->name;
+
+        $resource = ShopResource::where('id','=',$theBooking->resource_id)->get()->first();
+        $resource_name = $resource->name;
+
+        $booking_date = $theBooking->date_of_booking;
+        $booking_time_interval = $theBooking->booking_time_start.' - '.$theBooking->booking_time_stop;
+
+        $booking_price = $theBooking->payment_amount;
+
+        $vat = VatRate::orderBy('id','asc')->get()->first();
+        $vat_value = $vat->value;
+
+        $total_price = $booking_price + (($booking_price*$vat_value)/100);
+
+        $fillable = [
+            'booking_invoice_id'=> $this->id,
+            'booking_id'        => $theBooking->id,
+            'location_name'     => $location_name,
+            'resource_name'     => $resource_name,
+            'quantity'          => 1,
+            'booking_date'      => $booking_date,
+            'booking_time_interval' => $booking_time_interval,
+            'price'             => $booking_price,
+            'vat'               => $vat_value,
+            'discount'          => 0,
+            'total_price'       => $total_price
+        ];
 
         $validator = Validator::make($fillable, BookingInvoiceItem::rules('POST'), BookingInvoiceItem::$message, BookingInvoiceItem::$attributeNames);
         if ($validator->fails()){
@@ -55,7 +100,8 @@ class BookingInvoice extends Model
             else{
                 return ['success' => false, 'errors' => 'Error adding item'];
             }
-        } catch (Exception $e) {
+        }
+        catch (Exception $e) {
             return ['success' => false, 'errors' => 'Error while adding item'];
         }
     }

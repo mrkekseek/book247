@@ -1792,6 +1792,22 @@
             window.location.href = the_link;
         }
 
+        /* Page auto refresh after 5 min of inactivity - Start */
+        var time = new Date().getTime();
+        $(document.body).bind("mousemove keypress", function(e) {
+            time = new Date().getTime();
+        });
+
+        function refresh() {
+            if(new Date().getTime() - time >= 60000)
+                window.location.reload(true);
+            else
+                setTimeout(refresh, 10000);
+        }
+
+        setTimeout(refresh, 10000);
+        /* Page auto refresh after 5 min of inactivity - Stop */
+
         function show_notification(title_heading, message, theme, life, sticky) {
             var settings = {
                 theme: theme,

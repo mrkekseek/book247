@@ -190,7 +190,7 @@
                                                                         <tr>
                                                                             <td class="highlight">
                                                                                 <div class="{{ $invoice['color_status'] }}"></div>
-                                                                                <a href="javascript:;"> {{$invoice['invoice_no']}} </a>
+                                                                                <a href="javascript:;">Invoice #{{$invoice['invoice_no']}} </a>
                                                                             </td>
                                                                             <td> {{ $invoice['location'] }} </td>
                                                                             <td> {{ $invoice['items'] }} </td>

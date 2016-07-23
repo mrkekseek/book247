@@ -66,18 +66,15 @@
                                         <a data-toggle="modal" href="#draggable" class="profile-edit"> edit </a>
                                     </li>
                                     <li>
-                                        <a href="javascript:;"> Projects </a>
+                                        <a href="javascript:;"> Bookings </a>
                                     </li>
                                     <li>
-                                        <a href="javascript:;"> Messages
-                                            <span> 3 </span>
+                                        <a href="javascript:;"> Invoices
+                                            <span> 3 unpaid </span>
                                         </a>
                                     </li>
                                     <li>
-                                        <a href="javascript:;"> Friends </a>
-                                    </li>
-                                    <li>
-                                        <a href="javascript:;"> Settings </a>
+                                        <a href="javascript:;"> Hours Worked </a>
                                     </li>
                                 </ul>
                             </div>
@@ -105,7 +102,7 @@
                                     <div class="col-md-4">
                                         <div class="portlet sale-summary">
                                             <div class="portlet-title">
-                                                <div class="caption font-red sbold"> Sales Summary </div>
+                                                <div class="caption font-red sbold"> Hours worked </div>
                                                 <div class="tools">
                                                     <a class="reload" href="javascript:;"> </a>
                                                 </div>
@@ -113,20 +110,20 @@
                                             <div class="portlet-body">
                                                 <ul class="list-unstyled">
                                                     <li>
-                                                                    <span class="sale-info"> TODAY SOLD
+                                                                    <span class="sale-info"> This Week
                                                                         <i class="fa fa-img-up"></i>
                                                                     </span>
                                                         <span class="sale-num"> 23 </span>
                                                     </li>
                                                     <li>
-                                                                    <span class="sale-info"> WEEKLY SALES
+                                                                    <span class="sale-info"> This Month
                                                                         <i class="fa fa-img-down"></i>
                                                                     </span>
                                                         <span class="sale-num"> 87 </span>
                                                     </li>
                                                     <li>
-                                                        <span class="sale-info"> TOTAL SOLD </span>
-                                                        <span class="sale-num"> 2377 </span>
+                                                        <span class="sale-info"> Last Month </span>
+                                                        <span class="sale-num"> 177 </span>
                                                     </li>
                                                 </ul>
                                             </div>

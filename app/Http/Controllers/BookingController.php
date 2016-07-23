@@ -95,7 +95,7 @@ class BookingController extends Controller
             'payment_type'  => 'membership',
             'payment_amount'  => 0,
             'membership_id' => 1,
-            'invoice_id'    => 1,
+            'invoice_id'    => -1,
             'search_key'    => $search_key,
         ];
 
@@ -135,31 +135,6 @@ class BookingController extends Controller
                     'details'       => 'User Email : '.$user->email,
                     'updated'       => false,
                 ]);
-
-                if ($the_booking->payment_type=='cash'){
-                    $the_invoice = $the_booking->add_invoice();
-
-                    if (isset($the_invoice['success'])){
-                        Activity::log([
-                            'contentId'     => $user->id,
-                            'contentType'   => 'booking_invoices',
-                            'action'        => 'New Booking Invoice',
-                            'description'   => 'New booking invoice failed with message : '.json_encode($the_invoice['errors']).' |-| '.json_encode($fillable),
-                            'details'       => 'Booking ID : '.$the_booking->id,
-                            'updated'       => false,
-                        ]);
-                    }
-                    else{
-                        Activity::log([
-                            'contentId'     => $user->id,
-                            'contentType'   => 'booking_invoices',
-                            'action'        => 'New Booking Invoice',
-                            'description'   => 'New booking invoice created with id : '.@$the_invoice->id,
-                            'details'       => 'Booking ID : '.$the_booking->id,
-                            'updated'       => false,
-                        ]);
-                    }
-                }
             }
             else{
                 $the_booking = Booking::where('search_key', '=', $vars['book_key'])->get()->first();
@@ -176,51 +151,9 @@ class BookingController extends Controller
                         'details'       => 'User Email : '.$user->email,
                         'updated'       => false,
                     ]);
-
-                    if ($the_booking->payment_type=='cash' && $the_booking->invoice_id==1){
-                        // we have no invoice
-                        $the_invoice = $the_booking->add_invoice();
-
-                        Activity::log([
-                            'contentId'     => $user->id,
-                            'contentType'   => 'booking_invoices',
-                            'action'        => 'New Booking Invoice',
-                            'description'   => 'New booking invoice created with id : '.$the_invoice->id,
-                            'details'       => 'Booking ID : '.$the_booking->id,
-                            'updated'       => false,
-                        ]);
-                    }
-                    elseif ($the_booking->payment_type=='membership' && $the_booking->invoice_id!=1){
-                        $the_invoice = BookingInvoice::find($the_booking->invoice_id);
-                        if ($the_invoice){
-                            $the_invoice->status = 'cancelled';
-                            $the_invoice->save();
-
-                            Activity::log([
-                                'contentId'     => $user->id,
-                                'contentType'   => 'booking_invoices',
-                                'action'        => 'Cancel Booking Invoice',
-                                'description'   => 'Booking invoice cancelled with id : '.$the_invoice->id,
-                                'details'       => 'Booking ID : '.$the_booking->id,
-                                'updated'       => true,
-                            ]);
-                        }
-
-                        $the_booking->invoice_id = 1;
-                        $the_booking->save();
-
-                        Activity::log([
-                            'contentId'     => $user->id,
-                            'contentType'   => 'bookings',
-                            'action'        => 'Update Booking',
-                            'description'   => 'Remove invoice and link no invoice to the selected booking',
-                            'details'       => 'User Email : '.$user->email,
-                            'updated'       => true,
-                        ]);
-                    }
                 }
                 else{
-                    $search_key = $vars['book_key'];
+                    //$search_key = $vars['book_key'];
                 }
             }
 
@@ -690,6 +623,7 @@ class BookingController extends Controller
 
         if (sizeof($keys)>0){
             $email_confirm = [];
+            $booking_invoices = [];
             foreach($keys as $key){
                 if ( strlen($key)<5 ){ continue; }
                 $return_key[] = $key;
@@ -722,6 +656,28 @@ class BookingController extends Controller
                         'details'       => 'User Email : '.$user->email,
                         'updated'       => true,
                     ]);
+                }
+
+                if ($booking->payment_type=="cash" || $booking->payment_type=="recurring"){
+                    if (!isset($booking_invoices[$booking->by_user_id])){
+                        // echo $booking->invoice_id;
+                        if ($booking->invoice_id == -1) {
+                            // add invoice
+                            $book_invoice = $booking->add_invoice();
+                        }
+                        else {
+                            // get invoice
+                            $book_invoice = BookingInvoice::where('id', '=', $booking->invoice_id)->get()->first();
+                        }
+                        $booking_invoices[$booking->by_user_id] = $book_invoice;
+                        //xdebug_var_dump($book_invoice);
+                    }
+                    else {
+                        $book_invoice = $booking_invoices[$booking->by_user_id];
+                    }
+
+                    $book_invoice->add_invoice_item($booking->id);
+                    $booking->invoice_id = $book_invoice->id;
                 }
 
                 $booking->status = 'active';
@@ -1753,19 +1709,23 @@ class BookingController extends Controller
                     }
                 }
 
-                if ($canBook['payment']=='cash' && !isset($book_invoice)){
+                if ($canBook['payment']=='cash'){
+                    /*
                     // check for invoice
-                    if ($booking->invoice_id==-1){
-                        // add invoice
-                        $book_invoice = $booking->add_invoice();
+                    if (!isset($book_invoice)) {
+                        // echo $booking->invoice_id;
+                        if ($booking->invoice_id == -1) {
+                            // add invoice
+                            $book_invoice = $booking->add_invoice();
+                        } else {
+                            // get invoice
+                            $book_invoice = BookingInvoice::where('id', '=', $booking->invoice_id)->get()->first();
+                        }
+                        //xdebug_var_dump($book_invoice);
                     }
-                    else{
-                        // get invoice
-                        $book_invoice = BookingInvoice::where('id','=',$booking->invoice_id)->get()->first();
-                    }
-
-                    // check invoice items
-                    //$book_invoice->add_invoice_item($invoice_item_fill);
+                    $book_invoice->add_invoice_item($booking->id);
+                    $booking->invoice_id = $book_invoice->id;
+                    */
                 }
 
                 $booking->by_user_id = $by_user->id;
@@ -1879,6 +1839,7 @@ class BookingController extends Controller
                     'updated'       => true,
                 ]);
 
+                /*
                 $theInvoice = BookingInvoice::where('id','=',$booking->invoice_id)->get()->first();
                 if (!$theInvoice){
                     // create new invoice
@@ -1898,6 +1859,7 @@ class BookingController extends Controller
                 else{
                     $invoiceID = $theInvoice->id;
                 }
+                */
 
                 $firstBookingDay = Carbon::createFromFormat('Y-m-d', $booking->date_of_booking);
                 switch ($vars['occurrence']){
@@ -1934,7 +1896,7 @@ class BookingController extends Controller
                         'payment_type'          => 'recurring',
                         'payment_amount'        => $price_per_booking,
                         'membership_id'         => -1,
-                        'invoice_id'            => $invoiceID,
+                        'invoice_id'            => -1,
                         'search_key'            => '',
                     ];
 
@@ -1957,6 +1919,7 @@ class BookingController extends Controller
                     if ($msg['booking_key']!='') {
                         $justBooked = Booking::where('search_key','=',$msg['booking_key'])->get()->first();
 
+                        /*
                         $loc = ShopLocations::where('id','=',$justBooked->location_id)->get()->first();
                         $location_name = $loc->name;
                         $resource = ShopResource::where('id','=',$justBooked->resource_id)->get()->first();
@@ -1969,7 +1932,7 @@ class BookingController extends Controller
                         $total_price = $booking_price + (($booking_price*$vat_value)/100);
 
                         if ($invoiceID!=-1){
-                            $invoice_item_fill = [
+                            /*$invoice_item_fill = [
                                 'booking_invoice_id'=> $invoiceID,
                                 'booking_id'        => $justBooked->id,
                                 'location_name'     => $location_name,
@@ -1982,7 +1945,7 @@ class BookingController extends Controller
                                 'discount'          => 0,
                                 'total_price'       => $total_price
                             ];
-                            $theInvoice->add_invoice_item($invoice_item_fill);
+                            $theInvoice->add_invoice_item($justBooked->id);
 
                             Activity::log([
                                 'contentId'     => $user->id,
@@ -1993,6 +1956,7 @@ class BookingController extends Controller
                                 'updated'       => true,
                             ]);
                         }
+                        */
 
                         $booking_return[] = ['booking_key' => $msg['booking_key'],
                             'booking_date'  => $nextBookingDay->format('d-m-Y'),
@@ -2097,7 +2061,8 @@ class BookingController extends Controller
                 'updated'       => false,
             ]);
 
-            if ($the_booking->payment_type=='cash'){
+            /*
+            if ($the_booking->payment_type=='cash' && $is_staff){
                 $the_booking->add_invoice();
 
                 Activity::log([
@@ -2109,6 +2074,7 @@ class BookingController extends Controller
                     'updated'       => false,
                 ]);
             }
+            */
 
             return [
                 'booking_resource'  => $the_booking->resource_id,

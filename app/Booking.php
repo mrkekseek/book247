@@ -293,7 +293,8 @@ class Booking extends Model
             else{
                 return ['success' => false, 'errors' => 'Booking Error'];
             }
-        } catch (Exception $e) {
+        }
+        catch (Exception $e) {
             return ['success' => false, 'errors' => 'Booking Error'];
         }
     }
