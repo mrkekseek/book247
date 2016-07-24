@@ -445,6 +445,16 @@ Route::group(['middleware' => 'web'], function () {
         'uses'  => 'BookingController@get_user_booking_archive'
     ]);
 
+    Route::get('friends_list', [
+        'as'    => 'front/member_friend_list',
+        'uses'  => 'FrontEndUserController@member_friends_list'
+    ]);
+
+    Route::post('friends_list', [
+        'as'    => 'front/member_friend_list',
+        'uses'  => 'FrontEndUserController@get_member_friend_list'
+    ]);
+
     /** Stop Routes for front end */
 });
 

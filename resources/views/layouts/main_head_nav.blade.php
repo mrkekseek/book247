@@ -405,6 +405,11 @@
                         </li>
                     </ul>
                 </li>
+                <li class="menu-dropdown mega-menu-dropdown">
+                    <a href="{{route('front/member_friend_list')}}"> Friends List
+                        <span class="arrow"></span>
+                    </a>
+                </li>
                 <li class="menu-dropdown classic-menu-dropdown ">
                     <a href="javascript:;"> Financial
                         <span class="arrow"></span>

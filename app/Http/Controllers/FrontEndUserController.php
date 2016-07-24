@@ -1492,4 +1492,108 @@ class FrontEndUserController extends Controller
             return 'true';
         }
     }
+
+    /* Front emd pages part - START */
+
+    public function member_friends_list(){
+        if (!Auth::check()) {
+            return redirect()->intended(route('homepage'));
+        }
+        else{
+            $user = Auth::user();
+        }
+
+        $breadcrumbs = [
+            'Home'      => route('admin'),
+            'Dashboard' => '',
+        ];
+        $text_parts  = [
+            'title'     => 'Home',
+            'subtitle'  => 'users dashboard',
+            'table_head_text1' => 'Dashboard Summary'
+        ];
+        $sidebar_link= 'admin-home_dashboard';
+
+        return view('front/user_friends/friends_list',[
+            'breadcrumbs' => $breadcrumbs,
+            'text_parts'  => $text_parts,
+            'in_sidebar'  => $sidebar_link,
+            'user'  => $user,
+        ]);
+    }
+
+    /**
+     * Get all bookings for specific user with status different than expired
+     * @param int $userID
+     * @return array
+     */
+    public function get_member_friend_list($userID = -1){
+        if (Auth::check()) {
+            $user = Auth::user();
+        }
+        else{
+            return [];
+        }
+
+        if ($userID == -1){
+            $userID = $user->id;
+        }
+
+        $data = [];
+
+        $allBookings = Booking::with('notes')->where('by_user_id','=',$userID)->orWhere('for_user_id','=',$userID)->get();
+        if ($allBookings){
+            foreach($allBookings as $booking){
+                if ($booking->status == 'expired'){
+                    continue;
+                }
+
+                $format_date = Carbon::createFromFormat('Y-m-d H:i:s', $booking->date_of_booking.' '.$booking->booking_time_start)->format('Y,M j, H:i');
+                $bookingFor = User::find($booking->for_user_id);
+                $location = ShopLocations::find($booking->location_id);
+                $resource = ShopResource::find($booking->resource_id);
+                $activity = ShopResourceCategory::find($resource->category_id);
+                $status = '';
+
+                if ($booking->status != 'active'){
+                    if ($booking->status=="unpaid"){
+                        $status = '<a href="#'.$booking->search_key.'" class="btn yellow-gold">Pay Invoice</a>';
+                    }
+                    elseif ($booking->status=="paid"){
+                        $status = '<a href="#'.$booking->search_key.'" class="btn green-turquoise">Invoice</a>';
+                    }
+
+                    if (sizeof($booking->notes)>0){
+                        $status.= '<span data-id="' . $booking->search_key . '" class="details_booking btn blue-sharp">Details</span> ';;
+                    }
+                }
+                else{
+                    if ($this->can_cancel_booking($booking->id)) {
+                        $status = '<span data-id="' . $booking->search_key . '" class="cancel_booking btn grey-silver">Cancel</span> ';
+                    }
+
+                    if ($booking->by_user_id==$userID) {
+                        $status.= ' <span data-id="' . $booking->search_key . '" class="modify_booking btn blue-steel">Modify</span>';
+                    }
+                }
+
+                $data[] = [
+                    $format_date,
+                    $bookingFor->first_name.' '.$bookingFor->middle_name.' '.$bookingFor->last_name,
+                    $location->name.' - '.$resource->name,
+                    $activity->name,
+                    $booking->status,
+                    $status
+                ];
+            }
+        }
+
+        $bookings = [
+            "data" => $data
+        ];
+
+        return $bookings;
+    }
+
+    /* Front emd pages part - STOP */
 }
