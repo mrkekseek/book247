@@ -1396,6 +1396,61 @@ class FrontEndUserController extends Controller
         return $msg;
     }
 
+    public function remove_friend_from_list(Request $request, $id=-1){
+        if (!Auth::check()) {
+            return [
+                'success'=>false,
+                'title'=>'An error occurred',
+                'errors'=> 'You need to be logged in to have access to this function'
+            ];
+        }
+        else{
+            $user = Auth::user();
+        }
+
+        $vars = $request->only('search_key');
+        $is_staff = !$user->hasRole(['front-member','front-user']);
+
+        if ($id==-1){
+            $user_id = $user->id;
+        }
+        elseif ($is_staff==true){
+            $user_id = $id;
+        }
+        else{
+            return [
+                'success'=>false,
+                'title'  =>'An error occurred',
+                'errors' => 'Error in page configuration'
+            ];
+        }
+
+        $friend = UserFriends::where('id','=',$vars['search_key'])->get()->first();
+        if($friend){
+            if ($friend->user_id!=$user_id && $friend->friend_id!=$user_id){
+                return [
+                    'success'=> false,
+                    'title'  => 'An error occurred',
+                    'errors' => 'The selected friend could not be found on your friends list. Try logout/login first'
+                ];
+            }
+
+            $friend->delete();
+            return [
+                'success'=> true,
+                'title'  => 'Friend removed from Friends list',
+                'message' => 'You have now a friend less than before'
+            ];
+        }
+        else{
+            return [
+                'success'=> false,
+                'title'  => 'An error occurred',
+                'errors' => 'Could not find the friend you selected.'
+            ];
+        }
+    }
+
     public static function are_friends($user1, $user2){
         $friends = DB::select('select id from user_friends where (user_id=? and friend_id=?) or (user_id=? and friend_id=?)', [$user1, $user2, $user2, $user1]);
         if ($friends){
@@ -1493,9 +1548,72 @@ class FrontEndUserController extends Controller
         }
     }
 
-    /* Front emd pages part - START */
+    /* Front end pages part - START */
 
-    public function member_friends_list(){
+    public function member_friends_list($userID = -1){
+        if (Auth::check()) {
+            $user = Auth::user();
+        }
+        else{
+            return redirect()->intended(route('homepage'));
+        }
+
+        if ($userID == -1){
+            $userID = $user->id;
+        }
+        else{
+            // check if the logged in user is an employee
+        }
+
+        $friends_list = [];
+        $friends = DB::table('user_friends')
+            ->where('user_id','=',$userID)
+            ->orWhere('friend_id','=',$userID)
+            ->get();
+        if ($friends){
+            foreach($friends as $friend){
+                if ($userID = $friend->user_id){
+                    $friendID = $friend->friend_id;
+                }
+                else{
+                    $friendID = $friend->user_id;
+                }
+
+                $since = Carbon::createFromFormat('Y-m-d H:i:s', $friend->created_at)->format('M j Y');
+
+                $userFriend = User::with('PersonalDetail')->where('id','=',$friendID)->get()->first();
+                $friends_list[] = [
+                    'full_name'     => $userFriend->first_name.' '.$userFriend->middle_name.' '.$userFriend->last_name,
+                    'email_address' => $userFriend['PersonalDetail']->personal_email,
+                    'phone_number'  => $userFriend['PersonalDetail']->mobile_number,
+                    'preferred_gym' => $userFriend->email,
+                    'ref_nr'        => $friend->id,
+                    'since'         => $since
+                ];
+            }
+        }
+
+        $breadcrumbs = [
+            'Home'      => route('admin'),
+            'Dashboard' => '',
+        ];
+        $text_parts  = [
+            'title'     => 'Home',
+            'subtitle'  => 'users dashboard',
+            'table_head_text1' => 'Dashboard Summary'
+        ];
+        $sidebar_link= 'front-friends_list';
+
+        return view('front/user_friends/friends_list',[
+            'breadcrumbs' => $breadcrumbs,
+            'text_parts'  => $text_parts,
+            'in_sidebar'  => $sidebar_link,
+            'user'  => $user,
+            'list_of_friends' => $friends_list
+        ]);
+    }
+
+    public function front_invoice_list(){
         if (!Auth::check()) {
             return redirect()->intended(route('homepage'));
         }
@@ -1512,9 +1630,9 @@ class FrontEndUserController extends Controller
             'subtitle'  => 'users dashboard',
             'table_head_text1' => 'Dashboard Summary'
         ];
-        $sidebar_link= 'admin-home_dashboard';
+        $sidebar_link= 'front-finance_invoice_list';
 
-        return view('front/user_friends/friends_list',[
+        return view('front/finance/invoice_list',[
             'breadcrumbs' => $breadcrumbs,
             'text_parts'  => $text_parts,
             'in_sidebar'  => $sidebar_link,
@@ -1527,7 +1645,7 @@ class FrontEndUserController extends Controller
      * @param int $userID
      * @return array
      */
-    public function get_member_friend_list($userID = -1){
+    public function get_user_invoice_list($userID = -1){
         if (Auth::check()) {
             $user = Auth::user();
         }
@@ -1539,61 +1657,96 @@ class FrontEndUserController extends Controller
             $userID = $user->id;
         }
 
-        $data = [];
+        $invoicesList = [];
+        $bookings = Booking::with('invoice')
+            ->where('by_user_id','=',$userID)
+            ->where('invoice_id','!=',-1)
+            ->orderBy('created_at','desc')
+            ->get();
 
-        $allBookings = Booking::with('notes')->where('by_user_id','=',$userID)->orWhere('for_user_id','=',$userID)->get();
-        if ($allBookings){
-            foreach($allBookings as $booking){
-                if ($booking->status == 'expired'){
-                    continue;
-                }
-
-                $format_date = Carbon::createFromFormat('Y-m-d H:i:s', $booking->date_of_booking.' '.$booking->booking_time_start)->format('Y,M j, H:i');
-                $bookingFor = User::find($booking->for_user_id);
-                $location = ShopLocations::find($booking->location_id);
-                $resource = ShopResource::find($booking->resource_id);
-                $activity = ShopResourceCategory::find($resource->category_id);
-                $status = '';
-
-                if ($booking->status != 'active'){
-                    if ($booking->status=="unpaid"){
-                        $status = '<a href="#'.$booking->search_key.'" class="btn yellow-gold">Pay Invoice</a>';
+        if (sizeof($bookings)>0){
+            $buttons = [];
+            $colorStatus = '';
+            foreach ($bookings as $booking){
+                if (isset($booking->invoice[0])) {
+                    $the_invoice = $booking->invoice[0];
+                    switch ($the_invoice->status) {
+                        case 'pending':
+                            $colorStatus = 'warning';
+                            $buttons = 'yellow-gold';
+                            break;
+                        case 'ordered':
+                        case 'processing':
+                            $colorStatus = 'info';
+                            $buttons = 'green-meadow';
+                            break;
+                        case 'completed':
+                            $colorStatus = 'success';
+                            $buttons = 'green-jungle';
+                            break;
+                        case 'cancelled':
+                            $colorStatus = 'warning';
+                            $buttons = 'yellow-lemon';
+                            break;
+                        case 'declined':
+                        case 'incomplete':
+                            $colorStatus = 'danger';
+                            $buttons = 'red-thunderbird';
+                            break;
+                        case 'preordered':
+                            $colorStatus = 'info';
+                            $buttons = 'green-meadow';
+                            break;
                     }
-                    elseif ($booking->status=="paid"){
-                        $status = '<a href="#'.$booking->search_key.'" class="btn green-turquoise">Invoice</a>';
-                    }
 
-                    if (sizeof($booking->notes)>0){
-                        $status.= '<span data-id="' . $booking->search_key . '" class="details_booking btn blue-sharp">Details</span> ';;
+                    $price = 0;
+                    $items = 0;
+                    $location = '';
+                    $invoiceItems = BookingInvoiceItem::where('booking_invoice_id','=',$the_invoice->id)->get();
+                    if ($invoiceItems){
+                        foreach ($invoiceItems as $invItem){
+                            $price+=$invItem->total_price;
+                            $items++;
+                            if ($location==''){
+                                $location = $invItem->location_name;
+                            }
+                        }
                     }
                 }
                 else{
-                    if ($this->can_cancel_booking($booking->id)) {
-                        $status = '<span data-id="' . $booking->search_key . '" class="cancel_booking btn grey-silver">Cancel</span> ';
-                    }
-
-                    if ($booking->by_user_id==$userID) {
-                        $status.= ' <span data-id="' . $booking->search_key . '" class="modify_booking btn blue-steel">Modify</span>';
-                    }
+                    continue;
                 }
 
-                $data[] = [
-                    $format_date,
-                    $bookingFor->first_name.' '.$bookingFor->middle_name.' '.$bookingFor->last_name,
-                    $location->name.' - '.$resource->name,
-                    $activity->name,
-                    $booking->status,
-                    $status
+                $addedOn    = Carbon::createFromFormat('Y-m-d H:i:s', $booking->created_at)->format('j/m/Y');
+                $invoicesList[] = [
+                    '<div class="'.$colorStatus.'"></div><a href="javascript:;">Invoice #'.$the_invoice->id.' </a>',
+                    $location,
+                    $items,
+                    $price,
+                    $addedOn,
+                    $the_invoice->status,
+                    '<a class="btn '.$buttons.' btn-sm invoice_details_modal" data-key="'.$the_invoice->id.'" href="javascript:;"> <i class="fa fa-edit"></i> Details </a>',
+
+                    //'invoice_id'    => $the_invoice->id,
+                    //'invoice_no'    => $the_invoice->invoice_number,
+                    //'date'          => $addedOn,
+                    //'status'        => $the_invoice->status,
+                    //'color_status'  => $colorStatus,
+                    //'color_button'  => $buttons,
+                    //'price_to_pay'  => $price,
+                    //'items'         => $items,
+                    //'location'      => $location
                 ];
             }
+            unset($bookings); unset($booking);
         }
 
         $bookings = [
-            "data" => $data
+            "data" => $invoicesList
         ];
 
         return $bookings;
     }
 
-    /* Front emd pages part - STOP */
+    /* Front end pages part - STOP */
 }

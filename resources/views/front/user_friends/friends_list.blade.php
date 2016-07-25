@@ -31,17 +31,6 @@
         <!-- BEGIN PAGE CONTENT BODY -->
         <div class="page-content">
             <div class="container">
-                <!-- BEGIN PAGE BREADCRUMBS -->
-                <ul class="page-breadcrumb breadcrumb">
-                    <li>
-                        <a href="{{route('homepage')}}">Home</a>
-                        <i class="fa fa-circle"></i>
-                    </li>
-                    <li>
-                        <span>Booking Archive</span>
-                    </li>
-                </ul>
-                <!-- END PAGE BREADCRUMBS -->
                 <!-- BEGIN PAGE CONTENT INNER -->
                 <div class="page-content-inner">
                     <div class="row">
@@ -50,6 +39,23 @@
                                 <!-- BEGIN EXAMPLE TABLE PORTLET-->
                                 <div class="portlet light ">
                                     <div class="portlet-body">
+                                    @if (sizeof($list_of_friends)>0)
+                                        <div class="note note-info" style="margin-bottom:5px;">
+                                            <div class="row">
+                                                <div class="col-sm-9">
+                                                <h4 class="block">Add more friends</h4>
+                                                <p>
+                                                    Use the bottom button to add a new friend, friend that will be located using his/her phone number.
+                                                </p>
+                                                </div>
+                                                <div class="form col-sm-3">
+                                                    <div class="form-actions right" style="border-top:none; padding:10px 0 0;">
+                                                        <button class="btn green" type="submit"  onclick="javascript:add_new_friend_popup();">Add a new friend</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
                                         <div class="table-scrollable">
                                             <table class="table table-striped table-bordered table-advance table-hover">
                                                 <thead>
@@ -68,61 +74,41 @@
                                                 </tr>
                                                 </thead>
                                                 <tbody>
+                                            @foreach($list_of_friends as $friend)
                                                 <tr>
                                                     <td class="highlight">
                                                         <div class="success"></div>
-                                                        <a href="javascript:;"> Stefan Bogdan </a>
+                                                        <a href="javascript:;"> {{$friend['full_name']}} </a>
                                                     </td>
-                                                    <td class="hidden-xs"> 0744511446 </td>
-                                                    <td> <a href="javascript:;">stefan.bogdan@ymail.com</a> </td>
+                                                    <td> <a target="_blank" href="mailto:{{$friend['email_address']}}">{{$friend['email_address']}}</a> </td>
+                                                    <td class="hidden-xs"> {{$friend['phone_number']}} </td>
                                                     <td> Lysake squash </td>
+                                                    <td> {{$friend['since']}} </td>
                                                     <td>
-                                                        <a href="javascript:;" class="btn btn-sm btn-outline red-haze">
+                                                        <a href="javascript:;" data-id="{{$friend['ref_nr']}}" class="btn btn-sm btn-outline red-haze remove_friend">
                                                             <i class="fa fa-edit"></i> Remove </a>
                                                     </td>
                                                 </tr>
-                                                <tr>
-                                                    <td class="highlight">
-                                                        <div class="info"></div>
-                                                        <a href="javascript:;"> Stefan Bogdan </a>
-                                                    </td>
-                                                    <td class="hidden-xs"> 0744511446 </td>
-                                                    <td> <a href="javascript:;">stefan.bogdan@ymail.com</a> </td>
-                                                    <td> Lysake squash </td>
-                                                    <td>
-                                                        <a href="javascript:;" class="btn btn-sm btn-outline red-haze">
-                                                            <i class="fa fa-edit"></i> Remove </a>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td class="highlight">
-                                                        <div class="success"></div>
-                                                        <a href="javascript:;"> Stefan Bogdan </a>
-                                                    </td>
-                                                    <td class="hidden-xs"> 0744511446 </td>
-                                                    <td> <a href="javascript:;">stefan.bogdan@ymail.com</a> </td>
-                                                    <td> Lysake squash </td>
-                                                    <td>
-                                                        <a href="javascript:;" class="btn btn-sm btn-outline yellow-casablanca">
-                                                            <i class="fa fa-edit"></i> Remove </a>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td class="highlight">
-                                                        <div class="warning"></div>
-                                                        <a href="javascript:;"> Stefan Bogdan </a>
-                                                    </td>
-                                                    <td class="hidden-xs"> 0744511446 </td>
-                                                    <td> <a href="javascript:;">stefan.bogdan@ymail.com</a> </td>
-                                                    <td> Lysake squash </td>
-                                                    <td>
-                                                        <a href="javascript:;" class="btn btn-sm btn-outline yellow-casablanca">
-                                                            <i class="fa fa-edit"></i> Remove </a>
-                                                    </td>
-                                                </tr>
+                                            @endforeach
                                                 </tbody>
                                             </table>
                                         </div>
+                                    @else
+                                        <div class="note note-info" style="margin-bottom:5px;">
+                                            <h4 class="block">You have no friends! Add some...</h4>
+                                            <p>
+                                                Adding friends, makes it easier for you and your friend to make bookings and play your favorite games together.
+                                                The rules are simple : you and your friend need to have a player membership for using the booking friend feature
+                                                and that's it.<br /><br />
+                                                Use the bottom button to add a new friend, friend that will be located using his/her phone number.
+                                            </p>
+                                            <div class="form">
+                                                <div class="form-actions right" style="border-top:none; padding:10px 0 0;">
+                                                    <button class="btn green" type="submit"  onclick="javascript:add_new_friend_popup();">Add Friend</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endif
                                     </div>
                                 </div>
                                 <!-- END EXAMPLE TABLE PORTLET-->
@@ -130,20 +116,58 @@
                         </div>
                     </div>
 
-                    <div class="modal fade" id="small_cancel" tabindex="-1" role="dialog" aria-hidden="true">
+                    <div class="modal fade" id="small_remove_friend" tabindex="-1" role="dialog" aria-hidden="true">
                         <div class="modal-dialog">
                             <div class="modal-content">
                                 <div class="modal-header">
                                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
-                                    <h4 class="modal-title">Cancel booking</h4>
+                                    <h4 class="modal-title"> Remove Friend</h4>
                                 </div>
                                 <div class="modal-body">
-                                    <h4>You are about to cancel this booking :</h4>
-                                    <div class="book_details_cancel_place" style="padding:0px 15px;"></div>
+                                    <h5>You are about to remove one of your friends from your friend list : </h5>
+                                    <div class="friend_name_cancel_place" style="padding:0px 15px;"></div>
+                                    <input type="hidden" name="to_remove_friend" value="-1" />
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn dark btn-outline" data-dismiss="modal">No - return</button>
-                                    <button type="button" class="btn green" onclick="javascript:cancel_booking();">Yes - cancel</button>
+                                    <button type="button" class="btn green" onclick="javascript:remove_friend();">Yes - remove</button>
+                                </div>
+                            </div>
+                            <!-- /.modal-content -->
+                        </div>
+                        <!-- /.modal-dialog -->
+                    </div>
+
+                    <div class="modal fade draggable-modal" id="new_friend_modal" tabindex="-1" role="basic" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-body form-horizontal">
+                                    <div class="portlet light " style="padding-bottom:0px;margin-bottom:0px;">
+                                        <div class="portlet-title form-group">
+                                            <div class="caption">
+                                                <i class="icon-social-dribbble font-green"></i>
+                                                <span class="caption-subject font-green bold uppercase">Enter friend's phone number</span>
+                                            </div>
+                                        </div>
+                                        <div class="portlet-body form">
+                                            <form action="#" id="friend_search_form" role="form" name="friend_search_form">
+                                                <div class="form-body" style="padding-top:0px; padding-bottom:0px;">
+                                                    <div class="form-group note note-info margin-bottom-10">
+                                                        <div class="input-group">
+                                                            <input type="text" placeholder="Phone number..." name="friend_phone_no" class="form-control">
+                                                    <span class="input-group-btn">
+                                                        <button type="submit" class="btn red">Get Friend!</button>
+                                                    </span>
+                                                        </div>
+                                                        <small class="help-block"> numeric field between 8 and 10 digits </small>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn dark btn-outline submit_form_2" data-dismiss="modal">Close</button>
                                 </div>
                             </div>
                             <!-- /.modal-content -->
@@ -199,28 +223,135 @@
             }
         });
 
-        $(document).on('click', '.cancel_booking', function(){
-            //alert('Cancel Booking' + $(this).attr('data-id'));
+        var FormValidation = function () {
 
-            get_booking_details($(this).attr('data-id'), $('#small_cancel'));
-            $('#small_cancel').modal('show');
+            var handleValidation1 = function() {
+                var form1 = $('#friend_search_form');
+                var error1 = $('.alert-danger', form1);
+                var success1 = $('.alert-success', form1);
+
+                form1.validate({
+                    errorElement: 'span', //default input error message container
+                    errorClass: 'help-block help-block-error', // default input error message class
+                    focusInvalid: false, // do not focus the last invalid input
+                    ignore: "",  // validate all fields including form hidden input
+                    rules: {
+                        friend_phone_no: {
+                            minlength: 8,
+                            maxlength: 10,
+                            number:true,
+                            required: true
+                        },
+                    },
+
+                    invalidHandler: function (event, validator) { //display error alert on form submit
+                        success1.hide();
+                        error1.show();
+                        App.scrollTo(error1, -200);
+                    },
+
+                    errorPlacement: function (error, element) { // render error placement for each input type
+                        var icon = $(element).parent('.input-icon').children('i');
+                        icon.removeClass('fa-check').addClass("fa-warning");
+                        icon.attr("data-original-title", error.text()).tooltip({'container': 'body'});
+                    },
+
+                    highlight: function (element) { // hightlight error inputs
+                        $(element)
+                                .closest('.form-group').removeClass("has-success").addClass('has-error'); // set error class to the control group
+                    },
+
+                    unhighlight: function (element) { // revert the change done by hightlight
+
+                    },
+
+                    success: function (label, element) {
+                        var icon = $(element).parent('.input-icon').children('i');
+                        $(element).closest('.form-group').removeClass('has-error').addClass('has-success'); // set success class to the control group
+                        icon.removeClass("fa-warning").addClass("fa-check");
+                    },
+
+                    submitHandler: function (form) {
+                        success1.show();
+                        error1.hide();
+                        search_friend_by_phone($('input[name=friend_phone_no]').val()); // submit the form
+                    }
+                });
+            }
+
+            return {
+                //main function to initiate the module
+                init: function () {
+                    handleValidation1();
+                }
+            };
+
+        }();
+
+        jQuery(document).ready(function() {
+            // initialize the forms validation part
+            FormValidation.init();
         });
 
-        function cancel_booking(){
-            var search_key = $('input[name="search_key_selected"]').val();
+        function search_friend_by_phone(input_nr){
+            $.ajax({
+                url: '{{route('ajax/add_friend_by_phone')}}',
+                type: "post",
+                cache: false,
+                data: {
+                    'phone_no':    input_nr,
+                },
+                success: function(data){
+                    if (data.success=='true') {
+                        show_notification('Friend Added', 'Your have added ' + data.full_name + ' as a friend. You can now book an activity and include him.', 'lemon', 3500, 0);
+                        setTimeout(function(){
+                            $('#new_friend_modal').modal('hide');
+                            location.reload();
+                        }, 1500);
+                    }
+                    else{
+                        show_notification(data.error.title, data.error.message, 'lemon', 3500, 0);
+                    }
+                }
+            });
+        }
+
+        function add_new_friend_popup(){
+            $('#new_friend_modal').modal('show');
+        }
+
+        $(document).on('click', '.remove_friend', function(){
+            var friend_name  = $(this).parent().parent().find('td:eq(0)').find('a').html();
+            var friend_email = $(this).parent().parent().find('td:eq(1)').find('a').html();
+            $('.friend_name_cancel_place').html(friend_name + ' - ' + friend_email);
+
+            $('input[name="to_remove_friend"]').val($(this).attr('data-id'));
+
+            $('#small_remove_friend').modal('show');
+        });
+
+        function remove_friend(){
+            var search_key = $('input[name="to_remove_friend"]').val();
 
             $.ajax({
-                url: '{{route('ajax/cancel_booking')}}',
+                url: '{{route('ajax/remove_friend_from_list')}}',
                 type: "post",
                 cache: false,
                 data: {
                     'search_key' : search_key
                 },
                 success: function (data) {
-                    show_notification('Booking Canceled', 'The selected booking was canceled.', 'lemon', 3500, 0);
+                    if(data.success){
+                        show_notification(data.title, data.message, 'lime', 3500, 0);
+                        $('a[data-id="' + search_key + '"').parent().parent().remove();
+                    }
+                    else{
+                        show_notification(data.title, data.errors, 'ruby', 3500, 0);
+                    }
 
-                    $('#small_cancel').find('.book_details_cancel_place').html('');
-                    $('#small_cancel').modal('hide');
+                    $('#small_remove_friend').find('.friend_name_cancel_place').html('');
+                    $('input[name="to_remove_friend"]').val(-1);
+                    $('#small_remove_friend').modal('hide');
                 }
             });
         }

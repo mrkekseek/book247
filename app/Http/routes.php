@@ -450,9 +450,14 @@ Route::group(['middleware' => 'web'], function () {
         'uses'  => 'FrontEndUserController@member_friends_list'
     ]);
 
-    Route::post('friends_list', [
-        'as'    => 'front/member_friend_list',
-        'uses'  => 'FrontEndUserController@get_member_friend_list'
+    Route::get('invoice_list', [
+        'as'    => 'front/member_invoice_list',
+        'uses'  => 'FrontEndUserController@front_invoice_list'
+    ]);
+
+    Route::post('invoice_list', [
+        'as'    => 'front/member_invoice_list',
+        'uses'  => 'FrontEndUserController@get_user_invoice_list'
     ]);
 
     /** Stop Routes for front end */
@@ -535,6 +540,11 @@ Route::group(['prefix'=>'ajax', 'middleware' => 'web'], function(){
     Route::post('add_friend_by_phone', [
         'as'    => 'ajax/add_friend_by_phone',
         'uses'  => 'FrontEndUserController@add_friend_by_phone'
+    ]);
+
+    Route::post('remove_friend_from_list', [
+        'as'    => 'ajax/remove_friend_from_list',
+        'uses'  => 'FrontEndUserController@remove_friend_from_list'
     ]);
 
     Route::post('get_friends_list', [

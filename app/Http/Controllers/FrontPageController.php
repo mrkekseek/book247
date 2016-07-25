@@ -94,7 +94,7 @@ class FrontPageController extends Controller
             'subtitle'  => 'users dashboard',
             'table_head_text1' => 'Dashboard Summary'
         ];
-        $sidebar_link= 'admin-home_dashboard';
+        $sidebar_link= 'front-homepage';
 
         return view('front/home_page',[
             'breadcrumbs' => $breadcrumbs,

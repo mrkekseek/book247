@@ -363,18 +363,18 @@
         <div class="hor-menu  ">
             <ul class="nav navbar-nav">
                 @if (Auth::check())
-                <li class="menu-dropdown classic-menu-dropdown active">
+                <li class="menu-dropdown classic-menu-dropdown {{in_array($in_sidebar, ['front-homepage','front-calendar_view'])?"active":""}}">
                     <a href="javascript:;"> Squash Fitness
                         <span class="arrow"></span>
                     </a>
                     <ul class="dropdown-menu pull-left">
-                        <li class=" ">
+                        <li class=" {{$in_sidebar=="front-homepage"?"active":""}}">
                             <a href="{{ route('homepage') }}" class="nav-link  ">
                                 <i class="icon-bar-chart"></i> Booking Homepage
                                 <span class="badge badge-success">1</span>
                             </a>
                         </li>
-                        <li class=" ">
+                        <li class=" {{$in_sidebar=="front-calendar_view"?"active":""}}">
                             <a href="{{ route('front_calendar_booking',['day'=>\Carbon\Carbon::now()->format('d-m-Y')]) }}" class="nav-link  ">
                                 <i class="icon-bar-chart"></i> Booking Calendar
                                 <span class="badge badge-success">1</span>
@@ -382,7 +382,7 @@
                         </li>
                     </ul>
                 </li>
-                <li class="menu-dropdown mega-menu-dropdown  ">
+                <li class="menu-dropdown mega-menu-dropdown ">
                     <a href="javascript:;"> My Bookings
                         <span class="arrow"></span>
                     </a>
@@ -405,7 +405,7 @@
                         </li>
                     </ul>
                 </li>
-                <li class="menu-dropdown mega-menu-dropdown">
+                <li class="menu-dropdown mega-menu-dropdown {{$in_sidebar=="front-friends_list"?"active":""}}">
                     <a href="{{route('front/member_friend_list')}}"> Friends List
                         <span class="arrow"></span>
                     </a>
@@ -416,7 +416,7 @@
                     </a>
                     <ul class="dropdown-menu pull-left">
                         <li class=" ">
-                            <a href="#" class="nav-link  "> Invoices [not finished] </a>
+                            <a href="{{ route('front/member_invoice_list') }}" class="nav-link  "> List of Invoices </a>
                         </li>
                         <li class=" ">
                             <a href="#" class="nav-link  "> Financial Settings [not finished] </a>

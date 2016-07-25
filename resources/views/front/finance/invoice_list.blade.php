@@ -42,15 +42,16 @@
                                 <!-- BEGIN EXAMPLE TABLE PORTLET-->
                                 <div class="portlet light ">
                                     <div class="portlet-body">
-                                        <table class="table table-striped table-bordered table-hover table-checkable order-column" id="sample_1">
+                                        <table class="table table-striped table-bordered table-hover table-advance order-column " id="sample_1">
                                             <thead>
                                             <tr>
-                                                <th> Date and Time </th>
-                                                <th> Booking For </th>
-                                                <th> Location </th>
-                                                <th> Activity </th>
+                                                <th> Invoice Number </th>
+                                                <th> Booking Location </th>
+                                                <th> Invoice Items </th>
+                                                <th> Price </th>
+                                                <th> Added On </th>
                                                 <th> Status </th>
-                                                <th> Options </th>
+                                                <th> </th>
                                             </tr>
                                             </thead>
                                             <tbody></tbody>
@@ -226,14 +227,16 @@
                 table.dataTable({
                     // location sorce for data
                     "ajax": {
-                        "url" : "{{ route('front/bookings_archive') }}",
+                        "url" : "{{ route('front/member_invoice_list') }}",
                         "type" : "POST"
                     },
 
                     // load after everything else loads
                     "deferRender": true,
                     "autoWidth": false,
-
+                    "aoColumnDefs": [
+                        { "sClass": "highlight", "aTargets": [ 0 ] }
+                    ],
                     "initComplete": function () {
                         App.unblockUI('#main_body_container');
                     },
@@ -293,6 +296,7 @@
             }
 
             return {
+
                 //main function to initiate the module
                 init: function () {
                     if (!jQuery().dataTable) {
@@ -301,8 +305,8 @@
 
                     initTable1();
                 }
-            };
 
+            };
         }();
 
         jQuery(document).ready(function() {
