@@ -382,44 +382,34 @@
                         </li>
                     </ul>
                 </li>
-                <li class="menu-dropdown mega-menu-dropdown ">
-                    <a href="javascript:;"> My Bookings
+
+                <li class="menu-dropdown mega-menu-dropdown {{$in_sidebar=="front-type_of_memberships"?"active":""}}">
+                    <a href="{{ route('front/membership_types') }}"> Membership Types
                         <span class="arrow"></span>
                     </a>
-                    <ul class="dropdown-menu" style="min-width: 310px">
-                        <li>
-                            <div class="mega-menu-content">
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <ul class="mega-menu-submenu">
-                                            <li>
-                                                <a href="{{ route('front/bookings_archive') }}"> Booking Archive </a>
-                                            </li>
-                                            <li>
-                                                <a href="#"> Active Membership [not finished] </a>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                        </li>
-                    </ul>
                 </li>
+
+                <li class="menu-dropdown mega-menu-dropdown {{$in_sidebar=="front-bookings_list"?"active":""}}">
+                    <a href="{{ route('front/bookings_archive') }}"> My Bookings
+                        <span class="arrow"></span>
+                    </a>
+                </li>
+
                 <li class="menu-dropdown mega-menu-dropdown {{$in_sidebar=="front-friends_list"?"active":""}}">
                     <a href="{{route('front/member_friend_list')}}"> Friends List
                         <span class="arrow"></span>
                     </a>
                 </li>
-                <li class="menu-dropdown classic-menu-dropdown ">
+                <li class="menu-dropdown classic-menu-dropdown {{ in_array($in_sidebar, ['front-finance_invoice_list', 'front-finance_active_membership'])?'active':'' }}">
                     <a href="javascript:;"> Financial
                         <span class="arrow"></span>
                     </a>
                     <ul class="dropdown-menu pull-left">
-                        <li class=" ">
+                        <li class=" {{ $in_sidebar=='front-finance_invoice_list'?'active':'' }}">
                             <a href="{{ route('front/member_invoice_list') }}" class="nav-link  "> List of Invoices </a>
                         </li>
-                        <li class=" ">
-                            <a href="#" class="nav-link  "> Financial Settings [not finished] </a>
+                        <li class=" {{ $in_sidebar=='front-finance_active_membership'?'active':'' }}">
+                            <a href="{{ route('front/active_membership') }}"> Active Membership </a>
                         </li>
                     </ul>
                 </li>
@@ -439,6 +429,9 @@
                                             <li>
                                                 <a href="#"> Personal Settings [not finished] </a>
                                             </li>
+                                            <li class=" ">
+                                                <a href="#" class="nav-link  "> Financial Settings [not finished] </a>
+                                            </li>
                                         </ul>
                                     </div>
                                 </div>
@@ -448,21 +441,16 @@
                 </li>
                 @else
                     <li class="menu-dropdown classic-menu-dropdown ">
-                        <a href="javascript:;"> Squash Fitness
-                            <span class="arrow"></span>
+                        <a href="{{ route('homepage') }}" class="nav-link  ">
+                            <i class="icon-bar-chart"></i> Squash Fitness Homepage
                         </a>
-                        <ul class="dropdown-menu pull-left">
-                            <li class=" ">
-                                <a href="#" class=" ">
-                                    <i class="icon-bar-chart"></i> Membership Types
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#" class=" ">
-                                    <i class="icon-bar-chart"></i> Locations
-                                </a>
-                            </li>
-                        </ul>
+                    </li>
+
+                    <li class="menu-dropdown mega-menu-dropdown {{$in_sidebar=="front-type_of_memberships"?"active":""}}">
+                        <a href="{{ route('front/membership_types') }}">
+                            <i class="icon-bar-chart"></i> Membership Types
+                            <span class="badge badge-success">New</span>
+                        </a>
                     </li>
                 @endif
             </ul>

@@ -2324,7 +2324,7 @@ class BookingController extends Controller
             'subtitle'  => 'users dashboard',
             'table_head_text1' => 'Dashboard Summary'
         ];
-        $sidebar_link= 'admin-home_dashboard';
+        $sidebar_link= 'front-bookings_list';
 
         return view('front/bookings/archive',[
             'breadcrumbs' => $breadcrumbs,

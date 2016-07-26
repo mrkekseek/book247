@@ -434,7 +434,21 @@ Route::group(['middleware' => 'web'], function () {
     ]);
     /** Stop Routes for bookings */
 
-    /** Start Routes for front end */
+    /** Start - Membership Management */
+    Route::get('admin/memberships/add_plan', [
+        'as'    => 'admin/memberships_add_plan',
+        'uses'  => 'FrontEndUserController@show_account_settings'
+    ]);
+
+    Route::get('admin/memberships/list_plans', [
+        'as'    => 'admin/memberships_list_plans',
+        'uses'  => 'FrontEndUserController@show_account_settings'
+    ]);
+    /** Stop  - Membership Management */
+});
+
+/** Start Routes for front end */
+Route::group(['prefix'=>'front', 'middleware'=>'web'], function(){
     Route::get('bookings_archive', [
         'as'    => 'front/bookings_archive',
         'uses'  => 'BookingController@front_bookings_archive'
@@ -460,10 +474,16 @@ Route::group(['middleware' => 'web'], function () {
         'uses'  => 'FrontEndUserController@get_user_invoice_list'
     ]);
 
-    /** Stop Routes for front end */
-});
+    Route::get('list_of_memberships', [
+        'as'    => 'front/membership_types',
+        'uses'  => 'FrontEndUserController@type_of_memberships'
+    ]);
 
-Route::group(['prefix'=>'front', 'middleware'=>'web'], function(){
+    Route::get('active_membership', [
+        'as'    => 'front/active_membership',
+        'uses'  => 'FrontEndUserController@member_active_membership'
+    ]);
+
     Route::get('calendar_booking/{day}/',[
         'as'    => 'front_calendar_booking',
         'uses'  => 'BookingController@front_bookings_calendar_view'
@@ -474,6 +494,7 @@ Route::group(['prefix'=>'front', 'middleware'=>'web'], function(){
         'uses'  => 'BookingController@front_bookings_calendar_view'
     ]);
 });
+/** Stop Routes for front end */
 
 Route::group(['prefix'=>'ajax', 'middleware' => 'web'], function(){
 

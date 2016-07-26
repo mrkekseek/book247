@@ -33,88 +33,82 @@
             <div class="container">
                 <!-- BEGIN PAGE CONTENT INNER -->
                 <div class="page-content-inner">
-                    <div class="row">
-                        <div class="row">
-                            <div class="col-md-12">
-                                <!-- BEGIN EXAMPLE TABLE PORTLET-->
-                                <div class="portlet light ">
-                                    <div class="portlet-body">
-                                    @if (sizeof($list_of_friends)>0)
-                                        <div class="note note-info" style="margin-bottom:5px;">
-                                            <div class="row">
-                                                <div class="col-sm-9">
-                                                <h4 class="block">Add more friends</h4>
-                                                <p>
-                                                    Use the bottom button to add a new friend, friend that will be located using his/her phone number.
-                                                </p>
-                                                </div>
-                                                <div class="form col-sm-3">
-                                                    <div class="form-actions right" style="border-top:none; padding:10px 0 0;">
-                                                        <button class="btn green" type="submit"  onclick="javascript:add_new_friend_popup();">Add a new friend</button>
-                                                    </div>
-                                                </div>
-                                            </div>
+                    <!-- BEGIN EXAMPLE TABLE PORTLET-->
+                    <div class="portlet light margin-top-10">
+                        <div class="portlet-body">
+                        @if (sizeof($list_of_friends)>0)
+                            <div class="note note-info" style="margin-bottom:5px;">
+                                <div class="row">
+                                    <div class="col-sm-9">
+                                    <h4 class="block">Add more friends</h4>
+                                    <p>
+                                        Use the bottom button to add a new friend, friend that will be located using his/her phone number.
+                                    </p>
+                                    </div>
+                                    <div class="form col-sm-3">
+                                        <div class="form-actions right" style="border-top:none; padding:10px 0 0;">
+                                            <button class="btn green" type="submit"  onclick="javascript:add_new_friend_popup();">Add a new friend</button>
                                         </div>
-
-                                        <div class="table-scrollable">
-                                            <table class="table table-striped table-bordered table-advance table-hover">
-                                                <thead>
-                                                <tr>
-                                                    <th>
-                                                        <i class="fa fa-briefcase"></i> Friend Name </th>
-                                                    <th>
-                                                        <i class="fa fa-user"></i> Email Address </th>
-                                                    <th>
-                                                        <i class="fa fa-user"></i> Phone Number </th>
-                                                    <th class="hidden-xs">
-                                                        <i class="fa fa-shopping-cart"></i> Preferred Gym </th>
-                                                    <th class="hidden-xs">
-                                                        <i class="fa fa-shopping-cart"></i> Friend Since </th>
-                                                    <th> </th>
-                                                </tr>
-                                                </thead>
-                                                <tbody>
-                                            @foreach($list_of_friends as $friend)
-                                                <tr>
-                                                    <td class="highlight">
-                                                        <div class="success"></div>
-                                                        <a href="javascript:;"> {{$friend['full_name']}} </a>
-                                                    </td>
-                                                    <td> <a target="_blank" href="mailto:{{$friend['email_address']}}">{{$friend['email_address']}}</a> </td>
-                                                    <td class="hidden-xs"> {{$friend['phone_number']}} </td>
-                                                    <td> Lysake squash </td>
-                                                    <td> {{$friend['since']}} </td>
-                                                    <td>
-                                                        <a href="javascript:;" data-id="{{$friend['ref_nr']}}" class="btn btn-sm btn-outline red-haze remove_friend">
-                                                            <i class="fa fa-edit"></i> Remove </a>
-                                                    </td>
-                                                </tr>
-                                            @endforeach
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    @else
-                                        <div class="note note-info" style="margin-bottom:5px;">
-                                            <h4 class="block">You have no friends! Add some...</h4>
-                                            <p>
-                                                Adding friends, makes it easier for you and your friend to make bookings and play your favorite games together.
-                                                The rules are simple : you and your friend need to have a player membership for using the booking friend feature
-                                                and that's it.<br /><br />
-                                                Use the bottom button to add a new friend, friend that will be located using his/her phone number.
-                                            </p>
-                                            <div class="form">
-                                                <div class="form-actions right" style="border-top:none; padding:10px 0 0;">
-                                                    <button class="btn green" type="submit"  onclick="javascript:add_new_friend_popup();">Add Friend</button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    @endif
                                     </div>
                                 </div>
-                                <!-- END EXAMPLE TABLE PORTLET-->
                             </div>
+
+                            <div class="table-scrollable">
+                                <table class="table table-striped table-bordered table-advance table-hover">
+                                    <thead>
+                                    <tr>
+                                        <th>
+                                            <i class="fa fa-briefcase"></i> Friend Name </th>
+                                        <th>
+                                            <i class="fa fa-user"></i> Email Address </th>
+                                        <th>
+                                            <i class="fa fa-user"></i> Phone Number </th>
+                                        <th class="hidden-xs">
+                                            <i class="fa fa-shopping-cart"></i> Preferred Gym </th>
+                                        <th class="hidden-xs">
+                                            <i class="fa fa-shopping-cart"></i> Friend Since </th>
+                                        <th> </th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                @foreach($list_of_friends as $friend)
+                                    <tr>
+                                        <td class="highlight">
+                                            <div class="success"></div>
+                                            <a href="javascript:;"> {{$friend['full_name']}} </a>
+                                        </td>
+                                        <td> <a target="_blank" href="mailto:{{$friend['email_address']}}">{{$friend['email_address']}}</a> </td>
+                                        <td class="hidden-xs"> {{$friend['phone_number']}} </td>
+                                        <td> Lysake squash </td>
+                                        <td> {{$friend['since']}} </td>
+                                        <td>
+                                            <a href="javascript:;" data-id="{{$friend['ref_nr']}}" class="btn btn-sm btn-outline red-haze remove_friend">
+                                                <i class="fa fa-edit"></i> Remove </a>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                        @else
+                            <div class="note note-info" style="margin-bottom:5px;">
+                                <h4 class="block">You have no friends! Add some...</h4>
+                                <p>
+                                    Adding friends, makes it easier for you and your friend to make bookings and play your favorite games together.
+                                    The rules are simple : you and your friend need to have a player membership for using the booking friend feature
+                                    and that's it.<br /><br />
+                                    Use the bottom button to add a new friend, friend that will be located using his/her phone number.
+                                </p>
+                                <div class="form">
+                                    <div class="form-actions right" style="border-top:none; padding:10px 0 0;">
+                                        <button class="btn green" type="submit"  onclick="javascript:add_new_friend_popup();">Add Friend</button>
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
                         </div>
                     </div>
+                    <!-- END EXAMPLE TABLE PORTLET-->
 
                     <div class="modal fade" id="small_remove_friend" tabindex="-1" role="dialog" aria-hidden="true">
                         <div class="modal-dialog">
