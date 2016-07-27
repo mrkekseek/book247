@@ -435,15 +435,7 @@ Route::group(['middleware' => 'web'], function () {
     /** Stop Routes for bookings */
 
     /** Start - Membership Management */
-    Route::get('admin/memberships/add_plan', [
-        'as'    => 'admin/memberships_add_plan',
-        'uses'  => 'FrontEndUserController@show_account_settings'
-    ]);
-
-    Route::get('admin/memberships/list_plans', [
-        'as'    => 'admin/memberships_list_plans',
-        'uses'  => 'FrontEndUserController@show_account_settings'
-    ]);
+    Route::resource('membership_plan', 'MembershipPlansController');
     /** Stop  - Membership Management */
 });
 
