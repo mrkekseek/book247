@@ -436,6 +436,13 @@ Route::group(['middleware' => 'web'], function () {
 
     /** Start - Membership Management */
     Route::resource('membership_plan', 'MembershipPlansController');
+    //GET 	        /membership_plan 	        index 	    membership_plan.index
+    //GET 	        /membership_plan/create 	create 	    membership_plan.create
+    //POST 	        /membership_plan 	        store 	    membership_plan.store
+    //GET 	        /membership_plan/{id} 	    show 	    membership_plan.show
+    //GET 	        /membership_plan/{id}/edit 	edit 	    membership_plan.edit
+    //PUT/PATCH 	/membership_plan/{id} 	    update 	    membership_plan.update
+    //DELETE 	    /membership_plan/{id} 	    destroy 	membership_plan.destroy
     /** Stop  - Membership Management */
 });
 

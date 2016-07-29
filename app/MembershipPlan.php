@@ -10,9 +10,13 @@ class MembershipPlan extends Model
 
     public static $attributeNames = array(
         'name'      => 'Membership Name',
+        'plan_calendar_color' => 'Membership Plan Color',
         'status'    => 'Status',
         'price_id'  => 'Price',
-        'short_description' => 'Short Information',
+        'plan_period'   => 'Plan Period of Validity',
+        'administration_fee_name' => 'Administration Fee Amount',
+        'administration_fee_amount' => 'Short Information',
+        'short_description' => 'Administration Fee Name',
         'long_description'  => 'Description'
     );
 
@@ -20,8 +24,12 @@ class MembershipPlan extends Model
 
     protected $fillable = [
         'name',
+        'plan_calendar_color',
         'status',
         'price_id',
+        'plan_period',
+        'administration_fee_name',
+        'administration_fee_amount',
         'short_description',
         'long_description'
     ];
@@ -36,22 +44,30 @@ class MembershipPlan extends Model
             case 'POST':
             {
                 return [
-                    'name'              => 'required|min:3|max:75|unique:membership_plans,name',
-                    'status'            => 'required|in:active,pending,suspended,deleted',
-                    'price_id'          => 'required|exists:membership_plan_prices,id',
-                    'short_description' => 'required|min:50',
-                    'long_description'  => '',
+                    'name'                  => 'required|min:3|max:75|unique:membership_plans,name',
+                    'plan_calendar_color'   => 'required|min:7|max:7',
+                    'status'                => 'required|in:active,pending,suspended,deleted',
+                    'price_id'              => 'required|exists:membership_plan_prices,id',
+                    'plan_period'           => 'required|in:7d,14d,1m,3m.6m,12m',
+                    'administration_fee_name'   => 'required|min:3',
+                    'administration_fee_amount' => 'required|numeric|min:1',
+                    'short_description'     => 'required|min:50',
+                    'long_description'      => '',
                 ];
             }
             case 'PUT':
             case 'PATCH':
             {
                 return [
-                    'name'              => 'required|min:3|max:75|unique:membership_plans,name'.($id ? ",$id,id" : ''),
-                    'status'            => 'required|in:active,pending,suspended,deleted',
-                    'price_id'          => 'required|exists:membership_plan_prices,id',
-                    'short_description' => 'required|min:50',
-                    'long_description'  => '',
+                    'name'                  => 'required|min:3|max:75|unique:membership_plans,name'.($id ? ",$id,id" : ''),
+                    'plan_calendar_color'   => 'required|min:7|max:7',
+                    'status'                => 'required|in:active,pending,suspended,deleted',
+                    'price_id'              => 'required|exists:membership_plan_prices,id',
+                    'plan_period'           => 'required|in:7d,14d,1m,3m.6m,12m',
+                    'administration_fee_name'   => 'required|min:3',
+                    'administration_fee_amount' => 'required|numeric|min:1',
+                    'short_description'     => 'required|min:50',
+                    'long_description'      => '',
                 ];
             }
             default:break;

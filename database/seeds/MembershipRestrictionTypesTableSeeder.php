@@ -28,5 +28,13 @@ class MembershipRestrictionTypesTableSeeder extends Seeder
             'name' => 'price',
             'created_at' => Carbon::now()->format('Y-m-d H:i:s')
         ]);
+        DB::table('membership_restriction_types')->insert([
+            'name' => 'included_activity',
+            'created_at' => Carbon::now()->format('Y-m-d H:i:s')
+        ]);
+        DB::table('membership_restriction_types')->insert([
+            'name' => 'booking_time',
+            'created_at' => Carbon::now()->format('Y-m-d H:i:s')
+        ]);
     }
 }

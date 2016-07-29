@@ -68,6 +68,30 @@
         <li class="heading">
             <h3 class="uppercase">Administration</h3>
         </li>
+        <li class="nav-item {{ in_array($in_sidebar, array('admin-backend-memberships-all_plans'))?'active open':'' }} ">
+            <a href="javascript:;" class="nav-link nav-toggle">
+                <i class="icon-diamond"></i>
+                <span class="title"> Membership Plans </span>
+                <span class="arrow"></span>
+            </a>
+            <ul class="sub-menu">
+                <li class="nav-item {{ $in_sidebar=='admin-backend-all_users'?'active open':'' }}">
+                    <a href="{{route('membership_plan.create')}}" class="nav-link ">
+                        <span class="title">Add New Plan</span>
+                    </a>
+                </li>
+                <li class="nav-item {{ $in_sidebar=='admin-backend-all_users'?'active open':'' }}">
+                    <a href="{{route('membership_plan.edit',['id'=>4])}}" class="nav-link ">
+                        <span class="title">Edit Plan</span>
+                    </a>
+                </li>
+                <li class="nav-item {{ $in_sidebar=='admin-backend-memberships-all_plans'?'active open':'' }}">
+                    <a href="{{ route('membership_plan.index') }}" class="nav-link ">
+                        <span class="title">List All Plans</span>
+                    </a>
+                </li>
+            </ul>
+        </li>
         <li class="nav-item {{ in_array($in_sidebar, array('admin-backend-user_roles', 'admin-backend-all_users', 'admin-backend-roles_permission', 'admin-backend-user_details_view', 'admin-backend-permission_details_view'))?'active open':'' }} ">
             <a href="javascript:;" class="nav-link nav-toggle">
                 <i class="icon-diamond"></i>
