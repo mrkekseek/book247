@@ -24,7 +24,9 @@ class CreateMembershipPlans extends Migration
             $table->text('short_description');
             $table->longText('description');
             $table->timestamps();
+        });
 
+        Schema::table('membership_plans', function($table) {
             $table->foreign('price_id')->references('id')->on('membership_plan_prices');
         });
     }
