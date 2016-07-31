@@ -15,7 +15,6 @@ class CreateMembershipRestrictions extends Migration
         Schema::create('membership_restrictions', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('membership_id')->unsigned();
-            $table->integer('restriction_id')->unsigned();
             $table->string('value', 50);
             $table->string('min_value', 50);
             $table->string('max_value', 50);
@@ -24,7 +23,6 @@ class CreateMembershipRestrictions extends Migration
             $table->timestamps();
 
             $table->foreign('membership_id')->references('id')->on('membership_plans');
-            $table->foreign('restriction_id')->references('id')->on('membership_restriction_types');
         });
     }
 

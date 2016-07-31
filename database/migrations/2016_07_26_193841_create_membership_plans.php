@@ -17,7 +17,6 @@ class CreateMembershipPlans extends Migration
             $table->string('name');
             $table->string('plan_calendar_color');
             $table->enum('status', ['active', 'pending', 'suspended', 'deleted']);
-            $table->integer('price_id')->unsigned();
             $table->integer('plan_period');
             $table->string('administration_fee_name');
             $table->float('administration_fee_amount');
@@ -25,10 +24,6 @@ class CreateMembershipPlans extends Migration
             $table->longText('description');
             $table->timestamps();
         });
-
-        //Schema::table('membership_plans', function($table) {
-        //    $table->foreign('price_id')->references('id')->on('membership_plan_prices');
-        //});
     }
 
     /**
