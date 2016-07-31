@@ -15,6 +15,7 @@ class CreateMembershipRestrictionTypes extends Migration
         Schema::create('membership_restriction_types', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name');
+            $table->string('title');
             $table->timestamps();
         });
     }

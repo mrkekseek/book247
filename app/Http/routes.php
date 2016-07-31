@@ -443,6 +443,12 @@ Route::group(['middleware' => 'web'], function () {
     //GET 	        /membership_plan/{id}/edit 	edit 	    membership_plan.edit
     //PUT/PATCH 	/membership_plan/{id} 	    update 	    membership_plan.update
     //DELETE 	    /membership_plan/{id} 	    destroy 	membership_plan.destroy
+
+    Route::post('membership_plan/add_restriction', [
+        'as'    => 'membership_plan-add_restriction',
+        'uses'  => 'MembershipPlansController@add_plan_restriction'
+    ]);
+
     /** Stop  - Membership Management */
 });
 

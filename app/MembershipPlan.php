@@ -47,12 +47,12 @@ class MembershipPlan extends Model
                     'name'                  => 'required|min:3|max:75|unique:membership_plans,name',
                     'plan_calendar_color'   => 'required|min:7|max:7',
                     'status'                => 'required|in:active,pending,suspended,deleted',
-                    'price_id'              => 'required|exists:membership_plan_prices,id',
-                    'plan_period'           => 'required|in:7d,14d,1m,3m.6m,12m',
+                    'price_id'              => 'required',
+                    'plan_period'           => 'required|in:7,14,30,90,180,360',
                     'administration_fee_name'   => 'required|min:3',
                     'administration_fee_amount' => 'required|numeric|min:1',
                     'short_description'     => 'required|min:50',
-                    'long_description'      => '',
+                    'description'      => '',
                 ];
             }
             case 'PUT':
@@ -63,11 +63,11 @@ class MembershipPlan extends Model
                     'plan_calendar_color'   => 'required|min:7|max:7',
                     'status'                => 'required|in:active,pending,suspended,deleted',
                     'price_id'              => 'required|exists:membership_plan_prices,id',
-                    'plan_period'           => 'required|in:7d,14d,1m,3m.6m,12m',
+                    'plan_period'           => 'required|in:7,14,30,90,180,360',
                     'administration_fee_name'   => 'required|min:3',
                     'administration_fee_amount' => 'required|numeric|min:1',
                     'short_description'     => 'required|min:50',
-                    'long_description'      => '',
+                    'description'      => '',
                 ];
             }
             default:break;
@@ -75,7 +75,7 @@ class MembershipPlan extends Model
     }
 
     public function get_price(){
-        $price = MembershipPlanPrice::select('entry_price','created_at')->where('membership_id','=',$this->id)->orderBy('created_at','desc')->get()->first();
+        $price = MembershipPlanPrice::select('price','discount','created_at')->where('membership_id','=',$this->id)->orderBy('created_at','desc')->get()->first();
         if ($price) {
             $unformated_date = $price->created_at;
             $price->added_on = $unformated_date->format('d-m-Y');
@@ -85,10 +85,14 @@ class MembershipPlan extends Model
     }
 
     public function price(){
-        return $this->hasMany('App\MembershipPlanPrice', 'price_id', 'id');
+        return $this->hasMany('App\MembershipPlanPrice', 'id', 'price_id');
     }
 
     public function membership_restrictions(){
-        return $this->hasMany('App\MembershipRestrictions');
+        return $this->hasMany('App\MembershipRestriction', 'membership_id', 'id');
+    }
+
+    public function add_restriction($type, $attributes){
+
     }
 }

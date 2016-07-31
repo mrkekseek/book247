@@ -10,7 +10,7 @@ class MembershipRestriction extends Model
 
     public static $attributeNames = array(
         'membership_id'     => 'Membership ID',
-        'restriction_type'  => 'Restriction Type',
+        'restriction_id'  => 'Restriction Type',
         'value'         => 'Value',
         'min_value'     => 'Minimum Value',
         'max_value'     => 'Maximum Value',
@@ -22,7 +22,7 @@ class MembershipRestriction extends Model
 
     protected $fillable = [
         'membership_id',
-        'restriction_type',
+        'restriction_id',
         'value',
         'min_value',
         'max_value',
@@ -30,7 +30,7 @@ class MembershipRestriction extends Model
         'time_end',
     ];
 
-    public static function rules($method){
+    public static function rules($method, $id){
         switch($method) {
             case 'GET':
             case 'DELETE': {
@@ -41,7 +41,7 @@ class MembershipRestriction extends Model
             case 'PATCH':{
                 return [
                     'membership_id'     => 'required|exists:membership_plans,id',
-                    'restriction_type'  => 'required|exists:membership_restriction_types,id',
+                    'restriction_id'    => 'required|exists:membership_restriction_types,id',
                     'value'         => 'required|min:1',
                     'min_value'     => 'required|min:1',
                     'max_value'     => 'required|min:1',
@@ -55,5 +55,9 @@ class MembershipRestriction extends Model
 
     public function membership_plan(){
         return $this->belongsTo('App\MembershipPlan', 'membership_id', 'id');
+    }
+
+    public function restriction_title(){
+        return $this->belongsTo('App\MembershipRestrictionType', 'restriction_id', 'id');
     }
 }

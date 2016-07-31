@@ -16,7 +16,7 @@ class CreateMembershipPlans extends Migration
             $table->increments('id');
             $table->string('name');
             $table->string('plan_calendar_color');
-            $table->enum('status', ['active, pending, suspended, deleted']);
+            $table->enum('status', ['active', 'pending', 'suspended', 'deleted']);
             $table->integer('price_id')->unsigned();
             $table->integer('plan_period');
             $table->string('administration_fee_name');

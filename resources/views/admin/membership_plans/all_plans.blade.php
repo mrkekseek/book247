@@ -44,24 +44,26 @@
                             <thead>
                             <tr>
                                 <th> No. </th>
-                                <th> Cash Terminal Name </th>
-                                <th> Shop Location </th>
-                                <th> Barcode </th>
-                                <th> Last Cash-In </th>
-                                <th> Last Cash-Out </th>
+                                <th> Membership Plan Name </th>
+                                <th> Price </th>
+                                <th> Initial Fee </th>
+                                <th> Invoice Period </th>
+                                <th> Calendar Color </th>
+                                <th> Status </th>
                             </tr>
                             </thead>
                             <tbody>
-                            @foreach($cash_terminals as $terminal)
+                            @foreach($all_plans as $key=>$plan)
                                 <tr class="odd gradeX">
-                                    <td> 1 </td>
+                                    <td> {{$key}} </td>
                                     <td>
-                                        <a href="{{ route('admin/back_users/roles_permissions/view',['id' => $terminal->id]) }}"> {{ $terminal->name }} </a>
+                                        <a href="{{ route('membership_plan.edit',['id' => $plan['id']]) }}"> {{ $plan['name'] }} </a>
                                     </td>
-                                    <td> {{ $terminal->shopLocation->name }} </td>
-                                    <td> {{ $terminal->bar_code }} </td>
-                                    <td class="center"> {{ $terminal::last_cash_out() }} </td>
-                                    <td class="center"> {{ $terminal::last_cash_in() }} </td>
+                                    <td> {{ $plan['price'] }} </td>
+                                    <td> {{ $plan['admin_fee'] }} </td>
+                                    <td class="center"> {{ $plan['plan_period'] }} </td>
+                                    <td class="center"> <div style="width:25%; height:25px; background-color:{{ $plan['color'] }};"></div>  </td>
+                                    <td class="center"> {{ $plan['status'] }} </td>
                                 </tr>
                             @endforeach
                             </tbody>
@@ -69,67 +71,6 @@
                     </div>
                 </div>
                 <!-- END EXAMPLE TABLE PORTLET-->
-            </div>
-
-            <div class="modal fade draggable-modal" id="draggable" tabindex="-1" role="basic" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
-                            <h4 class="modal-title">Add New Cash Terminal</h4>
-                        </div>
-                        <div class="modal-body">
-                            <form action="#" id="new_cash_terminal" name="new_cash_terminal" class="form-horizontal">
-                                <div class="form-body">
-                                    <div class="alert alert-danger display-hide">
-                                        <button class="close" data-close="alert"></button> You have some form errors. Please check below. </div>
-                                    <div class="alert alert-success display-hide">
-                                        <button class="close" data-close="alert"></button> Your form validation is successful! </div>
-                                    <div class="form-group  margin-top-20">
-                                        <label class="control-label col-md-4">Terminal Name
-                                            <span class="required"> * </span>
-                                        </label>
-                                        <div class="col-md-7">
-                                            <div class="input-icon right">
-                                                <i class="fa"></i>
-                                                <input type="text" class="form-control" name="terminal_name" id="terminal_name" /> </div>
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="control-label col-md-4">Shop Location
-                                            <span class="required"> * </span>
-                                        </label>
-                                        <div class="col-md-7">
-                                            <div class="input-icon right">
-                                                <select class="form-control" name="shop_location" id="shop_location">
-                                                    <option>Select...</option>
-                                                    @foreach($shops as $shop)
-                                                        <option value="{{$shop->id}}">{{$shop->name}}</option>
-                                                    @endforeach
-                                                </select>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="control-label col-md-4">Bar Code
-                                        </label>
-                                        <div class="col-md-7">
-                                            <div class="input-icon right">
-                                                <i class="fa"></i>
-                                                <textarea class="form-control" name="bar_code" id="bar_code"></textarea> </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn dark btn-outline" data-dismiss="modal">Close</button>
-                            <button type="button" class="btn green submit_form_2" onClick="javascript: $('#new_cash_terminal').submit();">Save changes</button>
-                        </div>
-                    </div>
-                    <!-- /.modal-content -->
-                </div>
-                <!-- /.modal-dialog -->
             </div>
         </div>
         <!-- END PAGE BASE CONTENT -->

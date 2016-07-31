@@ -78,12 +78,12 @@
                                             </div>
                                             <div class="col-md-5">
                                                 <select name="membership_period" class="form-control input-inline input-small  inline-block">
-                                                    <option value="7d">7 days</option>
-                                                    <option value="14d">14 days</option>
-                                                    <option value="1m">one month</option>
-                                                    <option value="3m">three months</option>
-                                                    <option value="6m">six months</option>
-                                                    <option value="12m">12 months</option>
+                                                    <option value="7">7 days</option>
+                                                    <option value="14">14 days</option>
+                                                    <option value="30">one month</option>
+                                                    <option value="90">three months</option>
+                                                    <option value="180">six months</option>
+                                                    <option value="360">12 months</option>
                                                 </select>
                                                 <span class="help-inline inline-block"> Invoicing Period </span>
                                             </div>
@@ -314,7 +314,15 @@
                     'membership_long_description':  $('textarea[name=membership_long_description]').val(),
                 },
                 success: function(data){
-                    alert(data);
+                    if(data.success){
+                        show_notification(data.title, data.message, 'lime', 3500, 0);
+                        setTimeout(function(){
+                            window.location(data.redirect_link);
+                        },2000);
+                    }
+                    else{
+                        show_notification(data.title, data.errors, 'ruby', 3500, 0);
+                    }
                 }
             });
         }

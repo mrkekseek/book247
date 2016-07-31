@@ -37,12 +37,13 @@
         <!-- END PAGE HEAD-->
         <!-- BEGIN PAGE BASE CONTENT -->
         <div class="row">
+        @if ($membership_plan)
             <div class="col-md-12">
                 <div class="portlet light bordered">
                     <div class="portlet-title">
                         <div class="caption">
-                            <i class="icon-equalizer font-red-sunglo"></i>
-                            <span class="caption-subject font-red-sunglo bold uppercase"> Membership plan details</span>
+                            <i class="icon-equalizer font-purple-studio"></i>
+                            <span class="caption-subject font-purple-studio bold uppercase"> Membership plan details</span>
                             <span class="caption-helper">update details here...</span>
                         </div>
                         <div class="tools">
@@ -51,29 +52,29 @@
                     </div>
                     <div class="portlet-body form" style="display:none;">
                         <!-- BEGIN FORM-->
-                        <form action="#" class="form-horizontal">
+                        <form action="#" id="new_membership_plan" class="form-horizontal">
                             <div class="form-body">
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label class="control-label col-md-3"> Membership Name </label>
                                             <div class="col-md-9">
-                                                <input type="text" class="form-control" name="membership_name" placeholder="New plan name">
+                                                <input type="text" class="form-control" name="membership_name" placeholder="New plan name" value="{{$membership_plan->name}}">
                                             </div>
                                         </div>
                                         <div class="form-group">
                                             <label class="control-label col-md-3 inline"> Membership Price </label>
                                             <div class="col-md-4">
-                                                <input type="text" class="form-control input-inline input-small" name="membership_price" placeholder="NOK">
+                                                <input type="text" class="form-control input-inline input-small" name="membership_price" placeholder="NOK" value="{{$membership_plan->price[0]->price}}">
                                             </div>
                                             <div class="col-md-5">
                                                 <select name="membership_period" class="form-control input-inline input-small  inline-block">
-                                                    <option value="7d">7 days</option>
-                                                    <option value="14d">14 days</option>
-                                                    <option value="1m">one month</option>
-                                                    <option value="3m">three months</option>
-                                                    <option value="6m">six months</option>
-                                                    <option value="12m">12 months</option>
+                                                    <option {!!$membership_plan->plan_period==7?'selected="selected"':''!!} value="7">7 days</option>
+                                                    <option {!!$membership_plan->plan_period==14?'selected="selected"':''!!} value="14">14 days</option>
+                                                    <option {!!$membership_plan->plan_period==30?'selected="selected"':''!!} value="30">one month</option>
+                                                    <option {!!$membership_plan->plan_period==90?'selected="selected"':''!!} value="90">three months</option>
+                                                    <option {!!$membership_plan->plan_period==180?'selected="selected"':''!!} value="180">six months</option>
+                                                    <option {!!$membership_plan->plan_period==360?'selected="selected"':''!!} value="360">12 months</option>
                                                 </select>
                                                 <span class="help-inline inline-block"> Invoicing Period </span>
                                             </div>
@@ -81,23 +82,23 @@
                                         <div class="form-group">
                                             <label class="control-label col-md-3"> Administration Fee Name </label>
                                             <div class="col-md-9">
-                                                <input type="text" class="form-control" name="administration_fee_name" placeholder="Fee Name">
+                                                <input type="text" class="form-control" name="administration_fee_name" placeholder="Fee Name" value="{{$membership_plan->administration_fee_name}}">
                                             </div>
                                         </div>
                                         <div class="form-group">
                                             <label class="control-label col-md-3"> Administration Fee Price </label>
                                             <div class="col-md-9">
-                                                <input type="text" class="form-control input-medium" name="administration_fee_price" placeholder="Fee Price">
+                                                <input type="text" class="form-control input-medium" name="administration_fee_price" placeholder="Fee Price" value="{{$membership_plan->administration_fee_amount}}">
                                             </div>
                                         </div>
                                         <div class="form-group">
                                             <label class="control-label col-md-3">Plan Color</label>
                                             <div class="col-md-3">
-                                                <div class="input-group color colorpicker-default" data-color="#3865a8" data-color-format="rgba">
-                                                    <input type="text" class="form-control" name="membership_color" value="#3865a8" readonly>
+                                                <div class="input-group color colorpicker-default" data-color="{{$membership_plan->plan_calendar_color}}" data-color-format="rgba">
+                                                    <input type="text" class="form-control" name="membership_color" value="{{$membership_plan->plan_calendar_color}}" readonly>
                                                         <span class="input-group-btn">
                                                             <button class="btn default" type="button">
-                                                                <i style="background-color: #3865a8;"></i>&nbsp;</button>
+                                                                <i style="background-color: {{$membership_plan->plan_calendar_color}}};"></i>&nbsp;</button>
                                                         </span>
                                                 </div>
                                                 <!-- /input-group -->
@@ -109,7 +110,7 @@
                                         <div class="form-group">
                                             <label class="control-label col-md-3 inline">Short Description</label>
                                             <div class="col-md-9">
-                                                <textarea name="membership_short_description" style="min-height:100px;" class="form-control"></textarea>
+                                                <textarea name="membership_short_description" style="min-height:100px;" class="form-control">{{$membership_plan->short_description}}</textarea>
                                             </div>
                                         </div>
                                     </div>
@@ -118,7 +119,19 @@
                                         <div class="form-group">
                                             <label class="control-label col-md-3 inline">Long Description</label>
                                             <div class="col-md-9">
-                                                <textarea name="membership_long_description" style="height:246px;" class="form-control"></textarea>
+                                                <textarea name="membership_long_description" style="height:246px;" class="form-control">{{$membership_plan->description}}</textarea>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="control-label col-md-3 inline"> Membership Status </label>
+                                            <div class="col-md-7">
+                                                <select name="membership_status" class="form-control input-inline input-small  inline-block">
+                                                    <option {!!$membership_plan->status=='active'?'selected="selected"':''!!} value="active"> Active </option>
+                                                    <option {!!$membership_plan->status=='pending'?'selected="selected"':''!!} value="pending"> Pending </option>
+                                                    <option {!!$membership_plan->status=='suspended'?'selected="selected"':''!!} value="suspended"> Suspended </option>
+                                                    <option {!!$membership_plan->status=='deleted'?'selected="selected"':''!!} value="deleted"> Deleted </option>
+                                                </select>
+                                                <span class="help-inline inline-block"> Active status will make it live </span>
                                             </div>
                                         </div>
                                     </div>
@@ -149,15 +162,15 @@
                 <div class="portlet light bordered">
                     <div class="portlet-title">
                         <div class="caption">
-                            <i class="icon-equalizer font-red-sunglo"></i>
-                            <span class="caption-subject font-red-sunglo bold uppercase">Add new restrictions</span>
-                            <span class="caption-helper">set variables for new restrictions...</span>
+                            <i class="icon-equalizer font-green-jungle"></i>
+                            <span class="caption-subject font-green-jungle bold uppercase"> Add Membership Attributes </span>
+                            <span class="caption-helper">set the membership properties like activities included and much more</span>
                         </div>
                         <div class="tools">
-                            <a class="expand" href="" data-original-title="" title=""> </a>
+                            <a class="collapse" href="" data-original-title="" title=""> </a>
                         </div>
                     </div>
-                    <div class="portlet-body form tabbable-line boxless tabbable-reversed" style="display:none;">
+                    <div class="portlet-body form tabbable-line boxless tabbable-reversed">
                         <!-- BEGIN FORM-->
                         <ul class="nav nav-tabs">
                             <li class="active">
@@ -195,11 +208,10 @@
                                                 <div class="form-group">
                                                     <label class="control-label col-md-3">Select Included Activities</label>
                                                     <div class="col-md-9">
-                                                        <select class="form-control input-large" multiple style="height:120px;">
-                                                            <option> Tennis </option>
-                                                            <option> Squash </option>
-                                                            <option> Polo </option>
-                                                            <option> Golf </option>
+                                                        <select class="form-control input-large" name="plan_included_activity" multiple style="height:120px;">
+                                                            @foreach ($activities as $activity)
+                                                                <option value="{{$activity->id}}"> {{$activity->name}} </option>
+                                                            @endforeach
                                                         </select>
                                                     </div>
                                                 </div>
@@ -207,8 +219,8 @@
                                             <div class="form-actions">
                                                 <div class="row">
                                                     <div class="col-md-offset-3 col-md-9">
-                                                        <button type="submit" class="btn green">
-                                                            <i class="fa fa-pencil"></i> Add Activities Restriction </button>
+                                                        <button type="submit" class="btn green add_included_activity">
+                                                            <i class="fa fa-pencil"></i> Add Activities </button>
                                                         <button type="button" class="btn default">Cancel</button>
                                                     </div>
                                                 </div>
@@ -235,14 +247,14 @@
                                                 <div class="form-group">
                                                     <label class="control-label col-md-2"> Hours Before </label>
                                                     <div class="col-md-6">
-                                                        <input type="text" class="form-control form-inline input-xsmall inline-block" placeholder="hour">
+                                                        <input type="text" class="form-control form-inline input-xsmall inline-block" placeholder="hour" name="hours_before_booking">
                                                         <span class="help-block inline-block"> bookings available in advance with these hours </span>
                                                     </div>
                                                 </div>
                                                 <div class="form-group">
                                                     <label class="control-label col-md-2"> Hours Until </label>
                                                     <div class="col-md-6">
-                                                        <input type="text" class="form-control form-inline input-xsmall inline-block" placeholder="hour">
+                                                        <input type="text" class="form-control form-inline input-xsmall inline-block" placeholder="hour" name="hours_until_booking">
                                                         <span class="help-block inline-block"> bookings available until these hours from now  </span>
                                                     </div>
                                                 </div>
@@ -250,8 +262,8 @@
                                             <div class="form-actions">
                                                 <div class="row">
                                                     <div class="col-md-offset-3 col-md-9">
-                                                        <button type="submit" class="btn green">
-                                                            <i class="fa fa-pencil"></i> Add Day/Time Restriction </button>
+                                                        <button type="submit" class="btn green add_booking_allowed_interval">
+                                                            <i class="fa fa-pencil"></i> Add Booking Allowed Interval </button>
                                                         <button type="button" class="btn default">Cancel</button>
                                                     </div>
                                                 </div>
@@ -278,14 +290,14 @@
                                                 <div class="form-group">
                                                     <label class="control-label col-md-3">Day of the week</label>
                                                     <div class="col-md-9">
-                                                        <select class="form-control input-large" style="height:150px;" multiple>
-                                                            <option>Monday</option>
-                                                            <option>Tuesday</option>
-                                                            <option>Wednesday</option>
-                                                            <option>Thursday</option>
-                                                            <option>Friday</option>
-                                                            <option>Saturday</option>
-                                                            <option>Sunday</option>
+                                                        <select name="booking_day_selection" class="form-control input-large booking_day_selection" style="height:150px;" multiple>
+                                                            <option value="1">Monday</option>
+                                                            <option value="2">Tuesday</option>
+                                                            <option value="3">Wednesday</option>
+                                                            <option value="4">Thursday</option>
+                                                            <option value="5">Friday</option>
+                                                            <option value="6">Saturday</option>
+                                                            <option value="0">Sunday</option>
                                                         </select>
                                                     </div>
                                                 </div>
@@ -293,13 +305,13 @@
                                                     <label class="control-label col-md-3">Time of day</label>
                                                     <div class="col-md-9">
                                                         <div class="col-md-6">
-                                                            <input type="text" class="form-control form-inline input-xsmall inline-block" placeholder="hour">
-                                                            <input type="text" class="form-control form-inline input-xsmall inline-block" placeholder="minutes">
+                                                            <input type="text" class="form-control form-inline input-xsmall inline-block" placeholder="hour" name="booking_hour_start">
+                                                            <input type="text" class="form-control form-inline input-xsmall inline-block" placeholder="minutes" name="booking_minute_start">
                                                             <span class="help-block inline-block"> Start Time </span>
                                                         </div>
                                                         <div class="col-md-6">
-                                                            <input type="text" class="form-control inline-block input-xsmall" placeholder="hour">
-                                                            <input type="text" class="form-control inline-block input-xsmall" placeholder="minutes">
+                                                            <input type="text" class="form-control inline-block input-xsmall" placeholder="hour" name="booking_hour_stop">
+                                                            <input type="text" class="form-control inline-block input-xsmall" placeholder="minutes" name="booking_minute_stop">
                                                             <span class="help-block inline-block"> End Time </span>
                                                         </div>
                                                     </div>
@@ -308,8 +320,8 @@
                                             <div class="form-actions">
                                                 <div class="row">
                                                     <div class="col-md-offset-3 col-md-9">
-                                                        <button type="submit" class="btn green">
-                                                            <i class="fa fa-pencil"></i> Add Day/Time Restriction </button>
+                                                        <button type="submit" class="btn green add_booking_time_of_day">
+                                                            <i class="fa fa-pencil"></i> Add Day/Time Values </button>
                                                         <button type="button" class="btn default">Cancel</button>
                                                     </div>
                                                 </div>
@@ -336,7 +348,7 @@
                                                 <div class="form-group">
                                                     <label class="control-label col-md-3">Membership Open Bookings</label>
                                                     <div class="col-md-9">
-                                                        <input type="text" placeholder="number of bookings" class="block-inline input-large form-control" />
+                                                        <input type="text" placeholder="number of bookings" class="block-inline input-large form-control" name="nr_of_open_bookings" />
                                                         <span class="help-block"> after these free bookings, the member needs to pay for any other open bookings he is doing </span>
                                                     </div>
                                                 </div>
@@ -344,8 +356,8 @@
                                             <div class="form-actions">
                                                 <div class="row">
                                                     <div class="col-md-offset-3 col-md-9">
-                                                        <button type="submit" class="btn green">
-                                                            <i class="fa fa-pencil"></i> Add "Open Bookings" Restriction </button>
+                                                        <button type="submit" class="btn green add_nr_open_bookings">
+                                                            <i class="fa fa-pencil"></i> Add "Open Bookings" Limit </button>
                                                         <button type="button" class="btn default">Cancel</button>
                                                     </div>
                                                 </div>
@@ -360,7 +372,7 @@
                                     <div class="portlet-title">
                                         <div class="caption">
                                             <i class="icon-equalizer font-green-haze"></i>
-                                            <span class="caption-subject font-green-haze bold uppercase">Cancelation</span>
+                                            <span class="caption-subject font-green-haze bold uppercase">Cancellation</span>
                                             <span class="caption-helper">some info...</span>
                                         </div>
                                         <div class="actions">  </div>
@@ -372,7 +384,7 @@
                                                 <div class="form-group">
                                                     <label class="control-label col-md-3"> Can cancel </label>
                                                     <div class="col-md-9">
-                                                        <input type="text" placeholder="small" class="input-small form-control inline-block" />
+                                                        <input type="text" placeholder="" class="input-small form-control inline-block" name="nr_of_hours_before_cancellation" />
                                                         <span class="help-block inline-block"> hours before </span>
                                                     </div>
                                                 </div>
@@ -380,8 +392,8 @@
                                             <div class="form-actions">
                                                 <div class="row">
                                                     <div class="col-md-offset-3 col-md-9">
-                                                        <button type="submit" class="btn green">
-                                                            <i class="fa fa-pencil"></i> Add "Cancellation" restriction </button>
+                                                        <button type="submit" class="btn green add_cancellation_hours">
+                                                            <i class="fa fa-pencil"></i> Add "Cancellation" Limits </button>
                                                         <button type="button" class="btn default">Cancel</button>
                                                     </div>
                                                 </div>
@@ -401,8 +413,8 @@
                 <div class="portlet light bordered">
                     <div class="portlet-title">
                         <div class="caption">
-                            <i class="icon-equalizer font-red-sunglo"></i>
-                            <span class="caption-subject font-red-sunglo bold uppercase">Active restrictions</span>
+                            <i class="icon-equalizer font-blue-steel"></i>
+                            <span class="caption-subject font-blue-steel bold uppercase"> Active Attributes & Restrictions </span>
                             <span class="caption-helper">for the selected membership plan</span>
                         </div>
                         <div class="tools">
@@ -411,40 +423,38 @@
                     </div>
                     <div class="portlet-body row">
                         <!-- BEGIN FORM-->
-                        <div class="col-md-4">
-                            <div class="note note-success">
-                                <h4 class="block"> Cancellation Rule </h4>
-                                <p> 72 hours before time of play </p>
+                        @if($restrictions)
+                            @foreach ($restrictions as $restriction)
+                                <div class="col-md-4">
+                                    <div class="note {{ $restriction['color'] }}" style="min-height:132px;">
+                                        <button data-dismiss="alert" class="close" type="button"></button>
+                                        <h4 class="block"> {{ $restriction['title'] }} Rule </h4>
+                                        <p> {!! $restriction['description'] !!} </p>
+                                    </div>
+                                </div>
+                            @endforeach
+                        @else
+                            <div class="note note-warning" style="margin-left:15px; margin-right:15px;">
+                                <h4 class="block">You have no attributes added to this plan</h4>
+                                <p> Please use the "Add Membership Attributes" to customize and configure the membership plan so you create the perfect plan for your business. </p>
                             </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="note note-info">
-                                <h4 class="block"> Time of Booking Rule </h4>
-                                <p> Monday to Thursday - 7:00 to 23:00 </p>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="note note-warning">
-                                <h4 class="block"> Activities Rule </h4>
-                                <p> Included : tenis, squash </p>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="note note-info">
-                                <h4 class="block"> Time of Booking Rule </h4>
-                                <p> Friday - 7:00 to 16:00 </p>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="note note-info">
-                                <h4 class="block"> Time of Booking Rule </h4>
-                                <p> Saturday - 9:00 to 20:00 </p>
-                            </div>
-                        </div>
+                        @endif
                         <!-- END FORM-->
                     </div>
                 </div>
             </div>
+        @else
+            <div class="col-md-12">
+                <div class="portlet light ">
+                    <div class="portlet-body">
+                        <div class="note note-warning">
+                            <h4 class="block">An error occured</h4>
+                            <p> The price plan that you are searching for could not be found. Go back to the page you came here and try refreshing it, then access the link again.<br /><br /> Thank you!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @endif
         </div>
         <!-- END PAGE BASE CONTENT -->
     </div>
@@ -470,7 +480,6 @@
 
 @section('pageCustomJScripts')
     <script type="text/javascript">
-
         $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -498,7 +507,7 @@
 
         var FormValidation = function () {
             var handleValidation1 = function() {
-                var form1 = $('#new_cash_terminal');
+                var form1 = $('#new_membership_plan');
                 var error1 = $('.alert-danger', form1);
                 var success1 = $('.alert-success', form1);
 
@@ -508,17 +517,34 @@
                     focusInvalid: false, // do not focus the last invalid input
                     ignore: "",  // validate all fields including form hidden input
                     rules: {
-                        terminal_name: {
+                        membership_name: {
                             minlength: 5,
                             required: true
                         },
-                        bar_code: {
-                            minlength: 5,
-                            required: true
-                        },
-                        shop_location: {
+                        membership_price: {
+                            number: true,
                             minlength: 1,
-                            required: true,
+                            required: true
+                        },
+                        membership_period: {
+                            required: true
+                        },
+                        administration_fee_name: {
+                            minlength: 5,
+                            required: true
+                        },
+                        administration_fee_price: {
+                            number: true,
+                            minlength: 1,
+                            required: true
+                        },
+                        membership_color: {
+                            minlength: 7,
+                            required: true
+                        },
+                        membership_short_description: {
+                            minlength: 10,
+                            required: true
                         },
                     },
 
@@ -552,7 +578,7 @@
                     submitHandler: function (form) {
                         success1.show();
                         error1.hide();
-                        add_new_terminal(); // submit the form
+                        update_membership_details(); // submit the form
                     }
                 });
             }
@@ -572,19 +598,181 @@
             ComponentsColorPickers.init();
         });
 
-        function add_new_terminal(){
+        function update_membership_details(){
+            @if ($membership_plan)
+                $.ajax({
+                    url: '{{route('membership_plan.update', ['id'=>$membership_plan->id])}}',
+                    type: "post",
+                    data: {
+                        'name':                         $('input[name=membership_name]').val(),
+                        'price':                        $('input[name=membership_price]').val(),
+                        'plan_period':                  $('select[name=membership_period]').val(),
+                        'status':                       $('select[name=membership_status]').val(),
+                        'administration_fee_name':      $('input[name=administration_fee_name]').val(),
+                        'administration_fee_amount':    $('input[name=administration_fee_price]').val(),
+                        'plan_calendar_color':          $('input[name=membership_color]').val(),
+                        'membership_short_description': $('textarea[name=membership_short_description]').val(),
+                        'membership_long_description':  $('textarea[name=membership_long_description]').val(),
+                        '_method':'patch'
+                    },
+                    success: function(data){
+                        if(data.success){
+                            show_notification('Membership Plan Details Updated', data.message, 'lime', 3500, 0);
+                            setTimeout(function(){
+                                location.reload();
+                            },2000);
+                        }
+                        else{
+                            show_notification('Error updating membership details', data.errors, 'ruby', 3500, 0);
+                        }
+                    }
+                });
+            @endif
+        }
+
+        $('.add_included_activity').on('click', function(event){
+            event.preventDefault();
+
             $.ajax({
-                url: '{{route('admin/shops/new_cash_terminal')}}',
+                url: '{{route('membership_plan-add_restriction')}}',
                 type: "post",
                 data: {
-                    'name':         $('input[name=terminal_name]').val(),
-                    'location_id':  $('select[name=shop_location]').val(),
-                    'bar_code':     $('textarea[name=bar_code]').val()
+                    'type' : 'included_activity',
+                    'activities': serealizeSelects($('select[name="plan_included_activity"]')),
+                    'membership_id': '{{@$membership_plan->id}}'
                 },
                 success: function(data){
-                    alert(data);
+                    if(data.success){
+                        show_notification('Included Activities Added', data.message, 'lime', 3500, 0);
+                        setTimeout(function(){
+                            location.reload();
+                        },2000);
+                    }
+                    else{
+                        show_notification('Error adding activities', data.errors, 'ruby', 3500, 0);
+                    }
                 }
             });
+        });
+
+        $('.add_booking_allowed_interval').on('click', function(event){
+            event.preventDefault();
+
+            $.ajax({
+                url: '{{route('membership_plan-add_restriction')}}',
+                type: "post",
+                data: {
+                    'type' : 'booking_time_interval',
+                    'min_val': $('input[name="hours_before_booking"]').val(),
+                    'max_val': $('input[name="hours_until_booking"]').val(),
+                    'membership_id': '{{@$membership_plan->id}}'
+                },
+                success: function(data){
+                    if(data.success){
+                        show_notification('Booking Time Period Added', data.message, 'lime', 3500, 0);
+                        setTimeout(function(){
+                            location.reload();
+                        },2000);
+                    }
+                    else{
+                        show_notification('Error adding time period', data.errors, 'ruby', 3500, 0);
+                    }
+                }
+            });
+        });
+
+        $('.add_booking_time_of_day').on('click', function(event){
+            event.preventDefault();
+
+            $.ajax({
+                url: '{{route('membership_plan-add_restriction')}}',
+                type: "post",
+                data: {
+                    'type' : 'time_of_day',
+                    'day_selection': serealizeSelects($('select[name="booking_day_selection"]')),
+                    'hour_start': $('input[name="booking_hour_start"]').val(),
+                    'hour_stop': $('input[name="booking_hour_stop"]').val(),
+                    'minute_start': $('input[name="booking_minute_start"]').val(),
+                    'minute_stop': $('input[name="booking_minute_stop"]').val(),
+                    'membership_id': '{{@$membership_plan->id}}'
+                },
+                success: function(data){
+                    if(data.success){
+                        show_notification('Booking Time of Day added', data.message, 'lime', 3500, 0);
+                        setTimeout(function(){
+                            location.reload();
+                        },2000);
+                    }
+                    else{
+                        show_notification('Error adding booking time of day', data.errors, 'ruby', 3500, 0);
+                    }
+                }
+            });
+        });
+
+        $('.add_nr_open_bookings').on('click', function(event){
+            event.preventDefault();
+
+            $.ajax({
+                url: '{{route('membership_plan-add_restriction')}}',
+                type: "post",
+                data: {
+                    'type' : 'open_bookings',
+                    'open_bookings': $('input[name="nr_of_open_bookings"]').val(),
+                    'membership_id': '{{@$membership_plan->id}}'
+                },
+                success: function(data){
+                    if(data.success){
+                        show_notification('Nr. of open bookings added', data.message, 'lime', 3500, 0);
+                        setTimeout(function(){
+                            location.reload();
+                        },2000);
+                    }
+                    else{
+                        show_notification('Error adding nr. of open bookings', data.errors, 'ruby', 3500, 0);
+                    }
+                }
+            });
+        });
+
+        $('.add_cancellation_hours').on('click', function(event){
+            event.preventDefault();
+
+            $.ajax({
+                url: '{{route('membership_plan-add_restriction')}}',
+                type: "post",
+                data: {
+                    'type' : 'cancellation',
+                    'cancellation_before_hours': $('input[name="nr_of_hours_before_cancellation"]').val(),
+                    'membership_id': '{{@$membership_plan->id}}'
+                },
+                success: function(data){
+                    if(data.success){
+                        show_notification('Cancellation hours restriction added', data.message, 'lime', 3500, 0);
+                        setTimeout(function(){
+                            location.reload();
+                        },2000);
+                    }
+                    else{
+                        show_notification('Error adding cancellation restriction', data.errors, 'ruby', 3500, 0);
+                    }
+                }
+            });
+        });
+
+        /**
+         * Convert select to array with values
+         */
+        function serealizeSelects (select)
+        {
+            var array = [];
+            var list = '';
+            select.each(function(){
+                array.push($(this).val())
+                list = list + $(this).val() + ",";
+                console.log($(this).val());
+            });
+            return array;
         }
 
         /* Start - All admin scripts */
