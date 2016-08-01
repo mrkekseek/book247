@@ -181,6 +181,7 @@
 
             return {
                 //main function to initiate the module
+                // use : http://www.latlong.net/ - to get lat, lng information
                 init: function () {
                     var map;
                     $(document).ready(function(){

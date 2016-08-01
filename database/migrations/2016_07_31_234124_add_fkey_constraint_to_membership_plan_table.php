@@ -12,10 +12,10 @@ class AddFkeyConstraintToMembershipPlanTable extends Migration
      */
     public function up()
     {
-        Schema::table('membership_plans', function($table) {
-            $table->integer('price_id')->unsigned();
-            $table->foreign('price_id')->references('id')->on('membership_plan_prices');
-        });
+        //Schema::table('membership_plans', function($table) {
+        //    $table->integer('price_id')->unsigned();
+        //    $table->foreign('price_id')->references('id')->on('membership_plan_prices');
+        //});
     }
 
     /**
@@ -25,8 +25,8 @@ class AddFkeyConstraintToMembershipPlanTable extends Migration
      */
     public function down()
     {
-        Schema::table('membership_plans', function($table) {
-            $table->dropForeign('price_id');
-        });
+        //Schema::table('membership_plans', function($table) {
+        //    $table->dropForeign('price_id');
+        //});
     }
 }
