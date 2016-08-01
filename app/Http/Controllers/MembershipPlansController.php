@@ -210,7 +210,89 @@ class MembershipPlansController extends Controller
      */
     public function show($id)
     {
-        //
+        if (!Auth::check()) {
+            return redirect()->intended(route('admin/login'));
+        }
+        else{
+            $user = Auth::user();
+        }
+
+        $the_plan = MembershipPlan::with('price')->with('membership_restrictions')->where('id','=',$id)->get()->first();
+        if (!$the_plan){
+            $the_plan = false;
+        }
+
+        $activities = ShopResourceCategory::all()->sortBy('name');
+        $restrictions = array();
+        $plan_restrictions = MembershipRestriction::with('restriction_title')->where('membership_id','=',$the_plan->id)->orderBy('restriction_id','asc')->get();
+        foreach($plan_restrictions as $restriction){
+            switch($restriction->restriction_title->name){
+                case 'time_of_day' :
+                    $days_in = '';
+                    $days = json_decode($restriction->value);
+                    foreach ($days as $day){
+                        $days_in[] = jddayofweek($day, 1);
+                    }
+                    $description = 'Included days : <b>'.implode(', ',$days_in).'</b><br />between <b>'.$restriction->time_start.' - '.$restriction->time_end.'</b>';
+                    $color = 'note-info';
+                    break;
+                case 'open_bookings' :
+                    $description = 'Number of active open bookings included in membership plan : <b>'.$restriction->value.'</b>';
+                    $color = 'note-success';
+                    break;
+                case 'cancellation' :
+                    $description = 'Number of hours before booking start until cancellation is possible : <b>'.$restriction->value.' hours</b>';
+                    $color = 'note-warning';
+                    break;
+                case 'price' :
+                    $description = '';
+                    $color = 'note-success';
+                    break;
+                case 'included_activity' :
+                    $in_activities = ShopResourceCategory::whereIn('id', json_decode($restriction->value))->get();
+                    $available = array();
+                    foreach($in_activities as $activity){
+                        $available[] = $activity->name;
+                    }
+
+                    $description = 'Following activities are included : <b>'.implode(', ', $available).'</b>';
+                    $color = 'note-success';
+                    break;
+                case 'booking_time_interval' :
+                    $description = 'Booking can be made for intervals between <b>'.$restriction->min_value.' hours</b> from now until <b>'.$restriction->max_value.' hours</b> from now.';
+                    $color = 'note-info';
+                    break;
+            }
+
+            $restrictions[] = [
+                'id'            => $restriction->id,
+                'title'         => $restriction->restriction_title->title,
+                'description'   => $description,
+                'color'         => $color
+            ];
+        }
+
+        $breadcrumbs = [
+            'Home'              => route('admin'),
+            'Administration'    => route('admin'),
+            'Back End User'     => route('admin'),
+            'Permissions'        => '',
+        ];
+        $text_parts  = [
+            'title'     => 'Edit Plane - Full month free',
+            'subtitle'  => '',
+            'table_head_text1' => 'Backend Roles Permissions List'
+        ];
+        $sidebar_link= 'admin-backend-memberships-all_plans';
+
+        return view('admin/membership_plans/view_plan', [
+            'breadcrumbs'   => $breadcrumbs,
+            'text_parts'    => $text_parts,
+            'in_sidebar'    => $sidebar_link,
+            'membership_plan'   => $the_plan,
+            'activities'    => $activities,
+            'restrictions'  => $restrictions
+        ]);
     }
 
     /**

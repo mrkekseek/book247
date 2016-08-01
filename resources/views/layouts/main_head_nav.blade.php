@@ -382,19 +382,16 @@
                         </li>
                     </ul>
                 </li>
-
                 <li class="menu-dropdown mega-menu-dropdown {{$in_sidebar=="front-type_of_memberships"?"active":""}}">
                     <a href="{{ route('front/membership_types') }}"> Membership Types
                         <span class="arrow"></span>
                     </a>
                 </li>
-
                 <li class="menu-dropdown mega-menu-dropdown {{$in_sidebar=="front-bookings_list"?"active":""}}">
                     <a href="{{ route('front/bookings_archive') }}"> My Bookings
                         <span class="arrow"></span>
                     </a>
                 </li>
-
                 <li class="menu-dropdown mega-menu-dropdown {{$in_sidebar=="front-friends_list"?"active":""}}">
                     <a href="{{route('front/member_friend_list')}}"> Friends List
                         <span class="arrow"></span>
@@ -445,11 +442,16 @@
                             <i class="icon-bar-chart"></i> Squash Fitness Homepage
                         </a>
                     </li>
-
                     <li class="menu-dropdown mega-menu-dropdown {{$in_sidebar=="front-type_of_memberships"?"active":""}}">
                         <a href="{{ route('front/membership_types') }}">
                             <i class="icon-bar-chart"></i> Membership Types
-                            <span class="badge badge-success">New</span>
+                            <!--<span class="badge badge-success">New</span>-->
+                        </a>
+                    </li>
+                    <li class="menu-dropdown mega-menu-dropdown {{$in_sidebar=="front-contact_locations"?"active":""}}">
+                        <a href="{{ route('front/contact_locations') }}">
+                            <i class="icon-bar-chart"></i> Contact/Locations
+                            <span class="badge badge-success">1 New</span>
                         </a>
                     </li>
                 @endif

@@ -484,9 +484,14 @@ Route::group(['prefix'=>'front', 'middleware'=>'web'], function(){
         'uses'  => 'FrontEndUserController@type_of_memberships'
     ]);
 
+    Route::get('contact', [
+        'as'    => 'front/contact_locations',
+        'uses'  => 'FrontEndUserController@type_of_memberships'
+    ]);
+
     Route::get('active_membership', [
         'as'    => 'front/active_membership',
-        'uses'  => 'FrontEndUserController@member_active_membership'
+        'uses'  => 'FrontEndUserController@contact_locations'
     ]);
 
     Route::get('calendar_booking/{day}/',[

@@ -35,7 +35,7 @@
         </li>
         <li class="nav-item {{ in_array($in_sidebar, array('admin-frontend-all_members','admin-frontend-user_details_view'))?'active open':'' }}">
             <a href="javascript:;" class="nav-link nav-toggle">
-                <i class="icon-layers"></i>
+                <i class="icon-users"></i>
                 <span class="title">Front Users/Members</span>
                 <span class="arrow"></span>
             </a>
@@ -60,7 +60,7 @@
         </li>
         <li class="nav-item {{ in_array($in_sidebar, array('admin-bookings-calendar_view'))?'active open':'' }}  ">
             <a href="{{ route('bookings/location_calendar_day_view',['day'=>\Carbon\Carbon::now()->format('d-m-Y')]) }}" class="nav-link nav-toggle">
-                <i class="icon-feed"></i>
+                <i class="icon-calendar "></i>
                 <span class="title">Calendar View</span>
             </a>
         </li>
@@ -70,7 +70,7 @@
         </li>
         <li class="nav-item {{ in_array($in_sidebar, array('admin-backend-memberships-all_plans','admin-backend-memberships-new_plans'))?'active open':'' }} ">
             <a href="javascript:;" class="nav-link nav-toggle">
-                <i class="icon-diamond"></i>
+                <i class="icon-shield"></i>
                 <span class="title"> Membership Plans </span>
                 <span class="arrow"></span>
             </a>
@@ -89,7 +89,7 @@
         </li>
         <li class="nav-item {{ in_array($in_sidebar, array('admin-backend-user_roles', 'admin-backend-all_users', 'admin-backend-roles_permission', 'admin-backend-user_details_view', 'admin-backend-permission_details_view'))?'active open':'' }} ">
             <a href="javascript:;" class="nav-link nav-toggle">
-                <i class="icon-diamond"></i>
+                <i class="icon-calculator"></i>
                 <span class="title">Back End Users</span>
                 <span class="arrow"></span>
             </a>
