@@ -448,7 +448,7 @@
                             <!--<span class="badge badge-success">New</span>-->
                         </a>
                     </li>
-                    <li class="menu-dropdown mega-menu-dropdown {{$in_sidebar=="front-contact_locations"?"active":""}}">
+                    <li class="menu-dropdown mega-menu-dropdown {{$in_sidebar=="front-contact_or_locations"?"active":""}}">
                         <a href="{{ route('front/contact_locations') }}">
                             <i class="icon-bar-chart"></i> Contact/Locations
                             <span class="badge badge-success">1 New</span>

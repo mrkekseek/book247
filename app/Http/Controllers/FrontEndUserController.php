@@ -1777,7 +1777,7 @@ class FrontEndUserController extends Controller
             'subtitle'  => 'users dashboard',
             'table_head_text1' => 'Dashboard Summary'
         ];
-        $sidebar_link= 'front-type_of_memberships';
+        $sidebar_link= 'front-contact_or_locations';
 
         return view('front/contact_locations',[
             'breadcrumbs' => $breadcrumbs,

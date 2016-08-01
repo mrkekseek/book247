@@ -486,12 +486,12 @@ Route::group(['prefix'=>'front', 'middleware'=>'web'], function(){
 
     Route::get('contact', [
         'as'    => 'front/contact_locations',
-        'uses'  => 'FrontEndUserController@type_of_memberships'
+        'uses'  => 'FrontEndUserController@contact_locations'
     ]);
 
     Route::get('active_membership', [
         'as'    => 'front/active_membership',
-        'uses'  => 'FrontEndUserController@contact_locations'
+        'uses'  => 'FrontEndUserController@member_active_membership'
     ]);
 
     Route::get('calendar_booking/{day}/',[
