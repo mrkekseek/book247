@@ -317,7 +317,7 @@
                     if(data.success){
                         show_notification(data.title, data.message, 'lime', 3500, 0);
                         setTimeout(function(){
-                            window.location(data.redirect_link);
+                            window.location.href = data.redirect_link;
                         },2000);
                     }
                     else{

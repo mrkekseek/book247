@@ -15,6 +15,7 @@ class CreateMembershipPlans extends Migration
         Schema::create('membership_plans', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name');
+            $table->integer('price_id');
             $table->string('plan_calendar_color');
             $table->enum('status', ['active', 'pending', 'suspended', 'deleted']);
             $table->integer('plan_period');

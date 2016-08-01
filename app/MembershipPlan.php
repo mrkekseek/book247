@@ -50,7 +50,7 @@ class MembershipPlan extends Model
                     'price_id'              => 'required',
                     'plan_period'           => 'required|in:7,14,30,90,180,360',
                     'administration_fee_name'   => 'required|min:3',
-                    'administration_fee_amount' => 'required|numeric|min:1',
+                    'administration_fee_amount' => 'required|numeric',
                     'short_description'     => 'required|min:50',
                     'description'      => '',
                 ];
@@ -65,7 +65,7 @@ class MembershipPlan extends Model
                     'price_id'              => 'required|exists:membership_plan_prices,id',
                     'plan_period'           => 'required|in:7,14,30,90,180,360',
                     'administration_fee_name'   => 'required|min:3',
-                    'administration_fee_amount' => 'required|numeric|min:1',
+                    'administration_fee_amount' => 'required|numeric',
                     'short_description'     => 'required|min:50',
                     'description'      => '',
                 ];
