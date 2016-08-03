@@ -226,49 +226,13 @@ class MembershipPlansController extends Controller
         $restrictions = array();
         $plan_restrictions = MembershipRestriction::with('restriction_title')->where('membership_id','=',$the_plan->id)->orderBy('restriction_id','asc')->get();
         foreach($plan_restrictions as $restriction){
-            switch($restriction->restriction_title->name){
-                case 'time_of_day' :
-                    $days_in = '';
-                    $days = json_decode($restriction->value);
-                    foreach ($days as $day){
-                        $days_in[] = jddayofweek($day, 1);
-                    }
-                    $description = 'Included days : <b>'.implode(', ',$days_in).'</b><br />between <b>'.$restriction->time_start.' - '.$restriction->time_end.'</b>';
-                    $color = 'note-info';
-                    break;
-                case 'open_bookings' :
-                    $description = 'Number of active open bookings included in membership plan : <b>'.$restriction->value.'</b>';
-                    $color = 'note-success';
-                    break;
-                case 'cancellation' :
-                    $description = 'Number of hours before booking start until cancellation is possible : <b>'.$restriction->value.' hours</b>';
-                    $color = 'note-warning';
-                    break;
-                case 'price' :
-                    $description = '';
-                    $color = 'note-success';
-                    break;
-                case 'included_activity' :
-                    $in_activities = ShopResourceCategory::whereIn('id', json_decode($restriction->value))->get();
-                    $available = array();
-                    foreach($in_activities as $activity){
-                        $available[] = $activity->name;
-                    }
-
-                    $description = 'Following activities are included : <b>'.implode(', ', $available).'</b>';
-                    $color = 'note-success';
-                    break;
-                case 'booking_time_interval' :
-                    $description = 'Booking can be made for intervals between <b>'.$restriction->min_value.' hours</b> from now until <b>'.$restriction->max_value.' hours</b> from now.';
-                    $color = 'note-info';
-                    break;
-            }
+            $formatted = $restriction->format_for_display_boxes();
 
             $restrictions[] = [
                 'id'            => $restriction->id,
                 'title'         => $restriction->restriction_title->title,
-                'description'   => $description,
-                'color'         => $color
+                'description'   => $formatted['description'],
+                'color'         => $formatted['color']
             ];
         }
 
@@ -319,49 +283,13 @@ class MembershipPlansController extends Controller
         $restrictions = array();
         $plan_restrictions = MembershipRestriction::with('restriction_title')->where('membership_id','=',$the_plan->id)->orderBy('restriction_id','asc')->get();
         foreach($plan_restrictions as $restriction){
-            switch($restriction->restriction_title->name){
-                case 'time_of_day' :
-                    $days_in = '';
-                    $days = json_decode($restriction->value);
-                    foreach ($days as $day){
-                        $days_in[] = jddayofweek($day, 1);
-                    }
-                    $description = 'Included days : <b>'.implode(', ',$days_in).'</b><br />between <b>'.$restriction->time_start.' - '.$restriction->time_end.'</b>';
-                    $color = 'note-info';
-                break;
-                case 'open_bookings' :
-                    $description = 'Number of active open bookings included in membership plan : <b>'.$restriction->value.'</b>';
-                    $color = 'note-success';
-                break;
-                case 'cancellation' :
-                    $description = 'Number of hours before booking start until cancellation is possible : <b>'.$restriction->value.' hours</b>';
-                    $color = 'note-warning';
-                break;
-                case 'price' :
-                    $description = '';
-                    $color = 'note-success';
-                break;
-                case 'included_activity' :
-                    $in_activities = ShopResourceCategory::whereIn('id', json_decode($restriction->value))->get();
-                    $available = array();
-                    foreach($in_activities as $activity){
-                        $available[] = $activity->name;
-                    }
-
-                    $description = 'Following activities are included : <b>'.implode(', ', $available).'</b>';
-                    $color = 'note-success';
-                break;
-                case 'booking_time_interval' :
-                    $description = 'Booking can be made for intervals between <b>'.$restriction->min_value.' hours</b> from now until <b>'.$restriction->max_value.' hours</b> from now.';
-                    $color = 'note-info';
-                break;
-            }
+            $formatted = $restriction->format_for_display_boxes();
 
             $restrictions[] = [
                 'id'            => $restriction->id,
                 'title'         => $restriction->restriction_title->title,
-                'description'   => $description,
-                'color'         => $color
+                'description'   => $formatted['description'],
+                'color'         => $formatted['color']
             ];
         }
 
@@ -490,6 +418,8 @@ class MembershipPlansController extends Controller
     }
 
     public function add_plan_restriction(Request $request){
+
+
         $vars = $request->only('type','activities','membership_id','min_val','max_val','hour_start','hour_stop','minute_start','minute_stop','day_selection','open_bookings','cancellation_before_hours');
 
         $the_plan = MembershipPlan::where('id','=',$vars['membership_id'])->get()->first();
@@ -498,7 +428,7 @@ class MembershipPlansController extends Controller
         if ($the_plan && $restriction){
             $fillable = [
                 'membership_id'     => $the_plan->id,
-                'restriction_id'  => $restriction->id,
+                'restriction_id'    => $restriction->id,
                 'value'             => '0',
                 'min_value'         => '0',
                 'max_value'         => '0',
@@ -582,5 +512,9 @@ class MembershipPlansController extends Controller
                 ];
             }
         }
+    }
+
+    public function remove_plan_restriction(Request $request){
+
     }
 }

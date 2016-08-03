@@ -78,6 +78,10 @@ class User extends Authenticatable
         return $this->hasMany('App\UserDocuments');
     }
 
+    public function membership(){
+        return $this->hasMany('App\UserMembership');
+    }
+
     public static function rules($method, $id=0){
         switch($method){
             case 'GET':

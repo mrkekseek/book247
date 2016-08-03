@@ -60,4 +60,57 @@ class MembershipRestriction extends Model
     public function restriction_title(){
         return $this->belongsTo('App\MembershipRestrictionType', 'restriction_id', 'id');
     }
+
+    public function format_for_display_boxes(){
+        switch($this->restriction_title->name){
+            case 'time_of_day' :
+                $days_in = '';
+                $days = json_decode($this->value);
+                foreach ($days as $day){
+                    $days_in[] = jddayofweek($day, 1);
+                }
+                $description = 'Included days : <b>'.implode(', ',$days_in).'</b> between <b>'.$this->time_start.' - '.$this->time_end.'</b>';
+                $color = 'note-info';
+                break;
+            case 'open_bookings' :
+                $description = 'Number of active open bookings included in membership plan : <b>'.$this->value.'</b>';
+                $color = 'note-success';
+                break;
+            case 'cancellation' :
+                $description = 'Number of hours before booking start until cancellation is possible : <b>'.$this->value.' hours</b>';
+                $color = 'note-warning';
+                break;
+            case 'price' :
+                $description = '';
+                $color = 'note-success';
+                break;
+            case 'included_activity' :
+                $in_activities = ShopResourceCategory::whereIn('id', json_decode($this->value))->get();
+                $available = array();
+                foreach($in_activities as $activity){
+                    $available[] = $activity->name;
+                }
+
+                $description = 'Following activities are included : <b>'.implode(', ', $available).'</b>';
+                $color = 'note-success';
+                break;
+            case 'booking_time_interval' :
+                $description = 'Booking can be made for intervals between <b>'.$this->min_value.' hours</b> from now until <b>'.$this->max_value.' hours</b> from now.';
+                $color = 'note-info';
+                break;
+            default :
+                $description = '';
+                $color = '';
+            break;
+        }
+
+        return ['description' => $description,
+            'color'         => $color,
+            'value'         => $this->value,
+            'min_value'     => $this->min_value,
+            'max_value'     => $this->max_value,
+            'time_start'    => $this->time_start,
+            'time_end'      => $this->time_end,
+        ];
+    }
 }

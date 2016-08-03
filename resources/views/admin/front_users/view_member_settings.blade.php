@@ -92,8 +92,11 @@
                                         <span class="caption-subject font-blue-madison bold uppercase">Profile Account</span>
                                     </div>
                                     <ul class="nav nav-tabs">
-                                        <li class="active">
+                                        <li>
                                             <a href="#tab_1_1" data-toggle="tab">Personal Info</a>
+                                        </li>
+                                        <li class="active">
+                                            <a href="#tab_1_5" data-toggle="tab">Membership Plan</a>
                                         </li>
                                         <li>
                                             <a href="#tab_1_2" data-toggle="tab">Change Avatar</a>
@@ -109,7 +112,7 @@
                                 <div class="portlet-body">
                                     <div class="tab-content">
                                         <!-- PERSONAL INFO TAB -->
-                                        <div class="tab-pane active" id="tab_1_1">
+                                        <div class="tab-pane" id="tab_1_1">
                                             <form role="form" id="form_acc_personal" action="#">
                                                 <div class="alert alert-danger display-hide">
                                                     <button class="close" data-close="alert"></button> You have some form errors. Please check below. </div>
@@ -161,6 +164,103 @@
                                             </form>
                                         </div>
                                         <!-- END PERSONAL INFO TAB -->
+                                        <!-- Membership Plan TAB -->
+                                        <div class="tab-pane active row" id="tab_1_5">
+                                            <div class="col-md-12">
+                                                <div class="portlet light bordered">
+                                                    <div class="portlet-body form">
+                                                        <!-- BEGIN FORM-->
+                                                        <form action="#" id="new_membership_plan" class="form-horizontal">
+                                                            <div class="form-body">
+                                                                <div class="form-group">
+                                                                    <label class="control-label col-md-4"> Active Membership </label>
+                                                                    <div class="col-md-8">
+                                                                        <select name="membership_period" class="form-control input-inline input-large  inline-block">
+                                                                            @if ($membership_plan->id!=1)
+                                                                                <option> {$membership_plan->name}} </option>
+                                                                            @else
+                                                                                <option> No active Membership Plan </option>
+                                                                            @endif
+                                                                        </select>
+                                                                        @if ($membership_plan->id!=1)
+                                                                        <a href="#cancel_confirm_box" class="btn red-soft input" data-toggle="modal" style="min-width:190px;">
+                                                                            <i class="fa fa-pencil"></i> Cancel Current Plan</a>
+                                                                        @endif
+                                                                    </div>
+                                                                </div>
+                                                                @if ($membership_plan->id!=1)
+                                                                <div class="form-group">
+                                                                    <label class="control-label col-md-4"> Current invoice period </label>
+                                                                    <div class="col-md-8">
+                                                                        <p class="form-control-static"> 22 Feb 2016 to 21 June 2016 </p>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="form-group" style="border-bottom:1px solid #f1f1f1;">
+                                                                    <label class="control-label col-md-4"> Next invoice period</label>
+                                                                    <div class="col-md-8">
+                                                                        <p class="form-control-static"> 22 June 2016 to 21 Dec 2016 </p>
+                                                                    </div>
+                                                                </div>
+                                                                @endif
+
+                                                                @if (sizeof($memberships)>0)
+                                                                <div class="form-group">
+                                                                    <label class="control-label col-md-4 inline"> Change Plan To </label>
+                                                                    <div class="col-md-8">
+                                                                        <select name="membership_plans_list" class="form-control input-inline input-large  inline-block list_all_plans">
+                                                                            <option value="-1"> Select new plan </option>
+                                                                            @foreach ($memberships as $membership)
+                                                                                <option value="{{$membership->id}}"> {{$membership->name}} </option>
+                                                                            @endforeach
+                                                                        </select>
+                                                                        <button class="btn green apply_new_membership_plan input" style="min-width:190px; display:none;">
+                                                                            <i class="fa fa-pencil"></i> Apply New Plan </button>
+                                                                    </div>
+                                                                </div>
+                                                                @endif
+                                                            </div>
+                                                        </form>
+                                                        <!-- END FORM-->
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            @if (sizeof($restrictions))
+                                            <div class="col-md-12">
+                                                <div class="portlet light bordered">
+                                                    <div class="portlet-title">
+                                                        <div class="caption">
+                                                            <i class="icon-equalizer font-blue-steel"></i>
+                                                            <span class="caption-subject font-blue-steel bold uppercase"> Active Attributes & Restrictions </span>
+                                                            <span class="caption-helper">for the selected membership plan</span>
+                                                        </div>
+                                                        <div class="tools">
+                                                            <a class="collapse" href="" data-original-title="" title=""> </a>
+                                                        </div>
+                                                    </div>
+                                                    <div class="portlet-body row">
+                                                        <!-- BEGIN FORM-->
+                                                        @if($restrictions)
+                                                            @foreach ($restrictions as $restriction)
+                                                                <div class="col-md-4">
+                                                                    <div class="note {{ $restriction['color'] }}" style="min-height:120px; margin:0 0 15px; padding:5px 20px 10px 10px;">
+                                                                        <h4 class="block"> {{ $restriction['title'] }} Rule </h4>
+                                                                        <p> {!! $restriction['description'] !!} </p>
+                                                                    </div>
+                                                                </div>
+                                                            @endforeach
+                                                        @else
+                                                            <div class="note note-warning" style="margin-left:15px; margin-right:15px;">
+                                                                <h4 class="block">You have no attributes added to this plan</h4>
+                                                                <p> Please use the "Add Membership Attributes" to customize and configure the membership plan so you create the perfect plan for your business. </p>
+                                                            </div>
+                                                            @endif
+                                                                    <!-- END FORM-->
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            @endif
+                                        </div>
+                                        <!-- END Membership Plan TAB -->
                                         <!-- CHANGE AVATAR TAB -->
                                         <div class="tab-pane" id="tab_1_2">
                                             <form action="{{ route('admin/front_users/view_user/avatar_image', ['id'=>$user->id]) }}" id="user_picture_upload1" class="form-horizontal" method="post" enctype="multipart/form-data">
@@ -289,6 +389,83 @@
                             </div>
                         </div>
                     </div>
+                </div>
+
+                <div class="modal fade" id="changeIt" tabindex="-1" role="dialog" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                                <h4 class="modal-title"> Membership Plan Details </h4>
+                            </div>
+                            <div class="modal-body form-horizontal" id="book_main_details_container">
+                                <div class="form-body">
+                                    <div class="form-group">
+                                        <label class="col-md-4 control-label"> Membership Name </label>
+                                        <div class="col-md-8">
+                                            <input type="text" class="form-control input-sm" name="membership_name" value="" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-4 control-label"> Price </label>
+                                        <div class="col-md-8">
+                                            <input type="text" class="form-control input-sm" name="book_location" value="" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-4 control-label"> Invoice Period </label>
+                                        <div class="col-md-8">
+                                            <input class="form-control input-sm" name="book_room" value="" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-4 control-label"> One time Fee </label>
+                                        <div class="col-md-8">
+                                            <input type="text" class="form-control input-sm" name="book_activity" value="" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-4 control-label"> One time fee value </label>
+                                        <div class="col-md-8">
+                                            <input type="text" class="form-control input-sm" name="book_activity" value="" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-4 control-label"> Description </label>
+                                        <div class="col-md-8">
+                                            <input class="form-control input-sm" name="book_finance" value="" readonly />
+                                            <!--<select class="form-control input-inline input-large" name="book_finance"></select>-->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn green btn_no_show" data-toggle="modal" href="#not_show_confirm_box"> Return </button>
+                                <button type="button" class="btn green btn_modify_booking" onclick="javascript:change_booking_player();"> Assign New Plan </button>
+                            </div>
+                        </div>
+                        <!-- /.modal-content -->
+                    </div>
+                    <!-- /.modal-dialog -->
+                </div>
+
+                <div class="modal fade bs-modal-sm" id="cancel_confirm_box" tabindex="-1" role="dialog" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                                <h4 class="modal-title">Do you want to cancel the current membership plan?</h4>
+                            </div>
+                            <div class="modal-body margin-top-10 margin-bottom-10"> By clicking "Cancel Membership" the member will be switched to the default membership plan (the "No Membership Plan").
+                                After the cancellation you can apply another membership plan to this user from the same page.</div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn dark btn-outline" data-dismiss="modal">No, Go Back</button>
+                                <button type="button" class="btn green" onclick="javascript:cancel_booking();">Yes, Cancel</button>
+                            </div>
+                        </div>
+                        <!-- /.modal-content -->
+                    </div>
+                    <!-- /.modal-dialog -->
                 </div>
                 <!-- END PROFILE CONTENT -->
             </div>
@@ -868,6 +1045,19 @@
         $(document).ready(function(){
             FormDropzone.init();
         });
+
+        $('.list_all_plans').on('change', function(){
+            var button = $('.apply_new_memebrship_plan');
+
+            if ($(this).val()==-1 || $(this).val()=={{$membership_plan->id}}){
+                button.hide();
+            }
+            else{
+                button.show();
+            }
+        });
+
+        $('.apply_new_membership_plan').on()
 
         /* Start - All admin scripts */
         var UserTopAjaxSearch = function() {

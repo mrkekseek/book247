@@ -22,6 +22,8 @@ use App\UserDocuments;
 use App\ShopLocations;
 use App\ShopResource;
 use App\ShopResourceCategory;
+use App\MembershipPlan;
+use App\MembershipRestriction;
 use Webpatser\Countries\Countries;
 use Auth;
 use Hash;
@@ -317,6 +319,27 @@ class FrontEndUserController extends Controller
 
         $userDocuments = UserDocuments::where('user_id','=',$id)->where('category','=','account_documents')->get();
 
+        $the_plan = MembershipPlan::with('price')->with('membership_restrictions')->where('id','=','1')->get()->first();
+        if (!$the_plan){
+            $the_plan = false;
+        }
+
+        $activities = ShopResourceCategory::all()->sortBy('name');
+        $restrictions = array();
+        $plan_restrictions = MembershipRestriction::with('restriction_title')->where('membership_id','=',$the_plan->id)->orderBy('restriction_id','asc')->get();
+        foreach($plan_restrictions as $restriction){
+            $formatted = $restriction->format_for_display_boxes();
+
+            $restrictions[] = [
+                'id'            => $restriction->id,
+                'title'         => $restriction->restriction_title->title,
+                'description'   => $formatted['description'],
+                'color'         => $formatted['color']
+            ];
+        }
+
+        $membership_plans = MembershipPlan::where('id','!=','1')->where('status','=','active')->get()->sortBy('name');
+
         $breadcrumbs = [
             'Home'              => route('admin'),
             'Administration'    => route('admin'),
@@ -341,6 +364,11 @@ class FrontEndUserController extends Controller
             'avatarType'  => $avatarType,
             'permissions' => $permissions,
             'documents'   => $userDocuments,
+            // membership plan
+            'membership_plan'   => $the_plan,
+            'activities'    => $activities,
+            'restrictions'  => $restrictions,
+            'memberships'   => $membership_plans
         ]);
     }
 

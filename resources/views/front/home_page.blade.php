@@ -273,42 +273,16 @@
                             <!-- END PORTLET -->
                         @endif
                             <div class="portlet light search-page search-content-1 ">
-                                <div class="search-container ">
-                                    <ul>
-                                        <li class="search-item clearfix">
-                                            <a href="javascriptt:;">
-                                                <img src="{{ asset('assets/pages/img/page_general_search/01.jpg') }}">
-                                            </a>
-                                            <div class="search-content">
-                                                <h2 class="search-title">
-                                                    <a href="javascript:;">Metronic Search Results</a>
-                                                </h2>
-                                                <p class="search-desc"> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec efficitur pellentesque auctor. Morbi lobortis, leo in tristique scelerisque, mauris quam volutpat nunc </p>
-                                            </div>
-                                        </li>
-                                        <li class="search-item clearfix">
-                                            <a href="javascript:;">
-                                                <img src="{{ asset('assets/pages/img/page_general_search/1.jpg') }}">
-                                            </a>
-                                            <div class="search-content">
-                                                <h2 class="search-title">
-                                                    <a href="javascript:;">Lorem ipsum dolor</a>
-                                                </h2>
-                                                <p class="search-desc"> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec efficitur pellentesque auctor. Morbi lobortis, leo in tristique scelerisque, mauris quam volutpat nunc </p>
-                                            </div>
-                                        </li>
-                                        <li class="search-item clearfix">
-                                            <a href="javascript:;">
-                                                <img src="{{ asset('assets/pages/img/page_general_search/02.jpg') }}">
-                                            </a>
-                                            <div class="search-content">
-                                                <h2 class="search-title">
-                                                    <a href="javascript:;">sit amet</a>
-                                                </h2>
-                                                <p class="search-desc"> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec efficitur pellentesque auctor. Morbi lobortis, leo in tristique scelerisque, mauris quam volutpat nunc </p>
-                                            </div>
-                                        </li>
-                                    </ul>
+                                <div class="search-container " style="text-align: center;">
+                                    <div id="fb-root"></div>
+                                    <script>(function(d, s, id) {
+                                        var js, fjs = d.getElementsByTagName(s)[0];
+                                        if (d.getElementById(id)) return;
+                                        js = d.createElement(s); js.id = id;
+                                        js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.7&appId=480248068784470";
+                                        fjs.parentNode.insertBefore(js, fjs);
+                                    }(document, 'script', 'facebook-jssdk'));</script>
+                                    <div class="fb-page" data-href="https://www.facebook.com/squashandfitness/?fref=ts" data-tabs="timeline" data-width="535" data-height="460" data-small-header="false" data-adapt-container-width="true" data-hide-cover="false" data-show-facepile="true"><blockquote cite="https://www.facebook.com/squashandfitness/?fref=ts" class="fb-xfbml-parse-ignore"><a href="https://www.facebook.com/squashandfitness/?fref=ts">SQF.no - Squash &amp; Fitness</a></blockquote></div>
                                 </div>
                             </div>
                         </div>

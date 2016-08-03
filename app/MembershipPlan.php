@@ -95,4 +95,22 @@ class MembershipPlan extends Model
     public function add_restriction($type, $attributes){
 
     }
+
+    public function membership_plan_restrictions(){
+        $restrictions = array();
+
+        $plan_restrictions = MembershipRestriction::with('restriction_title')->where('membership_id','=',$this->id)->orderBy('restriction_id','asc')->get();
+        foreach($plan_restrictions as $restriction){
+            $formatted = $restriction->format_for_display_boxes();
+
+            $restrictions[] = [
+                'id'            => $restriction->id,
+                'title'         => $restriction->restriction_title->title,
+                'description'   => $formatted['description'],
+                'color'         => $formatted['color']
+            ];
+        }
+
+        return $restriction;
+    }
 }
