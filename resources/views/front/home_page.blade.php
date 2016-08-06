@@ -39,17 +39,6 @@
         <!-- BEGIN PAGE CONTENT BODY -->
         <div class="page-content">
             <div class="container">
-                <!-- BEGIN PAGE BREADCRUMBS -->
-                <ul class="page-breadcrumb breadcrumb">
-                    <li>
-                        <a href="{{route('homepage')}}">Home</a>
-                        <i class="fa fa-circle"></i>
-                    </li>
-                    <li>
-                        <span>SQF Booking</span>
-                    </li>
-                </ul>
-                <!-- END PAGE BREADCRUMBS -->
                 <!-- BEGIN PAGE CONTENT INNER -->
                 <div class="page-content-inner">
                     <div class="row">
@@ -62,7 +51,7 @@
                                         <a class="icon-btn location_btn" href="javascript:;" data-id="{{ $shop->id }}">
                                             <i class="fa fa-group hidden-xs"></i>
                                             <div> {{$shop->name}} </div>
-                                            <span class="badge badge-success"> {{sizeof($shop->resources)}} </span>
+                                            <span class="badge badge-success resource_activity_nr"> {{sizeof($shop->resources)}} </span>
                                         </a>
                                         @endif
                                     @endforeach

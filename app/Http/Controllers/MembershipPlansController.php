@@ -194,7 +194,7 @@ class MembershipPlansController extends Controller
                 'success' => true,
                 'message' => 'Page will reload so you can add all the other details for this plan...',
                 'title'   => 'Membership Plan Created',
-                'redirect_link' => route('membership_plan.edit',['id'=>$the_plan->id])
+                'redirect_link' => route('admin.membership_plan.edit',['id'=>$the_plan->id])
             ];
         }
         catch (Exception $e) {
@@ -217,7 +217,7 @@ class MembershipPlansController extends Controller
             $user = Auth::user();
         }
 
-        $the_plan = MembershipPlan::with('price')->with('membership_restrictions')->where('id','=',$id)->get()->first();
+        $the_plan = MembershipPlan::with('price')->with('restrictions')->where('id','=',$id)->get()->first();
         if (!$the_plan){
             $the_plan = false;
         }
@@ -274,7 +274,7 @@ class MembershipPlansController extends Controller
             $user = Auth::user();
         }
 
-        $the_plan = MembershipPlan::with('price')->with('membership_restrictions')->where('id','=',$id)->get()->first();
+        $the_plan = MembershipPlan::with('price')->with('restrictions')->where('id','=',$id)->get()->first();
         if (!$the_plan){
             $the_plan = false;
         }
@@ -402,7 +402,7 @@ class MembershipPlansController extends Controller
             'success' => true,
             'message' => 'Page will reload so you can add all the other details for this plan...',
             'title'   => 'Membership Plan Created',
-            'redirect_link' => route('membership_plan.edit',['id'=>$the_plan->id])
+            'redirect_link' => route('admin.membership_plan.edit',['id'=>$the_plan->id])
         ];
     }
 
@@ -516,5 +516,46 @@ class MembershipPlansController extends Controller
 
     public function remove_plan_restriction(Request $request){
 
+    }
+
+    public function ajax_get_plan_details(Request $request, $status='active'){
+        $vars = $request->only('selected_plan');
+
+        $the_plan = MembershipPlan::with('price')->where('id','=',$vars['selected_plan'])->where('status','=',$status)->get()->first();
+        if ($the_plan){
+            $details = [
+                'success'   => true,
+                'name'      => $the_plan->name,
+                'price'     => $the_plan->price[0]->price.' NOK',
+                'invoice_time'  => $the_plan->plan_period,
+                'one_time_fee_name' => $the_plan->administration_fee_name,
+                'one_time_fee_value'=> $the_plan->administration_fee_amount.' NOK',
+                'description'   => $the_plan->short_description,
+                'plan_order_id' => $the_plan->id
+            ];
+            switch ($the_plan->plan_period){
+                case 7 :   $details['invoice_time'] = '7 Days';
+                    break;
+                case 14 :  $details['invoice_time'] = '14 Days';
+                    break;
+                case 30 :  $details['invoice_time'] = '1 Month';
+                    break;
+                case 90 :  $details['invoice_time'] = '3 Months';
+                    break;
+                case 180 : $details['invoice_time'] = '6 Months';
+                    break;
+                case 360 : $details['invoice_time'] = '1 Year';
+                    break;
+            }
+
+            return $details;
+        }
+        else{
+            return [
+                'success'   => false,
+                'errors'    => 'The requested Membership Plan was not found',
+                'title'     => 'Error getting Plan Details'
+            ];
+        }
     }
 }

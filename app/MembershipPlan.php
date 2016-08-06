@@ -88,7 +88,7 @@ class MembershipPlan extends Model
         return $this->hasMany('App\MembershipPlanPrice', 'id', 'price_id');
     }
 
-    public function membership_restrictions(){
+    public function restrictions(){
         return $this->hasMany('App\MembershipRestriction', 'membership_id', 'id');
     }
 
@@ -96,7 +96,7 @@ class MembershipPlan extends Model
 
     }
 
-    public function membership_plan_restrictions(){
+    public function get_restrictions(){
         $restrictions = array();
 
         $plan_restrictions = MembershipRestriction::with('restriction_title')->where('membership_id','=',$this->id)->orderBy('restriction_id','asc')->get();
@@ -111,6 +111,6 @@ class MembershipPlan extends Model
             ];
         }
 
-        return $restriction;
+        return $restrictions;
     }
 }

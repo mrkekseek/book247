@@ -433,20 +433,38 @@ Route::group(['middleware' => 'web'], function () {
         'uses'  => 'BookingController@location_calendar_day_view'
     ]);
     /** Stop Routes for bookings */
+});
 
+Route::group(['middleware'=>'web', 'prefix'=>'admin'], function(){
     /** Start - Membership Management */
+
     Route::resource('membership_plan', 'MembershipPlansController');
-    //GET 	        /membership_plan 	        index 	    membership_plan.index
-    //GET 	        /membership_plan/create 	create 	    membership_plan.create
-    //POST 	        /membership_plan 	        store 	    membership_plan.store
-    //GET 	        /membership_plan/{id} 	    show 	    membership_plan.show
-    //GET 	        /membership_plan/{id}/edit 	edit 	    membership_plan.edit
-    //PUT/PATCH 	/membership_plan/{id} 	    update 	    membership_plan.update
-    //DELETE 	    /membership_plan/{id} 	    destroy 	membership_plan.destroy
+    //GET 	        /membership_plan 	        index 	    admin.membership_plan.index
+    //GET 	        /membership_plan/create 	create 	    admin.membership_plan.create
+    //POST 	        /membership_plan 	        store 	    admin.membership_plan.store
+    //GET 	        /membership_plan/{id} 	    show 	    admin.membership_plan.show
+    //GET 	        /membership_plan/{id}/edit 	edit 	    admin.membership_plan.edit
+    //PUT/PATCH 	/membership_plan/{id} 	    update 	    admin.membership_plan.update
+    //DELETE 	    /membership_plan/{id} 	    destroy 	admin.membership_plan.destroy
 
     Route::post('membership_plan/add_restriction', [
         'as'    => 'membership_plan-add_restriction',
         'uses'  => 'MembershipPlansController@add_plan_restriction'
+    ]);
+
+    Route::post('membership_plan/ajax_get_details', [
+        'as'    => 'admin/membership_plans/ajax_get_details',
+        'uses'  => 'MembershipPlansController@ajax_get_plan_details'
+    ]);
+
+    Route::post('membership_plans/assign_to_member', [
+        'as'    => 'admin/membership_plans/assign_to_member',
+        'uses'  => 'MembershipController@assign_membership_to_member'
+    ]);
+
+    Route::post('membership_plans/cancel_member_plan', [
+        'as'    => 'admin/membership_plans/cancel_member_plan',
+        'uses'  => 'MembershipController@cancel_membership_for_member'
     ]);
 
     /** Stop  - Membership Management */

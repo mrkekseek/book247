@@ -601,7 +601,7 @@
         function update_membership_details(){
             @if ($membership_plan)
                 $.ajax({
-                    url: '{{route('membership_plan.update', ['id'=>$membership_plan->id])}}',
+                    url: '{{route('admin.membership_plan.update', ['id'=>$membership_plan->id])}}',
                     type: "post",
                     data: {
                         'name':                         $('input[name=membership_name]').val(),

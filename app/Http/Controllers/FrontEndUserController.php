@@ -6,6 +6,7 @@ use App\Booking;
 use App\BookingInvoice;
 use App\BookingInvoiceItem;
 use App\UserFriends;
+use App\UserMembership;
 use Illuminate\Http\Request;
 
 use Illuminate\Http\Response;
@@ -319,25 +320,14 @@ class FrontEndUserController extends Controller
 
         $userDocuments = UserDocuments::where('user_id','=',$id)->where('category','=','account_documents')->get();
 
-        $the_plan = MembershipPlan::with('price')->with('membership_restrictions')->where('id','=','1')->get()->first();
-        if (!$the_plan){
-            $the_plan = false;
+        $my_plan = UserMembership::where('user_id','=',$back_user->id)->whereIn('status',['active','suspended'])->get()->first();
+        if ($my_plan){
+            $restrictions = $my_plan->get_plan_restrictions();
+            $plan_details = $my_plan->get_plan_details();
         }
-
-        $activities = ShopResourceCategory::all()->sortBy('name');
-        $restrictions = array();
-        $plan_restrictions = MembershipRestriction::with('restriction_title')->where('membership_id','=',$the_plan->id)->orderBy('restriction_id','asc')->get();
-        foreach($plan_restrictions as $restriction){
-            $formatted = $restriction->format_for_display_boxes();
-
-            $restrictions[] = [
-                'id'            => $restriction->id,
-                'title'         => $restriction->restriction_title->title,
-                'description'   => $formatted['description'],
-                'color'         => $formatted['color']
-            ];
+        else {
+            $my_plan = MembershipPlan::where('id','=',1)->get()->first();
         }
-
         $membership_plans = MembershipPlan::where('id','!=','1')->where('status','=','active')->get()->sortBy('name');
 
         $breadcrumbs = [
@@ -365,9 +355,10 @@ class FrontEndUserController extends Controller
             'permissions' => $permissions,
             'documents'   => $userDocuments,
             // membership plan
-            'membership_plan'   => $the_plan,
-            'activities'    => $activities,
-            'restrictions'  => $restrictions,
+            'membership_plan'   => $my_plan,
+            //'activities'    => $activities,
+            'restrictions'  => @$restrictions,
+            'plan_details'  => @$plan_details,
             'memberships'   => $membership_plans
         ]);
     }
@@ -1815,6 +1806,22 @@ class FrontEndUserController extends Controller
     }
 
     public function member_active_membership(){
+        if (Auth::check()) {
+            $user = Auth::user();
+        }
+        else{
+            return redirect()->intended(route('homepage'));;
+        }
+
+        $my_plan = UserMembership::where('user_id','=',$user->id)->whereIn('status',['active','suspended'])->get()->first();
+        if ($my_plan){
+            $restrictions = $my_plan->get_plan_restrictions();
+            $plan_details = $my_plan->get_plan_details();
+        }
+        else {
+            //$my_plan = MembershipPlan::where('id','=',1)->get()->first();
+        }
+
         $breadcrumbs = [
             'Home'      => route('admin'),
             'Dashboard' => '',
@@ -1830,6 +1837,11 @@ class FrontEndUserController extends Controller
             'breadcrumbs' => $breadcrumbs,
             'text_parts'  => $text_parts,
             'in_sidebar'  => $sidebar_link,
+            'membership_plan'   => $my_plan,
+            //'activities'    => $activities,
+            'restrictions'  => @$restrictions,
+            'plan_details'  => @$plan_details,
+            'user'          => $user
         ]);
     }
 

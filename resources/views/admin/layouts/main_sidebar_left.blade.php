@@ -76,12 +76,12 @@
             </a>
             <ul class="sub-menu">
                 <li class="nav-item {{ $in_sidebar=='admin-backend-memberships-new_plans'?'active open':'' }}">
-                    <a href="{{route('membership_plan.create')}}" class="nav-link ">
+                    <a href="{{route('admin.membership_plan.create')}}" class="nav-link ">
                         <span class="title">Add New Plan</span>
                     </a>
                 </li>
                 <li class="nav-item {{ $in_sidebar=='admin-backend-memberships-all_plans'?'active open':'' }}">
-                    <a href="{{ route('membership_plan.index') }}" class="nav-link ">
+                    <a href="{{ route('admin.membership_plan.index') }}" class="nav-link ">
                         <span class="title">List All Plans</span>
                     </a>
                 </li>

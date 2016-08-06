@@ -301,7 +301,7 @@
 
         function add_new_membership(){
             $.ajax({
-                url: '{{route('membership_plan.store')}}',
+                url: '{{route('admin.membership_plan.store')}}',
                 type: "post",
                 data: {
                     'name':                         $('input[name=membership_name]').val(),

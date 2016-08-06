@@ -177,7 +177,7 @@
                                                                     <div class="col-md-8">
                                                                         <select name="membership_period" class="form-control input-inline input-large  inline-block">
                                                                             @if ($membership_plan->id!=1)
-                                                                                <option> {$membership_plan->name}} </option>
+                                                                                <option> {{$membership_plan->membership_name}} </option>
                                                                             @else
                                                                                 <option> No active Membership Plan </option>
                                                                             @endif
@@ -213,8 +213,8 @@
                                                                                 <option value="{{$membership->id}}"> {{$membership->name}} </option>
                                                                             @endforeach
                                                                         </select>
-                                                                        <button class="btn green apply_new_membership_plan input" style="min-width:190px; display:none;">
-                                                                            <i class="fa fa-pencil"></i> Apply New Plan </button>
+                                                                        <a class="btn green apply_new_membership_plan input" style="min-width:190px; display:none;">
+                                                                            <i class="fa fa-pencil"></i> Apply New Plan </a>
                                                                     </div>
                                                                 </div>
                                                                 @endif
@@ -224,6 +224,76 @@
                                                     </div>
                                                 </div>
                                             </div>
+
+                                            @if ($membership_plan->id!=1)
+                                            <div class="col-md-12">
+                                                <div class="portlet light bordered">
+                                                    <div class="portlet-title">
+                                                        <div class="caption">
+                                                            <i class="icon-equalizer font-blue-steel"></i>
+                                                            <span class="caption-subject font-blue-steel bold uppercase"> Membership Plan Details </span>
+                                                            <span class="caption-helper">for the signed membership plan</span>
+                                                        </div>
+                                                        <div class="tools">
+                                                            <a class="collapse" href="" data-original-title="" title=""> </a>
+                                                        </div>
+                                                    </div>
+                                                    <div class="portlet-body row">
+                                                        <!-- BEGIN FORM-->
+                                                        @if($restrictions)
+                                                            <div class="col-md-3">
+                                                                <div class="note note-info font-grey-mint" style="min-height:95px; margin:0 0 10px; padding:5px 20px 10px 10px;">
+                                                                    <p> Price </p>
+                                                                    <h4 class="block" style="margin-bottom:0px; font-size:32px;"> <b>{{ $plan_details['price'] }} NOK</b> </h4>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-3">
+                                                                <div class="note note-info font-grey-mint" style="min-height:95px; margin:0 0 10px; padding:5px 20px 10px 10px;">
+                                                                    <p> Discount </p>
+                                                                    <h4 class="block" style="margin-bottom:0px; font-size:32px;"> <b>{{ $plan_details['discount'] }}</b> </h4>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-3">
+                                                                <div class="note note-warning font-grey-mint" style="min-height:95px; margin:0 0 10px; padding:5px 20px 10px 10px;">
+                                                                    <p> Invoice Period </p>
+                                                                    <h4 class="block" style="margin-bottom:0px; font-size:32px;"> <b>{{ $plan_details['invoice_period'] }}</b> </h4>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-3">
+                                                                <div class="note note-info font-grey-mint" style="min-height:95px; margin:0 0 10px; padding:5px 20px 10px 10px;">
+                                                                    <p> Signed On </p>
+                                                                    <h4 class="block" style="margin-bottom:0px; font-size:32px;"> {{ $plan_details['day_start'] }} </h4>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <div class="note note-info font-purple" style="min-height:95px; margin:0 0 10px; padding:5px 20px 10px 10px;">
+                                                                    <p> Signed By </p>
+                                                                    @if($plan_details['signed_by_link']!='')
+                                                                        <h4 class="block" style="margin-bottom:0px; font-size:24px;"> <b><a class="font-purple" href="{{ $plan_details['signed_by_link'] }}" target="_blank"> {{ $plan_details['signed_by_name'] }} </a></b> </h4>
+                                                                    @else
+                                                                        <h4 class="block" style="margin-bottom:0px; font-size:24px;"> <b>{{ $plan_details['signed_by_name'] }}</b> </h4>
+                                                                    @endif
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-4">
+                                                                <div class="note note-warning" style="min-height:95px; margin:0 0 10px; padding:5px 20px 10px 10px;">
+                                                                    <p> Current invoice period </p>
+                                                                    <h4 class="block" style="margin-bottom:0px; font-size:18px;"> 22 Mar 2014 - 22 June 2014 </h4>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-2">
+                                                                <div class="note note-danger bg-red-flamingo bg-font-red-flamingo color-white" style="min-height:95px; margin:0 0 10px; padding:5px 20px 10px 10px;">
+                                                                    <p> Invoice Status </p>
+                                                                    <h4 class="block" style="margin-bottom:0px; font-size:24px;"> Not Paid </h4>
+                                                                </div>
+                                                            </div>
+                                                        @endif
+                                                        <!-- END FORM-->
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            @endif
+
                                             @if (sizeof($restrictions))
                                             <div class="col-md-12">
                                                 <div class="portlet light bordered">
@@ -231,7 +301,7 @@
                                                         <div class="caption">
                                                             <i class="icon-equalizer font-blue-steel"></i>
                                                             <span class="caption-subject font-blue-steel bold uppercase"> Active Attributes & Restrictions </span>
-                                                            <span class="caption-helper">for the selected membership plan</span>
+                                                            <span class="caption-helper">for the signed membership plan</span>
                                                         </div>
                                                         <div class="tools">
                                                             <a class="collapse" href="" data-original-title="" title=""> </a>
@@ -409,39 +479,40 @@
                                     <div class="form-group">
                                         <label class="col-md-4 control-label"> Price </label>
                                         <div class="col-md-8">
-                                            <input type="text" class="form-control input-sm" name="book_location" value="" readonly>
+                                            <input type="text" class="form-control input-small" name="membership_price" value="" readonly>
                                         </div>
                                     </div>
                                     <div class="form-group">
                                         <label class="col-md-4 control-label"> Invoice Period </label>
                                         <div class="col-md-8">
-                                            <input class="form-control input-sm" name="book_room" value="" readonly>
+                                            <input class="form-control input-small" name="membership_invoice_period" value="" readonly>
                                         </div>
                                     </div>
                                     <div class="form-group">
                                         <label class="col-md-4 control-label"> One time Fee </label>
                                         <div class="col-md-8">
-                                            <input type="text" class="form-control input-sm" name="book_activity" value="" readonly>
+                                            <input type="text" class="form-control input-sm" name="membership_one_fee_name" value="" readonly>
                                         </div>
                                     </div>
                                     <div class="form-group">
                                         <label class="col-md-4 control-label"> One time fee value </label>
                                         <div class="col-md-8">
-                                            <input type="text" class="form-control input-sm" name="book_activity" value="" readonly>
+                                            <input type="text" class="form-control input-small" name="membership_one_fee_value" value="" readonly>
                                         </div>
                                     </div>
                                     <div class="form-group">
                                         <label class="col-md-4 control-label"> Description </label>
                                         <div class="col-md-8">
-                                            <input class="form-control input-sm" name="book_finance" value="" readonly />
+                                            <textarea class="form-control input-sm" name="membership_description" readonly></textarea>
                                             <!--<select class="form-control input-inline input-large" name="book_finance"></select>-->
                                         </div>
                                     </div>
                                 </div>
                             </div>
                             <div class="modal-footer">
-                                <button type="button" class="btn green btn_no_show" data-toggle="modal" href="#not_show_confirm_box"> Return </button>
-                                <button type="button" class="btn green btn_modify_booking" onclick="javascript:change_booking_player();"> Assign New Plan </button>
+                                <button type="button" class="btn green btn_no_show" data-toggle="modal" href="#changeIt"> Return </button>
+                                <button type="button" class="btn green btn_modify_booking" onclick="javascript:change_membership_plan();"> Assign New Plan </button>
+                                <input type="hidden" name="selected_plan_number" value="" />
                             </div>
                         </div>
                         <!-- /.modal-content -->
@@ -460,7 +531,7 @@
                                 After the cancellation you can apply another membership plan to this user from the same page.</div>
                             <div class="modal-footer">
                                 <button type="button" class="btn dark btn-outline" data-dismiss="modal">No, Go Back</button>
-                                <button type="button" class="btn green" onclick="javascript:cancel_booking();">Yes, Cancel</button>
+                                <button type="button" class="btn green" onclick="javascript:cancel_membership();">Yes, Cancel</button>
                             </div>
                         </div>
                         <!-- /.modal-content -->
@@ -1047,9 +1118,8 @@
         });
 
         $('.list_all_plans').on('change', function(){
-            var button = $('.apply_new_memebrship_plan');
-
-            if ($(this).val()==-1 || $(this).val()=={{$membership_plan->id}}){
+            var button = $('.apply_new_membership_plan');
+            if ($(this).val()==-1 || $(this).val()=='{{$membership_plan->id}}'){
                 button.hide();
             }
             else{
@@ -1057,7 +1127,90 @@
             }
         });
 
-        $('.apply_new_membership_plan').on()
+        $('.apply_new_membership_plan').on('click', function(){
+            $.ajax({
+                url: '{{route('admin/membership_plans/ajax_get_details')}}',
+                type: "post",
+                data: {
+                    'selected_plan': $('select[name=membership_plans_list]').val(),
+                },
+                success: function(data){
+                    if (data.success) {
+                        $('input[name="membership_name"]').val(data.name);
+                        $('input[name="membership_price"]').val(data.price);
+                        $('input[name="membership_one_fee_name"]').val(data.one_time_fee_name);
+                        $('input[name="membership_one_fee_value"]').val(data.one_time_fee_value);
+                        $('input[name="membership_invoice_period"]').val(data.invoice_time);
+                        $('textarea[name="membership_description"]').html(data.description);
+                        $('input[name="selected_plan_number"]').val(data.plan_order_id);
+
+                        $('#changeIt').modal('show');
+                    }
+                    else{
+                        show_notification(data.title, data.errors, 'tangerine', 3500, 0);
+                    }
+                }
+            });
+        });
+
+        function change_membership_plan(){
+            var userID = '{{$user->id}}';
+
+            $.ajax({
+                url: '{{route('admin/membership_plans/assign_to_member')}}',
+                type: "post",
+                data: {
+                    'selected_plan':    $('select[name=membership_plans_list]').val(),
+                    'member_id':        userID
+                },
+                success: function(data){
+                    if (data.success) {
+                        $('input[name="membership_name"]').val('');
+                        $('input[name="membership_price"]').val('');
+                        $('input[name="membership_one_fee_name"]').val('');
+                        $('input[name="membership_one_fee_value"]').val('');
+                        $('input[name="membership_invoice_period"]').val('');
+                        $('textarea[name="membership_description"]').html('');
+                        $('input[name="selected_plan_number"]').html(-1);
+
+                        $('#changeIt').modal('hide');
+                        show_notification(data.title, data.message, 'lime', 3500, 0);
+
+                        setTimeout(function(){
+                            location.reload();
+                        },2000);
+                    }
+                    else{
+                        show_notification(data.title, data.errors, 'tangerine', 3500, 0);
+                    }
+                }
+            });
+        }
+
+        function cancel_membership(){
+            var userID = '{{$user->id}}';
+
+            $.ajax({
+                url: '{{route('admin/membership_plans/cancel_member_plan')}}',
+                type: "post",
+                data: {
+                    'member_id':userID
+                },
+                success: function(data){
+                    if (data.success) {
+                        $('#cancel_confirm_box').modal('hide');
+                        show_notification(data.title, data.message, 'lime', 3500, 0);
+
+                        setTimeout(function(){
+                            location.reload();
+                        },2000);
+                    }
+                    else{
+                        show_notification(data.title, data.errors, 'tangerine', 3500, 0);
+                    }
+                }
+            });
+        }
 
         /* Start - All admin scripts */
         var UserTopAjaxSearch = function() {
