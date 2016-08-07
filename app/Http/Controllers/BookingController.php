@@ -6,9 +6,11 @@ use App\Booking;
 use App\BookingFinancialTransaction;
 use App\BookingInvoice;
 use App\BookingInvoiceItem;
+use App\MembershipPlan;
 use App\ShopLocations;
 use App\ShopResource;
 use App\ShopResourceCategory;
+use App\UserMembership;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -342,7 +344,66 @@ class BookingController extends Controller
             $free_open_bookings = 999;
         }
         else{
-            $free_open_bookings = 5;
+            $for_user_id = User::where('id','=',$fillable['for_user_id'])->get()->first();
+            if ($for_user_id){
+                // get user membership if exists
+                $active_membership = UserMembership::where('user_id','=',$for_user_id->id)->where('status','=','active')->get()->first();
+                if ($active_membership){
+                    $restrictions = $active_membership->get_plan_restrictions();
+                }
+                else{
+                    $default_membership = MembershipPlan::where('id','=',1)->get()->first();
+                    if ($default_membership){
+                        $restrictions = $default_membership->get_restrictions(true);
+                    }
+                    else{
+                        $restrictions = [];
+                    }
+                }
+
+                // membership included bookings
+                $free_open_bookings = 5;
+
+                foreach ($restrictions as $restriction){
+                    switch ($restriction['name']){
+                        case 'time_of_day' : {
+
+                        }
+                        break;
+                        case 'open_bookings' : {
+                            $free_open_bookings = $restriction['value'];
+                        }
+                        break;
+                        case 'cancellation' : {
+
+                        }
+                        break;
+                        case 'price' : {
+
+                        }
+                        break;
+                        case 'included_activity' : {
+
+                        }
+                        break;
+                        case 'booking_time_interval' : {
+
+                        }
+                        break;
+                    }
+                }
+
+
+
+                // included activities
+
+                // booking before & booking until (hours from now)
+
+                // booking time of day
+            }
+            else{
+                $free_open_bookings = 0;
+            }
         }
 
         // check for open bookings
@@ -350,15 +411,6 @@ class BookingController extends Controller
             ->where('for_user_id','=',$fillable['for_user_id'])
             ->where('search_key','!=',$search_key)
             ->get();
-
-        Activity::log([
-            'contentId'     => $user->id,
-            'contentType'   => 'bookings',
-            'action'        => 'Validate Booking',
-            'description'   => 'Validate booking details : nr of open bookings '.sizeof($ownBookings).' and recurrent - '.($recurring==true?"1":"0").' is employee - '.($is_employee==true?"1":"0"),
-            'details'       => 'User Booking : '.serialize($fillable),
-            'updated'       => false,
-        ]);
 
         if ($recurring==true){
             // is a recurrent booking
@@ -375,7 +427,7 @@ class BookingController extends Controller
             $message['payment'] = 'cash';
         }
 
-        // check for existing booking on the same resurce
+        // check for existing booking on the same resource, bookings that are already made
         $openBookings = Booking::whereIn('status',['pending','active'])
             ->where('resource_id','=',$fillable['resource_id'])
             ->where('location_id','=',$fillable['location_id'])

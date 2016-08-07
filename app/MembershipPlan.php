@@ -96,19 +96,29 @@ class MembershipPlan extends Model
 
     }
 
-    public function get_restrictions(){
+    public function get_restrictions($all_values = false){
         $restrictions = array();
 
         $plan_restrictions = MembershipRestriction::with('restriction_title')->where('membership_id','=',$this->id)->orderBy('restriction_id','asc')->get();
         foreach($plan_restrictions as $restriction){
             $formatted = $restriction->format_for_display_boxes();
-
-            $restrictions[] = [
+            $to_send = [
                 'id'            => $restriction->id,
                 'title'         => $restriction->restriction_title->title,
+                'name'          => $restriction->restriction_title->name,
                 'description'   => $formatted['description'],
-                'color'         => $formatted['color']
+                'color'         => $formatted['color'],
             ];
+
+            if ($all_values){
+                $to_send['value']       = $restriction->value;
+                $to_send['min_value']   = $restriction->min_value;
+                $to_send['max_value']   = $restriction->max_value;
+                $to_send['time_start']  = $restriction->time_start;
+                $to_send['time_end']    = $restriction->time_end;
+            }
+
+            $restrictions[] = $to_send;
         }
 
         return $restrictions;

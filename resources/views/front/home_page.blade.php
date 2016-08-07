@@ -51,7 +51,7 @@
                                         <a class="icon-btn location_btn" href="javascript:;" data-id="{{ $shop->id }}">
                                             <i class="fa fa-group hidden-xs"></i>
                                             <div> {{$shop->name}} </div>
-                                            <span class="badge badge-success resource_activity_nr"> {{sizeof($shop->resources)}} </span>
+                                            <span class="badge badge-success resource_activity_nr"> - </span>
                                         </a>
                                         @endif
                                     @endforeach
@@ -859,6 +859,7 @@
 
             $('input[name=selected_category]').val($(this).attr('data-id'));
             get_booking_hours();
+            get_rooms_per_location();
         });
 
         var timeinterval = ''; /* Interval timer */
@@ -977,6 +978,25 @@
                     time_of_booking_format_hours(data.hours);
                     place_of_booking_format_rooms(data.shopResources);
                     App.unblockUI('#tasks-widget');
+                }
+            });
+        }
+
+        function get_rooms_per_location(){
+            $.ajax({
+                url: '{{route('ajax/get_rooms_for_activity')}}',
+                type: "post",
+                cache: false,
+                data: {
+                    'selected_category':    $('input[name=selected_category]').val(),
+                },
+                success: function(data){
+                    $('a.location_btn').find('span').html('-');
+                    $.each(data.rooms, function(index, value){
+                        $('a.location_btn[data-id="'+index+'"]').find('span').html(value);
+                    });
+                    //.resource_activity_nr
+                    //        .location_btn
                 }
             });
         }
@@ -1436,8 +1456,8 @@
         /* Timer function - Stop */
 
         jQuery(document).ready(function() {
-            $('.location_btn[data-id="7"]').click();
             $('.is_resource[data-id="3"]').click();
+            $('.location_btn[data-id="7"]').click();
 
             //get_booking_hours();
             get_friends_list();

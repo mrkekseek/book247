@@ -87,8 +87,15 @@ class UserMembership extends Model
             $restrictions[] = [
                 'id'            => $rest->id,
                 'title'         => $rest->title,
+                'name'          => $rest->name,
                 'description'   => $rest->description,
-                'color'         => $rest->color
+                'color'         => $rest->color,
+
+                'value'         => $rest->value,
+                'min_value'     => $rest->min_value,
+                'max_value'     => $rest->max_value,
+                'time_start'    => $rest->time_start,
+                'time_end'      => $rest->time_end,
             ];
         }
 

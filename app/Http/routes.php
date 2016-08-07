@@ -531,6 +531,11 @@ Route::group(['prefix'=>'ajax', 'middleware' => 'web'], function(){
         'uses'  => 'FrontPageController@get_booking_hours'
     ]);
 
+    Route::post('get_rooms_for_activity', [
+        'as'    => 'ajax/get_rooms_for_activity',
+        'uses'  => 'ShopResourceController@get_rooms_for_activity'
+    ]);
+
     Route::post('book_resource',[
         'as'    => 'ajax/book_resource',
         'uses'  => 'FrontPageController@book_resource'

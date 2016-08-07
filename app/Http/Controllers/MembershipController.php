@@ -34,7 +34,7 @@ class MembershipController extends Controller
             'status'    => 'active'
         ];
 
-        $membership_restriction = $plan->get_restrictions();
+        $membership_restriction = $plan->get_restrictions(true);
         $fillable['membership_restrictions'] = json_encode($membership_restriction);
 
         $validator = Validator::make($fillable, UserMembership::rules('POST'), UserMembership::$message, UserMembership::$attributeNames);
