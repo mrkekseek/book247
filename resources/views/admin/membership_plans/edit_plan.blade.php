@@ -69,12 +69,12 @@
                                             </div>
                                             <div class="col-md-5">
                                                 <select name="membership_period" class="form-control input-inline input-small  inline-block">
-                                                    <option {!!$membership_plan->plan_period==7?'selected="selected"':''!!} value="7">7 days</option>
-                                                    <option {!!$membership_plan->plan_period==14?'selected="selected"':''!!} value="14">14 days</option>
-                                                    <option {!!$membership_plan->plan_period==30?'selected="selected"':''!!} value="30">one month</option>
-                                                    <option {!!$membership_plan->plan_period==90?'selected="selected"':''!!} value="90">three months</option>
-                                                    <option {!!$membership_plan->plan_period==180?'selected="selected"':''!!} value="180">six months</option>
-                                                    <option {!!$membership_plan->plan_period==360?'selected="selected"':''!!} value="360">12 months</option>
+                                                    <option {!!$membership_plan->plan_period==7?'selected="selected"':''!!} value="7">once every 7 days</option>
+                                                    <option {!!$membership_plan->plan_period==14?'selected="selected"':''!!} value="14">once every 14 days</option>
+                                                    <option {!!$membership_plan->plan_period==30?'selected="selected"':''!!} value="30">one per month</option>
+                                                    <option {!!$membership_plan->plan_period==90?'selected="selected"':''!!} value="90">once every three months</option>
+                                                    <option {!!$membership_plan->plan_period==180?'selected="selected"':''!!} value="180">once every six months</option>
+                                                    <option {!!$membership_plan->plan_period==360?'selected="selected"':''!!} value="360">once per year</option>
                                                 </select>
                                                 <span class="help-inline inline-block"> Invoicing Period </span>
                                             </div>
@@ -426,8 +426,8 @@
                         @if($restrictions)
                             @foreach ($restrictions as $restriction)
                                 <div class="col-md-4">
-                                    <div class="note {{ $restriction['color'] }}" style="min-height:132px;">
-                                        <button data-dismiss="alert" class="close" type="button"></button>
+                                    <div class="note {{ $restriction['color'] }}" style="min-height:145px;">
+                                        <button class="close remove_restriction" data-id="{{$restriction['id']}}" type="button"></button>
                                         <h4 class="block"> {{ $restriction['title'] }} Rule </h4>
                                         <p> {!! $restriction['description'] !!} </p>
                                     </div>
@@ -442,6 +442,26 @@
                         <!-- END FORM-->
                     </div>
                 </div>
+            </div>
+
+            <div class="modal fade bs-modal-sm" id="cancel_confirm_box" tabindex="-1" role="dialog" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                            <h4 class="modal-title"> Remove the selected attribute/restriction </h4>
+                        </div>
+                        <div class="modal-body margin-top-10 margin-bottom-10"> Do you want to remove the selected attribute/restriction from the current plan? By clicking "Yes - Remove" all the newly signed membership plans will not have this rule/restriction.</div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn green" onclick="javascript:remove_attribute_restriction();">Yes - Remove</button>
+                            <button type="button" class="btn dark btn-outline" data-dismiss="modal">No - Go Back</button>
+                            <input type="hidden" name="attribute-id" value="-1" />
+                            <input type="hidden" name="plan-id" value="{{ $membership_plan->id }}" />
+                        </div>
+                    </div>
+                    <!-- /.modal-content -->
+                </div>
+                <!-- /.modal-dialog -->
             </div>
         @else
             <div class="col-md-12">
@@ -759,6 +779,33 @@
                 }
             });
         });
+
+        $('.remove_restriction').on('click', function(){
+            $('input[name="attribute-id"]').val($(this).attr('data-id'));
+            $("#cancel_confirm_box").modal('show');
+        });
+
+        function remove_attribute_restriction(){
+            $.ajax({
+                url: '{{route('membership_plan-remove_restriction')}}',
+                type: "post",
+                data: {
+                    'restriction_id':$('input[name="attribute-id"]').val(),
+                    'membership_id': '{{@$membership_plan->id}}'
+                },
+                success: function(data){
+                    if(data.success){
+                        show_notification('Cancellation hours restriction added', data.message, 'lime', 3500, 0);
+                        setTimeout(function(){
+                            location.reload();
+                        },1000);
+                    }
+                    else{
+                        show_notification('Error adding cancellation restriction', data.errors, 'ruby', 3500, 0);
+                    }
+                }
+            });
+        };
 
         /**
          * Convert select to array with values

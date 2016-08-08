@@ -70,17 +70,17 @@
                                                 <div class="col-md-5">
                                                     <p class="form-control-static form-control border-blue-steel input-small">
                                                         @if ($membership_plan->plan_period==7)
-                                                            7 days
+                                                            once every 7 days
                                                         @elseif($membership_plan->plan_period==14)
-                                                            14 days
+                                                            once every 14 days
                                                         @elseif($membership_plan->plan_period==30)
-                                                            one month
+                                                            one per month
                                                         @elseif($membership_plan->plan_period==90)
-                                                            three months
+                                                            once every three months
                                                         @elseif($membership_plan->plan_period==180)
-                                                            six months
+                                                            once every six months
                                                         @else
-                                                            12 months
+                                                            once per year
                                                         @endif
                                                     </p>
                                                     <span class="help-inline inline-block"> Invoicing Period </span>

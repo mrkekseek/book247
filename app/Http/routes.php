@@ -452,6 +452,11 @@ Route::group(['middleware'=>'web', 'prefix'=>'admin'], function(){
         'uses'  => 'MembershipPlansController@add_plan_restriction'
     ]);
 
+    Route::post('membership_plan/remove_restriction', [
+        'as'    => 'membership_plan-remove_restriction',
+        'uses'  => 'MembershipPlansController@remove_plan_restriction'
+    ]);
+
     Route::post('membership_plan/ajax_get_details', [
         'as'    => 'admin/membership_plans/ajax_get_details',
         'uses'  => 'MembershipPlansController@ajax_get_plan_details'

@@ -342,8 +342,11 @@ class BookingController extends Controller
         }
         elseif ($is_employee==true && $user->id != $fillable['for_user_id']){
             $free_open_bookings = 999;
+            $message['payment'] = 'cash';
         }
         else{
+            $message['payment'] = 'membership';
+
             $for_user_id = User::where('id','=',$fillable['for_user_id'])->get()->first();
             if ($for_user_id){
                 // get user membership if exists
@@ -361,56 +364,19 @@ class BookingController extends Controller
                     }
                 }
 
-                // membership included bookings
-                $free_open_bookings = 5;
-
-                foreach ($restrictions as $restriction){
-                    switch ($restriction['name']){
-                        case 'time_of_day' : {
-
-                        }
-                        break;
-                        case 'open_bookings' : {
-                            $free_open_bookings = $restriction['value'];
-                        }
-                        break;
-                        case 'cancellation' : {
-
-                        }
-                        break;
-                        case 'price' : {
-
-                        }
-                        break;
-                        case 'included_activity' : {
-
-                        }
-                        break;
-                        case 'booking_time_interval' : {
-
-                        }
-                        break;
-                    }
-                }
-
-
-
-                // included activities
-
-                // booking before & booking until (hours from now)
-
-                // booking time of day
+                $message['payment'] = $this->check_membership_restrictions($for_user_id->id, $fillable, $restrictions, $search_key);
             }
             else{
                 $free_open_bookings = 0;
+                $message['payment'] = 'cash';
             }
         }
 
         // check for open bookings
-        $ownBookings = Booking::whereIn('status',['pending','active'])
-            ->where('for_user_id','=',$fillable['for_user_id'])
-            ->where('search_key','!=',$search_key)
-            ->get();
+        //$ownBookings = Booking::whereIn('status',['pending','active'])
+        //    ->where('for_user_id','=',$fillable['for_user_id'])
+        //    ->where('search_key','!=',$search_key)
+        //    ->get();
 
         if ($recurring==true){
             // is a recurrent booking
@@ -418,14 +384,10 @@ class BookingController extends Controller
         else if($is_employee==true && $user->id != $fillable['for_user_id']){
             // is a booking created by an employee in the backend
         }
-        else if (sizeof($ownBookings)<$free_open_bookings){
+        //else if ( $free_open_bookings <= sizeof($ownBookings) ){
             // no open bookings except the search key
-            $message['payment'] = 'membership';
-        }
-        else {
-            // more than the current pending booking and the user is the logged in user
-            $message['payment'] = 'cash';
-        }
+            //$message['payment'] = 'cash';
+        //}
 
         // check for existing booking on the same resource, bookings that are already made
         $openBookings = Booking::whereIn('status',['pending','active'])
@@ -441,6 +403,99 @@ class BookingController extends Controller
         }
 
         return $message;
+    }
+
+    private function check_membership_restrictions($member, $fillable, $restrictions, $search_key = 'c12abab@abab#abab12c'){
+        // we assume the payment type is membership then we go through all the restrictions and see if any of them is broken
+        $payment_type = 'membership';
+
+        // get activity selected for booking
+        $resource_category = ShopResource::select('category_id')->where('id','=',$fillable['location_id'])->get()->first();
+
+        // check for open bookings
+        $ownBookings = Booking::whereIn('status',['pending','active'])
+            ->where('for_user_id','=',$fillable['for_user_id'])
+            ->where('search_key','!=',$search_key)
+            ->get();
+        $nr_of_open_bookings = sizeof($ownBookings);
+
+        $time_of_day_result = [];
+
+        foreach ($restrictions as $restriction){
+            switch ($restriction['name']){
+                case 'time_of_day' : {
+                    //'value' => string '[1,2,3,4,5]' (length=11)
+                    $selected_days  = json_decode($restriction['value']);
+                    //'time_start' => string '06:00' (length=5)
+                    $hour_start     = Carbon::createFromFormat('H:i', $restriction['time_start']);
+                    //'time_end' => string '14:00' (length=5)
+                    $hour_end       = Carbon::createFromFormat('H:i', $restriction['time_end']);
+                    // booking hour
+                    $booking_hour   = Carbon::createFromFormat('H:i', $fillable['booking_time_start']);
+                    // day of week for the booking
+                    $booking_day    = Carbon::createFromFormat('Y-m-d', $fillable['date_of_booking']);
+
+                    // we check the day first
+                    if (!in_array($booking_day->format('w'), $selected_days)){
+                        // not in selected day
+                        $time_of_day_result[] = false;
+                    }
+                    // we check the hours interval second
+                    elseif ($booking_hour->gte($hour_start) && $booking_hour->lt($hour_end)){
+                        $time_of_day_result[] = false;
+                    }
+                }
+                break;
+                case 'open_bookings' : {
+                    if ( $nr_of_open_bookings >= $restriction['value'] ){
+                        $payment_type = 'cash';
+                        return $payment_type;
+                    }
+                }
+                break;
+                case 'cancellation' : {
+                    // do not need it here
+                }
+                break;
+                case 'price' : {
+                    // do not need it here
+                }
+                break;
+                case 'included_activity' : {
+                    $activities_in = json_decode($restriction['value']);
+                    if (!in_array($resource_category->category_id, $activities_in)){
+                        $payment_type = 'cash';
+                        return $payment_type;
+                    }
+                }
+                break;
+                case 'booking_time_interval' : {
+                    // booking must take place x hours from now
+                    $hours_from_now      = $restriction['min_value'];
+                    // bookings must be made until y hours from now
+                    $hours_until_booking = $restriction['max_value'];
+
+                    $booking_date_time = Carbon::createFromFormat('Y-m-d H:i', $fillable['date_of_booking'].' '.$fillable['booking_time_start']);
+                    $closest_booking_date_time = Carbon::now()->addHours($hours_from_now);
+                    $farthest_booking_date_time = Carbon::now()->addHours($hours_until_booking);
+
+                    if (!$booking_date_time->gte($closest_booking_date_time) || !$booking_date_time->lt($farthest_booking_date_time)){
+                        $payment_type = 'cash';
+                        return $payment_type;
+                    }
+                }
+                break;
+            }
+        }
+
+        foreach ($time_of_day_result as $a){
+            if ($a == true){
+                $payment_type = 'membership';
+                return $payment_type;
+            }
+        }
+
+        return $payment_type;
     }
 
     /**

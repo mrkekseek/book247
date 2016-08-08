@@ -418,7 +418,12 @@ class MembershipPlansController extends Controller
     }
 
     public function add_plan_restriction(Request $request){
-
+        if (!Auth::check()) {
+            return redirect()->intended(route('admin/login'));
+        }
+        else{
+            $user = Auth::user();
+        }
 
         $vars = $request->only('type','activities','membership_id','min_val','max_val','hour_start','hour_stop','minute_start','minute_stop','day_selection','open_bookings','cancellation_before_hours');
 
@@ -515,7 +520,44 @@ class MembershipPlansController extends Controller
     }
 
     public function remove_plan_restriction(Request $request){
+        if (!Auth::check()) {
+            return [
+                'success' => false,
+                'title'  => 'You have to be logged in',
+                'errors' => 'Please login to use this function'
+            ];
+        }
+        else{
+            $user = Auth::user();
+        }
 
+        $vars = $request->only('membership_id','restriction_id');
+
+        $the_plan = MembershipPlan::where('id','=',$vars['membership_id'])->get()->first();
+        if (!$the_plan){
+            return [
+                'success' => false,
+                'title'  => 'Membership plan error',
+                'errors' => 'Membership plan not found in the system!'
+            ];
+        }
+
+        $restriction = MembershipRestriction::where('id', '=', $vars['restriction_id'])->where('membership_id','=',$the_plan->id)->get()->first();
+        if ($the_plan && $restriction){
+            $restriction->delete();
+            return [
+                'success' => true,
+                'title'   => 'Restriction removed',
+                'message' => 'Restriction removed from the selected plan.',
+            ];
+        }
+        else{
+            return [
+                'success' => false,
+                'title'  => 'Restriction not found',
+                'errors' => 'The restriction was not found for the selected membership plan'
+            ];
+        }
     }
 
     public function ajax_get_plan_details(Request $request, $status='active'){
@@ -534,17 +576,17 @@ class MembershipPlansController extends Controller
                 'plan_order_id' => $the_plan->id
             ];
             switch ($the_plan->plan_period){
-                case 7 :   $details['invoice_time'] = '7 Days';
+                case 7 :   $details['invoice_time'] = 'once every 7 days';
                     break;
-                case 14 :  $details['invoice_time'] = '14 Days';
+                case 14 :  $details['invoice_time'] = 'once every 14 days';
                     break;
-                case 30 :  $details['invoice_time'] = '1 Month';
+                case 30 :  $details['invoice_time'] = 'one per month';
                     break;
-                case 90 :  $details['invoice_time'] = '3 Months';
+                case 90 :  $details['invoice_time'] = 'once every three months';
                     break;
-                case 180 : $details['invoice_time'] = '6 Months';
+                case 180 : $details['invoice_time'] = 'once every six months';
                     break;
-                case 360 : $details['invoice_time'] = '1 Year';
+                case 360 : $details['invoice_time'] = 'once per year';
                     break;
             }
 

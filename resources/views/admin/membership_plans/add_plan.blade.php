@@ -62,7 +62,7 @@
                         <form action="#" id="new_membership_plan" class="form-horizontal">
                             <div class="form-body">
                                 <div class="row">
-                                    <div class="col-md-6">
+                                    <div class="col-md-8">
                                         <div class="form-group">
                                             <label class="control-label col-md-3"> Membership Name </label>
                                             <div class="col-md-9">
@@ -73,17 +73,16 @@
                                             <label class="control-label col-md-3 inline"> Membership Price </label>
                                             <div class="col-md-4">
                                                 <input type="text" class="form-control inline-block input-small input-inline" name="membership_price">
-                                                <span class="help-inline inline-block"> NOK </span>
-                                                <span class="help-inline"> for selected period </span>
+                                                <span class="help-inline inline-block"> Per Invoice </span>
                                             </div>
                                             <div class="col-md-5">
-                                                <select name="membership_period" class="form-control input-inline input-small  inline-block">
-                                                    <option value="7">7 days</option>
-                                                    <option value="14">14 days</option>
-                                                    <option value="30">one month</option>
-                                                    <option value="90">three months</option>
-                                                    <option value="180">six months</option>
-                                                    <option value="360">12 months</option>
+                                                <select name="membership_period" class="form-control input-inline input inline-block">
+                                                    <option value="7">once every 7 days</option>
+                                                    <option value="14">once every 14 days</option>
+                                                    <option value="30">one per month</option>
+                                                    <option value="90">once every three months</option>
+                                                    <option value="180">once every six months</option>
+                                                    <option value="360">once per year</option>
                                                 </select>
                                                 <span class="help-inline inline-block"> Invoicing Period </span>
                                             </div>
@@ -126,11 +125,13 @@
                                         </div>
                                     </div>
                                     <!--/span-->
-                                    <div class="col-md-6">
+                                    <div class="col-md-4">
                                         <div class="form-group">
-                                            <label class="control-label col-md-3 inline">Long Description</label>
-                                            <div class="col-md-9">
-                                                <textarea name="membership_long_description" style="height:246px;" class="form-control"></textarea>
+                                            <div class="col-md-12 margin-top-10 margin-bottom-5">
+                                                <label class="control-label inline">Long Description</label>
+                                            </div>
+                                            <div class="col-md-12">
+                                                <textarea name="membership_long_description" style="height:339px;" class="form-control"></textarea>
                                             </div>
                                         </div>
                                     </div>

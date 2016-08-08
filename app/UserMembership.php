@@ -104,12 +104,12 @@ class UserMembership extends Model
 
     public function get_plan_details(){
         $invoice_period = [
-            '7'   => '7 Days',
-            '14'  => '14 days',
-            '30'  => '1 Month',
-            '90'  => '3 Months',
-            '180' => '6 Months',
-            '360' => '1 Year'
+            '7'   => 'once every 7 days',
+            '14'  => 'once every 14 days',
+            '30'  => 'one per month',
+            '90'  => 'once every three months',
+            '180' => 'once every six months',
+            '360' => 'once per year'
         ];
 
         if ($this->user_id==$this->signed_by){
