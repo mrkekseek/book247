@@ -14,8 +14,8 @@ class CreateUserMembershipsTable extends Migration
     {
         Schema::create('user_memberships', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('user_id')->unsigned();
-            $table->integer('membership_id')->unsigned();
+            $table->integer('user_id')->unsigned()->nullable();
+            $table->integer('membership_id')->unsigned()->nullable();
             $table->date('day_start');
             $table->date('day_stop');
             $table->string('membership_name');
@@ -23,10 +23,12 @@ class CreateUserMembershipsTable extends Migration
             $table->float('price');
             $table->float('discount');
             $table->longText('membership_restrictions');
-            $table->integer('signed_by')->unsigned();       // the employee that assigned the membership or the user himself
-            $table->enum('status',['active','suspended','canceled','expired']);
+            $table->integer('signed_by')->unsigned()->nullable();       // the employee that assigned the membership or the user himself
+            $table->enum('status', ['active', 'suspended', 'canceled', 'expired']);
             $table->timestamps();
+        });
 
+        Schema::table('user_memberships', function($table){
             $table->foreign('user_id')->references('id')->on('users');
             $table->foreign('signed_by')->references('id')->on('users');
             $table->foreign('membership_id')->references('id')->on('membership_plans');

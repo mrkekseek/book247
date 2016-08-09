@@ -20,9 +20,11 @@ class CreateInvoicesTable extends Migration
             $table->string('invoice_number', 64);
             $table->text('other_details');
             $table->enum('status', ['pending','ordered','processing','completed','cancelled','declined','incomplete','preordered']);
-
             $table->timestamps();
 
+        });
+
+        Schema::table('invoices', function($table){
             $table->foreign('employee_id')->references('id')->on('users');
         });
     }
