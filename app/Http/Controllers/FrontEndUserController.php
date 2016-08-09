@@ -324,7 +324,7 @@ class FrontEndUserController extends Controller
         if ($my_plan){
             $restrictions = $my_plan->get_plan_restrictions();
             $plan_details = $my_plan->get_plan_details();
-            xdebug_var_dump($restrictions); exit;
+            //xdebug_var_dump($restrictions); exit;
         }
         else {
             $my_plan = MembershipPlan::where('id','=',1)->get()->first();
