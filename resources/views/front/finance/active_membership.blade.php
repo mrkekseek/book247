@@ -60,7 +60,7 @@
                                                         <option> No active Membership Plan </option>
                                                     @endif
                                                 </select>
-                                                @if ($membership_plan->id!=1)
+                                                @if ($membership_plan->id!=1 && \Carbon\Carbon::now()->gt(\Carbon\Carbon::createFromFormat('Y-m-d',$membership_plan->day_stop)))
                                                     <a href="#cancel_confirm_box" class="btn red-soft input" data-toggle="modal" style="min-width:190px;">
                                                         <i class="fa fa-pencil"></i> Cancel Current Plan</a>
                                                 @endif
@@ -163,7 +163,8 @@
                     @endif
                 </div>
 
-                <div class="modal fade bs-modal-sm" id="cancel_confirm_box" tabindex="-1" role="dialog" aria-hidden="true">
+                    @if ($membership_plan->id!=1 && \Carbon\Carbon::now()->gt(\Carbon\Carbon::createFromFormat('Y-m-d',$membership_plan->day_stop)))
+                    <div class="modal fade bs-modal-sm" id="cancel_confirm_box" tabindex="-1" role="dialog" aria-hidden="true">
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header">
@@ -181,6 +182,7 @@
                     </div>
                     <!-- /.modal-dialog -->
                 </div>
+                    @endif
                 @endif
                 <!-- END PAGE CONTENT INNER -->
             </div>
@@ -230,6 +232,7 @@
             }
         });
 
+        @if ($membership_plan->id!=1 && \Carbon\Carbon::now()->gt(\Carbon\Carbon::createFromFormat('Y-m-d',$membership_plan->day_stop)))
         function cancel_membership(){
             var userID = '{{$user->id}}';
 
@@ -254,6 +257,7 @@
                 }
             });
         }
+        @endif
 
         function show_notification(title_heading, message, theme, life, sticky) {
             var settings = {

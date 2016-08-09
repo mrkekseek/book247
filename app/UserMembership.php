@@ -16,6 +16,7 @@ class UserMembership extends Model
         'day_stop'      => 'End Day',
         'membership_name'   => 'Membership Name',
         'invoice_period'    => 'Invoice Period',
+        'binding_period'    => 'Binding Period',
         'price'         => 'Price',
         'discount'      => 'Discount',
         'membership_restrictions' => 'Membership Restrictions',
@@ -31,6 +32,7 @@ class UserMembership extends Model
         'day_stop',
         'membership_name',
         'invoice_period',
+        'binding_period',
         'price',
         'discount',
         'membership_restrictions',
@@ -53,6 +55,7 @@ class UserMembership extends Model
                     'day_stop'  => 'required|date',
                     'membership_name'   => 'required|min:3',
                     'invoice_period'    => 'required|numeric',
+                    'binding_period'    => 'required|numeric',
                     'price'     => 'required|numeric',
                     'discount'  => 'numeric',
                     'membership_restrictions'   => 'required|min:3',
@@ -70,6 +73,7 @@ class UserMembership extends Model
                     'day_stop'  => 'required|date',
                     'membership_name'   => 'required|min:3',
                     'invoice_period'    => 'required|numeric',
+                    'binding_period'    => 'required|numeric',
                     'price'     => 'required|numeric',
                     'discount'  => 'numeric',
                     'membership_restrictions'   => 'required|min:3',
@@ -90,7 +94,6 @@ class UserMembership extends Model
                 'name'          => $rest->name,
                 'description'   => $rest->description,
                 'color'         => $rest->color,
-
                 'value'         => $rest->value,
                 'min_value'     => $rest->min_value,
                 'max_value'     => $rest->max_value,
@@ -136,12 +139,13 @@ class UserMembership extends Model
         }
 
         $plan_details = [
-            'price' => $this->price,
-            'day_start' => Carbon::createFromFormat('Y-m-d',$this->day_start)->format('j F, Y'),
-            'day_stop'  => Carbon::createFromFormat('Y-m-d',$this->day_stop)->format('j F, Y'),
+            'price'         => $this->price,
+            'day_start'     => Carbon::createFromFormat('Y-m-d',$this->day_start)->format('j F, Y'),
+            'day_stop'      => Carbon::createFromFormat('Y-m-d',$this->day_stop)->format('j F, Y'),
             'membership_name'   => $this->membership_name,
             'invoice_period'    => $invoice_period[$this->invoice_period],
-            'discount'  => $this->discount,
+            'binding_period'    => $this->binding_period,
+            'discount'      => $this->discount,
             'signed_by_name'    => $signed_by_name,
             'signed_by_link'    => $signed_by_link
         ];

@@ -55,7 +55,7 @@
                         <form action="#" id="new_membership_plan" class="form-horizontal">
                             <div class="form-body">
                                 <div class="row">
-                                    <div class="col-md-6">
+                                    <div class="col-md-12">
                                         <div class="form-group">
                                             <label class="control-label col-md-3"> Membership Name </label>
                                             <div class="col-md-9">
@@ -67,8 +67,11 @@
                                             <div class="col-md-4">
                                                 <input type="text" class="form-control input-inline input-small" name="membership_price" placeholder="NOK" value="{{$membership_plan->price[0]->price}}">
                                             </div>
-                                            <div class="col-md-5">
-                                                <select name="membership_period" class="form-control input-inline input-small  inline-block">
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="control-label col-md-3 inline"> Invoicing Period </label>
+                                            <div class="col-md-9">
+                                                <select name="membership_period" class="form-control input-inline input inline-block">
                                                     <option {!!$membership_plan->plan_period==7?'selected="selected"':''!!} value="7">once every 7 days</option>
                                                     <option {!!$membership_plan->plan_period==14?'selected="selected"':''!!} value="14">once every 14 days</option>
                                                     <option {!!$membership_plan->plan_period==30?'selected="selected"':''!!} value="30">one per month</option>
@@ -76,7 +79,18 @@
                                                     <option {!!$membership_plan->plan_period==180?'selected="selected"':''!!} value="180">once every six months</option>
                                                     <option {!!$membership_plan->plan_period==360?'selected="selected"':''!!} value="360">once per year</option>
                                                 </select>
-                                                <span class="help-inline inline-block"> Invoicing Period </span>
+                                                <span class="help-inline inline-block"> </span>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="control-label col-md-3 inline"> Binding Period </label>
+                                            <div class="col-md-9">
+                                                <select name="binding_period" class="form-control input-inline input inline-block">
+                                                    @for ($i=1; $i<25;$i++)
+                                                        <option {!!$membership_plan->binding_period==$i?'selected="selected"':''!!} value="{{ $i }}">{{ $i }} {!!$membership_plan->binding_period==$i?' - Current Selection':''!!}</option>
+                                                    @endfor
+                                                </select>
+                                                <span class="help-inline inline-block"> months </span>
                                             </div>
                                         </div>
                                         <div class="form-group">
@@ -113,13 +127,11 @@
                                                 <textarea name="membership_short_description" style="min-height:100px;" class="form-control">{{$membership_plan->short_description}}</textarea>
                                             </div>
                                         </div>
-                                    </div>
-                                    <!--/span-->
-                                    <div class="col-md-6">
+
                                         <div class="form-group">
-                                            <label class="control-label col-md-3 inline">Long Description</label>
+                                            <label class="control-label col-md-3 inline">Long/HTML Description</label>
                                             <div class="col-md-9">
-                                                <textarea name="membership_long_description" style="height:246px;" class="form-control">{{$membership_plan->description}}</textarea>
+                                                <textarea name="membership_long_description" style="height:100px;" class="form-control">{{$membership_plan->description}}</textarea>
                                             </div>
                                         </div>
                                         <div class="form-group">
@@ -135,7 +147,6 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <!--/span-->
                                 </div>
                                 <!--/row-->
                             </div>
@@ -549,6 +560,10 @@
                         membership_period: {
                             required: true
                         },
+                        binding_period: {
+                            required: true,
+                            number:true
+                        },
                         administration_fee_name: {
                             minlength: 5,
                             required: true
@@ -627,6 +642,7 @@
                         'name':                         $('input[name=membership_name]').val(),
                         'price':                        $('input[name=membership_price]').val(),
                         'plan_period':                  $('select[name=membership_period]').val(),
+                        'binding_period':               $('select[name=binding_period]').val(),
                         'status':                       $('select[name=membership_status]').val(),
                         'administration_fee_name':      $('input[name=administration_fee_name]').val(),
                         'administration_fee_amount':    $('input[name=administration_fee_price]').val(),

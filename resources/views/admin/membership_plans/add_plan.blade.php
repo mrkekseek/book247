@@ -62,7 +62,7 @@
                         <form action="#" id="new_membership_plan" class="form-horizontal">
                             <div class="form-body">
                                 <div class="row">
-                                    <div class="col-md-8">
+                                    <div class="col-md-12">
                                         <div class="form-group">
                                             <label class="control-label col-md-3"> Membership Name </label>
                                             <div class="col-md-9">
@@ -71,11 +71,14 @@
                                         </div>
                                         <div class="form-group">
                                             <label class="control-label col-md-3 inline"> Membership Price </label>
-                                            <div class="col-md-4">
+                                            <div class="col-md-9">
                                                 <input type="text" class="form-control inline-block input-small input-inline" name="membership_price">
                                                 <span class="help-inline inline-block"> Per Invoice </span>
                                             </div>
-                                            <div class="col-md-5">
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="control-label col-md-3 inline"> Invoicing Period </label>
+                                            <div class="col-md-9">
                                                 <select name="membership_period" class="form-control input-inline input inline-block">
                                                     <option value="7">once every 7 days</option>
                                                     <option value="14">once every 14 days</option>
@@ -84,7 +87,18 @@
                                                     <option value="180">once every six months</option>
                                                     <option value="360">once per year</option>
                                                 </select>
-                                                <span class="help-inline inline-block"> Invoicing Period </span>
+                                                <span class="help-inline inline-block">  </span>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="control-label col-md-3 inline"> Binding Period </label>
+                                            <div class="col-md-9">
+                                                <select name="binding_period" class="form-control input-small input-inline input inline-block">
+                                                    @for ($i=1; $i<25;$i++)
+                                                        <option value="{{ $i }}">{{ $i }}</option>
+                                                    @endfor
+                                                </select>
+                                                <span class="help-inline inline-block"> months </span>
                                             </div>
                                         </div>
                                         <div class="form-group">
@@ -125,13 +139,13 @@
                                         </div>
                                     </div>
                                     <!--/span-->
-                                    <div class="col-md-4">
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
                                         <div class="form-group">
-                                            <div class="col-md-12 margin-top-10 margin-bottom-5">
-                                                <label class="control-label inline">Long Description</label>
-                                            </div>
-                                            <div class="col-md-12">
-                                                <textarea name="membership_long_description" style="height:339px;" class="form-control"></textarea>
+                                            <label class="control-label inline col-md-3">Long/HTML Description</label>
+                                            <div class="col-md-9">
+                                                <textarea name="membership_long_description" style="height:110px;" class="form-control"></textarea>
                                             </div>
                                         </div>
                                     </div>
@@ -229,7 +243,12 @@
                             required: true
                         },
                         membership_period: {
-                            required: true
+                            required: true,
+                            number: true
+                        },
+                        binding_period: {
+                            required: true,
+                            number:true
                         },
                         administration_fee_name: {
                             minlength: 5,
@@ -308,6 +327,7 @@
                     'name':                         $('input[name=membership_name]').val(),
                     'price':                        $('input[name=membership_price]').val(),
                     'plan_period':                  $('select[name=membership_period]').val(),
+                    'binding_period':               $('select[name=binding_period]').val(),
                     'administration_fee_name':      $('input[name=administration_fee_name]').val(),
                     'administration_fee_amount':    $('input[name=administration_fee_price]').val(),
                     'plan_calendar_color':          $('input[name=membership_color]').val(),

@@ -24,9 +24,10 @@ class MembershipController extends Controller
             'user_id'       => $user->id,
             'membership_id' => $plan->id,
             'day_start' => Carbon::today()->toDateString(),
-            'day_stop'  => Carbon::today()->toDateString(),
+            'day_stop'  => Carbon::today()->addMonths($plan->binding_period)->toDateString(),
             'membership_name'   => $plan->name,
             'invoice_period'    => $plan->plan_period,
+            'binding_period'    => $plan->binding_period,
             'price'     => $to_be_paid->price,
             'discount'  => 0,
             'membership_restrictions'   => '',
@@ -118,7 +119,9 @@ class MembershipController extends Controller
             }
 
             $memberRole = Role::where('name','=','front-member')->get()->first();
-            $member->attachRole($memberRole);
+            if (!$member->hasRole($memberRole)) {
+                $member->attachRole($memberRole);
+            }
 
             return [
                 'success'   => true,

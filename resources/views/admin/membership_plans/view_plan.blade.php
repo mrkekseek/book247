@@ -55,7 +55,7 @@
                             <form action="#" id="new_membership_plan" class="form-horizontal">
                                 <div class="form-body">
                                     <div class="row">
-                                        <div class="col-md-6">
+                                        <div class="col-md-12">
                                             <div class="form-group">
                                                 <label class="control-label col-md-3"> Membership Name </label>
                                                 <div class="col-md-9">
@@ -64,11 +64,14 @@
                                             </div>
                                             <div class="form-group">
                                                 <label class="control-label col-md-3 inline"> Membership Price </label>
-                                                <div class="col-md-4">
+                                                <div class="col-md-9">
                                                     <p class="form-control-static form-control border-blue-steel input-small">{{$membership_plan->price[0]->price}}</p>
                                                 </div>
-                                                <div class="col-md-5">
-                                                    <p class="form-control-static form-control border-blue-steel input-small">
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="control-label col-md-3 inline"> Invoicing Period </label>
+                                                <div class="col-md-9">
+                                                    <p class="form-control-static form-control border-blue-steel input-large">
                                                         @if ($membership_plan->plan_period==7)
                                                             once every 7 days
                                                         @elseif($membership_plan->plan_period==14)
@@ -83,7 +86,24 @@
                                                             once per year
                                                         @endif
                                                     </p>
-                                                    <span class="help-inline inline-block"> Invoicing Period </span>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="control-label col-md-3 inline"> Binding Period </label>
+                                                <div class="col-md-9">
+                                                @if ($membership_plan->binding_period==0)
+                                                    <p class="form-control-static form-control border-blue-steel input-large">
+                                                    no period
+                                                    </p>
+                                                @elseif ($membership_plan->binding_period==1)
+                                                    <p class="form-control-static form-control border-blue-steel input-large">
+                                                    1  month
+                                                    </p>
+                                                @else
+                                                    <p class="form-control-static form-control border-blue-steel input-large">
+                                                    {{$membership_plan->binding_period}}  months
+                                                    </p>
+                                                @endif
                                                 </div>
                                             </div>
                                             <div class="form-group">
@@ -100,11 +120,8 @@
                                             </div>
                                             <div class="form-group">
                                                 <label class="control-label col-md-3">Plan Color</label>
-                                                <div class="col-md-3">
+                                                <div class="col-md-9">
                                                     <p class="form-control-static form-control border-blue-steel input-small" style="background-color: {{$membership_plan->plan_calendar_color}};"> &nbsp; </p>
-                                                    <!-- /input-group -->
-                                                </div>
-                                                <div class="col-md-6">
                                                     <span class="help-inline  block-inline"> Color to be displayed in calendar booking </span>
                                                 </div>
                                             </div>
@@ -114,11 +131,8 @@
                                                     <p class="form-control-static form-control border-blue-steel" style="height:auto;">{{$membership_plan->short_description}}</p>
                                                 </div>
                                             </div>
-                                        </div>
-                                        <!--/span-->
-                                        <div class="col-md-6">
                                             <div class="form-group">
-                                                <label class="control-label col-md-3 inline">Long Description</label>
+                                                <label class="control-label col-md-3 inline">Long/HTML Description</label>
                                                 <div class="col-md-9">
                                                     <p class="form-control-static form-control border-blue-steel" style="height:auto; min-height:90px;">{{$membership_plan->description}}</p>
                                                 </div>
@@ -140,7 +154,6 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <!--/span-->
                                     </div>
                                     <!--/row-->
                                 </div>

@@ -242,25 +242,25 @@
                                                         <!-- BEGIN FORM-->
                                                         @if($restrictions)
                                                             <div class="col-md-3">
-                                                                <div class="note note-info font-grey-mint" style="min-height:95px; margin:0 0 10px; padding:5px 20px 10px 10px;">
+                                                                <div class="note note-info font-grey-mint" style="min-height:110px; margin:0 0 10px; padding:5px 20px 10px 10px;">
                                                                     <p> Price </p>
                                                                     <h4 class="block" style="margin-bottom:0px; font-size:32px;"> <b>{{ $plan_details['price'] }} NOK</b> </h4>
                                                                 </div>
                                                             </div>
                                                             <div class="col-md-3">
-                                                                <div class="note note-info font-grey-mint" style="min-height:95px; margin:0 0 10px; padding:5px 20px 10px 10px;">
+                                                                <div class="note note-info font-grey-mint" style="min-height:110px; margin:0 0 10px; padding:5px 20px 10px 10px;">
                                                                     <p> Discount </p>
                                                                     <h4 class="block" style="margin-bottom:0px; font-size:32px;"> <b>{{ $plan_details['discount'] }}</b> </h4>
                                                                 </div>
                                                             </div>
                                                             <div class="col-md-3">
-                                                                <div class="note note-warning font-grey-mint" style="min-height:95px; margin:0 0 10px; padding:5px 20px 10px 10px;">
+                                                                <div class="note note-warning font-grey-mint" style="min-height:110px; margin:0 0 10px; padding:5px 20px 10px 10px;">
                                                                     <p> Invoice Period </p>
-                                                                    <h4 class="block" style="margin-bottom:0px; font-size:32px;"> <b>{{ $plan_details['invoice_period'] }}</b> </h4>
+                                                                    <h4 class="block" style="margin-bottom:0px; font-size:22px;"> <b>{{ $plan_details['invoice_period'] }}</b> </h4>
                                                                 </div>
                                                             </div>
                                                             <div class="col-md-3">
-                                                                <div class="note note-info font-grey-mint" style="min-height:95px; margin:0 0 10px; padding:5px 20px 10px 10px;">
+                                                                <div class="note note-info font-grey-mint" style="min-height:110px; margin:0 0 10px; padding:5px 20px 10px 10px;">
                                                                     <p> Signed On </p>
                                                                     <h4 class="block" style="margin-bottom:0px; font-size:32px;"> {{ $plan_details['day_start'] }} </h4>
                                                                 </div>

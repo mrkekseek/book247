@@ -133,7 +133,7 @@ class MembershipPlansController extends Controller
             $user = Auth::user();
         }
 
-        $vars = $request->only('name', 'price', 'plan_period', 'administration_fee_name', 'administration_fee_amount', 'plan_calendar_color', 'membership_short_description', 'membership_long_description');
+        $vars = $request->only('name', 'price', 'plan_period', 'binding_period', 'administration_fee_name', 'administration_fee_amount', 'plan_calendar_color', 'membership_short_description', 'membership_long_description');
 
         if (!in_array($vars['plan_period'], ['7','14','30','90','180','360'])){
             return [
@@ -148,6 +148,7 @@ class MembershipPlansController extends Controller
             'status' => 'pending',
             'price_id' => -1,
             'plan_period' => $vars['plan_period'],
+            'binding_period' => $vars['binding_period'],
             'administration_fee_name' => $vars['administration_fee_name'],
             'administration_fee_amount' => $vars['administration_fee_amount'],
             'short_description' => $vars['membership_short_description'],
@@ -342,10 +343,14 @@ class MembershipPlansController extends Controller
             ];
         }
 
-        $vars = $request->only('name','price','plan_period','administration_fee_name','administration_fee_amount','plan_calendar_color','membership_short_description','membership_long_description','status');
+        $vars = $request->only('name','price','plan_period','binding_period','administration_fee_name','administration_fee_amount','plan_calendar_color','membership_short_description','membership_long_description','status');
 
-        if (!in_array($vars['plan_period'], ['7','14','30','90','180','360'])){
-            return 'error';
+        if (!in_array($vars['plan_period'], [7,14,30,90,180,360])){
+            return [
+                'success' => false,
+                'errors'  => 'Plan period not in the correct form. Try again!',
+                'title'   => 'Error updating membership'
+            ];
         }
 
         $fillable = [
@@ -354,6 +359,7 @@ class MembershipPlansController extends Controller
             'price_id'  => $the_plan->price_id,
             'status' => $vars['status'],
             'plan_period' => $vars['plan_period'],
+            'binding_period' => $vars['binding_period'],
             'administration_fee_name' => $vars['administration_fee_name'],
             'administration_fee_amount' => $vars['administration_fee_amount'],
             'short_description' => $vars['membership_short_description'],
