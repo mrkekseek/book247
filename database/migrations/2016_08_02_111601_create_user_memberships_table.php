@@ -16,6 +16,9 @@ class CreateUserMembershipsTable extends Migration
             $table->engine = 'InnoDB';
 
             $table->increments('id');
+            $table->integer('user_id')->unsigned()->nullable();
+            $table->integer('signed_by')->unsigned()->nullable();       // the employee that assigned the membership or the user himself
+            $table->integer('membership_id')->unsigned()->nullable();
             $table->date('day_start');
             $table->date('day_stop');
             $table->string('membership_name');
@@ -25,16 +28,9 @@ class CreateUserMembershipsTable extends Migration
             $table->longText('membership_restrictions');
             $table->enum('status', ['active', 'suspended', 'canceled', 'expired']);
             $table->timestamps();
-        });
 
-        Schema::table('user_memberships', function($table){
-            $table->integer('user_id')->unsigned()->nullable();
             $table->foreign('user_id')->references('id')->on('users');
-
-            $table->integer('signed_by')->unsigned()->nullable();       // the employee that assigned the membership or the user himself
             $table->foreign('signed_by')->references('id')->on('users');
-
-            $table->integer('membership_id')->unsigned()->nullable();
             $table->foreign('membership_id')->references('id')->on('membership_plans');
         });
     }
