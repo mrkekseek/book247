@@ -13,6 +13,8 @@ class CreateUserMembershipsTable extends Migration
     public function up()
     {
         Schema::create('user_memberships', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
+
             $table->increments('id');
             $table->date('day_start');
             $table->date('day_stop');
