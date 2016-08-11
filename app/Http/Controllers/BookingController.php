@@ -427,11 +427,26 @@ class BookingController extends Controller
                     //'value' => string '[1,2,3,4,5]' (length=11)
                     $selected_days  = json_decode($restriction['value']);
                     //'time_start' => string '06:00' (length=5)
-                    $hour_start     = Carbon::createFromFormat('H:i', $restriction['time_start']);
+                    if (substr_count($restriction['time_start'], ':')==1) {
+                        $hour_start = Carbon::createFromFormat('H:i', $restriction['time_start']);
+                    }
+                    else{
+                        $hour_start = Carbon::createFromFormat('H:i:s', $restriction['time_start']);
+                    }
                     //'time_end' => string '14:00' (length=5)
-                    $hour_end       = Carbon::createFromFormat('H:i', $restriction['time_end']);
+                    if (substr_count($restriction['time_end'], ':')==1) {
+                        $hour_end = Carbon::createFromFormat('H:i', $restriction['time_end']);
+                    }
+                    else{
+                        $hour_end = Carbon::createFromFormat('H:i:s', $restriction['time_end']);
+                    }
                     // booking hour
-                    $booking_hour   = Carbon::createFromFormat('H:i', $fillable['booking_time_start']);
+                    if (substr_count($fillable['booking_time_start'], ':')==1) {
+                        $booking_hour = Carbon::createFromFormat('H:i', $fillable['booking_time_start']);
+                    }
+                    else{
+                        $booking_hour = Carbon::createFromFormat('H:i:s', $fillable['booking_time_start']);
+                    }
                     // day of week for the booking
                     $booking_day    = Carbon::createFromFormat('Y-m-d', $fillable['date_of_booking']);
 
@@ -475,7 +490,12 @@ class BookingController extends Controller
                     // bookings must be made until y hours from now
                     $hours_until_booking = $restriction['max_value'];
 
-                    $booking_date_time = Carbon::createFromFormat('Y-m-d H:i', $fillable['date_of_booking'].' '.$fillable['booking_time_start']);
+                    if (substr_count($fillable['booking_time_start'], ':')==1) {
+                        $booking_date_time = Carbon::createFromFormat('Y-m-d H:i', $fillable['date_of_booking'] . ' ' . $fillable['booking_time_start']);
+                    }
+                    else{
+                        $booking_date_time = Carbon::createFromFormat('Y-m-d H:i:s', $fillable['date_of_booking'] . ' ' . $fillable['booking_time_start']);
+                    }
                     $closest_booking_date_time = Carbon::now()->addHours($hours_from_now);
                     $farthest_booking_date_time = Carbon::now()->addHours($hours_until_booking);
 
@@ -1161,6 +1181,8 @@ class BookingController extends Controller
             $resources_ids[] = ['name'=>$resource->name, 'id'=>$resource->id];
         }
 
+        $membership_plans = MembershipPlan::where('id','!=','1')->where('status','=','active')->get()->sortBy('name');
+
         $buttons_color = [
             'is_show'           => 'bg-green-jungle bg-font-green-jungle',
             'is_no_show'        => 'bg-red-thunderbird bg-font-red-thunderbird',
@@ -1193,7 +1215,8 @@ class BookingController extends Controller
             'header_vals'   => $header_vals,
             'all_locations' => $all_locations,
             'all_activities'=> $all_activities,
-            'is_close_menu' => true
+            'is_close_menu' => true,
+            'memberships'   => $membership_plans
         ]);
     }
 

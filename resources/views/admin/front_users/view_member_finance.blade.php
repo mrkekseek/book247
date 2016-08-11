@@ -87,14 +87,14 @@
                                 <div class="portlet-title tabbable-line">
                                     <div class="caption caption-md">
                                         <i class="icon-globe theme-font hide"></i>
-                                        <span class="caption-subject font-blue-madison bold uppercase">Member Bookings</span>
+                                        <span class="caption-subject font-blue-madison bold uppercase">Member Invoices</span>
                                     </div>
                                     <ul class="nav nav-tabs">
                                         <li class="active">
-                                            <a href="#tab_1_1" data-toggle="tab">Last 10 bookings</a>
+                                            <a href="#tab_1_1" data-toggle="tab">Last 10 invoices</a>
                                         </li>
                                         <li>
-                                            <a href="#tab_1_2" data-toggle="tab">Archive</a>
+                                            <a href="#tab_1_2" data-toggle="tab">All Invoices</a>
                                         </li>
                                     </ul>
                                 </div>
@@ -106,6 +106,7 @@
                                                 <div class="col-md-12">
                                                     <!-- BEGIN BORDERED TABLE PORTLET-->
                                                     <div class="portlet light portlet-fit bordered">
+                                                        <h4> &nbsp; Latest Bookings Invoices </h4>
                                                         <div class="table-scrollable">
                                                             <table class="table table-bordered table-hover">
                                                                 <thead>
@@ -139,6 +140,51 @@
                                                                     @else
                                                                         <tr>
                                                                             <td colspan="3"><b>Total Items Value and Invoice Status</b></td>
+                                                                            <td class="hidden-xs"> <b> {{$invoice['price']}} </b> </td>
+                                                                            <td class="hidden-xs"> <b> {{$invoice['discount']}} </b> </td>
+                                                                            <td> <b>{{$invoice['total']}} </b> </td>
+                                                                            <td>
+                                                                                <span class="label label-sm {{$invoice['color_status']}} booking_details_modal" > {{$invoice['status']}} </span>
+                                                                            </td>
+                                                                        </tr>
+                                                                    @endif
+                                                                @endforeach
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+
+                                                        <h4> &nbsp; Latest General Invoices </h4>
+                                                        <div class="table-scrollable">
+                                                            <table class="table table-bordered table-hover">
+                                                                <thead>
+                                                                <tr>
+                                                                    <th> #ID </th>
+                                                                    <th> Invoice Date </th>
+                                                                    <th> Invoice Items Type </th>
+                                                                    <th class="hidden-xs"> Price </th>
+                                                                    <th class="hidden-xs"> Discount </th>
+                                                                    <th> Total </th>
+                                                                    <th> Status </th>
+                                                                </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                <?php $theNr = 1; ?>
+                                                                @foreach($lastTenGeneral as $invoice)
+                                                                    @if ($invoice['item_name']!='' && $invoice['item_type']!='')
+                                                                        <tr>
+                                                                            @if (isset($invoice['colspan']))
+                                                                                <td rowspan="{{$invoice['colspan']}}">{{$invoice['invoice_id']}}</td>
+                                                                            @endif
+                                                                            <td> {{$invoice['date']}} </td>
+                                                                            <td> {{$invoice['item_name']}} / {{$invoice['item_type']}} </td>
+                                                                            <td class="hidden-xs"> {{$invoice['price']}} </td>
+                                                                            <td class="hidden-xs"> {{$invoice['discount']}} </td>
+                                                                            <td> {{$invoice['total']}} </td>
+                                                                            <td> </td>
+                                                                        </tr>
+                                                                    @else
+                                                                        <tr>
+                                                                            <td colspan="2"><b>Total Items Value and Invoice Status</b></td>
                                                                             <td class="hidden-xs"> <b> {{$invoice['price']}} </b> </td>
                                                                             <td class="hidden-xs"> <b> {{$invoice['discount']}} </b> </td>
                                                                             <td> <b>{{$invoice['total']}} </b> </td>
@@ -198,7 +244,48 @@
                                                                             <td> {{ $invoice['date'] }} </td>
                                                                             <td> {{ $invoice['status'] }} </td>
                                                                             <td>
-                                                                                <a class="btn {{ $invoice['color_button'] }} btn-sm booking_details_modal" data-key="{{$invoice['invoice_no']}}" href="javascript:;">
+                                                                                <a class="btn {{ $invoice['color_button'] }} btn-sm booking_details_modal" data-key="{{$invoice['invoice_no']}}" href="{{ route('admin/invoices/view',['id'=>$invoice['invoice_no']]) }}">
+                                                                                    <i class="fa fa-edit"></i> Details </a>
+                                                                            </td>
+                                                                        </tr>
+                                                                    @endforeach
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+
+                                                            <div class="table-scrollable">
+                                                                <table class="table table-striped table-bordered table-advance table-hover">
+                                                                    <thead>
+                                                                    <tr>
+                                                                        <th>
+                                                                            <i class="fa fa-briefcase"></i> Invoice Number </th>
+                                                                        <th>
+                                                                            <i class="fa fa-briefcase"></i> Invoice Type </th>
+                                                                        <th>
+                                                                            <i class="fa fa-briefcase"></i> Invoice Items </th>
+                                                                        <th>
+                                                                            <i class="fa fa-briefcase"></i> Price </th>
+                                                                        <th>
+                                                                            <i class="fa fa-briefcase"></i> Added On </th>
+                                                                        <th>
+                                                                            <i class="fa fa-shopping-cart"></i> Status </th>
+                                                                        <th> </th>
+                                                                    </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                    @foreach ($generalInvoices as $invoice)
+                                                                        <tr>
+                                                                            <td class="highlight">
+                                                                                <div class="{{ $invoice['color_status'] }}"></div>
+                                                                                <a href="javascript:;">Invoice #{{$invoice['invoice_no']}} </a>
+                                                                            </td>
+                                                                            <td> {{ $invoice['invoice_type'] }} </td>
+                                                                            <td> {{ $invoice['items'] }} </td>
+                                                                            <td> {{ $invoice['price_to_pay'] }} </td>
+                                                                            <td> {{ $invoice['date'] }} </td>
+                                                                            <td> {{ $invoice['status'] }} </td>
+                                                                            <td>
+                                                                                <a class="btn {{ $invoice['color_button'] }} btn-sm booking_details_modal" target="_blank" href="{{ route('admin/invoices/view',['id'=>$invoice['invoice_no']]) }}">
                                                                                     <i class="fa fa-edit"></i> Details </a>
                                                                             </td>
                                                                         </tr>

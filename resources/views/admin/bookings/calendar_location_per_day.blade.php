@@ -404,6 +404,18 @@
                                 <div class="form-group">
                                     <label class="control-label visible-ie8 visible-ie9">Re-type Your Password</label>
                                     <input class="form-control placeholder-no-fix" type="password" autocomplete="off" placeholder="Re-type Your Password" name="rpassword" /> </div>
+
+                                <p class="hint" style="margin:5px 0;"> Enter membership plan below: </p>
+                                <div class="form-group">
+                                    <!--ie8, ie9 does not support html5 placeholder, so we just show field title for that-->
+                                    <label class="control-label visible-ie8 visible-ie9"> Available Memberships </label>
+                                    <select name="membership_plans_list" class="form-control list_all_plans">
+                                        <option value="-1"> No Membership Plan </option>
+                                        @foreach ($memberships as $membership)
+                                            <option value="{{$membership->id}}"> {{$membership->name}} </option>
+                                        @endforeach
+                                    </select> </div>
+
                                 <div class="form-actions">
                                     <button type="button" data-dismiss="modal" class="btn grey-steel">Back</button>
                                     <button type="submit" id="register-submit-btn" class="btn red uppercase pull-right">Submit</button>
@@ -851,6 +863,7 @@
                     'email': $('input[name="email"]').val(),
                     'phone_number': $('input[name="phone"]').val(),
                     'password': $('input[name="password"]').val(),
+                    'membership_plan': $('select[name="membership_plans_list"]').val()
                 },
                 success: function (data) {
                     if (data.success==1) {
@@ -1799,7 +1812,7 @@
         });
 
         function refresh() {
-            if(new Date().getTime() - time >= 60000)
+            if(new Date().getTime() - time >= 300000)
                 window.location.reload(true);
             else
                 setTimeout(refresh, 10000);

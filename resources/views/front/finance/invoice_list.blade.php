@@ -398,6 +398,8 @@
                     $('input[name="book_room"]').val(data.room);
                     $('input[name="book_activity"]').val(data.category);
                     //$('select[name="book_player"]').html(data.forUserName);
+
+                    //var booking_details = {room:'', activity:'', book_day:'', time_start:''};
                     get_players_list($('select[name="book_player"]'), data.forUserName, data.forUserID);
 
                     /* Get booking notes */

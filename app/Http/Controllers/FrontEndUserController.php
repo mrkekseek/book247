@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Booking;
 use App\BookingInvoice;
 use App\BookingInvoiceItem;
+use App\Invoice;
+use App\InvoiceItem;
 use App\UserFriends;
 use App\UserMembership;
 use Illuminate\Http\Request;
@@ -324,7 +326,6 @@ class FrontEndUserController extends Controller
         if ($my_plan){
             $restrictions = $my_plan->get_plan_restrictions();
             $plan_details = $my_plan->get_plan_details();
-            //xdebug_var_dump($restrictions); exit;
         }
         else {
             $my_plan = MembershipPlan::where('id','=',1)->get()->first();
@@ -737,6 +738,143 @@ class FrontEndUserController extends Controller
             }
         }
 
+        $generalInvoiceList = [];
+        $lastTenGeneralInvoice = [];
+        $generalInvoices = Invoice::where('user_id','=',$id)->orderBy('created_at','desc')->get();
+        if (sizeof($generalInvoices)>0){
+            $buttons = [];
+            $colorStatus = '';
+            foreach ($generalInvoices as $single_invoice){
+                switch ($single_invoice->status) {
+                    case 'pending':
+                        $colorStatus = 'warning';
+                        $buttons = 'yellow-gold';
+                        break;
+                    case 'ordered':
+                    case 'processing':
+                        $colorStatus = 'info';
+                        $buttons = 'green-meadow';
+                        break;
+                    case 'completed':
+                        $colorStatus = 'success';
+                        $buttons = 'green-jungle';
+                        break;
+                    case 'cancelled':
+                        $colorStatus = 'warning';
+                        $buttons = 'yellow-lemon';
+                        break;
+                    case 'declined':
+                    case 'incomplete':
+                        $colorStatus = 'danger';
+                        $buttons = 'red-thunderbird';
+                        break;
+                    case 'preordered':
+                        $colorStatus = 'info';
+                        $buttons = 'green-meadow';
+                        break;
+                }
+
+                $price = 0;
+                $items = 0;
+                $invoiceItems = InvoiceItem::where('invoice_id','=',$single_invoice->id)->get();
+                if ($invoiceItems){
+                    foreach ($invoiceItems as $invItem){
+                        $price+=$invItem->total_price;
+                        $items++;
+                    }
+                }
+
+                $addedOn    = Carbon::createFromFormat('Y-m-d H:i:s', $single_invoice->created_at)->format('j/m/Y');
+                $generalInvoiceList[] = [
+                    'invoice_id'    => $single_invoice->id,
+                    'invoice_no'    => $single_invoice->invoice_number,
+                    'date'          => $addedOn,
+                    'status'        => $single_invoice->status,
+                    'color_status'  => $colorStatus,
+                    'color_button'  => $buttons,
+                    'price_to_pay'  => $price,
+                    'items'         => $items,
+                    'invoice_type'  => $single_invoice->invoice_type
+                ];
+            }
+
+            $nr = 0;
+            foreach($generalInvoiceList as $invoice){
+                if ($nr>10){
+                    break;
+                }
+
+                $sum_price = 0;
+                $sum_discount = 0;
+                $sum_total = 0;
+                $is_first = 0;
+
+                $invoiceItems = InvoiceItem::where('invoice_id','=',$invoice['invoice_id'])->get();
+                if (sizeof($invoiceItems)>0){
+                    foreach($invoiceItems as $item){
+                        $new_set = [
+                            'item_name' => $item->item_name,
+                            'item_type' => $item->item_type,
+                            'price'     => $item->price,
+                            'discount'  => $item->discount,
+                            'total'     => $item->total_price,
+                            'date'      => Carbon::createFromFormat('Y-m-d H:i:s', $item->created_at)->format('j/m/Y')
+                        ];
+                        if ($is_first==0){
+                            $is_first=1;
+                            $new_set['colspan'] = sizeof($invoiceItems)+1;
+                            $new_set['invoice_id'] = $invoice['invoice_id'];
+                        }
+
+                        $lastTenGeneralInvoice[] = $new_set;
+
+                        $sum_price+= $item->price;
+                        $sum_discount+= $item->discount;
+                        $sum_total+= $item->total_price;
+                    }
+                }
+
+                switch ($invoice['status']) {
+                    case 'pending' :
+                        $colorStatus = 'label-warning';
+                        break;
+                    case 'expired' :
+                        $colorStatus = 'label-default';
+                        break;
+                    case 'active' :
+                        $colorStatus = 'label-success';
+                        break;
+                    case 'paid' :
+                        $colorStatus = 'label-success';
+                        break;
+                    case 'unpaid' :
+                        $colorStatus = 'label-danger';
+                        break;
+                    case 'noshow' :
+                        $colorStatus = 'label-danger';
+                        break;
+                    case 'old' :
+                        $colorStatus = 'label-info';
+                        break;
+                    case 'canceled' :
+                        $colorStatus = 'label-default';
+                        break;
+                }
+
+                $lastTenGeneralInvoice[] = [
+                    'item_name' => '',
+                    'item_type' => '',
+                    'status'    => $invoice['status'],
+                    'color_status'  => $colorStatus,
+                    'price'     => $sum_price,
+                    'discount'  => $sum_discount,
+                    'total'     => $sum_total,
+                    'date' => $invoice['date'],
+                ];
+                $nr++;
+            }
+        }
+
         $avatar = $back_user->avatar;
         if (!$avatar) {
             $avatar = new UserAvatars();
@@ -759,6 +897,10 @@ class FrontEndUserController extends Controller
         ];
         $sidebar_link= 'admin-frontend-user_details_view';
 
+        //xdebug_var_dump($invoicesList);
+        //xdebug_var_dump($lastTenInvoices);
+        //xdebug_var_dump($lastTenGeneralInvoice);
+
         return view('admin/front_users/view_member_finance', [
             'user'      => $back_user,
             'breadcrumbs' => $breadcrumbs,
@@ -768,6 +910,8 @@ class FrontEndUserController extends Controller
             'avatarType'  => $avatarType,
             'invoices'    => $invoicesList,
             'lastTen'     => $lastTenInvoices,
+            'generalInvoices' => $generalInvoiceList,
+            'lastTenGeneral'  => $lastTenGeneralInvoice,
             'multipleBookingsIndex' => isset($index)?$index:[],
         ]);
     }
@@ -1482,7 +1626,15 @@ class FrontEndUserController extends Controller
     }
 
     public function new_member_registration(Request $request){
-        $vars = $request->only('first_name', 'last_name', 'email', 'phone_number', 'password');
+        if (Auth::check()) {
+            $by_user = Auth::user();
+            if (!$by_user->hasRole(['front-member','front-user'])){
+                // is an employee
+                $is_employee = true;
+            }
+        }
+
+        $vars = $request->only('first_name', 'last_name', 'email', 'phone_number', 'password', 'membership_plan');
         $vars['middle_name'] = '';
         $vars['username'] = $vars['email'];
         $vars['user_type'] = Role::where('name','=','front-user')->get()->first()->id;
@@ -1505,6 +1657,8 @@ class FrontEndUserController extends Controller
         $text_psw    = $vars['password'];
         $credentials['password'] = bcrypt($credentials['password']);
 
+        $the_plan = MembershipPlan::where('id','=',$vars['membership_plan'])->where('id','!=',1)->where('status','=','active')->get()->first();
+
         try {
             $user = User::create($credentials);
             $user->attachRole($vars['user_type']);
@@ -1522,7 +1676,7 @@ class FrontEndUserController extends Controller
             $personalDetails->fill($personalData);
             $personalDetails->save();
 
-            $beautymail = app()->make(Beautymail::class);
+            /* $beautymail = app()->make(Beautymail::class);
             $beautymail->send('emails.new_user_registration', ['user'=>$user, 'personal_details'=>$personalDetails, 'raw_password' => $text_psw, 'logo' => ['path' => 'http://sqf.se/wp-content/uploads/2012/12/sqf-logo.png']], function($message) use ($user)
             {
                 $message
@@ -1530,7 +1684,20 @@ class FrontEndUserController extends Controller
                     ->to($user->email, $user->first_name.' '.$user->middle_name.' '.$user->last_name)
                     //->to('stefan.bogdan@ymail.com', $user->first_name.' '.$user->middle_name.' '.$user->last_name)
                     ->subject('Booking System - You are registered!');
-            });
+            }); */
+
+            // if membership plan selected
+            if ($the_plan) {
+                // add the membership plan to the new registered user
+                if ($user->attach_membership_plan($the_plan, $is_employee ? $by_user : $user)) {
+                    $memberRole = Role::where('name', '=', 'front-member')->get()->first();
+                    if (!$user->hasRole($memberRole)) {
+                        $user->attachRole($memberRole);
+                    }
+                } else {
+                    // could not assign plan to member
+                }
+            }
 
             return [
                 'success'       => true,

@@ -433,6 +433,18 @@ Route::group(['middleware' => 'web'], function () {
         'uses'  => 'BookingController@location_calendar_day_view'
     ]);
     /** Stop Routes for bookings */
+
+    /** Start Finance Part */
+    Route::get('admin/invoices', [
+        'as'    => 'admin/invoices',
+        'uses'  => 'InvoiceController@list_all_invoices'
+    ]);
+
+    Route::get('admin/invoices/{id}/view', [
+        'as'    => 'admin/invoices/view',
+        'uses'  => 'InvoiceController@view_invoice'
+    ]);
+    /** Stop Finance Part */
 });
 
 Route::group(['middleware'=>'web', 'prefix'=>'admin'], function(){

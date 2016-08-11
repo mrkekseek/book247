@@ -4,6 +4,7 @@ namespace App;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Zizaco\Entrust\Traits\EntrustUserTrait;
+use App\UserMembership;
 
 class User extends Authenticatable
 {
@@ -45,6 +46,40 @@ class User extends Authenticatable
         'password', 'remember_token',
     ];
 
+    public static function rules($method, $id=0){
+        switch($method){
+            case 'GET':
+            case 'DELETE':
+            {
+                return [];
+            }
+            case 'POST':
+            {
+                return [
+                    'first_name'    => 'required|min:4|max:150',
+                    'last_name'     => 'required|min:4|max:150',
+                    'username'      => 'required|min:6|max:30|unique:users,username',
+                    'password'      => 'required|min:8',
+                    'email'         => 'required|email|email|unique:users',
+                    'user_type'     => 'required|exists:roles,id',
+                ];
+            }
+            case 'PUT':
+            case 'PATCH':
+            {
+                return [
+                    'first_name'=> 'required|min:4|max:150',
+                    'last_name' => 'required|min:4|max:150',
+                    'username'  => 'required|min:6|max:30|unique:users,username'.($id ? ",$id,id" : ''),
+                    'password'  => 'required|min:8',
+                    'email'     => 'required|email|email|unique:users,email'.($id ? ",$id,id" : ''),
+                    'user_type' => 'required|exists:roles,id',
+                ];
+            }
+            default:break;
+        }
+    }
+
     public function canDo($permission){
 
     }
@@ -82,37 +117,29 @@ class User extends Authenticatable
         return $this->hasMany('App\UserMembership');
     }
 
-    public static function rules($method, $id=0){
-        switch($method){
-            case 'GET':
-            case 'DELETE':
-            {
-                return [];
-            }
-            case 'POST':
-            {
-                return [
-                    'first_name'    => 'required|min:4|max:150',
-                    'last_name'     => 'required|min:4|max:150',
-                    'username'      => 'required|min:6|max:30|unique:users,username',
-                    'password'      => 'required|min:8',
-                    'email'         => 'required|email|email|unique:users',
-                    'user_type'     => 'required|exists:roles,id',
-                ];
-            }
-            case 'PUT':
-            case 'PATCH':
-            {
-                return [
-                    'first_name'=> 'required|min:4|max:150',
-                    'last_name' => 'required|min:4|max:150',
-                    'username'  => 'required|min:6|max:30|unique:users,username'.($id ? ",$id,id" : ''),
-                    'password'  => 'required|min:8',
-                    'email'     => 'required|email|email|unique:users,email'.($id ? ",$id,id" : ''),
-                    'user_type' => 'required|exists:roles,id',
-                ];
-            }
-            default:break;
+    public function attach_membership_plan(MembershipPlan $the_plan, User $signed_by){
+        $user_plan = new UserMembership();
+        //$user_plan->assign_plan($this, $the_plan, $signed_by);
+        if ( $user_plan->create_new($this, $the_plan, $signed_by) ){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
+    public function cancel_membership_plan(UserMembership $old_plan){
+        if ($old_plan) {
+            $old_plan->status = 'canceled';
+            $old_plan->save();
+
+            $memberRole = Role::where('name','=','front-member')->get()->first();
+            $this->detachRole($memberRole);
+
+            return true;
+        }
+        else{
+            return false;
         }
     }
 }

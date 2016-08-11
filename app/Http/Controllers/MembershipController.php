@@ -17,51 +17,6 @@ use Regulus\ActivityLog\Models\Activity;
 
 class MembershipController extends Controller
 {
-    function create(User $user, MembershipPlan $plan, User $signed_by) {
-        $to_be_paid = $plan->get_price();
-
-        $fillable = [
-            'user_id'       => $user->id,
-            'membership_id' => $plan->id,
-            'day_start' => Carbon::today()->toDateString(),
-            'day_stop'  => Carbon::today()->addMonths($plan->binding_period)->toDateString(),
-            'membership_name'   => $plan->name,
-            'invoice_period'    => $plan->plan_period,
-            'binding_period'    => $plan->binding_period,
-            'price'     => $to_be_paid->price,
-            'discount'  => 0,
-            'membership_restrictions'   => '',
-            'signed_by' => $signed_by->id,
-            'status'    => 'active'
-        ];
-
-        $membership_restriction = $plan->get_restrictions(true);
-        $fillable['membership_restrictions'] = json_encode($membership_restriction);
-
-        $validator = Validator::make($fillable, UserMembership::rules('POST'), UserMembership::$message, UserMembership::$attributeNames);
-        if ($validator->fails()){
-            //echo json_encode($validator->getMessageBag()->toArray());
-            return false;
-        }
-
-        try {
-            $the_membership = UserMembership::create($fillable);
-            Activity::log([
-                'contentId'     => $user->id,
-                'contentType'   => 'user_membership',
-                'action'        => 'New Membership Assignment',
-                'description'   => 'New membership plan assigned to customer : '.$the_membership->id,
-                'details'       => 'Created by user : '.$signed_by->id,
-                'updated'       => false,
-            ]);
-
-            return $the_membership;
-        }
-        catch (Exception $e) {
-            return false;
-        }
-    }
-
     public function assign_membership_to_member(Request $request){
         if (!Auth::check()) {
             return [
@@ -111,8 +66,8 @@ class MembershipController extends Controller
         // check for old plans that are active
         $old_plan = UserMembership::where('user_id','=',$member->id)->whereIn('status',['active','suspended'])->orderBy('created_at','desc')->get()->first();
 
-        $new_plan = $this->create($member, $the_plan, $user);
-        if ($new_plan){
+        $new_plan = new UserMembership();
+        if ($new_plan->create_new($member, $the_plan, $user)){
             if ($old_plan) {
                 $old_plan->status = 'canceled';
                 $old_plan->save();
@@ -136,7 +91,6 @@ class MembershipController extends Controller
                 'title'     => 'An error occurred'
             ];
         }
-
     }
 
     public function cancel_membership_for_member(Request $request){
@@ -178,11 +132,7 @@ class MembershipController extends Controller
 
         $old_plan = UserMembership::where('user_id','=',$member->id)->whereIn('status',['active','suspended'])->orderBy('created_at','desc')->get()->first();
         if ($old_plan) {
-            $old_plan->status = 'canceled';
-            $old_plan->save();
-
-            $memberRole = Role::where('name','=','front-member')->get()->first();
-            $member->detachRole($memberRole);
+            $member->cancel_membership_plan($old_plan);
 
             return [
                 'success'   => true,
@@ -193,7 +143,7 @@ class MembershipController extends Controller
         else{
             return [
                 'success'   => false,
-                'errors'    => 'Could not assign plan to member. Please logout/login then try again.',
+                'errors'    => 'Could not cancel the current membership plan or no active plan at this moment. Please logout/login then try again.',
                 'title'     => 'An error occurred'
             ];
         }

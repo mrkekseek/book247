@@ -4,6 +4,8 @@ namespace App;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
+use Validator;
+use Regulus\ActivityLog\Models\Activity;
 
 class UserMembership extends Model
 {
@@ -151,5 +153,88 @@ class UserMembership extends Model
         ];
 
         return $plan_details;
+    }
+
+    public function create_new(User $user, MembershipPlan $plan, User $signed_by) {
+        $to_be_paid = $plan->get_price();
+
+        $fillable = [
+            'user_id'       => $user->id,
+            'membership_id' => $plan->id,
+            'day_start' => Carbon::today()->toDateString(),
+            'day_stop'  => Carbon::today()->addMonths($plan->binding_period)->toDateString(),
+            'membership_name'   => $plan->name,
+            'invoice_period'    => $plan->plan_period,
+            'binding_period'    => $plan->binding_period,
+            'price'     => $to_be_paid->price,
+            'discount'  => 0,
+            'membership_restrictions'   => '',
+            'signed_by' => $signed_by->id,
+            'status'    => 'active'
+        ];
+
+        $membership_restriction = $plan->get_restrictions(true);
+        $fillable['membership_restrictions'] = json_encode($membership_restriction);
+
+        $validator = Validator::make($fillable, UserMembership::rules('POST'), UserMembership::$message, UserMembership::$attributeNames);
+        if ($validator->fails()){
+            //echo json_encode($validator->getMessageBag()->toArray());
+            return false;
+        }
+
+        try {
+            $the_membership = UserMembership::create($fillable);
+            Activity::log([
+                'contentId'     => $user->id,
+                'contentType'   => 'user_membership',
+                'action'        => 'New Membership Assignment',
+                'description'   => 'New membership plan assigned to customer : '.$the_membership->id,
+                'details'       => 'Created by user : '.$signed_by->id,
+                'updated'       => false,
+            ]);
+
+            // assign invoice for the newly created membership
+            $member_invoice = new Invoice();
+            $member_invoice->user_id = $user->id;
+            $member_invoice->employee_id = $signed_by->id;
+            $member_invoice->invoice_type = 'Membership Plan Assignment Invoice';
+            $member_invoice->invoice_reference_id = '';
+            $member_invoice->invoice_number = Invoice::next_invoice_number();
+            $member_invoice->status = 'pending';
+
+            $member_invoice->save();
+
+            $invoice_item = [
+                'item_name'     => $the_membership->membership_name,
+                'item_type'     => 'user_memberships',
+                'item_reference_id'    => $the_membership->id,
+
+                'quantity'      => 1,
+                'price'         => $the_membership->price,
+                'vat'           => 0,
+                'discount'      => $the_membership->discount
+            ];
+            $member_invoice->add_invoice_item($invoice_item);
+
+            if ($plan->administration_fee_amount!=0){
+                // we have the one time administration fee here
+                $invoice_item = [
+                    'item_name'     => $plan->administration_fee_name,
+                    'item_type'     => 'user_memberships',
+                    'item_reference_id'    => $the_membership->id,
+
+                    'quantity'      => 1,
+                    'price'         => $plan->administration_fee_amount,
+                    'vat'           => 0,
+                    'discount'      => $the_membership->discount
+                ];
+                $member_invoice->add_invoice_item($invoice_item);
+            }
+
+            return $the_membership;
+        }
+        catch (Exception $e) {
+            return false;
+        }
     }
 }
