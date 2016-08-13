@@ -533,7 +533,9 @@
             var first_booking_box = $('.friend_booking:first').find('.booking_step_content');
             var select_container = first_booking_box.find('select[name="friend_booking"]');
             first_booking_box.show();
-            get_players_list(select_container);
+
+            var key = first_booking_box.parent().find('input[name="time_book_key"]').val();
+            get_players_list(select_container, key);
         }
 
         function hide_play_with_friends(){
@@ -573,7 +575,7 @@
             $('.booking_summary_box').before(append_to);
         }
 
-        function get_players_list(container){
+        function get_players_list(container, key){
             App.blockUI({
                 target: '#booking_form_option',
                 boxed: true,
@@ -585,7 +587,10 @@
                 type: "post",
                 cache: false,
                 data: {
-                    'limit': 5,
+                    'resourceID': '',
+                    'booking_time_start': '',
+                    'booking_day': '',
+                    'search_key': key,
                 },
                 success: function(data){
                     var all_list = "";
@@ -666,7 +671,7 @@
 
             if (own_next.hasClass('friend_booking')) {
                 var players_list_select = own_next.find('select[name="friend_booking"]');
-                get_players_list(players_list_select);
+                get_players_list(players_list_select, search_key);
             }
             else if (own_next.hasClass('booking_summary_box')){
                 get_booking_summary(own_next);

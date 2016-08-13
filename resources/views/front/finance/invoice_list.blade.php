@@ -400,7 +400,7 @@
                     //$('select[name="book_player"]').html(data.forUserName);
 
                     //var booking_details = {room:'', activity:'', book_day:'', time_start:''};
-                    get_players_list($('select[name="book_player"]'), data.forUserName, data.forUserID);
+                    get_players_list($('select[name="book_player"]'), data.forUserName, data.forUserID, key);
 
                     /* Get booking notes */
                     if (data.bookingNotes.length !=0){
@@ -422,7 +422,7 @@
             });
         }
 
-        function get_players_list(container, player_name, player_id){
+        function get_players_list(container, player_name, player_id, key){
             App.blockUI({
                 target: '#book_main_details_container',
                 boxed: true,
@@ -434,7 +434,10 @@
                 type: "post",
                 cache: false,
                 data: {
-                    'limit': 5,
+                    'resourceID': '',
+                    'booking_time_start': '',
+                    'booking_day': '',
+                    'search_key': key,
                 },
                 success: function(data){
                     var all_list = '<option value="'+ player_id +'" selected="selected">'+ player_name +'</option>';

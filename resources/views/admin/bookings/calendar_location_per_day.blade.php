@@ -1481,13 +1481,17 @@
                 boxed: true,
                 message: 'Processing...'
             });
+            var book_key = container.parent().parent().find('input[name="time_book_key"]').val();
 
             $.ajax({
                 url: '{{route('ajax/get_players_list')}}',
                 type: "post",
                 cache: false,
                 data: {
-                    'limit': 5,
+                    'resourceID': '',
+                    'booking_time_start': '',
+                    'booking_day': '',
+                    'search_key': book_key,
                     'userID': $('input[name="booking_made_by"]').val()
                 },
                 success: function(data){

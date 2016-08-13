@@ -245,7 +245,8 @@ class Booking extends Model
 
         try {
             $the_invoice = BookingInvoice::create($fillable);
-        } catch (Exception $e) {
+        }
+        catch (Exception $e) {
             return ['success' => false, 'errors' => 'Booking adding invoice to selected booking'];
         }
 
@@ -287,6 +288,8 @@ class Booking extends Model
             if ($the_invoice_item){
                 $this->invoice_id = $the_invoice_item->id;
                 $this->save();
+
+                $the_invoice->make_general_invoice();
 
                 return $the_invoice;
             }

@@ -68,7 +68,9 @@
     </div>
     <!-- END CONTENT -->
     <!-- BEGIN QUICK SIDEBAR -->
+    @if (isset($right_sidebar_on))
     @include('admin.layouts.main_quick_sidebar')
+    @endif
     <!-- END QUICK SIDEBAR -->
 </div>
 <!-- END CONTAINER -->

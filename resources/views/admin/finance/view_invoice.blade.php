@@ -54,12 +54,6 @@
                                     </ul>
                                 </div>
                                 <div class="col-xs-4  hidden-print">
-                                    <h3>About:</h3>
-                                    <ul class="list-unstyled">
-                                        <li> Drem psum dolor sit amet </li>
-                                        <li> Laoreet dolore magna </li>
-                                        <li> Consectetuer adipiscing elit </li>
-                                    </ul>
                                 </div>
                                 <div class="col-xs-4 invoice-payment">
                                     <h3>Payment Details:</h3>

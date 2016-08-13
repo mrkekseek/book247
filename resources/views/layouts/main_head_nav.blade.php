@@ -16,6 +16,7 @@
             @if (Auth::check())
             <ul class="nav navbar-nav pull-right">
                 <!-- BEGIN NOTIFICATION DROPDOWN -->
+                @if (isset($notifications_on))
                 <li class="dropdown dropdown-extended dropdown-notification dropdown-dark" id="header_notification_bar">
                     <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true">
                         <i class="icon-bell"></i>
@@ -114,8 +115,10 @@
                         </li>
                     </ul>
                 </li>
+                @endif
                 <!-- END NOTIFICATION DROPDOWN -->
                 <!-- BEGIN TODO DROPDOWN -->
+                @if (isset($todo_dropdown_on))
                 <li class="dropdown dropdown-extended dropdown-tasks dropdown-dark" id="header_task_bar">
                     <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true">
                         <i class="icon-calendar"></i>
@@ -224,11 +227,13 @@
                         </li>
                     </ul>
                 </li>
+                @endif
                 <!-- END TODO DROPDOWN -->
-                <li class="droddown dropdown-separator">
+                <!--<li class="droddown dropdown-separator">
                     <span class="separator"></span>
-                </li>
+                </li>-->
                 <!-- BEGIN INBOX DROPDOWN -->
+                @if (isset($inbox_dropdown_on))
                 <li class="dropdown dropdown-extended dropdown-inbox dropdown-dark" id="header_inbox_bar">
                     <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true">
                         <span class="circle">3</span>
@@ -301,6 +306,7 @@
                         </li>
                     </ul>
                 </li>
+                @endif
                 <!-- END INBOX DROPDOWN -->
                 <!-- BEGIN USER LOGIN DROPDOWN -->
                 <li class="dropdown dropdown-user dropdown-dark">
@@ -342,10 +348,12 @@
                 </li>
                 <!-- END USER LOGIN DROPDOWN -->
                 <!-- BEGIN QUICK SIDEBAR TOGGLER -->
+                @if (isset($right_sidebar_on))
                 <li class="dropdown dropdown-extended quick-sidebar-toggler">
                     <span class="sr-only">Toggle Quick Sidebar</span>
                     <i class="icon-logout"></i>
                 </li>
+                @endif
                 <!-- END QUICK SIDEBAR TOGGLER -->
             </ul>
             @endif

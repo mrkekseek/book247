@@ -493,7 +493,7 @@
                     players_dropd.removeAttr('disabled');
                     players_dropd.removeAttr('readonly');
 
-                    get_players_list(players_dropd, data.forUserName, data.forUserID);
+                    get_players_list(players_dropd, data.forUserName, data.forUserID, key);
 
                     if (data.paymentType=='cash'){
                         var book_finance = '<option value="cash" selected="selected">' + data.financialDetails + '</option>' +
@@ -632,7 +632,7 @@
             });
         }
 
-        function get_players_list(container, player_name, player_id){
+        function get_players_list(container, player_name, player_id, key){
             App.blockUI({
                 target: '#book_main_details_container',
                 boxed: true,
@@ -644,7 +644,10 @@
                 type: "post",
                 cache: false,
                 data: {
-                    'limit': 5,
+                    'resourceID': '',
+                    'booking_time_start': '',
+                    'booking_day': '',
+                    'search_key': key,
                     'userID': {{ $user->id }},
                 },
                 success: function(data){

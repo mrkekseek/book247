@@ -804,6 +804,10 @@ class FrontEndUserController extends Controller
                     break;
                 }
 
+                if ( $invoice['invoice_type'] == 'booking_invoice'){
+                    continue;
+                }
+
                 $sum_price = 0;
                 $sum_discount = 0;
                 $sum_total = 0;
@@ -1466,6 +1470,183 @@ class FrontEndUserController extends Controller
         return $all_friends;
     }
 
+    /**
+     * Check if the booking fillable can be transformed into a booking
+     * @param $fillable
+     * @param string $search_key
+     * @param bool $recurring
+     * @return array
+     */
+    private function validate_booking($fillable, $search_key='', $recurring = false, $is_employee = false){
+        $message = ['status'=>true, 'payment'=>'membership'];
+
+        // get user membership if exists
+        $active_membership = UserMembership::where('user_id','=',$fillable['for_user_id'])->where('status','=','active')->get()->first();
+        if ($active_membership){
+            $restrictions = $active_membership->get_plan_restrictions();
+        }
+        else{
+            $default_membership = MembershipPlan::where('id','=',1)->get()->first();
+            if ($default_membership){
+                $restrictions = $default_membership->get_restrictions(true);
+            }
+            else{
+                $restrictions = [];
+            }
+        }
+
+        $message['payment'] = $this->check_membership_restrictions($fillable, $restrictions, $search_key);
+
+        // check for existing booking on the same resource, bookings that are already made
+        $openBookings = Booking::whereIn('status',['pending','active'])
+            ->where('resource_id','=',$fillable['resource_id'])
+            ->where('location_id','=',$fillable['location_id'])
+            ->where('date_of_booking','=',$fillable['date_of_booking'])
+            ->where('booking_time_start','=',$fillable['booking_time_start'])
+            ->where('search_key','!=',$search_key)
+            ->get();
+        if (sizeof($openBookings)>0){
+            // we have another booking with the same details
+            $message['status'] = false;
+        }
+
+        return $message;
+    }
+
+    private function check_membership_restrictions($fillable, $restrictions, $search_key = 'c12abab@abab#abab12c'){
+        // we assume the payment type is membership then we go through all the restrictions and see if any of them is broken
+        $payment_type = 'membership';
+
+        // get activity selected for booking
+        $resource_category = ShopResource::where('id','=',$fillable['resource_id'])->get()->first();
+
+        // check for open bookings
+        $ownBookings = Booking::whereIn('status',['pending','active'])
+            ->where('for_user_id','=',$fillable['for_user_id'])
+            //->where('search_key','!=',$search_key)
+            ->where('payment_type','!=','cash')
+            ->get();
+        $nr_of_open_bookings = sizeof($ownBookings);
+
+        $time_of_day_result = [];
+
+        foreach ($restrictions as $restriction){
+            switch ($restriction['name']){
+                case 'time_of_day' : {
+                    //'value' => string '[1,2,3,4,5]' (length=11)
+                    $selected_days  = json_decode($restriction['value']);
+                    //'time_start' => string '06:00' (length=5)
+                    if (substr_count($restriction['time_start'], ':')==1) {
+                        $hour_start = Carbon::createFromFormat('H:i', $restriction['time_start']);
+                    }
+                    else{
+                        $hour_start = Carbon::createFromFormat('H:i:s', $restriction['time_start']);
+                    }
+                    //'time_end' => string '14:00' (length=5)
+                    if (substr_count($restriction['time_end'], ':')==1) {
+                        $hour_end = Carbon::createFromFormat('H:i', $restriction['time_end']);
+                    }
+                    else{
+                        $hour_end = Carbon::createFromFormat('H:i:s', $restriction['time_end']);
+                    }
+                    // booking hour
+                    if (substr_count($fillable['booking_time_start'], ':')==1) {
+                        $booking_hour = Carbon::createFromFormat('H:i', $fillable['booking_time_start']);
+                    }
+                    else{
+                        $booking_hour = Carbon::createFromFormat('H:i:s', $fillable['booking_time_start']);
+                    }
+                    // day of week for the booking
+                    $booking_day    = Carbon::createFromFormat('Y-m-d', $fillable['date_of_booking'])->format('w');
+
+                    //xdebug_var_dump(!in_array($booking_day, $selected_days));
+                    //xdebug_var_dump($booking_hour->gte($hour_start));
+                    //xdebug_var_dump($booking_hour->lt($hour_end));
+
+                    // we check the day first
+                    if (!in_array($booking_day, $selected_days)){
+                        // not in selected day
+                        //xdebug_var_dump($booking_day);
+                        //xdebug_var_dump($selected_days);
+                        $time_of_day_result[] = false;
+                    }
+                    // we check the hours interval second
+                    elseif ($booking_hour->lte($hour_start) || $booking_hour->gte($hour_end)){
+                        $time_of_day_result[] = false;
+                    }
+                    else{
+                        $time_of_day_result[] = true;
+                    }
+                }
+                    break;
+                case 'open_bookings' : {
+                    $the_open_restrictions = (int)$restriction['value'][0];
+                    //echo '<br />'.$nr_of_open_bookings.' >= '.$the_open_restrictions.' -- '.$fillable['for_user_id'].'<br />';
+                    if ( $nr_of_open_bookings >= $the_open_restrictions ){
+                        //echo '<br />'.$nr_of_open_bookings.' >= '.$the_open_restrictions.' -- '.$fillable['for_user_id'].'<br />';
+                        $payment_type = 'cash';
+                        return $payment_type;
+                    }
+                }
+                    break;
+                case 'cancellation' : {
+                    // do not need it here
+                }
+                    break;
+                case 'price' : {
+                    // do not need it here
+                }
+                    break;
+                case 'included_activity' : {
+                    $activities_in = json_decode($restriction['value']);
+                    if (!in_array($resource_category->category_id, $activities_in)){
+                        //xdebug_var_dump($fillable);
+                        //xdebug_var_dump($activities_in);
+                        //xdebug_var_dump($resource_category->category_id);
+                        //echo '<br />Not in category<br />';
+                        $payment_type = 'cash';
+                        return $payment_type;
+                    }
+                }
+                    break;
+                case 'booking_time_interval' : {
+                    // booking must take place x hours from now
+                    $hours_from_now      = $restriction['min_value'];
+                    // bookings must be made until y hours from now
+                    $hours_until_booking = $restriction['max_value'];
+
+                    if (substr_count($fillable['booking_time_start'], ':')==1) {
+                        $booking_date_time = Carbon::createFromFormat('Y-m-d H:i', $fillable['date_of_booking'] . ' ' . $fillable['booking_time_start']);
+                    }
+                    else{
+                        $booking_date_time = Carbon::createFromFormat('Y-m-d H:i:s', $fillable['date_of_booking'] . ' ' . $fillable['booking_time_start']);
+                    }
+                    $closest_booking_date_time = Carbon::now()->addHours($hours_from_now);
+                    $farthest_booking_date_time = Carbon::now()->addHours($hours_until_booking);
+
+                    if (!$booking_date_time->gte($closest_booking_date_time) || !$booking_date_time->lt($farthest_booking_date_time)){
+                        //echo '<br />Not in booking time interval<br />';
+                        $payment_type = 'cash';
+                        return $payment_type;
+                    }
+                }
+                    break;
+            }
+        }
+//xdebug_var_dump($time_of_day_result);
+        foreach ($time_of_day_result as $a){
+            if ($a == true){
+                $payment_type = 'membership';
+                return $payment_type;
+            }
+            else{
+                $payment_type = 'cash';
+            }
+        }
+
+        return $payment_type;
+    }
+
     public function ajax_get_available_players_list(Request $request){
         if (!Auth::check()) {
             return [];
@@ -1479,9 +1660,40 @@ class FrontEndUserController extends Controller
         if (!$user->hasRole(['front-member','front-user'])){
             $is_staff = true;
         }
-        $free_open_bookings = 5;
 
-        $vars = $request->only('userID');
+        $vars = $request->only('userID', 'resourceID', 'booking_time_start', 'booking_day', 'search_key');
+        $fillable = [
+            'for_user_id'   => -1,
+            'resource_id'   => -1,
+            'location_id'   => -1,
+            'date_of_booking'    => $vars['booking_day'],
+            'booking_time_start' => $vars['booking_time_start'],
+            'search_key'    => ''
+        ];
+
+        if (strlen($vars['search_key'])>2){
+            $booking = Booking::where('search_key','=',$vars['search_key'])->get()->first();
+            if (!$booking){
+                return [];
+            }
+            else{
+                $fillable['search_key']  = $booking->search_key;
+                $fillable['resource_id'] = $booking->resource_id;
+                $fillable['location_id'] = $booking->location_id;
+                $fillable['date_of_booking'] = $booking->date_of_booking;
+                $fillable['booking_time_start'] = $booking->booking_time_start;
+            }
+        }
+        else {
+            $resource = ShopResource::where('id', '=', $vars['resourceID'])->get()->first();
+            if (!$resource) {
+                return [];
+            } else {
+                $fillable['resource_id'] = $resource->id;
+                $fillable['location_id'] = $resource->location_id;
+            }
+        }
+
         if (isset($vars['userID'])){
             if ($user_id!=$vars['userID'] && $is_staff==true){
                 $user = User::find($vars['userID']);
@@ -1499,14 +1711,20 @@ class FrontEndUserController extends Controller
         foreach($friends as $friend){
             $friend_id = $friend->user_id==$user_id?$friend->friend_id:$friend->user_id;
             $user_details = User::find($friend_id);
+            $fillable['for_user_id'] = $friend_id;
 
             if (!$user_details){ continue; }
-            $bookings = BookingController::get_user_bookings($friend_id,['pending','active']);
-            if (sizeof($bookings)>=$free_open_bookings){ continue; }
 
-            $all_friends[] = ['name' => $user_details->first_name.' '.$user_details->middle_name.' '.$user_details->last_name, 'id'=>$user_details->id];
+            $canBook = $this->validate_booking($fillable, $vars['search_key']);
+            //xdebug_var_dump($canBook);
+            if ( $canBook['status']==false || $canBook['payment']=='cash' ){
+                continue;
+            }
+            else {
+                $all_friends[] = ['name' => $user_details->first_name . ' ' . $user_details->middle_name . ' ' . $user_details->last_name, 'id' => $user_details->id];
+            }
         }
-
+        //exit;
         return $all_friends;
     }
 

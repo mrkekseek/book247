@@ -18,7 +18,7 @@
     <!-- DOC: Remove "hide" class to enable the page header actions -->
     <div class="page-actions">
         <div class="btn-group">
-            <button type="button" class="btn red-haze btn-sm dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true">
+            <!--<button type="button" class="btn red-haze btn-sm dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true">
                 <span class="hidden-sm hidden-xs">Shop Locations&nbsp;</span>
                 <i class="fa fa-angle-down"></i>
             </button>
@@ -36,7 +36,7 @@
                         <span class="badge badge-success">4</span>
                     </a>
                 </li>
-            </ul>
+            </ul>-->
         </div>
     </div>
     <!-- END PAGE ACTIONS -->
@@ -55,6 +55,7 @@
             <ul class="nav navbar-nav pull-right">
                 <li class="separator hide"> </li>
                 <!-- BEGIN NOTIFICATION DROPDOWN -->
+                @if (isset($notifications_on))
                 <!-- DOC: Apply "dropdown-dark" class after below "dropdown-extended" to change the dropdown styte -->
                 <li class="dropdown dropdown-extended dropdown-notification dropdown-dark" id="header_notification_bar">
                     <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true">
@@ -154,9 +155,11 @@
                         </li>
                     </ul>
                 </li>
+                @endif
                 <!-- END NOTIFICATION DROPDOWN -->
                 <li class="separator hide"> </li>
                 <!-- BEGIN INBOX DROPDOWN -->
+                @if (isset($inbox_dropdown_on))
                 <!-- DOC: Apply "dropdown-dark" class after below "dropdown-extended" to change the dropdown styte -->
                 <li class="dropdown dropdown-extended dropdown-inbox dropdown-dark" id="header_inbox_bar">
                     <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true">
@@ -230,6 +233,7 @@
                         </li>
                     </ul>
                 </li>
+                @endif
                 <!-- END INBOX DROPDOWN -->
                 <li class="separator hide"> </li>
                 <!-- BEGIN TODO DROPDOWN -->
@@ -291,10 +295,12 @@
                 </li>
                 <!-- END USER LOGIN DROPDOWN -->
                 <!-- BEGIN QUICK SIDEBAR TOGGLER -->
+                @if (isset($right_sidebar_on))
                 <li class="dropdown dropdown-extended quick-sidebar-toggler">
                     <span class="sr-only">Toggle Quick Sidebar</span>
                     <i class="icon-logout"></i>
                 </li>
+                @endif
                 <!-- END QUICK SIDEBAR TOGGLER -->
             </ul>
         </div>

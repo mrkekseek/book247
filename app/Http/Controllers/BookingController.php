@@ -6,6 +6,8 @@ use App\Booking;
 use App\BookingFinancialTransaction;
 use App\BookingInvoice;
 use App\BookingInvoiceItem;
+use App\Invoice;
+use App\InvoiceItem;
 use App\MembershipPlan;
 use App\ShopLocations;
 use App\ShopResource;
@@ -410,12 +412,13 @@ class BookingController extends Controller
         $payment_type = 'membership';
 
         // get activity selected for booking
-        $resource_category = ShopResource::select('category_id')->where('id','=',$fillable['location_id'])->get()->first();
+        $resource_category = ShopResource::select('category_id')->where('id','=',$fillable['resource_id'])->get()->first();
 
         // check for open bookings
         $ownBookings = Booking::whereIn('status',['pending','active'])
             ->where('for_user_id','=',$fillable['for_user_id'])
             ->where('search_key','!=',$search_key)
+            ->where('payment_type','!=','cash')
             ->get();
         $nr_of_open_bookings = sizeof($ownBookings);
 
@@ -448,21 +451,25 @@ class BookingController extends Controller
                         $booking_hour = Carbon::createFromFormat('H:i:s', $fillable['booking_time_start']);
                     }
                     // day of week for the booking
-                    $booking_day    = Carbon::createFromFormat('Y-m-d', $fillable['date_of_booking']);
+                    $booking_day    = Carbon::createFromFormat('Y-m-d', $fillable['date_of_booking'])->format('w');
 
                     // we check the day first
-                    if (!in_array($booking_day->format('w'), $selected_days)){
+                    if (!in_array($booking_day, $selected_days)){
                         // not in selected day
                         $time_of_day_result[] = false;
                     }
                     // we check the hours interval second
-                    elseif ($booking_hour->gte($hour_start) && $booking_hour->lt($hour_end)){
+                    elseif ($booking_hour->lte($hour_start) || $booking_hour->gte($hour_end)){
                         $time_of_day_result[] = false;
+                    }
+                    else{
+                        $time_of_day_result[] = true;
                     }
                 }
                 break;
                 case 'open_bookings' : {
-                    if ( $nr_of_open_bookings >= $restriction['value'] ){
+                    $the_open_restrictions = (int)$restriction['value'][0];
+                    if ( $nr_of_open_bookings >= $the_open_restrictions ){
                         $payment_type = 'cash';
                         return $payment_type;
                     }
@@ -500,6 +507,7 @@ class BookingController extends Controller
                     $farthest_booking_date_time = Carbon::now()->addHours($hours_until_booking);
 
                     if (!$booking_date_time->gte($closest_booking_date_time) || !$booking_date_time->lt($farthest_booking_date_time)){
+                    //if (!$booking_date_time->gte($closest_booking_date_time) || !$booking_date_time->lt($farthest_booking_date_time)){
                         $payment_type = 'cash';
                         return $payment_type;
                     }
@@ -512,6 +520,9 @@ class BookingController extends Controller
             if ($a == true){
                 $payment_type = 'membership';
                 return $payment_type;
+            }
+            else{
+                $payment_type = 'cash';
             }
         }
 
@@ -805,6 +816,22 @@ class BookingController extends Controller
 
                     $book_invoice->add_invoice_item($booking->id);
                     $booking->invoice_id = $book_invoice->id;
+
+                    $general_invoice = Invoice::where('invoice_type','=','booking_invoice')->where('invoice_reference_id','=',$book_invoice->id)->get()->first();
+                    $is_item_added = InvoiceItem::where('item_type','=','booking_invoice_item')->where('item_reference_id','=',$booking->id)->get()->first();
+                    if (!$is_item_added) {
+                        $bookingItem = BookingInvoiceItem::where('booking_id', '=', $booking->id)->get()->first();
+                        $generalFillable = [
+                            'item_name' => $bookingItem->location_name . ', room ' . $bookingItem->resource_name . ' - ' . $bookingItem->booking_time_interval . ' on ' . $bookingItem->booking_date . ' ',
+                            'item_type' => 'booking_invoice_item',  // type of the item : membership payment, coupon code, discounts, bookings, products
+                            'item_reference_id' => $bookingItem->id,    // the ID from the table
+                            'quantity' => $bookingItem->quantity,  // number of items
+                            'price' => $bookingItem->price,     // base price
+                            'vat' => $bookingItem->vat,       // VAT for the product group
+                            'discount' => $bookingItem->discount,  // applied discount
+                        ];
+                        $general_invoice->add_invoice_item($generalFillable);
+                    }
                 }
 
                 $booking->status = 'active';

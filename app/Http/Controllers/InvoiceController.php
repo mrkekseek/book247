@@ -47,7 +47,8 @@ class InvoiceController extends Controller
                 }
 
                 $discount+= (($item->price*$item->discount)/100)*$item->quantity;
-                $subtotal+= $item_one_price * $item->quantity;
+                $subtotal+= $item->price * $item->quantity;
+
                 $total+= ($item_one_price + $item_vat)*$item->quantity;
             }
 
@@ -94,7 +95,7 @@ class InvoiceController extends Controller
             'invoice'   => $invoice,
             'invoice_items' => @$items,
             'member'    => @$invoice_user,
-            'sub_total' => $total,
+            'sub_total' => $subtotal,
             'discount' => $discount,
             'vat' => $vat,
             'grand_total' => $total

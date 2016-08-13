@@ -1029,12 +1029,17 @@
                 message: 'Processing...'
             });
 
+            var time_book_hour = container.parent().parent().find('input[name="time_book_hour"]').val();
+
             $.ajax({
                 url: '{{route('ajax/get_players_list')}}',
                 type: "post",
                 cache: false,
                 data: {
-                    'limit': 5,
+                    'resourceID': $('#resources_rooms').val(),
+                    'booking_time_start': time_book_hour,
+                    'booking_day': $('input[name=selected_date]').val(),
+                    'search_key': '',
                 },
                 success: function(data){
                     var all_list = "";

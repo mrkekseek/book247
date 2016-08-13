@@ -31,24 +31,24 @@
             </ul>
         </li>
         <li class="heading">
-            <h3 class="uppercase">Registered Clients</h3>
+            <h3 class="uppercase"> Registered Clients </h3>
         </li>
         <li class="nav-item {{ in_array($in_sidebar, array('admin-frontend-all_members','admin-frontend-user_details_view'))?'active open':'' }}">
             <a href="javascript:;" class="nav-link nav-toggle">
                 <i class="icon-users"></i>
-                <span class="title">Front Users/Members</span>
+                <span class="title"> Company Clients </span>
                 <span class="arrow"></span>
             </a>
             <ul class="sub-menu">
                 <li class="nav-item {{ $in_sidebar=='admin-frontend-all_members'?'active open':'' }} ">
                     <a href="{{ route('admin/front_users/view_all_members') }}" class="nav-link ">
-                        <span class="title">View All Members</span>
+                        <span class="title"> List All Clients </span>
                     </a>
                 </li>
                 @if ($in_sidebar=='admin-frontend-user_details_view')
                 <li class="nav-item {{ $in_sidebar=='admin-frontend-user_details_view'?'active open':'' }} ">
                     <a class="nav-link ">
-                        <span class="title">Member Overview</span>
+                        <span class="title"> Client Overview </span>
                     </a>
                 </li>
                 @endif
@@ -61,7 +61,7 @@
         <li class="nav-item {{ in_array($in_sidebar, array('admin-bookings-calendar_view'))?'active open':'' }}  ">
             <a href="{{ route('bookings/location_calendar_day_view',['day'=>\Carbon\Carbon::now()->format('d-m-Y')]) }}" class="nav-link nav-toggle">
                 <i class="icon-calendar "></i>
-                <span class="title">Calendar View</span>
+                <span class="title"> Calendar View </span>
             </a>
         </li>
 
@@ -90,36 +90,36 @@
         <li class="nav-item {{ in_array($in_sidebar, array('admin-backend-user_roles', 'admin-backend-all_users', 'admin-backend-roles_permission', 'admin-backend-user_details_view', 'admin-backend-permission_details_view'))?'active open':'' }} ">
             <a href="javascript:;" class="nav-link nav-toggle">
                 <i class="icon-calculator"></i>
-                <span class="title">Back End Users</span>
+                <span class="title"> Company Employees </span>
                 <span class="arrow"></span>
             </a>
             <ul class="sub-menu">
                 <li class="nav-item {{ $in_sidebar=='admin-backend-all_users'?'active open':'' }}">
                     <a href="{{route('admin/back_users')}}" class="nav-link ">
-                        <span class="title">View All Users</span>
+                        <span class="title"> List All Employees </span>
                     </a>
                 </li>
                 @if ($in_sidebar=="admin-backend-user_details_view")
                 <li class="nav-item {{ $in_sidebar=='admin-backend-user_details_view'?'active open':'' }}">
                     <a class="nav-link ">
-                        <span class="title">User Details</span>
+                        <span class="title"> Employee Details </span>
                     </a>
                 </li>
                 @endif
                 <li class="nav-item {{ $in_sidebar=='admin-backend-user_roles'?'active open':'' }}">
                     <a href="{{ route('admin/back_users/user_roles') }}" class="nav-link ">
-                        <span class="title">User Roles</span>
+                        <span class="title"> Employees Roles </span>
                     </a>
                 </li>
                 <li class="nav-item {{ $in_sidebar=='admin-backend-roles_permission'?'active open':'' }}">
                     <a href="{{ route('admin/back_users/roles_permissions') }}" class="nav-link ">
-                        <span class="title">Permissions</span>
+                        <span class="title"> Roles Permission </span>
                     </a>
                 </li>
                 @if ($in_sidebar=="admin-backend-permission_details_view")
                     <li class="nav-item {{ $in_sidebar=='admin-backend-permission_details_view'?'active open':'' }}">
                         <a class="nav-link ">
-                            <span class="title">Permission Details</span>
+                            <span class="title"> Permission Details </span>
                         </a>
                     </li>
                 @endif
@@ -134,7 +134,7 @@
             <ul class="sub-menu">
                 <li class="nav-item {{ $in_sidebar=='admin-backend-shop-locations-list'?'active open':'' }} ">
                     <a href="{{ route("admin/shops/locations/all") }}" class="nav-link ">
-                        <span class="title">All Locations</span>
+                        <span class="title"> List All Locations </span>
                     </a>
                 </li>
                 @if ($in_sidebar=="admin-backend-shop-locations-details-view")
@@ -144,16 +144,17 @@
                         </a>
                     </li>
                 @endif
-                <li class="nav-item {{ $in_sidebar=='admin-backend-inventory-and-transfers'?'active open':'' }} ">
+                <!--<li class="nav-item {{ $in_sidebar=='admin-backend-inventory-and-transfers'?'active open':'' }} ">
                     <a href="{{ route('admin/shops/inventory_and_transfer') }}" class="nav-link ">
                         <span class="title">Stock and Transfers</span>
                     </a>
-                </li>
-                <li class="nav-item {{ $in_sidebar=='admin-backend-shop-products-list'?'active open':'' }} ">
+                </li>-->
+                <!--<li class="nav-item {{ $in_sidebar=='admin-backend-shop-products-list'?'active open':'' }} ">
                     <a href="{{ route('admin/shops/products/all') }}" class="nav-link ">
                         <span class="title">All Products</span>
                     </a>
-                </li>
+                </li>-->
+                <!--
                 @if ($in_sidebar=="admin-backend-product-details-view")
                     <li class="nav-item {{ $in_sidebar=='admin-backend-product-details-view'?'active open':'' }}">
                         <a class="nav-link ">
@@ -161,27 +162,28 @@
                         </a>
                     </li>
                 @endif
-                <li class="nav-item {{ $in_sidebar=='admin-backend-all-products-inventory'?'active open':'' }} ">
+                -->
+                <!--<li class="nav-item {{ $in_sidebar=='admin-backend-all-products-inventory'?'active open':'' }} ">
                     <a href="{{ route('admin/shops/all_inventory') }}" class="nav-link ">
                         <span class="title">Product Inventory</span>
                     </a>
-                </li>
-                <li class="nav-item {{ $in_sidebar=='admin-backend-shop-new_order'?'active open':'' }} ">
+                </li>-->
+                <!--<li class="nav-item {{ $in_sidebar=='admin-backend-shop-new_order'?'active open':'' }} ">
                     <a href="{{ route('admin/shops/add_new_order') }}" class="nav-link ">
                         <span class="title"> New Order </span>
                     </a>
-                </li>
-                <li class="nav-item {{ $in_sidebar=='admin-backend-shop-all_orders'?'active open':'' }} ">
+                </li>-->
+                <!--<li class="nav-item {{ $in_sidebar=='admin-backend-shop-all_orders'?'active open':'' }} ">
                     <a href="{{ route('admin/shops/list_orders') }}" class="nav-link ">
                         <span class="title"> All Orders </span>
                     </a>
-                </li>
-                <li class="nav-item {{ $in_sidebar=='admin-backend-shops-cash_terminals'?'active open':'' }} ">
+                </li>-->
+                <!--<li class="nav-item {{ $in_sidebar=='admin-backend-shops-cash_terminals'?'active open':'' }} ">
                     <a href="{{ route('admin/shops/cash_terminals') }}" class="nav-link ">
                         <span class="title"> Cash Terminals </span>
                     </a>
-                </li>
-                <li class="nav-item {{ $in_sidebar=='admin-backend-shops-employees-work-plan'?'active open':'' }} ">
+                </li>-->
+                <!--<li class="nav-item {{ $in_sidebar=='admin-backend-shops-employees-work-plan'?'active open':'' }} ">
                     <a href="{{ route('admin/shops/employee_work_plan') }}" class="nav-link ">
                         <span class="title"> Working Schedule </span>
                     </a>

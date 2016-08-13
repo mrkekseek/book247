@@ -8,6 +8,7 @@ use App\ShopLocations;
 use App\ShopResource;
 use App\VatRate;
 use Carbon\Carbon;
+use Auth;
 
 class BookingInvoice extends Model
 {
@@ -174,6 +175,48 @@ class BookingInvoice extends Model
                 'success' => false,
                 'errors' => 'Error Creating Transaction!'];
         }
+    }
+
+    public function make_general_invoice(){
+        $bookingInvoiceID = $this->id;
+
+        $booking = Booking::where('id','=',$this->booking_id)->get()->first();
+        if (!$booking){
+            return false;
+        }
+
+        // see if someone is logged in
+        if (!Auth::check()) {
+            $general_invoice_employee = Auth::user();
+        }
+        else{
+            $general_invoice_employee = $booking->by_user_id;
+        }
+
+        $generalFillable = [
+            'user_id'       => $booking->for_user_id,
+            'employee_id'   => $general_invoice_employee,
+            'invoice_type'  => 'booking_invoice',
+            'invoice_reference_id'  => $bookingInvoiceID,
+            'invoice_number'        => Invoice::next_invoice_number()
+        ];
+        $general_invoice = Invoice::create($generalFillable);
+
+        $bookingInvoiceItems = BookingInvoiceItem::where('booking_invoice_id','=',$bookingInvoiceID)->get();
+        foreach ($bookingInvoiceItems as $bookingItem){
+            $generalFillable = [
+                'item_name'         => $bookingItem->location_name.', room '.$bookingItem->resource_name.' - '.$bookingItem->booking_time_interval.' on '.$bookingItem->booking_date.' ',
+                'item_type'         => 'booking_invoice_item',  // type of the item : membership payment, coupon code, discounts, bookings, products
+                'item_reference_id' => $bookingItem->id,    // the ID from the table
+                'quantity'      => $bookingItem->quantity,  // number of items
+                'price'         => $bookingItem->price,     // base price
+                'vat'           => $bookingItem->vat,       // VAT for the product group
+                'discount'      => $bookingItem->discount,  // applied discount
+            ];
+            $general_invoice->add_invoice_item($generalFillable);
+        }
+
+        return true;
     }
 
     public static function rules($method, $id=0){
