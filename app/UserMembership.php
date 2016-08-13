@@ -197,7 +197,7 @@ class UserMembership extends Model
             $member_invoice = new Invoice();
             $member_invoice->user_id = $user->id;
             $member_invoice->employee_id = $signed_by->id;
-            $member_invoice->invoice_type = 'Membership Plan Assignment Invoice';
+            $member_invoice->invoice_type = 'membership_plan_assignment_invoice';
             $member_invoice->invoice_reference_id = '';
             $member_invoice->invoice_number = Invoice::next_invoice_number();
             $member_invoice->status = 'pending';

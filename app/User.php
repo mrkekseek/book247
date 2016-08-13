@@ -142,4 +142,22 @@ class User extends Authenticatable
             return false;
         }
     }
+
+    public function get_membership_restrictions(){
+        $active_membership = UserMembership::where('user_id','=',$this->id)->where('status','=','active')->get()->first();
+        if ($active_membership){
+            $restrictions = $active_membership->get_plan_restrictions();
+        }
+        else{
+            $default_membership = MembershipPlan::where('id','=',1)->get()->first();
+            if ($default_membership){
+                $restrictions = $default_membership->get_restrictions(true);
+            }
+            else{
+                $restrictions = [];
+            }
+        }
+
+        return $restrictions;
+    }
 }

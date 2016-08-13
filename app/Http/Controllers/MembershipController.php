@@ -74,7 +74,7 @@ class MembershipController extends Controller
             }
 
             $memberRole = Role::where('name','=','front-member')->get()->first();
-            if (!$member->hasRole($memberRole)) {
+            if ($member->hasRole('front-member')===false) {
                 $member->attachRole($memberRole);
             }
 

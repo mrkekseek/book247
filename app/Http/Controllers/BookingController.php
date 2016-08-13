@@ -241,7 +241,8 @@ class BookingController extends Controller
         }
 
         if ($booking){
-            if (in_array($booking->status,['active','pending'])){
+            //if (in_array($booking->status,['active','pending'])){
+            if ($this->can_cancel_booking($booking->id)){
                 $old_status = $booking->status;
                 $booking->status = 'canceled';
                 $booking->save();
@@ -270,9 +271,11 @@ class BookingController extends Controller
                     'details'       => 'User Email : '.$user->email,
                     'updated'       => true,
                 ]);
+                return ['success' => 'true', 'message' => 'All is good.'];
             }
-            //Booking::whereIn('status',['active', 'pending'])->where('search_key','=',$vars['search_key'])->update(['status'=>'canceled']);
-            return ['success' => 'true', 'message' => 'All is good.'];
+            else{
+                return ['error' => 'No bookings found to confirm. Please make the booking process again. Remember you have 60 seconds to complete the booking before it expires.'];
+            }
         }
         else{
             return ['error' => 'No bookings found to confirm. Please make the booking process again. Remember you have 60 seconds to complete the booking before it expires.'];
@@ -352,7 +355,8 @@ class BookingController extends Controller
             $for_user_id = User::where('id','=',$fillable['for_user_id'])->get()->first();
             if ($for_user_id){
                 // get user membership if exists
-                $active_membership = UserMembership::where('user_id','=',$for_user_id->id)->where('status','=','active')->get()->first();
+
+                /*$active_membership = UserMembership::where('user_id','=',$for_user_id->id)->where('status','=','active')->get()->first();
                 if ($active_membership){
                     $restrictions = $active_membership->get_plan_restrictions();
                 }
@@ -364,7 +368,9 @@ class BookingController extends Controller
                     else{
                         $restrictions = [];
                     }
-                }
+                }*/
+
+                $restrictions = $for_user_id->get_membership_restrictions();
 
                 $message['payment'] = $this->check_membership_restrictions($for_user_id->id, $fillable, $restrictions, $search_key);
             }
@@ -1007,22 +1013,39 @@ class BookingController extends Controller
      * @return bool
      */
     public function can_cancel_booking($id, $hours = 8){
-        $booking = Booking::find($id); //exit;
-        //xdebug_var_dump($booking);
+        $can_cancel = true;
+
+        $booking = Booking::find($id);
         if ($booking){
             $bookingStartDateTime = Carbon::createFromFormat('Y-m-d H:i:s', $booking->date_of_booking.' '.$booking->booking_time_start);
-            $actualTime = Carbon::now()->addHours($hours);
+            $can_cancel_hours = 0;
 
-            if ($bookingStartDateTime->gte($actualTime)){
-                return true;
+            $user = User::where('id','=',$booking->for_user_id)->get()->first();
+            if (!$user){
+                $can_cancel = false;
             }
             else{
-                return false;
+                $restrictions = $user->get_membership_restrictions();
+                foreach ($restrictions as $restriction){
+                    if ($restriction['name'] == 'cancellation' && $restriction['value']>$can_cancel_hours) {
+                        $can_cancel_hours = $restriction['value'];
+                    }
+                }
+
+                $actualTime = Carbon::now()->addHours($can_cancel_hours);
+                if ($actualTime->lt($bookingStartDateTime)){
+                    $can_cancel = true;
+                }
+                else{
+                    $can_cancel = false;
+                }
             }
         }
         else{
-            return false;
+            $can_cancel = false;
         }
+
+        return $can_cancel;
     }
 
     /**
