@@ -312,7 +312,7 @@
                 <li class="dropdown dropdown-user dropdown-dark">
                     <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true">
                         <img alt="" class="img-circle" src="../assets/layouts/layout3/img/avatar9.jpg">
-                        <span class="username username-hide-mobile">Nick</span>
+                        <span class="username username-hide-mobile">{{Auth::user()->first_name.' '.Auth::user()->last_name}}</span>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-default">
                         <li>
