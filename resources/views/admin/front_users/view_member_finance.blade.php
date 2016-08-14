@@ -117,7 +117,7 @@
                                                                     <th> Time Interval </th>
                                                                     <th class="hidden-xs"> Price </th>
                                                                     <th class="hidden-xs"> Discount </th>
-                                                                    <th> Total </th>
+                                                                    <th> Total</th>
                                                                     <th> Status </th>
                                                                 </tr>
                                                                 </thead>
@@ -217,52 +217,11 @@
                                                                     <thead>
                                                                     <tr>
                                                                         <th>
-                                                                            <i class="fa fa-briefcase"></i> Invoice Number </th>
-                                                                        <th>
-                                                                            <i class="fa fa-briefcase"></i> Booking Location </th>
-                                                                        <th>
-                                                                            <i class="fa fa-briefcase"></i> Invoice Items </th>
-                                                                        <th>
-                                                                            <i class="fa fa-briefcase"></i> Price </th>
-                                                                        <th>
-                                                                            <i class="fa fa-briefcase"></i> Added On </th>
-                                                                        <th>
-                                                                            <i class="fa fa-shopping-cart"></i> Status </th>
-                                                                        <th> </th>
-                                                                    </tr>
-                                                                    </thead>
-                                                                    <tbody>
-                                                                    @foreach ($invoices as $invoice)
-                                                                        <tr>
-                                                                            <td class="highlight">
-                                                                                <div class="{{ $invoice['color_status'] }}"></div>
-                                                                                <a href="javascript:;">Invoice #{{$invoice['invoice_no']}} </a>
-                                                                            </td>
-                                                                            <td> {{ $invoice['location'] }} </td>
-                                                                            <td> {{ $invoice['items'] }} </td>
-                                                                            <td> {{ $invoice['price_to_pay'] }} </td>
-                                                                            <td> {{ $invoice['date'] }} </td>
-                                                                            <td> {{ $invoice['status'] }} </td>
-                                                                            <td>
-                                                                                <a class="btn {{ $invoice['color_button'] }} btn-sm booking_details_modal" data-key="{{$invoice['invoice_no']}}" href="{{ route('admin/invoices/view',['id'=>$invoice['invoice_no']]) }}">
-                                                                                    <i class="fa fa-edit"></i> Details </a>
-                                                                            </td>
-                                                                        </tr>
-                                                                    @endforeach
-                                                                    </tbody>
-                                                                </table>
-                                                            </div>
-
-                                                            <div class="table-scrollable">
-                                                                <table class="table table-striped table-bordered table-advance table-hover">
-                                                                    <thead>
-                                                                    <tr>
-                                                                        <th>
-                                                                            <i class="fa fa-briefcase"></i> Invoice Number </th>
+                                                                            <i class="fa fa-briefcase"></i> Number </th>
                                                                         <th>
                                                                             <i class="fa fa-briefcase"></i> Invoice Type </th>
                                                                         <th>
-                                                                            <i class="fa fa-briefcase"></i> Invoice Items </th>
+                                                                            <i class="fa fa-briefcase"></i> Items </th>
                                                                         <th>
                                                                             <i class="fa fa-briefcase"></i> Price </th>
                                                                         <th>
@@ -277,9 +236,9 @@
                                                                         <tr>
                                                                             <td class="highlight">
                                                                                 <div class="{{ $invoice['color_status'] }}"></div>
-                                                                                <a href="javascript:;">Invoice #{{$invoice['invoice_no']}} </a>
+                                                                                <a href="{{ route('admin/invoices/view',['id'=>$invoice['invoice_no']]) }}">Invoice #{{$invoice['invoice_no']}} </a>
                                                                             </td>
-                                                                            <td> {{ $invoice['invoice_type'] }} </td>
+                                                                            <td> {{ $invoice['display_name'] }} </td>
                                                                             <td> {{ $invoice['items'] }} </td>
                                                                             <td> {{ $invoice['price_to_pay'] }} </td>
                                                                             <td> {{ $invoice['date'] }} </td>

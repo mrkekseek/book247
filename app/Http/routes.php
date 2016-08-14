@@ -514,6 +514,11 @@ Route::group(['prefix'=>'front', 'middleware'=>'web'], function(){
         'uses'  => 'FrontEndUserController@get_user_invoice_list'
     ]);
 
+    Route::get('view_invoice/{id}', [
+        'as'    => 'front/view_invoice/',
+        'uses'  => 'FrontEndUserController@front_show_invoice'
+    ]);
+
     Route::get('list_of_memberships', [
         'as'    => 'front/membership_types',
         'uses'  => 'FrontEndUserController@type_of_memberships'

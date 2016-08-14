@@ -776,11 +776,20 @@ class FrontEndUserController extends Controller
 
                 $price = 0;
                 $items = 0;
+                $display_name = '-';
                 $invoiceItems = InvoiceItem::where('invoice_id','=',$single_invoice->id)->get();
                 if ($invoiceItems){
                     foreach ($invoiceItems as $invItem){
                         $price+=$invItem->total_price;
                         $items++;
+
+                        if ($display_name=='-' && $invItem->item_type=='user_memberships'){
+                            $display_name = 'Membership - '.$invItem->item_name;
+                        }
+                        elseif ($display_name=='-' && $invItem->item_type=='booking_invoice_item'){
+                            $bookingItem = BookingInvoiceItem::where('id','=',$invItem->item_reference_id)->get()->first();
+                            $display_name = 'Booking - '.$bookingItem->location_name;
+                        }
                     }
                 }
 
@@ -794,6 +803,7 @@ class FrontEndUserController extends Controller
                     'color_button'  => $buttons,
                     'price_to_pay'  => $price,
                     'items'         => $items,
+                    'display_name'  => $display_name,
                     'invoice_type'  => $single_invoice->invoice_type
                 ];
             }
@@ -2045,6 +2055,92 @@ class FrontEndUserController extends Controller
         ]);
     }
 
+    public function front_show_invoice($id)
+    {
+        if (!Auth::check()) {
+            return redirect()->intended(route('homepage'));
+        }
+        else{
+            $user = Auth::user();
+        }
+
+        $invoice = Invoice::where('invoice_number','=',$id)->where('user_id','=',$user->id)->get()->first();
+        if ($invoice){
+            $subtotal = 0;
+            $total = 0;
+            $discount = 0;
+            $vat = [];
+
+            $items = InvoiceItem::where('invoice_id','=',$invoice->id)->get();
+            foreach($items as $item){
+                // base price minus the discount
+                $item_one_price = $item->price - (($item->price*$item->discount)/100);
+                // apply the vat to the price
+                $item_vat = $item_one_price * ($item->vat/100);
+
+                if (isset($vat[$item->vat])){
+                    $vat[$item->vat]+= $item_vat*$item->quantity;
+                }
+                else{
+                    $vat[$item->vat] = $item_vat*$item->quantity;
+                }
+
+                $discount+= (($item->price*$item->discount)/100)*$item->quantity;
+                $subtotal+= $item->price * $item->quantity;
+
+                $total+= ($item_one_price + $item_vat)*$item->quantity;
+            }
+
+            $member = User::with('ProfessionalDetail')->with('PersonalDetail')->where('id','=',$invoice->user_id)->get()->first();
+            $member_professional = $member->ProfessionalDetail;
+            $member_personal = $member->PersonalDetail;
+            //xdebug_var_dump($member_professional);
+            //xdebug_var_dump($member_personal);
+            //xdebug_var_dump($member);
+
+            if ($member->country_id==0){
+                $country = '-';
+            }
+            else{
+                $get_country = Countries::where('id','=',$member->country_id)->get()->first();
+                $country = $get_country->name;
+            }
+
+            $invoice_user = [
+                'full_name' => $member->first_name.' '.$member->middle_name.' '.$member->last_name,
+                'email_address' => $member->email,
+                'date_of_birth' => $member_personal->date_of_birth,
+                'country'   => $country,
+            ];
+        }
+
+        $breadcrumbs = [
+            'Home'              => route('admin'),
+            'Administration'    => route('admin'),
+            'Back End User'     => route('admin'),
+            'All Backend Users' => '',
+        ];
+        $text_parts  = [
+            'title'     => 'Back-End Users',
+            'subtitle'  => 'view all users',
+            'table_head_text1' => 'Backend User List'
+        ];
+        $sidebar_link= 'admin-backend-shop-new_order';
+
+        return view('front/finance/show_invoice', [
+            'breadcrumbs'   => $breadcrumbs,
+            'text_parts'    => $text_parts,
+            'in_sidebar'    => $sidebar_link,
+            'invoice'   => $invoice,
+            'invoice_items' => @$items,
+            'member'    => @$invoice_user,
+            'sub_total' => $subtotal,
+            'discount'  => $discount,
+            'vat'       => $vat,
+            'grand_total'   => $total
+        ]);
+    }
+
     /**
      * Get all bookings for specific user with status different than expired
      * @param int $userID
@@ -2062,7 +2158,7 @@ class FrontEndUserController extends Controller
             $userID = $user->id;
         }
 
-        $invoicesList = [];
+        /*$invoicesList = [];
         $bookings = Booking::with('invoice')
             ->where('by_user_id','=',$userID)
             ->where('invoice_id','!=',-1)
@@ -2130,20 +2226,90 @@ class FrontEndUserController extends Controller
                     $price,
                     $addedOn,
                     $the_invoice->status,
-                    '<a class="btn '.$buttons.' btn-sm invoice_details_modal" data-key="'.$the_invoice->id.'" href="javascript:;"> <i class="fa fa-edit"></i> Details </a>',
-
-                    //'invoice_id'    => $the_invoice->id,
-                    //'invoice_no'    => $the_invoice->invoice_number,
-                    //'date'          => $addedOn,
-                    //'status'        => $the_invoice->status,
-                    //'color_status'  => $colorStatus,
-                    //'color_button'  => $buttons,
-                    //'price_to_pay'  => $price,
-                    //'items'         => $items,
-                    //'location'      => $location
+                    '<a class="btn '.$buttons.' btn-sm invoice_details_modal" href="'.route('front/view_invoice/', ['id'=>$the_invoice->invoice_number]).'"> <i class="fa fa-edit"></i> Details </a>',
                 ];
             }
             unset($bookings); unset($booking);
+        }*/
+
+        $invoicesList = [];
+        $generalInvoices = Invoice::where('user_id','=',$userID)->orderBy('created_at','desc')->get();
+        if (sizeof($generalInvoices)>0){
+            $buttons = [];
+            $colorStatus = '';
+            foreach ($generalInvoices as $single_invoice){
+                switch ($single_invoice->status) {
+                    case 'pending':
+                        $colorStatus = 'warning';
+                        $buttons = 'yellow-gold';
+                        break;
+                    case 'ordered':
+                    case 'processing':
+                        $colorStatus = 'info';
+                        $buttons = 'green-meadow';
+                        break;
+                    case 'completed':
+                        $colorStatus = 'success';
+                        $buttons = 'green-jungle';
+                        break;
+                    case 'cancelled':
+                        $colorStatus = 'warning';
+                        $buttons = 'yellow-lemon';
+                        break;
+                    case 'declined':
+                    case 'incomplete':
+                        $colorStatus = 'danger';
+                        $buttons = 'red-thunderbird';
+                        break;
+                    case 'preordered':
+                        $colorStatus = 'info';
+                        $buttons = 'green-meadow';
+                        break;
+                }
+
+                $price = 0;
+                $items = 0;
+                $display_name = '-';
+                $invoiceItems = InvoiceItem::where('invoice_id','=',$single_invoice->id)->get();
+                if ($invoiceItems){
+                    foreach ($invoiceItems as $invItem){
+                        $price+=$invItem->total_price;
+                        $items++;
+
+                        if ($display_name=='-' && $invItem->item_type=='user_memberships'){
+                            $display_name = 'Membership - '.$invItem->item_name;
+                        }
+                        elseif ($display_name=='-' && $invItem->item_type=='booking_invoice_item'){
+                            $bookingItem = BookingInvoiceItem::where('id','=',$invItem->item_reference_id)->get()->first();
+                            $display_name = 'Booking - '.$bookingItem->location_name;
+                        }
+                    }
+                }
+
+                /*$generalInvoiceList[] = [
+                    'invoice_id'    => $single_invoice->id,
+                    'invoice_no'    => $single_invoice->invoice_number,
+                    'date'          => $addedOn,
+                    'status'        => $single_invoice->status,
+                    'color_status'  => $colorStatus,
+                    'color_button'  => $buttons,
+                    'price_to_pay'  => $price,
+                    'items'         => $items,
+                    'display_name'  => $display_name,
+                    'invoice_type'  => $single_invoice->invoice_type
+                ];*/
+
+                $addedOn    = Carbon::createFromFormat('Y-m-d H:i:s', $single_invoice->created_at)->format('j/m/Y');
+                $invoicesList[] = [
+                    '<div class="'.$colorStatus.'"></div><a href="javascript:;"> #'.$single_invoice->invoice_number.' </a>',
+                    $display_name,
+                    $items,
+                    $price,
+                    $addedOn,
+                    $single_invoice->status,
+                    '<a class="btn '.$buttons.' btn-sm invoice_details_modal" href="'.route('front/view_invoice/', ['id'=>$single_invoice->invoice_number]).'"> <i class="fa fa-edit"></i> Details </a>',
+                ];
+            }
         }
 
         $bookings = [

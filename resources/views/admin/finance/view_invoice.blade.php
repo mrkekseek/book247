@@ -74,7 +74,6 @@
                                         <tr>
                                             <th> # </th>
                                             <th> Item </th>
-                                            <th class="hidden-xs hidden-print"> Description </th>
                                             <th class="hidden-xs"> Quantity </th>
                                             <th class="hidden-xs"> Unit Cost </th>
                                             <th class="hidden-xs"> Discount </th>
@@ -87,7 +86,6 @@
                                             <tr>
                                                 <td> {{$key+1}} </td>
                                                 <td> {{ $item->item_name }} </td>
-                                                <td class="hidden-xs hidden-print"> {{ $item->item_type }} </td>
                                                 <td class="hidden-xs"> {{ $item->quantity }} </td>
                                                 <td class="hidden-xs"> {{ $item->price }} </td>
                                                 <td class="hidden-xs"> {{ $item->discount }}% </td>

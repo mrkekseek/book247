@@ -45,9 +45,9 @@
                                         <table class="table table-striped table-bordered table-hover table-advance order-column " id="sample_1">
                                             <thead>
                                             <tr>
-                                                <th> Invoice Number </th>
-                                                <th> Booking Location </th>
-                                                <th> Invoice Items </th>
+                                                <th> Number </th>
+                                                <th> Invoice Details </th>
+                                                <th> Items </th>
                                                 <th> Price </th>
                                                 <th> Added On </th>
                                                 <th> Status </th>
@@ -61,108 +61,6 @@
                                 <!-- END EXAMPLE TABLE PORTLET-->
                             </div>
                         </div>
-                    </div>
-
-                    <div class="modal fade" id="small_cancel" tabindex="-1" role="dialog" aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
-                                    <h4 class="modal-title">Cancel booking</h4>
-                                </div>
-                                <div class="modal-body">
-                                    <h4>You are about to cancel this booking :</h4>
-                                    <div class="book_details_cancel_place" style="padding:0px 15px;"></div>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn dark btn-outline" data-dismiss="modal">No - return</button>
-                                    <button type="button" class="btn green" onclick="javascript:cancel_booking();">Yes - cancel</button>
-                                </div>
-                            </div>
-                            <!-- /.modal-content -->
-                        </div>
-                        <!-- /.modal-dialog -->
-                    </div>
-
-                    <div class="modal fade" id="small_details" tabindex="-1" role="dialog" aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
-                                    <h4 class="modal-title">Booking Details</h4>
-                                </div>
-                                <div class="modal-body">
-                                    <h4>You are seeing here the booking details and the available notes :</h4>
-                                    <div class="book_details_cancel_place" style="padding:0px 15px;"></div>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn dark btn-outline" data-dismiss="modal">Back to list</button>
-                                </div>
-                            </div>
-                            <!-- /.modal-content -->
-                        </div>
-                        <!-- /.modal-dialog -->
-                    </div>
-
-                    <div class="modal fade" id="changeIt" tabindex="-1" role="dialog" aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
-                                    <h4 class="modal-title">Update Booking</h4>
-                                </div>
-                                <div class="modal-body form-horizontal" id="book_main_details_container">
-                                    <div class="form-body">
-                                        <div class="form-group">
-                                            <label class="col-md-3 control-label"> Date/Time</label>
-                                            <div class="col-md-9">
-                                                <input type="text" class="form-control input-inline input-large" name="book_date_time" readonly>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="col-md-3 control-label"> Location</label>
-                                            <div class="col-md-9">
-                                                <input type="text" class="form-control input-inline input-large" name="book_location" readonly>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="col-md-3 control-label"> Room</label>
-                                            <div class="col-md-9">
-                                                <input class="form-control input-inline input-large" name="book_room" readonly>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="col-md-3 control-label"> Activity</label>
-                                            <div class="col-md-9">
-                                                <input type="text" class="form-control input-inline input-large" name="book_activity" readonly>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="col-md-3 control-label"> Player </label>
-                                            <div class="col-md-9">
-                                                <select class="form-control input-inline input-large" name="book_player"></select>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="col-md-3 control-label"> Financial </label>
-                                            <div class="col-md-9">
-                                                <input type="text" class="form-control input-inline input-large" name="book_finance" readonly>
-                                            </div>
-                                        </div>
-                                        <div class="form-group" id="all_booking_notes" style="display:none; margin-bottom:0px;">
-                                            <label class="col-md-3 text-right"> Notes </label>
-                                            <div class="col-md-9"> </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn dark btn-outline" data-dismiss="modal">No - return</button>
-                                    <button type="button" class="btn green" onclick="javascript:cancel_booking();">Yes - update</button>
-                                </div>
-                            </div>
-                            <!-- /.modal-content -->
-                        </div>
-                        <!-- /.modal-dialog -->
                     </div>
                 </div>
                 <!-- END PAGE CONTENT INNER -->
