@@ -85,7 +85,11 @@ class BackEndUserController extends Controller
     public function create(Request $request)
     {
         if (!Auth::check()) {
-            return redirect()->intended(route('admin/login'));
+            return [
+                'success'   => false,
+                'title'     => 'Login Error',
+                'errors'    => 'You need to be logged in for this action.'
+            ];
         }
         else{
             $user = Auth::user();
@@ -113,24 +117,34 @@ class BackEndUserController extends Controller
 
         if ($validator->fails()){
             //return $validator->errors()->all();
-            return array(
-                'success' => false,
-                'errors' => $validator->getMessageBag()->toArray()
-            );
+            return [
+                'success'   => false,
+                'title'     => 'Error Validating Fields',
+                'errors'    => $validator->getMessageBag()->toArray()
+            ];
         }
 
         $credentials = $vars;
         $credentials['password'] = bcrypt($credentials['password']);
         try {
             $user = User::create($credentials);
+
             // attach the roles to the new created user
             $user->attachRole($vars['user_type']);
 
-        } catch (Exception $e) {
-            return Response::json(['error' => 'User already exists.'], Response::HTTP_CONFLICT);
+            return [
+                'success'   => true,
+                'title'     => 'User Created',
+                'message'   => 'New backend user created and will be available in the list after the page refreshes.'
+            ];
         }
-
-        return $vars;
+        catch (Exception $e) {
+            return [
+                'success'   => false,
+                'title'     => 'User already exists',
+                'errors'    => 'Please check the errors and fix them.'
+            ];
+        }
     }
 
     /**

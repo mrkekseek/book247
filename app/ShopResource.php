@@ -34,6 +34,10 @@ class ShopResource extends Model
         return $this->hasOne('App\ShopLocation', 'id', 'location_id');
     }
 
+    public function category(){
+        return $this->hasOne('App\ShopResourceCategory', 'id', 'category_id');
+    }
+
     public static function rules($method, $id=0){
         switch($method){
             case 'GET':

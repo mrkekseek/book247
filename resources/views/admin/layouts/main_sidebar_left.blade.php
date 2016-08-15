@@ -183,7 +183,7 @@
                         <span class="title"> Cash Terminals </span>
                     </a>
                 </li>-->
-                <!--<li class="nav-item {{ $in_sidebar=='admin-backend-shops-employees-work-plan'?'active open':'' }} ">
+                <li class="nav-item {{ $in_sidebar=='admin-backend-shops-employees-work-plan'?'active open':'' }} ">
                     <a href="{{ route('admin/shops/employee_work_plan') }}" class="nav-link ">
                         <span class="title"> Working Schedule </span>
                     </a>

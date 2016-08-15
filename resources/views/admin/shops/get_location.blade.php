@@ -151,21 +151,18 @@
                                     <label class="col-md-3 control-label">City</label>
                                     <div class="col-md-9">
                                         <input type="text" name="shop_city" value="{{ $shopAddress->city }}" class="form-control input-inline input-medium" placeholder="Enter text">
-                                        <span class="help-inline"> Inline help. </span>
                                     </div>
                                 </div>
                                 <div class="form-group">
                                     <label class="col-md-3 control-label">Postal Code</label>
                                     <div class="col-md-9">
                                         <input type="text" name="shop_postal_code" value="{{ $shopAddress->postal_code }}" class="form-control input-inline input-medium" placeholder="Enter text">
-                                        <span class="help-inline"> Inline help. </span>
                                     </div>
                                 </div>
                                 <div class="form-group">
                                     <label class="col-md-3 control-label">Region</label>
                                     <div class="col-md-9">
                                         <input type="text" name="shop_region" value="{{ $shopAddress->region }}" class="form-control input-inline input-medium" placeholder="Enter text">
-                                        <span class="help-inline"> Inline help. </span>
                                     </div>
                                 </div>
                                 <div class="form-group">
@@ -191,45 +188,35 @@
 
         <div class="row">
             <div class="col-md-12">
-                <div class="portlet box green">
-                    <div class="portlet-title">
+                <div class="portlet box red border-grey-silver">
+                    <div class="portlet-title bg-grey-silver bg-font-grey-silver">
                         <div class="caption">
                             <i class="fa fa-cogs"></i>Shop Resources </div>
                         <div class="tools">
-                            <a class="expand" href="javascript:;" data-original-title="" title=""> </a>
+                            <a class="collapse" href="javascript:;" data-original-title="" title=""> </a>
                         </div>
                         <div class="actions">
-                            <a class="btn btn-circle btn-default" data-toggle="modal" href="#draggable">
+                            <a class="btn green-jungle" data-toggle="modal" href="#draggable">
                                 <i class="fa fa-plus"></i> Add Resource </a>
                         </div>
                     </div>
-                    <div class="portlet-body flip-scroll" style="display:none;">
+                    <div class="portlet-body flip-scroll">
                         <table class="table table-bordered table-striped table-condensed flip-content">
                             <thead class="flip-content">
                             <tr>
-                                <th width="5%"> Code </th>
+                                <th width="5%"> No. </th>
                                 <th> Name </th>
-                                <th class="numeric"> Price </th>
+                                <th class="numeric"> Category </th>
                                 <th class="numeric"> Change </th>
-                                <th class="numeric"> Change % </th>
-                                <th class="numeric"> Open </th>
-                                <th class="numeric"> High </th>
-                                <th class="numeric"> Low </th>
-                                <th class="numeric"> Volume </th>
                             </tr>
                             </thead>
                             <tbody>
-                            @foreach ($resourceList as $resource)
+                            @foreach ($resourceList as $key=>$resource)
                             <tr>
-                                <td> AAC </td>
+                                <td> {{$key+1}} </td>
                                 <td> <b>{{ $resource->name }}</b> </td>
-                                <td class="numeric"> &nbsp; </td>
+                                <td class="numeric"> {{ $resource->category->name }} </td>
                                 <td class="numeric"> -0.01 </td>
-                                <td class="numeric"> -0.36% </td>
-                                <td class="numeric"> $1.39 </td>
-                                <td class="numeric"> $1.39 </td>
-                                <td class="numeric"> &nbsp; </td>
-                                <td class="numeric"> 9,395 </td>
                             </tr>
                             @endforeach
                             </tbody>
@@ -242,14 +229,12 @@
         <div class="row">
             <div class="col-md-12">
                 <!-- BEGIN PORTLET-->
-                <div class="portlet box red">
-                    <div class="portlet-title">
+                <div class="portlet box red border-green-sharp">
+                    <div class="portlet-title bg-green-sharp bg-font-green-sharp">
                         <div class="caption">
                             <i class="fa fa-gift"></i>Opening Hours </div>
                         <div class="tools">
                             <a href="javascript:;" class="expand"> </a>
-                            <a href="javascript:;" class="reload"> </a>
-                            <a href="javascript:;" class="remove"> </a>
                         </div>
                     </div>
                     <div class="portlet-body form" style="display:none;">
@@ -325,6 +310,7 @@
             </div>
         </div>
 
+        @if (isset($more_on_shop_location)))
         <div class="row">
             <div class="col-md-12">
                 <div class="portlet box green">
@@ -596,6 +582,7 @@
                 </div>
             </div>
         </div>
+        @endif
         <!-- END PAGE BASE CONTENT -->
 
         <div class="modal fade draggable-modal" id="draggable" tabindex="-1" role="basic" aria-hidden="true">
@@ -641,14 +628,14 @@
                                         </select>
                                     </div>
                                 </div>
-                                <div class="form-group">
+                                <!--<div class="form-group">
                                     <label class="control-label col-md-4">Color Code</label>
                                     <div class="col-md-7">
                                         <div class="input-icon right">
                                             <i class="fa"></i>
                                             <input type="text" class="form-control input-sm" id="resource_color" name="resource_color" /> </div>
                                     </div>
-                                </div>
+                                </div>-->
                                 <div class="form-group">
                                     <label class="control-label col-md-4">Description
                                     </label>
@@ -1134,7 +1121,15 @@
                     'category_id':  $('select[name=resource_category]').val(),
                 },
                 success: function(data){
-                    alert(data);
+                    if(data.success){
+                        show_notification(data.title, data.message, 'lime', 3500, 0);
+                        setTimeout(function(){
+                            location.reload();
+                        },1500);
+                    }
+                    else{
+                        show_notification(data.title, data.errors, 'ruby', 3500, 0);
+                    }
                 }
             });
         }
@@ -1149,7 +1144,15 @@
                     opening_hours : str,
                 },
                 success: function(data){
-                    alert(data);
+                    if(data.success){
+                        show_notification(data.title, data.message, 'lime', 3500, 0);
+                        setTimeout(function(){
+                            location.reload();
+                        },2000);
+                    }
+                    else{
+                        show_notification(data.title, data.errors, 'ruby', 3500, 0);
+                    }
                 }
             });
         }
@@ -1168,7 +1171,15 @@
                     '_method':'patch'
                 },
                 success: function(data){
-                    alert(data);
+                    if(data.success){
+                        show_notification(data.title, data.message, 'lime', 3500, 0);
+                        setTimeout(function(){
+                            location.reload();
+                        },2500);
+                    }
+                    else{
+                        show_notification(data.title, data.errors, 'ruby', 3500, 0);
+                    }
                 }
             });
         }
@@ -1186,7 +1197,15 @@
                     '_method':'patch'
                 },
                 success: function(data){
-                    alert(data);
+                    if(data.success){
+                        show_notification(data.title, data.message, 'lime', 3500, 0);
+                        setTimeout(function(){
+                            location.reload();
+                        },2500);
+                    }
+                    else{
+                        show_notification(data.title, data.errors, 'ruby', 3500, 0);
+                    }
                 }
             });
         }

@@ -543,6 +543,11 @@ Route::group(['prefix'=>'front', 'middleware'=>'web'], function(){
         'as'    => 'front_calendar_booking_all',
         'uses'  => 'BookingController@front_bookings_calendar_view'
     ]);
+
+    Route::get('error_404', [
+        'as'    => 'error_404',
+        'uses'  => 'FrontPageController@error_404'
+    ]);
 });
 /** Stop Routes for front end */
 

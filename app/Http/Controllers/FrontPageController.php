@@ -420,4 +420,8 @@ class FrontPageController extends Controller
 
         return 'bine';
     }
+
+    public function error_404(){
+
+    }
 }

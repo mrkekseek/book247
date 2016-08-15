@@ -172,7 +172,6 @@
                                                     <option value="{{$role->id}}">{{$role->name}}</option>
                                                 @endforeach
                                                 </select> </div>
-                                            <span class="help-block"> e.g: 5500 0000 0000 0004 </span>
                                         </div>
                                     </div>
                                 </div>
@@ -355,7 +354,15 @@
                         '_method':      $('input[name=_method]').val(),
                         '_token':       $('input[name=_token]').val()},
                 success: function(data){
-                    alert(data);
+                    if(data.success){
+                        show_notification(data.title, data.message, 'lime', 3500, 0);
+                        setTimeout(function(){
+                            location.reload();
+                        },2000);
+                    }
+                    else{
+                        show_notification(data.title, data.errors, 'ruby', 3500, 0);
+                    }
                 }
             });
         }

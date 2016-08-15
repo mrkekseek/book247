@@ -44,11 +44,11 @@
                             <i class="icon-settings font-red"></i>
                             <span class="caption-subject font-red sbold uppercase">{!!$text_parts['table_head_text1']!!}</span>
                         </div>
-                        <div class="btn-group pull-right">
+                        <!--<div class="btn-group pull-right">
                             <button id="sample_editable_1_new" class="btn green"> Add New
                                 <i class="fa fa-plus"></i>
                             </button>
-                        </div>
+                        </div>-->
                     </div>
                     <div class="portlet-body">
                         <table class="table table-striped table-hover table-bordered" id="sample_editable_1">

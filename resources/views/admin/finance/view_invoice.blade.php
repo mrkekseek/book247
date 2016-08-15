@@ -124,7 +124,7 @@
                                             <strong>VAT {{$key_vat}}%:</strong> {{$item_vat==0?'----':$item_vat}} </li>
                                         @endforeach
                                         <li>
-                                            <strong>Grand Total:</strong> {{$grand_total}} </li>
+                                            <strong>Total:</strong> {{$grand_total}} </li>
                                     </ul>
                                     <br/>
                                     <a class="btn btn-lg blue hidden-print margin-bottom-5" onclick="javascript:window.print();"> Print

@@ -76,7 +76,11 @@ class ShopController extends Controller
 
     public function add_shop_location(Request $request){
         if (!Auth::check()) {
-            return redirect()->intended(route('admin/login'));
+            return [
+                'success'   => false,
+                'title'     => 'Login Error',
+                'errors'    => 'You need to be logged in to access this function'
+            ];
         }
         else{
             $user = Auth::user();
@@ -91,8 +95,9 @@ class ShopController extends Controller
         if ($shopValidator->fails()){
             //return $validator->errors()->all();
             return array(
-                'success' => false,
-                'errors' => $shopValidator->getMessageBag()->toArray()
+                'success'   => false,
+                'title'     => 'Error Shop Details',
+                'errors'    => $shopValidator->getMessageBag()->toArray()
             );
         }
         else{
@@ -107,8 +112,9 @@ class ShopController extends Controller
 
         if ($addressValidator->fails()){
             return array(
-                'success' => false,
-                'errors' => $addressValidator->getMessageBag()->toArray()
+                'success'   => false,
+                'title'     => 'Error Shop Address',
+                'errors'    => $addressValidator->getMessageBag()->toArray()
             );
         }
         else{
@@ -118,10 +124,14 @@ class ShopController extends Controller
 
             $shopLocation->address_id = $shopAddress->id;
             $shopLocation->save();
+
+            return [
+                'success'   => true,
+                'title'     => 'New Shop Added',
+                'message'   => 'A new shop location was added. Page will reload...'
+            ];
         }
         /** Stop - Add address to database */
-
-        return $shop_vars;
     }
 
     public function get_shop_location($id){
@@ -132,7 +142,7 @@ class ShopController extends Controller
             $user = Auth::user();
         }
 
-        $shopDetails = ShopLocations::with('opening_hours')->with('resources')->find($id);
+        $shopDetails = ShopLocations::with('opening_hours')->find($id);
         $shopAddress = Address::find($shopDetails->address_id);
         $shopOpeningHours = [];
         foreach ($shopDetails->opening_hours as $open_hour){
@@ -161,7 +171,7 @@ class ShopController extends Controller
         ];
 
         $resourceCategories = ShopResourceCategory::orderBy('name','asc')->get();
-        $shopResources = $shopDetails->resources;
+        $shopResources = ShopResource::with('category')->where('location_id','=',$shopDetails->id)->orderBy('category_id')->get();
 
         $breadcrumbs = [
             'Home'              => route('admin'),
@@ -201,6 +211,17 @@ class ShopController extends Controller
     }
 
     public function update_opening_hours(Request $request, $id){
+        if (!Auth::check()) {
+            return [
+                'success'   => false,
+                'title'     => 'Login Error',
+                'errors'    => 'You need to be logged in to access this function'
+            ];
+        }
+        else{
+            $user = Auth::user();
+        }
+
         $vars = $request->only('opening_hours','shopID');
         $opening_hours = $vars['opening_hours'];
         $open = [];
@@ -233,31 +254,61 @@ class ShopController extends Controller
             $openingHour->save();
         }
 
-        return 'bine';
+        return [
+            'success'   => true,
+            'title'     => 'Hours Updated',
+            'message'   => 'Opening Hours Successfully Updated'
+        ];
     }
 
     public function store_details_update(Request $request, $id){
+        if (!Auth::check()) {
+            return [
+                'success'   => false,
+                'title'     => 'Login Error',
+                'errors'    => 'You need to be logged in to access this function'
+            ];
+        }
+        else{
+            $user = Auth::user();
+        }
+
         $shop_vars = $request->only('name', 'bank_acc_no', 'phone', 'fax', 'email', 'registered_no');
         $shopLocation = ShopLocations::findOrFail($id);
 
         /** Start - Add shop location to database */
         $shopValidator = Validator::make($shop_vars, ShopLocations::rules('PATCH',$id), ShopLocations::$validationMessages, ShopLocations::$attributeNames);
-
         if ($shopValidator->fails()){
-            //return $validator->errors()->all();
-            return array(
-                'success' => false,
-                'errors' => $shopValidator->getMessageBag()->toArray()
-            );
+            return [
+                'success'   => false,
+                'title'     => 'Validation Error',
+                'errors'    => $shopValidator->getMessageBag()->toArray()
+            ];
         }
+
         $shopLocation->fill($shop_vars);
         $shopLocation->save();
         /** Stop - Add shop location to database */
 
-        return $shop_vars;
+        return [
+            'success'   => true,
+            'title'     => 'Store Details Updated',
+            'message'   => 'Store details successfully updated... Page will reload'
+        ];
     }
 
     public function store_address_update(Request $request, $id){
+        if (!Auth::check()) {
+            return [
+                'success'   => false,
+                'title'     => 'Login Error',
+                'errors'    => 'You need to be logged in to access this function'
+            ];
+        }
+        else{
+            $user = Auth::user();
+        }
+
         $address_vars = $request->only('address1', 'address2', 'city', 'postal_code', 'region');
         $shopLocation = ShopLocations::findOrFail($id);
         $shopAddress = Address::findOrFail($shopLocation->address_id);
@@ -267,17 +318,22 @@ class ShopController extends Controller
         $addressValidator = Validator::make($address_vars, Address::rules('PATCH', $id), Address::$validationMessages, Address::$attributeNames);
 
         if ($addressValidator->fails()){
-            return array(
-                'success' => false,
+            return [
+                'success'   => false,
+                'title'     => 'Validation Error',
                 'errors' => $addressValidator->getMessageBag()->toArray()
-            );
+            ];
         }
 
         $shopAddress->fill($address_vars);
         $shopAddress->save();
         /** Stop - Update address to database */
 
-        return $address_vars;
+        return [
+            'success'   => true,
+            'title'     => 'Store Details Updated',
+            'message'   => 'Store details successfully updated... Page will reload'
+        ];
     }
 
     public function shops_employee_working_plan(){
@@ -397,25 +453,32 @@ class ShopController extends Controller
         }
 
         $shopResourceVars = $request->only('location_id', 'name', 'description', 'category_id', 'color_code');
-
+        if ($shopResourceVars['color_code']==''){
+            $shopResourceVars['color_code'] = '#6e6e6e';
+        }
         /** Start - Add shop resource to database */
         $shopResourceValidator = Validator::make($shopResourceVars, ShopResource::rules('POST'), ShopResource::$validationMessages, ShopResource::$attributeNames);
 
         if ($shopResourceValidator->fails()){
             //return $validator->errors()->all();
-            return array(
+            return [
                 'success' => false,
-                'errors' => $shopResourceValidator->getMessageBag()->toArray()
-            );
+                'title'   => 'There is an error',
+                'errors'  => $shopResourceValidator->getMessageBag()->toArray()
+            ];
         }
         else{
             $shopResource = new ShopResource();
             $shopResource->fill($shopResourceVars);
             $shopResource->save();
+
+            return [
+                'success' => true,
+                'title'   => 'Resource Added',
+                'message' => 'The resource '.$shopResourceVars['name'].' was added to the selected Shop Location'
+            ];
         }
         /** Stop - Add shop resource to database */
-
-        return $shopResourceVars;
     }
 
     public function all_inventory_make_transfer(){

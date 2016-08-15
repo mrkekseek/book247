@@ -209,7 +209,11 @@ class RolesController extends Controller
 
     public function add_permission(Request $request){
         if (!Auth::check()) {
-            return redirect()->intended(route('admin/login'));
+            return [
+                'success'   => false,
+                'title'     => 'Login Error',
+                'errors'    => 'You need to be logged in for this action.'
+            ];
         }
         else{
             $user = Auth::user();
@@ -226,17 +230,27 @@ class RolesController extends Controller
         if ($validator->fails()){
             return array(
                 'success' => false,
-                'errors' => $validator->getMessageBag()->toArray()
+                'title'   => 'Error validating fields',
+                'errors'  => $validator->getMessageBag()->toArray()
             );
         }
 
         try {
             Permission::create($vars);
-        } catch (Exception $e) {
-            return Response::json(['error' => 'Role already exists.'], Response::HTTP_CONFLICT);
-        }
 
-        return $vars;
+            return [
+                'success'   => true,
+                'title'     => 'New Permission Created',
+                'message'   => 'The permission was created successfully. Go and assign it to the user roles.'
+            ];
+        }
+        catch (Exception $e) {
+            return [
+                'success'   => false,
+                'title'     => 'Error Creating Permission',
+                'errors'    => 'Role already exists. Check the fields and make changes'
+            ];
+        }
     }
 
     public function view_permission($id){
@@ -281,7 +295,11 @@ class RolesController extends Controller
 
     public function update_permission(Request $request, $id){
         if (!Auth::check()) {
-            return redirect()->intended(route('admin/login'));
+            return [
+                'success'   => false,
+                'title'     => 'Login Error',
+                'errors'    => 'You need to be logged in for this action.'
+            ];
         }
         else{
             $user = Auth::user();
@@ -290,7 +308,11 @@ class RolesController extends Controller
         $permission = Permission::find($id);
 
         if(!$permission){
-            return 'Error';
+            return [
+                'success'   => false,
+                'title'     => 'Login Error',
+                'errors'    => 'You need to be logged in for this action.'
+            ];
         }
 
         $vars = $request->only('name', 'display_name', 'description');
@@ -303,7 +325,8 @@ class RolesController extends Controller
         if ($validator->fails()){
             return array(
                 'success' => false,
-                'errors' => $validator->getMessageBag()->toArray()
+                'title'   => 'Error validating fields',
+                'errors'  => $validator->getMessageBag()->toArray()
             );
         }
 
@@ -324,6 +347,10 @@ class RolesController extends Controller
             }
         }
 
-        return 'Echo';
+        return [
+            'success'   => true,
+            'title'     => 'Permissions Updated',
+            'message'   => 'The permission was assigned to the new updated roles'
+        ];
     }
 }
