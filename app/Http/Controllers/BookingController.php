@@ -424,7 +424,7 @@ class BookingController extends Controller
         $ownBookings = Booking::whereIn('status',['pending','active'])
             ->where('for_user_id','=',$fillable['for_user_id'])
             ->where('search_key','!=',$search_key)
-            ->where('payment_type','!=','cash')
+            ->where('payment_type','=','membership')
             ->get();
         $nr_of_open_bookings = sizeof($ownBookings);
 

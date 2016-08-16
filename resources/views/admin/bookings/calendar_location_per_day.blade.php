@@ -1705,18 +1705,18 @@
                 },
                 success: function(data){
                     var booking_list = '';
-                    if (data.booking_key==''){
+                    /*if (data.booking_key==''){
                         // something went wrong, reload resources for the window
                     }
                     else{
-                        var payment_type_book = own_box.find('.booking_summary_single_play');
+                        var payment_type_book = own_box.find('.booking_payment_type');
                         if (data.booking_type == 'membership'){
                             payment_type_book.html('<i class="fa fa-thumbs-o-up"></i>');
                         }
                         else{
                             payment_type_book.html('<i class="fa fa-credit-card"></i>');
                         }
-                    }
+                    }*/
 
                     $.each(data.keys, function(key, val){
                         var book_box_val = $('span[booking-key="'+val.booking_key+'"]');
@@ -1730,7 +1730,7 @@
                             '</p>' +
                             '<div class="form-control-static fa-item booking_payment_type" style="float: right; margin: 5px 0px 0px; padding: 0px; min-height: 16px;">';
 
-                        if (data.booking_type == 'membership'){
+                        if (val.booking_type == 'membership'){
                             booking_list+= '<i class="fa fa-thumbs-o-up"></i>';
                         }
                         else{
@@ -1754,7 +1754,7 @@
             });
             box_container.append(bookings);
             save_single_bookings(box_container);
-            $('.play_alone_booking').show();
+            box_container.show();
 
             //var place = $('.booking_summary_box');
             //get_booking_summary(place);
