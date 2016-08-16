@@ -418,7 +418,7 @@
                         </li>
                     </ul>
                 </li>
-                <li class="menu-dropdown mega-menu-dropdown">
+                <li class="menu-dropdown mega-menu-dropdown {{ in_array($in_sidebar, ['front-settings_account', 'front-settings_personal', 'front-settings_finance'])?'active':'' }}">
                     <a href="javascript:;"> Settings
                         <span class="arrow"></span>
                     </a>
@@ -428,13 +428,13 @@
                                 <div class="row">
                                     <div class="col-md-12">
                                         <ul class="mega-menu-submenu">
-                                            <li>
-                                                <a href="#"> Account Settings [not finished] </a>
+                                            <li class=" {{ $in_sidebar=='front-settings_account'?'active':'' }}">
+                                                <a href="{{ route('settings/account') }}"> Account Settings [not finished] </a>
                                             </li>
-                                            <li>
-                                                <a href="#"> Personal Settings [not finished] </a>
+                                            <li class=" {{ $in_sidebar=='front-settings_personal'?'active':'' }}">
+                                                <a href="{{ route('settings/personal') }}"> Personal Settings [not finished] </a>
                                             </li>
-                                            <li class=" ">
+                                            <li class=" {{ $in_sidebar=='front-settings_finance'?'active':'' }}">
                                                 <a href="#" class="nav-link  "> Financial Settings [not finished] </a>
                                             </li>
                                         </ul>

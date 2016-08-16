@@ -544,6 +544,31 @@ Route::group(['prefix'=>'front', 'middleware'=>'web'], function(){
         'uses'  => 'BookingController@front_bookings_calendar_view'
     ]);
 
+    Route::get('settings/account', [
+        'as'    => 'settings/account',
+        'uses'  => 'FrontEndUserController@settings_account'
+    ]);
+
+    Route::get('settings/personal', [
+        'as'    => 'settings/personal',
+        'uses'  => 'FrontEndUserController@settings_personal'
+    ]);
+
+    Route::post('settings/personal/info', [
+        'as'    => 'settings/personal/info',
+        'uses'  => 'FrontEndUserController@settings_personal_info'
+    ]);
+
+    Route::post('settings/personal/avatar', [
+        'as'    => 'settings/personal/avatar',
+        'uses'  => 'FrontEndUserController@settings_personal_avatar'
+    ]);
+
+    Route::post('settings/personal/update_password', [
+        'as'    => 'settings/personal/update_password',
+        'uses'  => 'FrontEndUserController@settings_personal_update_password'
+    ]);
+
     Route::get('error_404', [
         'as'    => 'error_404',
         'uses'  => 'FrontPageController@error_404'

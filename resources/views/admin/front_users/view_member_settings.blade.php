@@ -203,7 +203,7 @@
                                                                 </div>
                                                                 @endif
 
-                                                                @if (sizeof($memberships)>0)
+                                                                @if (sizeof($memberships)>0 && $membership_plan->id==1)
                                                                 <div class="form-group">
                                                                     <label class="control-label col-md-4 inline"> Change Plan To </label>
                                                                     <div class="col-md-8">
@@ -372,6 +372,24 @@
                                                     </div>
                                                 </div>
                                             </form>
+
+                                            <div class="portlet light bordered">
+                                                <div class="portlet-title">
+                                                    <div class="caption">
+                                                        <i class="icon-edit font-dark"></i>
+                                                        <span class="caption-subject font-dark bold uppercase">Avatar Archive</span>
+                                                    </div>
+                                                </div>
+                                                <div class="portlet-body">
+                                                    <div class="row">
+                                                        @foreach ($old_avatars as $old_avatar)
+                                                            <div class="col-md-3" style="text-align: center;">
+                                                                <img src="data:{{ $old_avatar['type'] }};base64,{{ base64_encode($old_avatar['data']) }}" style="max-width:100%; max-height:200px;" />
+                                                            </div>
+                                                        @endforeach
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                         <!-- END CHANGE AVATAR TAB -->
                                         <!-- CHANGE PASSWORD TAB -->

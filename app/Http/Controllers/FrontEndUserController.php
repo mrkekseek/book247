@@ -318,7 +318,18 @@ class FrontEndUserController extends Controller
         }
 
         $avatarContent = Storage::disk('local')->get($avatar->file_location . $avatar->file_name);
-        $avatarType = Storage::disk('local')->mimeType($avatar->file_location . $avatar->file_name);
+        $avatarType    = Storage::disk('local')->mimeType($avatar->file_location . $avatar->file_name);
+
+        $avatarArchive = [];
+        $old_avatars = Storage::disk('local')->files($avatar->file_location);
+        if ($old_avatars){
+            foreach($old_avatars as $old_avatar){
+                $avatarArchive[] = [
+                    'type'  => Storage::disk('local')->mimeType($old_avatar),
+                    'data'  => Storage::disk('local')->get($old_avatar)
+                ];
+            }
+        }
 
         $userDocuments = UserDocuments::where('user_id','=',$id)->where('category','=','account_documents')->get();
 
@@ -361,7 +372,8 @@ class FrontEndUserController extends Controller
             //'activities'    => $activities,
             'restrictions'  => @$restrictions,
             'plan_details'  => @$plan_details,
-            'memberships'   => $membership_plans
+            'memberships'   => $membership_plans,
+            'old_avatars'   => $avatarArchive
         ]);
     }
 
@@ -944,7 +956,8 @@ class FrontEndUserController extends Controller
         $avatarFilename = $user->username.'.'.$request->file('user_avatar')->getClientOriginalExtension();
         $exists = Storage::disk('local')->exists($avatarLocation . $avatarFilename);
         if ($exists){
-            Storage::disk('local')->move( $avatarLocation . $avatarFilename, $avatarLocation . time().'-'.$avatarFilename.'.old');
+            $old_avatar_name = time().'-'.$avatarFilename.'.old';
+            Storage::disk('local')->move( $avatarLocation . $avatarFilename, $avatarLocation . $old_avatar_name);
         }
 
         $avatarData = [
@@ -980,9 +993,11 @@ class FrontEndUserController extends Controller
     public function update_personal_info(Request $request, $id)
     {
         if (!Auth::check()) {
-            return ['success' => false,
+            return [
+                'success' => false,
                 'title'   => 'Authentication Error',
-                'errors'  => 'Please reload the page and try again'];
+                'errors'  => 'Please reload the page and try again'
+            ];
         }
         else{
             $user = Auth::user();
@@ -993,14 +1008,16 @@ class FrontEndUserController extends Controller
             $is_staff = true;
         }
 
-        if ($id!=$user->id && $is_staff) {
+        if ($id!=$user->id && $is_staff || $id==$user->id) {
             // an employee is updating a member details
             $user = User::findOrFail($id);
         }
         else{
-            return ['success' => false,
+            return [
+                'success' => false,
                 'title'   => 'Authentication Error',
-                'errors'  => 'Please reload the page and try again'];
+                'errors'  => 'Please reload the page and try again'
+            ];
         }
 
         $vars = $request->only('about_info', 'country_id', 'date_of_birth', 'first_name', 'last_name', 'middle_name', 'mobile_number', 'personal_email');
@@ -1019,11 +1036,11 @@ class FrontEndUserController extends Controller
         ]);
 
         if ($validator->fails()){
-            return array(
+            return [
                 'success' => false,
                 'title'   => 'Validation Error',
                 'errors'  => $validator->getMessageBag()->toArray()
-            );
+            ];
         }
         else{
             $user->first_name  = $vars["first_name"];
@@ -1043,9 +1060,11 @@ class FrontEndUserController extends Controller
         $personalDetails->fill($personalData);
         $personalDetails->save();
 
-        return ['success' => true,
+        return [
+            'success' => true,
             'title'   => 'Information Updated',
-            'message' => 'Member/user information successfully updated'];
+            'message' => 'Member/user information successfully updated'
+        ];
     }
 
     public function update_personal_address(Request $request, $id)
@@ -1153,11 +1172,11 @@ class FrontEndUserController extends Controller
         }
 
         if ($validator->fails()){
-            return array(
+            return [
                 'success' => false,
                 'title'   => 'New password validation failed',
                 'errors'  => $validator->getMessageBag()->toArray()
-            );
+            ];
         }
         else {
             if ($is_staff){
@@ -1165,9 +1184,11 @@ class FrontEndUserController extends Controller
                     'password' => Hash::make($request->password1)
                 ])->save();
 
-                return ['success' => true,
+                return [
+                    'success' => true,
                     'title' => 'Password updated',
-                    'message' => 'Old password changed ... user updated'];
+                    'message' => 'Old password changed ... user updated'
+                ];
             }
             else{
                 $auth = auth();
@@ -1176,14 +1197,18 @@ class FrontEndUserController extends Controller
                         'password' => Hash::make($request->password1)
                     ])->save();
 
-                    return ['success' => true,
+                    return [
+                        'success' => true,
                         'title' => 'Password updated',
-                        'message' => 'Old password changed ... user updated'];
+                        'message' => 'Old password changed ... user updated'
+                    ];
                 }
                 else{
-                    return ['success' => false,
+                    return [
+                        'success' => false,
                         'title'  => 'Error updating password',
-                        'errors' => 'Old password mismatch'];
+                        'errors' => 'Old password mismatch'
+                    ];
                 }
             }
         }
@@ -1643,7 +1668,7 @@ class FrontEndUserController extends Controller
                     break;
             }
         }
-//xdebug_var_dump($time_of_day_result);
+
         foreach ($time_of_day_result as $a){
             if ($a == true){
                 $payment_type = 'membership';
@@ -2397,5 +2422,188 @@ class FrontEndUserController extends Controller
         ]);
     }
 
+    public function settings_account(){
+        if (Auth::check()) {
+            $user = Auth::user();
+        }
+        else{
+            return redirect()->intended(route('homepage'));;
+        }
+
+        $my_plan = UserMembership::where('user_id','=',$user->id)->whereIn('status',['active','suspended'])->get()->first();
+        if ($my_plan){
+            $restrictions = $my_plan->get_plan_restrictions();
+            $plan_details = $my_plan->get_plan_details();
+        }
+        else {
+            //$my_plan = MembershipPlan::where('id','=',1)->get()->first();
+        }
+
+        $breadcrumbs = [
+            'Home'      => route('admin'),
+            'Dashboard' => '',
+        ];
+        $text_parts  = [
+            'title'     => 'Home',
+            'subtitle'  => 'users dashboard',
+            'table_head_text1' => 'Dashboard Summary'
+        ];
+        $sidebar_link= 'front-settings_account';
+
+        return view('front/settings/account',[
+            'breadcrumbs' => $breadcrumbs,
+            'text_parts'  => $text_parts,
+            'in_sidebar'  => $sidebar_link,
+            'membership_plan'   => $my_plan,
+            //'activities'    => $activities,
+            'restrictions'  => @$restrictions,
+            'plan_details'  => @$plan_details,
+            'user'          => $user
+        ]);
+    }
+
+    public function settings_personal(){
+        if (Auth::check()) {
+            $user = Auth::user();
+        }
+        else{
+            return redirect()->intended(route('homepage'));
+        }
+
+        $userProfessional = $user->ProfessionalDetail;
+        if (!isset($userProfessional)){
+            $userProfessional = new ProfessionalDetail();
+        }
+
+        $userPersonal = $user->PersonalDetail;
+        if (isset($userPersonal)) {
+            $userPersonal->dob_format = Carbon::createFromFormat('Y-m-d', $userPersonal->date_of_birth)->format('d-m-Y');
+            $userPersonal->dob_to_show = Carbon::createFromFormat('Y-m-d', $userPersonal->date_of_birth)->format('d M Y');
+        }
+        else{
+            $userPersonal = new PersonalDetail();
+        }
+
+        /*$personalAddress = Address::find($userPersonal->address_id);
+        if (!isset($personalAddress)){
+            $personalAddress = new Address();
+        }*/
+
+        $countries = Countries::orderBy('name')->get();
+        $userCountry = Countries::find($user->country_id);
+
+        $avatar = $user->avatar;
+        if (!$avatar) {
+            $avatar = new UserAvatars();
+            $avatar->file_location = 'members/default/avatars/';
+            $avatar->file_name = 'default.jpg';
+        }
+
+        $avatarContent = Storage::disk('local')->get($avatar->file_location . $avatar->file_name);
+        $avatarType    = Storage::disk('local')->mimeType($avatar->file_location . $avatar->file_name);
+
+        $userMembership = UserMembership::where('user_id','=',$user->id)->get()->first();
+        if ($userMembership){
+            $membershipName = $userMembership->membership_name;
+        }
+        elsE{
+            $membershipName = 'No Membership Plan';
+        }
+
+        $breadcrumbs = [
+            'Home'      => route('admin'),
+            'Dashboard' => '',
+        ];
+        $text_parts  = [
+            'title'     => 'Home',
+            'subtitle'  => 'users dashboard',
+            'table_head_text1' => 'Dashboard Summary'
+        ];
+        $sidebar_link= 'front-settings_personal';
+
+        return view('front/settings/personal',[
+            'breadcrumbs'   => $breadcrumbs,
+            'text_parts'    => $text_parts,
+            'in_sidebar'    => $sidebar_link,
+            'user'          => $user,
+            'countries'     => $countries,
+            'personal'      => $userPersonal,
+            'avatar'        => $avatarContent,
+            'avatarType'    => $avatarType,
+            'membershipName'=> $membershipName
+        ]);
+    }
+
+    public function settings_personal_info(Request $request){
+        if (Auth::check()) {
+            $user = Auth::user();
+        }
+        else{
+            return [
+                'success' => false,
+                'title'   => 'Authentication Error',
+                'errors'  => 'You need to be logged in to access this function. Please login...'
+            ];
+        }
+
+        return $this->update_personal_info($request, $user->id);
+    }
+
+    public function settings_personal_avatar(Request $request){
+        if (!Auth::check()) {
+            return redirect()->intended(route('admin/login'));
+        }
+        else{
+            $user = Auth::user();
+        }
+
+        //$user = User::findOrFail($id);
+
+        $avatarLocation = 'members/'.$user->id.'/avatars/';
+        $avatarFilename = $user->username.'.'.$request->file('user_avatar')->getClientOriginalExtension();
+        $exists = Storage::disk('local')->exists($avatarLocation . $avatarFilename);
+        if ($exists){
+            $old_avatar_name = time().'-'.$avatarFilename.'.old';
+            Storage::disk('local')->move( $avatarLocation . $avatarFilename, $avatarLocation . $old_avatar_name);
+        }
+
+        $avatarData = [
+            'user_id'   => $user->id,
+            'file_name' => $avatarFilename,
+            'file_location' => $avatarLocation,
+            'width' => 0,
+            'height'=> 0
+        ];
+
+        $avatar = UserAvatars::find(['user_id' => $user->id])->first();
+        if (!$avatar) {
+            $avatar = new UserAvatars();
+        }
+        $avatar->fill($avatarData);
+        $avatar->save();
+
+        Storage::disk('local')->put(
+            $avatarLocation . $avatarFilename,
+            file_get_contents($request->file('user_avatar')->getRealPath())
+        );
+
+        //return redirect('admin/back_users/view_user/'.$id);
+        return redirect()->intended(route('settings/personal'));
+    }
+
+    public function settings_personal_update_password(Request $request){
+        if (!Auth::check()) {
+            return [
+                'success' => false,
+                'title'   => 'Authentication Error',
+                'errors'  => 'Please reload the page and try again'
+            ];
+        }
+        else{
+            $user = Auth::user();
+        }
+
+        return $this->updatePassword($request, $user->id);
+    }
     /* Front end pages part - STOP */
 }
