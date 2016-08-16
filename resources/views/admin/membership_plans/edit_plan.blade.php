@@ -42,9 +42,15 @@
                 <div class="portlet light bordered">
                     <div class="portlet-title">
                         <div class="caption">
-                            <i class="icon-equalizer font-purple-studio"></i>
-                            <span class="caption-subject font-purple-studio bold uppercase"> Membership plan details</span>
-                            <span class="caption-helper">update details here...</span>
+                            <i class="icon-equalizer {{ $membership_plan->status == 'active' ? 'font-green-jungle' : 'font-red-thunderbird' }}"></i>
+                            <span class="caption-subject {{ $membership_plan->status == 'active' ? 'font-green-jungle' : 'font-red-thunderbird' }} bold uppercase"> Membership plan details</span>
+                            <span class="caption-helper {{ $membership_plan->status == 'active' ? 'font-green-jungle' : 'font-red-thunderbird' }}">
+                                @if ($membership_plan->status == 'active')
+                                    - active and in use
+                                @else
+                                    - status "{{$membership_plan->status}}" - switch to "active" when you want this plan to be available
+                                @endif
+                            </span>
                         </div>
                         <div class="tools">
                             <a class="expand" href="" data-original-title="" title=""> </a>
@@ -169,12 +175,13 @@
                 </div>
             </div>
 
+            @if ($membership_plan->status != 'active')
             <div class="col-md-12">
                 <div class="portlet light bordered">
                     <div class="portlet-title">
                         <div class="caption">
-                            <i class="icon-equalizer font-green-jungle"></i>
-                            <span class="caption-subject font-green-jungle bold uppercase"> Add Membership Attributes </span>
+                            <i class="icon-equalizer font-purple-studio"></i>
+                            <span class="caption-subject font-purple-studio bold uppercase"> Add Membership Attributes </span>
                             <span class="caption-helper">set the membership properties like activities included and much more</span>
                         </div>
                         <div class="tools">
@@ -419,6 +426,7 @@
                     </div>
                 </div>
             </div>
+            @endif
 
             <div class="col-md-12">
                 <div class="portlet light bordered">
@@ -438,7 +446,10 @@
                             @foreach ($restrictions as $restriction)
                                 <div class="col-md-4">
                                     <div class="note {{ $restriction['color'] }}" style="min-height:145px;">
+                                        @if ($membership_plan->status != 'active')
                                         <button class="close remove_restriction" data-id="{{$restriction['id']}}" type="button"></button>
+                                        @endif
+
                                         <h4 class="block"> {{ $restriction['title'] }} Rule </h4>
                                         <p> {!! $restriction['description'] !!} </p>
                                     </div>

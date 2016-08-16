@@ -301,7 +301,7 @@ class MembershipPlansController extends Controller
             'Permissions'        => '',
         ];
         $text_parts  = [
-            'title'     => 'Edit Plane - Full month free',
+            'title'     => 'Edit Membership - '.$the_plan->name,
             'subtitle'  => '',
             'table_head_text1' => 'Backend Roles Permissions List'
         ];
