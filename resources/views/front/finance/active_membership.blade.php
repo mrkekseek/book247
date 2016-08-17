@@ -92,12 +92,14 @@
                                                     <h4 class="block" style="margin-bottom:0px; font-size:32px;"> <b>{{ $plan_details['price'] }} NOK</b> </h4>
                                                 </div>
                                             </div>
+                                            @if ($plan_details['discount']!=0)
                                             <div class="col-md-4">
                                                 <div class="note note-info font-grey-mint" style="min-height:105px; margin:0 0 10px; padding:5px 20px 10px 10px;">
                                                     <p> Discount </p>
                                                     <h4 class="block" style="margin-bottom:0px; font-size:32px;"> <b>{{ $plan_details['discount'] }}</b> </h4>
                                                 </div>
                                             </div>
+                                            @endif
                                             <div class="col-md-4">
                                                 <div class="note note-info font-grey-mint" style="min-height:105px; margin:0 0 10px; padding:5px 20px 10px 10px;">
                                                     <p> Invoice Period </p>
@@ -110,7 +112,7 @@
                                                     <h4 class="block" style="margin-bottom:0px; font-size:32px;"> {{ $plan_details['day_start'] }} </h4>
                                                 </div>
                                             </div>
-                                            <div class="col-md-4">
+                                            <div class="{{$plan_details['discount']==0?'col-md-8':'col-md-4'}}">
                                                 <div class="note note-warning" style="min-height:105px; margin:0 0 10px; padding:5px 20px 10px 10px;">
                                                     <p> Current invoice period </p>
                                                     <h4 class="block" style="margin-bottom:0px; font-size:18px;"> 22 Mar 2014 - 22 June 2014 </h4>

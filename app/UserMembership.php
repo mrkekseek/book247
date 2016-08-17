@@ -101,6 +101,7 @@ class UserMembership extends Model
                 'max_value'     => $rest->max_value,
                 'time_start'    => $rest->time_start,
                 'time_end'      => $rest->time_end,
+                'special_permissions'   => isset($rest->special_permissions)?$rest->special_permissions:json_encode([])
             ];
         }
 

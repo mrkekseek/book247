@@ -16,6 +16,7 @@ class MembershipRestriction extends Model
         'max_value'     => 'Maximum Value',
         'time_start'    => 'Time Start',
         'time_end'      => 'Time End',
+        'special_permissions'   => 'Special Permissions'
     );
 
     public static $message = array();
@@ -28,6 +29,7 @@ class MembershipRestriction extends Model
         'max_value',
         'time_start',
         'time_end',
+        'special_permissions'
     ];
 
     public static function rules($method, $id){
@@ -67,9 +69,34 @@ class MembershipRestriction extends Model
                 $days_in = '';
                 $days = json_decode($this->value);
                 foreach ($days as $day){
-                    $days_in[] = jddayofweek($day, 1);
+                    $days_in[] = jddayofweek($day-1, 1);
                 }
+
                 $description = 'Included days : <b>'.implode(', ',$days_in).'</b> between <b>'.$this->time_start.' - '.$this->time_end.'</b>';
+                $specials = json_decode($this->special_permissions);
+                if (sizeof($specials)>0){
+                    $description .= '<br />Special Restrictions : ';
+                    $description_sp = [];
+                    foreach($specials as $key=>$special){
+                        switch($key){
+                            case 'special_current_day' :
+                                if ($special==1) {
+                                    $description_sp[] = 'booking today';
+                                }
+                                elseif($special==0){
+                                    $description_sp[] = 'no booking today';
+                                }
+                                break;
+                            case 'special_days_ahead' :
+                                if ($special>0) {
+                                    $description_sp[] = 'book for ' . $special . ' days from midnight';
+                                }
+                                break;
+                        }
+                    }
+                    $description.=implode(', ',$description_sp);
+                }
+
                 $color = 'note-info';
                 break;
             case 'open_bookings' :
@@ -95,7 +122,25 @@ class MembershipRestriction extends Model
                 $color = 'note-success';
                 break;
             case 'booking_time_interval' :
-                $description = 'Booking can be made for intervals between <b>'.$this->min_value.' hours</b> from now until <b>'.$this->max_value.' hours</b> from now.';
+                $hour_day = [
+                    "1"   => '1 hour',
+                    "2"   => '2 hours',
+                    "3"   => '3 hours',
+                    "4"   => '4 hours',
+                    "5"   => '5 hours',
+                    "6"   => '6 hours',
+                    "9"   => '9 hours',
+                    "12"  => '12 hours',
+                    "24"  => '1 day',
+                    "48"  => '2 days',
+                    "72"  => '3 days',
+                    "96"  => '4 days',
+                    "120" => '5 days',
+                    "144" => '6 days',
+                    "168" => '7 days',
+                    "336" => '14 days'
+                ];
+                $description = 'Booking can be made <b> '.$hour_day[$this->max_value].' </b> up front.';
                 $color = 'note-info';
                 break;
             default :
@@ -104,13 +149,15 @@ class MembershipRestriction extends Model
             break;
         }
 
-        return ['description' => $description,
+        return [
+            'description'   => $description,
             'color'         => $color,
             'value'         => $this->value,
             'min_value'     => $this->min_value,
             'max_value'     => $this->max_value,
             'time_start'    => $this->time_start,
             'time_end'      => $this->time_end,
+            'special_permissions'   => $this->special_permissions
         ];
     }
 }

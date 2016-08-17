@@ -261,20 +261,28 @@
                                     <div class="portlet-body form">
                                         <!-- BEGIN FORM-->
                                         <form action="#" class="form-horizontal form-row-seperated">
-                                            <div class="form-body">
-                                                <div class="form-group">
-                                                    <label class="control-label col-md-2"> Hours Before </label>
-                                                    <div class="col-md-6">
-                                                        <input type="text" class="form-control form-inline input-xsmall inline-block" placeholder="hour" name="hours_before_booking">
-                                                        <span class="help-block inline-block"> bookings available in advance with these hours </span>
-                                                    </div>
-                                                </div>
-                                                <div class="form-group">
-                                                    <label class="control-label col-md-2"> Hours Until </label>
-                                                    <div class="col-md-6">
-                                                        <input type="text" class="form-control form-inline input-xsmall inline-block" placeholder="hour" name="hours_until_booking">
-                                                        <span class="help-block inline-block"> bookings available until these hours from now  </span>
-                                                    </div>
+                                            <div class="form-body" style="padding-left:15px; padding-right:15px; border-bottom:none;">
+                                                <div class="form-group" style="border-bottom:none;">
+                                                    <span class="help-block inline-block"> Player cannot book more than </span>
+                                                    <select name="hours_until_booking" class="form-control form-inline input-small inline-block">
+                                                        <option value="1">1 hour</option>
+                                                        <option value="2">2 hours</option>
+                                                        <option value="3">3 hours</option>
+                                                        <option value="4">4 hours</option>
+                                                        <option value="5">5 hours</option>
+                                                        <option value="6">6 hours</option>
+                                                        <option value="9">9 hours</option>
+                                                        <option value="12">12 hours</option>
+                                                        <option value="24">1 day</option>
+                                                        <option value="48">2 days</option>
+                                                        <option value="72">3 days</option>
+                                                        <option value="96">4 days</option>
+                                                        <option value="120">5 days</option>
+                                                        <option value="144">6 days</option>
+                                                        <option value="168">7 days</option>
+                                                        <option value="336">14 days</option>
+                                                    </select>
+                                                    <span class="help-block inline-block"> up front </span>
                                                 </div>
                                             </div>
                                             <div class="form-actions">
@@ -332,6 +340,50 @@
                                                             <input type="text" class="form-control inline-block input-xsmall" placeholder="minutes" name="booking_minute_stop">
                                                             <span class="help-block inline-block"> End Time </span>
                                                         </div>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group" style="border-bottom:none;">
+                                                    <label class="col-md-3 control-label"> Use Special Permission </label>
+                                                    <div class="col-md-9">
+                                                        <div class="radio-list">
+                                                            <label class="radio-inline">
+                                                                <input type="radio" name="useSpecialPermissions" value="1" checked> Yes </label>
+                                                            <label class="radio-inline">
+                                                                <input type="radio" name="useSpecialPermissions" value="0" checked> No </label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="special_permission_option form-group" style="border-bottom:none; padding-top:0; display:none;">
+                                                    <label class="col-md-3 control-label"> Book Current Day </label>
+                                                    <div class="col-md-9">
+                                                        <div class="radio-list">
+                                                            <label class="radio-inline">
+                                                                <input type="radio" name="specialCurrentDay" value="1" checked> Yes </label>
+                                                            <label class="radio-inline">
+                                                                <input type="radio" name="specialCurrentDay" value="0" checked> No </label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class=" special_permission_option form-group" style="border-bottom:none; padding-top:0; display:none;">
+                                                    <label class="col-md-3 control-label"> Book Next Day/Days </label>
+                                                    <div class="col-md-9">
+                                                        <select class="form-control input-large" name="specialDaysAhead">
+                                                            <option value="-1">Select Number Of Days</option>
+                                                            <option value="1">1 Day Ahead</option>
+                                                            <option value="2">2 Days Ahead</option>
+                                                            <option value="3">3 Days Ahead</option>
+                                                            <option value="4">4 Days Ahead</option>
+                                                            <option value="5">5 Days Ahead</option>
+                                                            <option value="6">6 Days Ahead</option>
+                                                            <option value="7">7 Days Ahead</option>
+                                                            <option value="8">8 Days Ahead</option>
+                                                            <option value="9">9 Days Ahead</option>
+                                                            <option value="10">10 Days Ahead</option>
+                                                            <option value="11">11 Days Ahead</option>
+                                                            <option value="12">12 Days Ahead</option>
+                                                            <option value="13">13 Days Ahead</option>
+                                                            <option value="14">14 Days Ahead</option>
+                                                        </select>
                                                     </div>
                                                 </div>
                                             </div>
@@ -710,8 +762,8 @@
                 type: "post",
                 data: {
                     'type' : 'booking_time_interval',
-                    'min_val': $('input[name="hours_before_booking"]').val(),
-                    'max_val': $('input[name="hours_until_booking"]').val(),
+                    'min_val': 0,
+                    'max_val': $('select[name="hours_until_booking"]').val(),
                     'membership_id': '{{@$membership_plan->id}}'
                 },
                 success: function(data){
@@ -731,6 +783,13 @@
         $('.add_booking_time_of_day').on('click', function(event){
             event.preventDefault();
 
+            var special_current_day = '';
+            var special_days_ahead = '';
+            if ($('input[name="useSpecialPermissions"]').val()==1){
+                special_current_day = $('input[name="specialCurrentDay"]').val();
+                special_days_ahead  = $('select[name="specialDaysAhead"]').val();
+            }
+
             $.ajax({
                 url: '{{route('membership_plan-add_restriction')}}',
                 type: "post",
@@ -741,7 +800,9 @@
                     'hour_stop': $('input[name="booking_hour_stop"]').val(),
                     'minute_start': $('input[name="booking_minute_start"]').val(),
                     'minute_stop': $('input[name="booking_minute_stop"]').val(),
-                    'membership_id': '{{@$membership_plan->id}}'
+                    'membership_id': '{{@$membership_plan->id}}',
+                    'special_current_day':special_current_day,
+                    'special_days_ahead':special_days_ahead
                 },
                 success: function(data){
                     if(data.success){
@@ -810,6 +871,15 @@
         $('.remove_restriction').on('click', function(){
             $('input[name="attribute-id"]').val($(this).attr('data-id'));
             $("#cancel_confirm_box").modal('show');
+        });
+
+        $('input[name="useSpecialPermissions"]').on('change', function(){
+            if ($(this).val() == 1){
+                $('.special_permission_option').show();
+            }
+            else{
+                $('.special_permission_option').hide();
+            }
         });
 
         function remove_attribute_restriction(){

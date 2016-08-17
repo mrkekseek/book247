@@ -431,7 +431,8 @@ class MembershipPlansController extends Controller
             $user = Auth::user();
         }
 
-        $vars = $request->only('type','activities','membership_id','min_val','max_val','hour_start','hour_stop','minute_start','minute_stop','day_selection','open_bookings','cancellation_before_hours');
+        $vars = $request->only('type','activities','membership_id','min_val','max_val','hour_start','hour_stop','minute_start',
+            'minute_stop','day_selection','open_bookings','cancellation_before_hours', 'special_current_day', 'special_days_ahead');
 
         $the_plan = MembershipPlan::where('id','=',$vars['membership_id'])->get()->first();
         $restriction = MembershipRestrictionType::where('name', '=', $vars["type"])->get()->first();
@@ -444,7 +445,8 @@ class MembershipPlansController extends Controller
                 'min_value'         => '0',
                 'max_value'         => '0',
                 'time_start'        => '00:00',
-                'time_end'          => '00:00'
+                'time_end'          => '00:00',
+                'special_permissions'   => ''
             ];
 
             switch($vars["type"]){
@@ -482,6 +484,13 @@ class MembershipPlansController extends Controller
 
                     $fillable['time_start'] = $vars['hour_start'] . ':' . $vars['minute_start'];
                     $fillable['time_end'] = $vars['hour_stop'] . ':' . $vars['minute_stop'];
+
+                    if ($vars['special_current_day']!='' || $vars['special_days_ahead']!=''){
+                        $fillable['special_permissions'] = json_encode([
+                            'special_current_day' => $vars['special_current_day'],
+                            'special_days_ahead' => $vars['special_days_ahead']
+                        ]);
+                    }
                 }
                 break;
                 case 'open_bookings' : {

@@ -371,7 +371,6 @@ class BookingController extends Controller
                 }*/
 
                 $restrictions = $for_user_id->get_membership_restrictions();
-
                 $message['payment'] = $this->check_membership_restrictions($for_user_id->id, $fillable, $restrictions, $search_key);
             }
             else{
@@ -433,6 +432,8 @@ class BookingController extends Controller
         foreach ($restrictions as $restriction){
             switch ($restriction['name']){
                 case 'time_of_day' : {
+                    $status = true; //break;
+
                     //'value' => string '[1,2,3,4,5]' (length=11)
                     $selected_days  = json_decode($restriction['value']);
                     //'time_start' => string '06:00' (length=5)
@@ -452,25 +453,56 @@ class BookingController extends Controller
                     // booking hour
                     if (substr_count($fillable['booking_time_start'], ':')==1) {
                         $booking_hour = Carbon::createFromFormat('H:i', $fillable['booking_time_start']);
+                        $booking_day_time   = Carbon::createFromFormat('Y-m-d H:i', $fillable['date_of_booking'].' '.$fillable['booking_time_start']);
                     }
                     else{
                         $booking_hour = Carbon::createFromFormat('H:i:s', $fillable['booking_time_start']);
+                        $booking_day_time   = Carbon::createFromFormat('Y-m-d H:i:s', $fillable['date_of_booking'].' '.$fillable['booking_time_start']);
                     }
                     // day of week for the booking
-                    $booking_day    = Carbon::createFromFormat('Y-m-d', $fillable['date_of_booking'])->format('w');
+                    $booking_day        = Carbon::createFromFormat('Y-m-d', $fillable['date_of_booking'])->format('w');
 
                     // we check the day first
                     if (!in_array($booking_day, $selected_days)){
                         // not in selected day
-                        $time_of_day_result[] = false;
+                        $status = false;
                     }
                     // we check the hours interval second
                     elseif ($booking_hour->lte($hour_start) || $booking_hour->gte($hour_end)){
-                        $time_of_day_result[] = false;
+                        // not in selected time period
+                        $status = false;
                     }
-                    else{
-                        $time_of_day_result[] = true;
+
+                    $special_restrictions = json_decode($restriction['special_permissions']);
+                    if (sizeof($special_restrictions)>=1){
+                        if (!isset($special_restrictions->special_days_ahead)){
+                            $special_restrictions->special_days_ahead = 1;
+                        }
+
+                        $now_day = Carbon::now();
+                        if ($special_restrictions->special_current_day=='1') {
+                            // we calculate the time when this period can be booked - start interval
+                            $start_interval = Carbon::instance($booking_day_time)->subDays($special_restrictions->special_days_ahead)->startOfDay();
+                            // we calculate the end interval
+                            $end_interval   = Carbon::instance($booking_day_time)->endOfDay();
+                        }
+                        else{
+                            // we calculate the time when this period can be booked - start interval
+                            $start_interval = Carbon::instance($booking_day_time)->subDays($special_restrictions->special_days_ahead)->startOfDay();
+                            // we calculate the end interval
+                            $end_interval   = Carbon::instance($booking_day_time)->subDays(1)->endOfDay();
+                        }
+                        //echo $now_day->toDateTimeString().' : '.$start_interval->toDateTimeString().' to '.$end_interval->toDateTimeString(); //exit;
+
+                        if ($now_day->gte($start_interval) && $now_day->lt($end_interval)){
+                            //$status = true;
+                        }
+                        else{
+                            $status = false;
+                        }
                     }
+
+                    $time_of_day_result[] = $status;
                 }
                 break;
                 case 'open_bookings' : {

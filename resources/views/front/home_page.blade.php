@@ -1461,8 +1461,8 @@
         /* Timer function - Stop */
 
         jQuery(document).ready(function() {
-            $('.is_resource[data-id="3"]').click();
-            $('.location_btn[data-id="7"]').click();
+            $('.is_resource[data-id="2"]').click();
+            $('.location_btn[data-id="5"]').click();
 
             //get_booking_hours();
             get_friends_list();

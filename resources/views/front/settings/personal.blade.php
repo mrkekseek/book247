@@ -72,19 +72,19 @@
                                     </div>
                                     <!-- END STAT -->
                                     <div>
-                                        <h4 class="profile-desc-title">About Marcus Doe</h4>
+                                        <h4 class="profile-desc-title">About Me</h4>
                                         <span class="profile-desc-text"> {{@$personal->about_info}} </span>
                                         <div class="margin-top-20 profile-desc-link">
                                             <i class="fa fa-globe"></i>
-                                            <a href="http://www.keenthemes.com">www.keenthemes.com</a>
+                                            <a href="">www.keenthemes.com</a>
                                         </div>
                                         <div class="margin-top-20 profile-desc-link">
                                             <i class="fa fa-twitter"></i>
-                                            <a href="http://www.twitter.com/keenthemes/">@keenthemes</a>
+                                            <a href="">@keenthemes</a>
                                         </div>
                                         <div class="margin-top-20 profile-desc-link">
                                             <i class="fa fa-facebook"></i>
-                                            <a href="http://www.facebook.com/keenthemes/">keenthemes</a>
+                                            <a href="">keenthemes</a>
                                         </div>
                                     </div>
                                 </div>

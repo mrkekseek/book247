@@ -120,6 +120,7 @@ class MembershipPlan extends Model
                 $to_send['max_value']   = $restriction->max_value;
                 $to_send['time_start']  = $restriction->time_start;
                 $to_send['time_end']    = $restriction->time_end;
+                $to_send['special_permissions'] = $restriction->special_permissions;
             }
 
             $restrictions[] = $to_send;

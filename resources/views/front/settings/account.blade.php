@@ -24,19 +24,76 @@
             <div class="container">
                 <!-- BEGIN PAGE CONTENT INNER -->
                 <div class="page-content-inner">
-                    <div class="portlet light margin-top-10">
-                        <div class="portlet-body">
-                            <div class="note note-warning" style="margin-bottom:5px;">
-                                <h4 class="block">You have no active membership</h4>
-                                <p>
-                                    With a membership you can do more and pay less. Select one that is fitted to your needs and start playing sports.<br /><br />
-                                    Use the bottom button to view all available memberships and select the one that is right for you.
-                                </p>
-                                <div class="form">
-                                    <div class="form-actions right" style="border-top:none; padding:10px 0 0;">
-                                        <a href="{{ route('front/membership_types') }}" class="btn purple-seance"> Membership Types </a>
-                                    </div>
+                    <div class="col-md-6">
+                        <div class="portlet light ">
+                            <div class="portlet-title">
+                                <div class="caption">
+                                    <i class="icon-share font-dark"></i>
+                                    <span class="caption-subject font-dark bold uppercase">Bookings Settings</span>
                                 </div>
+                            </div>
+                            <div class="portlet-body">
+                                <div class="margin-top-10 margin-bottom-10 clearfix">
+                                    <table class="table table-bordered table-striped">
+                                        <tbody><tr>
+                                            <td> Preferred Location </td>
+                                            <td>
+                                                <div style="padding:5px;" class="pulsate-regular">
+                                                    <select class="form-control">
+                                                        <option> Select Location </option>
+                                                    </select>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                Preferred Activity
+                                            </td>
+                                            <td>
+                                                <div style="padding:5px;" class="pulsate-regular">
+                                                    <select class="form-control">
+                                                        <option> Select Activity </option>
+                                                    </select>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        </tbody></table>
+                                </div>
+                                <span class="label label-danger"> NOTE! </span>
+                                <span> Pulsate is supported in Latest Firefox, Chrome, Opera, Safari and Internet Explorer 9 and Internet Explorer 10 only. </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="portlet light ">
+                            <div class="portlet-title">
+                                <div class="caption">
+                                    <i class="icon-share font-dark"></i>
+                                    <span class="caption-subject font-dark bold uppercase">Pulsate</span>
+                                </div>
+                            </div>
+                            <div class="portlet-body">
+                                <h4>Pulsate any page elements.</h4>
+                                <div class="margin-top-10 margin-bottom-10 clearfix">
+                                    <table class="table table-bordered table-striped">
+                                        <tbody><tr>
+                                            <td> Repeating Pulsate </td>
+                                            <td>
+                                                <div style="padding: 5px; -moz-outline-radius: 0px; outline: 2px solid rgba(191, 28, 86, 0.6); box-shadow: 0px 0px 5px rgba(191, 28, 86, 0.6);"> Repeating Pulsate </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <button  class="btn green">Pulsate Once</button>
+                                            </td>
+                                            <td>
+                                                <div style="padding:5px;"> Pulsate me </div>
+                                            </td>
+                                        </tr>
+                                        </tbody></table>
+                                </div>
+                                <span class="label label-danger"> NOTE! </span>
+                                <span> Pulsate is supported in Latest Firefox, Chrome, Opera, Safari and Internet Explorer 9 and Internet Explorer 10 only. </span>
                             </div>
                         </div>
                     </div>
@@ -64,7 +121,7 @@
 @section('pageBelowLevelPlugins')
     <script src="{{ asset('assets/global/plugins/jquery-validation/js/jquery.validate.min.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/global/plugins/jquery-validation/js/additional-methods.min.js') }}" type="text/javascript"></script>
-
+    <script src="{{ asset('assets/global/plugins/jquery.pulsate.min.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/global/plugins/jquery-notific8/jquery.notific8.min.js') }}" type="text/javascript"></script>
 @endsection
 
@@ -89,32 +146,50 @@
             }
         });
 
-        @if (@$membership_plan && \Carbon\Carbon::now()->gt(\Carbon\Carbon::createFromFormat('Y-m-d',$membership_plan->day_stop)))
-        function cancel_membership(){
-            var userID = '{{$user->id}}';
+        var UIGeneral = function () {
 
-            $.ajax({
-                url: '{{route('admin/membership_plans/cancel_member_plan')}}',
-                type: "post",
-                data: {
-                    'member_id':userID
-                },
-                success: function(data){
-                    if (data.success) {
-                        $('#cancel_confirm_box').modal('hide');
-                        show_notification(data.title, data.message, 'lime', 3500, 0);
-
-                        setTimeout(function(){
-                            location.reload();
-                        },2000);
-                    }
-                    else{
-                        show_notification(data.title, data.errors, 'tangerine', 3500, 0);
-                    }
+            var handlePulsate = function () {
+                if (!jQuery().pulsate) {
+                    return;
                 }
-            });
-        }
-        @endif
+
+                if (App.isIE8() == true) {
+                    return; // pulsate plugin does not support IE8 and below
+                }
+
+                if (jQuery().pulsate) {
+                    jQuery('.pulsate-regular').pulsate({
+                        color: "#bf1c56"
+                    });
+
+                    $('#pulsate-once-target2').pulsate({
+                        color: "#399bc3",
+                        repeat: false
+                    });
+
+                    $('#pulsate-crazy-target1').pulsate({
+                        color: "#fdbe41",
+                        reach: 50,
+                        repeat: 10,
+                        speed: 100,
+                        glow: true
+                    });
+                }
+            }
+
+            return {
+                //main function to initiate the module
+                init: function () {
+                    handlePulsate();
+                }
+
+            };
+
+        }();
+
+        jQuery(document).ready(function() {
+            UIGeneral.init();
+        });
 
         function show_notification(title_heading, message, theme, life, sticky) {
             var settings = {

@@ -312,7 +312,7 @@
                 <li class="dropdown dropdown-user dropdown-dark">
                     <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true">
                         <img alt="" class="img-circle" src="../assets/layouts/layout3/img/avatar9.jpg">
-                        <span class="username username-hide-mobile">{{Auth::user()->first_name.' '.Auth::user()->last_name}}</span>
+                        <span class="username username-hide-mobile">{{Auth::user()->first_name.' '.Auth::user()->middle_name.' '.Auth::user()->last_name}}</span>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-default">
                         <li>
@@ -336,10 +336,6 @@
                             </a>
                         </li>
                         <li class="divider"> </li>
-                        <li>
-                            <a href="page_user_lock_1.html">
-                                <i class="icon-lock"></i> Lock Screen </a>
-                        </li>
                         <li>
                             <a href="{{'/logout' }}">
                                 <i class="icon-key"></i> Log Out </a>
@@ -432,7 +428,7 @@
                                                 <a href="{{ route('settings/account') }}"> Account Settings [not finished] </a>
                                             </li>
                                             <li class=" {{ $in_sidebar=='front-settings_personal'?'active':'' }}">
-                                                <a href="{{ route('settings/personal') }}"> Personal Settings [not finished] </a>
+                                                <a href="{{ route('settings/personal') }}"> Personal Settings </a>
                                             </li>
                                             <li class=" {{ $in_sidebar=='front-settings_finance'?'active':'' }}">
                                                 <a href="#" class="nav-link  "> Financial Settings [not finished] </a>

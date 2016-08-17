@@ -312,7 +312,7 @@
                                                         @if($restrictions)
                                                             @foreach ($restrictions as $restriction)
                                                                 <div class="col-md-4">
-                                                                    <div class="note {{ $restriction['color'] }}" style="min-height:120px; margin:0 0 15px; padding:5px 20px 10px 10px;">
+                                                                    <div class="note {{ $restriction['color'] }}" style="min-height:140px; margin:0 0 15px; padding:5px 20px 10px 10px;">
                                                                         <h4 class="block"> {{ $restriction['title'] }} Rule </h4>
                                                                         <p> {!! $restriction['description'] !!} </p>
                                                                     </div>
