@@ -353,7 +353,7 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div class="special_permission_option form-group" style="border-bottom:none; padding-top:0; display:none;">
+                                                <!--<div class="special_permission_option form-group" style="border-bottom:none; padding-top:0; display:none;">
                                                     <label class="col-md-3 control-label"> Book Current Day </label>
                                                     <div class="col-md-9">
                                                         <div class="radio-list">
@@ -363,7 +363,8 @@
                                                                 <input type="radio" name="specialCurrentDay" value="0" checked> No </label>
                                                         </div>
                                                     </div>
-                                                </div>
+                                                </div>-->
+                                                <input type="hidden" name="specialCurrentDay" value="1" />
                                                 <div class=" special_permission_option form-group" style="border-bottom:none; padding-top:0; display:none;">
                                                     <label class="col-md-3 control-label"> Book Next Day/Days </label>
                                                     <div class="col-md-9">
