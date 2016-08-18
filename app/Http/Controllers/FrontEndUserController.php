@@ -210,13 +210,11 @@ class FrontEndUserController extends Controller
             $avatar->file_name = 'default.jpg';
         }
 
-
-
-        try {
+        if (Storage::disk('local')->exists($avatar->file_location . $avatar->file_name)) {
             $avatarContent = Storage::disk('local')->get($avatar->file_location . $avatar->file_name);
             $avatarType = Storage::disk('local')->mimeType($avatar->file_location . $avatar->file_name);
         }
-        catch (Illuminate\Filesystem\FileNotFoundException $exception){
+        else {
             $avatarContent = Storage::disk('local')->get('members/default/avatars/default.jpg');
             $avatarType = Storage::disk('local')->mimeType('members/default/avatars/default.jpg');
         }
