@@ -211,8 +211,14 @@ class BackEndUserController extends Controller
             $avatar->file_name = 'default.jpg';
         }
 
-        $avatarContent = Storage::disk('local')->get($avatar->file_location . $avatar->file_name);
-        $avatarType = Storage::disk('local')->mimeType($avatar->file_location . $avatar->file_name);
+        if (Storage::disk('local')->exists($avatar->file_location . $avatar->file_name)) {
+            $avatarContent = Storage::disk('local')->get($avatar->file_location . $avatar->file_name);
+            $avatarType = Storage::disk('local')->mimeType($avatar->file_location . $avatar->file_name);
+        }
+        else {
+            $avatarContent = Storage::disk('local')->get('employees/default/avatars/default.jpg');
+            $avatarType = Storage::disk('local')->mimeType('employees/default/avatars/default.jpg');
+        }
 
         $userDocuments = UserDocuments::where('user_id','=',$id)->where('category','=','account_documents')->get();
 
