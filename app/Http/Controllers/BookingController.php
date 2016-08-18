@@ -1272,6 +1272,18 @@ class BookingController extends Controller
 
         $membership_plans = MembershipPlan::where('id','!=','1')->where('status','=','active')->get()->sortBy('name');
 
+        $memberships = MembershipPlan::where('id','!=',1)->get();
+        $membership_legend = [];
+        if ($memberships){
+            foreach($memberships as $membership){
+                $membership_legend[] = [
+                    'name' => $membership->name,
+                    'status'=> $membership->status,
+                    'color' => $membership->plan_calendar_color
+                ];
+            }
+        }
+
         $buttons_color = [
             'is_show'           => 'bg-green-jungle bg-font-green-jungle',
             'is_no_show'        => 'bg-red-thunderbird bg-font-red-thunderbird',
@@ -1305,7 +1317,8 @@ class BookingController extends Controller
             'all_locations' => $all_locations,
             'all_activities'=> $all_activities,
             'is_close_menu' => true,
-            'memberships'   => $membership_plans
+            'memberships'   => $membership_plans,
+            'membership_legend'=> $membership_legend
         ]);
     }
 
@@ -2674,7 +2687,7 @@ class BookingController extends Controller
             'resources'     => $resources_ids,
             'header_vals'   => $header_vals,
             'all_locations' => $all_locations,
-            'all_activities'=> $all_activities
+            'all_activities'=> $all_activities,
         ]);
     }
 
