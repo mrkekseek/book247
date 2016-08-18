@@ -210,17 +210,15 @@ class FrontEndUserController extends Controller
             $avatar->file_name = 'default.jpg';
         }
 
+
+        
         try {
             $avatarContent = Storage::disk('local')->get($avatar->file_location . $avatar->file_name);
             $avatarType = Storage::disk('local')->mimeType($avatar->file_location . $avatar->file_name);
         }
         catch (Exception $e){
-            $avatar = new UserAvatars();
-            $avatar->file_location = 'members/default/avatars/';
-            $avatar->file_name = 'default.jpg';
-
-            $avatarContent = Storage::disk('local')->get($avatar->file_location . $avatar->file_name);
-            $avatarType = Storage::disk('local')->mimeType($avatar->file_location . $avatar->file_name);
+            $avatarContent = Storage::disk('local')->get('members/default/avatars/default.jpg');
+            $avatarType = Storage::disk('local')->mimeType('members/default/avatars/default.jpg');
         }
 
         $userDocuments = UserDocuments::where('user_id','=',$id)->where('category','=','account_documents')->get();
