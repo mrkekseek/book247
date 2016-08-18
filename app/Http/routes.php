@@ -615,7 +615,7 @@ Route::group(['prefix'=>'ajax', 'middleware' => 'web'], function(){
 
     Route::post('cancel_many', [
         'as'    => 'ajax/cancel_bookings',
-        'uses'  => 'BookingController@cancel_bookings'
+        'uses'  => 'BookingController@cancel_pending_bookings'
     ]);
 
     Route::post('cancel_one', [

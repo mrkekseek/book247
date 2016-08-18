@@ -117,6 +117,13 @@ class BookingController extends Controller
             else{
                 return ['booking_key' => ''];
             }
+
+            if ($fillable['payment_type']=="membership"){
+                $membershipID = UserMembership::where('user_id','=',$fillable['for_user_id'])->where('status','=','active')->get()->first();
+                if ($membershipID){
+                    $fillable['membership_id'] = $membershipID->id;
+                }
+            }
         }
 
         $validator = Validator::make($fillable, Booking::rules('POST'), Booking::$message, Booking::$attributeNames);
@@ -912,7 +919,7 @@ class BookingController extends Controller
      * @param Request $request
      * @return array
      */
-    public function cancel_bookings(Request $request){
+    public function cancel_pending_bookings(Request $request){
         if (!Auth::check()) {
             //return redirect()->intended(route('admin/login'));
             return ['success'=>false, 'title'=>'Credentials error', 'errors' => 'Please refresh the page and try again'];
@@ -1484,6 +1491,11 @@ class BookingController extends Controller
 
                     if ($formatted_booking['payment_type'] == 'membership' && $booking->status!='pending'){
                         $formatted_booking['color_stripe'] = 'bg-green-haze bg-font-green-haze';
+
+                        $userMembership = UserMembership::with('plan_blueprint')->where('user_id','=',$booking->for_user_id)->where('id','=',$booking->membership_id)->get()->first();
+                        if ($userMembership){
+                            $formatted_booking['custom_color'] = $userMembership->plan_blueprint->plan_calendar_color.' !important';
+                        }
                     }
                     elseif ($formatted_booking['payment_type'] == 'cash' && $booking->status!='pending'){
                         $formatted_booking['color_stripe'] = 'bg-yellow-gold bg-font-yellow-gold';
@@ -1687,6 +1699,8 @@ class BookingController extends Controller
                 unset($transaction);
             }
         }
+
+        //xdebug_var_dump($booking_details);
         return $booking_details;
     }
 
@@ -2249,6 +2263,13 @@ class BookingController extends Controller
             }
             else{
                 return ['booking_key' => '', 'error_msg' => 'could not determin book price'];
+            }
+
+            if ($fillable['payment_type']=="membership"){
+                $membershipID = UserMembership::where('user_id','=',$fillable['for_user_id'])->where('status','=','active')->get()->first();
+                if ($membershipID){
+                    $fillable['membership_id'] = $membershipID->id;
+                }
             }
         }
 

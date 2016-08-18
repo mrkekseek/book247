@@ -87,6 +87,10 @@ class UserMembership extends Model
         }
     }
 
+    public function plan_blueprint(){
+        return $this->belongsTo('App\MembershipPlan', 'membership_id', 'id');
+    }
+
     public function get_plan_restrictions(){
         $my_restrictions = json_decode($this->membership_restrictions);
         foreach($my_restrictions as $rest){

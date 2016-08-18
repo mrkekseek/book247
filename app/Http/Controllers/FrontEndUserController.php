@@ -27,6 +27,7 @@ use App\ShopResource;
 use App\ShopResourceCategory;
 use App\MembershipPlan;
 use App\MembershipRestriction;
+use Mockery\CountValidator\Exception;
 use Webpatser\Countries\Countries;
 use Auth;
 use Hash;
@@ -205,12 +206,22 @@ class FrontEndUserController extends Controller
         $avatar = $back_user->avatar;
         if (!$avatar) {
             $avatar = new UserAvatars();
-            $avatar->file_location = 'employees/default/avatars/';
+            $avatar->file_location = 'members/default/avatars/';
             $avatar->file_name = 'default.jpg';
         }
 
-        $avatarContent = Storage::disk('local')->get($avatar->file_location . $avatar->file_name);
-        $avatarType = Storage::disk('local')->mimeType($avatar->file_location . $avatar->file_name);
+        try {
+            $avatarContent = Storage::disk('local')->get($avatar->file_location . $avatar->file_name);
+            $avatarType = Storage::disk('local')->mimeType($avatar->file_location . $avatar->file_name);
+        }
+        catch (Exception $e){
+            $avatar = new UserAvatars();
+            $avatar->file_location = 'members/default/avatars/';
+            $avatar->file_name = 'default.jpg';
+
+            $avatarContent = Storage::disk('local')->get($avatar->file_location . $avatar->file_name);
+            $avatarType = Storage::disk('local')->mimeType($avatar->file_location . $avatar->file_name);
+        }
 
         $userDocuments = UserDocuments::where('user_id','=',$id)->where('category','=','account_documents')->get();
 
