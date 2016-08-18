@@ -324,8 +324,14 @@ class FrontEndUserController extends Controller
             $avatar->file_name = 'default.jpg';
         }
 
-        $avatarContent = Storage::disk('local')->get($avatar->file_location . $avatar->file_name);
-        $avatarType    = Storage::disk('local')->mimeType($avatar->file_location . $avatar->file_name);
+        if (Storage::disk('local')->exists($avatar->file_location . $avatar->file_name)) {
+            $avatarContent = Storage::disk('local')->get($avatar->file_location . $avatar->file_name);
+            $avatarType = Storage::disk('local')->mimeType($avatar->file_location . $avatar->file_name);
+        }
+        else {
+            $avatarContent = Storage::disk('local')->get('members/default/avatars/default.jpg');
+            $avatarType = Storage::disk('local')->mimeType('members/default/avatars/default.jpg');
+        }
 
         $avatarArchive = [];
         $old_avatars = Storage::disk('local')->files($avatar->file_location);
@@ -557,8 +563,14 @@ class FrontEndUserController extends Controller
             $avatar->file_name = 'default.jpg';
         }
 
-        $avatarContent = Storage::disk('local')->get($avatar->file_location . $avatar->file_name);
-        $avatarType = Storage::disk('local')->mimeType($avatar->file_location . $avatar->file_name);
+        if (Storage::disk('local')->exists($avatar->file_location . $avatar->file_name)) {
+            $avatarContent = Storage::disk('local')->get($avatar->file_location . $avatar->file_name);
+            $avatarType = Storage::disk('local')->mimeType($avatar->file_location . $avatar->file_name);
+        }
+        else {
+            $avatarContent = Storage::disk('local')->get('members/default/avatars/default.jpg');
+            $avatarType = Storage::disk('local')->mimeType('members/default/avatars/default.jpg');
+        }
 
         $breadcrumbs = [
             'Home'              => route('admin'),
@@ -914,8 +926,15 @@ class FrontEndUserController extends Controller
             $avatar->file_location = 'members/default/avatars/';
             $avatar->file_name = 'default.jpg';
         }
-        $avatarContent = Storage::disk('local')->get($avatar->file_location . $avatar->file_name);
-        $avatarType = Storage::disk('local')->mimeType($avatar->file_location . $avatar->file_name);
+
+        if (Storage::disk('local')->exists($avatar->file_location . $avatar->file_name)) {
+            $avatarContent = Storage::disk('local')->get($avatar->file_location . $avatar->file_name);
+            $avatarType = Storage::disk('local')->mimeType($avatar->file_location . $avatar->file_name);
+        }
+        else {
+            $avatarContent = Storage::disk('local')->get('members/default/avatars/default.jpg');
+            $avatarType = Storage::disk('local')->mimeType('members/default/avatars/default.jpg');
+        }
 
         $text_parts  = [
             'title'     => 'Back-End Users',
@@ -2533,8 +2552,14 @@ class FrontEndUserController extends Controller
             $avatar->file_name = 'default.jpg';
         }
 
-        $avatarContent = Storage::disk('local')->get($avatar->file_location . $avatar->file_name);
-        $avatarType    = Storage::disk('local')->mimeType($avatar->file_location . $avatar->file_name);
+        if (Storage::disk('local')->exists($avatar->file_location . $avatar->file_name)) {
+            $avatarContent = Storage::disk('local')->get($avatar->file_location . $avatar->file_name);
+            $avatarType = Storage::disk('local')->mimeType($avatar->file_location . $avatar->file_name);
+        }
+        else {
+            $avatarContent = Storage::disk('local')->get('members/default/avatars/default.jpg');
+            $avatarType = Storage::disk('local')->mimeType('members/default/avatars/default.jpg');
+        }
 
         $userMembership = UserMembership::where('user_id','=',$user->id)->get()->first();
         if ($userMembership){
