@@ -17,11 +17,9 @@ class RolesController extends Controller
 {
     /** List all user roles */
     public function all_users_roles(){
-        if (!Auth::check()) {
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
             return redirect()->intended(route('admin/login'));
-        }
-        else{
-            $user = Auth::user();
         }
 
         $all_roles = Role::All();
@@ -49,11 +47,9 @@ class RolesController extends Controller
 
     /** Add new user role */
     public function add_user_role(Request $request){
-        if (!Auth::check()) {
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
             return redirect()->intended(route('admin/login'));
-        }
-        else{
-            $user = Auth::user();
         }
 
         $vars = $request->only('name', 'display_name', 'description');
@@ -82,11 +78,9 @@ class RolesController extends Controller
 
     /** Update user role */
     public function update_user_role(Request $request){
-        if (!Auth::check()) {
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
             return redirect()->intended(route('admin/login'));
-        }
-        else{
-            $user = Auth::user();
         }
 
         $message = array(
@@ -134,11 +128,9 @@ class RolesController extends Controller
 
     /** Delete user role */
     public function delete_user_role(Request $request){
-        if (!Auth::check()) {
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
             return redirect()->intended(route('admin/login'));
-        }
-        else{
-            $user = Auth::user();
         }
 
         $vars = $request->only('dataID');
@@ -169,11 +161,9 @@ class RolesController extends Controller
 
     // list permissions, manage existing ones, add new permissions
     public function list_permissions(){
-        if (!Auth::check()) {
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
             return redirect()->intended(route('admin/login'));
-        }
-        else{
-            $user = Auth::user();
         }
 
         $permissions = Permission::all();
@@ -254,11 +244,9 @@ class RolesController extends Controller
     }
 
     public function view_permission($id){
-        if (!Auth::check()) {
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
             return redirect()->intended(route('admin/login'));
-        }
-        else{
-            $user = Auth::user();
         }
 
         $permission = Permission::find($id);

@@ -13,6 +13,8 @@ class CreateBookingNotesTable extends Migration
     public function up()
     {
         Schema::create('booking_notes', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
+
             $table->increments('id');
             $table->integer('booking_id')->unsigned();
             $table->integer('by_user_id')->unsigned();

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Booking;
 use App\ShopLocations;
 use App\ShopResourceCategory;
+use App\UserSettings;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Auth;
@@ -83,8 +84,9 @@ class FrontPageController extends Controller
 
         if (isset($user)) {
             $own_friends_bookings = $this::get_own_and_friends_bookings($user->id);
-//xdebug_var_dump($own_friends_bookings);
+            $settings   = UserSettings::get_general_settings($user->id, ['settings_preferred_location','settings_preferred_activity']);
         }
+
         $breadcrumbs = [
             'Home'      => route('admin'),
             'Dashboard' => '',
@@ -103,7 +105,8 @@ class FrontPageController extends Controller
             'user'  => $user,
             'shops' => $shopLocations,
             'resourceCategories' => $resourceCategories,
-            'meAndFriendsBookings' => @$own_friends_bookings
+            'meAndFriendsBookings' => @$own_friends_bookings,
+            'settings'  => @$settings
         ]);
     }
 
@@ -227,7 +230,7 @@ class FrontPageController extends Controller
     }
 
     public function get_booking_hours(Request $request){
-        if (Auth::check()) {
+        if (Auth::check() && Auth::user()->is_front_user()) {
             $user = Auth::user();
             BookingController::check_for_expired_pending_bookings();
         }

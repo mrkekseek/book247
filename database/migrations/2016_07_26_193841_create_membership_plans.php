@@ -13,6 +13,8 @@ class CreateMembershipPlans extends Migration
     public function up()
     {
         Schema::create('membership_plans', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
+
             $table->increments('id');
             $table->string('name');
             $table->integer('price_id');

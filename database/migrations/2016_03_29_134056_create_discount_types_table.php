@@ -13,6 +13,8 @@ class CreateDiscountTypesTable extends Migration
     public function up()
     {
         Schema::create('discount_types', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
+
             $table->increments('id');
             $table->string('name');
             $table->text('other_details');

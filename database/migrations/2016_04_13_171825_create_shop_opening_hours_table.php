@@ -13,6 +13,8 @@ class CreateShopOpeningHoursTable extends Migration
     public function up()
     {
         Schema::create('shop_opening_hours', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
+
             $table->increments('id');
             $table->integer('location_id')->unsigned();
             $table->enum('day_of_week', [1,2,3,4,5,6,7]);

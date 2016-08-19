@@ -28,27 +28,27 @@ class AdminController extends Controller
      */
     public function index()
     {
-        if (Auth::check()) {
-            $breadcrumbs = [
-                'Home'      => route('admin'),
-                'Dashboard' => '',
-            ];
-            $text_parts  = [
-                'title'     => 'Home',
-                'subtitle'  => 'users dashboard',
-                'table_head_text1' => 'Dashboard Summary'
-            ];
-            $sidebar_link= 'admin-home_dashboard';
-
-            return view('admin/main_page',[
-                'breadcrumbs' => $breadcrumbs,
-                'text_parts'  => $text_parts,
-                'in_sidebar'  => $sidebar_link,
-            ]);
-        }
-        else {
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
             return redirect()->intended(route('admin/login'));
         }
+
+        $breadcrumbs = [
+            'Home'      => route('admin'),
+            'Dashboard' => '',
+        ];
+        $text_parts  = [
+            'title'     => 'Home',
+            'subtitle'  => 'users dashboard',
+            'table_head_text1' => 'Dashboard Summary'
+        ];
+        $sidebar_link= 'admin-home_dashboard';
+
+        return view('admin/main_page',[
+            'breadcrumbs' => $breadcrumbs,
+            'text_parts'  => $text_parts,
+            'in_sidebar'  => $sidebar_link,
+        ]);
     }
 
     public function authenticate(Request $request)

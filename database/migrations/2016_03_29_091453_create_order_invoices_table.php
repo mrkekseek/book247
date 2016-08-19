@@ -13,6 +13,8 @@ class CreateOrderInvoicesTable extends Migration
     public function up()
     {
         Schema::create('order_invoices', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
+
             $table->increments('id');
             $table->integer('order_id')->unsigned();
             $table->string('invoice_number', 64);

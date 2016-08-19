@@ -13,7 +13,9 @@ class SetupCountriesTable extends Migration {
 	{
 		// Creates the users table
 		Schema::create(\Config::get('countries.table_name'), function($table)
-		{		    
+		{
+			$table->engine = 'InnoDB';
+
 		    $table->integer('id')->index();
 		    $table->string('capital', 255)->nullable();
 		    $table->string('citizenship', 255)->nullable();

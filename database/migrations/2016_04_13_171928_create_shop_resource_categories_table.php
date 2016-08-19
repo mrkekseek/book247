@@ -13,6 +13,8 @@ class CreateShopResourceCategoriesTable extends Migration
     public function up()
     {
         Schema::create('shop_resource_categories', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
+
             $table->increments('id');
             $table->string('name', 150);
             $table->string('url', 200);

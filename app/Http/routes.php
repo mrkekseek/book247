@@ -717,4 +717,9 @@ Route::group(['prefix'=>'ajax', 'middleware' => 'web'], function(){
         'as'    => 'ajax/register_new_member',
         'uses'  => 'FrontEndUserController@new_member_registration'
     ]);
+
+    Route::post('update_general_settings', [
+        'as'    => 'ajax/update_general_settings',
+        'uses'  => 'FrontEndUserController@update_general_settings'
+    ]);
 });

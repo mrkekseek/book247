@@ -368,6 +368,28 @@
                                                     @endforeach
                                                     </select> </div>
                                             </div>
+                                            <div class="form-group">
+                                                <label class="control-label">Default Location</label>
+                                                <div class="input-icon">
+                                                    <i class="fa"></i>
+                                                    <select class="form-control" name="settings_preferred_location">
+                                                        <option> Select Location </option>
+                                                        @foreach ($locations as $location)
+                                                            <option {!! @$settings['settings_preferred_location']==$location->id?' selected="selected" ':'' !!} value="{{$location->id}}">{{ $location->name }}</option>
+                                                        @endforeach
+                                                    </select> </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="control-label">Default Activity</label>
+                                                <div class="input-icon">
+                                                    <i class="fa"></i>
+                                                    <select class="form-control" name="settings_preferred_activity">
+                                                        <option> Select Activity </option>
+                                                        @foreach ($activities as $activity)
+                                                            <option {!! @$settings['settings_preferred_activity']==$activity->id?' selected="selected" ':'' !!} value="{{$activity->id}}">{{ $activity->name }}</option>
+                                                        @endforeach
+                                                    </select> </div>
+                                            </div>
                                             <div class="margiv-top-10">
                                                 <a href="javascript:;" onclick="javascript: $('#form_acc_info').submit();" class="btn green"> Save Changes </a>
                                                 <a href="javascript:;" class="btn default"> Cancel </a>
@@ -695,6 +717,14 @@
                                                 <label class="control-label">Last Name</label>
                                                 <input type="text" name="personalLastName" id="personalLastName" placeholder="Last Name" value="{{$user->last_name}}" class="form-control" /> </div>
                                             <div class="form-group">
+                                                <label class="control-label">Gender</label>
+                                                <select name="gender" class="form-control">
+                                                    <option>Select Gender</option>
+                                                    <option {!! $user->gender=='F'?'selected="selected"':'' !!} value="F"> Female </option>
+                                                    <option {!! $user->gender=='M'?'selected="selected"':'' !!} value="M"> Male </option>
+                                                </select>
+                                            </div>
+                                            <div class="form-group">
                                                 <label class="control-label">Citizenship</label>
                                                 <select name="personalCountry" id="personalCountry" class="form-control">
                                                     @foreach ($countries as $country)
@@ -946,6 +976,10 @@
                             required: true,
                             email: true
                         },
+                        gender: {
+                            required:true,
+                            minlength:1,
+                        }
                     },
 
                     invalidHandler: function (event, validator) { //display error alert on form submit
@@ -1004,6 +1038,14 @@
                             required: true,
                             email: true
                         },
+                        settings_preferred_activity: {
+                            required:true,
+                            minlength: 1
+                        },
+                        settings_preferred_location: {
+                            required:true,
+                            minlength: 1
+                        }
                     },
 
                     invalidHandler: function (event, validator) { //display error alert on form submit
@@ -1346,6 +1388,8 @@
                     'accountProfession': $('input[name=accountProfession]').val(),
                     'accountDescription': $('textarea[name=accountDescription]').val(),
                     'employeeRole': $('select[name=employeeRole]').val(),
+                    'settings_preferred_location': $('select[name="settings_preferred_location"]').val(),
+                    'settings_preferred_activity': $('select[name="settings_preferred_activity"]').val(),
                     '_method': 'post',
                 },
                 success: function(data){
@@ -1369,6 +1413,7 @@
                     'social_sec_no':    $('input[name=personalSSN]').val(),
                     'about_info':       $('textarea[name=personalAbout]').val(),
                     'country_id':       $('select[name=personalCountry]').val(),
+                    'gender':           $('select[name=gender]').val(),
                     '_method': 'post',
                 },
                 success: function(data){

@@ -22,6 +22,7 @@ class User extends Authenticatable
         'username',
         'email',
         'password',
+        'gender'
     ];
 
     public static $messages = [
@@ -35,6 +36,7 @@ class User extends Authenticatable
         'middle_name'   => 'First Name',
         'last_name'     => 'Last Name',
         'password'      => 'Password',
+        'gender'        => 'Gender'
         ];
 
     /**
@@ -62,6 +64,7 @@ class User extends Authenticatable
                     'password'      => 'required|min:8',
                     'email'         => 'required|email|email|unique:users',
                     'user_type'     => 'required|exists:roles,id',
+                    'gender'        => 'in:M,F'
                 ];
             }
             case 'PUT':
@@ -74,10 +77,37 @@ class User extends Authenticatable
                     'password'  => 'required|min:8',
                     'email'     => 'required|email|email|unique:users,email'.($id ? ",$id,id" : ''),
                     'user_type' => 'required|exists:roles,id',
+                    'gender'    => 'in:M,F'
                 ];
             }
             default:break;
         }
+    }
+
+    public function is_back_user()
+    {
+        foreach ($this->roles()->get() as $role)
+        {
+            if ($role->name != 'front-user' && $role->name != 'front-member')
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public function is_front_user()
+    {
+        foreach ($this->roles()->get() as $role)
+        {
+            if ($role->name == 'front-user' || $role->name == 'front-member')
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public function canDo($permission){

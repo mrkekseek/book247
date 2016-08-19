@@ -13,6 +13,8 @@ class CreateUserDocumentsTable extends Migration
     public function up()
     {
         Schema::create('users_documents', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
+
             $table->increments('id');
             $table->integer('user_id')->unsigned();
             $table->string('file_name', 100);

@@ -13,6 +13,8 @@ class CreateProductFeaturesTable extends Migration
     public function up()
     {
         Schema::create('product_features', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
+
             $table->integer('product_id')->unsigned();
             $table->integer('feature_id')->unsigned();
 

@@ -13,6 +13,8 @@ class CreateCashTerminalsTable extends Migration
     public function up()
     {
         Schema::create('cash_terminals', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
+
             $table->increments('id');
             $table->string('name', 64);
             $table->string('bar_code', 64);

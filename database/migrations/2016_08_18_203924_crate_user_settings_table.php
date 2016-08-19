@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateUserFriendsTable extends Migration
+class CrateUserSettingsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -12,17 +12,21 @@ class CreateUserFriendsTable extends Migration
      */
     public function up()
     {
-        Schema::create('user_friends', function (Blueprint $table) {
+        Schema::create('user_settings', function (Blueprint $table) {
             $table->engine = 'InnoDB';
 
             $table->increments('id');
-            $table->integer('user_id')->unsigned();
-            $table->integer('friend_id')->unsigned();
+            $table->integer('user_id')->length(10)->unsigned()->nullable();
+            $table->string('var_name');
+            $table->string('var_value');
             $table->timestamps();
-
-            $table->foreign('user_id')->references('id')->on('users');
-            $table->foreign('friend_id')->references('id')->on('users');
         });
+
+        DB::statement('SET FOREIGN_KEY_CHECKS = 0');
+        Schema::table('user_settings', function($table) {
+            $table->foreign('user_id')->references('id')->on('users');
+        });
+        DB::statement('SET FOREIGN_KEY_CHECKS = 1');
     }
 
     /**
@@ -32,6 +36,6 @@ class CreateUserFriendsTable extends Migration
      */
     public function down()
     {
-        Schema::drop('user_friends');
+        Schema::drop('user_settings');
     }
 }

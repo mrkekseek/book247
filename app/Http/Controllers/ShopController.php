@@ -24,11 +24,9 @@ class ShopController extends Controller
 {
     //
     public function list_all(){
-        if (!Auth::check()) {
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
             return redirect()->intended(route('admin/login'));
-        }
-        else{
-            $user = Auth::user();
         }
 
         $shop_locations = ShopLocations::get();
@@ -135,11 +133,9 @@ class ShopController extends Controller
     }
 
     public function get_shop_location($id){
-        if (!Auth::check()) {
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
             return redirect()->intended(route('admin/login'));
-        }
-        else{
-            $user = Auth::user();
         }
 
         $shopDetails = ShopLocations::with('opening_hours')->find($id);
@@ -200,11 +196,9 @@ class ShopController extends Controller
     }
 
     public function view_shop_location(){
-        if (!Auth::check()) {
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
             return redirect()->intended(route('admin/login'));
-        }
-        else{
-            $user = Auth::user();
         }
 
 
@@ -337,11 +331,9 @@ class ShopController extends Controller
     }
 
     public function shops_employee_working_plan(){
-        if (!Auth::check()) {
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
             return redirect()->intended(route('admin/login'));
-        }
-        else{
-            $user = Auth::user();
         }
 
         $shop_locations = ShopLocations::orderBy('name')->get();
@@ -368,11 +360,9 @@ class ShopController extends Controller
     }
 
     public static function list_all_locations(){
-        if (!Auth::check()) {
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
             return redirect()->intended(route('admin/login'));
-        }
-        else{
-            $user = Auth::user();
         }
 
         $shop_locations = ShopLocations::orderBy('name')->get();
@@ -381,11 +371,9 @@ class ShopController extends Controller
     }
 
     public function cash_terminals(){
-        if (!Auth::check()) {
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
             return redirect()->intended(route('admin/login'));
-        }
-        else{
-            $user = Auth::user();
         }
 
         $cash_terminals = CashTerminal::with('shopLocation')->get();
@@ -414,11 +402,9 @@ class ShopController extends Controller
     }
 
     public function add_cash_terminal(Request $request){
-        if (!Auth::check()) {
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
             return redirect()->intended(route('admin/login'));
-        }
-        else{
-            $user = Auth::user();
         }
 
         $cashTerminalVars = $request->only('name', 'bar_code', 'location_id', 'status');
@@ -445,11 +431,9 @@ class ShopController extends Controller
     }
 
     public function add_new_store_resource(Request $request){
-        if (!Auth::check()) {
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
             return redirect()->intended(route('admin/login'));
-        }
-        else{
-            $user = Auth::user();
         }
 
         $shopResourceVars = $request->only('location_id', 'name', 'description', 'category_id', 'color_code');
@@ -482,11 +466,9 @@ class ShopController extends Controller
     }
 
     public function all_inventory_make_transfer(){
-        if (!Auth::check()) {
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
             return redirect()->intended(route('admin/login'));
-        }
-        else{
-            $user = Auth::user();
         }
 
         $shop_locations = ShopLocations::get();

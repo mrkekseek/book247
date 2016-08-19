@@ -13,6 +13,8 @@ class CreateShopLocationsTable extends Migration
     public function up()
     {
         Schema::create('shop_locations', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
+
             $table->increments('id');
             $table->string('name');
             $table->integer('address_id')->unsigned();

@@ -13,6 +13,7 @@ use App\ShopLocations;
 use App\ShopResource;
 use App\ShopResourceCategory;
 use App\UserMembership;
+use App\UserSettings;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -1189,12 +1190,12 @@ class BookingController extends Controller
      *         - logged in : array
      */
     public function location_calendar_day_view($date_selected = 0, $selected_location = 0, $selected_activity = 0){
-        if (!Auth::check()) {
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
             return redirect()->intended(route('admin/login'));
         }
-        else{
-            $user = Auth::user();
-        }
+
+        $settings = UserSettings::get_general_settings($user->id, ['settings_preferred_location','settings_preferred_activity']);
 
         // Date validation and variables assignation
         if ($date_selected==0){
@@ -1209,7 +1210,7 @@ class BookingController extends Controller
 
         // location validation and variables assignation
         if ($selected_location==0){
-            $default_location = 7;
+            $default_location = isset($settings['settings_preferred_location'])?$settings['settings_preferred_location']:7;
         }
         else{
             $default_location = $selected_location;
@@ -1230,7 +1231,7 @@ class BookingController extends Controller
 
         // activity/category validation and variables assignation
         if ($selected_activity==0){
-            $default_activity = 3;
+            $default_activity = isset($settings['settings_preferred_activity'])?$settings['settings_preferred_activity']:3;
         }
         else{
             $default_activity = $selected_activity;
@@ -2554,11 +2555,9 @@ class BookingController extends Controller
 
     /* Front-End controller functions - Start */
     public function front_bookings_archive(){
-        if (!Auth::check()) {
+        $user = Auth::user();
+        if (!$user || !$user->is_front_user()) {
             return redirect()->intended(route('homepage'));
-        }
-        else{
-            $user = Auth::user();
         }
 
         $breadcrumbs = [
@@ -2588,12 +2587,12 @@ class BookingController extends Controller
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function front_bookings_calendar_view($date_selected = 0, $selected_location = 0, $selected_activity = 0){
-        if (!Auth::check()) {
-            return redirect()->intended(route('admin/login'));
+        $user = Auth::user();
+        if (!$user || !$user->is_front_user()) {
+            return redirect()->intended(route('homepage'));
         }
-        else{
-            $user = Auth::user();
-        }
+
+        $settings = UserSettings::get_general_settings($user->id, ['settings_preferred_location','settings_preferred_activity']);
 
         // Date validation and variables assignation
         if ($date_selected==0){
@@ -2608,7 +2607,7 @@ class BookingController extends Controller
 
         // location validation and variables assignation
         if ($selected_location==0){
-            $default_location = 7;
+            $default_location = isset($settings['settings_preferred_location'])?$settings['settings_preferred_location']:7;
         }
         else{
             $default_location = $selected_location;
@@ -2629,7 +2628,7 @@ class BookingController extends Controller
 
         // activity/category validation and variables assignation
         if ($selected_activity==0){
-            $default_activity = 3;
+            $default_activity = isset($settings['settings_preferred_activity'])?$settings['settings_preferred_activity']:3;
         }
         else{
             $default_activity = $selected_activity;

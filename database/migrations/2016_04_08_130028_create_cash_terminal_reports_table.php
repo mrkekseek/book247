@@ -8,6 +8,8 @@ class CreateCashTerminalReportsTable extends Migration
     public function up()
     {
         Schema::create('cash_terminal_daily_reports', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
+
             $table->increments('id');
             $table->integer('terminal_id')->unsigned();
             $table->integer('user_id')->unsigned();

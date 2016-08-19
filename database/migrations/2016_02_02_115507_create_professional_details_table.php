@@ -13,6 +13,8 @@ class CreateProfessionalDetailsTable extends Migration
     public function up()
     {
         Schema::create('professional_details', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
+
             $table->increments('id');
             $table->integer('user_id')->unsigned();
             $table->string('professional_email');

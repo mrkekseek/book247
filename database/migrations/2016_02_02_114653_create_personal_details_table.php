@@ -13,6 +13,8 @@ class CreatePersonalDetailsTable extends Migration
     public function up()
     {
         Schema::create('personal_details', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
+
             $table->increments('id');
             $table->integer('user_id')->unsigned();
             $table->integer('address_id')->unsigned();

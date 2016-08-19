@@ -9,6 +9,7 @@ use App\Invoice;
 use App\InvoiceItem;
 use App\UserFriends;
 use App\UserMembership;
+use App\UserSettings;
 use Illuminate\Http\Request;
 
 use Illuminate\Http\Response;
@@ -52,11 +53,9 @@ class FrontEndUserController extends Controller
 
     public function index()
     {
-        if (!Auth::check()) {
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
             return redirect()->intended(route('admin/login'));
-        }
-        else{
-            $user = Auth::user();
         }
 
         $back_users = User::whereHas('roles', function($query){
@@ -97,11 +96,9 @@ class FrontEndUserController extends Controller
      */
     public function create(Request $request)
     {
-        if (!Auth::check()) {
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
             return redirect()->intended(route('admin/login'));
-        }
-        else{
-            $user = Auth::user();
         }
 
         $vars = $request->only('first_name', 'middle_name', 'last_name', 'email', 'user_type', 'username', 'password', 'user_type');
@@ -165,12 +162,11 @@ class FrontEndUserController extends Controller
      */
     public function show($id)
     {
-        if (!Auth::check()) {
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
             return redirect()->intended(route('admin/login'));
         }
-        else{
-            $user = Auth::user();
-        }
+
         $back_user = User::with('roles')->find($id);
 
         @$userRole = $back_user->roles[0];
@@ -273,12 +269,11 @@ class FrontEndUserController extends Controller
      */
     public function show_account_settings($id)
     {
-        if (!Auth::check()) {
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
             return redirect()->intended(route('admin/login'));
         }
-        else{
-            $user = Auth::user();
-        }
+
         $back_user = User::with('roles')->find($id);
 
         $text_parts  = [
@@ -397,12 +392,11 @@ class FrontEndUserController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function show_bookings($id){
-        if (!Auth::check()) {
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
             return redirect()->intended(route('admin/login'));
         }
-        else{
-            $user = Auth::user();
-        }
+
         $back_user = User::with('roles')->find($id);
 
         $text_parts  = [
@@ -601,12 +595,11 @@ class FrontEndUserController extends Controller
      */
     public function show_finance($id)
     {
-        if (!Auth::check()) {
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
             return redirect()->intended(route('admin/login'));
         }
-        else{
-            $user = Auth::user();
-        }
+
         $back_user = User::find($id);
         if (!$back_user){
             return redirect()->intended(route('admin/login'));
@@ -969,11 +962,9 @@ class FrontEndUserController extends Controller
     }
 
     public function update_account_avatar(Request $request, $id){
-        if (!Auth::check()) {
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
             return redirect()->intended(route('admin/login'));
-        }
-        else{
-            $user = Auth::user();
         }
 
         //$user = User::findOrFail($id);
@@ -1046,11 +1037,13 @@ class FrontEndUserController extends Controller
             ];
         }
 
-        $vars = $request->only('about_info', 'country_id', 'date_of_birth', 'first_name', 'last_name', 'middle_name', 'mobile_number', 'personal_email');
+        $vars = $request->only('about_info', 'country_id', 'date_of_birth', 'first_name', 'last_name', 'middle_name', 'gender', 'mobile_number', 'personal_email');
 
-        $userVars = array(  'first_name'    => $vars["first_name"],
+        $userVars = array(
+            'first_name'    => $vars["first_name"],
             'last_name'     => $vars["last_name"],
             'middle_name'   => $vars["middle_name"],
+            'gender'        => $vars['gender'],
             'country_id'    => $vars["country_id"],
             'date_of_birth' => $vars["date_of_birth"]);
 
@@ -1059,6 +1052,7 @@ class FrontEndUserController extends Controller
             'last_name'     => 'required|min:4|max:150',
             'date_of_birth' => 'required|date',
             'country_id'    => 'required|exists:countries,id',
+            'gender'        => 'required|in:M,F'
         ]);
 
         if ($validator->fails()){
@@ -1073,6 +1067,7 @@ class FrontEndUserController extends Controller
             $user->last_name   = $vars["last_name"];
             $user->middle_name = $vars["middle_name"];
             $user->country_id  = $vars["country_id"];
+            $user->gender      = $vars["gender"];
             $user->save();
         }
 
@@ -1095,11 +1090,9 @@ class FrontEndUserController extends Controller
 
     public function update_personal_address(Request $request, $id)
     {
-        if (!Auth::check()) {
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
             return redirect()->intended(route('admin/login'));
-        }
-        else{
-            $user = Auth::user();
         }
 
         $userPersonal = PersonalDetail::find($id);
@@ -1241,11 +1234,9 @@ class FrontEndUserController extends Controller
     }
 
     public function update_personal_avatar(Request $request, $id){
-        if (!Auth::check()) {
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
             return redirect()->intended(route('admin/login'));
-        }
-        else{
-            $user = Auth::user();
         }
 
         $user = User::findOrFail($id);
@@ -1282,11 +1273,9 @@ class FrontEndUserController extends Controller
     }
 
     public function add_account_document(Request $request, $id){
-        if (!Auth::check()) {
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
             return redirect()->intended(route('admin/login'));
-        }
-        else{
-            $user = Auth::user();
         }
 
         $user = User::findOrFail($id);
@@ -1321,11 +1310,9 @@ class FrontEndUserController extends Controller
     }
 
     public function get_user_account_document($id, $document_name){
-        if (!Auth::check()) {
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
             return redirect()->intended(route('admin/login'));
-        }
-        else{
-            $user = Auth::user();
         }
 
         $back_user = User::findOrFail($id);
@@ -1347,11 +1334,9 @@ class FrontEndUserController extends Controller
     }
 
     public function ajax_get_users(Request $request){
-        if (!Auth::check()) {
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
             return redirect()->intended(route('admin/login'));
-        }
-        else{
-            $user = Auth::user();
         }
 
         $vars = $request->only('q');
@@ -1394,11 +1379,9 @@ class FrontEndUserController extends Controller
 
     public function ajax_get_user_info(Request $request, $id=-1)
     {
-        if (!Auth::check()) {
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
             return redirect()->intended(route('admin/login'));
-        }
-        else{
-            $user = Auth::user();
         }
 
         if (isset($request->id)){
@@ -1449,11 +1432,9 @@ class FrontEndUserController extends Controller
     }
 
     public function ajax_get_bill_address(Request $request){
-        if (!Auth::check()) {
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
             return redirect()->intended(route('admin/login'));
-        }
-        else{
-            $user = Auth::user();
         }
 
         $vars = $request->only('addressID','memberID');
@@ -1488,11 +1469,9 @@ class FrontEndUserController extends Controller
     }
 
     public function ajax_get_ship_address(Request $request, $id=-1){
-        if (!Auth::check()) {
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
             return redirect()->intended(route('admin/login'));
-        }
-        else{
-            $user = Auth::user();
         }
 
         $user_address = [];
@@ -2041,13 +2020,51 @@ class FrontEndUserController extends Controller
         }
     }
 
+    public function update_general_settings(Request $request, $id = -1){
+        if (!Auth::check()) {
+            return [
+                'success'=>false,
+                'title'=>'An error occurred',
+                'errors'=> 'You need to be logged in to have access to this function'
+            ];
+        }
+        else{
+            $user = Auth::user();
+        }
+
+        $vars = $request->only('general_settings');
+        if (sizeof($vars['general_settings'])>0){
+            foreach($vars['general_settings'] as $key=>$val){
+                $fillable = [
+                    'user_id'   => $user->id,
+                    'var_name'  => $key
+                ];
+
+                $storeSetting = UserSettings::firstOrNew($fillable);
+                $storeSetting->var_value = $val;
+                $storeSetting->save();
+            }
+
+            return [
+                'success' => true,
+                'title'   => 'Settings saved',
+                'message' => 'Settings saved and in effect'
+            ];
+        }
+        else{
+            return [
+                'success' => false,
+                'title'   => 'An error occurred',
+                'errors'  => 'Saved settings could not be stored.'
+            ];
+        }
+    }
+
     /* Front end pages part - START */
 
     public function member_friends_list($userID = -1){
-        if (Auth::check()) {
-            $user = Auth::user();
-        }
-        else{
+        $user = Auth::user();
+        if (!$user || !$user->is_front_user()) {
             return redirect()->intended(route('homepage'));
         }
 
@@ -2107,11 +2124,9 @@ class FrontEndUserController extends Controller
     }
 
     public function front_invoice_list(){
-        if (!Auth::check()) {
+        $user = Auth::user();
+        if (!$user || !$user->is_front_user()) {
             return redirect()->intended(route('homepage'));
-        }
-        else{
-            $user = Auth::user();
         }
 
         $breadcrumbs = [
@@ -2135,11 +2150,9 @@ class FrontEndUserController extends Controller
 
     public function front_show_invoice($id)
     {
-        if (!Auth::check()) {
+        $user = Auth::user();
+        if (!$user || !$user->is_front_user()) {
             return redirect()->intended(route('homepage'));
-        }
-        else{
-            $user = Auth::user();
         }
 
         $invoice = Invoice::where('invoice_number','=',$id)->where('user_id','=',$user->id)->get()->first();
@@ -2436,11 +2449,9 @@ class FrontEndUserController extends Controller
     }
 
     public function member_active_membership(){
-        if (Auth::check()) {
-            $user = Auth::user();
-        }
-        else{
-            return redirect()->intended(route('homepage'));;
+        $user = Auth::user();
+        if (!$user || !$user->is_front_user()) {
+            return redirect()->intended(route('homepage'));
         }
 
         $my_plan = UserMembership::where('user_id','=',$user->id)->whereIn('status',['active','suspended'])->get()->first();
@@ -2476,21 +2487,14 @@ class FrontEndUserController extends Controller
     }
 
     public function settings_account(){
-        if (Auth::check()) {
-            $user = Auth::user();
-        }
-        else{
-            return redirect()->intended(route('homepage'));;
+        $user = Auth::user();
+        if (!$user || !$user->is_front_user()) {
+            return redirect()->intended(route('homepage'));
         }
 
-        $my_plan = UserMembership::where('user_id','=',$user->id)->whereIn('status',['active','suspended'])->get()->first();
-        if ($my_plan){
-            $restrictions = $my_plan->get_plan_restrictions();
-            $plan_details = $my_plan->get_plan_details();
-        }
-        else {
-            //$my_plan = MembershipPlan::where('id','=',1)->get()->first();
-        }
+        $locations  = ShopLocations::orderBy('name')->get();
+        $activities = ShopResourceCategory::orderBy('name')->get();
+        $settings   = UserSettings::get_general_settings($user->id, ['settings_preferred_location','settings_preferred_activity']);
 
         $breadcrumbs = [
             'Home'      => route('admin'),
@@ -2507,19 +2511,16 @@ class FrontEndUserController extends Controller
             'breadcrumbs' => $breadcrumbs,
             'text_parts'  => $text_parts,
             'in_sidebar'  => $sidebar_link,
-            'membership_plan'   => $my_plan,
-            //'activities'    => $activities,
-            'restrictions'  => @$restrictions,
-            'plan_details'  => @$plan_details,
-            'user'          => $user
+            'locations'     => $locations,
+            'activities'    => $activities,
+            'user'          => $user,
+            'settings'      => $settings
         ]);
     }
 
     public function settings_personal(){
-        if (Auth::check()) {
-            $user = Auth::user();
-        }
-        else{
+        $user = Auth::user();
+        if (!$user || !$user->is_front_user()) {
             return redirect()->intended(route('homepage'));
         }
 
@@ -2609,11 +2610,9 @@ class FrontEndUserController extends Controller
     }
 
     public function settings_personal_avatar(Request $request){
-        if (!Auth::check()) {
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
             return redirect()->intended(route('admin/login'));
-        }
-        else{
-            $user = Auth::user();
         }
 
         //$user = User::findOrFail($id);

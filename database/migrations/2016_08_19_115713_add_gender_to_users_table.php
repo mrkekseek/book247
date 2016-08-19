@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateProductCategoriesTable extends Migration
+class AddGenderToUsersTable extends Migration
 {
     /**
      * Run the migrations.
@@ -12,12 +12,8 @@ class CreateProductCategoriesTable extends Migration
      */
     public function up()
     {
-        Schema::create('product_categories', function (Blueprint $table) {
-            $table->engine = 'InnoDB';
-
-            $table->increments('id');
-            $table->string('name');
-            $table->string('url');
+        Schema::table('users', function (Blueprint $table) {
+            $table->enum('gender',['M','F'])->after('last_name')->nullable();
         });
     }
 
@@ -28,6 +24,8 @@ class CreateProductCategoriesTable extends Migration
      */
     public function down()
     {
-        Schema::drop('product_categories');
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropColumn('gender');
+        });
     }
 }

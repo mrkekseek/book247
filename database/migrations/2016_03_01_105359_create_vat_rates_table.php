@@ -13,6 +13,8 @@ class CreateVatRatesTable extends Migration
     public function up()
     {
         Schema::create('vat_rates', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
+
             $table->increments('id');
             $table->string('name');
             $table->string('display_name');

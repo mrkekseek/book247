@@ -128,6 +128,14 @@
                                                     <label class="control-label">Last Name</label>
                                                     <input type="text" name="personalLastName" id="personalLastName" placeholder="Last Name" value="{{$user->last_name}}" class="form-control" /> </div>
                                                 <div class="form-group">
+                                                    <label class="control-label">Gender</label>
+                                                    <select name="gender" class="form-control">
+                                                        <option>Select Gender</option>
+                                                        <option {!! $user->gender=='F'?'selected="selected"':'' !!} value="F"> Female </option>
+                                                        <option {!! $user->gender=='M'?'selected="selected"':'' !!} value="M"> Male </option>
+                                                    </select>
+                                                </div>
+                                                <div class="form-group">
                                                     <label class="control-label">Citizenship</label>
                                                     <select name="personalCountry" id="personalCountry" class="form-control">
                                                         @foreach ($countries as $country)
@@ -675,6 +683,10 @@
                             minlength:4,
                             maxlength:12
                         },
+                        gender: {
+                            required: true,
+                            minlength:1,
+                        }
                     },
 
                     invalidHandler: function (event, validator) { //display error alert on form submit
@@ -1024,6 +1036,7 @@
                     'first_name':       $('input[name=personalFirstName]').val(),
                     'middle_name':      $('input[name=personalMiddleName]').val(),
                     'last_name':        $('input[name=personalLastName]').val(),
+                    'gender':           $('select[name=gender]').val(),
                     'date_of_birth':    $('input[name=personalDOB]').val(),
                     'personal_email':   $('input[name=personalEmail]').val(),
                     'mobile_number':    $('input[name=personalPhone]').val(),

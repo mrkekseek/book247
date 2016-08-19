@@ -13,6 +13,8 @@ class CreateMembershipRestrictions extends Migration
     public function up()
     {
         Schema::create('membership_restrictions', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
+
             $table->increments('id');
             $table->integer('membership_id')->unsigned();
             $table->string('value', 50);

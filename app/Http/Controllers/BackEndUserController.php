@@ -6,6 +6,9 @@ use App\Permission;
 use App\PersonalDetail;
 use App\ProfessionalDetail;
 use App\Address;
+use App\ShopLocations;
+use App\ShopResourceCategory;
+use App\UserSettings;
 use App\UserAvatars;
 use App\UserDocuments;
 use Illuminate\Http\Response;
@@ -37,13 +40,10 @@ class BackEndUserController extends Controller
 
     public function index()
     {
-        if (!Auth::check()) {
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
             return redirect()->intended(route('admin/login'));
         }
-        else{
-            $user = Auth::user();
-        }
-
 
         $back_users = User::whereHas('roles', function($query){
             $query->where('name', '!=', 'front-user');
@@ -166,12 +166,11 @@ class BackEndUserController extends Controller
      */
     public function show($id)
     {
-        if (!Auth::check()) {
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
             return redirect()->intended(route('admin/login'));
         }
-        else{
-            $user = Auth::user();
-        }
+
         $back_user = User::with('roles')->find($id);
 
         @$userRole = $back_user->roles[0];
@@ -222,6 +221,10 @@ class BackEndUserController extends Controller
 
         $userDocuments = UserDocuments::where('user_id','=',$id)->where('category','=','account_documents')->get();
 
+        $locations  = ShopLocations::orderBy('name')->get();
+        $activities = ShopResourceCategory::orderBy('name')->get();
+        $settings   = UserSettings::get_general_settings($back_user->id, ['settings_preferred_location','settings_preferred_activity']);
+
         $text_parts  = [
             'title'     => 'Back-End Users',
             'subtitle'  => $back_user->first_name.' '.$back_user->middle_name.' '.$back_user->last_name,
@@ -252,6 +255,9 @@ class BackEndUserController extends Controller
             'avatarType'  => $avatarType,
             'permissions' => $permissions,
             'documents'   => $userDocuments,
+            'locations'     => $locations,
+            'activities'    => $activities,
+            'settings'      => $settings
         ]);
     }
 
@@ -275,14 +281,13 @@ class BackEndUserController extends Controller
      */
     public function update_account_info(Request $request, $id)
     {
-        if (!Auth::check()) {
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
             return redirect()->intended(route('admin/login'));
         }
-        else{
-            $user = Auth::user();
-        }
 
-        $vars = $request->only('accountDescription', 'accountJobTitle', 'accountProfession', 'accountEmail', 'accountUsername', 'employeeRole');
+        $vars = $request->only( 'accountDescription', 'accountJobTitle', 'accountProfession', 'accountEmail', 'accountUsername', 'employeeRole',
+                                'settings_preferred_location', 'settings_preferred_activity');
         $userVars = array('username'=>$vars["accountUsername"], 'email'=>$vars["accountEmail"]);
         $userCh = User::with('roles')->find($id);
 
@@ -302,7 +307,6 @@ class BackEndUserController extends Controller
             $userCh->email    = $vars["accountEmail"];
             @$userCh->detachRoles($userCh->roles);
             $userCh->attachRole($vars['employeeRole']);
-
             $userCh->save();
         }
 
@@ -312,6 +316,17 @@ class BackEndUserController extends Controller
         $professionalDetails->profession  = $professionData['profession'];
         $professionalDetails->description = $professionData['description'];
         $professionalDetails->save();
+
+        // general settings related to default location
+        $fillable = ['user_id'   => $userCh->id,'var_name'  => 'settings_preferred_location'];
+        $storeSetting = UserSettings::firstOrNew($fillable);
+        $storeSetting->var_value = $vars['settings_preferred_location'];
+        $storeSetting->save();
+        // general settings related to default activity
+        $fillable = ['user_id'   => $userCh->id,'var_name'  => 'settings_preferred_activity'];
+        $storeSetting = UserSettings::firstOrNew($fillable);
+        $storeSetting->var_value = $vars['settings_preferred_activity'];
+        $storeSetting->save();
 
         return "bine";
     }
@@ -328,40 +343,41 @@ class BackEndUserController extends Controller
 
     public function update_personal_info(Request $request, $id)
     {
-        if (!Auth::check()) {
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
             return redirect()->intended(route('admin/login'));
         }
-        else{
-            $user = Auth::user();
-        }
 
-        $vars = $request->only('about_info', 'country_id', 'date_of_birth', 'first_name', 'last_name', 'middle_name', 'mobile_number', 'personal_email', 'bank_acc_no', 'social_sec_no');
+        $vars = $request->only('about_info', 'country_id', 'date_of_birth', 'first_name', 'last_name', 'middle_name', 'gender', 'mobile_number', 'personal_email', 'bank_acc_no', 'social_sec_no');
 
-        $userVars = array(  'first_name'    => $vars["first_name"],
-                            'last_name'     => $vars["last_name"],
-                            'middle_name'   => $vars["middle_name"],
-                            'country_id'    => $vars["country_id"],
-                            'date_of_birth' => $vars["date_of_birth"]);
+        $userVars = [
+            'first_name'    => $vars["first_name"],
+            'last_name'     => $vars["last_name"],
+            'middle_name'   => $vars["middle_name"],
+            'country_id'    => $vars["country_id"],
+            'date_of_birth' => $vars["date_of_birth"],
+            'gender'        => $vars['gender']
+        ];
         $userCh = User::find($id);
 
-        $validator = Validator::make($userVars, [
-            'first_name'    => 'required|min:4|max:150',
-            'last_name'     => 'required|min:4|max:150',
-            'date_of_birth' => 'required|date',
-            'country_id'    => 'required|exists:countries,id',
-        ]);
-
+        $updateRules = [
+            'first_name'=> 'required|min:4|max:150',
+            'last_name' => 'required|min:4|max:150',
+            'gender'    => 'in:M,F'
+        ];
+        $validator = Validator::make($userVars, $updateRules, User::$messages, User::$attributeNames);
         if ($validator->fails()){
-            //return array(
-            //    'success' => false,
-            //    'errors' => $validator->getMessageBag()->toArray()
-            //);
+            return array(
+                'success' => false,
+                'errors' => $validator->getMessageBag()->toArray()
+            );
         }
         else{
             $userCh->first_name  = $vars["first_name"];
             $userCh->last_name   = $vars["last_name"];
             $userCh->middle_name = $vars["middle_name"];
             $userCh->country_id  = $vars["country_id"];
+            $userCh->gender      = $vars["gender"];
             $userCh->save();
         }
 
@@ -389,11 +405,9 @@ class BackEndUserController extends Controller
 
     public function update_personal_address(Request $request, $id)
     {
-        if (!Auth::check()) {
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
             return redirect()->intended(route('admin/login'));
-        }
-        else{
-            $user = Auth::user();
         }
 
         $userPersonal = PersonalDetail::find($id);
@@ -456,11 +470,9 @@ class BackEndUserController extends Controller
     /** Change password */
     public function updatePassword(Request $request, $id)
     {
-        if (!Auth::check()) {
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
             return redirect()->intended(route('admin/login'));
-        }
-        else{
-            $user = Auth::user();
         }
 
         $user = User::findOrFail($id);
@@ -495,11 +507,9 @@ class BackEndUserController extends Controller
     }
 
     public function update_personal_avatar(Request $request, $id){
-        if (!Auth::check()) {
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
             return redirect()->intended(route('admin/login'));
-        }
-        else{
-            $user = Auth::user();
         }
 
         $user = User::findOrFail($id);
@@ -536,11 +546,9 @@ class BackEndUserController extends Controller
     }
 
     public function add_account_document(Request $request, $id){
-        if (!Auth::check()) {
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
             return redirect()->intended(route('admin/login'));
-        }
-        else{
-            $user = Auth::user();
         }
 
         $user = User::findOrFail($id);
@@ -575,11 +583,9 @@ class BackEndUserController extends Controller
     }
 
     public function get_user_account_document($id, $document_name){
-        if (!Auth::check()) {
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
             return redirect()->intended(route('admin/login'));
-        }
-        else{
-            $user = Auth::user();
         }
 
         $back_user = User::findOrFail($id);
@@ -601,11 +607,9 @@ class BackEndUserController extends Controller
     }
 
     public function ajax_get_users(Request $request){
-        if (!Auth::check()) {
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
             return redirect()->intended(route('admin/login'));
-        }
-        else{
-            $user = Auth::user();
         }
 
         $vars = $request->only('q');
@@ -658,11 +662,9 @@ class BackEndUserController extends Controller
 
     public function ajax_get_user_info(Request $request, $id=-1)
     {
-        if (!Auth::check()) {
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
             return redirect()->intended(route('admin/login'));
-        }
-        else{
-            $user = Auth::user();
         }
 
         if (isset($request->id)){
@@ -713,11 +715,9 @@ class BackEndUserController extends Controller
     }
 
     public function ajax_get_bill_address(Request $request){
-        if (!Auth::check()) {
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
             return redirect()->intended(route('admin/login'));
-        }
-        else{
-            $user = Auth::user();
         }
 
         $vars = $request->only('addressID','memberID');
@@ -752,15 +752,12 @@ class BackEndUserController extends Controller
     }
 
     public function ajax_get_ship_address(Request $request, $id=-1){
-        if (!Auth::check()) {
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
             return redirect()->intended(route('admin/login'));
-        }
-        else{
-            $user = Auth::user();
         }
 
         $user_address = [];
-
         if ($id==-1){
             $user_address = [
                 'full_address' => ' Jhon Done <br> #24 Park Avenue Str <br> New York <br> Connecticut, 23456 New York <br> United States <br> T: 123123232 <br> F: 231231232 <br> ',

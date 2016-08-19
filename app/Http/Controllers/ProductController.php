@@ -31,11 +31,9 @@ class ProductController extends Controller
     }
 
     public function list_all(){
-        if (!Auth::check()) {
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
             return redirect()->intended(route('admin/login'));
-        }
-        else{
-            $user = Auth::user();
         }
 
         $products = Product::orderBy('name')->get();
@@ -80,11 +78,9 @@ class ProductController extends Controller
     }
 
     public function create(Request $request){
-        if (!Auth::check()) {
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
             return redirect()->intended(route('admin/login'));
-        }
-        else{
-            $user = Auth::user();
         }
 
         $vars = $request->only('alternate_name', 'barcode', 'category_id', 'description', 'manufacturer', 'name', 'brand', 'vat_rate_id');
@@ -110,11 +106,9 @@ class ProductController extends Controller
     }
 
     public function get_product($id){
-        if (!Auth::check()) {
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
             return redirect()->intended(route('admin/login'));
-        }
-        else{
-            $user = Auth::user();
         }
 
         $product_details = Product::with('vat_rate')
@@ -178,11 +172,9 @@ class ProductController extends Controller
     }
 
     public function update_product(Request $request, $id){
-        if (!Auth::check()) {
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
             return redirect()->intended(route('admin/login'));
-        }
-        else{
-            $user = Auth::user();
         }
 
         /** @var $prod_vars - updated fields for the product that is edited */
@@ -252,11 +244,9 @@ class ProductController extends Controller
     }
 
     public function get_product_history(Request $request){
-        if (!Auth::check()) {
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
             return redirect()->intended(route('admin/login'));
-        }
-        else{
-            $user = Auth::user();
         }
 
         $iTotalRecords = 120;
@@ -300,11 +290,9 @@ class ProductController extends Controller
     }
 
     public function get_product_inventory(Request $request, $id){
-        if (!Auth::check()) {
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
             return redirect()->intended(route('admin/login'));
-        }
-        else{
-            $user = Auth::user();
         }
 
         $where_clause = $request->only('t_inventory_amount', 't_inventory_date_from', 't_inventory_date_to', 't_inventory_id_no',
@@ -480,11 +468,9 @@ class ProductController extends Controller
     }
 
     public function get_all_products_inventory(Request $request){
-        if (!Auth::check()) {
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
             return redirect()->intended(route('admin/login'));
-        }
-        else{
-            $user = Auth::user();
         }
 
         $where_clause = $request->only('t_inventory_amount', 't_inventory_date_from', 't_inventory_date_to', 't_inventory_product',
@@ -658,11 +644,9 @@ class ProductController extends Controller
 
     public function get_availability($id)
     {
-        if (!Auth::check()) {
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
             return redirect()->intended(route('admin/login'));
-        }
-        else{
-            $user = Auth::user();
         }
 
         $availability = ProductAvailability::where('product_id','=',$id)->orderBy('updated_at','desc')->get()->first();
@@ -676,11 +660,9 @@ class ProductController extends Controller
     }
 
     public function update_product_availability(Request $request, $id){
-        if (!Auth::check()) {
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
             return redirect()->intended(route('admin/login'));
-        }
-        else{
-            $user = Auth::user();
         }
 
         $vars = $request->only('available_from', 'available_to');
@@ -707,11 +689,9 @@ class ProductController extends Controller
     }
 
     public function get_price($id){
-        if (!Auth::check()) {
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
             return redirect()->intended(route('admin/login'));
-        }
-        else{
-            $user = Auth::user();
         }
 
         $price = ProductPrice::with('currency')->where('product_id','=',$id)->orderBy('updated_at','desc')->get()->first();
@@ -731,11 +711,9 @@ class ProductController extends Controller
     }
 
     public function update_price($product_id, $new_price, $new_currency){
-        if (!Auth::check()) {
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
             return redirect()->intended(route('admin/login'));
-        }
-        else{
-            $user = Auth::user();
         }
 
         $price_vars = array('list_price'=>$new_price, 'country_id'=>$new_currency, 'product_id'=>$product_id);
@@ -768,11 +746,9 @@ class ProductController extends Controller
     }
 
     public function all_inventory(){
-        if (!Auth::check()) {
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
             return redirect()->intended(route('admin/login'));
-        }
-        else{
-            $user = Auth::user();
         }
 
         $shops = ShopLocations::all();
@@ -801,11 +777,9 @@ class ProductController extends Controller
     }
 
     public function add_to_inventory(Request $request){
-        if (!Auth::check()) {
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
             return redirect()->intended(route('admin/login'));
-        }
-        else{
-            $user = Auth::user();
         }
 
         $vars = $request->only('entry_price', 'quantity', 'location_id', 'product_id');
@@ -861,11 +835,9 @@ class ProductController extends Controller
     }
 
     public function transfer_from_inventory(Request $request){
-        if (!Auth::check()) {
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
             return redirect()->intended(route('admin/login'));
-        }
-        else{
-            $user = Auth::user();
         }
 
         $vars = $request->only('quantity', 'old_location_id', 'new_location_id', 'product_id');
@@ -927,11 +899,9 @@ class ProductController extends Controller
     }
 
     public function get_product_stock($productID, $shopID=0){
-        if (!Auth::check()) {
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
             return redirect()->intended(route('admin/login'));
-        }
-        else{
-            $user = Auth::user();
         }
 
         // check if product exists
@@ -979,11 +949,9 @@ class ProductController extends Controller
     }
 
     public function ajax_get(Request $request){
-        if (!Auth::check()) {
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
             return redirect()->intended(route('admin/login'));
-        }
-        else{
-            $user = Auth::user();
         }
 
         $vars = $request->only('q');
@@ -1026,11 +994,9 @@ class ProductController extends Controller
     }
 
     public function add_product_image(Request $request, $id){
-        if (!Auth::check()) {
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
             return redirect()->intended(route('admin/login'));
-        }
-        else{
-            $user = Auth::user();
         }
 
         $product = Product::findOrFail($id);

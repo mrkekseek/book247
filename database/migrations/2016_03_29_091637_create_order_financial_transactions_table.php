@@ -13,6 +13,8 @@ class CreateOrderFinancialTransactionsTable extends Migration
     public function up()
     {
         Schema::create('order_financial_transactions', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
+
             $table->increments('id');
             $table->integer('user_id')->unsigned();
             $table->integer('order_invoice_id')->unsigned();

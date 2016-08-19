@@ -13,7 +13,7 @@
         <!-- END RESPONSIVE MENU TOGGLER -->
         <!-- BEGIN TOP NAVIGATION MENU -->
         <div class="top-menu hidden-xs">
-            @if (Auth::check())
+            @if (Auth::check() && Auth::user()->is_front_user())
             <ul class="nav navbar-nav pull-right">
                 <!-- BEGIN NOTIFICATION DROPDOWN -->
                 @if (isset($notifications_on))
@@ -366,7 +366,7 @@
         <!-- DOC: Remove data-hover="dropdown" and data-close-others="true" attributes below to disable the dropdown opening on mouse hover -->
         <div class="hor-menu  ">
             <ul class="nav navbar-nav">
-                @if (Auth::check())
+                @if (Auth::check() && Auth::user()->is_front_user())
                 <li class="menu-dropdown classic-menu-dropdown {{in_array($in_sidebar, ['front-homepage','front-calendar_view'])?"active":""}}">
                     <a href="javascript:;"> Squash Fitness
                         <span class="arrow"></span>
@@ -441,23 +441,23 @@
                     </ul>
                 </li>
                 @else
-                    <li class="menu-dropdown classic-menu-dropdown ">
-                        <a href="{{ route('homepage') }}" class="nav-link  ">
-                            <i class="icon-bar-chart"></i> Squash Fitness Homepage
-                        </a>
-                    </li>
-                    <li class="menu-dropdown mega-menu-dropdown {{$in_sidebar=="front-type_of_memberships"?"active":""}}">
-                        <a href="{{ route('front/membership_types') }}">
-                            <i class="icon-bar-chart"></i> Membership Types
-                            <!--<span class="badge badge-success">New</span>-->
-                        </a>
-                    </li>
-                    <li class="menu-dropdown mega-menu-dropdown {{$in_sidebar=="front-contact_or_locations"?"active":""}}">
-                        <a href="{{ route('front/contact_locations') }}">
-                            <i class="icon-bar-chart"></i> Contact/Locations
-                            <span class="badge badge-success">1 New</span>
-                        </a>
-                    </li>
+                <li class="menu-dropdown classic-menu-dropdown ">
+                    <a href="{{ route('homepage') }}" class="nav-link  ">
+                        <i class="icon-bar-chart"></i> Squash Fitness Homepage
+                    </a>
+                </li>
+                <li class="menu-dropdown mega-menu-dropdown {{$in_sidebar=="front-type_of_memberships"?"active":""}}">
+                    <a href="{{ route('front/membership_types') }}">
+                        <i class="icon-bar-chart"></i> Membership Types
+                        <!--<span class="badge badge-success">New</span>-->
+                    </a>
+                </li>
+                <li class="menu-dropdown mega-menu-dropdown {{$in_sidebar=="front-contact_or_locations"?"active":""}}">
+                    <a href="{{ route('front/contact_locations') }}">
+                        <i class="icon-bar-chart"></i> Contact/Locations
+                        <span class="badge badge-success">1 New</span>
+                    </a>
+                </li>
                 @endif
             </ul>
         </div>

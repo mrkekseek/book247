@@ -13,6 +13,8 @@ class CreateBookingInvoiceItemsTable extends Migration
     public function up()
     {
         Schema::create('booking_invoice_items', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
+
             $table->increments('id');
             $table->integer('booking_invoice_id')->unsigned();
             $table->integer('booking_id')->unsigned();

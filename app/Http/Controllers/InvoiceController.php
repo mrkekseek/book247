@@ -18,11 +18,9 @@ class InvoiceController extends Controller
     }
 
     public function view_invoice($id){
-        if (!Auth::check()) {
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
             return redirect()->intended(route('admin/login'));
-        }
-        else{
-            $user = Auth::user();
         }
 
         $invoice = Invoice::where('invoice_number','=',$id)->get()->first();

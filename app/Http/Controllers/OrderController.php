@@ -26,11 +26,9 @@ class OrderController extends Controller
     }
 
     public function add_order(){
-        if (!Auth::check()) {
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
             return redirect()->intended(route('admin/login'));
-        }
-        else{
-            $user = Auth::user();
         }
 
         $shops = ShopLocations::all();
@@ -60,11 +58,9 @@ class OrderController extends Controller
     }
 
     public function view_order($id){
-        if (!Auth::check()) {
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
             return redirect()->intended(route('admin/login'));
-        }
-        else{
-            $user = Auth::user();
         }
 
         $order = Order::where('id','=',$id)->get()->first();
@@ -192,11 +188,9 @@ class OrderController extends Controller
      * All list orders - draw table and search controllers
      */
     public function all_orders(){
-        if (!Auth::check()) {
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
             return redirect()->intended(route('admin/login'));
-        }
-        else{
-            $user = Auth::user();
         }
 
         $shops = ShopLocations::all();
@@ -228,11 +222,9 @@ class OrderController extends Controller
      * Get all lists orders based on search criteria
      */
     public function get_all_orders(Request $request){
-        if (!Auth::check()) {
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
             return redirect()->intended(route('admin/login'));
-        }
-        else{
-            $user = Auth::user();
         }
 
         $where_clause = $request->only('t_inventory_amount', 't_inventory_date_from', 't_inventory_date_to', 't_inventory_product',
@@ -391,11 +383,9 @@ class OrderController extends Controller
     }
 
     public function get_order_details(Request $request, $id=-1){
-        if (!Auth::check()) {
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
             return redirect()->intended(route('admin/login'));
-        }
-        else{
-            $user = Auth::user();
         }
 
         $vars = $request->only('id');
@@ -431,11 +421,9 @@ class OrderController extends Controller
     }
 
     public function get_order_lines_items(Request $request, $id=-1){
-        if (!Auth::check()) {
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
             return redirect()->intended(route('admin/login'));
-        }
-        else{
-            $user = Auth::user();
         }
 
         $vars = $request->only('orderID');
@@ -498,11 +486,9 @@ class OrderController extends Controller
      */
     public function add_update_line_item(Request $request){
         // add new entry in order_items table
-        if (!Auth::check()) {
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
             return redirect()->intended(route('admin/login'));
-        }
-        else{
-            $user = Auth::user();
         }
 
         $vars = $request->only('productID', 'lineID', 'orderID', 'quantity', 'sell_price', 'discount_amount', 'buyerID');

@@ -83,7 +83,7 @@
                                 <input type="hidden" name="selected_date" value="{{ \Carbon\Carbon::now()->format("Y-m-d") }}" />
                             </div>
 
-                            @if (Auth::check())
+                            @if (Auth::check() && Auth::user()->is_front_user())
                             <div class="portlet light margin-bottom-15 " id="all_friends_men">
                                 <dt>Friends List</dt>
                                 <div class="portlet-body">
@@ -113,7 +113,41 @@
                         </div>
                         <div class="col-md-6 login " style="background-color:transparent!important;">
 
-                        @if (!Auth::check())
+                        @if (Auth::check() && Auth::user()->is_front_user())
+                                <!-- BEGIN PORTLET -->
+                            <div class="portlet light margin-bottom-15">
+                                <div class="portlet-title">
+                                    <div class="caption caption-md">
+                                        <i class="icon-bar-chart theme-font hide"></i>
+                                        <span class="caption-subject font-blue-madison bold uppercase">Friends & Own Activity</span>
+                                        <span class="caption-helper">3 new</span>
+                                    </div>
+                                </div>
+                                <div class="portlet-body">
+                                    <div class="scroller" style="height: 305px;" data-always-visible="1" data-rail-visible1="0" data-handle-color="#D7DCE2">
+                                        <div class="general-item-list">
+                                            @foreach ($meAndFriendsBookings as $knownBooking)
+                                                <div class="item">
+                                                    <div class="item-head">
+                                                        <div class="item-details">
+                                                            <img class="item-pic" src="../assets/pages/media/users/avatar4.jpg">
+                                                            <a href="" class="item-name primary-link">{{ $knownBooking['breated_by'] }}</a>
+                                                            <span class="item-label">{{ $knownBooking['passed_time_since_creation'] }}</span>
+                                                        </div>
+                                                        <span class="item-status">
+                                                            <span class="badge badge-empty {{ $knownBooking['status']=='active'?'bg-green-jungle':'' }}
+                                                            {{ $knownBooking['status']=='pending'?'bg-red-thunderbird':'' }} "></span> {{ $knownBooking['status'] }} </span>
+                                                    </div>
+                                                    <div class="item-body"> Own booking for <span class="font-blue-hoki">{{ $knownBooking['book_date_format'] }}</span> in <span class="font-purple-sharp">{{ $knownBooking['on_location'] }}</span>
+                                                        for <span class="font-blue-hoki">{{ $knownBooking['categoryName'] }}</span> activity. Reserved resource -  <span class="font-purple-sharp">{{ $knownBooking['on_resource'] }}</span> room. </div>
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- END PORTLET -->
+                        @else
                             <div class="content" style="background-color:#ffffff; margin-top:0px;">
                                 <!-- BEGIN LOGIN FORM -->
                                 <form class="login-form portlet light " action="{{ url('/login') }}" method="post" name="user_login_form" id="user_login_form">
@@ -226,40 +260,6 @@
                                 </form>
                                 <!-- END REGISTRATION FORM -->
                             </div>
-                        @else
-                            <!-- BEGIN PORTLET -->
-                            <div class="portlet light margin-bottom-15">
-                                <div class="portlet-title">
-                                    <div class="caption caption-md">
-                                        <i class="icon-bar-chart theme-font hide"></i>
-                                        <span class="caption-subject font-blue-madison bold uppercase">Friends & Own Activity</span>
-                                        <span class="caption-helper">3 new</span>
-                                    </div>
-                                </div>
-                                <div class="portlet-body">
-                                    <div class="scroller" style="height: 305px;" data-always-visible="1" data-rail-visible1="0" data-handle-color="#D7DCE2">
-                                        <div class="general-item-list">
-                                            @foreach ($meAndFriendsBookings as $knownBooking)
-                                                <div class="item">
-                                                    <div class="item-head">
-                                                        <div class="item-details">
-                                                            <img class="item-pic" src="../assets/pages/media/users/avatar4.jpg">
-                                                            <a href="" class="item-name primary-link">{{ $knownBooking['breated_by'] }}</a>
-                                                            <span class="item-label">{{ $knownBooking['passed_time_since_creation'] }}</span>
-                                                        </div>
-                                                        <span class="item-status">
-                                                            <span class="badge badge-empty {{ $knownBooking['status']=='active'?'bg-green-jungle':'' }}
-                                                                {{ $knownBooking['status']=='pending'?'bg-red-thunderbird':'' }} "></span> {{ $knownBooking['status'] }} </span>
-                                                    </div>
-                                                    <div class="item-body"> Own booking for <span class="font-blue-hoki">{{ $knownBooking['book_date_format'] }}</span> in <span class="font-purple-sharp">{{ $knownBooking['on_location'] }}</span>
-                                                        for <span class="font-blue-hoki">{{ $knownBooking['categoryName'] }}</span> activity. Reserved resource -  <span class="font-purple-sharp">{{ $knownBooking['on_resource'] }}</span> room. </div>
-                                                </div>
-                                            @endforeach
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- END PORTLET -->
                         @endif
                             <div class="portlet light search-page search-content-1 ">
                                 <div class="search-container " style="text-align: center;">
@@ -280,7 +280,7 @@
                 <!-- END PAGE CONTENT INNER -->
             </div>
 
-            @if (Auth::check())
+            @if (Auth::check() && Auth::user()->is_front_user())
             <div class="modal fade draggable-modal" id="booking_modal_end_time" tabindex="-1" role="basic" aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
@@ -864,7 +864,7 @@
 
         var timeinterval = ''; /* Interval timer */
         $(document).on('click', '.book_step', function(){
-        @if (isset($user))
+        @if (Auth::check() && Auth::user()->is_front_user())
             $('.pre_book_time').html( $.trim($(this).html()) );
             $('input[name=selected_time]').val($(this).html());
             $('.pre_book_date').html($('.dp-selected').attr('title'));
@@ -1461,8 +1461,8 @@
         /* Timer function - Stop */
 
         jQuery(document).ready(function() {
-            $('.is_resource[data-id="2"]').click();
-            $('.location_btn[data-id="5"]').click();
+            $('.is_resource[data-id="{{ $settings['settings_preferred_activity']?$settings['settings_preferred_activity']:1 }}"]').click();
+            $('.location_btn[data-id="{{ $settings['settings_preferred_location']?$settings['settings_preferred_location']:5 }}"]').click();
 
             //get_booking_hours();
             get_friends_list();

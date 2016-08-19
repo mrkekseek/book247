@@ -29,7 +29,7 @@
                             <div class="portlet-title">
                                 <div class="caption">
                                     <i class="icon-share font-dark"></i>
-                                    <span class="caption-subject font-dark bold uppercase">Bookings Settings</span>
+                                    <span class="caption-subject font-dark bold uppercase">Booking Settings</span>
                                 </div>
                             </div>
                             <div class="portlet-body">
@@ -38,9 +38,12 @@
                                         <tbody><tr>
                                             <td> Preferred Location </td>
                                             <td>
-                                                <div style="padding:5px;" class="pulsate-regular">
-                                                    <select class="form-control">
+                                                <div style="padding:5px;">
+                                                    <select class="form-control" name="settings_preferred_location">
                                                         <option> Select Location </option>
+                                                    @foreach ($locations as $location)
+                                                        <option {!! @$settings['settings_preferred_location']==$location->id?' selected="selected" ':'' !!} value="{{$location->id}}">{{ $location->name }}</option>
+                                                    @endforeach
                                                     </select>
                                                 </div>
                                             </td>
@@ -50,17 +53,21 @@
                                                 Preferred Activity
                                             </td>
                                             <td>
-                                                <div style="padding:5px;" class="pulsate-regular">
-                                                    <select class="form-control">
+                                                <div style="padding:5px;">
+                                                    <select class="form-control" name="settings_preferred_activity">
                                                         <option> Select Activity </option>
+                                                    @foreach ($activities as $activity)
+                                                        <option {!! @$settings['settings_preferred_activity']==$activity->id?' selected="selected" ':'' !!} value="{{$activity->id}}">{{ $activity->name }}</option>
+                                                    @endforeach
                                                     </select>
                                                 </div>
                                             </td>
                                         </tr>
                                         </tbody></table>
+                                    <div class="form-actions right">
+                                        <button class="btn green" type="submit" onclick="javascript:update_booking_settings()"> Update </button>
+                                    </div>
                                 </div>
-                                <span class="label label-danger"> NOTE! </span>
-                                <span> Pulsate is supported in Latest Firefox, Chrome, Opera, Safari and Internet Explorer 9 and Internet Explorer 10 only. </span>
                             </div>
                         </div>
                     </div>
@@ -69,31 +76,31 @@
                             <div class="portlet-title">
                                 <div class="caption">
                                     <i class="icon-share font-dark"></i>
-                                    <span class="caption-subject font-dark bold uppercase">Pulsate</span>
+                                    <span class="caption-subject font-dark bold uppercase">Account Settings</span>
                                 </div>
                             </div>
                             <div class="portlet-body">
-                                <h4>Pulsate any page elements.</h4>
                                 <div class="margin-top-10 margin-bottom-10 clearfix">
                                     <table class="table table-bordered table-striped">
                                         <tbody><tr>
-                                            <td> Repeating Pulsate </td>
+                                            <td> Username </td>
                                             <td>
-                                                <div style="padding: 5px; -moz-outline-radius: 0px; outline: 2px solid rgba(191, 28, 86, 0.6); box-shadow: 0px 0px 5px rgba(191, 28, 86, 0.6);"> Repeating Pulsate </div>
+                                                <input type="text" name="account_username" value="{{$user->username}}" class="form-control input-inline input-large">
                                             </td>
                                         </tr>
                                         <tr>
                                             <td>
-                                                <button  class="btn green">Pulsate Once</button>
+                                                Registration Email
                                             </td>
                                             <td>
-                                                <div style="padding:5px;"> Pulsate me </div>
+                                                <input type="text" name="account_email" value="{{$user->email}}" class="form-control input-inline input-large">
                                             </td>
                                         </tr>
                                         </tbody></table>
+                                    <div class="form-actions right">
+                                        <button class="btn green" type="submit"> Update </button>
+                                    </div>
                                 </div>
-                                <span class="label label-danger"> NOTE! </span>
-                                <span> Pulsate is supported in Latest Firefox, Chrome, Opera, Safari and Internet Explorer 9 and Internet Explorer 10 only. </span>
                             </div>
                         </div>
                     </div>
@@ -121,7 +128,6 @@
 @section('pageBelowLevelPlugins')
     <script src="{{ asset('assets/global/plugins/jquery-validation/js/jquery.validate.min.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/global/plugins/jquery-validation/js/additional-methods.min.js') }}" type="text/javascript"></script>
-    <script src="{{ asset('assets/global/plugins/jquery.pulsate.min.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/global/plugins/jquery-notific8/jquery.notific8.min.js') }}" type="text/javascript"></script>
 @endsection
 
@@ -146,50 +152,34 @@
             }
         });
 
-        var UIGeneral = function () {
+        function update_booking_settings(){
+            var data = {settings_preferred_location:$('select[name="settings_preferred_location"]').val(), settings_preferred_activity:$('select[name="settings_preferred_activity"]').val()};
+            send_settings(data);
+        }
 
-            var handlePulsate = function () {
-                if (!jQuery().pulsate) {
-                    return;
+        function update_account_settings(){
+            var data = { account_username:$('select[name="account_username"]').val(), account_email:$('select[name="account_email"]').val()};
+            send_settings(data);
+        }
+
+        function send_settings(information){
+            $.ajax({
+                url: '{{route('ajax/update_general_settings')}}',
+                type: "post",
+                cache: false,
+                data: {
+                    'general_settings': information
+                },
+                success: function (data) {
+                    if (data.success) {
+                        show_notification(data.title, data.message, 'lime', 3500, 0);
+                    }
+                    else{
+                        show_notification(data.title, data.errors, 'tangerine', 3500, 0);
+                    }
                 }
-
-                if (App.isIE8() == true) {
-                    return; // pulsate plugin does not support IE8 and below
-                }
-
-                if (jQuery().pulsate) {
-                    jQuery('.pulsate-regular').pulsate({
-                        color: "#bf1c56"
-                    });
-
-                    $('#pulsate-once-target2').pulsate({
-                        color: "#399bc3",
-                        repeat: false
-                    });
-
-                    $('#pulsate-crazy-target1').pulsate({
-                        color: "#fdbe41",
-                        reach: 50,
-                        repeat: 10,
-                        speed: 100,
-                        glow: true
-                    });
-                }
-            }
-
-            return {
-                //main function to initiate the module
-                init: function () {
-                    handlePulsate();
-                }
-
-            };
-
-        }();
-
-        jQuery(document).ready(function() {
-            UIGeneral.init();
-        });
+            });
+        }
 
         function show_notification(title_heading, message, theme, life, sticky) {
             var settings = {

@@ -132,6 +132,13 @@
                                                                 <label class="control-label">Last Name</label>
                                                                 <input type="text" name="personalLastName" id="personalLastName" placeholder="Last Name" value="{{$user->last_name}}" class="form-control" /> </div>
                                                             <div class="form-group">
+                                                                <label class="control-label">Gender</label>
+                                                                <select name="gender" class="form-control">
+                                                                    <option>Select Gender</option>
+                                                                    <option {!! $user->gender=='F'?'selected="selected"':'' !!} value="F"> Female </option>
+                                                                    <option {!! $user->gender=='M'?'selected="selected"':'' !!} value="M"> Male </option>
+                                                                </select></div>
+                                                            <div class="form-group">
                                                                 <label class="control-label">Citizenship</label>
                                                                 <select name="personalCountry" id="personalCountry" class="form-control">
                                                                     @foreach ($countries as $country)
@@ -383,6 +390,10 @@
                             minlength:4,
                             maxlength:12
                         },
+                        gender: {
+                            required: true,
+                            minlength:1
+                        }
                     },
 
                     invalidHandler: function (event, validator) { //display error alert on form submit
@@ -782,6 +793,7 @@
                     'mobile_number':    $('input[name=personalPhone]').val(),
                     'about_info':       $('textarea[name=personalAbout]').val(),
                     'country_id':       $('select[name=personalCountry]').val(),
+                    'gender':           $('select[name=gender]').val()
                 },
                 success: function(data){
                     if (data.success) {

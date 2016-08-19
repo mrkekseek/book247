@@ -26,11 +26,9 @@ class MembershipPlansController extends Controller
      */
     public function index()
     {
-        if (!Auth::check()) {
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
             return redirect()->intended(route('admin/login'));
-        }
-        else{
-            $user = Auth::user();
         }
 
         $all_plans = [];
@@ -82,11 +80,9 @@ class MembershipPlansController extends Controller
      */
     public function create()
     {
-        if (!Auth::check()) {
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
             return redirect()->intended(route('admin/login'));
-        }
-        else{
-            $user = Auth::user();
         }
 
         $cash_terminals = CashTerminal::with('shopLocation')->get();
@@ -211,11 +207,9 @@ class MembershipPlansController extends Controller
      */
     public function show($id)
     {
-        if (!Auth::check()) {
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
             return redirect()->intended(route('admin/login'));
-        }
-        else{
-            $user = Auth::user();
         }
 
         $the_plan = MembershipPlan::with('price')->with('restrictions')->where('id','=',$id)->get()->first();
@@ -268,11 +262,9 @@ class MembershipPlansController extends Controller
      */
     public function edit($id)
     {
-        if (!Auth::check()) {
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
             return redirect()->intended(route('admin/login'));
-        }
-        else{
-            $user = Auth::user();
         }
 
         $the_plan = MembershipPlan::with('price')->with('restrictions')->where('id','=',$id)->get()->first();
@@ -424,11 +416,9 @@ class MembershipPlansController extends Controller
     }
 
     public function add_plan_restriction(Request $request){
-        if (!Auth::check()) {
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
             return redirect()->intended(route('admin/login'));
-        }
-        else{
-            $user = Auth::user();
         }
 
         $vars = $request->only('type','activities','membership_id','min_val','max_val','hour_start','hour_stop','minute_start',
