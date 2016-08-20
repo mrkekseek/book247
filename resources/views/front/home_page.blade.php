@@ -773,7 +773,7 @@
                     invalidHandler: function (event, validator) { //display error alert on form submit
                         success2.hide();
                         error2.show();
-                        App.scrollTo(error1, -200);
+                        App.scrollTo(error2, -200);
                     },
 
                     errorPlacement: function (error, element) { // render error placement for each input type
