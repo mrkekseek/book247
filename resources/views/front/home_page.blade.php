@@ -735,7 +735,7 @@
                                 }
                             }
                         },
-                        email: {
+                        reg_email: {
                             email: true,
                             required: true,
                             remote: {
@@ -743,7 +743,7 @@
                                 type: "post",
                                 data: {
                                     email: function() {
-                                        return $( "input[name='email']" ).val();
+                                        return $( "input[name='reg_email']" ).val();
                                     }
                                 }
                             }
