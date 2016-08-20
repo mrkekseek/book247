@@ -1461,8 +1461,8 @@
         /* Timer function - Stop */
 
         jQuery(document).ready(function() {
-            $('.is_resource[data-id="{{ $settings['settings_preferred_activity']?$settings['settings_preferred_activity']:1 }}"]').click();
-            $('.location_btn[data-id="{{ $settings['settings_preferred_location']?$settings['settings_preferred_location']:5 }}"]').click();
+            $('.is_resource[data-id="{{ isset($settings['settings_preferred_activity'])?$settings['settings_preferred_activity']:1 }}"]').click();
+            $('.location_btn[data-id="{{ isset($settings['settings_preferred_location'])?$settings['settings_preferred_location']:5 }}"]').click();
 
             //get_booking_hours();
             get_friends_list();
