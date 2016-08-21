@@ -58,11 +58,11 @@
                                     <!-- STAT -->
                                     <div class="row list-separated profile-stat">
                                         <div class="col-md-4 col-sm-4 col-xs-6">
-                                            <div class="uppercase profile-stat-title"> 37 </div>
+                                            <div class="uppercase profile-stat-title"> {{ $countBookings }} </div>
                                             <div class="uppercase profile-stat-text"> Bookings </div>
                                         </div>
                                         <div class="col-md-4 col-sm-4 col-xs-6">
-                                            <div class="uppercase profile-stat-title"> 51 </div>
+                                            <div class="uppercase profile-stat-title"> {{$countFriends}} </div>
                                             <div class="uppercase profile-stat-text"> Friends </div>
                                         </div>
                                         <div class="col-md-4 col-sm-4 col-xs-6">

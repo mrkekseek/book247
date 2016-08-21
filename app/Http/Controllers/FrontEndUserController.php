@@ -2085,7 +2085,7 @@ class FrontEndUserController extends Controller
             ->get();
         if ($friends){
             foreach($friends as $friend){
-                if ($userID = $friend->user_id){
+                if ($userID == $friend->user_id){
                     $friendID = $friend->friend_id;
                 }
                 else{
@@ -2093,13 +2093,14 @@ class FrontEndUserController extends Controller
                 }
 
                 $since = Carbon::createFromFormat('Y-m-d H:i:s', $friend->created_at)->format('M j Y');
-
                 $userFriend = User::with('PersonalDetail')->where('id','=',$friendID)->get()->first();
+                $generalSettings = UserSettings::get_general_settings($userFriend->id, ['settings_preferred_location']);
+
                 $friends_list[] = [
                     'full_name'     => $userFriend->first_name.' '.$userFriend->middle_name.' '.$userFriend->last_name,
-                    'email_address' => $userFriend['PersonalDetail']->personal_email,
-                    'phone_number'  => $userFriend['PersonalDetail']->mobile_number,
-                    'preferred_gym' => $userFriend->email,
+                    'email_address' => isset($userFriend['PersonalDetail']->personal_email)?$userFriend['PersonalDetail']->personal_email:'-',
+                    'phone_number'  => isset($userFriend['PersonalDetail']->mobile_number)?$userFriend['PersonalDetail']->mobile_number:'-',
+                    'preferred_gym' => isset($generalSettings['settings_preferred_location'])?$generalSettings['settings_preferred_location']:'-',
                     'ref_nr'        => $friend->id,
                     'since'         => $since
                 ];
@@ -2569,9 +2570,13 @@ class FrontEndUserController extends Controller
         if ($userMembership){
             $membershipName = $userMembership->membership_name;
         }
-        elsE{
+        else{
             $membershipName = 'No Membership Plan';
         }
+
+        $own_bookings = Booking::where('for_user_id','=',$user->id)->whereIn('status',['active','paid','unpaid','old','canceled','no_show'])->count();
+        $own_friends  = UserFriends::where('user_id','=',$user->id)->orWhere('friend_id','=',$user->id)->count();
+        //$own_logins   = ;
 
         $breadcrumbs = [
             'Home'      => route('admin'),
@@ -2593,7 +2598,9 @@ class FrontEndUserController extends Controller
             'personal'      => $userPersonal,
             'avatar'        => $avatarContent,
             'avatarType'    => $avatarType,
-            'membershipName'=> $membershipName
+            'membershipName'=> $membershipName,
+            'countBookings' => $own_bookings,
+            'countFriends'  => $own_friends
         ]);
     }
 
