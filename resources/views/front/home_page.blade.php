@@ -194,18 +194,22 @@
                                 </form>
                                 <!-- END LOGIN FORM -->
                                 <!-- BEGIN FORGOT PASSWORD FORM -->
-                                <form class="forget-form portlet light " method="post" name="password_reset_form" id="password_reset_form">
+                                <form class="forget-form portlet light " action="#" id="password_reset_form">
                                     <div class="portlet-title">
                                         <div class="caption">
-                                            <span class="caption-subject font-green-haze bold uppercase">Forget Password ?</span>
+                                            <span class="caption-subject font-green-haze bold uppercase"> Forget Password ?</span>
                                             <span class="caption-helper">Enter your e-mail to reset it...</span>
                                         </div>
                                     </div>
+                                    <div class="alert alert-danger display-hide">
+                                        <button class="close" data-close="alert"></button> You have some errors in the form. Please check below. </div>
+                                    <div class="alert alert-success display-hide">
+                                        <button class="close" data-close="alert"></button> Information is valid, please wait! </div>
                                     <div class="form-group">
                                         <input class="form-control placeholder-no-fix" type="text" autocomplete="off" placeholder="Email" name="email" /> </div>
                                     <div class="form-actions">
                                         <button type="button" id="back-btn" class="btn grey-steel">Back</button>
-                                        <button type="submit" class="btn btn-primary uppercase pull-right">Submit</button>
+                                        <button type="button" class="btn btn-primary uppercase pull-right" onClick="javascript: $('#password_reset_form').submit();">Submit</button>
                                     </div>
                                 </form>
                                 <!-- END FORGOT PASSWORD FORM -->
@@ -565,7 +569,7 @@
                     },
 
                     submitHandler: function(form) {
-                        form.submit();
+                        request_reset_email($('input[name=email]').val());
                     }
                 });
 
@@ -811,9 +815,7 @@
                     handleValidation1();
                     handleValidation2();
                 }
-
             };
-
         }();
 
         jQuery(document).ready(function() {
@@ -848,6 +850,28 @@
                     }
                     else{
                         show_notification('User registration ERROR', 'Something went wrong with the registration. Try changing the email/phone number or try reloading the page', 'lemon', 3500, 0);
+                    }
+                }
+            });
+        }
+
+        function request_reset_email(email){
+            $.ajax({
+                url: '{{ route('ajax/password_reset_request') }}',
+                type: "post",
+                cache: false,
+                data: {
+                    'email': $('input[name="email"]').val(),
+                },
+                success: function (data) {
+                    if (data.success==1) {
+                        show_notification(data.title, data.message, 'lime', 5000, 0);
+                        setTimeout(function(){
+                            window.location.reload(true);
+                        },5500);
+                    }
+                    else{
+                        show_notification(data.title, data.errors, 'lemon', 5000, 0);
                     }
                 }
             });

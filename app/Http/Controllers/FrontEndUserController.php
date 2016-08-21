@@ -10,6 +10,7 @@ use App\InvoiceItem;
 use App\UserFriends;
 use App\UserMembership;
 use App\UserSettings;
+use Illuminate\Auth\Passwords\PasswordBroker;
 use Illuminate\Http\Request;
 
 use Illuminate\Http\Response;
@@ -36,7 +37,9 @@ use Storage;
 use Carbon\Carbon;
 use Validator;
 use DB;
+use Illuminate\Support\Str;
 use Snowfire\Beautymail\Beautymail;
+use Illuminate\Auth\Passwords\TokenRepositoryInterface;
 
 class FrontEndUserController extends Controller
 {
@@ -2664,4 +2667,142 @@ class FrontEndUserController extends Controller
         return $this->updatePassword($request, $user->id);
     }
     /* Front end pages part - STOP */
+
+    /* Reset Password Functions - START */
+    public function password_reset_form(Request $request, $token){
+        $breadcrumbs = [
+            'Home'      => route('admin'),
+            'Dashboard' => '',
+        ];
+        $text_parts  = [
+            'title'     => 'Home',
+            'subtitle'  => 'users dashboard',
+            'table_head_text1' => 'Dashboard Summary'
+        ];
+        $sidebar_link= 'front-password_reset';
+
+        return view('front/password_reset/reset_password',[
+            'breadcrumbs' => $breadcrumbs,
+            'text_parts'  => $text_parts,
+            'in_sidebar'  => $sidebar_link,
+            'token'       => $token
+        ]);
+    }
+
+    public function password_reset_action(Request $request, $token){
+        $this->check_expired_password_requests();
+
+        $vars = $request->only('token', 'email', 'password1', 'password2');
+        $validator = Validator::make($vars, [
+            'email' => 'required|email',
+            'token' => 'required|min:32',
+            'password1'     => 'required|min:8',
+            'password2'     => 'required|min:8|same:password1',
+
+        ]);
+
+        if ($validator->fails()){
+            return [
+                'success'   => false,
+                'errors'    => 'The email or passwords that you entered are not valid Please try again.',
+                'title'     => 'Email/Password validation failed'
+            ];
+        }
+
+        // check token with the email received
+        $db_token = DB::select('select email from password_resets where email=:email and token=:token limit 1', ['email' => $vars['email'], 'token' => $vars['token']]);
+        if (sizeof($db_token)<1){
+            return [
+                'success'   => false,
+                'errors'    => 'Invalid token / email combination or link expired. Remember this link is available 60 minutes from the moment of request. If you need to reset password again, make a new request.',
+                'title'     => 'Invalid token / email combination'
+            ];
+        }
+
+        $user = User::where('email','=',$vars['email'])->get()->first();
+        if (!$user){
+            return [
+                'success'   => false,
+                'errors'    => 'Email not fount in users list. Contact administrators about this issue.',
+                'title'     => 'Invalid email provided'
+            ];
+        }
+
+        $user->password = bcrypt($vars['password1']);
+        $user->save();
+        DB::delete('delete from password_resets where email=:email and token=:token limit 1', ['email' => $vars['email'], 'token' => $vars['token']]);
+
+        $beauty_mail = app()->make(Beautymail::class);
+        $beauty_mail->send('emails.user.password_changed',
+            ['user'=>$user, 'logo' => ['path' => 'http://sqf.se/wp-content/uploads/2012/12/sqf-logo.png']],
+            function($message) use ($user) {
+                $message
+                    ->from('bogdan@bestintest.eu')
+                    ->to($user->email, $user->first_name.' '.$user->middle_name.' '.$user->last_name)
+                    //->to('stefan.bogdan@ymail.com', $player->first_name.' '.$player->middle_name.' '.$player->last_name)
+                    ->subject('Booking System - Password successfully changed');
+            });
+
+        return [
+            'success'   => true,
+            'message'   => 'Your password was successfully changed with the new one. Go to homepage and login',
+            'title'     => 'Password Changed'
+        ];
+    }
+
+    public function password_reset_request(Request $request){
+        $vars = $request->only('email');
+
+        $validator = Validator::make($vars, [
+            'email' => 'required|email',
+        ]);
+        if ($validator->fails()){
+            return [
+                'success'   => false,
+                'errors'    => 'Invalid email used in password reset function',
+                'title'     => 'Invalid email'
+            ];
+        }
+
+        $user = User::where('email','=',$vars['email'])->get()->first();
+        if ($user){
+            $generateKey = $this->createNewToken();
+            $oldKey = DB::select('select * from password_resets where email = :email limit 1', ['email'=>$user->email]);
+            if (sizeof($oldKey)>0){
+                // we have old key so we delete it then insert the new key
+                DB::delete('delete from password_resets where email = :email limit 1', ['email'=>$user->email]);
+            }
+
+            DB::insert('insert into password_resets (email, token, created_at) values (:email, :key, :now_time)', ['email'=>$user->email, 'key'=>$generateKey, 'now_time'=>Carbon::now()]);
+
+            $beauty_mail = app()->make(Beautymail::class);
+            $beauty_mail->send('emails.user.password_reset_link',
+                ['user'=>$user, 'token'=>$generateKey, 'logo' => ['path' => 'http://sqf.se/wp-content/uploads/2012/12/sqf-logo.png']],
+                function($message) use ($user) {
+                    $message
+                        ->from('bogdan@bestintest.eu')
+                        ->to($user->email, $user->first_name.' '.$user->middle_name.' '.$user->last_name)
+                        //->to('stefan.bogdan@ymail.com', $player->first_name.' '.$player->middle_name.' '.$player->last_name)
+                        ->subject('Booking System - Password reset request');
+                });
+        }
+
+        return [
+            'success'   => true,
+            'title'     => 'Password reset action',
+            'message'   => 'If the email is registered in our system, an email will be sent in the next minute with the steps to reset your email'
+        ];
+    }
+
+    private function createNewToken()
+    {
+        return hash_hmac('sha256', Str::random(40), \Config::get('app.key'));
+    }
+
+    private function check_expired_password_requests($minutes = 60){
+        $expire_date = Carbon::now()->subMinutes($minutes);
+
+        return DB::delete('delete from password_resets where created_at < :date_time', ['date_time'=>$expire_date]);
+    }
+    /* Reset Password functions - STOP */
 }

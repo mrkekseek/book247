@@ -190,4 +190,6 @@ class User extends Authenticatable
 
         return $restrictions;
     }
+
+
 }

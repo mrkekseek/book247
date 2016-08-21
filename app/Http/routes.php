@@ -569,6 +569,16 @@ Route::group(['prefix'=>'front', 'middleware'=>'web'], function(){
         'uses'  => 'FrontEndUserController@settings_personal_update_password'
     ]);
 
+    Route::get('reset_password/{token}',[
+        'as'    => 'reset_password',
+        'uses'  => 'FrontEndUserController@password_reset_form'
+    ]);
+
+    Route::post('reset_password/{token}',[
+        'as'    => 'reset_password',
+        'uses'  => 'FrontEndUserController@password_reset_action'
+    ]);
+
     Route::get('error_404', [
         'as'    => 'error_404',
         'uses'  => 'FrontPageController@error_404'
@@ -721,5 +731,10 @@ Route::group(['prefix'=>'ajax', 'middleware' => 'web'], function(){
     Route::post('update_general_settings', [
         'as'    => 'ajax/update_general_settings',
         'uses'  => 'FrontEndUserController@update_general_settings'
+    ]);
+
+    Route::post('password_reset_request',[
+        'as'    => 'ajax/password_reset_request',
+        'uses'  => 'FrontEndUserController@password_reset_request'
     ]);
 });

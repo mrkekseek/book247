@@ -54,7 +54,7 @@ return [
     |
     */
 
-    'from' => ['address' => null, 'name' => null],
+    'from' => ['address' => 'sys-agent@bookingSystem.no', 'name' => 'System Agent'],
 
     /*
     |--------------------------------------------------------------------------
