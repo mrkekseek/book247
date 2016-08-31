@@ -46,11 +46,11 @@
                                             <thead>
                                             <tr>
                                                 <th> Date and Time </th>
-                                                <th> Booking For </th>
-                                                <th> Location </th>
-                                                <th> Activity </th>
+                                                <th class="no-sort"> Booking For </th>
+                                                <th class="no-sort"> Location </th>
+                                                <th class="no-sort"> Activity </th>
                                                 <th> Status </th>
-                                                <th> Options </th>
+                                                <th class="no-sort"> Options </th>
                                             </tr>
                                             </thead>
                                             <tbody></tbody>
@@ -278,17 +278,15 @@
                     // set the initial value
                     "pageLength": 15,
                     "pagingType": "bootstrap_full_number",
-                    "columnDefs": [{  // set default column settings
-                        'orderable': false,
-                        'targets': [4]
-                    }],
-                    "columnDefs": [
-                        {   "width": "15%",
-                            "targets": 0 }
-                    ],
                     "order": [
-                        [0, "asc"]
-                    ] // set first column as a default sort by asc
+                        [0, "desc"]
+                    ], // set first column as a default sort by asc
+                    "columnDefs": [{  // set default column settings
+                        "targets"  : 'no-sort',
+                        "orderable": false,
+                        },
+                        {   "width": "15%",
+                            "targets": 0 }],
                 });
             }
 

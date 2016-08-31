@@ -79,7 +79,7 @@
                                         </td>
                                         <td> <a target="_blank" href="mailto:{{$friend['email_address']}}">{{$friend['email_address']}}</a> </td>
                                         <td class="hidden-xs"> {{$friend['phone_number']}} </td>
-                                        <td> {{$friend['preferred_gym']}} </td>
+                                        <td> {{ isset($locations[$friend['preferred_gym']])?$locations[$friend['preferred_gym']]:'-' }} </td>
                                         <td> {{$friend['since']}} </td>
                                         <td>
                                             <a href="javascript:;" data-id="{{$friend['ref_nr']}}" class="btn btn-sm btn-outline red-haze remove_friend">

@@ -293,7 +293,7 @@
                                 <div class="portlet-title form-group">
                                     <div class="caption">
                                         <i class="icon-social-dribbble font-green"></i>
-                                        <span class="caption-subject font-green bold uppercase">Blockquotes</span>
+                                        <span class="caption-subject font-green bold uppercase">Booking Details</span>
                                     </div>
                                     <div style="float:right;" class="caption" id="countdown_60"><span class="minutes"></span>:<span class="seconds"></span></div>
                                 </div>
@@ -334,7 +334,7 @@
                                                     <div class="booking_summary_price_membership"></div>
                                                     <div class="form-actions right" style="padding-top:5px; padding-bottom:5px;">
                                                         <a class="btn blue-hoki booking_step_back" style="padding-top:4px; padding-bottom:4px;">Back</a>
-                                                        <a class="btn blue-hoki " style="padding-top:4px; padding-bottom:4px;" onclick="cancel_booking()">Cancel</a>
+                                                        <a class="btn blue-hoki cancel_booking_popup_btn" style="padding-top:4px; padding-bottom:4px;">Cancel</a>
                                                         <a class="btn blue-hoki " style="padding-top:4px; padding-bottom:4px;" onclick="confirm_booking()">Confirm</a>
                                                     </div>
                                                 </div>
@@ -465,7 +465,8 @@
         $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            }
+            },
+            cache: false,
         });
 
         var Login = function() {
@@ -1279,7 +1280,7 @@
         function get_booking_summary(place){
             var all_bookings = '';
             $('input[name="time_book_key"]').each(function(){
-                console.log($(this).val());
+                //console.log($(this).val());
                 if ( $(this).val().length > 4 ) {
                     all_bookings += $(this).val() + ',';
                 }
@@ -1333,6 +1334,10 @@
                     'selected_bookings': all_bookings,
                 },
                 success: function(data){
+                    // clean book keys
+                    $('input[name="time_book_key"]').val('');
+                    $('input[name="time_book_hour"]').val('');
+
                     $('#booking_modal_end_time').modal('hide');
                     show_notification('Booking Confirmed', 'Your booking is now confirmed. You can see it in your list of bookings.', 'lemon', 3500, 0);
 
@@ -1342,7 +1347,7 @@
             });
         }
 
-        function cancel_booking(){
+        function cancel_booking(opt1, opt2){
             var all_bookings = '';
             $('input[name="time_book_key"]').each(function(){
                 if ( $(this).val().length > 4 ) {
@@ -1359,13 +1364,22 @@
                 },
                 success: function(data){
                     $('#booking_modal_end_time').modal('hide');
-                    show_notification('Booking Confirmed', 'The pending bookings were canceled. You can do another booking at any time.', 'lemon', 3500, 0);
+                    if (opt2==1) {
+                        show_notification('Bookings Canceled', 'The pending bookings were canceled. You can do another booking at any time.', 'lemon', 3500, 0);
+                    }
 
                     get_booking_hours();
-                    clean_booking_popup();
+
+                    if (opt1==1) {
+                        clean_booking_popup();
+                    }
                 }
             });
         }
+
+        $('.cancel_booking_popup_btn').on('click', function(){
+            cancel_booking(1,1);
+        });
 
         function clean_booking_popup(){
             $('#booking_end_time').html('');
@@ -1398,7 +1412,9 @@
         $('#booking_modal_end_time').on('hidden.bs.modal', function () {
             if ($('#booking_end_time').html()!=''){
                 show_notification('Booking Operation Was Broken', 'You closed the popup window before the booking was finished. You can always try again.', 'lemon', 3500, 0);
-                clean_booking_popup();
+
+                cancel_booking(1,0);
+                //clean_booking_popup();
             }
         });
 

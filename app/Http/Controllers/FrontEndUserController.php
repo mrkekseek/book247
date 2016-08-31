@@ -2084,6 +2084,13 @@ class FrontEndUserController extends Controller
             ->orWhere('friend_id','=',$userID)
             ->get();
         if ($friends){
+            // get list of locations to use for preffered one
+            $shopLocations = ShopLocations::all();
+            $locations = [];
+            foreach($shopLocations as $location){
+                $locations[$location->id] = $location->name;
+            }
+
             foreach($friends as $friend){
                 if ($userID == $friend->user_id){
                     $friendID = $friend->friend_id;
@@ -2123,7 +2130,8 @@ class FrontEndUserController extends Controller
             'text_parts'  => $text_parts,
             'in_sidebar'  => $sidebar_link,
             'user'  => $user,
-            'list_of_friends' => $friends_list
+            'list_of_friends' => $friends_list,
+            'locations' => $locations
         ]);
     }
 
