@@ -203,21 +203,7 @@ class BackEndUserController extends Controller
         $countries = Countries::orderBy('name')->get();
         $userCountry = Countries::find($back_user->country_id);
 
-        $avatar = $back_user->avatar;
-        if (!$avatar) {
-            $avatar = new UserAvatars();
-            $avatar->file_location = 'employees/default/avatars/';
-            $avatar->file_name = 'default.jpg';
-        }
-
-        if (Storage::disk('local')->exists($avatar->file_location . $avatar->file_name)) {
-            $avatarContent = Storage::disk('local')->get($avatar->file_location . $avatar->file_name);
-            $avatarType = Storage::disk('local')->mimeType($avatar->file_location . $avatar->file_name);
-        }
-        else {
-            $avatarContent = Storage::disk('local')->get('employees/default/avatars/default.jpg');
-            $avatarType = Storage::disk('local')->mimeType('employees/default/avatars/default.jpg');
-        }
+        $avatar = $back_user->get_avatar_image();
 
         $userDocuments = UserDocuments::where('user_id','=',$id)->where('category','=','account_documents')->get();
 
@@ -251,8 +237,7 @@ class BackEndUserController extends Controller
             'breadcrumbs' => $breadcrumbs,
             'text_parts'  => $text_parts,
             'in_sidebar'  => $sidebar_link,
-            'avatar'      => $avatarContent,
-            'avatarType'  => $avatarType,
+            'avatar'      => $avatar['avatar_base64'],
             'permissions' => $permissions,
             'documents'   => $userDocuments,
             'locations'     => $locations,
@@ -620,44 +605,43 @@ class BackEndUserController extends Controller
             ->select('users.first_name','users.middle_name','users.last_name','users.id','users.email','personal_details.mobile_number','addresses.city','addresses.region')
             ->leftjoin('personal_details','personal_details.user_id','=','users.id')
             ->leftjoin('addresses','addresses.id','=','personal_details.address_id')
-            ->where(    'users.first_name','like','%'.$vars['q'].'%')
-            ->orWhere(  'users.middle_name','like','%'.$vars['q'].'%')
-            ->orWhere(  'users.last_name','like','%'.$vars['q'].'%')
-            ->orWhere(  'users.email','like','%'.$vars['q'].'%')
-            ->orWhere(  'personal_details.personal_email','like','%'.$vars['q'].'%');
+            ->leftjoin('role_user', 'users.id', '=', 'role_user.user_id')
+            ->whereIn('role_user.role_id',['5','6'])
+            ->where(function($query) use ($vars){
+                $query->where('users.first_name','like','%'.$vars['q'].'%')
+                    ->orWhere('users.middle_name','like','%'.$vars['q'].'%')
+                    ->orWhere('users.last_name','like','%'.$vars['q'].'%')
+                    ->orWhere('users.email','like','%'.$vars['q'].'%')
+                    ->orWhere('users.email','like','%'.$vars['q'].'%')
+                    ->orWhere('personal_details.mobile_number','like','%'.$vars['q'].'%')
+                    ->orWhere('personal_details.personal_email','like','%'.$vars['q'].'%');
+            })
+            ->groupBy('users.id');
 
         $results = $query->get();
         if ($results){
             foreach($results as $result){
                 $user_temp = User::where('id','=',$result->id)->get()->first();
-                if ($user_temp->hasRole(['front-member','front-user'])){
-                    $user_link = route('admin/front_users/view_user',['id'=>$user_temp->id]);
-                }
-                else{
-                    $user_link = route('admin/back_users/view_user/',['id'=>$user_temp->id]);
-                }
+                $user_link = route('admin/front_users/view_user',['id'=>$user_temp->id]);
+                $avatar = $user_temp->get_avatar_image();
 
                 $items[] = array('id'=>$result->id,
-                    'first_name' => $result->first_name,
-                    'middle_name' => $result->middle_name,
-                    'last_name' => $result->last_name,
-                    'email' => $result->email,
-                    'phone'=>$result->mobile_number,
-                    'city'=>$result->city,
-                    'region'=>$result->region,
-                    'product_image_url' => asset('assets/pages/img/avatars/team'.rand(1,10).'.jpg'),
-                    'user_profile_img' => asset('assets/pages/img/avatars/team'.rand(1,10).'.jpg'),
-                    'user_link_details' => $user_link
+                    'first_name'    => $result->first_name,
+                    'middle_name'   => $result->middle_name,
+                    'last_name'     => $result->last_name,
+                    'email'         => $result->email,
+                    'phone'         => $result->mobile_number,
+                    'city'          => $result->city,
+                    'region'        => $result->region,
+                    'user_profile_img'      => asset('assets/pages/img/avatars/team'.rand(1,10).'.jpg'),
+                    'avatar_image'          => $avatar['avatar_base64'],
+                    'user_link_details'     => $user_link
                 );
             }
         }
 
         $items_array['items'] = $items;
-
         return $items_array;
-
-
-        $user_info = [];
     }
 
     public function ajax_get_user_info(Request $request, $id=-1)

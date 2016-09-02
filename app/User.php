@@ -5,6 +5,8 @@ namespace App;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Zizaco\Entrust\Traits\EntrustUserTrait;
 use App\UserMembership;
+use App\UserAvatars;
+use Storage;
 
 class User extends Authenticatable
 {
@@ -191,5 +193,37 @@ class User extends Authenticatable
         return $restrictions;
     }
 
+    public function get_avatar_image($is_link = false){
+        $avatar = $this->avatar;
+        if (!$avatar) {
+            $avatar = new UserAvatars();
+            $avatar->file_location = 'employees/default/avatars/';
+            $avatar->file_name = 'default.jpg';
+        }
 
+        if ($this->is_back_user()){
+            if (Storage::disk('local')->exists($avatar->file_location . $avatar->file_name)) {
+                $avatarContent  = Storage::disk('local')->get($avatar->file_location . $avatar->file_name);
+                $avatarType     = Storage::disk('local')->mimeType($avatar->file_location . $avatar->file_name);
+            }
+        }
+        elseif($this->is_front_user()){
+            if (Storage::disk('local')->exists($avatar->file_location . $avatar->file_name)) {
+                $avatarContent  = Storage::disk('local')->get($avatar->file_location . $avatar->file_name);
+                $avatarType     = Storage::disk('local')->mimeType($avatar->file_location . $avatar->file_name);
+            }
+        }
+
+        if (!isset($avatarContent) || !isset($avatarType)){
+            $avatarContent      = Storage::disk('local')->get('members/default/avatars/default.jpg');
+            $avatarType         = Storage::disk('local')->mimeType('members/default/avatars/default.jpg');
+        }
+
+        return [
+            'file_location'     => $avatar->file_location,
+            'avatar_content'    => $avatarContent,
+            'avatar_type'       => $avatarType,
+            'avatar_base64'     => 'data:'.$avatarType.';base64,'.base64_encode($avatarContent)
+        ];
+    }
 }

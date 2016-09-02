@@ -101,7 +101,7 @@
                             @endif
 
                             <div class="portlet light margin-bottom-15" id="tasks-widget">
-                                <div class="portlet-title" style="min-height:27px; margin-bottom:5px;">
+                                <div class="portlet-title" style="min-height:27px; margin-bottom:3px;">
                                     <dt>Select booking start time</dt>
                                 </div>
                                 <div class="portlet-body util-btn-margin-bottom-5">
@@ -109,12 +109,20 @@
 
                                     </div>
                                 </div>
+                                <div class="portlet-title" style="min-height:5px; margin-bottom:5px;"> </div>
+                                @if (Auth::check() && Auth::user()->is_front_user())
+                                    <a href="javascript:;" class="btn default green-jungle-stripe" style="padding:5px 10px; font-size:14px; cursor:default; margin-bottom:5px;"> More than half courts available </a>
+                                    <a href="javascript:;" class="btn default yellow-saffron-stripe" style="padding:5px 10px; font-size:14px; cursor:default; margin-bottom:5px;"> Less than half courts available </a>
+                                    <a href="javascript:;" class="btn default red-stripe btn-lg" style="padding:5px 10px; font-size:14px; cursor:default; margin-bottom:5px;"> All courts are booked </a>
+                                @else
+                                    <a href="javascript:;" class="btn default dark-stripe btn-lg book_step" style="padding:5px 10px; font-size:14px; cursor:default;"> You need to be logged in to view availability </a>
+                                @endif
                             </div>
                         </div>
                         <div class="col-md-6 login " style="background-color:transparent!important;">
 
                         @if (Auth::check() && Auth::user()->is_front_user())
-                                <!-- BEGIN PORTLET -->
+                            <!-- BEGIN PORTLET -->
                             <div class="portlet light margin-bottom-15">
                                 <div class="portlet-title">
                                     <div class="caption caption-md">
@@ -1085,7 +1093,7 @@
             });
 
             if (all_list == ''){
-                all_list = '<p class="font-green-sharp">You have no friends. Add more using the "Add new friend" button under this message.</p>';
+                all_list = '<p class="font-green-sharp">You have no friends. Add your playing partners here to make bookings faster for you and your friends.</p>';
             }
             else{
                 //add_friends_for_bookings(1, ["","11:30"]);

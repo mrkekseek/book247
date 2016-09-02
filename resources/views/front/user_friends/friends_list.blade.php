@@ -42,7 +42,8 @@
                                     <div class="col-sm-9">
                                     <h4 class="block">Add more friends</h4>
                                     <p>
-                                        Use the bottom button to add a new friend, friend that will be located using his/her phone number.
+                                        Use the "Add more friends" button to add a new friend. You will need to know his registration phone number for this action to be successful.
+                                        Adding friends makes it more easy for you and your friends to book activities together.
                                     </p>
                                     </div>
                                     <div class="form col-sm-3">
@@ -97,7 +98,7 @@
                                     Adding friends, makes it easier for you and your friend to make bookings and play your favorite games together.
                                     The rules are simple : you and your friend need to have a player membership for using the booking friend feature
                                     and that's it.<br /><br />
-                                    Use the bottom button to add a new friend, friend that will be located using his/her phone number.
+                                    Use the "Add Friend" button to add a new friend, friend that will be found using his/her registration phone number.
                                 </p>
                                 <div class="form">
                                     <div class="form-actions right" style="border-top:none; padding:10px 0 0;">

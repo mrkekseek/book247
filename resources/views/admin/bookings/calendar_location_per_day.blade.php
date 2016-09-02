@@ -63,6 +63,14 @@
                         </div>
                     </div>
                     <div class="portlet-body flip-scroll">
+                        <div class="row" style="margin-bottom:10px;">
+                            @foreach($membership_legend as $each_legend)
+                                <div class="col-md-3">
+                                    <a class="border-grey-salt" style="background-color:{{ $each_legend['color'] }}; padding:0px 15px; margin-right:10px;"> &nbsp; </a> {{ $each_legend['name'].' - '.$each_legend['status'] }}
+                                </div>
+                            @endforeach
+                        </div>
+
                         <table class="table table-striped table-bordered table-hover" id="bookings_calendar_view_admin">
                             <thead class="flip-content">
                             <tr>
@@ -522,7 +530,7 @@
                     if (repo.loading) return repo.text;
 
                     var markup = "<div class='select2-result-repository clearfix'>" +
-                            "<div class='select2-result-repository__avatar'><img src='" + repo.product_image_url + "' /></div>" +
+                            "<div class='select2-result-repository__avatar'><img src='" + repo.avatar_image + "' /></div>" +
                             "<div class='select2-result-repository__meta'>" +
                             "<div class='select2-result-repository__title'>" + repo.first_name + " " + repo.middle_name + " " + repo.last_name + "</div> ";
 
@@ -602,7 +610,7 @@
                     if (repo.loading) return repo.text;
 
                     var markup = "<div class='select2-result-repository clearfix' >" +
-                            "<div class='select2-result-repository__avatar'><img src='" + repo.product_image_url + "' /></div>" +
+                            "<div class='select2-result-repository__avatar'><img src='" + repo.avatar_image + "' /></div>" +
                             "<div class='select2-result-repository__meta'>" +
                             "<div class='select2-result-repository__title'>" + repo.first_name + " " + repo.middle_name + " " + repo.last_name + "</div> ";
 

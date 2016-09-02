@@ -245,7 +245,10 @@ class BookingController extends Controller
             $booking = Booking::where('search_key','=',$vars['search_key'])->get()->first();
         }
         else {
-            $booking = Booking::where('for_user_id','=',$user->id)->orWhere('by_user_id','=',$user->id)->where('search_key','=',$vars['search_key'])->get()->first();
+            $booking = Booking::where('search_key','=',$vars['search_key'])
+                        ->where(function($query) use ($user){
+                                    $query->where('for_user_id','=',$user->id)->orWhere('by_user_id','=',$user->id);
+                       })->get()->first();
         }
 
         if ($booking){
@@ -282,7 +285,7 @@ class BookingController extends Controller
                 return ['success' => 'true', 'message' => 'All is good.'];
             }
             else{
-                return ['error' => 'No bookings found to confirm. Please make the booking process again. Remember you have 60 seconds to complete the booking before it expires.'];
+                return ['error' => 'The selected booking can\'t be canceled. Please check your membership plan rules regarding cancellation or ask one of our staff about this.'];
             }
         }
         else{
@@ -1052,13 +1055,13 @@ class BookingController extends Controller
      * @param int $hours
      * @return bool
      */
-    public function can_cancel_booking($id, $hours = 8){
+    public function can_cancel_booking($id, $hours = 6){
         $can_cancel = true;
 
         $booking = Booking::find($id);
         if ($booking){
             $bookingStartDateTime = Carbon::createFromFormat('Y-m-d H:i:s', $booking->date_of_booking.' '.$booking->booking_time_start);
-            $can_cancel_hours = 0;
+            $can_cancel_hours = $hours;
 
             $user = User::where('id','=',$booking->for_user_id)->get()->first();
             if (!$user){

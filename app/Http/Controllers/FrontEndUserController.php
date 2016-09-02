@@ -202,21 +202,7 @@ class FrontEndUserController extends Controller
         $countries = Countries::orderBy('name')->get();
         $userCountry = Countries::find($back_user->country_id);
 
-        $avatar = $back_user->avatar;
-        if (!$avatar) {
-            $avatar = new UserAvatars();
-            $avatar->file_location = 'members/default/avatars/';
-            $avatar->file_name = 'default.jpg';
-        }
-
-        if (Storage::disk('local')->exists($avatar->file_location . $avatar->file_name)) {
-            $avatarContent = Storage::disk('local')->get($avatar->file_location . $avatar->file_name);
-            $avatarType = Storage::disk('local')->mimeType($avatar->file_location . $avatar->file_name);
-        }
-        else {
-            $avatarContent = Storage::disk('local')->get('members/default/avatars/default.jpg');
-            $avatarType = Storage::disk('local')->mimeType('members/default/avatars/default.jpg');
-        }
+        $avatar = $back_user->get_avatar_image();
 
         $userDocuments = UserDocuments::where('user_id','=',$id)->where('category','=','account_documents')->get();
 
@@ -246,8 +232,7 @@ class FrontEndUserController extends Controller
             'breadcrumbs' => $breadcrumbs,
             'text_parts'  => $text_parts,
             'in_sidebar'  => $sidebar_link,
-            'avatar'      => $avatarContent,
-            'avatarType'  => $avatarType,
+            'avatar'      => $avatar['avatar_base64'],
             'permissions' => $permissions,
             'documents'   => $userDocuments,
         ]);
@@ -315,24 +300,10 @@ class FrontEndUserController extends Controller
         $countries = Countries::orderBy('name')->get();
         $userCountry = Countries::find($back_user->country_id);
 
-        $avatar = $back_user->avatar;
-        if (!$avatar) {
-            $avatar = new UserAvatars();
-            $avatar->file_location = 'members/default/avatars/';
-            $avatar->file_name = 'default.jpg';
-        }
-
-        if (Storage::disk('local')->exists($avatar->file_location . $avatar->file_name)) {
-            $avatarContent = Storage::disk('local')->get($avatar->file_location . $avatar->file_name);
-            $avatarType = Storage::disk('local')->mimeType($avatar->file_location . $avatar->file_name);
-        }
-        else {
-            $avatarContent = Storage::disk('local')->get('members/default/avatars/default.jpg');
-            $avatarType = Storage::disk('local')->mimeType('members/default/avatars/default.jpg');
-        }
+        $avatar = $back_user->get_avatar_image();
 
         $avatarArchive = [];
-        $old_avatars = Storage::disk('local')->files($avatar->file_location);
+        $old_avatars = Storage::disk('local')->files($avatar['file_location']);
         if ($old_avatars){
             foreach($old_avatars as $old_avatar){
                 $avatarArchive[] = [
@@ -374,8 +345,7 @@ class FrontEndUserController extends Controller
             'breadcrumbs' => $breadcrumbs,
             'text_parts'  => $text_parts,
             'in_sidebar'  => $sidebar_link,
-            'avatar'      => $avatarContent,
-            'avatarType'  => $avatarType,
+            'avatar'      => $avatar['avatar_base64'],
             'permissions' => $permissions,
             'documents'   => $userDocuments,
             // membership plan
@@ -553,21 +523,7 @@ class FrontEndUserController extends Controller
             $index[$indexKey] = $nr;
         }
 
-        $avatar = $back_user->avatar;
-        if (!$avatar) {
-            $avatar = new UserAvatars();
-            $avatar->file_location = 'members/default/avatars/';
-            $avatar->file_name = 'default.jpg';
-        }
-
-        if (Storage::disk('local')->exists($avatar->file_location . $avatar->file_name)) {
-            $avatarContent = Storage::disk('local')->get($avatar->file_location . $avatar->file_name);
-            $avatarType = Storage::disk('local')->mimeType($avatar->file_location . $avatar->file_name);
-        }
-        else {
-            $avatarContent = Storage::disk('local')->get('members/default/avatars/default.jpg');
-            $avatarType = Storage::disk('local')->mimeType('members/default/avatars/default.jpg');
-        }
+        $avatar = $back_user->get_avatar_image();
 
         $breadcrumbs = [
             'Home'              => route('admin'),
@@ -582,8 +538,7 @@ class FrontEndUserController extends Controller
             'breadcrumbs' => $breadcrumbs,
             'text_parts'  => $text_parts,
             'in_sidebar'  => $sidebar_link,
-            'avatar'      => $avatarContent,
-            'avatarType'  => $avatarType,
+            'avatar'      => $avatar['avatar_base64'],
             'bookings'    => $bookingsList,
             'multipleBookingsIndex' => isset($index)?$index:[],
             'lastTen' =>  isset($lastTenBookings)?$lastTenBookings:[]
@@ -916,21 +871,7 @@ class FrontEndUserController extends Controller
             }
         }
 
-        $avatar = $back_user->avatar;
-        if (!$avatar) {
-            $avatar = new UserAvatars();
-            $avatar->file_location = 'members/default/avatars/';
-            $avatar->file_name = 'default.jpg';
-        }
-
-        if (Storage::disk('local')->exists($avatar->file_location . $avatar->file_name)) {
-            $avatarContent = Storage::disk('local')->get($avatar->file_location . $avatar->file_name);
-            $avatarType = Storage::disk('local')->mimeType($avatar->file_location . $avatar->file_name);
-        }
-        else {
-            $avatarContent = Storage::disk('local')->get('members/default/avatars/default.jpg');
-            $avatarType = Storage::disk('local')->mimeType('members/default/avatars/default.jpg');
-        }
+        $avatar = $back_user->get_avatar_image();
 
         $text_parts  = [
             'title'     => 'Back-End Users',
@@ -954,8 +895,7 @@ class FrontEndUserController extends Controller
             'breadcrumbs' => $breadcrumbs,
             'text_parts'  => $text_parts,
             'in_sidebar'  => $sidebar_link,
-            'avatar'      => $avatarContent,
-            'avatarType'  => $avatarType,
+            'avatar'      => $avatar['avatar_base64'],
             'invoices'    => $invoicesList,
             'lastTen'     => $lastTenInvoices,
             'generalInvoices' => $generalInvoiceList,
@@ -2079,6 +2019,7 @@ class FrontEndUserController extends Controller
         }
 
         $friends_list = [];
+        $locations = [];
         $friends = DB::table('user_friends')
             ->where('user_id','=',$userID)
             ->orWhere('friend_id','=',$userID)
@@ -2086,7 +2027,7 @@ class FrontEndUserController extends Controller
         if ($friends){
             // get list of locations to use for preffered one
             $shopLocations = ShopLocations::all();
-            $locations = [];
+
             foreach($shopLocations as $location){
                 $locations[$location->id] = $location->name;
             }
@@ -2558,21 +2499,7 @@ class FrontEndUserController extends Controller
         $countries = Countries::orderBy('name')->get();
         $userCountry = Countries::find($user->country_id);
 
-        $avatar = $user->avatar;
-        if (!$avatar) {
-            $avatar = new UserAvatars();
-            $avatar->file_location = 'members/default/avatars/';
-            $avatar->file_name = 'default.jpg';
-        }
-
-        if (Storage::disk('local')->exists($avatar->file_location . $avatar->file_name)) {
-            $avatarContent = Storage::disk('local')->get($avatar->file_location . $avatar->file_name);
-            $avatarType = Storage::disk('local')->mimeType($avatar->file_location . $avatar->file_name);
-        }
-        else {
-            $avatarContent = Storage::disk('local')->get('members/default/avatars/default.jpg');
-            $avatarType = Storage::disk('local')->mimeType('members/default/avatars/default.jpg');
-        }
+        $avatar = $user->get_avatar_image();
 
         $userMembership = UserMembership::where('user_id','=',$user->id)->get()->first();
         if ($userMembership){
@@ -2604,8 +2531,7 @@ class FrontEndUserController extends Controller
             'user'          => $user,
             'countries'     => $countries,
             'personal'      => $userPersonal,
-            'avatar'        => $avatarContent,
-            'avatarType'    => $avatarType,
+            'avatar'        => $avatar['avatar_base64'],
             'membershipName'=> $membershipName,
             'countBookings' => $own_bookings,
             'countFriends'  => $own_friends

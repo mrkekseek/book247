@@ -38,11 +38,7 @@
                                 <div class="portlet light profile-sidebar-portlet ">
                                     <!-- SIDEBAR USERPIC -->
                                     <div class="profile-userpic">
-                                        @if ( strlen($avatar)>10 )
-                                            <img src="data:{{ $avatarType }};base64,{{ base64_encode($avatar) }}" class="img-responsive" alt="" />
-                                        @else
-                                            <img src="{{asset('assets/pages/media/profile/profile_user.jpg')}}" class="img-responsive" alt="" />
-                                        @endif
+                                        <img src="{{ $avatar }}" class="img-responsive" alt="" />
                                     </div>
                                     <!-- END SIDEBAR USERPIC -->
                                     <!-- SIDEBAR USER TITLE -->
@@ -191,9 +187,7 @@
                                                                             <div class="fileinput-new thumbnail" style="width: 200px; height: 244px;">
                                                                                 <img src="http://www.placehold.it/200x246/EFEFEF/AAAAAA&amp;text=no+image" alt="" /> </div>
                                                                             <div class="fileinput-preview fileinput-exists thumbnail" style="max-width: 200px; max-height: 240px;">
-                                                                                @if ( strlen($avatar)>10 )
-                                                                                    <img src="data:{{ $avatarType }};base64,{{ base64_encode($avatar) }}" />
-                                                                                @endif
+                                                                                <img src="{{ $avatar }}" class="img-responsive" alt="" />
                                                                             </div>
                                                                             <div>
                                                                     <span class="btn default btn-file">

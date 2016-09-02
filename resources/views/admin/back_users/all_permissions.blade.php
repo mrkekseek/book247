@@ -423,7 +423,7 @@
                     if (repo.loading) return repo.text;
 
                     var markup = "<div class='select2-result-repository clearfix' >" +
-                            "<div class='select2-result-repository__avatar'><img src='" + repo.product_image_url + "' /></div>" +
+                            "<div class='select2-result-repository__avatar'><img src='" + repo.avatar_image + "' /></div>" +
                             "<div class='select2-result-repository__meta'>" +
                             "<div class='select2-result-repository__title'>" + repo.first_name + " " + repo.middle_name + " " + repo.last_name + "</div> ";
 

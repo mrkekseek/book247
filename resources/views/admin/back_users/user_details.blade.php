@@ -62,7 +62,7 @@
                             <div class="col-md-3">
                                 <ul class="list-unstyled profile-nav">
                                     <li>
-                                        <img src="data:{{ $avatarType }};base64,{{ base64_encode($avatar) }}" class="img-responsive pic-bordered" alt="" />
+                                        <img src="{{$avatar}}" class="img-responsive pic-bordered" alt="" />
                                         <a data-toggle="modal" href="#draggable" class="profile-edit"> edit </a>
                                     </li>
                                     <li>
@@ -405,7 +405,7 @@
                                                         <img src="http://www.placehold.it/200x246/EFEFEF/AAAAAA&amp;text=no+image" alt="" /> </div>
                                                     <div class="fileinput-preview fileinput-exists thumbnail" style="max-width: 200px; max-height: 240px; line-height: 200px;">
                                                     @if ( strlen($avatar)>10 )
-                                                        <img src="data:{{ $avatarType }};base64,{{ base64_encode($avatar) }}" />
+                                                        <img src="{{ $avatar }}" />
                                                     @endif
                                                     </div>
                                                     <div>
@@ -832,7 +832,7 @@
                                                     <img src="http://www.placehold.it/200x246/EFEFEF/AAAAAA&amp;text=no+image" alt="" /> </div>
                                                 <div class="fileinput-preview fileinput-exists thumbnail" style="max-width: 200px; max-height: 240px;">
                                                     @if ( strlen($avatar)>10 )
-                                                        <img src="data:{{ $avatarType }};base64,{{ base64_encode($avatar) }}" />
+                                                        <img src="{{ $avatar }}" />
                                                     @endif
                                                 </div>
                                                 <div>
@@ -1508,7 +1508,7 @@
                     if (repo.loading) return repo.text;
 
                     var markup = "<div class='select2-result-repository clearfix' >" +
-                            "<div class='select2-result-repository__avatar'><img src='" + repo.product_image_url + "' /></div>" +
+                            "<div class='select2-result-repository__avatar'><img src='" + repo.avatar_image + "' /></div>" +
                             "<div class='select2-result-repository__meta'>" +
                             "<div class='select2-result-repository__title'>" + repo.first_name + " " + repo.middle_name + " " + repo.last_name + "</div> ";
 

@@ -34,11 +34,7 @@
                     <div class="portlet light profile-sidebar-portlet bordered">
                         <!-- SIDEBAR USERPIC -->
                         <div class="profile-userpic">
-                            @if ( strlen($avatar)>10 )
-                                <img src="data:{{ $avatarType }};base64,{{ base64_encode($avatar) }}" class="img-responsive" alt="" />
-                            @else
-                                <img src="{{asset('assets/pages/media/profile/profile_user.jpg')}}" class="img-responsive" alt="" />
-                            @endif
+                            <img src="{{ $avatar }}" class="img-responsive" alt="" />
                         </div>
                         <!-- END SIDEBAR USERPIC -->
                         <!-- SIDEBAR USER TITLE -->
@@ -1765,7 +1761,7 @@
                     if (repo.loading) return repo.text;
 
                     var markup = "<div class='select2-result-repository clearfix' >" +
-                            "<div class='select2-result-repository__avatar'><img src='" + repo.product_image_url + "' /></div>" +
+                            "<div class='select2-result-repository__avatar'><img src='" + repo.avatar_image + "' /></div>" +
                             "<div class='select2-result-repository__meta'>" +
                             "<div class='select2-result-repository__title'>" + repo.first_name + " " + repo.middle_name + " " + repo.last_name + "</div> ";
 
