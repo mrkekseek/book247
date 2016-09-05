@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 
 class SetupCountriesTable extends Migration {
 
@@ -16,7 +17,7 @@ class SetupCountriesTable extends Migration {
 		{
 			$table->engine = 'InnoDB';
 
-		    $table->integer('id')->index();
+		    $table->integer('id')->unsigned()->index();
 		    $table->string('capital', 255)->nullable();
 		    $table->string('citizenship', 255)->nullable();
 		    $table->string('country_code', 3)->default('');
@@ -35,6 +36,18 @@ class SetupCountriesTable extends Migration {
 		    $table->string('flag', 6)->nullable();
 		    
 		    $table->primary('id');
+		});
+
+		Schema::table('users', function (Blueprint $table) {
+			$table->engine = 'InnoDB';
+			$table->foreign('country_id')->references('id')->on('countries');
+		});
+
+		Schema::table('addresses', function (Blueprint $table) {
+			DB::statement('SET FOREIGN_KEY_CHECKS = 0');
+			$table->engine = 'InnoDB';
+			$table->foreign('country_id')->references('id')->on('countries');
+			DB::statement('SET FOREIGN_KEY_CHECKS = 1');
 		});
 	}
 

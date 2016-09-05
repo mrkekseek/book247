@@ -19,6 +19,10 @@ class CreateProductCategoriesTable extends Migration
             $table->string('name');
             $table->string('url');
         });
+
+        Schema::table('products', function (Blueprint $table) {
+            $table->foreign('category_id')->references('id')->on('product_categories');
+        });
     }
 
     /**

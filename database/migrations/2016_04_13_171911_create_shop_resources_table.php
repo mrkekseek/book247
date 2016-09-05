@@ -24,7 +24,6 @@ class CreateShopResourcesTable extends Migration
             $table->timestamps();
 
             $table->foreign('location_id')->references('id')->on('shop_locations');
-            $table->foreign('category_id')->references('id')->on('shop_resource_categories');
         });
     }
 

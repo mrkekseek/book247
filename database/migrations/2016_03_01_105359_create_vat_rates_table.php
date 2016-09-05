@@ -22,6 +22,10 @@ class CreateVatRatesTable extends Migration
             $table->text('description');
             $table->timestamps();
         });
+
+        Schema::table('products', function (Blueprint $table) {
+            $table->foreign('vat_rate_id')->references('id')->on('vat_rates');
+        });
     }
 
     /**

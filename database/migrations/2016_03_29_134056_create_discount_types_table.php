@@ -20,6 +20,10 @@ class CreateDiscountTypesTable extends Migration
             $table->text('other_details');
             $table->timestamps();
         });
+
+        Schema::table('orders', function (Blueprint $table) {
+            $table->foreign('discount_type')->references('id')->on('discount_types');
+        });
     }
 
     /**
