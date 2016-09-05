@@ -19,7 +19,6 @@ class CreateProductFeaturesTable extends Migration
             $table->integer('feature_id')->unsigned();
 
             $table->foreign('product_id')->references('id')->on('products');
-            $table->foreign('feature_id')->references('id')->on('features');
         });
     }
 

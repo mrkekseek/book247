@@ -21,6 +21,10 @@ class CreateFeaturesTable extends Migration
             $table->text('description');
             $table->timestamps();
         });
+
+        Schema::table('product_features', function (Blueprint $table) {
+            $table->foreign('feature_id')->references('id')->on('features');
+        });
     }
 
     /**

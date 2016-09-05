@@ -29,9 +29,6 @@ class CreateProductsTable extends Migration
             $table->tinyInteger('status');
             $table->integer('vat_rate_id')->unsigned();
             $table->timestamps();
-
-            $table->foreign('category_id')->references('id')->on('product_categories');
-            $table->foreign('vat_rate_id')->references('id')->on('vat_rates');
         });
     }
 

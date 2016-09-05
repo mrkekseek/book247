@@ -20,6 +20,10 @@ class CreateShopResourceCategoriesTable extends Migration
             $table->string('url', 200);
             $table->timestamps();
         });
+
+        Schema::table('shop_resources', function (Blueprint $table) {
+            $table->foreign('category_id')->references('id')->on('shop_resource_categories');
+        });
     }
 
     /**

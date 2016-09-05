@@ -16,19 +16,23 @@ class CreateAddressesTable extends Migration
             $table->engine = 'InnoDB';
 
             $table->increments('id');
-            $table->integer('user_id')->unsigned();
+            $table->integer('user_id')->unsigned()->nullable();
             $table->integer('ord_number');
             $table->string('address1');
             $table->string('address2');
             $table->string('city');
             $table->string('region');
             $table->string('postal_code');
-            $table->integer('country_id')->unsigned();
+            $table->integer('country_id')->unsigned()->nullable();
             $table->timestamps();
 
-            $table->foreign('country_id')->references('id')->on('countries');
             $table->foreign('user_id')->references('id')->on('users');
         });
+
+        Schema::table('company_details', function (Blueprint $table) {
+            $table->foreign('address_id')->references('id')->on('addresses');
+        });
+
     }
 
     /**
