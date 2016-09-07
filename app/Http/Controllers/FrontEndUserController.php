@@ -2069,8 +2069,8 @@ class FrontEndUserController extends Controller
             ->orWhere('friend_id','=',$userID)
             ->get();
         if ($friends){
-            // get list of locations to use for preffered one
-            $shopLocations = ShopLocations::all();
+            // get list of locations to use for preferred one
+            $shopLocations = ShopLocations::where('visibility','=','public')->get();
 
             foreach($shopLocations as $location){
                 $locations[$location->id] = $location->name;
@@ -2489,7 +2489,7 @@ class FrontEndUserController extends Controller
             return redirect()->intended(route('homepage'));
         }
 
-        $locations  = ShopLocations::orderBy('name')->get();
+        $locations  = ShopLocations::where('visibility','=','public')->orderBy('name')->get();
         $activities = ShopResourceCategory::orderBy('name')->get();
         $settings   = UserSettings::get_general_settings($user->id, ['settings_preferred_location','settings_preferred_activity']);
 
