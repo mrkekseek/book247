@@ -611,6 +611,8 @@ class BackEndUserController extends Controller
                 $query->where('users.first_name','like','%'.$vars['q'].'%')
                     ->orWhere('users.middle_name','like','%'.$vars['q'].'%')
                     ->orWhere('users.last_name','like','%'.$vars['q'].'%')
+                    ->orWhere(DB::raw("CONCAT(users.first_name, ' ', users.last_name)"),'like','%'.$vars['q'].'%')
+                    ->orWhere(DB::raw("CONCAT(users.first_name, ' ', users.middle_name, ' ', users.last_name)"),'like','%'.$vars['q'].'%')
                     ->orWhere('users.email','like','%'.$vars['q'].'%')
                     ->orWhere('users.email','like','%'.$vars['q'].'%')
                     ->orWhere('personal_details.mobile_number','like','%'.$vars['q'].'%')

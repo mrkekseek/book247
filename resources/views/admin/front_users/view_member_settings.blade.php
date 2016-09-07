@@ -88,10 +88,10 @@
                                         <span class="caption-subject font-blue-madison bold uppercase">Profile Account</span>
                                     </div>
                                     <ul class="nav nav-tabs">
-                                        <li>
+                                        <li class="active">
                                             <a href="#tab_1_1" data-toggle="tab">Personal Info</a>
                                         </li>
-                                        <li class="active">
+                                        <li>
                                             <a href="#tab_1_5" data-toggle="tab">Membership Plan</a>
                                         </li>
                                         <li>
@@ -108,7 +108,7 @@
                                 <div class="portlet-body">
                                     <div class="tab-content">
                                         <!-- PERSONAL INFO TAB -->
-                                        <div class="tab-pane" id="tab_1_1">
+                                        <div class="tab-pane active row" id="tab_1_1">
                                             <form role="form" id="form_acc_personal" action="#">
                                                 <div class="alert alert-danger display-hide">
                                                     <button class="close" data-close="alert"></button> You have some form errors. Please check below. </div>
@@ -169,7 +169,7 @@
                                         </div>
                                         <!-- END PERSONAL INFO TAB -->
                                         <!-- Membership Plan TAB -->
-                                        <div class="tab-pane active row" id="tab_1_5">
+                                        <div class="tab-pane row" id="tab_1_5">
                                             <div class="col-md-12">
                                                 <div class="portlet light bordered">
                                                     <div class="portlet-body form">
@@ -179,16 +179,12 @@
                                                                 <div class="form-group">
                                                                     <label class="control-label col-md-4"> Active Membership </label>
                                                                     <div class="col-md-8">
-                                                                        <select name="membership_period" class="form-control input-inline input-large  inline-block">
-                                                                            @if ($membership_plan->id!=1)
-                                                                                <option> {{$membership_plan->membership_name}} </option>
-                                                                            @else
-                                                                                <option> No active Membership Plan </option>
-                                                                            @endif
-                                                                        </select>
                                                                         @if ($membership_plan->id!=1)
-                                                                        <a href="#cancel_confirm_box" class="btn red-soft input" data-toggle="modal" style="min-width:190px;">
-                                                                            <i class="fa fa-pencil"></i> Cancel Current Plan</a>
+                                                                            <input class="form-control input-inline input-large inline-block" disabled readonly name="what_is_the_plan" value="{{$membership_plan->membership_name}}" />
+                                                                            <a href="#cancel_confirm_box" class="btn red-soft input" data-toggle="modal" style="min-width:190px;">
+                                                                                <i class="fa fa-pencil"></i> Cancel Current Plan</a>
+                                                                        @else
+                                                                            <input class="form-control input-inline input-large inline-block" disabled readonly name="what_is_the_plan" value="No active Membership Plan" />
                                                                         @endif
                                                                     </div>
                                                                 </div>
@@ -212,7 +208,7 @@
                                                                     <label class="control-label col-md-4 inline"> Change Plan To </label>
                                                                     <div class="col-md-8">
                                                                         <select name="membership_plans_list" class="form-control input-inline input-large  inline-block list_all_plans">
-                                                                            <option value="-1"> Select new plan </option>
+                                                                            <option value="-1"> Select membership plan </option>
                                                                             @foreach ($memberships as $membership)
                                                                                 <option value="{{$membership->id}}"> {{$membership->name}} </option>
                                                                             @endforeach

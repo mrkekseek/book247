@@ -1002,7 +1002,7 @@ class BookingController extends Controller
                     continue;
                 }
 
-                $format_date = Carbon::createFromFormat('Y-m-d H:i:s', $booking->date_of_booking.' '.$booking->booking_time_start)->format('Y,M j, H:i');
+                $format_date = Carbon::createFromFormat('Y-m-d H:i:s', $booking->date_of_booking.' '.$booking->booking_time_start);
                 $bookingFor = User::find($booking->for_user_id);
                 $location = ShopLocations::find($booking->location_id);
                 $resource = ShopResource::find($booking->resource_id);
@@ -1026,13 +1026,13 @@ class BookingController extends Controller
                         $status = '<span data-id="' . $booking->search_key . '" class="cancel_booking btn grey-silver">Cancel</span> ';
                     }
 
-                    if ($booking->by_user_id==$userID) {
+                    if ($booking->by_user_id==$userID && Carbon::now()->lt($format_date)) {
                         $status.= ' <span data-id="' . $booking->search_key . '" class="modify_booking btn blue-steel">Modify</span>';
                     }
                 }
 
                 $data[] = [
-                    $format_date,
+                    $format_date->format('Y,M j, H:i'),
                     $bookingFor->first_name.' '.$bookingFor->middle_name.' '.$bookingFor->last_name,
                     $location->name.' - '.$resource->name,
                     $activity->name,
@@ -1219,7 +1219,7 @@ class BookingController extends Controller
             $default_location = $selected_location;
         }
         $location_found = false;
-        $all_locations = ShopLocations::select('id','name')->orderBy('name','ASC')->get();
+        $all_locations = ShopLocations::select('id','name')->where('visibility','=','public')->orderBy('name','ASC')->get();
         foreach ($all_locations as $location){
             if ($location->id==$default_location){
                 $location_found=true;
@@ -2616,7 +2616,7 @@ class BookingController extends Controller
             $default_location = $selected_location;
         }
         $location_found = false;
-        $all_locations = ShopLocations::select('id','name')->orderBy('name','ASC')->get();
+        $all_locations = ShopLocations::select('id','name')->where('visibility','=','public')->orderBy('name','ASC')->get();
         foreach ($all_locations as $location){
             if ($location->id==$default_location){
                 $location_found=true;

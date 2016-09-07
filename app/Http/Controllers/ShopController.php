@@ -267,7 +267,7 @@ class ShopController extends Controller
             $user = Auth::user();
         }
 
-        $shop_vars = $request->only('name', 'bank_acc_no', 'phone', 'fax', 'email', 'registered_no');
+        $shop_vars = $request->only('name', 'bank_acc_no', 'phone', 'fax', 'email', 'registered_no', 'visibility');
         $shopLocation = ShopLocations::findOrFail($id);
 
         /** Start - Add shop location to database */

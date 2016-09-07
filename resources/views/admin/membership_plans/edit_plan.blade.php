@@ -642,7 +642,7 @@
                             required: true
                         },
                         membership_short_description: {
-                            minlength: 10,
+                            minlength: 20,
                             required: true
                         },
                     },

@@ -111,6 +111,18 @@
                                         <span class="help-block"> National Registration Number </span>
                                     </div>
                                 </div>
+                                <div class="form-group">
+                                    <label class="col-md-3 control-label">Visibility</label>
+                                    <div class="col-md-9">
+                                        <select name="visibility" class="form-control">
+                                            <option {!! $shopDetails->visibility=="pending"?"selected":"" !!} value="pending">Pending</option>
+                                            <option {!! $shopDetails->visibility=="public"?"selected":"" !!} value="public">Public</option>
+                                            <option {!! $shopDetails->visibility=="warehouse"?"selected":"" !!} value="warehouse">Warehouse</option>
+                                            <option {!! $shopDetails->visibility=="suspended"?"selected":"" !!} value="suspended">Suspended</option>
+                                        </select>
+                                        <span class="help-block"> Only public visibility will be shown in calendar dropdown </span>
+                                    </div>
+                                </div>
                             </div>
                             <div class="form-actions">
                                 <div class="row">
@@ -1168,6 +1180,7 @@
                     'fax':          $('input[name=shop_fax]').val(),
                     'email':        $('input[name=shop_email]').val(),
                     'registered_no':$('input[name=shop_registration_no]').val(),
+                    'visibility':   $('select[name=visibility]').val(),
                     '_method':'patch'
                 },
                 success: function(data){

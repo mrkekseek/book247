@@ -104,6 +104,51 @@ class FrontEndUserController extends Controller
             return redirect()->intended(route('admin/login'));
         }
 
+        $back_users = User::whereHas('roles', function($query){
+            $query->where('name', 'front-user');
+        })->orWhereHas('roles', function($query){
+            $query->where('name', 'front-member');
+        })->get();
+
+        $role = Role::where('name','=','front-user')->get()->first();
+        $memberships = MembershipPlan::where('status','=','active')->where('id','!=','1')->get();
+
+        $breadcrumbs = [
+            'Home'              => route('admin'),
+            'Administration'    => route('admin'),
+            'Back End User'     => route('admin'),
+            'All Backend Users' => '',
+        ];
+        $text_parts  = [
+            'title'     => 'Company Clients',
+            'subtitle'  => 'add new',
+            'table_head_text1' => 'Backend User List'
+        ];
+        $sidebar_link= 'admin-frontend-add_member';
+
+        return view('admin/front_users/add_new_member', [
+            'users' => $back_users,
+            'breadcrumbs' => $breadcrumbs,
+            'text_parts'  => $text_parts,
+            'in_sidebar'  => $sidebar_link,
+            'role'   => $role,
+            'memberships' => $memberships
+        ]);
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request)
+    {
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
+            return redirect()->intended(route('admin/login'));
+        }
+
         $vars = $request->only('first_name', 'middle_name', 'last_name', 'email', 'user_type', 'username', 'password', 'user_type');
         $messages = array(
             'email.unique' => 'Please use an email that is not in the database',
@@ -144,17 +189,6 @@ class FrontEndUserController extends Controller
         }
 
         return $vars;
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
     }
 
     /**
@@ -1862,10 +1896,19 @@ class FrontEndUserController extends Controller
             }
         }
 
-        $vars = $request->only('first_name', 'last_name', 'email', 'phone_number', 'password', 'membership_plan');
-        $vars['middle_name'] = '';
-        $vars['username'] = $vars['email'];
-        $vars['user_type'] = Role::where('name','=','front-user')->get()->first()->id;
+        $vars = $request->only('first_name', 'middle_name', 'last_name', 'email', 'phone_number', 'password', 'membership_plan', 'username', 'user_type');
+
+        if (!isset($vars['middle_name'])){
+            $vars['middle_name'] = '';
+        }
+
+        if (!isset($vars['username'])){
+            $vars['username'] = $vars['email'];
+        }
+
+        if (!isset($vars['user_type'])){
+            $vars['user_type'] = Role::where('name','=','front-user')->get()->first()->id;
+        }
 
         if ($vars['password']==""){
             $vars['password'] = substr(bcrypt(str_random(12)),0,8);
@@ -1904,15 +1947,16 @@ class FrontEndUserController extends Controller
             $personalDetails->fill($personalData);
             $personalDetails->save();
 
-            /* $beautymail = app()->make(Beautymail::class);
-            $beautymail->send('emails.new_user_registration', ['user'=>$user, 'personal_details'=>$personalDetails, 'raw_password' => $text_psw, 'logo' => ['path' => 'http://sqf.se/wp-content/uploads/2012/12/sqf-logo.png']], function($message) use ($user)
-            {
-                $message
-                    ->from('bogdan@bestintest.eu')
-                    ->to($user->email, $user->first_name.' '.$user->middle_name.' '.$user->last_name)
-                    //->to('stefan.bogdan@ymail.com', $user->first_name.' '.$user->middle_name.' '.$user->last_name)
-                    ->subject('Booking System - You are registered!');
-            }); */
+            $beautymail = app()->make(Beautymail::class);
+            $beautymail->send('emails.new_user_registration',
+                ['user'=>$user, 'personal_details'=>$personalDetails, 'raw_password' => $text_psw, 'logo' => ['path' => 'http://sqf.se/wp-content/uploads/2012/12/sqf-logo.png']],
+                function($message) use ($user){
+                    $message
+                        ->from('bogdan@bestintest.eu')
+                        ->to($user->email, $user->first_name.' '.$user->middle_name.' '.$user->last_name)
+                        //->to('stefan.bogdan@ymail.com', $user->first_name.' '.$user->middle_name.' '.$user->last_name)
+                        ->subject('Booking System - You are registered!');
+                });
 
             // if membership plan selected
             if ($the_plan) {

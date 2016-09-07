@@ -16,6 +16,7 @@ class ShopLocations extends Model
         'fax' => 'Fax Number',
         'email' => 'Contact Email',
         'registered_no' => 'Registered Number',
+        'visibility' => 'Location Visibility'
     );
     public static $validationMessages = array(
         'registered_no.unique' => 'Duplicate registration number in the database',
@@ -29,6 +30,7 @@ class ShopLocations extends Model
         'fax',
         'email',
         'registered_no',
+        'visibility'
     );
 
     public function address(){
@@ -53,24 +55,26 @@ class ShopLocations extends Model
             case 'POST':
             {
                 return [
-                    'name' => 'required|min:5|max:50|unique:shop_locations',
-                    'bank_acc_no' => 'required|min:5',
+                    'name'  => 'required|min:5|max:50|unique:shop_locations',
+                    'bank_acc_no'   => 'required|min:5',
                     'phone' => 'required|min:5',
-                    'fax' => 'required|min:5',
+                    'fax'   => 'required|min:5',
                     'email' => 'required|email:true',
                     'registered_no' => 'required|min:5|unique:shop_locations',
+                    'visibility'    => 'in:warehouse,public,pending,suspended',
                 ];
             }
             case 'PUT':
             case 'PATCH':
             {
                 return [
-                    'name' => 'required|min:5|max:50|unique:shop_locations,name'.($id ? ','.$id.',id' : ''),
-                    'bank_acc_no' => 'required|min:5',
+                    'name'  => 'required|min:5|max:50|unique:shop_locations,name'.($id ? ','.$id.',id' : ''),
+                    'bank_acc_no'   => 'required|min:5',
                     'phone' => 'required|min:5',
-                    'fax' => 'required|min:5',
+                    'fax'   => 'required|min:5',
                     'email' => 'required|email:true',
                     'registered_no' => 'required|min:5|unique:shop_locations,registered_no'.($id ? ','.$id.',id' : ''),
+                    'visibility'    => 'in:warehouse,public,pending,suspended',
                 ];
             }
             default:break;

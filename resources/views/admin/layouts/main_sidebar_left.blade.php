@@ -33,13 +33,18 @@
         <li class="heading">
             <h3 class="uppercase"> Registered Clients </h3>
         </li>
-        <li class="nav-item {{ in_array($in_sidebar, array('admin-frontend-all_members','admin-frontend-user_details_view'))?'active open':'' }}">
+        <li class="nav-item {{ in_array($in_sidebar, array('admin-frontend-all_members','admin-frontend-user_details_view', 'admin-frontend-add_member'))?'active open':'' }}">
             <a href="javascript:;" class="nav-link nav-toggle">
                 <i class="icon-users"></i>
                 <span class="title"> Company Clients </span>
                 <span class="arrow"></span>
             </a>
             <ul class="sub-menu">
+                <li class="nav-item {{ $in_sidebar=='admin-frontend-add_member'?'active open':'' }} ">
+                    <a href="{{ route('admin/front_users/register_new') }}" class="nav-link ">
+                        <span class="title"> Add New Client </span>
+                    </a>
+                </li>
                 <li class="nav-item {{ $in_sidebar=='admin-frontend-all_members'?'active open':'' }} ">
                     <a href="{{ route('admin/front_users/view_all_members') }}" class="nav-link ">
                         <span class="title"> List All Clients </span>

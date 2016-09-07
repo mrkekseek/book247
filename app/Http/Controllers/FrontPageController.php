@@ -70,7 +70,7 @@ class FrontPageController extends Controller
         BookingController::check_for_expired_pending_bookings();
 
         $user = Auth::user();
-        $shopLocations = ShopLocations::with('opening_hours')->with('resources')->get();
+        $shopLocations = ShopLocations::with('opening_hours')->with('resources')->where('visibility','=','public')->get();
 
         $resourceCategories = [];
         $categories = ShopResourceCategory::all();

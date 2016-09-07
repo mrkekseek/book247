@@ -74,6 +74,11 @@ Route::group(['middleware' => 'web'], function () {
         'uses'  =>  'BackEndUserController@create'
     ]);
 
+    Route::put('/admin/front_users/add_user', [
+        'as'    =>  'admin/front_users/add_user',
+        'uses'  =>  'FrontEndUserController@store'
+    ]);
+
     Route::get('/admin/back_users/view_user/{id}', [
         'as' => 'admin/back_users/view_user/',
         'uses' => 'BackEndUserController@show',
@@ -392,6 +397,11 @@ Route::group(['middleware' => 'web'], function () {
     Route::get('admin/front_users/view_all_members', [
         'as'    => 'admin/front_users/view_all_members',
         'uses'  => 'FrontEndUserController@index'
+    ]);
+
+    Route::get('admin/front_users/register_new', [
+        'as'    => 'admin/front_users/register_new',
+        'uses'  => 'FrontEndUserController@create'
     ]);
 
     Route::get('admin/front_users/{id}/view_user', [

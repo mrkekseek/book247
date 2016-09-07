@@ -54,7 +54,7 @@ class MembershipPlan extends Model
                     'binding_period'        => 'required|numeric',
                     'administration_fee_name'   => 'required|min:3',
                     'administration_fee_amount' => 'required|numeric',
-                    'short_description'     => 'required|min:50',
+                    'short_description'     => 'required|min:20',
                     'description'      => '',
                 ];
             }
@@ -70,7 +70,7 @@ class MembershipPlan extends Model
                     'binding_period'        => 'required|numeric',
                     'administration_fee_name'   => 'required|min:3',
                     'administration_fee_amount' => 'required|numeric',
-                    'short_description'     => 'required|min:50',
+                    'short_description'     => 'required|min:20',
                     'description'      => '',
                 ];
             }

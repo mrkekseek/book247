@@ -1435,6 +1435,10 @@
             else{
                 // show buttons
                 $('.booking_type_next').show();
+                if($('.prebook').length < 2){
+                    // hide play with friends
+                    $('a[data-id="play_with_friends_booking"]').hide();
+                }
             }
         });
 
