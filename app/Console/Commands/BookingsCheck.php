@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\BookingInvoice;
+use Carbon\Carbon;
 use Illuminate\Console\Command;
 use App\Booking;
 
@@ -47,6 +48,13 @@ class BookingsCheck extends Command
                 // unpaid - booking that has an invoice and is not paid
                 // old -    booking that is membership free
 
+                // we check all the starting dates and based on that we update the status
+                $currentTime = Carbon::now();
+                $bookingDate = Carbon::createFromFormat('Y-m-d H:i:s',$booking->date_of_booking.' '.$booking->booking_time_start);
+                if ($currentTime->lte($bookingDate)){
+                    continue;
+                }
+
                 switch ($booking->payment_type) {
                     case 'cash' :
                         $invoiceID = $booking->invoice_id;
@@ -75,7 +83,5 @@ class BookingsCheck extends Command
                 $booking->save();
             }
         }
-
-
     }
 }
