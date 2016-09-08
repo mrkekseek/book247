@@ -50,7 +50,7 @@ class BookingsCheck extends Command
                 switch ($booking->payment_type) {
                     case 'cash' :
                         $invoiceID = $booking->invoice_id;
-                        $invoice = BookingInvoice::where('id','=',$invoiceID)->get();
+                        $invoice = BookingInvoice::where('id','=',$invoiceID)->get()->first();
 
                         if (!$invoice){
                             continue;
