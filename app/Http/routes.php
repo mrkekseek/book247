@@ -218,6 +218,11 @@ Route::group(['middleware' => 'web'], function () {
         'uses'  => 'ShopController@get_shop_location'
     ]);
 
+    Route::get('/admin/shops/resources/{id}', [
+        'as'    => 'admin/shops/resources/view',
+        'uses'  => 'ShopController@get_shop_resource'
+    ]);
+
     Route::post('/admin/shops/locations/add', [
         'as'    => 'admin/shops/locations/add',
         'uses'  => 'ShopController@add_shop_location'
@@ -261,6 +266,41 @@ Route::group(['middleware' => 'web'], function () {
     Route::post('admin/shops/resources/add', [
         'as'    => 'admin/shops/resources/add',
         'uses'  => 'ShopController@add_new_store_resource'
+    ]);
+
+    Route::post(    'admin/shops/resource/update', [
+        'as'    =>  'admin/shops/resource/update',
+        'uses'  =>  'ShopController@update_store_resource'
+    ]);
+
+    Route::post(    'admin/shops/resources/delete', [
+        'as'    =>  'admin/shops/resources/delete',
+        'uses'  =>  'ShopController@delete_store_resource'
+    ]);
+
+    Route::post(    'admin/shops/resource/add_price', [
+        'as'    =>  'admin/shops/resource/add_price',
+        'uses'  =>  'ShopController@add_resource_price'
+    ]);
+
+    Route::post(    'admin/shops/resource/update_resource_price', [
+        'as'    =>  'admin/shops/resource/update_resource_price',
+        'uses'  =>  'ShopController@update_resource_price'
+    ]);
+
+    Route::post(    'admin/shops/resource/delete_resource_price', [
+        'as'    =>  'admin/shops/resource/delete_resource_price',
+        'uses'  =>  'ShopController@delete_resource_price'
+    ]);
+
+    Route::post(    'admin/shops/resource/get_resource_price_details', [
+        'as'    =>  'admin/shops/resource/get_resource_price_details',
+        'uses'  =>  'ShopController@get_resource_price_details'
+    ]);
+
+    Route::post(    'admin/shops/resource/copy_resource_prices', [
+        'as'    =>  'admin/shops/resource/copy_resource_prices',
+        'uses'  =>  'ShopController@copy_resource_prices'
     ]);
 
     Route::get('admin/shops/inventory_and_transfer', [

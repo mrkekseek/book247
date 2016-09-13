@@ -113,7 +113,7 @@ class BookingController extends Controller
 
             $book_price = ShopResource::find($fillable['resource_id']);
             if ($book_price){
-                $fillable['payment_amount'] = $book_price->session_price;
+                $fillable['payment_amount'] = $book_price->get_price($vars['selected_date'], $booking_start_time);
             }
             else{
                 return ['booking_key' => ''];
@@ -1366,6 +1366,10 @@ class BookingController extends Controller
         $v1 = $dateSelected->format("Y-m-d");
         $v2 = Carbon::now()->format("Y-m-d");
         if ( $v1==$v2) {
+            if ($currentTimeHour<7){
+                $currentTimeHour = 7;
+            }
+
             $begin->addHour($currentTimeHour);
             $begin->addMinutes($currentTimeMinutes);
         }
@@ -1844,7 +1848,7 @@ class BookingController extends Controller
 
             $book_price = ShopResource::find($fillable['resource_id']);
             if ($book_price){
-                $booking->payment_amount = $book_price->session_price;
+                $booking->payment_amount = $book_price->get_price($booking->date_of_booking, $booking->booking_time_start);
             }
             else{
                 return ['booking_key' => ''];
@@ -1941,7 +1945,7 @@ class BookingController extends Controller
 
                     $book_price = ShopResource::find($fillable['resource_id']);
                     if ($book_price){
-                        $booking->payment_amount = $book_price->session_price;
+                        $booking->payment_amount = $book_price->get_price($booking->date_of_booking, $booking->booking_time_start);
                     }
                     else{
                         $return_bookings[] = [
@@ -2276,10 +2280,10 @@ class BookingController extends Controller
 
             $book_price = ShopResource::find($fillable['resource_id']);
             if ($book_price){
-                $fillable['payment_amount'] = $book_price->session_price;
+                $fillable['payment_amount'] = $book_price->get_price($fillable['date_of_booking'], $fillable['booking_time_start']);
             }
             else{
-                return ['booking_key' => '', 'error_msg' => 'could not determin book price'];
+                return ['booking_key' => '', 'error_msg' => 'could not determine book price'];
             }
 
             if ($fillable['payment_type']=="membership"){

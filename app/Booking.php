@@ -119,9 +119,12 @@ class Booking extends Model
 
         $location = ShopLocations::find($this->location_id);
         $locationName = $location->name;
+
         $room = ShopResource::find($this->resource_id);
         $roomName = $room->name;
-        $roomPrice= $room->session_price;
+        $roomPrice= $room->get_price($this->date_of_booking, $this->booking_time_start);
+        //$roomPrice= $room->session_price;
+
         $category = ShopResourceCategory::find($room->category_id);
         $categoryName = $category->name;
 

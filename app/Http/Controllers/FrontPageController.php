@@ -205,6 +205,10 @@ class FrontPageController extends Controller
         $v1 = $dateSelected->format("Y-m-d");
         $v2 = Carbon::now()->format("Y-m-d");
         if ( $v1==$v2) {
+            if ($currentTimeHour<7){
+                $currentTimeHour = 7;
+            }
+
             $begin->addHour($currentTimeHour);
             $begin->addMinutes($currentTimeMinutes);
         }

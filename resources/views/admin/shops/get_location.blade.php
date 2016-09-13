@@ -219,7 +219,7 @@
                                 <th width="5%"> No. </th>
                                 <th> Name </th>
                                 <th class="numeric"> Category </th>
-                                <th class="numeric"> Change </th>
+                                <th class="numeric" style="width:190px;"> Options </th>
                             </tr>
                             </thead>
                             <tbody>
@@ -228,7 +228,8 @@
                                 <td> {{$key+1}} </td>
                                 <td> <b>{{ $resource->name }}</b> </td>
                                 <td class="numeric"> {{ $resource->category->name }} </td>
-                                <td class="numeric"> -0.01 </td>
+                                <td class="numeric"> <a class="btn blue" href="{{ route('admin/shops/resources/view', ['id'=>$resource->id]) }}">Edit/Show</a>
+                                    <button class="btn red delete_shop_resource" data-id="{{$resource->id}}">Delete</button> </td>
                             </tr>
                             @endforeach
                             </tbody>
@@ -597,6 +598,7 @@
         @endif
         <!-- END PAGE BASE CONTENT -->
 
+        <!-- BEGIN Delete price for resource -->
         <div class="modal fade draggable-modal" id="draggable" tabindex="-1" role="basic" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -640,14 +642,6 @@
                                         </select>
                                     </div>
                                 </div>
-                                <!--<div class="form-group">
-                                    <label class="control-label col-md-4">Color Code</label>
-                                    <div class="col-md-7">
-                                        <div class="input-icon right">
-                                            <i class="fa"></i>
-                                            <input type="text" class="form-control input-sm" id="resource_color" name="resource_color" /> </div>
-                                    </div>
-                                </div>-->
                                 <div class="form-group">
                                     <label class="control-label col-md-4">Description
                                     </label>
@@ -657,6 +651,35 @@
                                             <textarea class="form-control input-sm" id="resource_description" name="resource_description"></textarea> </div>
                                     </div>
                                 </div>
+
+                                <div class="form-group">
+                                    <label class="control-label col-md-4">Default/Base Price</label>
+                                    <div class="col-md-7">
+                                        <div class="input-icon right">
+                                            <i class="fa"></i>
+                                            <input type="text" class="form-control input-sm" id="resource_price" name="resource_price" value="0" /> </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-4">Vat Rate</label>
+                                    <div class="col-md-7">
+                                        <select name="resource_vat_rate" class="form-control input-large">
+                                            <option>Select VAT</option>
+                                            @foreach ($vatRates as $vat)
+                                                <option value="{{ $vat->id }}">{{ $vat->display_name }}</option>
+                                            @endforeach
+                                        </select>
+                                        <span class="help-block"> Invoice VAT applied on the booking price </span>
+                                    </div>
+                                </div>
+                                <!--<div class="form-group">
+                                    <label class="control-label col-md-4">Color Code</label>
+                                    <div class="col-md-7">
+                                        <div class="input-icon right">
+                                            <i class="fa"></i>
+                                            <input type="text" class="form-control input-sm" id="resource_color" name="resource_color" /> </div>
+                                    </div>
+                                </div>-->
                             </div>
                         </form>
                     </div>
@@ -669,6 +692,28 @@
             </div>
             <!-- /.modal-dialog -->
         </div>
+        <!-- END Delete price for resource -->
+
+        <!-- BEGIN Delete price for resource -->
+        <div class="modal fade bs-modal-sm" id="delete_resource_modal" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog modal-sm">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                        <h4 class="modal-title">Delete this price?</h4>
+                    </div>
+                    <div class="modal-body"> By clicking "Delete Price" the price attribute will be removed from this resource. Do you want to delete it? </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn dark btn-outline" data-dismiss="modal">No, Go Back</button>
+                        <button type="button" class="btn green" onclick="javascript:delete_resource();">Yes, Delete</button>
+                        <input type="hidden" name="res_id" value="" />
+                    </div>
+                </div>
+                <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+        </div>
+        <!-- END Delete price for resource -->
     </div>
 @endsection
 
@@ -878,6 +923,16 @@
                         resource_description: {
                             minlength: 15,
                         },
+                        resource_price: {
+                            min:1,
+                            number:true,
+                            required:true
+                        },
+                        resource_vat_rate: {
+                            minlength:1,
+                            number:true,
+                            required:true
+                        }
                     },
 
                     invalidHandler: function (event, validator) { //display error alert on form submit
@@ -1131,6 +1186,8 @@
                     'color_code':   $('input[name=resource_color]').val(),
                     'description':  $('textarea[name=resource_description]').val(),
                     'category_id':  $('select[name=resource_category]').val(),
+                    'session_price':$('input[name=resource_price]').val(),
+                    'vat_id':       $('select[name=resource_vat_rate]').val(),
                 },
                 success: function(data){
                     if(data.success){
@@ -1208,6 +1265,33 @@
                     'region':       $('input[name=shop_region]').val(),
                     'postal_code':  $('input[name=shop_postal_code]').val(),
                     '_method':'patch'
+                },
+                success: function(data){
+                    if(data.success){
+                        show_notification(data.title, data.message, 'lime', 3500, 0);
+                        setTimeout(function(){
+                            location.reload();
+                        },2500);
+                    }
+                    else{
+                        show_notification(data.title, data.errors, 'ruby', 3500, 0);
+                    }
+                }
+            });
+        }
+
+        $(".delete_shop_resource").on("click", function(){
+            $('input[name=res_id]').val($(this).attr('data-id'));
+            $('#delete_resource_modal').modal('show');
+        });
+
+        function delete_resource(){
+            $.ajax({
+                url: '{{route('admin/shops/resources/delete')}}',
+                type: "post",
+                data: {
+                    'resource_id':$('input[name=res_id]').val(),
+                    'location_id':'{{$shopDetails->id}}'
                 },
                 success: function(data){
                     if(data.success){

@@ -1201,10 +1201,8 @@
         $('#booking_modal_end_time').on('hidden.bs.modal', function () {
 
             if ($('input[name="booking_made_for"]').val()==1){
-                console.log('1');
             }
             else if ($('input[name="booking_made_by"]').val()!=''){
-                console.log('2');
                 var all_bookings = select_all_booking_keys();
 
                 if ($('input[name="booking_made_for"]').val()==0) {
@@ -1214,7 +1212,6 @@
                 }
             }
             else if ($('.prebook').length > 0){
-                console.log('3');
                 var all_bookings = select_all_booking_keys();
 
                 if ($('input[name="booking_made_for"]').val()==0) {
@@ -1260,7 +1257,6 @@
         }
 
         function cancel_booking_keys(all_bookings){
-            console.log(all_bookings);
             if (all_bookings==-1){
                 all_bookings = select_all_booking_keys();
             }
@@ -1297,7 +1293,6 @@
         }
 
         function clean_booking_popup(){
-            //console.log('here');
             var all_bookings = '';
             $('.prebook').each(function(index, elem){
                 //var search_key = $(this).find('span').attr('booking-key');
@@ -1325,7 +1320,6 @@
             $('#register_new_user_popup').modal('hide');
 
             //$('#search_for_player > .form-body > .note-info > .booking_step_content > .form-actions').hide();
-            //console.log($('#search_for_player').find('.form-actions').html());
         }
 
         function confirm_booking(){
@@ -1770,13 +1764,14 @@
             var box_container = $(".play_alone_booking");
             var bookings = '';
 
+            box_container.find('.booking_step_content').first().show();
+
             $("td.prebook span[booking-key]").each(function(key, val){
                 bookings += ' <input type="hidden" value="' + $(this).attr('booking-key') + '" name="time_book_key"> ';
             });
             box_container.append(bookings);
             save_single_bookings(box_container);
             box_container.show();
-
             //var place = $('.booking_summary_box');
             //get_booking_summary(place);
             //place.find('.booking_step_content').first().show();
