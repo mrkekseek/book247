@@ -323,12 +323,17 @@
                                                 <input type="hidden" autocomplete="off" value="" name="time_book_key" />
                                                 <input type="hidden" autocomplete="off" value="" name="time_book_hour" />
                                                 <p class="form-control-static"><strong>
-                                                        <span data-id="booking_name">{{ $user->first_name.' '.$user->middle_name.' '.$user->last_name }}</span>
-                                                        <span data-id="start_time"></span>
-                                                        <span data-id="room_booked"></span></strong></p>
+                                                        <span data-id="booking_name"> </span>
+                                                        <span data-id="start_time"> </span>
+                                                        <span data-id="room_booked"> </span></strong></p>
                                                 <div class="form-control-static fa-item booking_payment_type" style="float:right;"></div>
                                                 <div class="booking_step_content" style="display:none;">
-                                                    <select class="form-control" name="resources_room" id="resources_rooms"></select>
+                                                    <label><small>Select Player</small></label>
+                                                    <select name="friend_booking" class="form-control margin-bottom-10 input-sm"></select>
+
+                                                    <label><small>Select Room</small></label>
+                                                    <select class="form-control input-sm" name="resources_room" id="resources_rooms"></select>
+
                                                     <div class="form-actions right" style="padding-top:5px; padding-bottom:5px;">
                                                         <a class="btn blue-hoki booking_step_back" style="padding-top:4px; padding-bottom:4px;">Back</a>
                                                         <a class="btn blue-hoki booking_step_next" style="padding-top:4px; padding-bottom:4px;">Next</a>
@@ -936,6 +941,9 @@
             var own_box = $(this).parents('.form-group').first();
 
             if ($(this).attr('data-id')=="to_own_booking"){
+                var first_players_list = $(".is_own_booking").find('div>select[name="friend_booking"]');
+                get_players_list(first_players_list);
+
                 var time_intv = new Array('');
 
                 $('.friend_booking').remove();
@@ -997,6 +1005,7 @@
 
             selectedDate = typeof selectedDate !== 'undefined' ? selectedDate : $('input[name=selected_date]').val();
             $('.pre_book_date').html($('.dp-selected').attr('title'));
+            var randUI = Math.floor((Math.random() * 100000000000000000) + 1);
 
             $.ajax({
                 url: '{{route('ajax/get_booking_hours')}}',
@@ -1006,6 +1015,7 @@
                     'location_selected':    $('input[name=selected_location]').val(),
                     'date_selected':        selectedDate,
                     'selected_category':    $('input[name=selected_category]').val(),
+                    'randUI':               randUI
                 },
                 success: function(data){
                     time_of_booking_format_hours(data.hours);
@@ -1063,7 +1073,6 @@
             });
 
             var time_book_hour = container.parent().parent().find('input[name="time_book_hour"]').val();
-
             $.ajax({
                 url: '{{route('ajax/get_players_list')}}',
                 type: "post",
