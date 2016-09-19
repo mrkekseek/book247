@@ -234,7 +234,11 @@ class BookingController extends Controller
     public function cancel_booking(Request $request){
         if (!Auth::check()) {
             //return redirect()->intended(route('admin/login'));
-            return ['error' => 'Authentication Error'];
+            return [
+                'success' => false,
+                'title'   => 'Authentication Error',
+                'errors'  => 'Please reload the page and try again'
+            ];
         }
         else{
             $user = Auth::user();
@@ -255,41 +259,59 @@ class BookingController extends Controller
             //if (in_array($booking->status,['active','pending'])){
             if ($this->can_cancel_booking($booking->id)){
                 $old_status = $booking->status;
-                $booking->status = 'canceled';
-                $booking->save();
+                if ( $booking->cancel_booking() ){
+                    if ($old_status=='active'){
+                        // send_email_to_user
+                        $player = User::where('id','=',$booking->for_user_id)->get()->first();
+                        $booking_details = $booking->get_summary_details(false);
 
-                if ($old_status=='active'){
-                    // send_email_to_user
-                    $player = User::where('id','=',$booking->for_user_id)->get()->first();
-                    $booking_details = $booking->get_summary_details(false);
+                        $beautymail = app()->make(Beautymail::class);
+                        $beautymail->send('emails.booking.cancel_booking', ['player'=>$player, 'booking'=>$booking_details, 'logo' => ['path' => 'http://sqf.se/wp-content/uploads/2012/12/sqf-logo.png']], function($message) use ($player, $booking_details)
+                        {
+                            $message
+                                ->from('bogdan@bestintest.eu')
+                                ->to($player->email, $player->first_name.' '.$player->middle_name.' '.$player->last_name)
+                                //->to('stefan.bogdan@ymail.com', $player->first_name.' '.$player->middle_name.' '.$player->last_name)
+                                ->subject('Booking System - Your booking for '.$booking_details["bookingDate"].' was canceled');
+                        });
+                    }
 
-                    $beautymail = app()->make(Beautymail::class);
-                    $beautymail->send('emails.booking.cancel_booking', ['player'=>$player, 'booking'=>$booking_details, 'logo' => ['path' => 'http://sqf.se/wp-content/uploads/2012/12/sqf-logo.png']], function($message) use ($player, $booking_details)
-                    {
-                        $message
-                            ->from('bogdan@bestintest.eu')
-                            ->to($player->email, $player->first_name.' '.$player->middle_name.' '.$player->last_name)
-                            //->to('stefan.bogdan@ymail.com', $player->first_name.' '.$player->middle_name.' '.$player->last_name)
-                            ->subject('Booking System - Your booking for '.$booking_details["bookingDate"].' was canceled');
-                    });
+                    Activity::log([
+                        'contentId'     => $user->id,
+                        'contentType'   => 'bookings',
+                        'action'        => 'Cancel Booking',
+                        'description'   => 'Booking cancelled with the ID : '.$booking->id,
+                        'details'       => 'User Email : '.$user->email,
+                        'updated'       => true,
+                    ]);
+                    return [
+                        'success' => true,
+                        'title'   => 'Booking canceled',
+                        'message' => 'Booking canceled and invoice updated accordingly [if it was a paid booking]'
+                    ];
                 }
-
-                Activity::log([
-                    'contentId'     => $user->id,
-                    'contentType'   => 'bookings',
-                    'action'        => 'Cancel Booking',
-                    'description'   => 'Booking cancelled with the ID : '.$booking->id,
-                    'details'       => 'User Email : '.$user->email,
-                    'updated'       => true,
-                ]);
-                return ['success' => 'true', 'message' => 'All is good.'];
+                else{
+                    return [
+                        'success' => false,
+                        'title'   => 'Booking canceled',
+                        'errors' => 'Booking canceled and invoice updated accordingly [if it was a paid booking]'
+                    ];
+                }
             }
             else{
-                return ['error' => 'The selected booking can\'t be canceled. Please check your membership plan rules regarding cancellation or ask one of our staff about this.'];
+                return [
+                    'success' => false,
+                    'title'   => 'Action error',
+                    'errors'  => 'The selected booking can\'t be canceled. Please check your membership plan rules regarding cancellation or ask one of our staff about this.'
+                ];
             }
         }
         else{
-            return ['error' => 'No bookings found to confirm. Please make the booking process again. Remember you have 60 seconds to complete the booking before it expires.'];
+            return [
+                'success' => false,
+                'title'   => 'Booking not found',
+                'errors'  => 'Please make the booking process again. Remember you have 60 seconds to complete the booking before it expires.'
+            ];
         }
     }
 
@@ -866,18 +888,19 @@ class BookingController extends Controller
                     $book_invoice->add_invoice_item($booking->id);
                     $booking->invoice_id = $book_invoice->id;
 
-                    $general_invoice = Invoice::where('invoice_type','=','booking_invoice')->where('invoice_reference_id','=',$book_invoice->id)->get()->first();
-                    $is_item_added = InvoiceItem::where('item_type','=','booking_invoice_item')->where('item_reference_id','=',$booking->id)->get()->first();
+                    $bookingItem        = BookingInvoiceItem::where('booking_id', '=', $booking->id)->get()->first();
+                    $general_invoice    = Invoice::where('invoice_type', '=','booking_invoice')->where('invoice_reference_id','=',$book_invoice->id)->get()->first();
+                    $is_item_added      = InvoiceItem::where('item_type','=','booking_invoice_item')->where('item_reference_id','=',$bookingItem->id)->get()->first();
                     if (!$is_item_added) {
-                        $bookingItem = BookingInvoiceItem::where('booking_id', '=', $booking->id)->get()->first();
                         $generalFillable = [
-                            'item_name' => $bookingItem->location_name . ', room ' . $bookingItem->resource_name . ' - ' . $bookingItem->booking_time_interval . ' on ' . $bookingItem->booking_date . ' ',
-                            'item_type' => 'booking_invoice_item',  // type of the item : membership payment, coupon code, discounts, bookings, products
-                            'item_reference_id' => $bookingItem->id,    // the ID from the table
-                            'quantity' => $bookingItem->quantity,  // number of items
-                            'price' => $bookingItem->price,     // base price
-                            'vat' => $bookingItem->vat,       // VAT for the product group
-                            'discount' => $bookingItem->discount,  // applied discount
+                            'item_name'         => $bookingItem->location_name . ', room ' . $bookingItem->resource_name . '
+                                                    - ' . $bookingItem->booking_time_interval . ' on ' . $bookingItem->booking_date . ' ',
+                            'item_type'         => 'booking_invoice_item',  // type of the item : membership payment, coupon code, discounts, bookings, products
+                            'item_reference_id' => $bookingItem->id,        // the ID from the table
+                            'quantity'          => $bookingItem->quantity,  // number of items
+                            'price'             => $bookingItem->price,     // base price
+                            'vat'               => $bookingItem->vat,       // VAT for the product group
+                            'discount'          => $bookingItem->discount,  // applied discount
                         ];
                         $general_invoice->add_invoice_item($generalFillable);
                     }
@@ -2351,7 +2374,9 @@ class BookingController extends Controller
      */
     public function booking_action_player_show(Request $request){
         if (!Auth::check()) {
-            return [];
+            return ['success'   => false,
+                    'errors'    => 'You are not logged in or your login expired. Please login and return to this page',
+                    'title'     => 'You need to login'];
         }
         else{
             $user = Auth::user();
@@ -2375,17 +2400,23 @@ class BookingController extends Controller
                 }
                 $booking->save();
 
-                return ['success' => 'true', 'message' => 'Show status changed to "Show"'];
+                return ['success' => true,
+                        'title'   => 'Booking status changed',
+                        'message' => 'Show status changed from "Active" to "Show"'];
             }
             else {
                 $booking->status = 'active';
                 $booking->save();
 
-                return ['success' => 'true', 'message' => 'Show status changed to "Active"'];
+                return ['success' => true,
+                        'title'   => 'Booking status changed',
+                        'message' => 'Show status changed from "Show" to "Active"'];
             }
         }
         else {
-            return ['success' => 'true', 'message' => 'All is good.'];
+            return ['success' => false,
+                    'title'   => 'Booking not found',
+                    'message' => 'Try reloading the page the change the status again'];
         }
     }
 

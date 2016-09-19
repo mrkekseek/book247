@@ -923,7 +923,13 @@
                     'search_key': booking_key
                 },
                 success: function (data) {
-                    show_notification('Booking Show Confirmation', 'The player is marked as "show for the booking".', 'lime', 3500, 0);
+                    if (data.success==1) {
+                        show_notification(data.title, data.message, 'lime', 2500, 0);
+                    }
+                    else{
+                        show_notification(data.title, data.errors, 'ruby', 3500, 0);
+                    }
+
                     //$('#small').find('.book_details_cancel_place').html('');
                     $('#cancel_confirm_box').modal('hide');
                     $('#changeIt').modal('hide');
@@ -1094,17 +1100,24 @@
                     'search_key': search_key
                 },
                 success: function (data) {
-                    show_notification('Booking Canceled', 'The selected bookings were canceled.', 'lemon', 3500, 0);
+                    if (data.success){
+                        show_notification(data.title, data.message, 'lemon', 3500, 0);
 
-                    var action_buttons = $('div[search-key="'+search_key+'"]');
-                    action_buttons.css('display','none');
-                    action_buttons.after(' - canceled');
-                    action_buttons.parent().removeClass();
-                    action_buttons.parent().addClass('bg-yellow-saffron bg-font-yellow-saffron');
+                        var action_buttons = $('div[search-key="'+search_key+'"]');
+                        action_buttons.css('display','none');
+                        action_buttons.after(' - canceled');
+                        action_buttons.parent().removeClass();
+                        action_buttons.parent().addClass('bg-yellow-saffron bg-font-yellow-saffron');
 
-                    $('#cancel_confirm_box').modal('hide');
-                    $('#more_options_bookings_show').modal('hide');
-                    draw_booking_box();
+                        $('#cancel_confirm_box').modal('hide');
+                        $('#more_options_bookings_show').modal('hide');
+                        draw_booking_box();
+                    }
+                    else{
+                        show_notification(data.title, data.errors, 'ruby', 3500, 0);
+                        $('#cancel_confirm_box').modal('hide');
+                        $('#more_options_bookings_show').modal('hide');
+                    }
                 }
             });
         }

@@ -96,7 +96,7 @@ class BookingInvoice extends Model
             $the_invoice_item = BookingInvoiceItem::create($fillable);
 
             if ($the_invoice_item){
-                return ['success' => true, 'message' => 'Item Added'];
+                return ['success' => true, 'message' => 'Item Added', 'id' => $the_invoice_item->id];
             }
             else{
                 return ['success' => false, 'errors' => 'Error adding item'];

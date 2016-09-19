@@ -654,6 +654,10 @@ class FrontEndUserController extends Controller
                             }
                         }
                     }
+
+                    if ($items==0){
+                        continue;
+                    }
                 }
                 else{
                     continue;
@@ -804,8 +808,12 @@ class FrontEndUserController extends Controller
                         }
                         elseif ($display_name=='-' && $invItem->item_type=='booking_invoice_item'){
                             $bookingItem = BookingInvoiceItem::where('id','=',$invItem->item_reference_id)->get()->first();
-                            $display_name = 'Booking - '.$bookingItem->location_name;
+                            $display_name = 'Booking - '.@$bookingItem->location_name;
                         }
+                    }
+
+                    if ($items==0){
+                        continue;
                     }
                 }
 

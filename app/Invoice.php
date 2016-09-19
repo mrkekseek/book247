@@ -4,6 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use Validator;
+use App\InvoiceItems;
 
 class Invoice extends Model
 {
@@ -66,7 +67,7 @@ class Invoice extends Model
     }
 
     public function items(){
-        return $this->hasMany('App\InvoiceItems', 'invoice_id', 'id')->orderBy('invoice_items.created_at','asc');
+        return $this->hasMany('App\InvoiceItem', 'invoice_id', 'id')->orderBy('invoice_items.created_at','asc');
     }
 
     public static function next_invoice_number(){
