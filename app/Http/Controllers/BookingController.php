@@ -870,7 +870,15 @@ class BookingController extends Controller
                     ]);
                 }
 
-                if ($booking->payment_type=="cash" || $booking->payment_type=="recurring"){
+                if ($booking->payment_type=="membership" && $booking->membership_id==-1){
+                    $userMembership = UserMembership::where('user_id','=',$booking->for_user_id)->where('status','=','active')->get()->first();
+                    if ($userMembership){
+                        $booking->membership_id = $userMembership->id;
+                    }
+                }
+                elseif ($booking->payment_type=="cash" || $booking->payment_type=="recurring"){
+                    // check if the membership assigned to the user is the same as the one in the booking
+
                     if (!isset($booking_invoices[$booking->by_user_id])){
                         // echo $booking->invoice_id;
                         if ($booking->invoice_id == -1) {
