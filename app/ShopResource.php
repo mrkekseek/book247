@@ -85,8 +85,15 @@ class ShopResource extends Model
     public function get_price($date, $start_time){
         $final_price = $this->session_price;
 
-        $book_day = Carbon::createFromFormat('Y-m-d',$date);
-        $week_day = Carbon::createFromFormat('Y-m-d',$date)->format('w');
+        if (gettype($date)=="string"){
+            $book_day = Carbon::createFromFormat('Y-m-d',$date);
+            $week_day = Carbon::createFromFormat('Y-m-d',$date)->format('w');
+        }
+        else{
+            $book_day = $date->format('Y-m-d');
+            $week_day = $date->format('w');
+        }
+
         if (strlen($start_time)<=5){
             $book_time= Carbon::createFromFormat('H:s', $start_time);
         }

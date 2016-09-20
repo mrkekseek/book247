@@ -1299,7 +1299,7 @@ class BookingController extends Controller
 
         $membership_plans = MembershipPlan::where('id','!=','1')->where('status','=','active')->get()->sortBy('name');
 
-        $memberships = MembershipPlan::where('id','!=',1)->get();
+        $memberships = MembershipPlan::where('id','!=',-1)->get();
         $membership_legend = [];
         if ($memberships){
             foreach($memberships as $membership){
@@ -1480,6 +1480,15 @@ class BookingController extends Controller
             'is_disabled'       => '',
         ];
 
+        // get custom membership colors
+        $allPlans = MembershipPlan::select('id', 'plan_calendar_color')->get();
+        $plansCalendarColor = [];
+        if ($allPlans){
+            foreach($allPlans as $thePlan){
+                $plansCalendarColor[$thePlan->id] = $thePlan->plan_calendar_color;
+            }
+        }
+
         $q = DB::table('bookings');
         if (is_array($location)){
             $q->whereIn('location_id', $location);
@@ -1536,13 +1545,14 @@ class BookingController extends Controller
                     if ($formatted_booking['payment_type'] == 'membership' && $booking->status!='pending'){
                         $formatted_booking['color_stripe'] = 'bg-green-haze bg-font-green-haze';
 
-                        $userMembership = UserMembership::with('plan_blueprint')->where('user_id','=',$booking->for_user_id)->where('id','=',$booking->membership_id)->get()->first();
-                        if ($userMembership){
-                            $formatted_booking['custom_color'] = $userMembership->plan_blueprint->plan_calendar_color.' !important';
+                        $userMembership = UserMembership::where('user_id','=',$booking->for_user_id)->where('id','=',$booking->membership_id)->get()->first();
+                        if ($userMembership && isset($plansCalendarColor[$userMembership->membership_id])){
+                            $formatted_booking['custom_color'] = $plansCalendarColor[$userMembership->membership_id].' !important';
                         }
                     }
                     elseif ($formatted_booking['payment_type'] == 'cash' && $booking->status!='pending'){
                         $formatted_booking['color_stripe'] = 'bg-yellow-gold bg-font-yellow-gold';
+                        $formatted_booking['custom_color'] = $plansCalendarColor[1].' !important';
                     }
                     elseif ($formatted_booking['payment_type'] == 'recurring' && $booking->status!='pending'){
                         $formatted_booking['color_stripe'] = 'bg-purple-wisteria bg-font-purple-wisteria';
@@ -2061,7 +2071,7 @@ class BookingController extends Controller
                         'message' => 'Booking not found'];
                     continue;
                 }
-                else{
+                else {
                     $booking->payment_type = 'recurring';
                     $booking->save();
                     $price_per_booking = $booking->payment_amount;
@@ -2133,6 +2143,9 @@ class BookingController extends Controller
 
                 $firstBookingDay = Carbon::createFromFormat('Y-m-d', $booking->date_of_booking);
                 switch ($vars['occurrence']){
+                    case 1 :
+                        $nextBookingDay = $firstBookingDay->addDays(1);
+                        break;
                     case 7 :
                         $nextBookingDay = $firstBookingDay->addDays(7);
                         break;
@@ -2140,7 +2153,7 @@ class BookingController extends Controller
                         $nextBookingDay = $firstBookingDay->addDays(14);
                         break;
                     case 21:
-                        $nextBookingDay = $firstBookingDay->addMonth(21);
+                        $nextBookingDay = $firstBookingDay->addDays(21);
                         break;
                     case 28:
                         $nextBookingDay = $firstBookingDay->addDays(28);
@@ -2246,6 +2259,9 @@ class BookingController extends Controller
                     }
 
                     switch ($vars['occurrence']){
+                        case 1 :
+                            $nextBookingDay = $firstBookingDay->addDays(1);
+                            break;
                         case 7 :
                             $nextBookingDay = $firstBookingDay->addDays(7);
                             break;
@@ -2253,7 +2269,7 @@ class BookingController extends Controller
                             $nextBookingDay = $firstBookingDay->addDays(14);
                             break;
                         case 21:
-                            $nextBookingDay = $firstBookingDay->addMonth(21);
+                            $nextBookingDay = $firstBookingDay->addDays(21);
                             break;
                         case 28:
                             $nextBookingDay = $firstBookingDay->addDays(28);

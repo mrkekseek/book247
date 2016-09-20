@@ -66,7 +66,7 @@
                         <div class="row" style="margin-bottom:10px;">
                             @foreach($membership_legend as $each_legend)
                                 <div class="col-md-3">
-                                    <a class="border-grey-salt" style="background-color:{{ $each_legend['color'] }}; padding:0px 15px; margin-right:10px;"> &nbsp; </a> {{ $each_legend['name'].' - '.$each_legend['status'] }}
+                                    <a class="border-grey-salt" style="background-color:{{ $each_legend['color'] }}; padding:0px 15px; margin-right:10px;"> &nbsp; </a> {{ $each_legend['name'] }}
                                 </div>
                             @endforeach
                         </div>
