@@ -778,14 +778,17 @@ class BookingController extends Controller
                 }
 
                 if ($booking){
+                    // get resource VAT
+                    $resourceDetails = ShopResource::with('vatRate')->where('id','=',$booking->resource_id)->get()->first();
+
                     //xdebug_var_dump($booking);
                     if ($booking['payment_type']=='cash'){
                         $cash_nr+=1;
-                        $cash_amount+= $booking['payment_amount'];
+                        $cash_amount+= ($booking['payment_amount']*(100+$resourceDetails->vatRate->value))/100;
                     }
                     elseif ($booking['payment_type']=='recurring'){
                         $recurring_nr++;
-                        $recurring_cash+=$booking['payment_amount'];
+                        $recurring_cash+=($booking['payment_amount']*(100+$resourceDetails->vatRate->value))/100;
                     }
                     else{
                         $membership_nr+=1;
@@ -794,11 +797,11 @@ class BookingController extends Controller
             }
 
             return ['success' => 'true',
-                    'membership_nr' => $membership_nr,
-                    'recurring_nr' => $recurring_nr,
-                    'recurring_cash' => $recurring_cash,
-                    'cash_nr' => $cash_nr,
-                    'cash_amount' => $cash_amount.' NOK' ];
+                    'membership_nr'     => $membership_nr,
+                    'recurring_nr'      => $recurring_nr,
+                    'recurring_cash'    => $recurring_cash,
+                    'cash_nr'       => $cash_nr,
+                    'cash_amount'   => $cash_amount.' NOK' ];
         }
         else{
             return ['error' => 'No bookings found to confirm. Please make the booking process again. Remember you have 60 seconds to complete the booking before it expires.'];
