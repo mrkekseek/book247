@@ -17,6 +17,7 @@ class ShopResourcePrice extends Model
         'day_start' => 'Day Start',
         'day_stop'  => 'Dai stop',
         'type'      => 'Price type - general/specific',
+        'group_price'   => 'Group Price',
         'price'     => 'Price',
         'vat_id'    => 'VAT ID'     ];
 
@@ -30,6 +31,7 @@ class ShopResourcePrice extends Model
         'date_start',
         'date_stop',
         'type',
+        'group_price',
         'price',
         'vat_id'    ];
 

@@ -688,6 +688,13 @@ class ShopController extends Controller
             ];
         }
 
+        // group price = true; // one price is assigned to all same resources in the same location
+        $group_price = true;
+        $randomIdentifier = '';
+        if ($group_price==true){
+            $randomIdentifier = time().'-'.mt_rand();
+        }
+
         $vars = $request->only('days', 'time_start', 'time_stop', 'date_start', 'date_stop', 'type', 'price', 'resource_id');
 
         if ($vars['type']=='general'){
@@ -718,6 +725,7 @@ class ShopController extends Controller
             'date_stop'     => $date_end,
             'type'          => $vars['type'],
             'price'         => $vars['price'],
+            'group_price'   => $randomIdentifier,
             'vat_id'        => $shopResource->vatRate->id,
             'resource_id'   => $shopResource->id,
         ];
@@ -740,6 +748,25 @@ class ShopController extends Controller
             $resourcePrice->fill($ResourcePriceVars);
             $resourcePrice->save();
 
+            if ($group_price==true){
+                // we apply same price to all resources of the same type in specified location
+                $allResourcesInLocation = ShopResource::select('id')
+                    ->where('location_id','=',$shopResource->location_id)
+                    ->where('category_id','=',$shopResource->category_id)
+                    ->where('id','!=',$shopResource->id)
+                    ->get();
+
+                if (sizeof($allResourcesInLocation)>0){
+                    foreach($allResourcesInLocation as $singleResource){
+                        $ResourcePriceVars['resource_id'] = $singleResource->id;
+
+                        $resourcePrice = new ShopResourcePrice();
+                        $resourcePrice->fill($ResourcePriceVars);
+                        $resourcePrice->save();
+                    }
+                }
+            }
+
             return [
                 'success' => true,
                 'title'   => 'Resource Price Added',
@@ -757,6 +784,9 @@ class ShopController extends Controller
                 'title'   => 'Error authentication'
             ];
         }
+
+        // group price = true; // one price is assigned to all same resources in the same location
+        $group_price = true;
 
         $vars = $request->only('days', 'time_start', 'time_stop', 'date_start', 'date_stop', 'type', 'price', 'resource_id', 'price_id');
 
@@ -821,6 +851,22 @@ class ShopController extends Controller
             $resourcePrice->fill($ResourcePriceVars);
             $resourcePrice->save();
 
+            if ($group_price==true && strlen($resourcePrice->group_price)>5){
+                // we apply same price to all resources of the same type in specified location
+                $allGroupPrices = ShopResourcePrice::
+                    where('group_price','=',$resourcePrice->group_price)
+                    ->where('id','!=',$resourcePrice->id)
+                    ->get();
+
+                if (sizeof($allGroupPrices)>0){
+                    foreach($allGroupPrices as $singlePrice){
+                        $ResourcePriceVars['resource_id'] = $singlePrice->resource_id;
+                        $singlePrice->fill($ResourcePriceVars);
+                        $singlePrice->save();
+                    }
+                }
+            }
+
             return [
                 'success' => true,
                 'title'   => 'Resource Price Updated',
@@ -838,6 +884,9 @@ class ShopController extends Controller
                 'title'   => 'Error authentication'
             ];
         }
+
+        // group price = true; // one price is assigned to all same resources in the same location
+        $group_price = true;
 
         $vars = $request->only('resource_id', 'price_id');
 
@@ -857,7 +906,13 @@ class ShopController extends Controller
                 'title'   => 'Error in update'];
         }
         else{
-            $resourcePrice->delete();
+            if ($group_price==true && strlen($resourcePrice->group_price)>5){
+                // we need to delete all the prices with the same group_price identifier
+                ShopResourcePrice::where('group_price','=',$resourcePrice->group_price)->delete();
+            }
+            else{
+                $resourcePrice->delete();
+            }
         }
 
         return [
@@ -921,6 +976,7 @@ class ShopController extends Controller
                     'date_stop'     => $price->date_stop,
                     'type'          => $price->type,
                     'price'         => $price->price,
+                    'group_price'   => $price->group_price,
                     'vat_id'        => $price->vat_id,
                     'resource_id'   => $toShopResource->id,
                 ];
