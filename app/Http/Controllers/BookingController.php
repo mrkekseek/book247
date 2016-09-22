@@ -1066,7 +1066,7 @@ class BookingController extends Controller
                 }
 
                 $data[] = [
-                    $format_date->format('Y,M j, H:i'),
+                    $format_date->format('d-M-Y, H:i'),
                     $bookingFor->first_name.' '.$bookingFor->middle_name.' '.$bookingFor->last_name,
                     $location->name.' - '.$resource->name,
                     $activity->name,

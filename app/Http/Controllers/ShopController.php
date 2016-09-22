@@ -145,17 +145,6 @@ class ShopController extends Controller
         $shopDetails = ShopLocations::with('opening_hours')->find($id);
         $shopAddress = Address::find($shopDetails->address_id);
         $shopOpeningHours = [];
-        foreach ($shopDetails->opening_hours as $open_hour){
-            if ($open_hour->entry_type=='day'){
-                $shopOpeningHours[$open_hour->day_of_week] = [
-                    'open_at' => $open_hour->open_at,
-                    'close_at' => $open_hour->close_at,
-                    'break_from' => $open_hour->break_from,
-                    'break_to' => $open_hour->break_to,
-                ];
-            }
-        }
-        //xdebug_var_dump($shopOpeningHours);
 
         $addressCountry = Countries::find($shopAddress->country_id);
         $shopAddress->countryName = $addressCountry->name;
@@ -173,6 +162,36 @@ class ShopController extends Controller
         $resourceCategories = ShopResourceCategory::orderBy('name','asc')->get();
         $shopResources = ShopResource::with('category')->where('location_id','=',$shopDetails->id)->orderBy('category_id')->get();
         $vatRates = VatRate::all();
+
+        $shopHours = [];
+        $types = ['open_hours' => 'Open Time', 'close_hours' => 'Closed Time'];
+        if (sizeof($shopDetails->opening_hours)>0){
+            foreach($shopDetails->opening_hours as $hours){
+                $days_in = '';
+                $days = json_decode($hours->days);
+                foreach ($days as $day){
+                    $days_in[] = jddayofweek($day-1, 1);
+                }
+
+                if ($hours->date_start==NULL || $hours->date_stop==null){
+                    $date_interval = "active at all time";
+                    $days = implode(',',$days_in);
+                }
+                else{
+                    $date_interval = 'from '.Carbon::createFromFormat('Y-m-d', $hours->date_start)->format('d-m-Y').' to '.Carbon::createFromFormat('Y-m-d', $hours->date_stop)->format('d-m-Y');
+                    $days = 'Pre-defined dates';
+                }
+                $time_interval = Carbon::createFromFormat('H:i:s', $hours->time_start)->format('H:i').' to '.Carbon::createFromFormat('H:i:s', $hours->time_stop)->format('H:i');
+
+                $shopHours[] = [
+                    'id'    => $hours->id,
+                    'date_interval' => $date_interval,
+                    'time_interval' => $time_interval,
+                    'type'  => $types[$hours->type],
+                    'days'  => $days
+                ];
+            }
+        }
 
         $breadcrumbs = [
             'Home'                => route('admin'),
@@ -193,7 +212,7 @@ class ShopController extends Controller
             'shopDetails'   => $shopDetails,
             'shopAddress'   => $shopAddress,
             'weekDays'      => $weekDays,
-            'opening_hours' => $shopOpeningHours,
+            'opening_hours' => $shopHours,
             'resourceCategory' => $resourceCategories,
             'resourceList'  => $shopResources,
             'vatRates'      => $vatRates
@@ -209,54 +228,207 @@ class ShopController extends Controller
 
     }
 
-    public function update_opening_hours(Request $request, $id){
-        if (!Auth::check()) {
+    public function add_opening_hours(Request $request){
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
             return [
-                'success'   => false,
-                'title'     => 'Login Error',
-                'errors'    => 'You need to be logged in to access this function'
+                'success' => false,
+                'errors'  => 'You need to be logged in to access this function',
+                'title'   => 'Error authentication'
             ];
         }
+
+        $vars = $request->only('days', 'time_start', 'time_stop', 'date_start', 'date_stop', 'type', 'location_id');
+
+        if (($vars['date_start']=='' && $vars['date_stop']!='') || ($vars['date_start']!='' && $vars['date_stop']=='') || ($vars['date_start']=='' && $vars['date_stop']=='')){
+            $date_start = '';
+            $date_end   = '';
+        }
         else{
-            $user = Auth::user();
+            $date_start = Carbon::createFromFormat('d-m-Y',$vars['date_start'])->toDateString();
+            $date_end   = Carbon::createFromFormat('d-m-Y',$vars['date_stop'])->toDateString();
         }
 
-        $vars = $request->only('opening_hours','shopID');
-        $opening_hours = $vars['opening_hours'];
-        $open = [];
-        $close = [];
-        $break_from = [];
-        $break_to = [];
-
-        for ($i=1; $i<8; $i++) {
-            foreach ($opening_hours as $val) {
-                if (     $val['name'] == 'open_'.$i ){
-                    $open[$i] = $val['value'];
-                }
-                if ( $val['name'] == 'close_'.$i ){
-                    $close[$i] = $val['value'];
-                }
-                if ( $val['name'] == 'break_from_'.$i ){
-                    $break_from[$i] = $val['value'];
-                }
-                if ( $val['name'] == 'break_to_'.$i ){
-                    $break_to[$i] = $val['value'];
-                }
-            }
+        $shopLocation = ShopLocations::where('id', '=', $vars['location_id'])->get()->first();
+        if (!$shopLocation){
+            return[];
         }
 
-        $shopLocation = ShopLocations::findOrFail($id);
-        for ($i=1; $i<=7; $i++){
-            $openingHour = ShopOpeningHour::firstOrNew(['entry_type'=>'day', 'day_of_week'=>$i, 'location_id'=>$shopLocation->id]);
-            $openingHour->fill(['entry_type'=>'day', 'location_id'=>$id, 'day_of_week'=>$i,
-                                'open_at'=>$open[$i], 'close_at'=>$close[$i], 'break_from'=> $break_from[$i], 'break_to'=> $break_to[$i]]);
+        $ShopOpeningHoursVars = [
+            'days'              => json_encode($vars['days']),
+            'time_start'        => Carbon::createFromFormat('H:i',$vars['time_start'])->toTimeString(),
+            'time_stop'         => Carbon::createFromFormat('H:i',$vars['time_stop'])->toTimeString(),
+            'date_start'        => $date_start,
+            'date_stop'         => $date_end,
+            'type'              => $vars['type'],
+            'shop_location_id'  => $shopLocation->id,
+        ];
+
+        if ($ShopOpeningHoursVars['date_start']=='' || $ShopOpeningHoursVars['date_stop']==''){
+            unset($ShopOpeningHoursVars['date_start']);
+            unset($ShopOpeningHoursVars['date_stop']);
+        }
+
+        $ShopOpeningHourValidator = Validator::make($ShopOpeningHoursVars, ShopOpeningHour::rules('POST'), ShopOpeningHour::$validationMessages, ShopOpeningHour::$attributeNames);
+        if ($ShopOpeningHourValidator->fails()){
+            return [
+                'success' => false,
+                'title'   => 'There is an error',
+                'errors'  => $ShopOpeningHourValidator->getMessageBag()->toArray()
+            ];
+        }
+        else {
+            $openingHour = new ShopOpeningHour();
+            $openingHour->fill($ShopOpeningHoursVars);
             $openingHour->save();
+
+            return [
+                'success' => true,
+                'title'   => 'Opening Hour Added',
+                'message' => 'The opening hours settings were added to the shop'
+            ];
+        }
+    }
+
+    public function get_opening_hours_details(Request $request){
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
+            return [
+                'success' => false,
+                'errors'  => 'You need to be logged in to access this function',
+                'title'   => 'Error authentication'
+            ];
+        }
+
+        $vars = $request->only('open_hour_id','location_id');
+
+        $openHour = ShopOpeningHour::where('id','=',$vars['open_hour_id'])->where('shop_location_id','=',$vars['location_id'])->get()->first();
+        if (!$openHour){
+            return['success'=>false, 'title'=>"Error", 'errors'=>"Open Hour settings not found"];
+        }
+        else{
+            $the_hour = [
+                'id'    => $openHour->id,
+                'days'  => json_decode($openHour->days),
+                'time_start' => Carbon::createFromFormat('H:i:s',$openHour->time_start)->format('H:i'),
+                'time_stop'  => Carbon::createFromFormat('H:i:s',$openHour->time_stop)->format('H:i'),
+                'date_start' => $openHour->date_start==""?"":Carbon::createFromFormat('Y-m-d', $openHour->date_start)->format('d-m-Y'),
+                'date_stop'  => $openHour->date_stop==""?"":Carbon::createFromFormat('Y-m-d', $openHour->date_stop)->format('d-m-Y'),
+                'type'  => $openHour->type,
+            ];
+            return ['success'=>true, 'hour'=>$the_hour];
+        }
+    }
+
+    public function update_opening_hours(Request $request){
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
+            return [
+                'success' => false,
+                'errors'  => 'You need to be logged in to access this function',
+                'title'   => 'Error authentication'
+            ];
+        }
+
+        $vars = $request->only('days', 'time_start', 'time_stop', 'date_start', 'date_stop', 'type', 'location_id', 'open_hour_id');
+
+        if (($vars['date_start']=='' && $vars['date_stop']!='') || ($vars['date_start']!='' && $vars['date_stop']=='') || ($vars['date_start']=='' && $vars['date_stop']=='')){
+            $date_start = '';
+            $date_end   = '';
+        }
+        else{
+            $date_start = Carbon::createFromFormat('d-m-Y',$vars['date_start'])->toDateString();
+            $date_end   = Carbon::createFromFormat('d-m-Y',$vars['date_stop'])->toDateString();
+        }
+
+        $shopLocation = ShopLocations::where('id', '=', $vars['location_id'])->get()->first();
+        if (!$shopLocation){
+            return['success'=> false,
+                'errors'    => 'No location found for the given ID',
+                'title'     => 'Error in update'];
+        }
+
+        $openHour = ShopOpeningHour::where('id','=',$vars['open_hour_id'])->where('shop_location_id','=',$shopLocation->id)->get()->first();
+        if (!$openHour){
+            return[
+                'success' => false,
+                'errors'  => 'No open hour setting found for the given ID',
+                'title'   => 'Error in update'];
+        }
+
+        $OpenHoursVars = [
+            'days'          => json_encode($vars['days']),
+            'time_start'    => Carbon::createFromFormat('H:i',$vars['time_start'])->toTimeString(),
+            'time_stop'     => Carbon::createFromFormat('H:i',$vars['time_stop'])->toTimeString(),
+            'date_start'    => $date_start,
+            'date_stop'     => $date_end,
+            'type'          => $vars['type'],
+            'shop_location_id'   => $shopLocation->id,
+        ];
+
+        if ($OpenHoursVars['date_start']=='' || $OpenHoursVars['date_stop']==''){
+            unset($OpenHoursVars['date_start']);
+            unset($OpenHoursVars['date_stop']);
+        }
+
+        $OpenHourValidator = Validator::make($OpenHoursVars, ShopOpeningHour::rules('PUT', $openHour->id), ShopOpeningHour::$validationMessages, ShopOpeningHour::$attributeNames);
+        if ($OpenHourValidator->fails()){
+            return [
+                'success' => false,
+                'title'   => 'There is an error',
+                'errors'  => $OpenHourValidator->getMessageBag()->toArray()
+            ];
+        }
+        else {
+            $openHour->fill($OpenHoursVars);
+            $openHour->save();
+
+            return [
+                'success' => true,
+                'title'   => 'Opening Hours Updated',
+                'message' => 'The opening hours on the selected location were updated with success'
+            ];
+        }
+    }
+
+    public function delete_opening_hours(Request $request){
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
+            return [
+                'success' => false,
+                'errors'  => 'You need to be logged in to access this function',
+                'title'   => 'Error authentication'
+            ];
+        }
+
+        // group price = true; // one price is assigned to all same resources in the same location
+        $group_price = true;
+
+        $vars = $request->only('hour_id', 'location_id');
+
+        $shopLocation = ShopLocations::where('id', '=', $vars['location_id'])->get()->first();
+        if (!$shopLocation){
+            return[
+                'success' => false,
+                'errors'  => 'No location found for selected hour interval',
+                'title'   => 'Error in delete'];
+        }
+
+        $openingHour = ShopOpeningHour::where('id','=',$vars['hour_id'])->where('shop_location_id','=',$shopLocation->id)->get()->first();
+        if (!$openingHour){
+            return[
+                'success' => false,
+                'errors'  => 'No open hour object found for the given ID',
+                'title'   => 'Error in delete'];
+        }
+        else{
+            $openingHour->delete();
         }
 
         return [
-            'success'   => true,
-            'title'     => 'Hours Updated',
-            'message'   => 'Opening Hours Successfully Updated'
+            'success' => true,
+            'title'   => 'Open hour setting Deleted',
+            'message' => 'The open hour setting was deleted with success'
         ];
     }
 

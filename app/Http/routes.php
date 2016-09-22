@@ -248,9 +248,24 @@ Route::group(['middleware' => 'web'], function () {
         'uses'  => 'ShopController@add_cash_terminal'
     ]);
 
-    Route::post('admin/shops/location/{id}/opening_hours_update', [
-        'as'    => 'admin/shops/location/opening_hours_update',
+    Route::post('admin/shops/add_opening_hours', [
+        'as'    => 'admin/shops/add_opening_hours',
+        'uses'  => 'ShopController@add_opening_hours'
+    ]);
+
+    Route::post('admin/shops/get_opening_hours_details', [
+        'as'    => 'admin/shops/get_opening_hours_details',
+        'uses'  => 'ShopController@get_opening_hours_details'
+    ]);
+
+    Route::post('admin/shops/update_opening_hours', [
+        'as'    => 'admin/shops/update_opening_hours',
         'uses'  => 'ShopController@update_opening_hours'
+    ]);
+
+    Route::post('admin/shops/delete_opening_hours', [
+        'as'    => 'admin/shops/delete_opening_hours',
+        'uses'  => 'ShopController@delete_opening_hours'
     ]);
 
     Route::patch('admin/shops/location/{id}/store_details_update', [

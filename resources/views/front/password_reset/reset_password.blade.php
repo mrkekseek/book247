@@ -125,6 +125,25 @@
             }
         });
 
+        $.validator.addMethod("datePickerDate",function(value, element) {
+            // put your own logic here, this is just a (crappy) example
+            return value.match(/^\d\d?-\d\d?-\d\d\d\d$/);
+        },"Please enter a date in the format dd/mm/yyyy.");
+        $.validator.addMethod('filesize',function(value, element, param) {
+            // param = size (in bytes)
+            // element = element to validate (<input>)
+            // value = value of the element (file name)
+            return this.optional(element) || (element.files[0].size <= param);
+        },"File must be JPG, GIF or PNG, less than 1MB");
+        $.validator.addMethod("validate_email",function(value, element) {
+            if(/^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/.test( value )) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        },"Please enter a valid Email.");
+
         var FormValidation = function () {
 
             var handleValidation2 = function() {
@@ -140,6 +159,7 @@
                     rules: {
                         email: {
                             email: true,
+                            validate_email: true,
                             required: true,
                         },
                         password: {

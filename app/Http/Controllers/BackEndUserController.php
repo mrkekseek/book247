@@ -8,6 +8,7 @@ use App\ProfessionalDetail;
 use App\Address;
 use App\ShopLocations;
 use App\ShopResourceCategory;
+use App\UserMembership;
 use App\UserSettings;
 use App\UserAvatars;
 use App\UserDocuments;
@@ -627,6 +628,14 @@ class BackEndUserController extends Controller
                 $user_link = route('admin/front_users/view_account_settings',['id'=>$user_temp->id]);
                 $avatar = $user_temp->get_avatar_image();
 
+                $userMembership = UserMembership::where('user_id','=',$result->id)->where('status','=','active')->get()->first();
+                if ($userMembership){
+                    $activeMembership = $userMembership->membership_name;
+                }
+                else{
+                    $activeMembership = 'No Active Membership';
+                }
+
                 $items[] = array('id'=>$result->id,
                     'first_name'    => $result->first_name,
                     'middle_name'   => $result->middle_name,
@@ -635,6 +644,7 @@ class BackEndUserController extends Controller
                     'phone'         => $result->mobile_number,
                     'city'          => $result->city,
                     'region'        => $result->region,
+                    'membership'    => $activeMembership,
                     'user_profile_img'      => asset('assets/pages/img/avatars/team'.rand(1,10).'.jpg'),
                     'avatar_image'          => $avatar['avatar_base64'],
                     'user_link_details'     => $user_link

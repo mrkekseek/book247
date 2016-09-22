@@ -8,6 +8,7 @@
     <link href="{{ asset('assets/global/css/components-rounded.min.css') }}" rel="stylesheet" id="style_components" type="text/css" />
     <link href="{{ asset('assets/global/css/plugins.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('assets/global/plugins/jquery-notific8/jquery.notific8.min.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/global/plugins/bootstrap-daterangepicker/daterangepicker.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('assets/global/plugins/bootstrap-timepicker/css/bootstrap-timepicker.min.css') }}" rel="stylesheet" type="text/css" />
 @endsection
 
@@ -246,77 +247,45 @@
                     <div class="portlet-title bg-green-sharp bg-font-green-sharp">
                         <div class="caption">
                             <i class="fa fa-gift"></i>Opening Hours </div>
-                        <div class="tools">
-                            <a href="javascript:;" class="expand"> </a>
+                        <div class="actions">
+                            <a class="btn green-jungle" data-toggle="modal" href="#add_opening_hours_modal">
+                                <i class="fa fa-plus"></i> Add Opening Hours </a>
                         </div>
                     </div>
-                    <div class="portlet-body form" style="display:none;">
-                        <!-- BEGIN FORM-->
-                        <form action="" class="form-horizontal form-bordered" name="opening_hours" id="opening_hours">
-                            <div class="form-body form">
-                                @foreach ($weekDays as $key=>$day)
-                                <div class="form-group">
-                                    <div class="control-label col-md-1">
-                                        {{$day}} Open
-                                    </div>
-                                    <div class="col-md-2">
-                                        <div class="input-group">
-                                            <input type="text" class="form-control timepicker timepicker-24" name="open_{{$key}}" value="{{@$opening_hours[$key]["open_at"]}}">
-                                                <span class="input-group-btn">
-                                                    <button class="btn default" type="button">
-                                                        <i class="fa fa-clock-o"></i>
-                                                    </button>
-                                                </span>
-                                        </div>
-                                    </div>
-                                    <label class="control-label col-md-1">Close</label>
-                                    <div class="col-md-2">
-                                        <div class="input-group">
-                                            <input type="text" class="form-control timepicker timepicker-24" name="close_{{$key}}" value="{{@$opening_hours[$key]["close_at"]}}">
-                                                <span class="input-group-btn">
-                                                    <button class="btn default" type="button">
-                                                        <i class="fa fa-clock-o"></i>
-                                                    </button>
-                                                </span>
-                                        </div>
-                                    </div>
-
-                                    <div class="control-label col-md-1">
-                                        Break From
-                                    </div>
-                                    <div class="col-md-2">
-                                        <div class="input-group">
-                                            <input type="text" class="form-control timepicker timepicker-24"  value="{{@$opening_hours[$key]["break_from"]}}" name="break_from_{{$key}}">
-                                                <span class="input-group-btn">
-                                                    <button class="btn default" type="button">
-                                                        <i class="fa fa-clock-o"></i>
-                                                    </button>
-                                                </span>
-                                        </div>
-                                    </div>
-                                    <label class="control-label col-md-1">To</label>
-                                    <div class="col-md-2">
-                                        <div class="input-group">
-                                            <input type="text" class="form-control timepicker timepicker-24"  value="{{@$opening_hours[$key]["break_to"]}}" name="break_to_{{$key}}">
-                                                <span class="input-group-btn">
-                                                    <button class="btn default" type="button">
-                                                        <i class="fa fa-clock-o"></i>
-                                                    </button>
-                                                </span>
-                                        </div>
-                                    </div>
-                                </div>
+                    <div class="portlet-body flip-scroll">
+                        @if (sizeof($opening_hours)>0)
+                            <table class="table table-bordered table-striped table-condensed flip-content">
+                                <thead class="flip-content">
+                                <tr>
+                                    <th width="5%"> No. </th>
+                                    <th> Week Days </th>
+                                    <th class="numeric"> Time Interval </th>
+                                    <th class="numeric"> Date Restrictions </th>
+                                    <th class="numeric"> Type </th>
+                                    <th class="numeric" style="width:130px;"> </th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                @foreach ($opening_hours as $key=>$hours)
+                                    <tr>
+                                        <td> {{$key+1}} </td>
+                                        <td> {{$hours['days']}} </td>
+                                        <td> {{$hours['time_interval']}} </td>
+                                        <td> {{$hours['date_interval']}} </td>
+                                        <td class="numeric"> {{$hours['type']}} </td>
+                                        <td class="numeric"> <span class="btn blue btn-sm" onclick="javascript:get_opening_hour({{$hours['id']}})">Edit</span>
+                                            <span class="btn red btn-sm" onclick="javascript:delete_opening_hours('{{ $hours['id'] }}','{{ $shopDetails->id }}')">Delete</span> </td>
+                                    </tr>
                                 @endforeach
+                                </tbody>
+                            </table>
+                        @else
+                            <div class="note note-warning">
+                                <h4 class="block">You have no opening hours defined for this location</h4>
+                                <p> Use the "Add Opening Hours" button to define open hours for this location. After you set up the opening hours for different days of week and/or hour intervals
+                                    you can also add special opening hours for specific calendar day or days interval.</p>
                             </div>
-                            <div class="form-actions">
-                                <div class="row">
-                                    <div class="col-md-offset-10 col-md-2">
-                                        <button class="btn green" type="submit">Update</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </form>
-                        <!-- END FORM-->
+                        @endif
                     </div>
                 </div>
                 <!-- END PORTLET-->
@@ -598,7 +567,7 @@
         @endif
         <!-- END PAGE BASE CONTENT -->
 
-        <!-- BEGIN Delete price for resource -->
+        <!-- BEGIN Add new shop resource -->
         <div class="modal fade draggable-modal" id="draggable" tabindex="-1" role="basic" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -692,17 +661,17 @@
             </div>
             <!-- /.modal-dialog -->
         </div>
-        <!-- END Delete price for resource -->
+        <!-- END Add new shop resource -->
 
-        <!-- BEGIN Delete price for resource -->
+        <!-- BEGIN Delete shop resource -->
         <div class="modal fade bs-modal-sm" id="delete_resource_modal" tabindex="-1" role="dialog" aria-hidden="true">
             <div class="modal-dialog modal-sm">
                 <div class="modal-content">
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
-                        <h4 class="modal-title">Delete this price?</h4>
+                        <h4 class="modal-title">Delete this resource?</h4>
                     </div>
-                    <div class="modal-body"> By clicking "Delete Price" the price attribute will be removed from this resource. Do you want to delete it? </div>
+                    <div class="modal-body"> By clicking "Yes, Delete" the resource will be removed from this location. Do you want to delete it? </div>
                     <div class="modal-footer">
                         <button type="button" class="btn dark btn-outline" data-dismiss="modal">No, Go Back</button>
                         <button type="button" class="btn green" onclick="javascript:delete_resource();">Yes, Delete</button>
@@ -713,13 +682,199 @@
             </div>
             <!-- /.modal-dialog -->
         </div>
-        <!-- END Delete price for resource -->
+        <!-- END Delete shop resource -->
+
+        <!-- BEGIN Add opening hours to shop -->
+        <div class="modal fade draggable-modal" id="add_opening_hours_modal" tabindex="-1" role="basic" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        <form action="#" id="new_opening_hours" name="new_opening_hours" class="form-horizontal">
+                            <div class="form-body">
+                                <div class="alert alert-danger display-hide">
+                                    <button class="close" data-close="alert"></button> You have some form errors. Please check below. </div>
+                                <div class="alert alert-success display-hide">
+                                    <button class="close" data-close="alert"></button> Your form validation is successful! </div>
+                                <div class="form-group  margin-top-20">
+                                    <label class="control-label col-md-4">Week days
+                                        <span class="required"> * </span>
+                                    </label>
+                                    <div class="col-md-7">
+                                        <div class="input-icon right">
+                                            <i class="fa"></i>
+                                            <select name="week_days" class="form-control input-sm input-medium" multiple="" style="height:130px;">
+                                                <option value="1">Monday</option>
+                                                <option value="2">Tuesday</option>
+                                                <option value="3">Wednesday</option>
+                                                <option value="4">Thursday</option>
+                                                <option value="5">Friday</option>
+                                                <option value="6">Saturday</option>
+                                                <option value="0">Sunday</option>
+                                            </select> </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="control-label col-md-4">Time Interval
+                                        <span class="required"> * </span>
+                                    </label>
+                                    <div class="col-md-7">
+                                        <div class="input-icon right">
+                                            <i class="fa"></i>
+                                            <input type="text" name="time_start" class="form-control input-xsmall input-sm input-inline" value="00:00" /> to
+                                            <input type="text" name="time_stop" class="form-control input-xsmall input-sm input-inline" value="23:59" />
+                                            <h6 class="help-block"> Use a valid hh:mm time value between 00:00 and 23:59 </h6>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="control-label col-md-4">Type
+                                        <span class="required"> * </span>
+                                    </label>
+                                    <div class="col-md-7">
+                                        <div class="input-icon right">
+                                            <i class="fa"></i>
+                                            <select class="form-control input-sm input-medium" name="hours_type" id="hours_type">
+                                                <option value="open_hours">Open Hours</option>
+                                                <option value="close_hours">Closed Hours</option>
+                                            </select>
+                                            <h6 class="help-block"> Specific Type requires the from/to dates to be entered </h6> </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="control-label col-md-4">Date Interval</label>
+                                    <div class="col-md-8">
+                                        <div class="input-group input-large date-picker input-daterange" data-date="10-11-2012" data-date-format="dd-mm-yyyy">
+                                            <input type="text" class="form-control input-sm" name="from_date" id="from_date">
+                                            <span class="input-group-addon"> to </span>
+                                            <input type="text" class="form-control input-sm" name="to_date" id="to_date"> </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn dark btn-outline" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn green submit_form_2" onclick="javascript: $('#new_opening_hours').submit();">Save changes</button>
+                    </div>
+                </div>
+                <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+        </div>
+        <!-- END Add opening hours to shop -->
+
+        <!-- BEGIN Update opening hours -->
+        <div class="modal fade draggable-modal" id="update_opening_hours_modal" tabindex="-1" role="basic" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        <form action="#" id="update_opening_hours" name="update_opening_hours" class="form-horizontal">
+                            <div class="form-body">
+                                <div class="alert alert-danger display-hide">
+                                    <button class="close" data-close="alert"></button> You have some form errors. Please check below. </div>
+                                <div class="alert alert-success display-hide">
+                                    <button class="close" data-close="alert"></button> Your form validation is successful! </div>
+                                <div class="form-group  margin-top-20">
+                                    <label class="control-label col-md-4">Week days
+                                        <span class="required"> * </span>
+                                    </label>
+                                    <div class="col-md-7">
+                                        <div class="input-icon right">
+                                            <i class="fa"></i>
+                                            <select name="update_week_days" class="form-control input-sm input-medium" multiple="" style="height:130px;">
+                                                <option value="1">Monday</option>
+                                                <option value="2">Tuesday</option>
+                                                <option value="3">Wednesday</option>
+                                                <option value="4">Thursday</option>
+                                                <option value="5">Friday</option>
+                                                <option value="6">Saturday</option>
+                                                <option value="0">Sunday</option>
+                                            </select> </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-4">Time Interval
+                                        <span class="required"> * </span>
+                                    </label>
+                                    <div class="col-md-7">
+                                        <div class="input-icon right">
+                                            <i class="fa"></i>
+                                            <input type="text" name="update_time_start" class="form-control input-xsmall input-sm input-inline" value="" /> to
+                                            <input type="text" name="update_time_stop" class="form-control input-xsmall input-sm input-inline" value="" />
+                                            <h6 class="help-block"> Use a valid hh:mm time value between 00:00 and 23:59 </h6>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-4">Type
+                                        <span class="required"> * </span>
+                                    </label>
+                                    <div class="col-md-7">
+                                        <div class="input-icon right">
+                                            <i class="fa"></i>
+                                            <select class="form-control input-sm input-medium" name="update_price_type">
+                                                <option value="open_hours">Open Hours</option>
+                                                <option value="close_hours">Closed Hours</option>
+                                            </select>
+                                            <h6 class="help-block"> Specific Type requires the from/to dates to be entered </h6> </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-4">Date Interval</label>
+                                    <div class="col-md-8">
+                                        <div class="input-group input-large date-picker input-daterange" data-date="10-11-2012" data-date-format="dd-mm-yyyy" id="edit_update_daterange">
+                                            <input type="text" class="form-control input-sm" name="update_from_date">
+                                            <span class="input-group-addon"> to </span>
+                                            <input type="text" class="form-control input-sm" name="update_to_date"> </div>
+                                    </div>
+                                </div>
+                                <input type="hidden" value="" name="open_hour_id" />
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn dark btn-outline" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn green submit_form_2" onclick="javascript: $('#update_opening_hours').submit();">Save changes</button>
+                    </div>
+                </div>
+                <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+        </div>
+        <!-- END Update opening hours -->
+
+        <!-- BEGIN Delete opening hour -->
+        <div class="modal fade bs-modal-sm" id="delete_opening_hours_modal" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog modal-sm">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                        <h4 class="modal-title">Delete this "Opening Hours" entry?</h4>
+                    </div>
+                    <div class="modal-body"> By clicking "Yes, Delete" the open hour attribute will be removed from this location. Do you want to delete it? </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn dark btn-outline" data-dismiss="modal">No, Go Back</button>
+                        <button type="button" class="btn green" onclick="javascript:delete_hours();">Yes, Delete</button>
+                        <input type="hidden" name="del_open_hour_id" value="" />
+                        <input type="hidden" name="del_location_id" value="" />
+                    </div>
+                </div>
+                <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+        </div>
+        <!-- END Delete opening hour -->
     </div>
 @endsection
 
 @section('pageBelowLevelPlugins')
     <script src="{{ asset('assets/global/plugins/jquery-validation/js/jquery.validate.min.js') }}" type="text/javascript"></script>
-    <script src="{{ asset('assets/global/plugins/bootstrap-timepicker/js/bootstrap-timepicker.min.js') }}" type="text/javascript"></script>
+    <!--<script src="{{ asset('assets/global/plugins/bootstrap-timepicker/js/bootstrap-timepicker.min.js') }}" type="text/javascript"></script>-->
+    <script src="{{ asset('assets/global/plugins/moment.min.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('assets/global/plugins/bootstrap-daterangepicker/daterangepicker.min.js') }}" type="text/javascript"></script>
 @endsection
 
 @section('pageBelowLevelScripts')
@@ -734,162 +889,30 @@
 
 @section('pageCustomJScripts')
     <script type="text/javascript">
-
         $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             }
         });
 
-        var TableDatatablesManaged = function () {
-
-            var initTable1 = function () {
-
-                var table = $('#all_permissions');
-
-                // begin first table
-                table.dataTable({
-
-                    // Internationalisation. For more info refer to http://datatables.net/manual/i18n
-                    "language": {
-                        "aria": {
-                            "sortAscending": ": activate to sort column ascending",
-                            "sortDescending": ": activate to sort column descending"
-                        },
-                        "emptyTable": "No data available in table",
-                        "info": "Showing _START_ to _END_ of _TOTAL_ records",
-                        "infoEmpty": "No records found",
-                        "infoFiltered": "(filtered1 from _MAX_ total records)",
-                        "lengthMenu": "Show _MENU_",
-                        "search": "Search:",
-                        "zeroRecords": "No matching records found",
-                        "paginate": {
-                            "previous":"Prev",
-                            "next": "Next",
-                            "last": "Last",
-                            "first": "First"
-                        }
-                    },
-
-                    // Or you can use remote translation file
-                    //"language": {
-                    //   url: '//cdn.datatables.net/plug-ins/3cfcc339e89/i18n/Portuguese.json'
-                    //},
-
-                    // Uncomment below line("dom" parameter) to fix the dropdown overflow issue in the datatable cells. The default datatable layout
-                    // setup uses scrollable div(table-scrollable) with overflow:auto to enable vertical scroll(see: assets/global/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.js).
-                    // So when dropdowns used the scrollable div should be removed.
-                    //"dom": "<'row'<'col-md-6 col-sm-12'l><'col-md-6 col-sm-12'f>r>t<'row'<'col-md-5 col-sm-12'i><'col-md-7 col-sm-12'p>>",
-
-                    "bStateSave": true, // save datatable state(pagination, sort, etc) in cookie.
-
-                    "columnDefs": [ {
-                        "targets": 0,
-                        "orderable": false,
-                        "searchable": false
-                    }],
-
-                    "lengthMenu": [
-                        [5, 15, 20, -1],
-                        [5, 15, 20, "All"] // change per page values here
-                    ],
-                    // set the initial value
-                    "pageLength": 5,
-                    "pagingType": "bootstrap_full_number",
-                    "columnDefs": [{  // set default column settings
-                        'orderable': false,
-                        'targets': [0]
-                    }, {
-                        "searchable": false,
-                        "targets": [0]
-                    }],
-                    "order": [
-                        [1, "asc"]
-                    ] // set first column as a default sort by asc
-                });
-
-                var tableWrapper = jQuery('#sample_1_wrapper');
-
-                table.find('.group-checkable').change(function () {
-                    var set = jQuery(this).attr("data-set");
-                    var checked = jQuery(this).is(":checked");
-                    jQuery(set).each(function () {
-                        if (checked) {
-                            $(this).prop("checked", true);
-                            $(this).parents('tr').addClass("active");
-                        } else {
-                            $(this).prop("checked", false);
-                            $(this).parents('tr').removeClass("active");
-                        }
-                    });
-                    jQuery.uniform.update(set);
-                });
-
-                table.on('change', 'tbody tr .checkboxes', function () {
-                    $(this).parents('tr').toggleClass("active");
-                });
+        $.validator.addMethod("datePickerDate",function(value, element) {
+            // put your own logic here, this is just a (crappy) example
+            return value.match(/^\d\d?-\d\d?-\d\d\d\d$/);
+        },"Please enter a date in the format dd/mm/yyyy.");
+        $.validator.addMethod('filesize',function(value, element, param) {
+            // param = size (in bytes)
+            // element = element to validate (<input>)
+            // value = value of the element (file name)
+            return this.optional(element) || (element.files[0].size <= param);
+        },"File must be JPG, GIF or PNG, less than 1MB");
+        $.validator.addMethod("validate_email",function(value, element) {
+            if(/^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/.test( value )) {
+                return true;
             }
-
-            return {
-
-                //main function to initiate the module
-                init: function () {
-                    if (!jQuery().dataTable) {
-                        return;
-                    }
-
-                    initTable1();
-                }
-
-            };
-
-        }();
-
-        var ComponentsDateTimePickers = function () {
-
-            var handleTimePickers = function () {
-
-                if (jQuery().timepicker) {
-                    $('.timepicker-default').timepicker({
-                        autoclose: true,
-                        showSeconds: true,
-                        minuteStep: 1
-                    });
-
-                    $('.timepicker-no-seconds').timepicker({
-                        autoclose: true,
-                        minuteStep: 5
-                    });
-
-                    $('.timepicker-24').timepicker({
-                        autoclose: true,
-                        minuteStep: 5,
-                        showSeconds: false,
-                        showMeridian: false
-                    });
-
-                    // handle input group button click
-                    $('.timepicker').parent('.input-group').on('click', '.input-group-btn', function(e){
-                        e.preventDefault();
-                        $(this).parent('.input-group').find('.timepicker').timepicker('showWidget');
-                    });
-                }
+            else {
+                return false;
             }
-
-            return {
-                //main function to initiate the module
-                init: function () {
-                    handleTimePickers();
-                }
-            };
-
-        }();
-
-        if (App.isAngularJsApp() === false) {
-            jQuery(document).ready(function() {
-                ComponentsDateTimePickers.init();
-            });
-        }
+        },"Please enter a valid Email.");
 
         var FormValidation = function () {
 
@@ -1048,6 +1071,7 @@
                         },
                         shop_email: {
                             email: true,
+                            validate_email: true,
                             required: true
                         },
                         shop_bank_acc_no: {
@@ -1159,6 +1183,130 @@
                 });
             }
 
+            var handleValidation5 = function() {
+                var form5 = $('#new_opening_hours');
+                var error5 = $('.alert-danger', form5);
+                var success5 = $('.alert-success', form5);
+
+                form5.validate({
+                    errorElement: 'span', //default input error message container
+                    errorClass: 'help-block help-block-error', // default input error message class
+                    focusInvalid: false, // do not focus the last invalid input
+                    ignore: "",  // validate all fields including form hidden input
+                    rules: {
+                        week_days: {
+                            required: true
+                        },
+                        time_start: {
+                            minlength: 5,
+                            required: true
+                        },
+                        time_stop: {
+                            minlength: 5,
+                            required: true
+                        },
+                        hours_type: {
+                            required: true
+                        }
+                    },
+
+                    invalidHandler: function (event, validator) { //display error alert on form submit
+                        success5.hide();
+                        error5.show();
+                        App.scrollTo(error5, -200);
+                    },
+
+                    errorPlacement: function (error, element) { // render error placement for each input type
+                        var icon = $(element).parent('.input-icon').children('i');
+                        icon.removeClass('fa-check').addClass("fa-warning");
+                        icon.attr("data-original-title", error.text()).tooltip({'container': 'body'});
+                    },
+
+                    highlight: function (element) { // hightlight error inputs
+                        $(element)
+                                .closest('.form-group').removeClass("has-success").addClass('has-error'); // set error class to the control group
+                    },
+
+                    unhighlight: function (element) { // revert the change done by hightlight
+
+                    },
+
+                    success: function (label, element) {
+                        var icon = $(element).parent('.input-icon').children('i');
+                        $(element).closest('.form-group').removeClass('has-error').addClass('has-success'); // set success class to the control group
+                        icon.removeClass("fa-warning").addClass("fa-check");
+                    },
+
+                    submitHandler: function (form) {
+                        success5.show();
+                        error5.hide();
+                        add_opening_hours(); // submit the form
+                    }
+                });
+            }
+
+            var handleValidation6 = function() {
+                var form6 = $('#update_opening_hours');
+                var error6 = $('.alert-danger', form6);
+                var success6 = $('.alert-success', form6);
+
+                form6.validate({
+                    errorElement: 'span', //default input error message container
+                    errorClass: 'help-block help-block-error', // default input error message class
+                    focusInvalid: false, // do not focus the last invalid input
+                    ignore: "",  // validate all fields including form hidden input
+                    rules: {
+                        update_week_days: {
+                            required: true
+                        },
+                        update_time_start: {
+                            minlength: 5,
+                            required: true
+                        },
+                        update_time_stop: {
+                            minlength: 5,
+                            required: true
+                        },
+                        update_price_type: {
+                            required: true
+                        }
+                    },
+
+                    invalidHandler: function (event, validator) { //display error alert on form submit
+                        success6.hide();
+                        error6.show();
+                        App.scrollTo(error6, -200);
+                    },
+
+                    errorPlacement: function (error, element) { // render error placement for each input type
+                        var icon = $(element).parent('.input-icon').children('i');
+                        icon.removeClass('fa-check').addClass("fa-warning");
+                        icon.attr("data-original-title", error.text()).tooltip({'container': 'body'});
+                    },
+
+                    highlight: function (element) { // hightlight error inputs
+                        $(element)
+                                .closest('.form-group').removeClass("has-success").addClass('has-error'); // set error class to the control group
+                    },
+
+                    unhighlight: function (element) { // revert the change done by hightlight
+
+                    },
+
+                    success: function (label, element) {
+                        var icon = $(element).parent('.input-icon').children('i');
+                        $(element).closest('.form-group').removeClass('has-error').addClass('has-success'); // set success class to the control group
+                        icon.removeClass("fa-warning").addClass("fa-check");
+                    },
+
+                    submitHandler: function (form) {
+                        success6.show();
+                        error6.hide();
+                        update_opening_hours(); // submit the form
+                    }
+                });
+            }
+
             return {
                 //main function to initiate the module
                 init: function () {
@@ -1166,13 +1314,238 @@
                     handleValidation2();
                     handleValidation3();
                     handleValidation4();
+                    handleValidation5();
+                    handleValidation6();
+                }
+            };
+        }();
+
+        var TableDatatablesManaged = function () {
+
+            var initTable1 = function () {
+
+                var table = $('#all_permissions');
+
+                // begin first table
+                table.dataTable({
+
+                    // Internationalisation. For more info refer to http://datatables.net/manual/i18n
+                    "language": {
+                        "aria": {
+                            "sortAscending": ": activate to sort column ascending",
+                            "sortDescending": ": activate to sort column descending"
+                        },
+                        "emptyTable": "No data available in table",
+                        "info": "Showing _START_ to _END_ of _TOTAL_ records",
+                        "infoEmpty": "No records found",
+                        "infoFiltered": "(filtered1 from _MAX_ total records)",
+                        "lengthMenu": "Show _MENU_",
+                        "search": "Search:",
+                        "zeroRecords": "No matching records found",
+                        "paginate": {
+                            "previous":"Prev",
+                            "next": "Next",
+                            "last": "Last",
+                            "first": "First"
+                        }
+                    },
+
+                    // Or you can use remote translation file
+                    //"language": {
+                    //   url: '//cdn.datatables.net/plug-ins/3cfcc339e89/i18n/Portuguese.json'
+                    //},
+
+                    // Uncomment below line("dom" parameter) to fix the dropdown overflow issue in the datatable cells. The default datatable layout
+                    // setup uses scrollable div(table-scrollable) with overflow:auto to enable vertical scroll(see: assets/global/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.js).
+                    // So when dropdowns used the scrollable div should be removed.
+                    //"dom": "<'row'<'col-md-6 col-sm-12'l><'col-md-6 col-sm-12'f>r>t<'row'<'col-md-5 col-sm-12'i><'col-md-7 col-sm-12'p>>",
+
+                    "bStateSave": true, // save datatable state(pagination, sort, etc) in cookie.
+
+                    "columnDefs": [ {
+                        "targets": 0,
+                        "orderable": false,
+                        "searchable": false
+                    }],
+
+                    "lengthMenu": [
+                        [5, 15, 20, -1],
+                        [5, 15, 20, "All"] // change per page values here
+                    ],
+                    // set the initial value
+                    "pageLength": 5,
+                    "pagingType": "bootstrap_full_number",
+                    "columnDefs": [{  // set default column settings
+                        'orderable': false,
+                        'targets': [0]
+                    }, {
+                        "searchable": false,
+                        "targets": [0]
+                    }],
+                    "order": [
+                        [1, "asc"]
+                    ] // set first column as a default sort by asc
+                });
+
+                var tableWrapper = jQuery('#sample_1_wrapper');
+
+                table.find('.group-checkable').change(function () {
+                    var set = jQuery(this).attr("data-set");
+                    var checked = jQuery(this).is(":checked");
+                    jQuery(set).each(function () {
+                        if (checked) {
+                            $(this).prop("checked", true);
+                            $(this).parents('tr').addClass("active");
+                        } else {
+                            $(this).prop("checked", false);
+                            $(this).parents('tr').removeClass("active");
+                        }
+                    });
+                    jQuery.uniform.update(set);
+                });
+
+                table.on('change', 'tbody tr .checkboxes', function () {
+                    $(this).parents('tr').toggleClass("active");
+                });
+            }
+
+            return {
+
+                //main function to initiate the module
+                init: function () {
+                    if (!jQuery().dataTable) {
+                        return;
+                    }
+
+                    initTable1();
                 }
 
             };
 
         }();
 
+        var ComponentsDateTimePickers = function () {
+
+            var handleDatePickers = function () {
+
+                if (jQuery().datepicker) {
+                    $('.date-picker').datepicker({
+                        rtl: App.isRTL(),
+                        orientation: "left",
+                        autoclose: true
+                    });
+                    //$('body').removeClass("modal-open"); // fix bug when inline picker is used in modal
+                }
+
+                /* Workaround to restrict daterange past date select: http://stackoverflow.com/questions/11933173/how-to-restrict-the-selectable-date-ranges-in-bootstrap-datepicker */
+            }
+
+            var handleDateRangePickers = function () {
+                if (!jQuery().daterangepicker) {
+                    return;
+                }
+
+                $('#defaultrange').daterangepicker({
+                            opens: (App.isRTL() ? 'left' : 'right'),
+                            format: 'MM/DD/YYYY',
+                            separator: ' to ',
+                            startDate: moment().subtract('days', 29),
+                            endDate: moment(),
+                            ranges: {
+                                'Today': [moment(), moment()],
+                                'Yesterday': [moment().subtract('days', 1), moment().subtract('days', 1)],
+                                'Last 7 Days': [moment().subtract('days', 6), moment()],
+                                'Last 30 Days': [moment().subtract('days', 29), moment()],
+                                'This Month': [moment().startOf('month'), moment().endOf('month')],
+                                'Last Month': [moment().subtract('month', 1).startOf('month'), moment().subtract('month', 1).endOf('month')]
+                            },
+                            minDate: '01/01/2012',
+                            maxDate: '12/31/2018',
+                        },
+                        function (start, end) {
+                            $('#defaultrange input').val(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
+                        }
+                );
+
+                $('#defaultrange_modal').daterangepicker({
+                            opens: (App.isRTL() ? 'left' : 'right'),
+                            format: 'MM/DD/YYYY',
+                            separator: ' to ',
+                            startDate: moment().subtract('days', 29),
+                            endDate: moment(),
+                            minDate: '01/01/2012',
+                            maxDate: '12/31/2018',
+                        },
+                        function (start, end) {
+                            $('#defaultrange_modal input').val(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
+                        }
+                );
+
+                // this is very important fix when daterangepicker is used in modal. in modal when daterange picker is opened and mouse clicked anywhere bootstrap modal removes the modal-open class from the body element.
+                // so the below code will fix this issue.
+                $('#defaultrange_modal').on('click', function(){
+                    if ($('#daterangepicker_modal').is(":visible") && $('body').hasClass("modal-open") == false) {
+                        $('body').addClass("modal-open");
+                    }
+                });
+
+                $('#reportrange').daterangepicker({
+                            opens: (App.isRTL() ? 'left' : 'right'),
+                            startDate: moment().subtract('days', 29),
+                            endDate: moment(),
+                            minDate: '01/01/2012',
+                            maxDate: '12/31/2014',
+                            dateLimit: {
+                                days: 60
+                            },
+                            showDropdowns: true,
+                            showWeekNumbers: true,
+                            timePicker: false,
+                            timePickerIncrement: 1,
+                            timePicker12Hour: true,
+                            ranges: {
+                                'Today': [moment(), moment()],
+                                'Yesterday': [moment().subtract('days', 1), moment().subtract('days', 1)],
+                                'Last 7 Days': [moment().subtract('days', 6), moment()],
+                                'Last 30 Days': [moment().subtract('days', 29), moment()],
+                                'This Month': [moment().startOf('month'), moment().endOf('month')],
+                                'Last Month': [moment().subtract('month', 1).startOf('month'), moment().subtract('month', 1).endOf('month')]
+                            },
+                            buttonClasses: ['btn'],
+                            applyClass: 'green',
+                            cancelClass: 'default',
+                            format: 'MM/DD/YYYY',
+                            separator: ' to ',
+                            locale: {
+                                applyLabel: 'Apply',
+                                fromLabel: 'From',
+                                toLabel: 'To',
+                                customRangeLabel: 'Custom Range',
+                                daysOfWeek: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'],
+                                monthNames: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+                                firstDay: 1
+                            }
+                        },
+                        function (start, end) {
+                            $('#reportrange span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
+                        }
+                );
+                //Set the initial state of the picker label
+                $('#reportrange span').html(moment().subtract('days', 29).format('MMMM D, YYYY') + ' - ' + moment().format('MMMM D, YYYY'));
+            }
+
+            return {
+                //main function to initiate the module
+                init: function () {
+                    handleDatePickers();
+                    //handleDateRangePickers();
+                }
+            };
+        }();
+
         $(document).ready(function(){
+            ComponentsDateTimePickers.init();
+
             FormValidation.init();
         });
 
@@ -1195,29 +1568,6 @@
                         setTimeout(function(){
                             location.reload();
                         },1500);
-                    }
-                    else{
-                        show_notification(data.title, data.errors, 'ruby', 3500, 0);
-                    }
-                }
-            });
-        }
-
-        function update_work_hours(){
-            var str = $( "#opening_hours" ).serializeArray();
-
-            $.ajax({
-                url: '{{route('admin/shops/location/opening_hours_update', ['id'=>$shopDetails->id])}}',
-                type: "post",
-                data: {
-                    opening_hours : str,
-                },
-                success: function(data){
-                    if(data.success){
-                        show_notification(data.title, data.message, 'lime', 3500, 0);
-                        setTimeout(function(){
-                            location.reload();
-                        },2000);
                     }
                     else{
                         show_notification(data.title, data.errors, 'ruby', 3500, 0);
@@ -1307,177 +1657,167 @@
             });
         }
 
-        /* Start - All admin scripts */
-        var UserTopAjaxSearch = function() {
-
-            var handleDemo = function() {
-
-                // Set the "bootstrap" theme as the default theme for all Select2
-                // widgets.
-                //
-                // @see https://github.com/select2/select2/issues/2927
-                $.fn.select2.defaults.set("theme", "bootstrap");
-                $.fn.modal.Constructor.prototype.enforceFocus = function() {};
-
-                var placeholder = "Select a State";
-
-                $(".select2, .select2-multiple").select2({
-                    placeholder: placeholder,
-                    width: null
-                });
-
-                $(".select2-allow-clear").select2({
-                    allowClear: true,
-                    placeholder: placeholder,
-                    width: null
-                });
-
-                function formatUserData(repo) {
-                    if (repo.loading) return repo.text;
-
-                    var markup = "<div class='select2-result-repository clearfix' >" +
-                            "<div class='select2-result-repository__avatar'><img src='" + repo.avatar_image + "' /></div>" +
-                            "<div class='select2-result-repository__meta'>" +
-                            "<div class='select2-result-repository__title'>" + repo.first_name + " " + repo.middle_name + " " + repo.last_name + "</div> ";
-
-                    if (repo.description) {
-                        //markup += "<div class='select2-result-repository__description'>" + repo.description + "</div>";
-                    }
-
-                    markup += "<div class='select2-result-repository__statistics'>";
-                    if (repo.email) {
-                        markup += " <div class='select2-result-repository__forks'><span class='fa fa-envelope-square'></span> " + repo.email + "</div> ";
-                    }
-                    if (repo.phone) {
-                        markup += " <div class='select2-result-repository__forks'><span class='fa fa-phone-square'></span> " + repo.phone + "</div> ";
-                    }
-                    markup += '<br />';
-
-                    if (repo.city || repo.region) {
-                        markup += "<div class='select2-result-repository__stargazers'><span class='fa fa-map-o'></span> " + repo.city + ", " + repo.region + "</div>";
-                    }
-
-                    markup += "</div>" +
-                            "</div></div>";
-
-                    return markup;
-                }
-
-                function formatUserDataSelection(repo) {
-                    // we add product price to the form
-                    //$('input[name=inventory_list_price]').val(repo.list_price);
-                    //$('input[name=inventory_entry_price]').val(repo.entry_price);
-                    //$('.price_currency').html(repo.currency);
-
-                    if (repo.first_name==null && repo.first_name==null && repo.first_name==null){
-                        var full_name = null;
+        /* Add opening hours to selected location */
+        function add_opening_hours(){
+            $.ajax({
+                url: '{{route('admin/shops/add_opening_hours')}}',
+                type: "post",
+                data: {
+                    'days':         $('select[name=week_days]').val(),
+                    'time_start':   $('input[name=time_start]').val(),
+                    'time_stop':    $('input[name=time_stop]').val(),
+                    'date_start':   $('input[name=from_date]').val(),
+                    'date_stop':    $('input[name=to_date]').val(),
+                    'type':         $('select[name=hours_type]').val(),
+                    'location_id':  '{{$shopDetails->id}}'
+                },
+                success: function(data){
+                    if(data.success){
+                        show_notification(data.title, data.message, 'lime', 3500, 0);
+                        setTimeout(function(){
+                            location.reload();
+                        },1500);
                     }
                     else{
-                        var full_name = repo.first_name + " " + repo.middle_name + " " + repo.last_name;
-                        location.href = repo.user_link_details;
+                        show_notification(data.title, data.errors, 'ruby', 3500, 0);
                     }
 
-                    return full_name || repo.text;
+                    $('#add_opening_hours_modal').modal('hide');
+                    $('#new_opening_hours')[0].reset();
                 }
+            });
+        }
 
-                $(".js-data-users-ajax").select2({
-                    width: "off",
-                    ajax: {
-                        url: "{{ route('admin/users/ajax_get_users') }}",
-                        type: "post",
-                        dataType: 'json',
-                        delay: 250,
-                        data: function(params) {
-                            return {
-                                q: params.term, // search term
-                                page: params.page
-                            };
-                        },
-                        processResults: function(data, page) {
-                            // parse the results into the format expected by Select2.
-                            // since we are using custom formatting functions we do not need to
-                            // alter the remote JSON data
-                            return {
-                                results: data.items
-                            };
-                        },
-                        cache: true
-                    },
-                    escapeMarkup: function(markup) {
-                        return markup;
-                    }, // let our custom formatter work
-                    minimumInputLength: 1,
-                    templateResult: formatUserData,
-                    templateSelection: formatUserDataSelection
-                });
+        /* Get opening hours details for the clicked button in a modal window */
+        function get_opening_hour(id){
+            var select_days = {1:'Monday', 2:'Tuesday', 3:'Wednesday', 4:'Thursday', 5:'Friday', 6:'Saturday', 0:'Sunday'};
+            var select_type = {open_hours:"Open Hours", close_hours:"Closed Hours"};
 
-                $("button[data-select2-open]").click(function() {
-                    $("#" + $(this).data("select2-open")).select2("open");
-                });
+            $.ajax({
+                url: '{{route('admin/shops/get_opening_hours_details')}}',
+                type: "post",
+                data: {
+                    'open_hour_id': id,
+                    'location_id':  '{{$shopDetails->id}}'
+                },
+                success: function(data){
+                    if(data.success){
+                        $("#update_opening_hours_modal").find('input:text, input:hidden, input:password, input:file, select, textarea').val('');
+                        $("#update_opening_hours_modal").find('input:radio, input:checkbox').removeAttr('checked').removeAttr('selected');
 
-                $(":checkbox").on("click", function() {
-                    $(this).parent().nextAll("select").prop("disabled", !this.checked);
-                });
+                        var week_days_list = '';
+                        $.each(select_days, function(key, val){
+                            if (key==0){ return true; }
 
-                // copy Bootstrap validation states to Select2 dropdown
-                //
-                // add .has-waring, .has-error, .has-succes to the Select2 dropdown
-                // (was #select2-drop in Select2 v3.x, in Select2 v4 can be selected via
-                // body > .select2-container) if _any_ of the opened Select2's parents
-                // has one of these forementioned classes (YUCK! ;-))
-                $(".select2, .select2-multiple, .select2-allow-clear, .js-data-example-ajax, .js-data-users-ajax").on("select2:open", function() {
-                    if ($(this).parents("[class*='has-']").length) {
-                        var classNames = $(this).parents("[class*='has-']")[0].className.split(/\s+/);
-
-                        for (var i = 0; i < classNames.length; ++i) {
-                            if (classNames[i].match("has-")) {
-                                $("body > .select2-container").addClass(classNames[i]);
+                            if ($.inArray(key, data.hour.days)!=-1){
+                                week_days_list+='<option value="'+key+'" selected>'+val+'</option>';
                             }
+                            else{
+                                week_days_list+='<option value="'+key+'">'+val+'</option>';
+                            }
+                        });
+
+                        if ($.inArray("0", data.hour.days)!=-1){
+                            week_days_list+='<option value="0" selected>'+select_days[0]+'</option>';
                         }
+                        else{
+                            week_days_list+='<option value="0">'+select_days[0]+'</option>';
+                        }
+
+                        $('select[name=update_week_days]').html(week_days_list);
+
+                        var price_type = '';
+                        $.each(select_type, function(key, val){
+                            if ( data.hour.type == key ){
+                                price_type+='<option value="'+key+'" selected="selected">'+val+'</option>';
+                            }
+                            else{
+                                price_type+='<option value="'+key+'">'+val+'</option>';
+                            }
+                        });
+                        $('select[name=update_price_type]').html(price_type);
+
+                        $('input[name=update_time_start]').val(data.hour.time_start);
+                        $('input[name=update_time_stop]').val(data.hour.time_stop);
+
+                        $('input[name=update_from_date]').datepicker('setDate',data.hour.date_start);
+                        $('input[name=update_to_date]').datepicker('setDate',data.hour.date_stop);
+
+                        $('input[name=open_hour_id]').val(data.hour.id);
+                        $('#update_opening_hours_modal').modal('show');
                     }
-                });
-
-                $(".js-btn-set-scaling-classes").on("click", function() {
-                    $("#select2-multiple-input-sm, #select2-single-input-sm").next(".select2-container--bootstrap").addClass("input-sm");
-                    $("#select2-multiple-input-lg, #select2-single-input-lg").next(".select2-container--bootstrap").addClass("input-lg");
-                    $(this).removeClass("btn-primary btn-outline").prop("disabled", true);
-                });
-            }
-
-            return {
-                //main function to initiate the module
-                init: function() {
-                    handleDemo();
+                    else{
+                        show_notification(data.title, data.errors, 'ruby', 3500, 0);
+                    }
                 }
-            };
-        }();
-        jQuery(document).ready(function () {
-            // initialize select2 drop downs
-            UserTopAjaxSearch.init();
-        });
-
-        function booking_calendar_view_redirect(selected_date){
-            var calendar_book = "{{route('bookings/location_calendar_day_view',['day'=>'##day##'])}}";
-            the_link = calendar_book.replace('##day##', $('#calendar_booking_top_menu').data('datepicker').getFormattedDate('dd-mm-yyyy'));
-            window.location.href = the_link;
+            });
         }
 
-        function show_notification(title_heading, message, theme, life, sticky) {
-            var settings = {
-                theme: theme,
-                sticky: sticky,
-                horizontalEdge: 'top',
-                verticalEdge: 'right',
-                life : life,
-            };
+        /* Update opening hours with the popup information */
+        function update_opening_hours(){
+            $.ajax({
+                url: '{{route('admin/shops/update_opening_hours')}}',
+                type: "post",
+                data: {
+                    'days':         $('select[name=update_week_days]').val(),
+                    'time_start':   $('input[name=update_time_start]').val(),
+                    'time_stop':    $('input[name=update_time_stop]').val(),
+                    'date_start':   $('input[name=update_from_date]').val(),
+                    'date_stop':    $('input[name=update_to_date]').val(),
+                    'type':         $('select[name=update_price_type]').val(),
+                    'location_id':  '{{$shopDetails->id}}',
+                    'open_hour_id': $('input[name=open_hour_id]').val()
+                },
+                success: function(data){
+                    if(data.success){
+                        show_notification(data.title, data.message, 'lime', 3500, 0);
+                        setTimeout(function(){
+                            location.reload();
+                        },1000);
+                    }
+                    else{
+                        show_notification(data.title, data.errors, 'ruby', 3500, 0);
+                    }
 
-            if ($.trim(title_heading) != '') {
-                settings.heading = title_heading;
-            }
-
-            $.notific8('zindex', 11500);
-            $.notific8($.trim(message), settings);
+                    $('#update_price_modal').modal('hide');
+                    $('#new_resource_price')[0].reset();
+                }
+            });
         }
-        /* Stop - All admin scripts */
+
+        /* Show delete opening hours confirmation modal window */
+        function delete_opening_hours(id, res_id){
+            $('input[name=del_open_hour_id]').val(id);
+            $('input[name=del_location_id]').val(res_id);
+
+            $('#delete_opening_hours_modal').modal('show');
+        }
+
+        /* Delete selected opening hours from shop location */
+        function delete_hours(){
+            $.ajax({
+                url: '{{route('admin/shops/delete_opening_hours')}}',
+                type: "post",
+                data: {
+                    'hour_id':      $('input[name=del_open_hour_id]').val(),
+                    'location_id':  $('input[name=del_location_id]').val()
+                },
+                success: function(data){
+                    $('#delete_price_modal').modal('hide');
+                    $('input[name=del_open_hour_id]').val('');
+                    $('input[name=del_location_id]').val('');
+
+                    if(data.success){
+                        show_notification(data.title, data.message, 'lime', 3500, 0);
+                        setTimeout(function(){
+                            location.reload();
+                        },750);
+                    }
+                    else{
+                        show_notification(data.title, data.errors, 'ruby', 3500, 0);
+                    }
+                }
+            });
+        }
     </script>
 @endsection

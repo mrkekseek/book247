@@ -124,12 +124,125 @@
 
 @section('pageCustomJScripts')
     <script type="text/javascript">
-
-        $.ajaxSetup({
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        $.validator.addMethod("datePickerDate",function(value, element) {
+            // put your own logic here, this is just a (crappy) example
+            return value.match(/^\d\d?-\d\d?-\d\d\d\d$/);
+        },"Please enter a date in the format dd/mm/yyyy.");
+        $.validator.addMethod('filesize',function(value, element, param) {
+            // param = size (in bytes)
+            // element = element to validate (<input>)
+            // value = value of the element (file name)
+            return this.optional(element) || (element.files[0].size <= param);
+        },"File must be JPG, GIF or PNG, less than 1MB");
+        $.validator.addMethod("validate_email",function(value, element) {
+            if(/^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/.test( value )) {
+                return true;
             }
-        });
+            else {
+                return false;
+            }
+        },"Please enter a valid Email.");
+
+        var FormValidation = function () {
+
+            var handleValidation1 = function() {
+                var form1 = $('#new_shop');
+                var error1 = $('.alert-danger', form1);
+                var success1 = $('.alert-success', form1);
+
+                form1.validate({
+                    errorElement: 'span', //default input error message container
+                    errorClass: 'help-block help-block-error', // default input error message class
+                    focusInvalid: false, // do not focus the last invalid input
+                    ignore: "",  // validate all fields including form hidden input
+                    rules: {
+                        shop_name: {
+                            minlength: 3,
+                            required: true
+                        },
+                        shop_email: {
+                            email: true,
+                            required: true,
+                            validate_email: true
+                        },
+                        shop_reg_no: {
+                            minlength: 5,
+                            required: true,
+                        },
+                        shop_bank_acc: {
+                            minlength: 5,
+                            required: true
+                        },
+                        shop_phone: {
+                            minlength: 5,
+                            required: true
+                        },
+                        shop_fax: {
+                            minlength: 5,
+                            required: true,
+                        },
+                        shop_address1: {
+                            minlength: 5,
+                            required: true
+                        },
+                        shop_city: {
+                            minlength: 3,
+                            required: true
+                        },
+                        shop_region: {
+                            minlength:2,
+                            required: true
+                        },
+                        shop_postal_code: {
+                            minlength: 2,
+                            required: true
+                        },
+                    },
+
+                    invalidHandler: function (event, validator) { //display error alert on form submit
+                        success1.hide();
+                        error1.show();
+                        App.scrollTo(error1, -200);
+                    },
+
+                    errorPlacement: function (error, element) { // render error placement for each input type
+                        var icon = $(element).parent('.input-icon').children('i');
+                        icon.removeClass('fa-check').addClass("fa-warning");
+                        icon.attr("data-original-title", error.text()).tooltip({'container': 'body'});
+                    },
+
+                    highlight: function (element) { // hightlight error inputs
+                        $(element)
+                                .closest('.form-group').removeClass("has-success").addClass('has-error'); // set error class to the control group
+                    },
+
+                    unhighlight: function (element) { // revert the change done by hightlight
+
+                    },
+
+                    success: function (label, element) {
+                        var icon = $(element).parent('.input-icon').children('i');
+                        $(element).closest('.form-group').removeClass('has-error').addClass('has-success'); // set success class to the control group
+                        icon.removeClass("fa-warning").addClass("fa-check");
+                    },
+
+                    submitHandler: function (form) {
+                        success1.show();
+                        error1.hide();
+                        add_new_shop(); // submit the form
+                    }
+                });
+            }
+
+            return {
+                //main function to initiate the module
+                init: function () {
+                    handleValidation1();
+                }
+
+            };
+
+        }();
 
         var TableDatatablesManaged = function () {
 
@@ -235,106 +348,6 @@
 
         }();
 
-        var FormValidation = function () {
-
-            var handleValidation1 = function() {
-                var form1 = $('#new_shop');
-                var error1 = $('.alert-danger', form1);
-                var success1 = $('.alert-success', form1);
-
-                form1.validate({
-                    errorElement: 'span', //default input error message container
-                    errorClass: 'help-block help-block-error', // default input error message class
-                    focusInvalid: false, // do not focus the last invalid input
-                    ignore: "",  // validate all fields including form hidden input
-                    rules: {
-                        shop_name: {
-                            minlength: 3,
-                            required: true
-                        },
-                        shop_email: {
-                            email: true,
-                            required: true
-                        },
-                        shop_reg_no: {
-                            minlength: 5,
-                            required: true,
-                        },
-                        shop_bank_acc: {
-                            minlength: 5,
-                            required: true
-                        },
-                        shop_phone: {
-                            minlength: 5,
-                            required: true
-                        },
-                        shop_fax: {
-                            minlength: 5,
-                            required: true,
-                        },
-                        shop_address1: {
-                            minlength: 5,
-                            required: true
-                        },
-                        shop_city: {
-                            minlength: 3,
-                            required: true
-                        },
-                        shop_region: {
-                            minlength:2,
-                            required: true
-                        },
-                        shop_postal_code: {
-                            minlength: 2,
-                            required: true
-                        },
-                    },
-
-                    invalidHandler: function (event, validator) { //display error alert on form submit
-                        success1.hide();
-                        error1.show();
-                        App.scrollTo(error1, -200);
-                    },
-
-                    errorPlacement: function (error, element) { // render error placement for each input type
-                        var icon = $(element).parent('.input-icon').children('i');
-                        icon.removeClass('fa-check').addClass("fa-warning");
-                        icon.attr("data-original-title", error.text()).tooltip({'container': 'body'});
-                    },
-
-                    highlight: function (element) { // hightlight error inputs
-                        $(element)
-                                .closest('.form-group').removeClass("has-success").addClass('has-error'); // set error class to the control group
-                    },
-
-                    unhighlight: function (element) { // revert the change done by hightlight
-
-                    },
-
-                    success: function (label, element) {
-                        var icon = $(element).parent('.input-icon').children('i');
-                        $(element).closest('.form-group').removeClass('has-error').addClass('has-success'); // set success class to the control group
-                        icon.removeClass("fa-warning").addClass("fa-check");
-                    },
-
-                    submitHandler: function (form) {
-                        success1.show();
-                        error1.hide();
-                        add_new_shop(); // submit the form
-                    }
-                });
-            }
-
-            return {
-                //main function to initiate the module
-                init: function () {
-                    handleValidation1();
-                }
-
-            };
-
-        }();
-
         $(document).ready(function(){
             FormValidation.init();
         });
@@ -369,178 +382,5 @@
                 }
             });
         }
-
-        /* Start - All admin scripts */
-        var UserTopAjaxSearch = function() {
-
-            var handleDemo = function() {
-
-                // Set the "bootstrap" theme as the default theme for all Select2
-                // widgets.
-                //
-                // @see https://github.com/select2/select2/issues/2927
-                $.fn.select2.defaults.set("theme", "bootstrap");
-                $.fn.modal.Constructor.prototype.enforceFocus = function() {};
-
-                var placeholder = "Select a State";
-
-                $(".select2, .select2-multiple").select2({
-                    placeholder: placeholder,
-                    width: null
-                });
-
-                $(".select2-allow-clear").select2({
-                    allowClear: true,
-                    placeholder: placeholder,
-                    width: null
-                });
-
-                function formatUserData(repo) {
-                    if (repo.loading) return repo.text;
-
-                    var markup = "<div class='select2-result-repository clearfix' >" +
-                            "<div class='select2-result-repository__avatar'><img src='" + repo.avatar_image + "' /></div>" +
-                            "<div class='select2-result-repository__meta'>" +
-                            "<div class='select2-result-repository__title'>" + repo.first_name + " " + repo.middle_name + " " + repo.last_name + "</div> ";
-
-                    if (repo.description) {
-                        //markup += "<div class='select2-result-repository__description'>" + repo.description + "</div>";
-                    }
-
-                    markup += "<div class='select2-result-repository__statistics'>";
-                    if (repo.email) {
-                        markup += " <div class='select2-result-repository__forks'><span class='fa fa-envelope-square'></span> " + repo.email + "</div> ";
-                    }
-                    if (repo.phone) {
-                        markup += " <div class='select2-result-repository__forks'><span class='fa fa-phone-square'></span> " + repo.phone + "</div> ";
-                    }
-                    markup += '<br />';
-
-                    if (repo.city || repo.region) {
-                        markup += "<div class='select2-result-repository__stargazers'><span class='fa fa-map-o'></span> " + repo.city + ", " + repo.region + "</div>";
-                    }
-
-                    markup += "</div>" +
-                            "</div></div>";
-
-                    return markup;
-                }
-
-                function formatUserDataSelection(repo) {
-                    // we add product price to the form
-                    //$('input[name=inventory_list_price]').val(repo.list_price);
-                    //$('input[name=inventory_entry_price]').val(repo.entry_price);
-                    //$('.price_currency').html(repo.currency);
-
-                    if (repo.first_name==null && repo.first_name==null && repo.first_name==null){
-                        var full_name = null;
-                    }
-                    else{
-                        var full_name = repo.first_name + " " + repo.middle_name + " " + repo.last_name;
-                        location.href = repo.user_link_details;
-                    }
-
-                    return full_name || repo.text;
-                }
-
-                $(".js-data-users-ajax").select2({
-                    width: "off",
-                    ajax: {
-                        url: "{{ route('admin/users/ajax_get_users') }}",
-                        type: "post",
-                        dataType: 'json',
-                        delay: 250,
-                        data: function(params) {
-                            return {
-                                q: params.term, // search term
-                                page: params.page
-                            };
-                        },
-                        processResults: function(data, page) {
-                            // parse the results into the format expected by Select2.
-                            // since we are using custom formatting functions we do not need to
-                            // alter the remote JSON data
-                            return {
-                                results: data.items
-                            };
-                        },
-                        cache: true
-                    },
-                    escapeMarkup: function(markup) {
-                        return markup;
-                    }, // let our custom formatter work
-                    minimumInputLength: 1,
-                    templateResult: formatUserData,
-                    templateSelection: formatUserDataSelection
-                });
-
-                $("button[data-select2-open]").click(function() {
-                    $("#" + $(this).data("select2-open")).select2("open");
-                });
-
-                $(":checkbox").on("click", function() {
-                    $(this).parent().nextAll("select").prop("disabled", !this.checked);
-                });
-
-                // copy Bootstrap validation states to Select2 dropdown
-                //
-                // add .has-waring, .has-error, .has-succes to the Select2 dropdown
-                // (was #select2-drop in Select2 v3.x, in Select2 v4 can be selected via
-                // body > .select2-container) if _any_ of the opened Select2's parents
-                // has one of these forementioned classes (YUCK! ;-))
-                $(".select2, .select2-multiple, .select2-allow-clear, .js-data-example-ajax, .js-data-users-ajax").on("select2:open", function() {
-                    if ($(this).parents("[class*='has-']").length) {
-                        var classNames = $(this).parents("[class*='has-']")[0].className.split(/\s+/);
-
-                        for (var i = 0; i < classNames.length; ++i) {
-                            if (classNames[i].match("has-")) {
-                                $("body > .select2-container").addClass(classNames[i]);
-                            }
-                        }
-                    }
-                });
-
-                $(".js-btn-set-scaling-classes").on("click", function() {
-                    $("#select2-multiple-input-sm, #select2-single-input-sm").next(".select2-container--bootstrap").addClass("input-sm");
-                    $("#select2-multiple-input-lg, #select2-single-input-lg").next(".select2-container--bootstrap").addClass("input-lg");
-                    $(this).removeClass("btn-primary btn-outline").prop("disabled", true);
-                });
-            }
-
-            return {
-                //main function to initiate the module
-                init: function() {
-                    handleDemo();
-                }
-            };
-        }();
-        jQuery(document).ready(function () {
-            // initialize select2 drop downs
-            UserTopAjaxSearch.init();
-        });
-
-        function booking_calendar_view_redirect(selected_date){
-            var calendar_book = "{{route('bookings/location_calendar_day_view',['day'=>'##day##'])}}";
-            the_link = calendar_book.replace('##day##', $('#calendar_booking_top_menu').data('datepicker').getFormattedDate('dd-mm-yyyy'));
-            window.location.href = the_link;
-        }
-
-        function show_notification(title_heading, message, theme, life, sticky) {
-            var settings = {
-                theme: theme,
-                sticky: sticky,
-                horizontalEdge: 'top',
-                verticalEdge: 'right',
-                life : life,
-            };
-
-            if ($.trim(title_heading) != '') {
-                settings.heading = title_heading;
-            }
-
-            $.notific8('zindex', 11500);
-            $.notific8($.trim(message), settings);
-        }
-        /* Stop - All admin scripts */
     </script>
 @endsection

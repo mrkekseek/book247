@@ -482,8 +482,26 @@
             cache: false,
         });
 
-        var Login = function() {
+        $.validator.addMethod("datePickerDate",function(value, element) {
+            // put your own logic here, this is just a (crappy) example
+            return value.match(/^\d\d?-\d\d?-\d\d\d\d$/);
+        },"Please enter a date in the format dd/mm/yyyy.");
+        $.validator.addMethod('filesize',function(value, element, param) {
+            // param = size (in bytes)
+            // element = element to validate (<input>)
+            // value = value of the element (file name)
+            return this.optional(element) || (element.files[0].size <= param);
+        },"File must be JPG, GIF or PNG, less than 1MB");
+        $.validator.addMethod("validate_email",function(value, element) {
+            if(/^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/.test( value )) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        },"Please enter a valid Email.");
 
+        var Login = function() {
             var handleLogin = function() {
 
                 $('.login-form').validate({
@@ -553,7 +571,8 @@
                     rules: {
                         email: {
                             required: true,
-                            email: true
+                            email: true,
+                            validate_email: true
                         }
                     },
 
@@ -629,9 +648,7 @@
                     handleRegister();
 
                 }
-
             };
-
         }();
 
         var UIDatepaginator = function () {
@@ -664,7 +681,6 @@
         }();
 
         var FormValidation = function () {
-
             var handleValidation1 = function() {
                 var form1 = $('#friend_search_form');
                 var error1 = $('.alert-danger', form1);
@@ -755,6 +771,7 @@
                         },
                         reg_email: {
                             email: true,
+                            validate_email: true,
                             required: true,
                             remote: {
                                 url: "{{ route('ajax/check_email_for_member_registration') }}",

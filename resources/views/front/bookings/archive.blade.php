@@ -303,7 +303,7 @@
 
         }();
 
-        jQuery(document).ready(function() {
+        function load_table_date(){
             App.blockUI({
                 target: '#main_body_container',
                 boxed: true,
@@ -311,6 +311,10 @@
             });
 
             TableDatatablesManaged.init();
+        }
+
+        jQuery(document).ready(function() {
+            load_table_date();
         });
 
         $(document).on('click', '.cancel_booking', function(){
@@ -360,6 +364,12 @@
         }
 
         function cancel_booking(){
+            App.blockUI({
+                target: '#small_cancel',
+                boxed: true,
+                message: 'Processing...'
+            });
+
             var search_key = $('input[name="search_key_selected"]').val();
 
             $.ajax({
@@ -374,6 +384,10 @@
 
                     $('#small_cancel').find('.book_details_cancel_place').html('');
                     $('#small_cancel').modal('hide');
+                    App.unblockUI('#small_cancel');
+
+                    $("#sample_1").dataTable().fnDestroy();
+                    load_table_date();
                 }
             });
         }

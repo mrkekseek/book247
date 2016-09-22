@@ -307,47 +307,24 @@
             }
         });
 
-        var ComponentsDateTimePickers = function () {
-
-            var handleDatePickers = function () {
-                if (jQuery().datepicker) {
-                    $('.date-picker').datepicker({
-                        rtl: App.isRTL(),
-                        orientation: "left",
-                        autoclose: true
-                    });
-                    //$('body').removeClass("modal-open"); // fix bug when inline picker is used in modal
-                }
-                /* Workaround to restrict daterange past date select: http://stackoverflow.com/questions/11933173/how-to-restrict-the-selectable-date-ranges-in-bootstrap-datepicker */
+        $.validator.addMethod("datePickerDate",function(value, element) {
+            // put your own logic here, this is just a (crappy) example
+            return value.match(/^\d\d?-\d\d?-\d\d\d\d$/);
+        },"Please enter a date in the format dd/mm/yyyy.");
+        $.validator.addMethod('filesize',function(value, element, param) {
+            // param = size (in bytes)
+            // element = element to validate (<input>)
+            // value = value of the element (file name)
+            return this.optional(element) || (element.files[0].size <= param);
+        },"File must be JPG, GIF or PNG, less than 1MB");
+        $.validator.addMethod("validate_email",function(value, element) {
+            if(/^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/.test( value )) {
+                return true;
             }
-
-            return {
-                //main function to initiate the module
-                init: function () {
-                    handleDatePickers();
-                }
-            };
-        }();
-
-        $.validator.addMethod(
-                "datePickerDate",
-                function(value, element) {
-                    // put your own logic here, this is just a (crappy) example
-                    return value.match(/^\d\d?-\d\d?-\d\d\d\d$/);
-                },
-                "Please enter a date in the format dd/mm/yyyy."
-        );
-
-        $.validator.addMethod(
-                'filesize',
-                function(value, element, param) {
-                    // param = size (in bytes)
-                    // element = element to validate (<input>)
-                    // value = value of the element (file name)
-                    return this.optional(element) || (element.files[0].size <= param);
-                },
-                "File must be JPG, GIF or PNG, less than 1MB"
-        );
+            else {
+                return false;
+            }
+        },"Please enter a valid Email.");
 
         var FormValidation = function () {
             /* Personal Info */
@@ -376,7 +353,8 @@
                         },
                         personalEmail: {
                             required: true,
-                            email: true
+                            email: true,
+                            validate_email: true,
                         },
                         personalPhone: {
                             required: true,
@@ -444,7 +422,8 @@
                         },
                         accountEmail: {
                             required: true,
-                            email: true
+                            email: true,
+                            validate_email:true
                         },
                     },
 
@@ -546,7 +525,7 @@
                     }
                 });
             }
-            /* Change Password */
+
             var handleValidation4 = function() {
                 var form4 = $('#form_password_update');
                 var error4 = $('.alert-danger', form4);
@@ -658,60 +637,6 @@
                 });
             }
 
-            var handleValidation6 = function() {
-                var form6 = $('#user_picture_upload2');
-                var error6 = $('.alert-danger', form6);
-                var success6 = $('.alert-success', form6);
-
-                form5.validate({
-                    errorElement: 'span', //default input error message container
-                    errorClass: 'help-block help-block-error', // default input error message class
-                    focusInvalid: false, // do not focus the last invalid input
-                    ignore: "",  // validate all fields including form hidden input
-                    rules: {
-                        user_avatar: {
-                            required: true,
-                            accept: "image/*",
-                            filesize: 1048576,
-                        },
-                    },
-                    messages: {
-                        user_avatar: {
-                            required: "We need your avatar before submitting the form",
-                            accept: "The uploaded file must be an image",
-                            filesize: "File must be JPG, GIF or PNG, less than 1MB",
-                        }
-                    },
-
-                    invalidHandler: function (event, validator) { //display error alert on form submit
-                        success6.hide();
-                        error6.show();
-                        App.scrollTo(error6, -200);
-                    },
-
-                    highlight: function (element) { // hightlight error inputs
-                        $(element)
-                                .closest('.form-group').addClass('has-error'); // set error class to the control group
-                    },
-
-                    unhighlight: function (element) { // revert the change done by hightlight
-                        $(element)
-                                .closest('.form-group').removeClass('has-error'); // set error class to the control group
-                    },
-
-                    success: function (label) {
-                        label
-                                .closest('.form-group').removeClass('has-error'); // set success class to the control group
-                    },
-
-                    submitHandler: function (form) {
-                        success6.show();
-                        error6.hide();
-                        form.submit();
-                    }
-                });
-            }
-
             return {
                 //main function to initiate the module
                 init: function () {
@@ -720,6 +645,28 @@
                     handleValidation3();
                     handleValidation4();
                     handleValidation5();
+                }
+            };
+        }();
+
+        var ComponentsDateTimePickers = function () {
+
+            var handleDatePickers = function () {
+                if (jQuery().datepicker) {
+                    $('.date-picker').datepicker({
+                        rtl: App.isRTL(),
+                        orientation: "left",
+                        autoclose: true
+                    });
+                    //$('body').removeClass("modal-open"); // fix bug when inline picker is used in modal
+                }
+                /* Workaround to restrict daterange past date select: http://stackoverflow.com/questions/11933173/how-to-restrict-the-selectable-date-ranges-in-bootstrap-datepicker */
+            }
+
+            return {
+                //main function to initiate the module
+                init: function () {
+                    handleDatePickers();
                 }
             };
         }();

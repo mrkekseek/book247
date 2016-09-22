@@ -468,31 +468,24 @@
 
 @section('pageCustomJScripts')
     <script type="text/javascript">
-        $.ajaxSetup({
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            }
-        });
-
-        $.validator.addMethod(
-                "datePickerDate",
-                function(value, element) {
+        $.validator.addMethod("datePickerDate",function(value, element) {
                     // put your own logic here, this is just a (crappy) example
                     return value.match(/^\d\d?-\d\d?-\d\d\d\d$/);
-                },
-                "Please enter a date in the format dd/mm/yyyy."
-        );
-
-        $.validator.addMethod(
-                'filesize',
-                function(value, element, param) {
+                },"Please enter a date in the format dd/mm/yyyy.");
+        $.validator.addMethod('filesize',function(value, element, param) {
                     // param = size (in bytes)
                     // element = element to validate (<input>)
                     // value = value of the element (file name)
                     return this.optional(element) || (element.files[0].size <= param);
-                },
-                "File must be JPG, GIF or PNG, less than 1MB"
-        );
+                },"File must be JPG, GIF or PNG, less than 1MB");
+        $.validator.addMethod("validate_email",function(value, element) {
+            if(/^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/.test( value )) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        },"Please enter a valid Email.");
 
         var timeinterval = ''; /* Interval timer */
         var resourceName = {
@@ -502,9 +495,8 @@
         };
 
         /* Members search using select drop-down */
-        var ComponentsSelect2 = function() {
-
-            var handleDemo = function() {
+        var ComponentsSelectCalendarView = function() {
+            var handlePopupSearch = function() {
 
                 // Set the "bootstrap" theme as the default theme for all Select2
                 // widgets.
@@ -539,6 +531,9 @@
                     }
 
                     markup += "<div class='select2-result-repository__statistics'>";
+                    if (repo.membership){
+                        markup += " <div class='select2-result-repository__forks'><span class='fa fa-phone-square'></span> " + repo.membership + "</div><br />";
+                    }
                     if (repo.email) {
                         markup += " <div class='select2-result-repository__forks'><span class='fa fa-envelope-square'></span> " + repo.email + "</div> ";
                     }
@@ -619,6 +614,9 @@
                     }
 
                     markup += "<div class='select2-result-repository__statistics'>";
+                    if (repo.membership){
+                        markup += " <div class='select2-result-repository__forks'><span class='fa fa-phone-square'></span> " + repo.membership + "</div><br />";
+                    }
                     if (repo.email) {
                         markup += " <div class='select2-result-repository__forks'><span class='fa fa-envelope-square'></span> " + repo.email + "</div> ";
                     }
@@ -721,7 +719,7 @@
             return {
                 //main function to initiate the module
                 init: function() {
-                    handleDemo();
+                    handlePopupSearch();
                 }
             };
         }();
@@ -791,6 +789,7 @@
                         },
                         email: {
                             email: true,
+                            validate_email:true,
                             required: true,
                             remote: {
                                 url: "{{ route('ajax/check_email_for_member_registration') }}",
@@ -861,7 +860,7 @@
         if (App.isAngularJsApp() === false) {
             jQuery(document).ready(function () {
                 // initialize select2 drop downs
-                ComponentsSelect2.init();
+                ComponentsSelectCalendarView.init();
                 // initialize date/time pickersz
                 ComponentsDateTimePickers.init();
                 // initialize the forms validation part
@@ -1853,23 +1852,5 @@
 
         setTimeout(refresh, 10000);
         /* Page auto refresh after 5 min of inactivity - Stop */
-
-        function show_notification(title_heading, message, theme, life, sticky) {
-            var settings = {
-                theme: theme,
-                sticky: sticky,
-                horizontalEdge: 'top',
-                verticalEdge: 'right',
-                life : life,
-            };
-
-            if ($.trim(title_heading) != '') {
-                settings.heading = title_heading;
-            }
-
-            $.notific8('zindex', 11500);
-            $.notific8($.trim(message), settings);
-        }
-        /* Stop - All admin scripts */
     </script>
 @endsection

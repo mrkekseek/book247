@@ -38,7 +38,7 @@ class ShopLocations extends Model
     }
 
     public function opening_hours(){
-        return $this->hasMany('App\ShopOpeningHour', 'location_id', 'id');
+        return $this->hasMany('App\ShopOpeningHour', 'shop_location_id', 'id');
     }
 
     public function resources(){
