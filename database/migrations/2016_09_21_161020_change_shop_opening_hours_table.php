@@ -13,7 +13,7 @@ class ChangeShopOpeningHoursTable extends Migration
     public function up()
     {
         Schema::table('shop_opening_hours', function ($table) {
-            $table->dropForeign('location_id');
+            $table->dropForeign('shop_opening_hours_location_id_foreign');
         });
 
         Schema::drop('shop_opening_hours');
