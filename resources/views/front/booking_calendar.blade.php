@@ -63,7 +63,7 @@
                                             <div class="input-group input-small">
                                                 <select id="header_activity_selected" class="form-control reload_calendar_page" style="border-radius:4px;">
                                                     @foreach($all_activities as $an_activity)
-                                                        <option value="{{ $an_activity->id }}" {{ $an_activity->id==$header_vals['selected_activity']?" selected ":'' }} >{{ $an_activity->name }}</option>
+                                                        <option value="{{ $an_activity['id'] }}" {{ $an_activity['id']==$header_vals['selected_activity']?" selected ":'' }} >{{ $an_activity['name'] }}</option>
                                                     @endforeach
                                                 </select>
                                             </div>

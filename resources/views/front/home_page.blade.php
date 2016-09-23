@@ -59,7 +59,7 @@
                                 </div>
                             </div>
 
-                            <div class="portlet light margin-bottom-15">
+                            <div class="portlet light margin-bottom-15" id="activities-widget">
                                 <dt>Select Activity</dt>
                                 <div class="portlet-body">
                                     <div class="clearfix util-btn-margin-bottom-5">
@@ -1019,6 +1019,11 @@
                 boxed: true,
                 message: 'Processing...'
             });
+            App.blockUI({
+                target: '#activities-widget',
+                boxed: true,
+                message: 'Refreshing...'
+            });
 
             selectedDate = typeof selectedDate !== 'undefined' ? selectedDate : $('input[name=selected_date]').val();
             $('.pre_book_date').html($('.dp-selected').attr('title'));
@@ -1035,11 +1040,21 @@
                     'randUI':               randUI
                 },
                 success: function(data){
+                    hide_unavailable_activities(data.available_activities);
                     time_of_booking_format_hours(data.hours);
                     place_of_booking_format_rooms(data.shopResources);
                     App.unblockUI('#tasks-widget');
                 }
             });
+        }
+
+        function hide_unavailable_activities(activities){
+            $('.is_resource').hide();
+            $.each(activities, function(key, value){
+                $('.is_resource[data-id=' + value + ']').show();
+            });
+
+            App.unblockUI('#activities-widget');
         }
 
         function get_rooms_per_location(){

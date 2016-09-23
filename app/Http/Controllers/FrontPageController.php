@@ -301,7 +301,15 @@ class FrontPageController extends Controller
             }
         }
 
-        $returnArray = ["hours"=>$hours, "shopResources"=>$shopResource];
+        $locationActivities = [];
+        $availableActivities = ShopResource::select('category_id')->where('location_id','=',$vars['location_selected'])->groupBy('category_id')->get();
+        if ($availableActivities){
+            foreach($availableActivities as $oneActivity){
+                $locationActivities[$oneActivity->category_id] = $oneActivity->category_id;
+            }
+        }
+
+        $returnArray = ["hours"=>$hours, "shopResources"=>$shopResource, "available_activities"=>$locationActivities];
 
         return $returnArray;
     }

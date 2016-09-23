@@ -1266,25 +1266,35 @@ class BookingController extends Controller
         unset($location);
         $header_vals['selected_location'] = $default_location;
 
+        $location = ShopLocations::select('id','name')->where('id','=',$default_location)->get()->first();
+
         // activity/category validation and variables assignation
+        $locationActivities = [];
+        $checkLocations = [];
+        $first_line_activity = -1;
+        $availableActivities = ShopResource::with('category')->where('location_id','=',$location->id)->groupBy('category_id')->get();
+        if ($availableActivities){
+            foreach($availableActivities as $oneActivity){
+                if ($first_line_activity == -1){
+                    $first_line_activity = $oneActivity->category_id;
+                }
+                $locationActivities[] = ['id' => $oneActivity->category_id, 'name' => $oneActivity->category->name];
+                $checkLocations[] = $oneActivity->category_id;
+            }
+        }
+
         if ($selected_activity==0){
-            $default_activity = isset($settings['settings_preferred_activity'])?$settings['settings_preferred_activity']:3;
+            $default_activity = isset($settings['settings_preferred_activity'])?$settings['settings_preferred_activity']:$first_line_activity;
         }
         else{
             $default_activity = $selected_activity;
         }
-        $activity_found = false;
-        $all_activities = ShopResourceCategory::select('id','name')->orderBy('name','ASC')->get();
-        foreach ($all_activities as $activity){
-            if ($activity->id==$default_activity){
-                $activity_found=true;
-            }
+
+        if (!in_array($default_activity, $checkLocations)){
+            // redirect to default first activity in the location
+            return redirect()->intended(route('bookings/location_calendar_day_view_all',['day'=>$header_vals['date_selected'], 'location'=>$location->id, 'activity'=>$first_line_activity]));
         }
-        if ($activity_found==false){
-            // redirect not found
-            $default_activity = 3;
-        }
-        unset($activity);
+
         $header_vals['selected_activity'] = $default_activity;
 
         $location = ShopLocations::select('id','name')->where('id','=',$default_location)->get()->first();
@@ -1297,11 +1307,9 @@ class BookingController extends Controller
                 $resources_ids[] = $resource->id;
             }
         }
-        //xdebug_var_dump($resources);
+
         $hours_interval = $this->make_hours_interval($date_selected, '07:00', '23:00', 30, true, false);
-        //xdebug_var_dump($hours_interval);
         $location_bookings = $this->get_location_bookings($date_selected, $location->id, $resources_ids, $hours_interval);
-        //xdebug_var_dump($location_bookings['hours']['09:00']);
 
         $resources_ids = [];
         foreach($resources as $resource){
@@ -1353,7 +1361,7 @@ class BookingController extends Controller
             'button_color'  => $buttons_color,
             'header_vals'   => $header_vals,
             'all_locations' => $all_locations,
-            'all_activities'=> $all_activities,
+            'all_activities'=> $locationActivities,
             'is_close_menu' => true,
             'memberships'   => $membership_plans,
             'membership_legend'=> $membership_legend
@@ -2691,28 +2699,38 @@ class BookingController extends Controller
         unset($location);
         $header_vals['selected_location'] = $default_location;
 
+        $location = ShopLocations::select('id','name')->where('id','=',$default_location)->get()->first();
+
         // activity/category validation and variables assignation
+        $locationActivities = [];
+        $checkLocations = [];
+        $first_line_activity = -1;
+        $availableActivities = ShopResource::with('category')->where('location_id','=',$location->id)->groupBy('category_id')->get();
+        if ($availableActivities){
+            foreach($availableActivities as $oneActivity){
+                if ($first_line_activity == -1){
+                    $first_line_activity = $oneActivity->category_id;
+                }
+                $locationActivities[] = ['id' => $oneActivity->category_id, 'name' => $oneActivity->category->name];
+                $checkLocations[] = $oneActivity->category_id;
+            }
+        }
+
         if ($selected_activity==0){
-            $default_activity = isset($settings['settings_preferred_activity'])?$settings['settings_preferred_activity']:3;
+            $default_activity = isset($settings['settings_preferred_activity'])?$settings['settings_preferred_activity']:$first_line_activity;
         }
         else{
             $default_activity = $selected_activity;
         }
-        $activity_found = false;
-        $all_activities = ShopResourceCategory::select('id','name')->orderBy('name','ASC')->get();
-        foreach ($all_activities as $activity){
-            if ($activity->id==$default_activity){
-                $activity_found=true;
-            }
+
+        if (!in_array($default_activity, $checkLocations)){
+            // redirect to default first activity in the location
+            return redirect()->intended(route('front_calendar_booking_all',['day'=>$header_vals['date_selected'], 'location'=>$location->id, 'activity'=>$first_line_activity]));
         }
-        if ($activity_found==false){
-            // redirect not found
-            $default_activity = 3;
-        }
+
         unset($activity);
         $header_vals['selected_activity'] = $default_activity;
 
-        $location = ShopLocations::select('id','name')->where('id','=',$default_location)->get()->first();
         $activity = ShopResourceCategory::where('id','=',$default_activity)->get()->first();
 
         $resources_ids = [];
@@ -2751,7 +2769,8 @@ class BookingController extends Controller
             'resources'     => $resources_ids,
             'header_vals'   => $header_vals,
             'all_locations' => $all_locations,
-            'all_activities'=> $all_activities,
+            'all_activities'=> $locationActivities,
+            //'all_activities'=> $all_activities,
         ]);
     }
 
