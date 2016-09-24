@@ -107,6 +107,24 @@
                                                 </div>
                                             </div>
                                             <div class="form-group">
+                                                <label class="control-label col-md-3 inline"> Sign out period </label>
+                                                <div class="col-md-9">
+                                                @if ($membership_plan->sign_out_period==0)
+                                                    <p class="form-control-static form-control border-blue-steel input-large">
+                                                    no period
+                                                    </p>
+                                                @elseif ($membership_plan->sign_out_period==1)
+                                                    <p class="form-control-static form-control border-blue-steel input-large">
+                                                    1  month
+                                                    </p>
+                                                @else
+                                                    <p class="form-control-static form-control border-blue-steel input-large">
+                                                    {{$membership_plan->sign_out_period}}  months
+                                                    </p>
+                                                @endif
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
                                                 <label class="control-label col-md-3"> Administration Fee Name </label>
                                                 <div class="col-md-9">
                                                     <p class="form-control-static form-control border-blue-steel">{{ $membership_plan->administration_fee_name }}</p>

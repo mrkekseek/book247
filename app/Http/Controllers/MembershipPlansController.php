@@ -129,7 +129,7 @@ class MembershipPlansController extends Controller
             $user = Auth::user();
         }
 
-        $vars = $request->only('name', 'price', 'plan_period', 'binding_period', 'administration_fee_name', 'administration_fee_amount', 'plan_calendar_color', 'membership_short_description', 'membership_long_description');
+        $vars = $request->only('name', 'price', 'plan_period', 'binding_period', 'sign_out_period', 'administration_fee_name', 'administration_fee_amount', 'plan_calendar_color', 'membership_short_description', 'membership_long_description');
 
         if (!in_array($vars['plan_period'], ['7','14','30','90','180','360'])){
             return [
@@ -145,6 +145,7 @@ class MembershipPlansController extends Controller
             'price_id' => -1,
             'plan_period' => $vars['plan_period'],
             'binding_period' => $vars['binding_period'],
+            'sign_out_period' => $vars['sign_out_period'],
             'administration_fee_name' => $vars['administration_fee_name'],
             'administration_fee_amount' => $vars['administration_fee_amount'],
             'short_description' => $vars['membership_short_description'],
@@ -335,7 +336,7 @@ class MembershipPlansController extends Controller
             ];
         }
 
-        $vars = $request->only('name','price','plan_period','binding_period','administration_fee_name','administration_fee_amount','plan_calendar_color','membership_short_description','membership_long_description','status');
+        $vars = $request->only('name','price','plan_period','binding_period','sign_out_period','administration_fee_name','administration_fee_amount','plan_calendar_color','membership_short_description','membership_long_description','status');
 
         if (!in_array($vars['plan_period'], [7,14,30,90,180,360])){
             return [
@@ -352,6 +353,7 @@ class MembershipPlansController extends Controller
             'status' => $vars['status'],
             'plan_period' => $vars['plan_period'],
             'binding_period' => $vars['binding_period'],
+            'sign_out_period' => $vars['sign_out_period'],
             'administration_fee_name' => $vars['administration_fee_name'],
             'administration_fee_amount' => $vars['administration_fee_amount'],
             'short_description' => $vars['membership_short_description'],
@@ -578,7 +580,8 @@ class MembershipPlansController extends Controller
                 'one_time_fee_name' => $the_plan->administration_fee_name,
                 'one_time_fee_value'=> $the_plan->administration_fee_amount.' NOK',
                 'description'   => $the_plan->short_description,
-                'plan_order_id' => $the_plan->id
+                'plan_order_id' => $the_plan->id,
+                'sign_out_period'   => $the_plan->sign_out_period
             ];
             switch ($the_plan->plan_period){
                 case 7 :   $details['invoice_time'] = 'once every 7 days';

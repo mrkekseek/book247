@@ -102,6 +102,17 @@
                                             </div>
                                         </div>
                                         <div class="form-group">
+                                            <label class="control-label col-md-3 inline"> Sign Out Period </label>
+                                            <div class="col-md-9">
+                                                <select name="sign_out_period" class="form-control input-small input-inline input inline-block">
+                                                    @for ($i=1; $i<25;$i++)
+                                                        <option value="{{ $i }}">{{ $i }}</option>
+                                                    @endfor
+                                                </select>
+                                                <span class="help-inline inline-block"> months </span>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
                                             <label class="control-label col-md-3"> Administration Fee Name </label>
                                             <div class="col-md-9">
                                                 <input type="text" class="form-control" name="administration_fee_name" placeholder="Fee Name">
@@ -244,6 +255,10 @@
                             required: true,
                             number:true
                         },
+                        sign_out_period: {
+                            required: true,
+                            number:true
+                        },
                         administration_fee_name: {
                             minlength: 5,
                             required: true
@@ -322,6 +337,7 @@
                     'price':                        $('input[name=membership_price]').val(),
                     'plan_period':                  $('select[name=membership_period]').val(),
                     'binding_period':               $('select[name=binding_period]').val(),
+                    'sign_out_period':               $('select[name=sign_out_period]').val(),
                     'administration_fee_name':      $('input[name=administration_fee_name]').val(),
                     'administration_fee_amount':    $('input[name=administration_fee_price]').val(),
                     'plan_calendar_color':          $('input[name=membership_color]').val(),
