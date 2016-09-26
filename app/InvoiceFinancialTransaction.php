@@ -4,28 +4,28 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class BookingFinancialTransaction extends Model
+class InvoiceFinancialTransaction extends Model
 {
-    protected $table = 'booking_financial_transactions';
+    protected $table = 'invoice_financial_transactions';
 
     public static $attributeNames = array(
-        'user_id'           => 'User ID',
-        'booking_invoice_id'=> 'Invoice Number',
-        'booking_invoice_item_id'   => 'Invoice Item',
-        'transaction_amount'=> 'Transaction Amount',
+        'user_id'               => 'User ID',
+        'invoice_id'            => 'Invoice Number',
+        'invoice_items'         => 'Invoice Item/Items',
+        'transaction_amount'    => 'Transaction Amount',
         'transaction_currency'  => 'Transaction Currency',
-        'transaction_type'  => 'Transaction Type',
-        'transaction_date'  => 'Transaction Date',
-        'other_details'     => 'Invoice Details',
-        'status'            => 'Invoice Status',
+        'transaction_type'      => 'Transaction Type',
+        'transaction_date'      => 'Transaction Date',
+        'other_details'         => 'Invoice Details',
+        'status'                => 'Invoice Status',
     );
 
     public static $message = array();
 
     protected $fillable = [
         'user_id',
-        'booking_invoice_id',
-        'booking_invoice_item_id',
+        'invoice_id',
+        'invoice_items',
         'transaction_amount',
         'transaction_currency',
         'transaction_type',
@@ -45,11 +45,10 @@ class BookingFinancialTransaction extends Model
             {
                 return [
                     'user_id'               => 'required|exists:users,id',
-                    'booking_invoice_id'    => 'required|exists:booking_invoices,id',
-                    'booking_invoice_item_id'   => 'required|exists:booking_invoice_items,id',
+                    'invoice_id'            => 'required|exists:invoices,id',
                     'transaction_amount'    => 'required|numeric',
                     'transaction_currency'  => 'required',
-                    'transaction_type'      => 'required',
+                    'transaction_type'      => 'required|in:cash,card,manual',
                     'transaction_date'      => 'required|date',
                     'status'                => 'required|in:pending,processing,completed,cancelled,declined,incomplete',
                 ];
@@ -60,10 +59,9 @@ class BookingFinancialTransaction extends Model
                 return [
                     'user_id'               => 'required|exists:users,id',
                     'booking_invoice_id'    => 'required|exists:booking_invoices,id',
-                    'booking_invoice_item_id'   => 'required|exists:booking_invoice_items,id',
                     'transaction_amount'    => 'required|numeric',
                     'transaction_currency'  => 'required',
-                    'transaction_type'      => 'required',
+                    'transaction_type'      => 'required|in:cash,card,manual',
                     'transaction_date'      => 'required|date',
                     'status'                => 'required|in:pending,processing,completed,cancelled,declined,incomplete',
                 ];
@@ -72,4 +70,7 @@ class BookingFinancialTransaction extends Model
         }
     }
 
+    public function invoice(){
+        $this->belongsTo('App\Invoice', 'invoice_id', 'id');
+    }
 }

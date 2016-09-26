@@ -1591,12 +1591,25 @@ class BookingController extends Controller
                         case 'active' :
                             $formatted_booking['button_show'] = 'show_btn_active';
                             if ($booking->payment_type=="cash"){
-                                $invoice = BookingInvoice::with('financial_transaction')->find($booking->invoice_id);
+                                $invoice = BookingInvoice::with('invoice_items')->with('financial_transaction')->find($booking->invoice_id);
                                 if ($invoice){
-                                    foreach ($invoice->financial_transaction as $ab) {
-                                        $transaction = $ab;
-                                        break;
+                                    $invItemID = 0;
+                                    foreach($invoice->invoice_items as $invItem){
+                                        if ($invItem->booking_id==$booking->id){
+                                            $invItemID = $invItem->id;
+                                            break;
+                                        }
                                     }
+
+                                    foreach ($invoice->financial_transaction as $ab) {
+                                        if ($ab->booking_invoice_item_id==$invItemID){
+                                            $transaction = $ab;
+                                            break;
+                                        }
+                                    }
+
+                                    //xdebug_var_dump($transaction);
+                                    //xdebug_var_dump($invoice->status);
 
                                     $formatted_booking['invoice_status'] = $invoice->status;
                                     switch ($invoice->status){
@@ -1609,6 +1622,23 @@ class BookingController extends Controller
                                             break;
                                         case 'processing' :
                                             // a payment process started and the result is waiting
+                                            if (isset($transaction)) {
+                                                switch ($transaction->transaction_type) {
+                                                    case 'cash' :
+                                                        $formatted_booking['button_finance'] = 'is_paid_cash';
+                                                        break;
+                                                    case 'card' :
+                                                        $formatted_booking['button_finance'] = 'is_paid_card';
+                                                        break;
+                                                    default :
+                                                        $formatted_booking['button_finance'] = 'is_paid_online';
+                                                        break;
+                                                }
+                                            }
+                                            else{
+                                                $formatted_booking['button_finance'] = 'payment_btn_active';
+                                            }
+                                            break;
                                         case 'completed' :
                                             // payment was done successfully
                                             switch($transaction->transaction_type){
@@ -2480,37 +2510,27 @@ class BookingController extends Controller
                     'errors' => 'Error Getting Invoice...'];
             }
 
-            $invoiceItems = BookingInvoiceItem::where('booking_invoice_id','=',$invoice->id)->get();
-            $totalAmount = 0;
-            if ($invoiceItems){
-                foreach($invoiceItems as $item){
-                    $totalAmount+=$item->total_price;
-                }
+            $invoiceItem = BookingInvoiceItem::where('booking_invoice_id','=',$invoice->id)->where('booking_id','=',$booking->id)->get()->first();
+            if (!$invoiceItem){
+                return [
+                    'success' => false,
+                    'errors'  => 'Error Creating Transaction! Please reload the page or try logout/login before trying the same action.'];
             }
+            $totalAmount = $invoiceItem->total_price;
 
             if (!isset($vars['status'])){
                 // manual payment at the store/location, so status is finished
                 $vars['status'] = 'completed';
             }
-
             if (!isset($vars['other_details'])){
                 // manual payment at the store/location, so status is finished
-                $vars['other_details'] = 'Calendar view payment';
+                $vars['other_details'] = 'Calendar view manual payment';
             }
 
-            $fillTransaction = [
-                'user_id' => $user->id,
-                'transaction_amount' => $totalAmount,
-                'transaction_currency' => 'NOK',
-                'transaction_type' => $vars['method'],
-                'transaction_date' => Carbon::now(),
-                'other_details' => $vars['other_details'],
-                'status' => $vars['status']
-            ];
-            $message = $invoice->add_transaction($fillTransaction);
+            $message = $invoice->add_transaction($user->id, $invoiceItem->id, $totalAmount, $vars['method'], $vars['other_details'], $vars['status'] );
             if ($message['success']==true){
-                $invoice->status = $message['transaction_status'];
-                $invoice->save();
+                // check if invoice is all paid
+                $invoice->check_if_paid();
 
                 Activity::log([
                     'contentId'     => $user->id,

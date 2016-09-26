@@ -2,6 +2,7 @@
 
 namespace App;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Validator;
 use App\InvoiceItems;
@@ -68,6 +69,10 @@ class Invoice extends Model
 
     public function items(){
         return $this->hasMany('App\InvoiceItem', 'invoice_id', 'id')->orderBy('invoice_items.created_at','asc');
+    }
+
+    public function transactions(){
+        return $this->hasMany('App\InvoiceFinancialTransaction', 'invoice_id', 'id')->orderBy('invoice_financial_transactions.created_at','asc');
     }
 
     public static function next_invoice_number(){
@@ -170,18 +175,45 @@ class Invoice extends Model
         }
     }
 
-    public function add_transaction($fillable){
-        $fillable['booking_invoice_id'] = $this->id;
+    public function add_transaction($user_id, $transaction_type, $status, $otherDetails, $id_partial_payment = false, $invoice_items = []){
+        // not all invoice items are paid
+        if ($id_partial_payment){
+            $transactionAmount = 0;
+            $invoiceItems = [];
+            foreach($invoice_items as $item){
+                $transactionAmount+=$item->total_price;
+                $invoiceItems[] = $item->id;
+            }
+            $invoiceItems = json_encode($invoiceItems);
+        }
+        // all invoice items are paid
+        else{
+            $total_sum = $this->get_invoice_total();
+            $transactionAmount = $total_sum['total_sum'];
+            $invoiceItems = '';
+        }
 
-        $validator = Validator::make($fillable, BookingFinancialTransaction::rules('POST'), BookingFinancialTransaction::$message, BookingFinancialTransaction::$attributeNames);
+        $fillable = [
+            'user_id'       => $user_id,
+            'invoice_id'    => $this->id,
+            'invoice_items' => $invoiceItems,
+            'transaction_amount'    => $transactionAmount,
+            'transaction_currency'  => 'NOK',
+            'transaction_type'  => $transaction_type,
+            'transaction_date'  => Carbon::now()->format('Y-m-d'),
+            'status'        => $status,
+            'other_details' => is_array($otherDetails)?json_encode($otherDetails):$otherDetails,
+        ];
+
+        $validator = Validator::make($fillable, InvoiceFinancialTransaction::rules('POST'), InvoiceFinancialTransaction::$message, InvoiceFinancialTransaction::$attributeNames);
         if ($validator->fails()){
             return [
                 'success' => false,
-                'errors' => $validator->getMessageBag()->toArray()];
+                'errors'  => $validator->getMessageBag()->toArray()];
         }
 
-        $transaction = BookingFinancialTransaction::
-        where('booking_invoice_id','=',$this->booking_invoice_id)
+        $transaction = InvoiceFinancialTransaction::
+            where('invoice_id','=',$this->invoice_id)
             ->whereIn('status',['pending','processing'])
             ->orderBy('created_at','DESC')->get()->first();
         if ($transaction){
@@ -191,16 +223,36 @@ class Invoice extends Model
         }
 
         try {
-            $newTransaction = BookingFinancialTransaction::create($fillable);
+            $newTransaction = InvoiceFinancialTransaction::create($fillable);
+
+            $this->check_if_paid();
             return [
-                'success'=>true,
-                'transaction_id' => $newTransaction->id,
-                'transaction_status' => $newTransaction->status];
+                'success'           => true,
+                'transaction_id'    => $newTransaction->id,
+                'transaction_status'=> $newTransaction->status];
         }
         catch (Exception $e) {
             return [
                 'success' => false,
-                'errors' => 'Error Creating Transaction!'];
+                'errors'  => 'Error Creating Transaction!'];
         }
+    }
+
+    public function check_if_paid(){
+        $invoiceTotal = $this->get_invoice_total();
+
+        $transactions_total = 0;
+        $transactions = InvoiceFinancialTransaction::where('invoice_id','=',$this->id)->whereIn('status',['completed'])->get();
+        foreach($transactions as $one){
+            $transactions_total+=$one->transaction_amount;
+        }
+
+        if ($invoiceTotal['total_sum'] == $transactions_total){
+            $this->status = 'completed';
+        }
+        else{
+            $this->status = 'processing';
+        }
+        $this->save();
     }
 }

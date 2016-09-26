@@ -263,30 +263,14 @@
                         <img alt="" class="img-circle" src="{{ asset('assets/layouts/layout4/img/avatar9.jpg') }}" /> </a>
                     <ul class="dropdown-menu dropdown-menu-default">
                         <li>
-                            <a href="page_user_profile_1.html">
+                            <a href="{{ route('admin/back_users/view_user/', ['id' => Auth::user()->id ]) }}">
                                 <i class="icon-user"></i> My Profile </a>
                         </li>
                         <li>
-                            <a href="app_calendar.html">
-                                <i class="icon-calendar"></i> My Calendar </a>
-                        </li>
-                        <li>
-                            <a href="app_inbox.html">
-                                <i class="icon-envelope-open"></i> My Inbox
-                                <span class="badge badge-danger"> 3 </span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="app_todo_2.html">
-                                <i class="icon-rocket"></i> My Tasks
-                                <span class="badge badge-success"> 7 </span>
-                            </a>
+                            <a href="{{ route('bookings/location_calendar_day_view',['day'=>\Carbon\Carbon::now()->format('d-m-Y')]) }}">
+                                <i class="icon-calendar"></i> Calendar View </a>
                         </li>
                         <li class="divider"> </li>
-                        <li>
-                            <a href="page_user_lock_1.html">
-                                <i class="icon-lock"></i> Lock Screen </a>
-                        </li>
                         <li>
                             <a href="{{ route('admin/logout') }}">
                                 <i class="icon-key"></i> Log Out </a>

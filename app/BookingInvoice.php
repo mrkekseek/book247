@@ -143,8 +143,18 @@ class BookingInvoice extends Model
         }
     }
 
-    public function add_transaction($fillable){
-        $fillable['booking_invoice_id'] = $this->id;
+    public function add_transaction($userId, $bookingItemID, $totalAmount, $method, $details, $status){
+        $fillable = [
+            'booking_invoice_id'        => $this->id,
+            'booking_invoice_item_id'   => $bookingItemID,
+            'user_id'               => $userId,
+            'transaction_amount'    => $totalAmount,
+            'transaction_currency'  => 'NOK',
+            'transaction_type'  => $method,
+            'transaction_date'  => Carbon::now(),
+            'other_details'     => $details,
+            'status'            => $status
+        ];
 
         $validator = Validator::make($fillable, BookingFinancialTransaction::rules('POST'), BookingFinancialTransaction::$message, BookingFinancialTransaction::$attributeNames);
         if ($validator->fails()){
@@ -165,6 +175,14 @@ class BookingInvoice extends Model
 
         try {
             $newTransaction = BookingFinancialTransaction::create($fillable);
+
+            // find generalInvoice for this bookingInvoice
+            $invoice = Invoice::where('invoice_type', '=', 'booking_invoice')->where('invoice_reference_id','=',$this->id)->get()->first();
+            // find item in the generalInvoice for the selected bookingFinancialTransaction
+            $invoiceItem = InvoiceItem::where('invoice_id','=',$invoice->id)->where('item_type','=','booking_invoice_item')->where('item_reference_id','=',$bookingItemID)->get()->first();
+            // add transaction to the invoice
+            $invoice->add_transaction($userId, $method, $status, $details, $id_partial_payment = true, $invoice_items = [$invoiceItem]);
+
             return [
                 'success'=>true,
                 'transaction_id' => $newTransaction->id,
@@ -217,6 +235,24 @@ class BookingInvoice extends Model
         }
 
         return true;
+    }
+
+    public function check_if_paid(){
+        $invoiceTotal = $this->get_invoice_total();
+
+        $transactions_total = 0;
+        $transactions = BookingFinancialTransaction::where('booking_invoice_id','=',$this->id)->whereIn('status',['completed'])->get();
+        foreach($transactions as $one){
+            $transactions_total+=$one->transaction_amount;
+        }
+
+        if ($invoiceTotal['total_sum'] == $transactions_total){
+            $this->status = 'completed';
+        }
+        else{
+            $this->status = 'processing';
+        }
+        $this->save();
     }
 
     public static function rules($method, $id=0){

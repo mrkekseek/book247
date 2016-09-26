@@ -308,41 +308,82 @@ class Booking extends Model
 
     public function cancel_booking(){
         $this->status = 'canceled';
+        $invoice = BookingInvoice::with('invoice_items')->where('id','=',$this->invoice_id)->get()->first();
+        //xdebug_var_dump($invoice); exit;
 
         // check if the booking is a paid one and cancel the booking item from invoices
         if ($this->payment_type == "cash"){
-            $bookingInvoice = BookingInvoice::with('invoice_items')->where('id','=',$this->invoice_id)->get()->first();
-            if (!$bookingInvoice){
-                return false;
-            }
+            if ($invoice->status=='pending'){
+                // no payment was done to this booking/bookings invoice
+                $bookingInvoice = BookingInvoice::with('invoice_items')->where('id','=',$this->invoice_id)->get()->first();
+                if (!$bookingInvoice){
+                    return false;
+                }
 
-            $bookingInvoiceItem = BookingInvoiceItem::where('booking_id','=',$this->id)->where('booking_invoice_id','=',$bookingInvoice->id)->get()->first();
-            if (!$bookingInvoiceItem){
-                return false;
-            }
+                $bookingInvoiceItem = BookingInvoiceItem::where('booking_id','=',$this->id)->where('booking_invoice_id','=',$bookingInvoice->id)->get()->first();
+                if (!$bookingInvoiceItem){
+                    return false;
+                }
 
-            $invoice = Invoice::with('items')->where('invoice_type','=','booking_invoice')->where('invoice_reference_id','=',$bookingInvoice->id)->get()->first();
-            if (!$invoice){
-                return false;
-            }
+                $invoice = Invoice::with('items')->where('invoice_type','=','booking_invoice')->where('invoice_reference_id','=',$bookingInvoice->id)->get()->first();
+                if (!$invoice){
+                    return false;
+                }
 
-            $invoiceItem = InvoiceItem::where('item_type','=','booking_invoice_item')->where('item_reference_id','=',$bookingInvoiceItem->id)->get()->first();
-            if (!$invoice){
-                return false;
-            }
+                $invoiceItem = InvoiceItem::where('item_type','=','booking_invoice_item')->where('item_reference_id','=',$bookingInvoiceItem->id)->get()->first();
+                if (!$invoice){
+                    return false;
+                }
 
-            // delete invoiceItem then check the invoice if it has more items; if no items found, delete empty invoice
-            $invoiceItem->delete();
-            if (sizeof($invoice->items)==1){
-                $invoice->status = 'cancelled';
-                $invoice->save();
-            }
+                // delete invoiceItem then check the invoice if it has more items; if no items found, delete empty invoice
+                $invoiceItem->delete();
+                if (sizeof($invoice->items)==1){
+                    $invoice->status = 'cancelled';
+                    $invoice->save();
+                }
 
-            // delete bookingInvoiceItem then check the bookingInvoice if it has more items; if no items found, leave the bookingInvoice empty
-            $bookingInvoiceItem->delete();
-            if (sizeof($bookingInvoice->invoice_items)==1){
-                $bookingInvoice->status = 'cancelled';
-                $bookingInvoice->save();
+                // delete bookingInvoiceItem then check the bookingInvoice if it has more items; if no items found, leave the bookingInvoice empty
+                $bookingInvoiceItem->delete();
+                if (sizeof($bookingInvoice->invoice_items)==1){
+                    $bookingInvoice->status = 'cancelled';
+                    $bookingInvoice->save();
+                }
+            }
+            elseif($invoice->status=='processing' || $invoice->status=='completed'){
+                // full or partial payment done to this invoice and booking/bookings
+                $bookingInvoice = BookingInvoice::with('invoice_items')->where('id','=',$this->invoice_id)->get()->first();
+                if (!$bookingInvoice){
+                    return false;
+                }
+
+                $bookingInvoiceItem = BookingInvoiceItem::where('booking_id','=',$this->id)->where('booking_invoice_id','=',$bookingInvoice->id)->get()->first();
+                if (!$bookingInvoiceItem){
+                    return false;
+                }
+
+                $invoice = Invoice::with('items')->where('invoice_type','=','booking_invoice')->where('invoice_reference_id','=',$bookingInvoice->id)->get()->first();
+                if (!$invoice){
+                    return false;
+                }
+
+                $invoiceItem = InvoiceItem::where('item_type','=','booking_invoice_item')->where('item_reference_id','=',$bookingInvoiceItem->id)->get()->first();
+                if (!$invoice){
+                    return false;
+                }
+
+                // create credit invoice for canceled item if the item canceled was paid
+                //$invoiceItem->delete();
+                //if (sizeof($invoice->items)==1){
+                //    $invoice->status = 'cancelled';
+                //    $invoice->save();
+                //}
+
+                // delete bookingInvoiceItem then check the bookingInvoice if it has more items; if no items found, leave the bookingInvoice empty
+                //$bookingInvoiceItem->delete();
+                //if (sizeof($bookingInvoice->invoice_items)==1){
+                //    $bookingInvoice->status = 'cancelled';
+                //    $bookingInvoice->save();
+                //}
             }
         }
 
