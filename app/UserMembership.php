@@ -242,10 +242,59 @@ class UserMembership extends Model
                 $member_invoice->add_invoice_item($invoice_item);
             }
 
+            $the_membership->generate_invoices_plan();
+
             return $the_membership;
         }
         catch (Exception $e) {
             return false;
         }
+    }
+
+    public function generate_invoices_plan(){
+        $invoiceNo = 1;
+
+        $invoice_date = Carbon::createFromFormat('Y-m-d',$this->day_start);
+        $end_date = Carbon::createFromFormat('Y-m-d', $this->day_stop);
+        while ($end_date->gt($invoice_date)){
+            if ($this->invoice_period==7 || $this->invoice_period==14){
+                $invoice_date->addDays($this->invoice_period);
+                //echo '1';
+            }
+            elseif($this->invoice_period==30 || $this->invoice_period==90 || $this->invoice_period==180){
+                $invoice_date->addMonths($this->invoice_period/30);
+                //echo '2';
+            }
+            else{
+                $invoice_date->addYear();
+                //echo '3';
+            }
+
+            $fillable = [
+                'user_membership_id'=> $this->id,
+                'item_name'         => 'Invoice #' . $invoiceNo . ' for '.$this->membership_name,
+                'price'             => $this->price,
+                'discount'          => $this->discount,
+                'issued_date'       => $invoice_date->format('Y-m-d'),
+                'status'            => 'pending'
+            ];
+
+            $validator = Validator::make($fillable, UserMembershipInvoicePlanning::rules('POST'), UserMembershipInvoicePlanning::$message, UserMembershipInvoicePlanning::$attributeNames);
+            if ($validator->fails()){
+                //echo json_encode($validator->getMessageBag()->toArray());
+                return false;
+            }
+
+            UserMembershipInvoicePlanning::create($fillable); //exit;
+            $invoiceNo++;
+        }
+
+        $firstInv = UserMembershipInvoicePlanning::where('user_membership_id','=',$this->id)->orderBy('issued_date','ASC')->get()->first();
+        $firstInv->status = 'old';
+        $firstInv->save();
+
+        $lastInv = UserMembershipInvoicePlanning::where('user_membership_id','=',$this->id)->orderBy('issued_date','DESC')->get()->first();
+        $lastInv->status = 'last';
+        $lastInv->save();
     }
 }
