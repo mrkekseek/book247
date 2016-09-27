@@ -352,24 +352,35 @@ class Booking extends Model
             elseif($invoice->status=='processing' || $invoice->status=='completed'){
                 // full or partial payment done to this invoice and booking/bookings
                 $bookingInvoice = BookingInvoice::with('invoice_items')->where('id','=',$this->invoice_id)->get()->first();
-                if (!$bookingInvoice){
+                if (sizeof($bookingInvoice)==0){
+                    //echo '1';
+                    //xdebug_var_dump($bookingInvoice); exit;
                     return false;
                 }
 
                 $bookingInvoiceItem = BookingInvoiceItem::where('booking_id','=',$this->id)->where('booking_invoice_id','=',$bookingInvoice->id)->get()->first();
-                if (!$bookingInvoiceItem){
+                if (sizeof($bookingInvoiceItem)==0){
+                    //echo '2';
+                    //xdebug_var_dump($bookingInvoiceItem); exit;
                     return false;
                 }
 
                 $invoice = Invoice::with('items')->where('invoice_type','=','booking_invoice')->where('invoice_reference_id','=',$bookingInvoice->id)->get()->first();
-                if (!$invoice){
+                if (sizeof($invoice)==0){
+                    //echo '3';
+                    //xdebug_var_dump($invoice); exit;
                     return false;
                 }
 
                 $invoiceItem = InvoiceItem::where('item_type','=','booking_invoice_item')->where('item_reference_id','=',$bookingInvoiceItem->id)->get()->first();
-                if (!$invoice){
+                if (sizeof($invoiceItem)==0){
+                    //echo $bookingInvoiceItem->id;
+                    //xdebug_var_dump($invoiceItem); exit;
                     return false;
                 }
+//exit;
+                $creditInvoice = new Invoice();
+                $creditInvoice->add_credit_invoice($invoiceItem);
 
                 // create credit invoice for canceled item if the item canceled was paid
                 //$invoiceItem->delete();
@@ -379,11 +390,11 @@ class Booking extends Model
                 //}
 
                 // delete bookingInvoiceItem then check the bookingInvoice if it has more items; if no items found, leave the bookingInvoice empty
-                //$bookingInvoiceItem->delete();
-                //if (sizeof($bookingInvoice->invoice_items)==1){
-                //    $bookingInvoice->status = 'cancelled';
-                //    $bookingInvoice->save();
-                //}
+                $bookingInvoiceItem->delete();
+                if (sizeof($bookingInvoice->invoice_items)==1){
+                    $bookingInvoice->status = 'cancelled';
+                    $bookingInvoice->save();
+                }
             }
         }
 

@@ -74,7 +74,7 @@
                         <table class="table table-striped table-bordered table-hover" id="bookings_calendar_view_admin">
                             <thead class="flip-content">
                             <tr>
-                                <th width="10%"> Time Interval </th>
+                                <th width="5%"> Time </th>
                                 @foreach ($resources as $resource)
                                     <th>{{ $resource['name'] }}</th>
                                 @endforeach

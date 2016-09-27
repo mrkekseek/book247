@@ -913,7 +913,7 @@ class BookingController extends Controller
                             'vat'               => $bookingItem->vat,       // VAT for the product group
                             'discount'          => $bookingItem->discount,  // applied discount
                         ];
-                        $general_invoice->add_invoice_item($generalFillable);
+                        $abcd = $general_invoice->add_invoice_item($generalFillable);
                     }
                 }
 

@@ -810,6 +810,10 @@ class FrontEndUserController extends Controller
                             $bookingItem = BookingInvoiceItem::where('id','=',$invItem->item_reference_id)->get()->first();
                             $display_name = 'Booking - '.@$bookingItem->location_name;
                         }
+                        elseif ($display_name=='-' && $invItem->item_type=='store_credit_item'){
+                            $bookingItem = BookingInvoiceItem::where('id','=',$invItem->item_reference_id)->get()->first();
+                            $display_name = 'Store Credit - '.@$bookingItem->location_name;
+                        }
                     }
 
                     if ($items==0){
@@ -848,11 +852,12 @@ class FrontEndUserController extends Controller
                 $is_first = 0;
 
                 $invoiceItems = InvoiceItem::where('invoice_id','=',$invoice['invoice_id'])->get();
+                $invType = ['store_credit_item'=>'Store Credit','user_memberships'=>'Membership Plan'];
                 if (sizeof($invoiceItems)>0){
                     foreach($invoiceItems as $item){
                         $new_set = [
                             'item_name' => $item->item_name,
-                            'item_type' => $item->item_type,
+                            'item_type' => $invType[$item->item_type],
                             'price'     => $item->price,
                             'discount'  => $item->discount,
                             'total'     => $item->total_price,

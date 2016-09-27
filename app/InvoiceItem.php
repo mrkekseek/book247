@@ -45,14 +45,14 @@ class InvoiceItem extends Model
             {
                 return [
                     'invoice_id'    => 'required|exists:invoices,id',
-                    'item_name'     => 'required|string|between:2,150',
+                    'item_name'     => 'required|string|between:2,500',
                     'item_type'     => 'required|string|between:2,150',
                     'item_reference_id' => 'required|integer',
                     'quantity'  => 'required|integer|min:0',
-                    'price'     => 'required|numeric|min:0',
+                    'price'     => 'required|numeric',
                     'discount'  => 'required|numeric|min:0|max:100',
                     'vat'       => 'required|numeric|min:0|max:100',
-                    'total_price'    => 'required|numeric|min:0',
+                    'total_price'    => 'required|numeric',
                 ];
             }
             case 'PUT':
@@ -60,14 +60,14 @@ class InvoiceItem extends Model
             {
                 return [
                     'invoice_id'    => 'required|exists:invoices,id',
-                    'item_name'     => 'required|string|between:2,150',
+                    'item_name'     => 'required|string|between:2,500',
                     'item_type'     => 'required|string|between:2,150',
                     'item_reference_id' => 'required|integer',
                     'quantity'  => 'required|integer|min:0',
-                    'price'     => 'required|numeric|min:0',
+                    'price'     => 'required|numeric',
                     'discount'  => 'required|numeric|min:0|max:100',
                     'vat'       => 'required|numeric|min:0|max:100',
-                    'total_price'    => 'required|numeric|min:0',
+                    'total_price'    => 'required|numeric',
                 ];
             }
             default:break;

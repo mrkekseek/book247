@@ -255,4 +255,53 @@ class Invoice extends Model
         }
         $this->save();
     }
+
+    public function add_credit_invoice($invoiceItem, $employeeId=0){
+        if ($employeeId==0){
+            $employee = User::where('username','=','sysagent')->get()->first();
+            if ($employee){
+                $employeeId = $employee->id;
+            }
+            else{
+                $employeeId = 38;
+            }
+        }
+
+        $invoice = Invoice::where('id','=',$invoiceItem->invoice_id)->get()->first();
+        if (sizeof($invoice)==0){
+            return ['success' => false, 'errors' => 'Could not find invoice'];
+        }
+
+        $other_details = 'Cancellation of the Invoice Item with ID: '.$invoiceItem->id.' and return of item value in store credit';
+        $fillable = [
+            'user_id'       => $invoice->user_id,
+            'employee_id'   => $employeeId,
+            'invoice_type'  => 'store_credit',
+            'invoice_reference_id'  => $invoice->id,
+            'invoice_number'=> $this->next_invoice_number(),
+            'other_details' => $other_details,
+            'status'        => 'pending'
+        ];
+
+        $validator = Validator::make($fillable, Invoice::rules('POST'), Invoice::$message, Invoice::$attributeNames);
+        if ($validator->fails()){
+            return array(
+                'success' => false,
+                'errors' => $validator->getMessageBag()->toArray()
+            );
+        }
+        $invoice = Invoice::create($fillable);
+
+        $storeCreditItem = [
+            'item_name' => 'Refund for : '.$invoiceItem->item_name,
+            'item_type' => 'store_credit_item',
+            'item_reference_id' => $invoiceItem->id,
+            'quantity'  => $invoiceItem->quantity,
+            'price'     => -$invoiceItem->price,
+            'discount'  => $invoiceItem->discount,
+            'vat'       => $invoiceItem->vat
+        ];
+        $invoice->add_invoice_item($storeCreditItem);
+
+    }
 }
