@@ -104,8 +104,7 @@
                                             @endforeach
                                         @else
                                             <tr>
-                                                <td></td>
-                                                <td colspan="{{sizeof($resources)}}" style="height: 300px; vertical-align:middle;">
+                                                <td colspan="{{sizeof($resources)+1}}" style="height: 300px; vertical-align:middle; text-align:center;">
                                                     <h1>Location is closed for selected date</h1>
                                                 </td>
                                             </tr>
