@@ -2771,6 +2771,15 @@ class BookingController extends Controller
         }
         else{
             $date_selected = Carbon::createFromFormat('d-m-Y',$date_selected)->format('Y-m-d');
+
+            // check if date_selected is less than today
+            $selected = Carbon::createFromFormat('Y-m-d',$date_selected);
+            if ($selected->lt(Carbon::today())){
+                return redirect()->intended(route('front_calendar_booking', ['day' => Carbon::today()->format('d-m-Y')]));
+            }
+            elseif ($selected->gte(Carbon::today()->addDays(7))){
+                return redirect()->intended(route('front_calendar_booking', ['day' => Carbon::today()->addDays(7)->format('d-m-Y')]));
+            }
         }
         $header_vals['date_selected'] = Carbon::createFromFormat('Y-m-d',$date_selected)->format('d-m-Y');
         $header_vals['next_date'] = Carbon::createFromFormat('Y-m-d',$date_selected)->addDay(1)->format('d-m-Y');
