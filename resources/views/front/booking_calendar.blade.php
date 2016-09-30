@@ -86,21 +86,30 @@
                                         </tr>
                                         </thead>
                                         <tbody>
-                                        @foreach ($time_intervals as $key=>$hour)
+                                        @if (sizeof($time_intervals)>0)
+                                            @foreach ($time_intervals as $key=>$hour)
+                                                <tr>
+                                                    <td >{{ $key }} <a class="btn btn-circle btn-icon-only border-white bg-green-meadow bg-font-green-meadow add_custom_bookings_btn" href="javascript:;"> + </a></td>
+                                                    @foreach ($resources as $resource)
+                                                        <td class="{{ isset($location_bookings[$key][$resource['id']]['color_stripe'])?$location_bookings[$key][$resource['id']]['color_stripe']:$hour['color_stripe'] }}
+                                                        {{ ( $hour['color_stripe']=='' && !isset($location_bookings[$key][$resource['id']]['color_stripe']) )?' isfreetime':'' }}" style="padding:4px 8px;">
+                                                            @if ( isset($location_bookings[$key][$resource['id']]) )
+                                                                <a class="font-white" href="">Booked</a>
+                                                            @else
+                                                                <span data-resource="{{ $resource['id'] }}" data-time="{{ $key }}">&nbsp;</span>
+                                                            @endif
+                                                        </td>
+                                                    @endforeach
+                                                </tr>
+                                            @endforeach
+                                        @else
                                             <tr>
-                                                <td >{{ $key }} <a class="btn btn-circle btn-icon-only border-white bg-green-meadow bg-font-green-meadow add_custom_bookings_btn" href="javascript:;"> + </a></td>
-                                                @foreach ($resources as $resource)
-                                                    <td class="{{ isset($location_bookings[$key][$resource['id']]['color_stripe'])?$location_bookings[$key][$resource['id']]['color_stripe']:$hour['color_stripe'] }}
-                                                    {{ ( $hour['color_stripe']=='' && !isset($location_bookings[$key][$resource['id']]['color_stripe']) )?' isfreetime':'' }}" style="padding:4px 8px;">
-                                                        @if ( isset($location_bookings[$key][$resource['id']]) )
-                                                            <a class="font-white" href="">Booked</a>
-                                                        @else
-                                                            <span data-resource="{{ $resource['id'] }}" data-time="{{ $key }}">&nbsp;</span>
-                                                        @endif
-                                                    </td>
-                                                @endforeach
+                                                <td></td>
+                                                <td colspan="{{sizeof($resources)}}" style="height: 300px; vertical-align:middle;">
+                                                    <h1>Location is closed for selected date</h1>
+                                                </td>
                                             </tr>
-                                        @endforeach
+                                        @endif
                                         </tbody>
                                     </table>
                                 </div>

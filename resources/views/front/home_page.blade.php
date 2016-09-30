@@ -1180,6 +1180,13 @@
                 }
             });
 
+            if (all_hours==''){
+                all_hours = '<div class="note note-warning">'+
+                                '<h4 class="block">No available hours</h4>'+
+                                '<p> There are no more available intervals for today or the selected location is closed for the selected date. </p>'+
+                            '</div>';
+            }
+
             $("#booking_hours").html(all_hours);
         }
 
