@@ -13,6 +13,8 @@ class CreateShopResourcePricesTable extends Migration
     public function up()
     {
         Schema::create('shop_resource_prices', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
+
             $table->increments('id');
             $table->integer('resource_id')->unsigned();
             $table->string('days', 50);

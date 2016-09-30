@@ -13,6 +13,8 @@ class CreateUserMembershipInvoicePlanningTable extends Migration
     public function up()
     {
         Schema::create('user_membership_invoice_planning', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
+
             $table->increments('id');
             $table->integer('user_membership_id')->unsigned();
             $table->string('item_name', 500);
