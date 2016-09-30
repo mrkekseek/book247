@@ -35,17 +35,6 @@
             <!-- END PAGE TITLE -->
         </div>
         <!-- END PAGE HEAD-->
-        <!-- BEGIN PAGE BREADCRUMB -->
-        <ul class="page-breadcrumb breadcrumb">
-            <li>
-                <a href="index.html">Home</a>
-                <i class="fa fa-circle"></i>
-            </li>
-            <li>
-                <span class="active">Form Stuff</span>
-            </li>
-        </ul>
-        <!-- END PAGE BREADCRUMB -->
         <!-- BEGIN PAGE BASE CONTENT -->
         <div class="row">
             <div class="col-md-12">

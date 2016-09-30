@@ -1308,8 +1308,20 @@ class BookingController extends Controller
             }
         }
 
-        $hours_interval = $this->make_hours_interval($date_selected, '07:00', '23:00', 30, true, false);
-        $location_bookings = $this->get_location_bookings($date_selected, $location->id, $resources_ids, $hours_interval);
+        $locationOpeningHours = $location->get_opening_hours($date_selected);
+        //xdebug_var_dump($locationOpeningHours); exit;
+        if (isset($locationOpeningHours['open_at']) && isset($locationOpeningHours['close_at'])){
+            $open_at  = $locationOpeningHours['open_at'];
+            $close_at = $locationOpeningHours['close_at'];
+        }
+        else{
+            $open_at  = '07:00';
+            $close_at = '23:00';
+        }
+        $hours_interval     = $this->make_hours_interval($date_selected, $open_at, $close_at, 30, true, false);
+        $location_bookings  = $this->get_location_bookings($date_selected, $location->id, $resources_ids, $hours_interval);
+
+    //$this->make_hours_interval1($date_selected, $open_at, $close_at, 30, false, false);
 
         $resources_ids = [];
         foreach($resources as $resource){
@@ -1378,22 +1390,21 @@ class BookingController extends Controller
      * @param bool $show_last
      * @return array
      */
-    public function make_hours_interval($date_selected, $start_time='07:00', $end_time='23:00', $time_period=30, $show_all = false, $show_last = false){
+    public function make_hours_interval_old($date_selected, $start_time='07:00', $end_time='23:00', $time_period=30, $show_all = false, $show_last = false){
         $dateSelected = Carbon::createFromFormat("Y-m-d", $date_selected);
         if (!$dateSelected){
             return [];
         }
 
         $hours = [];
-
         // if selected day = today
         if ( $show_all == false ) {
             $currentTimeHour    = Carbon::now()->format('H');
             $currentTimeMinutes = Carbon::now()->format('i');
         }
         else {
-            $currentTimeHour    = Carbon::createFromTime(6)->format('H');
-            $currentTimeMinutes = Carbon::createFromTime(0,59)->format('i');
+            $currentTimeHour    = Carbon::createFromFormat('H:i',$start_time)->format('H');
+            $currentTimeMinutes = Carbon::createFromFormat('H:i',$start_time)->format('i');
         }
 
         if ($currentTimeMinutes>=0 && $currentTimeMinutes<30){
@@ -1408,15 +1419,12 @@ class BookingController extends Controller
         $v1 = $dateSelected->format("Y-m-d");
         $v2 = Carbon::now()->format("Y-m-d");
         if ( $v1==$v2) {
-            if ($currentTimeHour<7){
-                $currentTimeHour = 7;
-            }
-
             $begin->addHour($currentTimeHour);
             $begin->addMinutes($currentTimeMinutes);
+            $begin->addMinutes(-$time_period);
         }
         else{
-            $begin->addHour(7);
+            $begin->addHour($currentTimeHour);
         }
         $end    = Carbon::tomorrow();
         if ($show_last==false){
@@ -1439,9 +1447,79 @@ class BookingController extends Controller
                 $hours[$key] = ['color_stripe' => ""];
             }
         }
-
+//xdebug_var_dump($hours);
         return $hours;
     }
+
+//  -----------------
+    /**
+     * Returns time interval for days based on the requirements of each specific resource/category of bookings
+     * @param $date_selected
+     * @param string $start_time
+     * @param string $end_time
+     * @param int $time_period
+     * @param bool $show_all
+     * @param bool $show_last
+     * @return array
+     */
+    public function make_hours_interval($date_selected, $start_time='07:00', $end_time='23:00', $time_period=30, $show_all = false, $show_last = false){
+//echo 'Date : '.$date_selected.' ; time_start : '.$start_time.' ; time_end : '.$end_time;
+        $dateSelected = Carbon::createFromFormat("Y-m-d H:i", $date_selected.' 00:00');
+        if (!$dateSelected){
+            return [];
+        }
+
+        $startTime  = Carbon::createFromFormat('H:i',$start_time);
+        $endTime    = Carbon::createFromFormat('H:i',$end_time);
+
+        $begin = Carbon::instance($dateSelected);
+        if ($dateSelected->format('Y-m-d') == Carbon::today()->format('Y-m-d')){
+            // it's today
+            $begin->addHours($startTime->format('H'));
+            $begin->addMinutes($startTime->format('i'));
+
+            if ($show_all == false){
+                while ($begin->lte(Carbon::now())){
+                    $begin->addMinutes($time_period);
+                }
+            }
+        }
+        else{
+            // it's another day
+            $begin->addHours($startTime->format('H'));
+            $begin->addMinutes($startTime->format('i'));
+        }
+//xdebug_var_dump($begin);
+        $end = Carbon::instance($dateSelected);
+        $end->addHours($endTime->format('H'));
+        $end->addMinutes($endTime->format('i'));
+        if ($show_last == true){
+            $end->addMinute();
+        }
+        else{
+            // we leave it like this
+        }
+//xdebug_var_dump($end);
+        $interval   = DateInterval::createFromDateString($time_period.' minutes');
+        $period     = new DatePeriod($begin, $interval, $end);
+        $hours      = [];
+
+        $current_time   = Carbon::now()->format( "H:i" );
+        $yesterday      = $dateSelected->lt(Carbon::today()) ? true : false;
+        $today          = $dateSelected->eq(Carbon::today()) ? true : false;
+        foreach ( $period as $dt ) {
+            $key = $dt->format( "H:i" );
+            if ( ($key<$current_time && $today) || $yesterday ) {
+                $hours[$key] = ['color_stripe' => "bg-grey-salt bg-font-grey-salt"];
+            }
+            else{
+                $hours[$key] = ['color_stripe' => ""];
+            }
+        }
+//xdebug_var_dump($hours); exit;
+        return $hours;
+    }
+//  -----------------
 
     /**
      * Get location bookings based on location, resources, time intervals
@@ -2761,13 +2839,17 @@ class BookingController extends Controller
             }
         }
 
-        $opening_hour = '07:00';
-        if ( Carbon::now()->format('Y-m-d')==$date_selected ){
-            $opening_hour = Carbon::now()->format('H:i');
+        $locationOpeningHours = $location->get_opening_hours($date_selected);
+        if (isset($locationOpeningHours['open_at']) && isset($locationOpeningHours['close_at'])){
+            $open_at  = $locationOpeningHours['open_at'];
+            $close_at = $locationOpeningHours['close_at'];
         }
-        $closing_hour = '23:00';
+        else{
+            $open_at  = '07:00';
+            $close_at = '23:00';
+        }
 
-        $hours_interval = $this->make_hours_interval($date_selected, $opening_hour, $closing_hour, 30, false, false);
+        $hours_interval = $this->make_hours_interval($date_selected, $open_at, $close_at, 30, false, false);
         $location_bookings = $this->player_get_location_bookings($date_selected, $location->id, $resources_ids, $hours_interval);
 
         $resources_ids = [];

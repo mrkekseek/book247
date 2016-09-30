@@ -256,13 +256,12 @@ class Booking extends Model
 
         $loc = ShopLocations::where('id','=',$this->location_id)->get()->first();
         $location_name = $loc->name;
-        $resource = ShopResource::where('id','=',$this->resource_id)->get()->first();
+        $resource = ShopResource::with('vatRate')->where('id','=',$this->resource_id)->get()->first();
         $resource_name = $resource->name;
+        $vat_value = $resource->vatRate->value;
         $booking_date = $this->date_of_booking;
         $booking_time_interval = $this->booking_time_start.' - '.$this->booking_time_stop;
         $booking_price = $this->payment_amount;
-        $vat = VatRate::orderBy('id','asc')->get()->first();
-        $vat_value = $vat->value;
         $total_price = $booking_price + (($booking_price*$vat_value)/100);
 
         $fillable = [

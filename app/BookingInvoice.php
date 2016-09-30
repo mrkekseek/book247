@@ -53,21 +53,17 @@ class BookingInvoice extends Model
         }
 
         $theBooking = Booking::where('id','=',$bookingID)->get()->first();
-
         $loc = ShopLocations::where('id','=',$theBooking->location_id)->get()->first();
         $location_name = $loc->name;
 
-        $resource = ShopResource::where('id','=',$theBooking->resource_id)->get()->first();
+        $resource = ShopResource::with('vatRate')->where('id','=',$theBooking->resource_id)->get()->first();
+        //xdebug_var_dump($resource->vatRate);
         $resource_name = $resource->name;
+        $vat_value = $resource->vatRate->value;
 
         $booking_date = $theBooking->date_of_booking;
         $booking_time_interval = $theBooking->booking_time_start.' - '.$theBooking->booking_time_stop;
-
         $booking_price = $theBooking->payment_amount;
-
-        $vat = VatRate::orderBy('id','asc')->get()->first();
-        $vat_value = $vat->value;
-
         $total_price = $booking_price + (($booking_price*$vat_value)/100);
 
         $fillable = [

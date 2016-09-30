@@ -262,7 +262,7 @@
                                                             <div class="col-md-3">
                                                                 <div class="note note-info font-grey-mint" style="min-height:110px; margin:0 0 10px; padding:5px 20px 10px 10px;">
                                                                     <p> Signed On </p>
-                                                                    <h4 class="block" style="margin-bottom:0px; font-size:32px;"> {{ $plan_details['day_start'] }} </h4>
+                                                                    <h4 class="block" style="margin-bottom:0px; font-size:24px;"> {{ $plan_details['day_start'] }} </h4>
                                                                 </div>
                                                             </div>
                                                             <div class="col-md-6">
@@ -278,7 +278,7 @@
                                                             <div class="col-md-4">
                                                                 <div class="note note-warning" style="min-height:95px; margin:0 0 10px; padding:5px 20px 10px 10px;">
                                                                     <p> Current invoice period </p>
-                                                                    <h4 class="block" style="margin-bottom:0px; font-size:18px;"> 22 Mar 2014 - 22 June 2014 </h4>
+                                                                    <h4 class="block" style="margin-bottom:0px; font-size:18px;"> {{ $plan_details['invoicePeriod'] }} </h4>
                                                                 </div>
                                                             </div>
                                                             <div class="col-md-2">
@@ -328,6 +328,71 @@
                                                     </div>
                                                 </div>
                                             </div>
+                                            @endif
+
+                                            @if (sizeof($plannedInvoices))
+                                                <div class="col-md-12">
+                                                    <div class="portlet light bordered">
+                                                        <div class="portlet-title">
+                                                            <div class="caption">
+                                                                <i class="icon-equalizer font-blue-steel"></i>
+                                                                <span class="caption-subject font-blue-steel bold uppercase"> Membership planned invoices </span>
+                                                                <span class="caption-helper">for the signed membership plan</span>
+                                                            </div>
+                                                            <div class="tools">
+                                                                <a class="expand" href="" data-original-title="" title=""> </a>
+                                                            </div>
+                                                        </div>
+                                                        <div class="portlet-body row" style="display:none;">
+                                                            <!-- BEGIN FORM-->
+                                                            <div class="table-scrollable">
+                                                                <table class="table table-striped table-bordered table-advance table-hover">
+                                                                    <thead>
+                                                                    <tr>
+                                                                        <th>
+                                                                            <i class="fa fa-calendar-minus-o"></i> Invoice Name </th>
+                                                                        <th class="hidden-xs">
+                                                                            <i class="fa fa-calendar"></i> To be issued on </th>
+                                                                        <th class="hidden-xs">
+                                                                            <i class="fa fa-calendar"></i> Last active day </th>
+                                                                        <th>
+                                                                            <i class="fa fa-dollar"></i> Price </th>
+                                                                        <th class="hidden-xs">
+                                                                            <i class="fa fa-asterisk"></i> Payment Status </th>
+                                                                        <!--<th> Options </th>-->
+                                                                    </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                    @foreach ($plannedInvoices as $singlePlanned)
+                                                                    <tr>
+                                                                        <td class="highlight">
+                                                                        @if ($singlePlanned['invoiceLink']!='')
+                                                                            <div class="success"></div>
+                                                                            <a href="{{ $singlePlanned['invoiceLink'] }}" target="_blank"> {{ $singlePlanned['item_name'] }} </a>
+                                                                        @else
+                                                                            <div class="success"></div>
+                                                                            <span> &nbsp; &nbsp; {{ $singlePlanned['item_name'] }} </span>
+                                                                        @endif
+                                                                        </td>
+                                                                        <td> {{ $singlePlanned['issued_date'] }} - {{ $singlePlanned['status'] }} </td>
+                                                                        <td> {{ $singlePlanned['last_active_date'] }} </td>
+                                                                        <td class="hidden-xs"> {{ $singlePlanned['price'] }} NOK </td>
+                                                                        <td>
+                                                                            @if ($singlePlanned['invoiceStatus']!='')
+                                                                                <span class="label label-sm label-success"> {{$singlePlanned['invoiceStatus']}} </span>
+                                                                            @endif
+                                                                        </td>
+                                                                        <!--<td> <a href="javascript:;" class="btn btn-sm green"> Group Invoices <i class="fa fa-plus"></i></a>
+                                                                            <a href="javascript:;" class="btn btn-sm purple"> Defer <i class="fa fa-times"></i></a></td>-->
+                                                                    </tr>
+                                                                    @endforeach
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                            <!-- END FORM-->
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             @endif
                                         </div>
                                         <!-- END Membership Plan TAB -->

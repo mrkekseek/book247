@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Carbon\Carbon;
 
 class ShopLocations extends Model
 {
@@ -79,5 +80,62 @@ class ShopLocations extends Model
             }
             default:break;
         }
+    }
+
+    public function get_opening_hours($date){
+        $hours = [
+            'open_at'   => '06:30',
+            'close_at'  => '23:00'
+        ];
+
+        $book_day = Carbon::createFromFormat('Y-m-d',$date);
+        $week_day = Carbon::createFromFormat('Y-m-d',$date)->format('w');
+
+        $allOpeningHours = ShopOpeningHour::where('shop_location_id','=',$this->id)
+            ->orderByRaw('FIELD(type, "close_hours", "break_hours", "open_hours")')
+            ->orderBy('date_start', 'ASC')->get();
+        foreach ($allOpeningHours as $singleHour){
+            $days = json_decode($singleHour->days);
+
+            switch ($singleHour->type) {
+                case 'open_hours'  :
+                    $openAt     = Carbon::createFromFormat('H:i:s', $singleHour->time_start)->format('H:i');
+                    $closeAt    = Carbon::createFromFormat('H:i:s', $singleHour->time_stop)->format('H:i');
+
+                    if (is_null($singleHour->date_start) || is_null($singleHour->date_stop)){
+                        if (in_array($week_day, $days)){
+                            return ['open_at' => $openAt, 'close_at' => $closeAt];
+                        }
+                    }
+                    else{
+                        $date_start = Carbon::createFromFormat('Y-m-d', $singleHour->date_start);
+                        $date_end   = Carbon::createFromFormat('Y-m-d', $singleHour->date_stop);
+                        if ($book_day->gte($date_start) && $book_day->lte($date_end) && in_array($week_day, $days)){
+                            return ['open_at' => $openAt, 'close_at' => $closeAt];
+                        }
+                    }
+                    break;
+                case 'close_hours' :
+                    if (is_null($singleHour->date_start) || is_null($singleHour->date_stop)){
+                        // one of the dates is undefined, so we treat it as if it has no dates added and is a generic entry
+                        if (in_array($week_day, $days)){
+                            return ['open_at' => '00:00', 'close_at' => '00:00'];
+                        }
+                    }
+                    else{
+                        // both dates defined
+                        $date_start = Carbon::createFromFormat('Y-m-d', $singleHour->date_start);
+                        $date_end   = Carbon::createFromFormat('Y-m-d', $singleHour->date_stop);
+                        if ($book_day->gte($date_start) && $book_day->lte($date_end) && in_array($week_day, $days)){
+                            return ['open_at' => '00:00', 'close_at' => '00:00'];
+                        }
+                    }
+                    break;
+                case 'break_hours' : ;
+                    break;
+            }
+        }
+
+        return $hours;
     }
 }

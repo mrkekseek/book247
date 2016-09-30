@@ -40,17 +40,6 @@
                 <!-- BEGIN EXAMPLE TABLE PORTLET-->
                 <div class="portlet light bordered">
                     <div class="portlet-body">
-                        <div class="table-toolbar">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="btn-group">
-                                        <button id="sample_editable_1_new" class="btn sbold green" data-toggle="modal" href="#draggable"> Add New
-                                            <i class="fa fa-plus"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
                         <table class="table table-striped table-bordered table-hover table-checkable order-column" id="sample_1">
                             <thead>
                             <tr>
@@ -85,95 +74,6 @@
                     </div>
                 </div>
                 <!-- END EXAMPLE TABLE PORTLET-->
-            </div>
-
-            <div class="modal fade draggable-modal" id="draggable" tabindex="-1" role="basic" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
-                            <h4 class="modal-title">Add new Front User/Customer</h4>
-                        </div>
-                        <div class="modal-body">
-                            <form action="#" id="form_sample_2" class="form-horizontal">
-                                <div class="form-body">
-                                    <div class="alert alert-danger display-hide">
-                                        <button class="close" data-close="alert"></button> You have some form errors. Please check below. </div>
-                                    <div class="alert alert-success display-hide">
-                                        <button class="close" data-close="alert"></button> Your form validation is successful! </div>
-                                    <div class="form-group  margin-top-20">
-                                        <label class="control-label col-md-4">First Name
-                                            <span class="required"> * </span>
-                                        </label>
-                                        <div class="col-md-7">
-                                            <div class="input-icon right">
-                                                <i class="fa"></i>
-                                                <input type="text" class="form-control" name="first_name" /> </div>
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="control-label col-md-4">Middle Name
-                                        </label>
-                                        <div class="col-md-7">
-                                            <div class="input-icon right">
-                                                <i class="fa"></i>
-                                                <input type="text" class="form-control" name="middle_name" /> </div>
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="control-label col-md-4">Last Name
-                                            <span class="required"> * </span>
-                                        </label>
-                                        <div class="col-md-7">
-                                            <div class="input-icon right">
-                                                <i class="fa"></i>
-                                                <input type="text" class="form-control" name="last_name" /> </div>
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="control-label col-md-4">Username
-                                            <span class="required"> * </span>
-                                        </label>
-                                        <div class="col-md-7">
-                                            <div class="input-icon right">
-                                                <i class="fa"></i>
-                                                <input type="text" class="form-control" name="username" /> </div>
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="control-label col-md-4">Password
-                                            <span class="required"> * </span>
-                                        </label>
-                                        <div class="col-md-7">
-                                            <div class="input-icon right">
-                                                <i class="fa"></i>
-                                                <input type="text" class="form-control" name="password" /> </div>
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="control-label col-md-4">Email Address
-                                            <span class="required"> * </span>
-                                        </label>
-                                        <div class="col-md-7">
-                                            <div class="input-icon right">
-                                                <i class="fa"></i>
-                                                <input type="text" class="form-control" name="email" /> </div>
-                                        </div>
-                                    </div>
-                                    <input type="hidden" name="user_type" value="{{$role->id}}" />
-                                </div>
-                                {!! csrf_field() !!}
-                                <input type="hidden" name="_method" value="put" />
-                            </form>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn dark btn-outline" data-dismiss="modal">Close</button>
-                            <button type="button" class="btn green submit_form_2" onCLick="javascript: $('#form_sample_2').submit();">Save changes</button>
-                        </div>
-                    </div>
-                    <!-- /.modal-content -->
-                </div>
-                <!-- /.modal-dialog -->
             </div>
         </div>
         <!-- END PAGE BASE CONTENT -->
@@ -338,27 +238,8 @@
             };
         }();
 
-        function register_back_user(){
-            $.ajax({
-                url: '{{route('admin/back_users/add_user')}}',
-                type: "post",
-                data: { 'first_name':   $('input[name=first_name]').val(),
-                    'middle_name':  $('input[name=middle_name]').val(),
-                    'last_name':    $('input[name=last_name]').val(),
-                    'username':     $('input[name=username]').val(),
-                    'password':     $('input[name=password]').val(),
-                    'email':        $('input[name=email]').val(),
-                    'user_type':    $('select[name=user_type]').val(),
-                    '_method':      $('input[name=_method]').val(),
-                    '_token':       $('input[name=_token]').val()},
-                success: function(data){
-                    alert(data);
-                }
-            });
-        }
-
         $(document).ready(function(){
-            FormValidation.init();
+            // FormValidation.init();
         });
     </script>
 @endsection

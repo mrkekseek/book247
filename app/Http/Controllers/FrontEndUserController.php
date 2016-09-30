@@ -9,6 +9,7 @@ use App\Invoice;
 use App\InvoiceItem;
 use App\UserFriends;
 use App\UserMembership;
+use App\UserMembershipInvoicePlanning;
 use App\UserSettings;
 use Illuminate\Auth\Passwords\PasswordBroker;
 use Illuminate\Http\Request;
@@ -353,6 +354,46 @@ class FrontEndUserController extends Controller
         if ($my_plan){
             $restrictions = $my_plan->get_plan_restrictions();
             $plan_details = $my_plan->get_plan_details();
+
+            $currentInvoiceDate = UserMembershipInvoicePlanning::where('status','=','old')->where('user_membership_id','=',$my_plan->id)->orderBy('issued_date','desc')->get()->first();
+            if ($currentInvoiceDate) {
+                $invoice_date = Carbon::createFromFormat('Y-m-d', $currentInvoiceDate->issued_date);
+                if ($my_plan->invoice_period == 7 || $my_plan->invoice_period == 14) {
+                    $plan_details['invoicePeriod'] = $invoice_date->format('j M Y') . ' - ' . $invoice_date->addDays($my_plan->invoice_period)->format('j M Y');
+                } elseif ($my_plan->invoice_period == 30 || $my_plan->invoice_period == 90 || $my_plan->invoice_period == 180) {
+                    $plan_details['invoicePeriod'] = $invoice_date->format('j M Y') . ' - ' . $invoice_date->addMonths($my_plan->invoice_period / 30)->format('j M Y');
+                    //echo '2';
+                } else {
+                    $plan_details['invoicePeriod'] = $invoice_date->format('j M Y') . ' - ' . $invoice_date->addYear()->format('j M Y');
+                    //echo '3';
+                }
+            }
+            else{
+                $plan_details['invoicePeriod'] = '-';
+            }
+
+            $allPlannedInvoices = UserMembershipInvoicePlanning::where('user_membership_id','=',$my_plan->id)->orderBy('issued_date','asc')->get();
+            $plannedInvoices = [];
+            foreach($allPlannedInvoices as $onlyOne){
+                $varInv = [
+                    'invoiceLink'   => '',
+                    'invoiceStatus' => '',
+                    'item_name' => $onlyOne->item_name,
+                    'price'     => $onlyOne->price,
+                    'status'    => $onlyOne->status,
+                    'issued_date'   => $onlyOne->issued_date,
+                    'last_active_date'   => $onlyOne->last_active_date
+                ];
+
+                if ($onlyOne->invoice_id!=-1){
+                    $getInvoice = Invoice::where('id','=',$onlyOne->invoice_id)->get()->first();
+                    $varInv['status']= 'issued';
+                    $varInv['invoiceStatus']= $getInvoice->status;
+                    $varInv['invoiceLink']  = route('admin/invoices/view', ['id' => $getInvoice->invoice_number]);
+                }
+
+                $plannedInvoices[$onlyOne->id] = $varInv;
+            }
         }
         else {
             $my_plan = MembershipPlan::where('id','=',1)->get()->first();
@@ -388,7 +429,8 @@ class FrontEndUserController extends Controller
             'restrictions'  => @$restrictions,
             'plan_details'  => @$plan_details,
             'memberships'   => $membership_plans,
-            'old_avatars'   => $avatarArchive
+            'old_avatars'   => $avatarArchive,
+            'plannedInvoices'   => @$plannedInvoices
         ]);
     }
 

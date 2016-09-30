@@ -209,7 +209,7 @@ class UserMembership extends Model
             $member_invoice->user_id = $user->id;
             $member_invoice->employee_id = $signed_by->id;
             $member_invoice->invoice_type = 'membership_plan_assignment_invoice';
-            $member_invoice->invoice_reference_id = '';
+            $member_invoice->invoice_reference_id = $the_membership->id;
             $member_invoice->invoice_number = Invoice::next_invoice_number();
             $member_invoice->status = 'pending';
 
@@ -252,22 +252,56 @@ class UserMembership extends Model
     }
 
     public function generate_invoices_plan(){
+        // get first generated invoice
         $invoiceNo = 1;
-
+        $firstPrice = 0;
+        $invoice = Invoice::with('items')->where('invoice_type','=','membership_plan_assignment_invoice')->where('invoice_reference_id','=',$this->id)->get()->first();
         $invoice_date = Carbon::createFromFormat('Y-m-d',$this->day_start);
+        foreach($invoice->items as $item){
+            $firstPrice+=$item->total_price;
+        }
+
+        $invoice_last_active = Carbon::createFromFormat('Y-m-d', $this->day_start);
+        if ($this->invoice_period==7 || $this->invoice_period==14){
+            $invoice_last_active->addDays($this->invoice_period)->addDays(-1);
+        }
+        elseif($this->invoice_period==30 || $this->invoice_period==90 || $this->invoice_period==180){
+            $invoice_last_active->addMonths($this->invoice_period/30)->addDays(-1);
+        }
+        else{
+            $invoice_last_active->addYear()->addDays(-1);
+        }
+
+        $fillable = [
+            'user_membership_id'=> $this->id,
+            'item_name'         => 'Invoice #' . $invoiceNo . ' for '.$this->membership_name,
+            'price'             => $firstPrice,
+            'discount'          => $this->discount,
+            'issued_date'       => $invoice_date->format('Y-m-d'),
+            'last_active_date'  => $invoice_last_active->format('Y-m-d'),
+            'status'            => 'pending'
+        ];
+        UserMembershipInvoicePlanning::create($fillable);
+
+        $invoiceNo++;
+        unset($invoice_last_active);
+        unset($fillable);
+
+        $invoice_last_active = Carbon::createFromFormat('Y-m-d',$this->day_start);
         $end_date = Carbon::createFromFormat('Y-m-d', $this->day_stop);
-        while ($end_date->gt($invoice_date)){
+
+        while ($end_date->gt($invoice_last_active->addDay())){
             if ($this->invoice_period==7 || $this->invoice_period==14){
                 $invoice_date->addDays($this->invoice_period);
-                //echo '1';
+                $invoice_last_active = Carbon::instance($invoice_date)->addDays($this->invoice_period)->addDays(-1);
             }
             elseif($this->invoice_period==30 || $this->invoice_period==90 || $this->invoice_period==180){
                 $invoice_date->addMonths($this->invoice_period/30);
-                //echo '2';
+                $invoice_last_active = Carbon::instance($invoice_date)->addMonths($this->invoice_period/30)->addDays(-1);
             }
             else{
                 $invoice_date->addYear();
-                //echo '3';
+                $invoice_last_active = Carbon::instance($invoice_date)->addYear()->addDays(-1);
             }
 
             $fillable = [
@@ -276,6 +310,7 @@ class UserMembership extends Model
                 'price'             => $this->price,
                 'discount'          => $this->discount,
                 'issued_date'       => $invoice_date->format('Y-m-d'),
+                'last_active_date'  => $invoice_last_active->format('Y-m-d'),
                 'status'            => 'pending'
             ];
 
@@ -289,8 +324,10 @@ class UserMembership extends Model
             $invoiceNo++;
         }
 
+        $firstInvoice = Invoice::where('invoice_type','=','membership_plan_assignment_invoice')->where('invoice_reference_id','=',$this->id)->get()->first();
         $firstInv = UserMembershipInvoicePlanning::where('user_membership_id','=',$this->id)->orderBy('issued_date','ASC')->get()->first();
         $firstInv->status = 'old';
+        $firstInv->invoice_id = $firstInvoice->id;
         $firstInv->save();
 
         $lastInv = UserMembershipInvoicePlanning::where('user_membership_id','=',$this->id)->orderBy('issued_date','DESC')->get()->first();

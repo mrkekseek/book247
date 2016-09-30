@@ -14,7 +14,8 @@ class UserMembershipInvoicePlanning extends Model
         'price'             => 'Price',
         'discount'          => 'Discount',
         'issued_date'       => 'Issued Date',
-        'status'            => 'Status'
+        'status'            => 'Status',
+        'last_active_date'  => 'Last Active Date'
     );
 
     public static $message = array();
@@ -25,7 +26,8 @@ class UserMembershipInvoicePlanning extends Model
         'price',
         'discount',
         'issued_date',
-        'status'
+        'status',
+        'last_active_date'
     ];
 
     public static function rules($method, $id=0){
@@ -43,6 +45,7 @@ class UserMembershipInvoicePlanning extends Model
                     'price'                 => 'required|numeric',
                     'discount'              => 'numeric',
                     'issued_date'           => 'date',
+                    'last_active_date'      => 'date',
                     'status'                => 'required|in:old,pending,last',
                 ];
             }
@@ -55,6 +58,8 @@ class UserMembershipInvoicePlanning extends Model
                     'price'                 => 'required|numeric',
                     'discount'              => 'numeric',
                     'issued_date'           => 'date',
+                    'last_active_date'      => 'date',
+                    'invoice_id'            => 'required|exists:invoices,id|unique',
                     'status'                => 'required|in:old,pending,last',
                 ];
             }
