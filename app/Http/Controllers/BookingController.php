@@ -1462,7 +1462,7 @@ class BookingController extends Controller
      * @param bool $show_last
      * @return array
      */
-    public function make_hours_interval($date_selected, $start_time='07:00', $end_time='23:00', $time_period=30, $show_all = false, $show_last = false){
+    public static function make_hours_interval($date_selected, $start_time='07:00', $end_time='23:00', $time_period=30, $show_all = false, $show_last = false){
 //echo 'Date : '.$date_selected.' ; time_start : '.$start_time.' ; time_end : '.$end_time;
         $dateSelected = Carbon::createFromFormat("Y-m-d H:i", $date_selected.' 00:00');
         if (!$dateSelected){

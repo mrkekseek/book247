@@ -181,58 +181,6 @@ class FrontPageController extends Controller
         return ceil(($number*100)/$resourceNumber);
     }
 
-    public function get_hours_interval($date_selected, $time_period=30, $show_last = false){
-        $dateSelected = Carbon::createFromFormat("Y-m-d", $date_selected);
-        if (!$dateSelected){
-            return [];
-        }
-
-        $hours = [];
-
-        // if selected day = today
-        $currentTimeHour    = Carbon::now()->format('H');
-        $currentTimeMinutes = Carbon::now()->format('i');
-
-        if ($currentTimeMinutes>=0 && $currentTimeMinutes<30){
-            $currentTimeMinutes = 30;
-        }
-        else{
-            $currentTimeMinutes = 0;
-            $currentTimeHour = (int)$currentTimeHour+1;
-        }
-
-        $begin  = Carbon::today();
-        $v1 = $dateSelected->format("Y-m-d");
-        $v2 = Carbon::now()->format("Y-m-d");
-        if ( $v1==$v2) {
-            if ($currentTimeHour<7){
-                $currentTimeHour = 7;
-            }
-
-            $begin->addHour($currentTimeHour);
-            $begin->addMinutes($currentTimeMinutes);
-        }
-        else{
-            $begin->addHour(7);
-        }
-        $end    = Carbon::tomorrow();
-        if ($show_last==false){
-            $end->addMinutes(-60);
-        }
-        else{
-            $end->addMinutes(-30);
-        }
-
-        $interval   = DateInterval::createFromDateString($time_period.' minutes');
-        $period     = new DatePeriod($begin, $interval, $end);
-
-        foreach ( $period as $dt ) {
-            $hours[$dt->format( "H:i" )] = ['color_stripe' => "blue-dark-stripe"];
-        }
-
-        return $hours;
-    }
-
     public function get_booking_hours(Request $request){
         if (Auth::check() && Auth::user()->is_front_user()) {
             $user = Auth::user();
@@ -245,11 +193,23 @@ class FrontPageController extends Controller
         // check if we get today or 10 days from today
         $vars = $request->only('date_selected','selected_category','location_selected');
         $dateSelected = Carbon::createFromFormat("Y-m-d", $vars['date_selected']);
+
+        if ($vars['location_selected']!=-1){
+            $location = ShopLocations::where('id','=',$vars['location_selected'])->get()->first();
+            $locationOpeningHours = $location->get_opening_hours($dateSelected->format('Y-m-d'));
+            $open_at  = $locationOpeningHours['open_at'];
+            $close_at = $locationOpeningHours['close_at'];
+        }
+        else{
+            $open_at  = '07:00';
+            $close_at = '23:00';
+        }
+
         if (!$dateSelected){
             return 'error';
         }
         else{
-            $hours = FrontPageController::get_hours_interval($vars['date_selected'], 30);
+            $hours = BookingController::make_hours_interval($dateSelected->format('Y-m-d'), $open_at, $close_at, 30, false, false);
         }
 
         $occupancy_status = [1=>'green-jungle-stripe',
