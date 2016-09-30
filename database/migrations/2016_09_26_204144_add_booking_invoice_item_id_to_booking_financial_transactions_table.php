@@ -13,6 +13,7 @@ class AddBookingInvoiceItemIdToBookingFinancialTransactionsTable extends Migrati
     public function up()
     {
         Schema::table('booking_financial_transactions', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->integer('booking_invoice_item_id')->after('booking_invoice_id')->unsigned();
 
             DB::statement('SET FOREIGN_KEY_CHECKS = 0');
