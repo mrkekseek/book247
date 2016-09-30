@@ -19,7 +19,7 @@ class AddBookingInvoiceItemIdToBookingFinancialTransactionsTable extends Migrati
 
         Schema::table('booking_financial_transactions', function(Blueprint $table){
             DB::statement('SET FOREIGN_KEY_CHECKS = 0');
-            $table->foreign('booking_invoice_item_id')->reference('id')->on('booking_invoice_items');
+            //$table->foreign('booking_invoice_item_id')->reference('id')->on('booking_invoice_items');
             DB::statement('SET FOREIGN_KEY_CHECKS = 1');
         });
     }
