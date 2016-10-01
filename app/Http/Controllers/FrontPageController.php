@@ -287,12 +287,30 @@ class FrontPageController extends Controller
         // check if we get today or 10 days from today
         $dateSelected = Carbon::createFromFormat("Y-m-d", $vars['date_selected']);
         if (!$dateSelected){
-            return 'error';
+            return [];
         }
         else{
-            $hours = FrontPageController::get_hours_interval($vars['date_selected'], 30, true);
-        }
+            if ($vars['location_selected']!=-1){
+                $location = ShopLocations::where('id','=',$vars['location_selected'])->get()->first();
+                $locationOpeningHours = $location->get_opening_hours($dateSelected->format('Y-m-d'));
+                $open_at  = $locationOpeningHours['open_at'];
+                $close_at = $locationOpeningHours['close_at'];
+            }
+            else{
+                $open_at  = '07:00';
+                $close_at = '23:00';
+            }
 
+            if (!$dateSelected){
+                return [];
+            }
+            else{
+                $hours = BookingController::make_hours_interval($dateSelected->format('Y-m-d'), $open_at, $close_at, 30, false, true);
+            }
+
+            //$hours = FrontPageController::get_hours_interval($vars['date_selected'], 30, true);
+        }
+//xdebug_var_dump($hours);
         if (isset($user)){
             foreach($hours as $key=>$hour){
                 $resourcesAvailability[$key] = 100;

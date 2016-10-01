@@ -41,8 +41,176 @@
             <div class="container">
                 <!-- BEGIN PAGE CONTENT INNER -->
                 <div class="page-content-inner">
-                    <div class="row">
-                        <div class="col-md-6">
+                    <div class="row ">
+                        <div class="col-md-6 login " style="background-color:transparent!important;">
+
+                            @if (Auth::check() && Auth::user()->is_front_user())
+                                    <!-- BEGIN PORTLET -->
+                            <div class="portlet light margin-bottom-15">
+                                <div class="portlet-title">
+                                    <div class="caption caption-md">
+                                        <i class="icon-bar-chart theme-font hide"></i>
+                                        <span class="caption-subject font-blue-madison bold uppercase">Friends & Own Activity</span>
+                                        <span class="caption-helper">3 new</span>
+                                    </div>
+                                </div>
+                                <div class="portlet-body">
+                                    <div class="scroller" style="height: 305px;" data-always-visible="1" data-rail-visible1="0" data-handle-color="#D7DCE2">
+                                        <div class="general-item-list">
+                                            @foreach ($meAndFriendsBookings as $knownBooking)
+                                                <div class="item">
+                                                    <div class="item-head">
+                                                        <div class="item-details">
+                                                            <img class="item-pic" src="../assets/pages/media/users/avatar4.jpg">
+                                                            <a href="" class="item-name primary-link">{{ $knownBooking['breated_by'] }}</a>
+                                                            <span class="item-label">{{ $knownBooking['passed_time_since_creation'] }}</span>
+                                                        </div>
+                                                        <span class="item-status">
+                                                            <span class="badge badge-empty {{ $knownBooking['status']=='active'?'bg-green-jungle':'' }}
+                                                            {{ $knownBooking['status']=='pending'?'bg-red-thunderbird':'' }} "></span> {{ $knownBooking['status'] }} </span>
+                                                    </div>
+                                                    <div class="item-body"> Own booking for <span class="font-blue-hoki">{{ $knownBooking['book_date_format'] }}</span> in <span class="font-purple-sharp">{{ $knownBooking['on_location'] }}</span>
+                                                        for <span class="font-blue-hoki">{{ $knownBooking['categoryName'] }}</span> activity. Reserved resource -  <span class="font-purple-sharp">{{ $knownBooking['on_resource'] }}</span> room. </div>
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- END PORTLET -->
+                            @else
+                                <div class="content" style="background-color:#ffffff; margin-top:0px;">
+                                    <!-- BEGIN LOGIN FORM -->
+                                    <form class="login-form portlet light " action="{{ url('/login') }}" method="post" name="user_login_form" id="user_login_form">
+                                        {!! csrf_field() !!}
+
+                                        <div class="portlet-title">
+                                            <div class="caption">
+                                                <span class="caption-subject font-green-haze bold uppercase">User Login</span>
+                                                <span class="caption-helper">account details...</span>
+                                            </div>
+                                        </div>
+                                        <div class="alert alert-danger display-hide">
+                                            <button class="close" data-close="alert"></button>
+                                            <span> Incorrect username/password combination ... </span>
+                                        </div>
+                                        <div class="form-group">
+                                            <!--ie8, ie9 does not support html5 placeholder, so we just show field title for that-->
+                                            <label class="control-label visible-ie8 visible-ie9">Username
+                                                <span class="required"> * </span>
+                                            </label>
+                                            <input class="form-control form-control-solid placeholder-no-fix {{ $errors->has('username') ? ' has-error' : '' }}" type="text" autocomplete="off" placeholder="Email" name="username" id="username_focus" value="{{ old('username') }}" /> </div>
+                                        <div class="form-group">
+                                            <label class="control-label visible-ie8 visible-ie9">Password
+                                                <span class="required"> * </span>
+                                            </label>
+                                            <input class="form-control form-control-solid placeholder-no-fix {{ $errors->has('password') ? ' has-error' : '' }}" type="password" autocomplete="off" placeholder="Password" name="password" /> </div>
+                                        <div class="form-actions">
+                                            <button type="submit" class="btn red btn-block uppercase">Login</button>
+                                        </div>
+                                        <div class="form-actions">
+                                            <div class="pull-left">
+                                                <label class="rememberme check">
+                                                    <input type="checkbox" name="remember" value="1" />Remember me </label>
+                                            </div>
+                                            <div class="pull-right forget-password-block">
+                                                <a href="javascript:;" id="forget-password" class="forget-password">Forgot Password?</a>
+                                            </div>
+                                        </div>
+                                        <div class="create-account bg-white bg-font-white">
+                                            <p>
+                                                <a href="javascript:;" class="green-meadow btn" id="register-btn">Create an account</a>
+                                            </p>
+                                        </div>
+                                    </form>
+                                    <!-- END LOGIN FORM -->
+                                    <!-- BEGIN FORGOT PASSWORD FORM -->
+                                    <form class="forget-form portlet light " action="#" id="password_reset_form">
+                                        <div class="portlet-title">
+                                            <div class="caption">
+                                                <span class="caption-subject font-green-haze bold uppercase"> Forget Password ?</span>
+                                                <span class="caption-helper">Enter your e-mail to reset it...</span>
+                                            </div>
+                                        </div>
+                                        <div class="alert alert-danger display-hide">
+                                            <button class="close" data-close="alert"></button> You have some errors in the form. Please check below. </div>
+                                        <div class="alert alert-success display-hide">
+                                            <button class="close" data-close="alert"></button> Information is valid, please wait! </div>
+                                        <div class="form-group">
+                                            <input class="form-control placeholder-no-fix" type="text" autocomplete="off" placeholder="Email" name="email" /> </div>
+                                        <div class="form-actions">
+                                            <button type="button" id="back-btn" class="btn grey-steel">Back</button>
+                                            <button type="button" class="btn btn-primary uppercase pull-right" onClick="javascript: $('#password_reset_form').submit();">Submit</button>
+                                        </div>
+                                    </form>
+                                    <!-- END FORGOT PASSWORD FORM -->
+                                    <!-- BEGIN REGISTRATION FORM -->
+                                    <form class="register-form portlet light " method="post" name="user_registration_form" id="user_registration_form">
+                                        <div class="portlet-title">
+                                            <div class="caption">
+                                                <span class="caption-subject font-green-haze bold uppercase">Sign Up</span>
+                                                <span class="caption-helper"></span>
+                                            </div>
+                                        </div>
+                                        <div class="alert alert-danger display-hide">
+                                            <button class="close" data-close="alert"></button> You have some errors in the form. Please check below. </div>
+                                        <div class="alert alert-success display-hide">
+                                            <button class="close" data-close="alert"></button> Information is valid, please wait! </div>
+                                        <p class="hint"> Enter your personal details below: </p>
+                                        <div class="form-group">
+                                            <label class="control-label visible-ie8 visible-ie9">First Name</label>
+                                            <input class="form-control placeholder-no-fix" type="text" placeholder="First Name" name="firstname" /> </div>
+                                        <div class="form-group">
+                                            <label class="control-label visible-ie8 visible-ie9">Last Name</label>
+                                            <input class="form-control placeholder-no-fix" type="text" placeholder="Last Name" name="lastname" /> </div>
+                                        <div class="form-group">
+                                            <label class="control-label visible-ie8 visible-ie9">Phone Number</label>
+                                            <input class="form-control placeholder-no-fix" type="text" placeholder="Phone Number" name="phone" /> </div>
+
+                                        <p class="hint"> Enter your account details below: </p>
+                                        <div class="form-group">
+                                            <!--ie8, ie9 does not support html5 placeholder, so we just show field title for that-->
+                                            <label class="control-label visible-ie8 visible-ie9">Email</label>
+                                            <input class="form-control placeholder-no-fix" type="text" placeholder="Email" name="reg_email" /> </div>
+                                        <div class="form-group">
+                                            <label class="control-label visible-ie8 visible-ie9">Password</label>
+                                            <input class="form-control placeholder-no-fix" type="password" autocomplete="off" id="register_password" placeholder="Password" name="password" /> </div>
+                                        <div class="form-group">
+                                            <label class="control-label visible-ie8 visible-ie9">Re-type Your Password</label>
+                                            <input class="form-control placeholder-no-fix" type="password" autocomplete="off" placeholder="Re-type Your Password" name="rpassword" /> </div>
+                                        <div class="form-group margin-top-20 margin-bottom-20">
+                                            <label class="check">
+                                                <input type="checkbox" name="tnc" />
+                                                <span class="loginblue-font">I agree to the </span>
+                                                <a href="javascript:;" class="loginblue-link">Terms of Service</a>
+                                                <span class="loginblue-font">and</span>
+                                                <a href="javascript:;" class="loginblue-link">Privacy Policy </a>
+                                            </label>
+                                            <div id="register_tnc_error"> </div>
+                                        </div>
+                                        <div class="form-actions">
+                                            <button type="button" id="register-back-btn" class="btn grey-steel">Back</button>
+                                            <button type="submit" class="btn red uppercase pull-right">Submit</button>
+                                        </div>
+                                    </form>
+                                    <!-- END REGISTRATION FORM -->
+                                </div>
+                            @endif
+                            <div class="portlet light search-page search-content-1 hidden-xs hidden-sm">
+                                <div class="search-container " style="text-align: center;">
+                                    <div id="fb-root"></div>
+                                    <script>(function(d, s, id) {
+                                            var js, fjs = d.getElementsByTagName(s)[0];
+                                            if (d.getElementById(id)) return;
+                                            js = d.createElement(s); js.id = id;
+                                            js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.7&appId=480248068784470";
+                                            fjs.parentNode.insertBefore(js, fjs);
+                                        }(document, 'script', 'facebook-jssdk'));</script>
+                                    <div class="fb-page" data-href="https://www.facebook.com/squashandfitness/?fref=ts" data-tabs="timeline" data-width="535" data-height="460" data-small-header="false" data-adapt-container-width="true" data-hide-cover="false" data-show-facepile="true"><blockquote cite="https://www.facebook.com/squashandfitness/?fref=ts" class="fb-xfbml-parse-ignore"><a href="https://www.facebook.com/squashandfitness/?fref=ts">SQF.no - Squash &amp; Fitness</a></blockquote></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 ">
                             <div class="portlet light margin-bottom-15">
                                 <dt>Select Location</dt>
                                 <div class="portlet-body">
@@ -117,174 +285,6 @@
                                 @else
                                     <a href="javascript:;" class="btn default dark-stripe btn-lg book_step" style="padding:5px 10px; font-size:14px; cursor:default;"> You need to be logged in to view availability </a>
                                 @endif
-                            </div>
-                        </div>
-                        <div class="col-md-6 login " style="background-color:transparent!important;">
-
-                        @if (Auth::check() && Auth::user()->is_front_user())
-                            <!-- BEGIN PORTLET -->
-                            <div class="portlet light margin-bottom-15">
-                                <div class="portlet-title">
-                                    <div class="caption caption-md">
-                                        <i class="icon-bar-chart theme-font hide"></i>
-                                        <span class="caption-subject font-blue-madison bold uppercase">Friends & Own Activity</span>
-                                        <span class="caption-helper">3 new</span>
-                                    </div>
-                                </div>
-                                <div class="portlet-body">
-                                    <div class="scroller" style="height: 305px;" data-always-visible="1" data-rail-visible1="0" data-handle-color="#D7DCE2">
-                                        <div class="general-item-list">
-                                            @foreach ($meAndFriendsBookings as $knownBooking)
-                                                <div class="item">
-                                                    <div class="item-head">
-                                                        <div class="item-details">
-                                                            <img class="item-pic" src="../assets/pages/media/users/avatar4.jpg">
-                                                            <a href="" class="item-name primary-link">{{ $knownBooking['breated_by'] }}</a>
-                                                            <span class="item-label">{{ $knownBooking['passed_time_since_creation'] }}</span>
-                                                        </div>
-                                                        <span class="item-status">
-                                                            <span class="badge badge-empty {{ $knownBooking['status']=='active'?'bg-green-jungle':'' }}
-                                                            {{ $knownBooking['status']=='pending'?'bg-red-thunderbird':'' }} "></span> {{ $knownBooking['status'] }} </span>
-                                                    </div>
-                                                    <div class="item-body"> Own booking for <span class="font-blue-hoki">{{ $knownBooking['book_date_format'] }}</span> in <span class="font-purple-sharp">{{ $knownBooking['on_location'] }}</span>
-                                                        for <span class="font-blue-hoki">{{ $knownBooking['categoryName'] }}</span> activity. Reserved resource -  <span class="font-purple-sharp">{{ $knownBooking['on_resource'] }}</span> room. </div>
-                                                </div>
-                                            @endforeach
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- END PORTLET -->
-                        @else
-                            <div class="content" style="background-color:#ffffff; margin-top:0px;">
-                                <!-- BEGIN LOGIN FORM -->
-                                <form class="login-form portlet light " action="{{ url('/login') }}" method="post" name="user_login_form" id="user_login_form">
-                                    {!! csrf_field() !!}
-
-                                    <div class="portlet-title">
-                                        <div class="caption">
-                                            <span class="caption-subject font-green-haze bold uppercase">User Login</span>
-                                            <span class="caption-helper">account details...</span>
-                                        </div>
-                                    </div>
-                                    <div class="alert alert-danger display-hide">
-                                        <button class="close" data-close="alert"></button>
-                                        <span> Incorrect username/password combination ... </span>
-                                    </div>
-                                    <div class="form-group">
-                                        <!--ie8, ie9 does not support html5 placeholder, so we just show field title for that-->
-                                        <label class="control-label visible-ie8 visible-ie9">Username
-                                            <span class="required"> * </span>
-                                        </label>
-                                        <input class="form-control form-control-solid placeholder-no-fix {{ $errors->has('username') ? ' has-error' : '' }}" type="text" autocomplete="off" placeholder="Email" name="username" id="username_focus" value="{{ old('username') }}" /> </div>
-                                    <div class="form-group">
-                                        <label class="control-label visible-ie8 visible-ie9">Password
-                                            <span class="required"> * </span>
-                                        </label>
-                                        <input class="form-control form-control-solid placeholder-no-fix {{ $errors->has('password') ? ' has-error' : '' }}" type="password" autocomplete="off" placeholder="Password" name="password" /> </div>
-                                    <div class="form-actions">
-                                        <button type="submit" class="btn red btn-block uppercase">Login</button>
-                                    </div>
-                                    <div class="form-actions">
-                                        <div class="pull-left">
-                                            <label class="rememberme check">
-                                                <input type="checkbox" name="remember" value="1" />Remember me </label>
-                                        </div>
-                                        <div class="pull-right forget-password-block">
-                                            <a href="javascript:;" id="forget-password" class="forget-password">Forgot Password?</a>
-                                        </div>
-                                    </div>
-                                    <div class="create-account bg-white bg-font-white">
-                                        <p>
-                                            <a href="javascript:;" class="green-meadow btn" id="register-btn">Create an account</a>
-                                        </p>
-                                    </div>
-                                </form>
-                                <!-- END LOGIN FORM -->
-                                <!-- BEGIN FORGOT PASSWORD FORM -->
-                                <form class="forget-form portlet light " action="#" id="password_reset_form">
-                                    <div class="portlet-title">
-                                        <div class="caption">
-                                            <span class="caption-subject font-green-haze bold uppercase"> Forget Password ?</span>
-                                            <span class="caption-helper">Enter your e-mail to reset it...</span>
-                                        </div>
-                                    </div>
-                                    <div class="alert alert-danger display-hide">
-                                        <button class="close" data-close="alert"></button> You have some errors in the form. Please check below. </div>
-                                    <div class="alert alert-success display-hide">
-                                        <button class="close" data-close="alert"></button> Information is valid, please wait! </div>
-                                    <div class="form-group">
-                                        <input class="form-control placeholder-no-fix" type="text" autocomplete="off" placeholder="Email" name="email" /> </div>
-                                    <div class="form-actions">
-                                        <button type="button" id="back-btn" class="btn grey-steel">Back</button>
-                                        <button type="button" class="btn btn-primary uppercase pull-right" onClick="javascript: $('#password_reset_form').submit();">Submit</button>
-                                    </div>
-                                </form>
-                                <!-- END FORGOT PASSWORD FORM -->
-                                <!-- BEGIN REGISTRATION FORM -->
-                                <form class="register-form portlet light " method="post" name="user_registration_form" id="user_registration_form">
-                                    <div class="portlet-title">
-                                        <div class="caption">
-                                            <span class="caption-subject font-green-haze bold uppercase">Sign Up</span>
-                                            <span class="caption-helper"></span>
-                                        </div>
-                                    </div>
-                                    <div class="alert alert-danger display-hide">
-                                        <button class="close" data-close="alert"></button> You have some errors in the form. Please check below. </div>
-                                    <div class="alert alert-success display-hide">
-                                        <button class="close" data-close="alert"></button> Information is valid, please wait! </div>
-                                    <p class="hint"> Enter your personal details below: </p>
-                                    <div class="form-group">
-                                        <label class="control-label visible-ie8 visible-ie9">First Name</label>
-                                        <input class="form-control placeholder-no-fix" type="text" placeholder="First Name" name="firstname" /> </div>
-                                    <div class="form-group">
-                                        <label class="control-label visible-ie8 visible-ie9">Last Name</label>
-                                        <input class="form-control placeholder-no-fix" type="text" placeholder="Last Name" name="lastname" /> </div>
-                                    <div class="form-group">
-                                        <label class="control-label visible-ie8 visible-ie9">Phone Number</label>
-                                        <input class="form-control placeholder-no-fix" type="text" placeholder="Phone Number" name="phone" /> </div>
-
-                                    <p class="hint"> Enter your account details below: </p>
-                                    <div class="form-group">
-                                        <!--ie8, ie9 does not support html5 placeholder, so we just show field title for that-->
-                                        <label class="control-label visible-ie8 visible-ie9">Email</label>
-                                        <input class="form-control placeholder-no-fix" type="text" placeholder="Email" name="reg_email" /> </div>
-                                    <div class="form-group">
-                                        <label class="control-label visible-ie8 visible-ie9">Password</label>
-                                        <input class="form-control placeholder-no-fix" type="password" autocomplete="off" id="register_password" placeholder="Password" name="password" /> </div>
-                                    <div class="form-group">
-                                        <label class="control-label visible-ie8 visible-ie9">Re-type Your Password</label>
-                                        <input class="form-control placeholder-no-fix" type="password" autocomplete="off" placeholder="Re-type Your Password" name="rpassword" /> </div>
-                                    <div class="form-group margin-top-20 margin-bottom-20">
-                                        <label class="check">
-                                            <input type="checkbox" name="tnc" />
-                                            <span class="loginblue-font">I agree to the </span>
-                                            <a href="javascript:;" class="loginblue-link">Terms of Service</a>
-                                            <span class="loginblue-font">and</span>
-                                            <a href="javascript:;" class="loginblue-link">Privacy Policy </a>
-                                        </label>
-                                        <div id="register_tnc_error"> </div>
-                                    </div>
-                                    <div class="form-actions">
-                                        <button type="button" id="register-back-btn" class="btn grey-steel">Back</button>
-                                        <button type="submit" class="btn red uppercase pull-right">Submit</button>
-                                    </div>
-                                </form>
-                                <!-- END REGISTRATION FORM -->
-                            </div>
-                        @endif
-                            <div class="portlet light search-page search-content-1 ">
-                                <div class="search-container " style="text-align: center;">
-                                    <div id="fb-root"></div>
-                                    <script>(function(d, s, id) {
-                                        var js, fjs = d.getElementsByTagName(s)[0];
-                                        if (d.getElementById(id)) return;
-                                        js = d.createElement(s); js.id = id;
-                                        js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.7&appId=480248068784470";
-                                        fjs.parentNode.insertBefore(js, fjs);
-                                    }(document, 'script', 'facebook-jssdk'));</script>
-                                    <div class="fb-page" data-href="https://www.facebook.com/squashandfitness/?fref=ts" data-tabs="timeline" data-width="535" data-height="460" data-small-header="false" data-adapt-container-width="true" data-hide-cover="false" data-show-facepile="true"><blockquote cite="https://www.facebook.com/squashandfitness/?fref=ts" class="fb-xfbml-parse-ignore"><a href="https://www.facebook.com/squashandfitness/?fref=ts">SQF.no - Squash &amp; Fitness</a></blockquote></div>
-                                </div>
                             </div>
                         </div>
                     </div>

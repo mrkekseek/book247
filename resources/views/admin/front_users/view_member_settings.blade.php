@@ -126,7 +126,7 @@
                                                 <div class="form-group">
                                                     <label class="control-label">Gender</label>
                                                     <select name="gender" class="form-control">
-                                                        <option>Select Gender</option>
+                                                        <option value>Select Gender</option>
                                                         <option {!! $user->gender=='F'?'selected="selected"':'' !!} value="F"> Female </option>
                                                         <option {!! $user->gender=='M'?'selected="selected"':'' !!} value="M"> Male </option>
                                                     </select>
@@ -707,7 +707,6 @@
                         },
                         gender: {
                             required: true,
-                            minlength:1,
                         }
                     },
 
