@@ -93,7 +93,8 @@ class ShopLocations extends Model
 
         $allOpeningHours = ShopOpeningHour::where('shop_location_id','=',$this->id)
             ->orderByRaw('FIELD(type, "close_hours", "break_hours", "open_hours")')
-            ->orderBy('date_start', 'ASC')->get();
+            ->orderBy('date_start', 'DESC')->get();
+        //xdebug_var_dump($allOpeningHours); exit;
         foreach ($allOpeningHours as $singleHour){
             $days = json_decode($singleHour->days);
 
