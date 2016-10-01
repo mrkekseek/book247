@@ -2750,6 +2750,183 @@ class BookingController extends Controller
         ]);
     }
 
+    /* Front-End - my bookings + archive */
+    public function front_my_bookings(){
+        if (Auth::check()) {
+            $user = Auth::user();
+        }
+        else{
+            return [];
+        }
+
+        $userID = $user->id;
+        $bookingsList = [];
+        $bookings = Booking::where('for_user_id','=',$userID)
+            ->orWhere('by_user_id','=',$userID)
+            ->orderBy('date_of_booking','desc')
+            ->orderBy('booking_time_start','desc')
+            ->get();
+        if (sizeof($bookings)>0){
+            $buttons = [];
+            $colorStatus = '';
+            foreach ($bookings as $booking){
+                switch ($booking->status) {
+                    case 'pending' :
+                        $colorStatus = 'warning';
+                        $buttons = 'yellow-gold';
+                        break;
+                    case 'expired' :
+                        $colorStatus = 'info';
+                        $buttons = 'grey-salsa';
+                        break;
+                    case'active' :
+                        $colorStatus = 'success';
+                        $buttons = 'green-jungle';
+                        break;
+                    case 'paid' :
+                        $colorStatus = 'success';
+                        $buttons = 'green-jungle';
+                        break;
+                    case 'unpaid' :
+                        $colorStatus = 'warning';
+                        $buttons = 'yellow-gold';
+                        break;
+                    case 'noshow' :
+                        $colorStatus = 'danger';
+                        $buttons = 'red-thunderbird';
+                        break;
+                    case 'old' :
+                        $colorStatus = 'info';
+                        $buttons = 'green-meadow';
+                        break;
+                    case 'canceled' :
+                        $colorStatus = 'warning';
+                        $buttons = 'yellow-lemon';
+                        break;
+                }
+
+                $date       = Carbon::createFromFormat('Y-m-d', $booking->date_of_booking)->format('l, M jS, Y');
+                $addedOn    = Carbon::createFromFormat('Y-m-d H:i:s', $booking->updated_at)->format('j/m/Y H:i');
+                $dateSmall  = Carbon::createFromFormat('Y-m-d', $booking->date_of_booking)->format('j/m/Y');
+                $timeInterval = Carbon::createFromFormat('H:i:s', $booking->booking_time_start)->format('H:i').' - '.Carbon::createFromFormat('H:i:s', $booking->booking_time_stop)->format('H:i');
+
+                $madeForID = $booking->for_user_id;
+                $userFor= User::find($booking->for_user_id);
+                if ($userFor) {
+                    $madeFor = $userFor->first_name . ' ' . $userFor->middle_name . ' ' . $userFor->last_name;
+                }
+                else{
+                    $madeFor = ' - ';
+                }
+
+                $location = ShopLocations::find($booking->location_id);
+                $locationName = $location->name;
+                $room = ShopResource::find($booking->resource_id);
+                $roomName = $room->name;
+                $category = ShopResourceCategory::find($room->category_id);
+                $categoryName = $category->name;
+
+                $bookingsList[] = [
+                    'dateShort'     => $dateSmall,
+                    'date'          => $date,
+                    'timeInterval'  => $timeInterval,
+                    'player_name'   => $madeFor,
+                    'player_id'     => $madeForID,
+                    'location'      => $locationName,
+                    'room'          => $roomName,
+                    'activity'      => $categoryName,
+                    'status'        => $booking->status,
+                    'color_status'  => $colorStatus,
+                    'color_button'  => $buttons,
+                    'last_update'   => $booking->updated_at,
+                    'added_by'      => $booking->by_user_id,
+                    'search_key'    => $booking->search_key,
+                    'added_on'      => $addedOn
+                ];
+            }
+
+            unset($bookings); unset($booking);
+
+            $nr = 1;
+            $index = [];
+            $lastMan = 0;
+            $lastTime = '';
+            $lastTenBookings = [];
+            foreach($bookingsList as $lastOne){
+                if (!isset($lastMan)){ $lastMan = $lastOne['added_by']; }
+                if (!isset($lastTime)){ $lastTime = $lastOne['last_update']; }
+
+                if ($lastMan==$lastOne['added_by'] && $lastTime==$lastOne['last_update']){
+                    $nr++;
+                    $lastOne['colspan'] = 0;
+                }
+                else{
+                    $lastMan  = $lastOne['added_by'];
+                    $lastTime = $lastOne['last_update'];
+
+                    $indexKey = sizeof($index)+1;
+                    $index[$indexKey-1] = $nr;
+
+                    if ($indexKey>10){
+                        break;
+                    }
+                    $nr=1;
+                }
+
+                switch ($lastOne['status']) {
+                    case 'pending' :
+                        $colorStatus = 'label-warning';
+                        break;
+                    case 'expired' :
+                        $colorStatus = 'label-default';
+                        break;
+                    case 'active' :
+                        $colorStatus = 'label-success';
+                        break;
+                    case 'paid' :
+                        $colorStatus = 'label-success';
+                        break;
+                    case 'unpaid' :
+                        $colorStatus = 'label-danger';
+                        break;
+                    case 'noshow' :
+                        $colorStatus = 'label-danger';
+                        break;
+                    case 'old' :
+                        $colorStatus = 'label-info';
+                        break;
+                    case 'canceled' :
+                        $colorStatus = 'label-default';
+                        break;
+                }
+                $lastOne['status-color'] = $colorStatus;
+                $lastTenBookings[] = $lastOne;
+            }
+            $index[$indexKey] = $nr;
+        }
+
+        $breadcrumbs = [
+            'Home'      => route('admin'),
+            'Dashboard' => '',
+        ];
+        $text_parts  = [
+            'title'     => 'Home',
+            'subtitle'  => 'users dashboard',
+            'table_head_text1' => 'Dashboard Summary'
+        ];
+        $sidebar_link= 'front-bookings_list';
+
+        return view('front/bookings/my_bookings',[
+            'breadcrumbs' => $breadcrumbs,
+            'text_parts'  => $text_parts,
+            'in_sidebar'  => $sidebar_link,
+            'user'  => $user,
+            'bookings'    => $bookingsList,
+            'multipleBookingsIndex' => isset($index)?$index:[],
+            'lastTen' =>  isset($lastTenBookings)?$lastTenBookings:[]
+        ]);
+    }
+
     /**
      * Booking calendar - Front member view
      * @param int $date_selected

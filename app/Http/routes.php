@@ -554,6 +554,11 @@ Route::group(['middleware'=>'web', 'prefix'=>'admin'], function(){
 
 /** Start Routes for front end */
 Route::group(['prefix'=>'front', 'middleware'=>'web'], function(){
+    Route::get('my_bookings', [
+        'as'    => 'front/my_bookings',
+        'uses'  => 'BookingController@front_my_bookings'
+    ]);
+
     Route::get('bookings_archive', [
         'as'    => 'front/bookings_archive',
         'uses'  => 'BookingController@front_bookings_archive'
