@@ -504,13 +504,22 @@ class FrontEndUserController extends Controller
                 $dateSmall  = Carbon::createFromFormat('Y-m-d', $booking->date_of_booking)->format('j/m/Y');
                 $timeInterval = Carbon::createFromFormat('H:i:s', $booking->booking_time_start)->format('H:i').' - '.Carbon::createFromFormat('H:i:s', $booking->booking_time_stop)->format('H:i');
 
-                $madeForID = $booking->for_user_id;
-                $userFor= User::find($booking->for_user_id);
+                $madeForID  = $booking->for_user_id;
+                $userFor    = User::find($booking->for_user_id);
                 if ($userFor) {
                     $madeFor = $userFor->first_name . ' ' . $userFor->middle_name . ' ' . $userFor->last_name;
                 }
                 else{
                     $madeFor = ' - ';
+                }
+
+                $madeByID   = $booking->by_user_id;
+                $userBy     = User::find($booking->by_user_id);
+                if ($userBy) {
+                    $madeBy = $userBy->first_name . ' ' . $userBy->middle_name . ' ' . $userBy->last_name;
+                }
+                else{
+                    $madeBy = ' - ';
                 }
 
                 $location = ShopLocations::find($booking->location_id);
@@ -524,6 +533,8 @@ class FrontEndUserController extends Controller
                     'dateShort'     => $dateSmall,
                     'date'          => $date,
                     'timeInterval'  => $timeInterval,
+                    'bookingByName' => $madeBy,
+                    'bookingByID'   => $madeByID,
                     'player_name'   => $madeFor,
                     'player_id'     => $madeForID,
                     'location'      => $locationName,

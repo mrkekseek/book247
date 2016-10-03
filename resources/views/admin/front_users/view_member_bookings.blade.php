@@ -87,10 +87,10 @@
                                     </div>
                                     <ul class="nav nav-tabs">
                                         <li class="active">
-                                            <a href="#tab_1_1" data-toggle="tab">Last 10 bookings</a>
+                                            <a href="#tab_1_1" data-toggle="tab">Current Bookings</a>
                                         </li>
                                         <li>
-                                            <a href="#tab_1_2" data-toggle="tab">Archive</a>
+                                            <a href="#tab_1_2" data-toggle="tab">History</a>
                                         </li>
                                     </ul>
                                 </div>
@@ -107,12 +107,11 @@
                                                                 <thead>
                                                                 <tr>
                                                                     <th> # </th>
-                                                                    <th> Date </th>
-                                                                    <th> Time Interval </th>
+                                                                    <th> Date - Time Interval </th>
                                                                     <th class="hidden-xs"> Player </th>
-                                                                    <th> Location </th>
-                                                                    <th class="hidden-xs"> Room </th>
-                                                                    <th class="hidden-xs"> Activity </th>
+                                                                    <th> Location and Room </th>
+                                                                    <th class="hidden-xs"> Added On </th>
+                                                                    <th class="hidden-xs"> Added By </th>
                                                                     <th> Status </th>
                                                                 </tr>
                                                                 </thead>
@@ -124,12 +123,11 @@
                                                                         echo '<td rowspan="'.($multipleBookingsIndex[$theNr]).'">'.$theNr.'</td>';
                                                                         $theNr++;
                                                                     } else {  } ?>
-                                                                        <td> {{$booking['date']}} </td>
-                                                                        <td> {{$booking['timeInterval']}} </td>
+                                                                        <td> <small>{{$booking['date']}} {{$booking['timeInterval']}}</small> </td>
                                                                         <td class="hidden-xs"> <a href="{{ route('admin/front_users/view_user',['id'=>$booking['player_id']])}}" target="_blank">{{$booking['player_name']}}</a> </td>
-                                                                        <td class="hidden-xs"> {{$booking['location']}} </td>
-                                                                        <td> {{$booking['room']}} </td>
-                                                                        <td class="hidden-xs"> {{$booking['activity']}} </td>
+                                                                        <td class="hidden-xs"> <small>{{$booking['location']}} {{$booking['room']}}</small> </td>
+                                                                        <td class="hidden-xs"> <small>{{$booking['added_on']}}</small> </td>
+                                                                        <td class="hidden-xs"> <small>{{$booking['bookingByName']}}</small> </td>
                                                                         <td>
                                                                             <span class="label label-sm {{$booking['status-color']}} booking_details_modal" data-key="{{$booking['search_key']}}"> {{$booking['status']}} </span>
                                                                         </td>

@@ -57,45 +57,53 @@
                                     <div class="tab-content">
                                         <!-- PERSONAL INFO TAB -->
                                         <div class="tab-pane active" id="tab_1_1">
+                                            <p> Here you can see all your upcoming bookings, the old/canceled ones are shown in "Bookings History" </p>
                                             <div class="row">
                                                 <div class="col-md-12">
                                                     <!-- BEGIN BORDERED TABLE PORTLET-->
+                                                    @if (sizeof($lastTen)>0)
                                                     <div class="portlet light portlet-fit bordered">
                                                         <div class="table-scrollable">
-                                                            <table class="table table-bordered table-hover">
-                                                                <thead>
+                                                        <table class="table table-bordered table-hover">
+                                                            <thead>
+                                                            <tr>
+                                                                <th> # </th>
+                                                                <th> Date </th>
+                                                                <th> Time Interval </th>
+                                                                <th class="hidden-xs"> Player </th>
+                                                                <th> Location </th>
+                                                                <th class="hidden-xs"> Room </th>
+                                                                <th class="hidden-xs"> Activity </th>
+                                                                <th> Status </th>
+                                                            </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                            <?php $theNr = 1; ?>
+                                                            @foreach($lastTen as $booking)
                                                                 <tr>
-                                                                    <th> # </th>
-                                                                    <th> Date </th>
-                                                                    <th> Time Interval </th>
-                                                                    <th class="hidden-xs"> Player </th>
-                                                                    <th> Location </th>
-                                                                    <th class="hidden-xs"> Room </th>
-                                                                    <th class="hidden-xs"> Activity </th>
-                                                                    <th> Status </th>
+                                                                    <?php   if (!isset($booking['colspan'])){
+                                                                        echo '<td rowspan="'.($multipleBookingsIndex[$theNr]).'">'.$theNr.'</td>';
+                                                                        $theNr++;
+                                                                    } else {  } ?>
+                                                                    <td> <small>{{$booking['date']}}</small> </td>
+                                                                    <td> <small>{{$booking['timeInterval']}}</small> </td>
+                                                                    <td class="hidden-xs"> <small>{{$booking['player_name']}}</small> </td>
+                                                                    <td class="hidden-xs"> <small>{{$booking['location']}}</small> </td>
+                                                                    <td> <small>{{$booking['room']}}</small> </td>
+                                                                    <td class="hidden-xs"> <small>{{$booking['activity']}}</small> </td>
+                                                                    <td> {!! $booking['button_actions'] !!} </td>
                                                                 </tr>
-                                                                </thead>
-                                                                <tbody>
-                                                                <?php $theNr = 1; ?>
-                                                                @foreach($lastTen as $booking)
-                                                                    <tr>
-                                                                        <?php   if (!isset($booking['colspan'])){
-                                                                            echo '<td rowspan="'.($multipleBookingsIndex[$theNr]).'">'.$theNr.'</td>';
-                                                                            $theNr++;
-                                                                        } else {  } ?>
-                                                                        <td> <small>{{$booking['date']}}</small> </td>
-                                                                        <td> <small>{{$booking['timeInterval']}}</small> </td>
-                                                                        <td class="hidden-xs"> <small>{{$booking['player_name']}}</small> </td>
-                                                                        <td class="hidden-xs"> <small>{{$booking['location']}}</small> </td>
-                                                                        <td> <small>{{$booking['room']}}</small> </td>
-                                                                        <td class="hidden-xs"> <small>{{$booking['activity']}}</small> </td>
-                                                                        <td> {!! $booking['button_actions'] !!} </td>
-                                                                    </tr>
-                                                                @endforeach
-                                                                </tbody>
-                                                            </table>
-                                                        </div>
+                                                            @endforeach
+                                                            </tbody>
+                                                        </table>
                                                     </div>
+                                                    </div>
+                                                    @else
+                                                    <div class="note note-warning">
+                                                        <h4 class="block">No upcoming bookings - Book some more</h4>
+                                                        <p> All your old bookings are visible in the "Bookings History" tab. </p>
+                                                    </div>
+                                                    @endif
                                                     <!-- END BORDERED TABLE PORTLET-->
                                                 </div>
                                             </div>
@@ -107,48 +115,55 @@
                                             <div class="row">
                                                 <div class="col-md-12">
                                                     <!-- BEGIN SAMPLE TABLE PORTLET-->
+                                                    @if (sizeof($bookings)>0)
                                                     <div class="portlet">
                                                         <div class="portlet-body">
                                                             <div class="table-scrollable">
-                                                                <table class="table table-striped table-bordered table-advance table-hover">
-                                                                    <thead>
+                                                            <table class="table table-striped table-bordered table-advance table-hover">
+                                                                <thead>
+                                                                <tr>
+                                                                    <th>
+                                                                        <i class="fa fa-briefcase"></i> Booking Date </th>
+                                                                    <th>
+                                                                        <i class="fa fa-briefcase"></i> Booking Time </th>
+                                                                    <th>
+                                                                        <i class="fa fa-briefcase"></i> Location - Room </th>
+                                                                    <th class="hidden-xs">
+                                                                        <i class="fa fa-user"></i> Player </th>
+                                                                    <th>
+                                                                        <i class="fa fa-briefcase"></i> Added On </th>
+                                                                    <th>
+                                                                        <i class="fa fa-shopping-cart"></i> Status </th>
+                                                                    <th> </th>
+                                                                </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                @foreach ($bookings as $booking)
+                                                                    @if ($booking['status']=='active') { continue;} @endif
                                                                     <tr>
-                                                                        <th>
-                                                                            <i class="fa fa-briefcase"></i> Booking Date </th>
-                                                                        <th>
-                                                                            <i class="fa fa-briefcase"></i> Booking Time </th>
-                                                                        <th>
-                                                                            <i class="fa fa-briefcase"></i> Location - Room </th>
-                                                                        <th class="hidden-xs">
-                                                                            <i class="fa fa-user"></i> Player </th>
-                                                                        <th>
-                                                                            <i class="fa fa-briefcase"></i> Added On </th>
-                                                                        <th>
-                                                                            <i class="fa fa-shopping-cart"></i> Status </th>
-                                                                        <th> </th>
+                                                                        <td class="highlight">
+                                                                            <div class="{{ $booking['color_status'] }}"></div>
+                                                                            <small>&nbsp; <span class="font-blue-soft"> {{ $booking['dateShort'] }}  </span> </small>
+                                                                        </td>
+                                                                        <td> <small>{{ $booking['timeInterval'] }}</small> </td>
+                                                                        <td> <small>{{ $booking['location'] }} - {{  $booking['room'] }}</small> </td>
+                                                                        <td class="hidden-xs"> <small>{{$booking['player_name']}}</small> </td>
+                                                                        <td> <small>{{ $booking['added_on'] }}</small> </td>
+                                                                        <td> <small>{{ $booking['status'] }}</small> </td>
+                                                                        <td> {!! $booking['button_actions'] !!} </td>
                                                                     </tr>
-                                                                    </thead>
-                                                                    <tbody>
-                                                                    @foreach ($bookings as $booking)
-                                                                        @if ($booking['status']=='active') { continue;} @endif
-                                                                        <tr>
-                                                                            <td class="highlight">
-                                                                                <div class="{{ $booking['color_status'] }}"></div>
-                                                                                <small>&nbsp; <span class="font-blue-soft"> {{ $booking['dateShort'] }}  </span> </small>
-                                                                            </td>
-                                                                            <td> <small>{{ $booking['timeInterval'] }}</small> </td>
-                                                                            <td> <small>{{ $booking['location'] }} - {{  $booking['room'] }}</small> </td>
-                                                                            <td class="hidden-xs"> <small>{{$booking['player_name']}}</small> </td>
-                                                                            <td> <small>{{ $booking['added_on'] }}</small> </td>
-                                                                            <td> <small>{{ $booking['status'] }}</small> </td>
-                                                                            <td> {!! $booking['button_actions'] !!} </td>
-                                                                        </tr>
-                                                                    @endforeach
-                                                                    </tbody>
-                                                                </table>
-                                                            </div>
+                                                                @endforeach
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
                                                         </div>
                                                     </div>
+                                                    @else
+                                                        <div class="note note-warning">
+                                                            <h4 class="block">No past bookings</h4>
+                                                            <p> You have no old/passed bookings. Once you create a new booking, it will be visible here after the booking date/time passed. </p>
+                                                        </div>
+                                                    @endif
                                                     <!-- END SAMPLE TABLE PORTLET-->
                                                 </div>
                                             </div>
