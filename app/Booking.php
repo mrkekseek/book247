@@ -426,7 +426,7 @@ class Booking extends Model
     }
 
     public function invoice(){
-        return $this->hasMany('App\BookingInvoice', 'booking_id', 'id')->orderBy('booking_invoices.created_at','asc');
+        return $this->hasMany('App\BookingInvoice', 'id', 'invoice_id')->orderBy('booking_invoices.created_at','asc');
     }
 
     public static function rules($method, $id=0){

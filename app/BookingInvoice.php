@@ -251,6 +251,16 @@ class BookingInvoice extends Model
         $this->save();
     }
 
+    public function get_general_invoice(){
+        $general = Invoice::where('invoice_type','=','booking_invoice')->where('invoice_reference_id','=',$this->id)->get()->first();
+        if ($general){
+            return $general;
+        }
+        else{
+            return [];
+        }
+    }
+
     public static function rules($method, $id=0){
         switch($method){
             case 'GET':

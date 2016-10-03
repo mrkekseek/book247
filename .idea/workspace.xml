@@ -25,10 +25,12 @@
       <file leaf-file-name="routes.php" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/Http/routes.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-0.0">
-              <caret line="508" column="40" selection-start-line="508" selection-start-column="19" selection-end-line="508" selection-end-column="40" />
+            <state vertical-scroll-proportion="-6.2">
+              <caret line="557" column="37" selection-start-line="557" selection-start-column="20" selection-end-line="557" selection-end-column="37" />
               <folding>
+                <element signature="e#7#385#0#PHP" expanded="true" />
                 <element signature="e#387#768#0#PHP" expanded="false" />
+                <element signature="e#808#17815#1#PHP" expanded="true" />
                 <element signature="e#915#1000#0#PHP" expanded="false" />
                 <element signature="e#1008#1124#0#PHP" expanded="false" />
                 <element signature="e#1028#1123#0#PHP" expanded="false" />
@@ -139,47 +141,42 @@
                 <element signature="e#15367#15537#0#PHP" expanded="false" />
                 <element signature="e#15416#15536#0#PHP" expanded="false" />
                 <element signature="e#17874#19598#1#PHP" expanded="true" />
-                <element signature="e#19691#22706#1#PHP" expanded="true" />
-                <element signature="e#22799#27921#1#PHP" expanded="true" />
-                <element signature="e#23165#23268#0#PHP" expanded="false" />
-                <element signature="e#23324#23454#0#PHP" expanded="false" />
-                <element signature="e#23923#24036#0#PHP" expanded="false" />
-                <element signature="e#24217#24329#0#PHP" expanded="false" />
-                <element signature="e#24374#24491#0#PHP" expanded="false" />
-                <element signature="e#24710#24837#0#PHP" expanded="false" />
-                <element signature="e#25045#25171#0#PHP" expanded="false" />
-                <element signature="e#25211#25328#0#PHP" expanded="false" />
-                <element signature="e#25376#25503#0#PHP" expanded="false" />
-                <element signature="e#25553#25681#0#PHP" expanded="false" />
-                <element signature="e#25917#26052#0#PHP" expanded="false" />
-                <element signature="e#26106#26241#0#PHP" expanded="false" />
-                <element signature="e#26295#26430#0#PHP" expanded="false" />
-                <element signature="e#26486#26625#0#PHP" expanded="false" />
-                <element signature="e#26680#26817#0#PHP" expanded="false" />
-                <element signature="e#26872#27009#0#PHP" expanded="false" />
-                <element signature="e#27071#27211#0#PHP" expanded="false" />
-                <element signature="e#27266#27406#0#PHP" expanded="false" />
-                <element signature="e#27453#27575#0#PHP" expanded="false" />
-                <element signature="e#27622#27748#0#PHP" expanded="false" />
-                <element signature="e#27793#27917#0#PHP" expanded="false" />
+                <element signature="e#22937#28059#1#PHP" expanded="true" />
+                <element signature="e#23303#23406#0#PHP" expanded="false" />
+                <element signature="e#23462#23592#0#PHP" expanded="false" />
+                <element signature="e#24061#24174#0#PHP" expanded="false" />
+                <element signature="e#24355#24467#0#PHP" expanded="false" />
+                <element signature="e#24512#24629#0#PHP" expanded="false" />
+                <element signature="e#24848#24975#0#PHP" expanded="false" />
+                <element signature="e#25183#25309#0#PHP" expanded="false" />
+                <element signature="e#25349#25466#0#PHP" expanded="false" />
+                <element signature="e#25691#25819#0#PHP" expanded="false" />
+                <element signature="e#26055#26190#0#PHP" expanded="false" />
+                <element signature="e#26244#26379#0#PHP" expanded="false" />
+                <element signature="e#26433#26568#0#PHP" expanded="false" />
+                <element signature="e#26624#26763#0#PHP" expanded="false" />
+                <element signature="e#26818#26955#0#PHP" expanded="false" />
+                <element signature="e#27010#27147#0#PHP" expanded="false" />
+                <element signature="e#27209#27349#0#PHP" expanded="false" />
+                <element signature="e#27591#27713#0#PHP" expanded="false" />
+                <element signature="e#27760#27886#0#PHP" expanded="false" />
+                <element signature="e#27931#28055#0#PHP" expanded="false" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ShopLocations.php" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/ShopLocations.php">
+      <file leaf-file-name="main_head_nav.blade.php" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/resources/views/layouts/main_head_nav.blade.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-8.5">
-              <caret line="21" column="46" selection-start-line="21" selection-start-column="46" selection-end-line="21" selection-end-column="46" />
+            <state vertical-scroll-proportion="0.5044955">
+              <caret line="394" column="56" selection-start-line="394" selection-start-column="56" selection-end-line="394" selection-end-column="56" />
               <folding>
-                <element signature="e#23#62#0#PHP" expanded="true" />
-                <element signature="e#231#518#0#PHP" expanded="false" />
-                <element signature="e#560#655#0#PHP" expanded="false" />
-                <element signature="e#684#852#0#PHP" expanded="false" />
-                <element signature="e#2646#2728#0#PHP" expanded="false" />
-                <element signature="e#3094#5336#0#PHP" expanded="false" />
-                <element signature="e#3202#5326#0#PHP" expanded="false" />
+                <element signature="n#li#0;n#ul#0;n#div#1;n#div#0;n#div#0;n#!!top" expanded="false" />
+                <element signature="n#li#1;n#ul#0;n#div#1;n#div#0;n#div#0;n#!!top" expanded="false" />
+                <element signature="n#li#2;n#ul#0;n#div#1;n#div#0;n#div#0;n#!!top" expanded="false" />
+                <element signature="n#li#3;n#ul#0;n#div#1;n#div#0;n#div#0;n#!!top" expanded="false" />
+                <element signature="n#li#4;n#ul#0;n#div#1;n#div#0;n#div#0;n#!!top" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -188,14 +185,19 @@
       <file leaf-file-name="BookingController.php" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/Http/Controllers/BookingController.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-13.054545">
-              <caret line="1380" column="5" selection-start-line="1380" selection-start-column="5" selection-end-line="1380" selection-end-column="5" />
+            <state vertical-scroll-proportion="-21.038462">
+              <caret line="2768" column="33" selection-start-line="2768" selection-start-column="33" selection-end-line="2768" selection-end-column="33" />
               <folding>
                 <element signature="e#40#56#0#PHP" expanded="true" />
                 <element signature="e#32981#34425#0#PHP" expanded="false" />
                 <element signature="e#33698#34425#0#PHP" expanded="false" />
                 <element signature="e#34443#37582#0#PHP" expanded="false" />
-                <element signature="e#50334#57321#0#PHP" expanded="true" />
+                <element signature="e#41982#44661#0#PHP" expanded="true" />
+                <element signature="e#42046#42157#0#PHP" expanded="false" />
+                <element signature="e#42119#42157#0#PHP" expanded="false" />
+                <element signature="e#42167#42229#0#PHP" expanded="false" />
+                <element signature="e#43017#44175#0#PHP" expanded="false" />
+                <element signature="e#43677#44175#0#PHP" expanded="false" />
                 <element signature="e#50484#50596#0#PHP" expanded="false" />
                 <element signature="e#50790#51004#0#PHP" expanded="false" />
                 <element signature="e#50893#51004#0#PHP" expanded="false" />
@@ -224,14 +226,42 @@
                 <element signature="e#59040#59167#0#PHP" expanded="false" />
                 <element signature="e#59117#59167#0#PHP" expanded="false" />
                 <element signature="e#59796#60122#0#PHP" expanded="false" />
-                <element signature="e#62419#62998#0#PHP" expanded="false" />
-                <element signature="e#88648#93481#0#PHP" expanded="false" />
-                <element signature="e#88723#88788#0#PHP" expanded="false" />
-                <element signature="e#91694#92460#0#PHP" expanded="false" />
-                <element signature="e#92683#93048#1#PHP" expanded="false" />
-                <element signature="e#93330#93481#0#PHP" expanded="false" />
-                <element signature="e#93367#93470#0#PHP" expanded="false" />
+                <element signature="e#62426#63005#0#PHP" expanded="false" />
+                <element signature="e#88655#93488#0#PHP" expanded="false" />
+                <element signature="e#88730#88795#0#PHP" expanded="false" />
+                <element signature="e#91701#92467#0#PHP" expanded="false" />
+                <element signature="e#92690#93055#1#PHP" expanded="false" />
+                <element signature="e#93337#93488#0#PHP" expanded="false" />
+                <element signature="e#93374#93477#0#PHP" expanded="false" />
+                <element signature="e#118291#118402#0#PHP" expanded="false" />
+                <element signature="e#118364#118402#0#PHP" expanded="false" />
+                <element signature="e#118716#126424#0#PHP" expanded="false" />
+                <element signature="e#119023#120475#0#PHP" expanded="false" />
+                <element signature="e#119963#120475#0#PHP" expanded="false" />
+                <element signature="e#120493#121872#0#PHP" expanded="false" />
+                <element signature="e#123146#124013#0#PHP" expanded="false" />
+                <element signature="e#124264#126314#0#PHP" expanded="false" />
+                <element signature="e#124756#125108#0#PHP" expanded="false" />
+                <element signature="e#125126#126151#0#PHP" expanded="false" />
+                <element signature="e#126327#126414#0#PHP" expanded="false" />
+                <element signature="e#126449#126534#0#PHP" expanded="false" />
+                <element signature="e#126559#126705#0#PHP" expanded="false" />
+                <element signature="e#126803#127151#0#PHP" expanded="false" />
+                <element signature="e#127404#133244#0#PHP" expanded="true" />
+                <element signature="e#133854#134577#0#PHP" expanded="true" />
+                <element signature="e#135110#149903#0#PHP" expanded="true" />
+                <element signature="e#149909#155466#0#PHP" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="BookingInvoice.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/BookingInvoice.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-24.846153">
+              <caret line="253" column="10" selection-start-line="253" selection-start-column="10" selection-end-line="253" selection-end-column="10" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -239,11 +269,12 @@
       <file leaf-file-name="Booking.php" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/Booking.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-23.884615">
-              <caret line="231" column="34" selection-start-line="231" selection-start-column="34" selection-end-line="231" selection-end-column="34" />
+            <state vertical-scroll-proportion="-24.846153">
+              <caret line="428" column="67" selection-start-line="428" selection-start-column="67" selection-end-line="428" selection-end-column="67" />
               <folding>
                 <element signature="e#298#832#0#PHP" expanded="false" />
                 <element signature="e#900#1221#0#PHP" expanded="false" />
+                <element signature="e#1684#2907#0#PHP" expanded="false" />
                 <element signature="e#10289#10840#0#PHP" expanded="false" />
                 <element signature="e#11001#11180#0#PHP" expanded="false" />
                 <element signature="e#11190#11727#0#PHP" expanded="false" />
@@ -253,40 +284,91 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ShopResource.php" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/ShopResource.php">
+      <file leaf-file-name="my_bookings.blade.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/resources/views/front/bookings/my_bookings.blade.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-20.26923">
-              <caret line="93" column="43" selection-start-line="93" selection-start-column="43" selection-end-line="93" selection-end-column="43" />
+            <state vertical-scroll-proportion="-23.576923">
+              <caret line="147" column="88" selection-start-line="147" selection-start-column="88" selection-end-line="147" selection-end-column="88" />
               <folding>
-                <element signature="e#23#41#0#PHP" expanded="true" />
+                <element signature="e#13729#13754#0#HTML" expanded="true" />
+                <element signature="e#15122#15147#0#HTML" expanded="true" />
+                <element signature="e#19196#19236#0#HTML" expanded="true" />
+                <element signature="e#22961#23162#0#HTML" expanded="true" />
+                <element signature="e#23218#26669#0#HTML" expanded="true" />
+                <element signature="e#23493#26643#0#HTML" expanded="true" />
+                <element signature="e#23763#24241#0#HTML" expanded="true" />
+                <element signature="e#26704#27655#0#HTML" expanded="true" />
+                <element signature="e#27204#27629#0#HTML" expanded="true" />
+                <element signature="e#27701#29589#0#HTML" expanded="true" />
+                <element signature="e#27976#29563#0#HTML" expanded="true" />
+                <element signature="e#28814#29287#0#HTML" expanded="true" />
+                <element signature="e#29664#30757#0#HTML" expanded="true" />
+                <element signature="e#30219#30731#0#HTML" expanded="true" />
+                <element signature="e#30391#30597#0#HTML" expanded="true" />
+                <element signature="e#30820#30934#0#HTML" expanded="true" />
+                <element signature="e#31000#31137#0#HTML" expanded="true" />
+                <element signature="e#31221#31650#0#HTML" expanded="true" />
+                <marker date="1475491493955" expanded="true" signature="22923:23162" placeholder="..." />
+                <marker date="1475491493955" expanded="true" signature="22962:23161" placeholder="..." />
+                <marker date="1475491493955" expanded="true" signature="23219:26656" placeholder="..." />
+                <marker date="1475491493955" expanded="true" signature="23494:26642" placeholder="..." />
+                <marker date="1475491493955" expanded="true" signature="23637:24315" placeholder="..." />
+                <marker date="1475491493955" expanded="true" signature="23724:24241" placeholder="..." />
+                <marker date="1475491493955" expanded="true" signature="23764:24240" placeholder="..." />
+                <marker date="1475491493955" expanded="true" signature="23821:23839" placeholder="..." />
+                <marker date="1475491493955" expanded="true" signature="26705:26855" placeholder="..." />
+                <marker date="1475491493955" expanded="true" signature="27205:27628" placeholder="..." />
+                <marker date="1475491493955" expanded="true" signature="27702:29576" placeholder="..." />
+                <marker date="1475491493955" expanded="true" signature="27977:29562" placeholder="..." />
+                <marker date="1475491493955" expanded="true" signature="28601:29463" placeholder="..." />
+                <marker date="1475491493955" expanded="true" signature="28775:29287" placeholder="..." />
+                <marker date="1475491493955" expanded="true" signature="28815:29286" placeholder="..." />
+                <marker date="1475491493955" expanded="true" signature="28867:28885" placeholder="..." />
+                <marker date="1475491493955" expanded="true" signature="29665:29830" placeholder="..." />
+                <marker date="1475491493955" expanded="true" signature="30220:30730" placeholder="..." />
+                <marker date="1475491493955" expanded="true" signature="30365:30597" placeholder="..." />
+                <marker date="1475491493955" expanded="true" signature="30392:30596" placeholder="..." />
+                <marker date="1475491493955" expanded="true" signature="30445:30574" placeholder="..." />
+                <marker date="1475491493955" expanded="true" signature="30782:30934" placeholder="..." />
+                <marker date="1475491493955" expanded="true" signature="30821:30933" placeholder="..." />
+                <marker date="1475491493955" expanded="true" signature="30961:31137" placeholder="..." />
+                <marker date="1475491493955" expanded="true" signature="31001:31136" placeholder="..." />
+                <marker date="1475491493955" expanded="true" signature="31222:31649" placeholder="..." />
+                <marker date="1475491493955" expanded="true" signature="31483:31546" placeholder="..." />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="2016_09_26_204144_add_booking_invoice_item_id_to_booking_financial_transactions_table.php" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/database/migrations/2016_09_26_204144_add_booking_invoice_item_id_to_booking_financial_transactions_table.php">
+      <file leaf-file-name="FrontPageController.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/Http/Controllers/FrontPageController.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.33596838">
-              <caret line="21" column="14" selection-start-line="21" selection-start-column="14" selection-end-line="21" selection-end-column="14" />
+            <state vertical-scroll-proportion="0.0">
+              <caret line="184" column="52" selection-start-line="184" selection-start-column="46" selection-end-line="184" selection-end-column="52" />
               <folding>
-                <element signature="e#338#513#1#PHP" expanded="true" />
-                <element signature="n#down#0;n#AddBookingInvoiceItemIdToBookingFinancialTransactionsTable#0;n#!!top" expanded="true" />
-                <element signature="e#1001#1163#1#PHP" expanded="true" />
+                <element signature="e#10044#12698#0#PHP" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="2016_09_09_225858_add_vat_rate_to_shop_resources_table.php" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/database/migrations/2016_09_09_225858_add_vat_rate_to_shop_resources_table.php">
+      <file leaf-file-name="FrontEndUserController.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/Http/Controllers/FrontEndUserController.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-11.769231">
-              <caret line="19" column="12" selection-start-line="19" selection-start-column="8" selection-end-line="21" selection-end-column="11" />
+            <state vertical-scroll-proportion="-11.692307">
+              <caret line="2177" column="41" selection-start-line="2177" selection-start-column="41" selection-end-line="2177" selection-end-column="41" />
               <folding>
-                <element signature="e#294#422#1#PHP" expanded="true" />
-                <element signature="e#525#627#1#PHP" expanded="true" />
+                <element signature="e#15722#23105#0#PHP" expanded="true" />
+                <element signature="e#15796#15908#0#PHP" expanded="false" />
+                <element signature="e#15987#16142#0#PHP" expanded="false" />
+                <element signature="e#16435#22214#0#PHP" expanded="false" />
+                <marker date="1475087410476" expanded="true" signature="75310:75402" placeholder="select id fr... user_friends" />
+                <marker date="1475087410476" expanded="true" signature="105575:105652" placeholder="select email... password_resets" />
+                <marker date="1475087410476" expanded="true" signature="106549:106620" placeholder="delete from " />
+                <marker date="1475087410476" expanded="true" signature="108201:108259" placeholder="select * fro... password_resets" />
+                <marker date="1475087410476" expanded="true" signature="108427:108483" placeholder="delete from " />
+                <marker date="1475087410476" expanded="true" signature="108551:108638" placeholder="insert into password_resets... " />
+                <marker date="1475087410476" expanded="true" signature="110004:110061" placeholder="delete from " />
               </folding>
             </state>
           </provider>
@@ -300,10 +382,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/resources/views/admin/front_users/view_member_finance.blade.php" />
-        <option value="$PROJECT_DIR$/resources/views/admin/membership_plans/all_plans.blade.php" />
-        <option value="$PROJECT_DIR$/resources/views/admin/orders/all_orders.blade.php" />
-        <option value="$PROJECT_DIR$/resources/views/admin/products/all_inventory.blade.php" />
         <option value="$PROJECT_DIR$/resources/views/admin/products/all_products_list.blade.php" />
         <option value="$PROJECT_DIR$/resources/views/admin/products/product_details.blade.php" />
         <option value="$PROJECT_DIR$/resources/views/admin/shops/add_new_order.blade.php" />
@@ -315,9 +393,6 @@
         <option value="$PROJECT_DIR$/app/Http/Controllers/BackEndUserController.php" />
         <option value="$PROJECT_DIR$/resources/views/admin/layouts/main.blade.php" />
         <option value="$PROJECT_DIR$/database/migrations/2016_09_21_161020_change_shop_opening_hours_table.php" />
-        <option value="$PROJECT_DIR$/app/Http/Controllers/FrontPageController.php" />
-        <option value="$PROJECT_DIR$/resources/views/front/home_page.blade.php" />
-        <option value="$PROJECT_DIR$/resources/views/front/booking_calendar.blade.php" />
         <option value="$PROJECT_DIR$/database/migrations/2016_09_23_234909_add_sign_out_period_to_membership_plans_table.php" />
         <option value="$PROJECT_DIR$/app/MembershipPlan.php" />
         <option value="$PROJECT_DIR$/resources/views/admin/membership_plans/view_plan.blade.php" />
@@ -332,25 +407,32 @@
         <option value="$PROJECT_DIR$/app/BookingFinancialTransaction.php" />
         <option value="$PROJECT_DIR$/database/migrations/2016_09_27_103801_increase_booking_invoice_items_length.php" />
         <option value="$PROJECT_DIR$/database/migrations/2016_09_27_103816_increase_invoice_items_length.php" />
-        <option value="$PROJECT_DIR$/resources/views/admin/bookings/calendar_location_per_day.blade.php" />
         <option value="$PROJECT_DIR$/app/InvoiceItem.php" />
         <option value="$PROJECT_DIR$/app/Invoice.php" />
         <option value="$PROJECT_DIR$/database/migrations/2016_09_27_220942_add_invoice_id_to_membership_invoice_planning_table.php" />
         <option value="$PROJECT_DIR$/database/migrations/2016_09_28_194955_add_last_active_date_to_membership_invoice_planning.php" />
         <option value="$PROJECT_DIR$/app/UserMembershipInvoicePlanning.php" />
         <option value="$PROJECT_DIR$/app/Http/Controllers/FrontEndUserController.php" />
-        <option value="$PROJECT_DIR$/resources/views/admin/front_users/view_member_settings.blade.php" />
         <option value="$PROJECT_DIR$/app/UserMembership.php" />
         <option value="$PROJECT_DIR$/resources/views/admin/membership_plans/add_plan.blade.php" />
         <option value="$PROJECT_DIR$/resources/views/admin/front_users/all_members_list.blade.php" />
-        <option value="$PROJECT_DIR$/app/BookingInvoice.php" />
-        <option value="$PROJECT_DIR$/app/Booking.php" />
-        <option value="$PROJECT_DIR$/app/ShopLocations.php" />
-        <option value="$PROJECT_DIR$/app/Http/Controllers/BookingController.php" />
         <option value="$PROJECT_DIR$/database/migrations/2016_09_09_094648_create_shop_resource_prices_table.php" />
         <option value="$PROJECT_DIR$/database/migrations/2016_09_26_122055_create_invoice_financial_transactions_table.php" />
         <option value="$PROJECT_DIR$/database/migrations/2016_09_27_141333_create_user_membership_invoice_planning_table.php" />
         <option value="$PROJECT_DIR$/database/migrations/2016_09_26_204144_add_booking_invoice_item_id_to_booking_financial_transactions_table.php" />
+        <option value="$PROJECT_DIR$/resources/views/admin/bookings/calendar_location_per_day.blade.php" />
+        <option value="$PROJECT_DIR$/resources/views/front/booking_calendar.blade.php" />
+        <option value="$PROJECT_DIR$/app/ShopLocations.php" />
+        <option value="$PROJECT_DIR$/resources/views/admin/front_users/view_member_settings.blade.php" />
+        <option value="$PROJECT_DIR$/app/Http/Controllers/FrontPageController.php" />
+        <option value="$PROJECT_DIR$/resources/views/front/home_page.blade.php" />
+        <option value="$PROJECT_DIR$/app/Http/routes.php" />
+        <option value="$PROJECT_DIR$/storage/framework/views/60d8f5ccd7df0fd05ea97df2d96f6f93264172bf.php" />
+        <option value="$PROJECT_DIR$/resources/views/front/bookings/my_bookings.blade.php" />
+        <option value="$PROJECT_DIR$/app/BookingInvoice.php" />
+        <option value="$PROJECT_DIR$/app/Booking.php" />
+        <option value="$PROJECT_DIR$/app/Http/Controllers/BookingController.php" />
+        <option value="$PROJECT_DIR$/resources/views/layouts/main_head_nav.blade.php" />
       </list>
     </option>
   </component>
@@ -364,10 +446,10 @@
   </component>
   <component name="PhpWorkspaceProjectConfiguration" backward_compatibility_performed="true" />
   <component name="ProjectFrameBounds">
-    <option name="x" value="-8" />
-    <option name="y" value="-8" />
-    <option name="width" value="1936" />
-    <option name="height" value="1176" />
+    <option name="x" value="-7" />
+    <option name="y" value="2" />
+    <option name="width" value="1932" />
+    <option name="height" value="1165" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true">
     <OptionsSetting value="true" id="Add" />
@@ -422,7 +504,11 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="database" />
+              <option name="myItemId" value="resources" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="views" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -436,11 +522,151 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="database" />
+              <option name="myItemId" value="resources" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="migrations" />
+              <option name="myItemId" value="views" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="layouts" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="bookingsys" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="bookingsys" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="resources" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="views" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="front" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="bookingsys" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="bookingsys" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="resources" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="views" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="front" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="finance" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="bookingsys" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="bookingsys" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="resources" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="views" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="front" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="bookings" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="bookingsys" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="bookingsys" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="resources" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="views" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="admin" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="bookingsys" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="bookingsys" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="resources" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="views" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="admin" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="front_users" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="bookingsys" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="bookingsys" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="resources" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -455,6 +681,46 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="app" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="bookingsys" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="bookingsys" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="app" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Http" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="bookingsys" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="bookingsys" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="app" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Http" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Controllers" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -513,14 +779,13 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1936" height="1176" extended-state="6" />
+    <frame x="-7" y="2" width="1932" height="1165" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.3" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.1920668" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32981783" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3292683" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24859287" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32981783" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
@@ -532,6 +797,7 @@
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Gulp" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24859287" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3988495" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
     </layout>
@@ -561,74 +827,11 @@
           <option name="timeStamp" value="104" />
         </line-breakpoint>
       </breakpoints>
-      <option name="time" value="176" />
+      <option name="time" value="178" />
     </breakpoint-manager>
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/database/migrations/2016_09_21_161020_change_shop_opening_hours_table.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.21837945">
-          <caret line="14" column="10" selection-start-line="14" selection-start-column="10" selection-end-line="14" selection-end-column="10" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/resources/views/front/home_page.blade.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="1015" column="48" selection-start-line="1015" selection-start-column="48" selection-end-line="1015" selection-end-column="48" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/storage/framework/views/cf488d311c6bf4a607dc416a9887f738c883ecfb.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.33300394">
-          <caret line="63" column="0" selection-start-line="63" selection-start-column="0" selection-end-line="63" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/resources/views/front/booking_calendar.blade.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="272" column="141" selection-start-line="272" selection-start-column="31" selection-end-line="272" selection-end-column="141" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/Http/Controllers/BackEndUserController.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="594" column="53" selection-start-line="594" selection-start-column="53" selection-end-line="594" selection-end-column="53" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/Http/Controllers/FrontPageController.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="304" column="19" selection-start-line="303" selection-start-column="8" selection-end-line="309" selection-end-column="9" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/MembershipPlan.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.55932206">
-          <caret line="74" column="68" selection-start-line="74" selection-start-column="68" selection-end-line="74" selection-end-column="68" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/resources/views/admin/membership_plans/view_plan.blade.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.34097707">
-          <caret line="40" column="38" selection-start-line="40" selection-start-column="38" selection-end-line="40" selection-end-column="38" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/resources/views/admin/membership_plans/edit_plan.blade.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-48.615383">
-          <caret line="718" column="56" selection-start-line="718" selection-start-column="56" selection-end-line="718" selection-end-column="56" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/database/migrations/2016_09_23_234909_add_sign_out_period_to_membership_plans_table.php">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.5084746">
@@ -682,13 +885,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.21837945">
           <caret line="40" column="49" selection-start-line="40" selection-start-column="49" selection-end-line="40" selection-end-column="49" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/resources/views/admin/bookings/calendar_location_per_day.blade.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-17.307692">
-          <caret line="76" column="44" selection-start-line="76" selection-start-column="44" selection-end-line="76" selection-end-column="44" />
         </state>
       </provider>
     </entry>
@@ -748,12 +944,402 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/app/Http/Controllers/InvoiceController.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-10.461538">
+          <caret line="25" column="57" selection-start-line="25" selection-start-column="57" selection-end-line="25" selection-end-column="57" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/UserMembershipInvoicePlanning.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.7559289">
+          <caret line="60" column="54" selection-start-line="60" selection-start-column="54" selection-end-line="60" selection-end-column="54" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/Http/Controllers/MembershipPlansController.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.6304348">
+          <caret line="319" column="49" selection-start-line="319" selection-start-column="49" selection-end-line="319" selection-end-column="49" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/Http/Controllers/MembershipController.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="68" column="32" selection-start-line="68" selection-start-column="32" selection-end-line="68" selection-end-column="32" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/Invoice.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="258" column="68" selection-start-line="258" selection-start-column="68" selection-end-line="258" selection-end-column="68" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/resources/views/admin/membership_plans/add_plan.blade.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.3132411">
+          <caret line="33" column="18" selection-start-line="33" selection-start-column="18" selection-end-line="33" selection-end-column="18" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/UserMembership.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-18.0">
+          <caret line="299" column="121" selection-start-line="299" selection-start-column="121" selection-end-line="299" selection-end-column="121" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/resources/views/admin/front_users/all_members_list.blade.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-46.76923">
+          <caret line="93" column="33" selection-start-line="93" selection-start-column="33" selection-end-line="93" selection-end-column="33" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/database/migrations/2016_08_18_203924_crate_user_settings_table.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.23517786">
+          <caret line="15" column="38" selection-start-line="15" selection-start-column="12" selection-end-line="15" selection-end-column="38" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/database/migrations/2016_09_27_220942_add_invoice_id_to_membership_invoice_planning_table.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.23517786">
+          <caret line="15" column="78" selection-start-line="15" selection-start-column="78" selection-end-line="15" selection-end-column="78" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/database/migrations/2016_09_28_194955_add_last_active_date_to_membership_invoice_planning.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.23517786">
+          <caret line="15" column="42" selection-start-line="15" selection-start-column="26" selection-end-line="15" selection-end-column="42" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/database/migrations/2016_09_09_094648_create_shop_resource_prices_table.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.25197628">
+          <caret line="16" column="12" selection-start-line="16" selection-start-column="12" selection-end-line="16" selection-end-column="12" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/database/migrations/2016_09_26_122055_create_invoice_financial_transactions_table.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.25197628">
+          <caret line="16" column="12" selection-start-line="16" selection-start-column="12" selection-end-line="16" selection-end-column="12" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/database/migrations/2016_09_27_141333_create_user_membership_invoice_planning_table.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.25197628">
+          <caret line="16" column="12" selection-start-line="16" selection-start-column="12" selection-end-line="16" selection-end-column="12" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/database/migrations/2016_09_21_095127_add_group_price_to_shop_resource_prices_table.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.21837945">
+          <caret line="14" column="75" selection-start-line="14" selection-start-column="75" selection-end-line="14" selection-end-column="75" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/database/migrations/2016_09_09_225858_add_vat_rate_to_shop_resources_table.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-11.769231">
+          <caret line="19" column="12" selection-start-line="19" selection-start-column="8" selection-end-line="21" selection-end-column="11" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/database/migrations/2016_09_26_204144_add_booking_invoice_item_id_to_booking_financial_transactions_table.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-13.076923">
+          <caret line="21" column="14" selection-start-line="21" selection-start-column="14" selection-end-line="21" selection-end-column="14" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/resources/views/front/booking_calendar.blade.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="96" column="88" selection-start-line="96" selection-start-column="88" selection-end-line="96" selection-end-column="88" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/resources/views/admin/bookings/calendar_location_per_day.blade.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="149" column="118" selection-start-line="149" selection-start-column="73" selection-end-line="149" selection-end-column="118" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/ShopResource.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.77272725">
+          <caret line="84" column="50" selection-start-line="84" selection-start-column="50" selection-end-line="84" selection-end-column="50" />
+          <folding>
+            <element signature="e#23#41#0#PHP" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/resources/views/admin/front_users/view_member_settings.blade.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.6266531">
+          <caret line="132" column="54" selection-start-line="132" selection-start-column="54" selection-end-line="132" selection-end-column="54" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/ShopLocations.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="1.1511858">
+          <caret line="142" column="0" selection-start-line="142" selection-start-column="0" selection-end-line="142" selection-end-column="0" />
+          <folding>
+            <element signature="e#23#62#0#PHP" expanded="true" />
+            <element signature="e#231#518#0#PHP" expanded="false" />
+            <element signature="e#560#655#0#PHP" expanded="false" />
+            <element signature="e#684#852#0#PHP" expanded="false" />
+            <element signature="e#2587#5418#0#PHP" expanded="true" />
+            <element signature="e#2646#2728#0#PHP" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/resources/views/front/home_page.blade.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-23.538462">
+          <caret line="36" column="37" selection-start-line="36" selection-start-column="37" selection-end-line="36" selection-end-column="37" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/resources/views/front/bookings/archive.blade.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.4367589">
+          <caret line="26" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="488" selection-end-column="11" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/resources/views/admin/front_users/view_member_bookings.blade.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-18.923077">
+          <caret line="82" column="30" selection-start-line="80" selection-start-column="24" selection-end-line="208" selection-end-column="30" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/Http/Controllers/FrontPageController.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="184" column="52" selection-start-line="184" selection-start-column="46" selection-end-line="184" selection-end-column="52" />
+          <folding>
+            <element signature="e#10044#12698#0#PHP" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/storage/framework/views/60d8f5ccd7df0fd05ea97df2d96f6f93264172bf.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.33300394">
+          <caret line="78" column="72" selection-start-line="78" selection-start-column="72" selection-end-line="78" selection-end-column="72" />
+          <folding>
+            <marker date="1475491496073" expanded="true" signature="24915:24933" placeholder="..." />
+            <marker date="1475491496073" expanded="true" signature="29989:30007" placeholder="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/resources/views/front/bookings/my_bookings.blade.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-23.576923">
+          <caret line="147" column="88" selection-start-line="147" selection-start-column="88" selection-end-line="147" selection-end-column="88" />
+          <folding>
+            <element signature="e#13729#13754#0#HTML" expanded="true" />
+            <element signature="e#15122#15147#0#HTML" expanded="true" />
+            <element signature="e#19196#19236#0#HTML" expanded="true" />
+            <element signature="e#22961#23162#0#HTML" expanded="true" />
+            <element signature="e#23218#26669#0#HTML" expanded="true" />
+            <element signature="e#23493#26643#0#HTML" expanded="true" />
+            <element signature="e#23763#24241#0#HTML" expanded="true" />
+            <element signature="e#26704#27655#0#HTML" expanded="true" />
+            <element signature="e#27204#27629#0#HTML" expanded="true" />
+            <element signature="e#27701#29589#0#HTML" expanded="true" />
+            <element signature="e#27976#29563#0#HTML" expanded="true" />
+            <element signature="e#28814#29287#0#HTML" expanded="true" />
+            <element signature="e#29664#30757#0#HTML" expanded="true" />
+            <element signature="e#30219#30731#0#HTML" expanded="true" />
+            <element signature="e#30391#30597#0#HTML" expanded="true" />
+            <element signature="e#30820#30934#0#HTML" expanded="true" />
+            <element signature="e#31000#31137#0#HTML" expanded="true" />
+            <element signature="e#31221#31650#0#HTML" expanded="true" />
+            <marker date="1475491493955" expanded="true" signature="22923:23162" placeholder="..." />
+            <marker date="1475491493955" expanded="true" signature="22962:23161" placeholder="..." />
+            <marker date="1475491493955" expanded="true" signature="23219:26656" placeholder="..." />
+            <marker date="1475491493955" expanded="true" signature="23494:26642" placeholder="..." />
+            <marker date="1475491493955" expanded="true" signature="23637:24315" placeholder="..." />
+            <marker date="1475491493955" expanded="true" signature="23724:24241" placeholder="..." />
+            <marker date="1475491493955" expanded="true" signature="23764:24240" placeholder="..." />
+            <marker date="1475491493955" expanded="true" signature="23821:23839" placeholder="..." />
+            <marker date="1475491493955" expanded="true" signature="26705:26855" placeholder="..." />
+            <marker date="1475491493955" expanded="true" signature="27205:27628" placeholder="..." />
+            <marker date="1475491493955" expanded="true" signature="27702:29576" placeholder="..." />
+            <marker date="1475491493955" expanded="true" signature="27977:29562" placeholder="..." />
+            <marker date="1475491493955" expanded="true" signature="28601:29463" placeholder="..." />
+            <marker date="1475491493955" expanded="true" signature="28775:29287" placeholder="..." />
+            <marker date="1475491493955" expanded="true" signature="28815:29286" placeholder="..." />
+            <marker date="1475491493955" expanded="true" signature="28867:28885" placeholder="..." />
+            <marker date="1475491493955" expanded="true" signature="29665:29830" placeholder="..." />
+            <marker date="1475491493955" expanded="true" signature="30220:30730" placeholder="..." />
+            <marker date="1475491493955" expanded="true" signature="30365:30597" placeholder="..." />
+            <marker date="1475491493955" expanded="true" signature="30392:30596" placeholder="..." />
+            <marker date="1475491493955" expanded="true" signature="30445:30574" placeholder="..." />
+            <marker date="1475491493955" expanded="true" signature="30782:30934" placeholder="..." />
+            <marker date="1475491493955" expanded="true" signature="30821:30933" placeholder="..." />
+            <marker date="1475491493955" expanded="true" signature="30961:31137" placeholder="..." />
+            <marker date="1475491493955" expanded="true" signature="31001:31136" placeholder="..." />
+            <marker date="1475491493955" expanded="true" signature="31222:31649" placeholder="..." />
+            <marker date="1475491493955" expanded="true" signature="31483:31546" placeholder="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/resources/views/front/finance/invoice_list.blade.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-0.40316206">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <marker date="1471199083170" expanded="true" signature="11485:11503" placeholder="..." />
+            <marker date="1471199083170" expanded="true" signature="16322:16340" placeholder="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/Http/Controllers/FrontEndUserController.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-11.692307">
+          <caret line="2177" column="41" selection-start-line="2177" selection-start-column="41" selection-end-line="2177" selection-end-column="41" />
+          <folding>
+            <element signature="e#15722#23105#0#PHP" expanded="true" />
+            <element signature="e#15796#15908#0#PHP" expanded="false" />
+            <element signature="e#15987#16142#0#PHP" expanded="false" />
+            <element signature="e#16435#22214#0#PHP" expanded="false" />
+            <marker date="1475087410476" expanded="true" signature="75310:75402" placeholder="select id fr... user_friends" />
+            <marker date="1475087410476" expanded="true" signature="105575:105652" placeholder="select email... password_resets" />
+            <marker date="1475087410476" expanded="true" signature="106549:106620" placeholder="delete from " />
+            <marker date="1475087410476" expanded="true" signature="108201:108259" placeholder="select * fro... password_resets" />
+            <marker date="1475087410476" expanded="true" signature="108427:108483" placeholder="delete from " />
+            <marker date="1475087410476" expanded="true" signature="108551:108638" placeholder="insert into password_resets... " />
+            <marker date="1475087410476" expanded="true" signature="110004:110061" placeholder="delete from " />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/Booking.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-24.846153">
+          <caret line="428" column="67" selection-start-line="428" selection-start-column="67" selection-end-line="428" selection-end-column="67" />
+          <folding>
+            <element signature="e#298#832#0#PHP" expanded="false" />
+            <element signature="e#900#1221#0#PHP" expanded="false" />
+            <element signature="e#1684#2907#0#PHP" expanded="false" />
+            <element signature="e#10289#10840#0#PHP" expanded="false" />
+            <element signature="e#11001#11180#0#PHP" expanded="false" />
+            <element signature="e#11190#11727#0#PHP" expanded="false" />
+            <element signature="e#11625#11727#0#PHP" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/BookingInvoice.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-24.846153">
+          <caret line="253" column="10" selection-start-line="253" selection-start-column="10" selection-end-line="253" selection-end-column="10" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/Http/Controllers/BookingController.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-21.038462">
+          <caret line="2768" column="33" selection-start-line="2768" selection-start-column="33" selection-end-line="2768" selection-end-column="33" />
+          <folding>
+            <element signature="e#40#56#0#PHP" expanded="true" />
+            <element signature="e#32981#34425#0#PHP" expanded="false" />
+            <element signature="e#33698#34425#0#PHP" expanded="false" />
+            <element signature="e#34443#37582#0#PHP" expanded="false" />
+            <element signature="e#41982#44661#0#PHP" expanded="true" />
+            <element signature="e#42046#42157#0#PHP" expanded="false" />
+            <element signature="e#42119#42157#0#PHP" expanded="false" />
+            <element signature="e#42167#42229#0#PHP" expanded="false" />
+            <element signature="e#43017#44175#0#PHP" expanded="false" />
+            <element signature="e#43677#44175#0#PHP" expanded="false" />
+            <element signature="e#50484#50596#0#PHP" expanded="false" />
+            <element signature="e#50790#51004#0#PHP" expanded="false" />
+            <element signature="e#50893#51004#0#PHP" expanded="false" />
+            <element signature="e#51407#51644#0#PHP" expanded="false" />
+            <element signature="e#51577#51644#0#PHP" expanded="false" />
+            <element signature="e#51811#51962#0#PHP" expanded="false" />
+            <element signature="e#51971#52078#0#PHP" expanded="false" />
+            <element signature="e#52584#53010#0#PHP" expanded="false" />
+            <element signature="e#53020#53276#0#PHP" expanded="false" />
+            <element signature="e#53209#53276#0#PHP" expanded="false" />
+            <element signature="e#53286#53604#0#PHP" expanded="false" />
+            <element signature="e#54030#54166#0#PHP" expanded="false" />
+            <element signature="e#54982#55104#0#PHP" expanded="false" />
+            <element signature="e#55334#55651#0#PHP" expanded="false" />
+            <element signature="e#55678#56339#0#PHP" expanded="false" />
+            <element signature="e#56365#56596#0#PHP" expanded="false" />
+            <element signature="e#56717#57313#0#PHP" expanded="false" />
+            <element signature="e#57327#57653#0#PHP" expanded="false" />
+            <element signature="e#57894#57947#0#PHP" expanded="false" />
+            <element signature="e#58013#58383#0#PHP" expanded="false" />
+            <element signature="e#58183#58383#0#PHP" expanded="false" />
+            <element signature="e#58393#58612#0#PHP" expanded="false" />
+            <element signature="e#58504#58612#0#PHP" expanded="false" />
+            <element signature="e#58749#58993#0#PHP" expanded="false" />
+            <element signature="e#58931#58993#0#PHP" expanded="false" />
+            <element signature="e#59040#59167#0#PHP" expanded="false" />
+            <element signature="e#59117#59167#0#PHP" expanded="false" />
+            <element signature="e#59796#60122#0#PHP" expanded="false" />
+            <element signature="e#62426#63005#0#PHP" expanded="false" />
+            <element signature="e#88655#93488#0#PHP" expanded="false" />
+            <element signature="e#88730#88795#0#PHP" expanded="false" />
+            <element signature="e#91701#92467#0#PHP" expanded="false" />
+            <element signature="e#92690#93055#1#PHP" expanded="false" />
+            <element signature="e#93337#93488#0#PHP" expanded="false" />
+            <element signature="e#93374#93477#0#PHP" expanded="false" />
+            <element signature="e#118291#118402#0#PHP" expanded="false" />
+            <element signature="e#118364#118402#0#PHP" expanded="false" />
+            <element signature="e#118716#126424#0#PHP" expanded="false" />
+            <element signature="e#119023#120475#0#PHP" expanded="false" />
+            <element signature="e#119963#120475#0#PHP" expanded="false" />
+            <element signature="e#120493#121872#0#PHP" expanded="false" />
+            <element signature="e#123146#124013#0#PHP" expanded="false" />
+            <element signature="e#124264#126314#0#PHP" expanded="false" />
+            <element signature="e#124756#125108#0#PHP" expanded="false" />
+            <element signature="e#125126#126151#0#PHP" expanded="false" />
+            <element signature="e#126327#126414#0#PHP" expanded="false" />
+            <element signature="e#126449#126534#0#PHP" expanded="false" />
+            <element signature="e#126559#126705#0#PHP" expanded="false" />
+            <element signature="e#126803#127151#0#PHP" expanded="false" />
+            <element signature="e#127404#133244#0#PHP" expanded="true" />
+            <element signature="e#133854#134577#0#PHP" expanded="true" />
+            <element signature="e#135110#149903#0#PHP" expanded="true" />
+            <element signature="e#149909#155466#0#PHP" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/app/Http/routes.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-0.0">
-          <caret line="508" column="40" selection-start-line="508" selection-start-column="19" selection-end-line="508" selection-end-column="40" />
+        <state vertical-scroll-proportion="-6.2">
+          <caret line="557" column="37" selection-start-line="557" selection-start-column="20" selection-end-line="557" selection-end-column="37" />
           <folding>
+            <element signature="e#7#385#0#PHP" expanded="true" />
             <element signature="e#387#768#0#PHP" expanded="false" />
+            <element signature="e#808#17815#1#PHP" expanded="true" />
             <element signature="e#915#1000#0#PHP" expanded="false" />
             <element signature="e#1008#1124#0#PHP" expanded="false" />
             <element signature="e#1028#1123#0#PHP" expanded="false" />
@@ -864,364 +1450,40 @@
             <element signature="e#15367#15537#0#PHP" expanded="false" />
             <element signature="e#15416#15536#0#PHP" expanded="false" />
             <element signature="e#17874#19598#1#PHP" expanded="true" />
-            <element signature="e#19691#22706#1#PHP" expanded="true" />
-            <element signature="e#22799#27921#1#PHP" expanded="true" />
-            <element signature="e#23165#23268#0#PHP" expanded="false" />
-            <element signature="e#23324#23454#0#PHP" expanded="false" />
-            <element signature="e#23923#24036#0#PHP" expanded="false" />
-            <element signature="e#24217#24329#0#PHP" expanded="false" />
-            <element signature="e#24374#24491#0#PHP" expanded="false" />
-            <element signature="e#24710#24837#0#PHP" expanded="false" />
-            <element signature="e#25045#25171#0#PHP" expanded="false" />
-            <element signature="e#25211#25328#0#PHP" expanded="false" />
-            <element signature="e#25376#25503#0#PHP" expanded="false" />
-            <element signature="e#25553#25681#0#PHP" expanded="false" />
-            <element signature="e#25917#26052#0#PHP" expanded="false" />
-            <element signature="e#26106#26241#0#PHP" expanded="false" />
-            <element signature="e#26295#26430#0#PHP" expanded="false" />
-            <element signature="e#26486#26625#0#PHP" expanded="false" />
-            <element signature="e#26680#26817#0#PHP" expanded="false" />
-            <element signature="e#26872#27009#0#PHP" expanded="false" />
-            <element signature="e#27071#27211#0#PHP" expanded="false" />
-            <element signature="e#27266#27406#0#PHP" expanded="false" />
-            <element signature="e#27453#27575#0#PHP" expanded="false" />
-            <element signature="e#27622#27748#0#PHP" expanded="false" />
-            <element signature="e#27793#27917#0#PHP" expanded="false" />
+            <element signature="e#22937#28059#1#PHP" expanded="true" />
+            <element signature="e#23303#23406#0#PHP" expanded="false" />
+            <element signature="e#23462#23592#0#PHP" expanded="false" />
+            <element signature="e#24061#24174#0#PHP" expanded="false" />
+            <element signature="e#24355#24467#0#PHP" expanded="false" />
+            <element signature="e#24512#24629#0#PHP" expanded="false" />
+            <element signature="e#24848#24975#0#PHP" expanded="false" />
+            <element signature="e#25183#25309#0#PHP" expanded="false" />
+            <element signature="e#25349#25466#0#PHP" expanded="false" />
+            <element signature="e#25691#25819#0#PHP" expanded="false" />
+            <element signature="e#26055#26190#0#PHP" expanded="false" />
+            <element signature="e#26244#26379#0#PHP" expanded="false" />
+            <element signature="e#26433#26568#0#PHP" expanded="false" />
+            <element signature="e#26624#26763#0#PHP" expanded="false" />
+            <element signature="e#26818#26955#0#PHP" expanded="false" />
+            <element signature="e#27010#27147#0#PHP" expanded="false" />
+            <element signature="e#27209#27349#0#PHP" expanded="false" />
+            <element signature="e#27591#27713#0#PHP" expanded="false" />
+            <element signature="e#27760#27886#0#PHP" expanded="false" />
+            <element signature="e#27931#28055#0#PHP" expanded="false" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/Http/Controllers/InvoiceController.php">
+    <entry file="file://$PROJECT_DIR$/resources/views/layouts/main_head_nav.blade.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-10.461538">
-          <caret line="25" column="57" selection-start-line="25" selection-start-column="57" selection-end-line="25" selection-end-column="57" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/UserMembershipInvoicePlanning.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.7559289">
-          <caret line="60" column="54" selection-start-line="60" selection-start-column="54" selection-end-line="60" selection-end-column="54" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/Http/Controllers/MembershipPlansController.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.6304348">
-          <caret line="319" column="49" selection-start-line="319" selection-start-column="49" selection-end-line="319" selection-end-column="49" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/Http/Controllers/MembershipController.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="68" column="32" selection-start-line="68" selection-start-column="32" selection-end-line="68" selection-end-column="32" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/resources/views/admin/front_users/view_member_settings.blade.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="368" column="111" selection-start-line="368" selection-start-column="111" selection-end-line="368" selection-end-column="111" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/Invoice.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="258" column="68" selection-start-line="258" selection-start-column="68" selection-end-line="258" selection-end-column="68" />
+        <state vertical-scroll-proportion="0.5044955">
+          <caret line="394" column="56" selection-start-line="394" selection-start-column="56" selection-end-line="394" selection-end-column="56" />
           <folding>
-            <element signature="e#23#41#0#PHP" expanded="true" />
-            <element signature="e#222#542#0#PHP" expanded="false" />
-            <element signature="e#610#783#0#PHP" expanded="false" />
-            <element signature="e#2912#3372#0#PHP" expanded="false" />
-            <element signature="e#6353#6878#0#PHP" expanded="false" />
-            <element signature="e#6720#6878#0#PHP" expanded="false" />
-            <element signature="e#6900#7403#0#PHP" expanded="false" />
-            <element signature="e#7592#7754#0#PHP" expanded="false" />
-            <element signature="e#7988#8177#0#PHP" expanded="false" />
-            <element signature="e#8187#8667#0#PHP" expanded="false" />
-            <element signature="e#8517#8667#0#PHP" expanded="false" />
-            <element signature="e#10479#10602#0#PHP" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/Http/Controllers/FrontEndUserController.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="383" column="61" selection-start-line="383" selection-start-column="61" selection-end-line="383" selection-end-column="61" />
-          <folding>
-            <element signature="e#12191#12519#0#PHP" expanded="false" />
-            <element signature="e#12520#12713#0#PHP" expanded="false" />
-            <element signature="e#12740#12813#0#PHP" expanded="false" />
-            <element signature="e#13964#14054#0#PHP" expanded="false" />
-            <element signature="e#14198#14469#0#PHP" expanded="false" />
-            <element signature="e#15722#23105#0#PHP" expanded="true" />
-            <element signature="e#23238#38230#0#PHP" expanded="true" />
-            <element signature="e#38236#39706#0#PHP" expanded="true" />
-            <element signature="e#39892#42915#0#PHP" expanded="true" />
-            <element signature="e#42921#44792#0#PHP" expanded="true" />
-            <element signature="e#44937#44988#0#PHP" expanded="true" />
-            <element signature="e#45021#47811#0#PHP" expanded="true" />
-            <element signature="e#47817#49225#0#PHP" expanded="true" />
-            <element signature="e#49231#50462#0#PHP" expanded="true" />
-            <element signature="e#50468#51433#0#PHP" expanded="true" />
-            <element signature="e#51439#53236#0#PHP" expanded="true" />
-            <element signature="e#53242#55238#0#PHP" expanded="true" />
-            <element signature="e#55244#56939#0#PHP" expanded="true" />
-            <element signature="e#56945#57510#0#PHP" expanded="true" />
-            <element signature="e#57516#58274#0#PHP" expanded="true" />
-            <element signature="e#58475#60045#0#PHP" expanded="true" />
-            <element signature="e#60051#68400#0#PHP" expanded="true" />
-            <element signature="e#68406#71433#0#PHP" expanded="true" />
-            <element signature="e#71439#73478#0#PHP" expanded="true" />
-            <element signature="e#73484#75221#0#PHP" expanded="true" />
-            <element signature="e#75227#75553#0#PHP" expanded="true" />
-            <element signature="e#75559#79485#0#PHP" expanded="true" />
-            <element signature="e#79491#79798#0#PHP" expanded="true" />
-            <element signature="e#79804#80093#0#PHP" expanded="true" />
-            <element signature="e#80099#81347#0#PHP" expanded="true" />
-            <element signature="e#81393#84210#0#PHP" expanded="true" />
-            <element signature="e#84216#84966#0#PHP" expanded="true" />
-            <element signature="e#84972#88140#0#PHP" expanded="true" />
-            <element signature="e#88286#95500#0#PHP" expanded="true" />
-            <element signature="e#95506#96075#0#PHP" expanded="true" />
-            <element signature="e#96081#96647#0#PHP" expanded="true" />
-            <element signature="e#96653#97992#0#PHP" expanded="true" />
-            <element signature="e#97998#99170#0#PHP" expanded="true" />
-            <element signature="e#99176#101690#0#PHP" expanded="true" />
-            <element signature="e#101696#102144#0#PHP" expanded="true" />
-            <element signature="e#102150#103599#0#PHP" expanded="true" />
-            <element signature="e#103605#104030#0#PHP" expanded="true" />
-            <element signature="e#104117#104751#0#PHP" expanded="true" />
-            <element signature="e#104757#107571#0#PHP" expanded="true" />
-            <element signature="e#107577#109716#0#PHP" expanded="true" />
-            <element signature="e#109722#109845#0#PHP" expanded="true" />
-            <element signature="e#109851#110099#0#PHP" expanded="true" />
-            <marker date="1475087410476" expanded="true" signature="75310:75402" placeholder="select id fr... user_friends" />
-            <marker date="1475087410476" expanded="true" signature="105575:105652" placeholder="select email... password_resets" />
-            <marker date="1475087410476" expanded="true" signature="106549:106620" placeholder="delete from " />
-            <marker date="1475087410476" expanded="true" signature="108201:108259" placeholder="select * fro... password_resets" />
-            <marker date="1475087410476" expanded="true" signature="108427:108483" placeholder="delete from " />
-            <marker date="1475087410476" expanded="true" signature="108551:108638" placeholder="insert into password_resets... " />
-            <marker date="1475087410476" expanded="true" signature="110004:110061" placeholder="delete from " />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/resources/views/admin/membership_plans/add_plan.blade.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.3132411">
-          <caret line="33" column="18" selection-start-line="33" selection-start-column="18" selection-end-line="33" selection-end-column="18" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/UserMembership.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-18.0">
-          <caret line="299" column="121" selection-start-line="299" selection-start-column="121" selection-end-line="299" selection-end-column="121" />
-          <folding>
-            <element signature="e#10163#10252#0#PHP" expanded="false" />
-            <element signature="e#10346#10772#0#PHP" expanded="false" />
-            <element signature="e#10503#10690#0#PHP" expanded="false" />
-            <element signature="e#10699#10772#0#PHP" expanded="false" />
-            <element signature="e#10794#11231#0#PHP" expanded="false" />
-            <element signature="e#12368#12838#0#PHP" expanded="false" />
-            <element signature="e#13041#13186#0#PHP" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/resources/views/admin/front_users/all_members_list.blade.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-46.76923">
-          <caret line="93" column="33" selection-start-line="93" selection-start-column="33" selection-end-line="93" selection-end-column="33" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/BookingInvoice.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.042490117">
-          <caret line="61" column="8" selection-start-line="61" selection-start-column="8" selection-end-line="61" selection-end-column="47" />
-          <folding>
-            <element signature="e#287#476#0#PHP" expanded="false" />
-            <element signature="e#544#642#0#PHP" expanded="false" />
-            <element signature="e#3011#3190#0#PHP" expanded="false" />
-            <element signature="e#3558#3670#0#PHP" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/Booking.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-23.884615">
-          <caret line="231" column="34" selection-start-line="231" selection-start-column="34" selection-end-line="231" selection-end-column="34" />
-          <folding>
-            <element signature="e#298#832#0#PHP" expanded="false" />
-            <element signature="e#900#1221#0#PHP" expanded="false" />
-            <element signature="e#10289#10840#0#PHP" expanded="false" />
-            <element signature="e#11001#11180#0#PHP" expanded="false" />
-            <element signature="e#11190#11727#0#PHP" expanded="false" />
-            <element signature="e#11625#11727#0#PHP" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/Http/Controllers/BookingController.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-13.054545">
-          <caret line="1380" column="5" selection-start-line="1380" selection-start-column="5" selection-end-line="1380" selection-end-column="5" />
-          <folding>
-            <element signature="e#40#56#0#PHP" expanded="true" />
-            <element signature="e#32981#34425#0#PHP" expanded="false" />
-            <element signature="e#33698#34425#0#PHP" expanded="false" />
-            <element signature="e#34443#37582#0#PHP" expanded="false" />
-            <element signature="e#50334#57321#0#PHP" expanded="true" />
-            <element signature="e#50484#50596#0#PHP" expanded="false" />
-            <element signature="e#50790#51004#0#PHP" expanded="false" />
-            <element signature="e#50893#51004#0#PHP" expanded="false" />
-            <element signature="e#51407#51644#0#PHP" expanded="false" />
-            <element signature="e#51577#51644#0#PHP" expanded="false" />
-            <element signature="e#51811#51962#0#PHP" expanded="false" />
-            <element signature="e#51971#52078#0#PHP" expanded="false" />
-            <element signature="e#52584#53010#0#PHP" expanded="false" />
-            <element signature="e#53020#53276#0#PHP" expanded="false" />
-            <element signature="e#53209#53276#0#PHP" expanded="false" />
-            <element signature="e#53286#53604#0#PHP" expanded="false" />
-            <element signature="e#54030#54166#0#PHP" expanded="false" />
-            <element signature="e#54982#55104#0#PHP" expanded="false" />
-            <element signature="e#55334#55651#0#PHP" expanded="false" />
-            <element signature="e#55678#56339#0#PHP" expanded="false" />
-            <element signature="e#56365#56596#0#PHP" expanded="false" />
-            <element signature="e#56717#57313#0#PHP" expanded="false" />
-            <element signature="e#57327#57653#0#PHP" expanded="false" />
-            <element signature="e#57894#57947#0#PHP" expanded="false" />
-            <element signature="e#58013#58383#0#PHP" expanded="false" />
-            <element signature="e#58183#58383#0#PHP" expanded="false" />
-            <element signature="e#58393#58612#0#PHP" expanded="false" />
-            <element signature="e#58504#58612#0#PHP" expanded="false" />
-            <element signature="e#58749#58993#0#PHP" expanded="false" />
-            <element signature="e#58931#58993#0#PHP" expanded="false" />
-            <element signature="e#59040#59167#0#PHP" expanded="false" />
-            <element signature="e#59117#59167#0#PHP" expanded="false" />
-            <element signature="e#59796#60122#0#PHP" expanded="false" />
-            <element signature="e#62419#62998#0#PHP" expanded="false" />
-            <element signature="e#88648#93481#0#PHP" expanded="false" />
-            <element signature="e#88723#88788#0#PHP" expanded="false" />
-            <element signature="e#91694#92460#0#PHP" expanded="false" />
-            <element signature="e#92683#93048#1#PHP" expanded="false" />
-            <element signature="e#93330#93481#0#PHP" expanded="false" />
-            <element signature="e#93367#93470#0#PHP" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/database/migrations/2016_08_18_203924_crate_user_settings_table.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.23517786">
-          <caret line="15" column="38" selection-start-line="15" selection-start-column="12" selection-end-line="15" selection-end-column="38" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/database/migrations/2016_09_27_220942_add_invoice_id_to_membership_invoice_planning_table.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.23517786">
-          <caret line="15" column="78" selection-start-line="15" selection-start-column="78" selection-end-line="15" selection-end-column="78" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/database/migrations/2016_09_28_194955_add_last_active_date_to_membership_invoice_planning.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.23517786">
-          <caret line="15" column="42" selection-start-line="15" selection-start-column="26" selection-end-line="15" selection-end-column="42" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/ShopLocations.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-8.5">
-          <caret line="21" column="46" selection-start-line="21" selection-start-column="46" selection-end-line="21" selection-end-column="46" />
-          <folding>
-            <element signature="e#23#62#0#PHP" expanded="true" />
-            <element signature="e#231#518#0#PHP" expanded="false" />
-            <element signature="e#560#655#0#PHP" expanded="false" />
-            <element signature="e#684#852#0#PHP" expanded="false" />
-            <element signature="e#2646#2728#0#PHP" expanded="false" />
-            <element signature="e#3094#5336#0#PHP" expanded="false" />
-            <element signature="e#3202#5326#0#PHP" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/database/migrations/2016_09_09_094648_create_shop_resource_prices_table.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.25197628">
-          <caret line="16" column="12" selection-start-line="16" selection-start-column="12" selection-end-line="16" selection-end-column="12" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/database/migrations/2016_09_26_122055_create_invoice_financial_transactions_table.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.25197628">
-          <caret line="16" column="12" selection-start-line="16" selection-start-column="12" selection-end-line="16" selection-end-column="12" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/database/migrations/2016_09_27_141333_create_user_membership_invoice_planning_table.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.25197628">
-          <caret line="16" column="12" selection-start-line="16" selection-start-column="12" selection-end-line="16" selection-end-column="12" />
-          <folding>
-            <element signature="e#824#1070#1#PHP" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/ShopResource.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-20.26923">
-          <caret line="93" column="43" selection-start-line="93" selection-start-column="43" selection-end-line="93" selection-end-column="43" />
-          <folding>
-            <element signature="e#23#41#0#PHP" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/database/migrations/2016_09_21_095127_add_group_price_to_shop_resource_prices_table.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.21837945">
-          <caret line="14" column="75" selection-start-line="14" selection-start-column="75" selection-end-line="14" selection-end-column="75" />
-          <folding>
-            <element signature="e#308#418#1#PHP" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/database/migrations/2016_09_09_225858_add_vat_rate_to_shop_resources_table.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-11.769231">
-          <caret line="19" column="12" selection-start-line="19" selection-start-column="8" selection-end-line="21" selection-end-column="11" />
-          <folding>
-            <element signature="e#294#422#1#PHP" expanded="true" />
-            <element signature="e#525#627#1#PHP" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/database/migrations/2016_09_26_204144_add_booking_invoice_item_id_to_booking_financial_transactions_table.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.33596838">
-          <caret line="21" column="14" selection-start-line="21" selection-start-column="14" selection-end-line="21" selection-end-column="14" />
-          <folding>
-            <element signature="e#338#513#1#PHP" expanded="true" />
-            <element signature="n#down#0;n#AddBookingInvoiceItemIdToBookingFinancialTransactionsTable#0;n#!!top" expanded="true" />
-            <element signature="e#1001#1163#1#PHP" expanded="true" />
+            <element signature="n#li#0;n#ul#0;n#div#1;n#div#0;n#div#0;n#!!top" expanded="false" />
+            <element signature="n#li#1;n#ul#0;n#div#1;n#div#0;n#div#0;n#!!top" expanded="false" />
+            <element signature="n#li#2;n#ul#0;n#div#1;n#div#0;n#div#0;n#!!top" expanded="false" />
+            <element signature="n#li#3;n#ul#0;n#div#1;n#div#0;n#div#0;n#!!top" expanded="false" />
+            <element signature="n#li#4;n#ul#0;n#div#1;n#div#0;n#div#0;n#!!top" expanded="false" />
           </folding>
         </state>
       </provider>

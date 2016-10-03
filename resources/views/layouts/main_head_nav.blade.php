@@ -392,7 +392,7 @@
                     </a>
                 </li>
                 <li class="menu-dropdown mega-menu-dropdown {{$in_sidebar=="front-bookings_list"?"active":""}}">
-                    <a href="{{ route('front/bookings_archive') }}"> My Bookings
+                    <a href="{{ route('front/my_bookings') }}"> My Bookings
                         <span class="arrow"></span>
                     </a>
                 </li>

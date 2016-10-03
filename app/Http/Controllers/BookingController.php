@@ -2761,7 +2761,7 @@ class BookingController extends Controller
 
         $userID = $user->id;
         $bookingsList = [];
-        $bookings = Booking::where('for_user_id','=',$userID)
+        $bookings = Booking::with('invoice')->where('for_user_id','=',$userID)
             ->orWhere('by_user_id','=',$userID)
             ->orderBy('date_of_booking','desc')
             ->orderBy('booking_time_start','desc')
@@ -2770,6 +2770,32 @@ class BookingController extends Controller
             $buttons = [];
             $colorStatus = '';
             foreach ($bookings as $booking){
+                $status = '';
+                $format_date = Carbon::createFromFormat('Y-m-d H:i:s', $booking->date_of_booking.' '.$booking->booking_time_start);
+                if ($booking->status != 'active'){
+                    if ($booking->status=="unpaid" && $booking->status!="canceled"){
+                        $bookingInvoice = $booking->invoice[0];
+                        $generalInvoice = $bookingInvoice->get_general_invoice();
+                        $status = '<a href="'.route('front/view_invoice/', ['id' => $generalInvoice->invoice_number]).'" class="btn btn-sm yellow-gold">Pay Invoice</a>';
+                    }
+                    elseif ($booking->status=="paid" && $booking->status!="canceled"){
+                        $status = '<a href="#'.$booking->search_key.'" class="btn btn-sm green-turquoise">Invoice</a>';
+                    }
+
+                    if (sizeof($booking->notes)>0){
+                        $status.= '<span data-id="' . $booking->search_key . '" class="details_booking btn btn-sm blue-sharp">Details</span> ';
+                    }
+                }
+                else{
+                    if ($this->can_cancel_booking($booking->id)) {
+                        $status = '<span data-id="' . $booking->search_key . '" class="cancel_booking btn btn-sm grey-silver">Cancel</span> ';
+                    }
+
+                    if ($booking->by_user_id==$userID && Carbon::now()->lt($format_date)) {
+                        $status.= ' <span data-id="' . $booking->search_key . '" class="modify_booking btn btn-sm blue-steel">Modify</span>';
+                    }
+                }
+
                 switch ($booking->status) {
                     case 'pending' :
                         $colorStatus = 'warning';
@@ -2806,7 +2832,7 @@ class BookingController extends Controller
                 }
 
                 $date       = Carbon::createFromFormat('Y-m-d', $booking->date_of_booking)->format('l, M jS, Y');
-                $addedOn    = Carbon::createFromFormat('Y-m-d H:i:s', $booking->updated_at)->format('j/m/Y H:i');
+                $addedOn    = Carbon::createFromFormat('Y-m-d H:i:s', $booking->updated_at)->format('j/m/Y');
                 $dateSmall  = Carbon::createFromFormat('Y-m-d', $booking->date_of_booking)->format('j/m/Y');
                 $timeInterval = Carbon::createFromFormat('H:i:s', $booking->booking_time_start)->format('H:i').' - '.Carbon::createFromFormat('H:i:s', $booking->booking_time_stop)->format('H:i');
 
@@ -2841,10 +2867,11 @@ class BookingController extends Controller
                     'last_update'   => $booking->updated_at,
                     'added_by'      => $booking->by_user_id,
                     'search_key'    => $booking->search_key,
-                    'added_on'      => $addedOn
+                    'added_on'      => $addedOn,
+                    'button_actions'=> @$status
                 ];
             }
-
+//xdebug_var_dump($bookingsList); exit;
             unset($bookings); unset($booking);
 
             $nr = 1;
@@ -2852,7 +2879,10 @@ class BookingController extends Controller
             $lastMan = 0;
             $lastTime = '';
             $lastTenBookings = [];
-            foreach($bookingsList as $lastOne){
+            foreach($bookingsList as $key=>$lastOne){
+                if ($lastOne['status']!='active'){
+                    continue;
+                }
                 if (!isset($lastMan)){ $lastMan = $lastOne['added_by']; }
                 if (!isset($lastTime)){ $lastTime = $lastOne['last_update']; }
 
@@ -2867,7 +2897,7 @@ class BookingController extends Controller
                     $indexKey = sizeof($index)+1;
                     $index[$indexKey-1] = $nr;
 
-                    if ($indexKey>10){
+                    if ($indexKey>50){
                         break;
                     }
                     $nr=1;
@@ -2901,8 +2931,12 @@ class BookingController extends Controller
                 }
                 $lastOne['status-color'] = $colorStatus;
                 $lastTenBookings[] = $lastOne;
+
+                unset($bookingsList[$key]);
             }
-            $index[$indexKey] = $nr;
+            if (sizeof($lastTenBookings)>0){
+                $index[$indexKey] = $nr;
+            }
         }
 
         $breadcrumbs = [

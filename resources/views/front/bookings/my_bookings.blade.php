@@ -83,15 +83,13 @@
                                                                             echo '<td rowspan="'.($multipleBookingsIndex[$theNr]).'">'.$theNr.'</td>';
                                                                             $theNr++;
                                                                         } else {  } ?>
-                                                                        <td> {{$booking['date']}} </td>
-                                                                        <td> {{$booking['timeInterval']}} </td>
-                                                                        <td class="hidden-xs"> <a href="{{ route('admin/front_users/view_user',['id'=>$booking['player_id']])}}" target="_blank">{{$booking['player_name']}}</a> </td>
-                                                                        <td class="hidden-xs"> {{$booking['location']}} </td>
-                                                                        <td> {{$booking['room']}} </td>
-                                                                        <td class="hidden-xs"> {{$booking['activity']}} </td>
-                                                                        <td>
-                                                                            <span class="label label-sm {{$booking['status-color']}} booking_details_modal" data-key="{{$booking['search_key']}}"> {{$booking['status']}} </span>
-                                                                        </td>
+                                                                        <td> <small>{{$booking['date']}}</small> </td>
+                                                                        <td> <small>{{$booking['timeInterval']}}</small> </td>
+                                                                        <td class="hidden-xs"> <small>{{$booking['player_name']}}</small> </td>
+                                                                        <td class="hidden-xs"> <small>{{$booking['location']}}</small> </td>
+                                                                        <td> <small>{{$booking['room']}}</small> </td>
+                                                                        <td class="hidden-xs"> <small>{{$booking['activity']}}</small> </td>
+                                                                        <td> {!! $booking['button_actions'] !!} </td>
                                                                     </tr>
                                                                 @endforeach
                                                                 </tbody>
@@ -105,8 +103,7 @@
                                         <!-- END PERSONAL INFO TAB -->
                                         <!-- CHANGE AVATAR TAB -->
                                         <div class="tab-pane" id="tab_1_2">
-                                            <p> Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum
-                                                eiusmod. </p>
+                                            <p> Here you can see all your old or canceled bookings, the active/pending ones are shown in "Upcoming Bookings" </p>
                                             <div class="row">
                                                 <div class="col-md-12">
                                                     <!-- BEGIN SAMPLE TABLE PORTLET-->
@@ -125,8 +122,6 @@
                                                                         <th class="hidden-xs">
                                                                             <i class="fa fa-user"></i> Player </th>
                                                                         <th>
-                                                                            <i class="fa fa-briefcase"></i> Activity </th>
-                                                                        <th>
                                                                             <i class="fa fa-briefcase"></i> Added On </th>
                                                                         <th>
                                                                             <i class="fa fa-shopping-cart"></i> Status </th>
@@ -135,21 +130,18 @@
                                                                     </thead>
                                                                     <tbody>
                                                                     @foreach ($bookings as $booking)
+                                                                        @if ($booking['status']=='active') { continue;} @endif
                                                                         <tr>
                                                                             <td class="highlight">
                                                                                 <div class="{{ $booking['color_status'] }}"></div>
-                                                                                <a href="javascript:;"> {{ $booking['dateShort'] }} </a>
+                                                                                <small>&nbsp; <span class="font-blue-soft"> {{ $booking['dateShort'] }}  </span> </small>
                                                                             </td>
-                                                                            <td> {{ $booking['timeInterval'] }} </td>
-                                                                            <td> {{ $booking['location'].' - '.$booking['room'] }} </td>
-                                                                            <td class="hidden-xs"> <a href="{{route('admin/front_users/view_user',['id'=>$booking['player_id']])}}" target="_blank">{{$booking['player_name']}}</a> </td>
-                                                                            <td> {{ $booking['activity'] }} </td>
-                                                                            <td> {{ $booking['added_on'] }} </td>
-                                                                            <td> {{ $booking['status'] }} </td>
-                                                                            <td>
-                                                                                <a class="btn {{ $booking['color_button'] }} btn-sm booking_details_modal" data-key="{{$booking['search_key']}}" href="javascript:;">
-                                                                                    <i class="fa fa-edit"></i> Details </a>
-                                                                            </td>
+                                                                            <td> <small>{{ $booking['timeInterval'] }}</small> </td>
+                                                                            <td> <small>{{ $booking['location'] }} - {{  $booking['room'] }}</small> </td>
+                                                                            <td class="hidden-xs"> <small>{{$booking['player_name']}}</small> </td>
+                                                                            <td> <small>{{ $booking['added_on'] }}</small> </td>
+                                                                            <td> <small>{{ $booking['status'] }}</small> </td>
+                                                                            <td> {!! $booking['button_actions'] !!} </td>
                                                                         </tr>
                                                                     @endforeach
                                                                     </tbody>
