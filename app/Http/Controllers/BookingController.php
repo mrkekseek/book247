@@ -2752,11 +2752,9 @@ class BookingController extends Controller
 
     /* Front-End - my bookings + archive */
     public function front_my_bookings(){
-        if (Auth::check()) {
-            $user = Auth::user();
-        }
-        else{
-            return [];
+        $user = Auth::user();
+        if (!$user || !$user->is_front_user()) {
+            return redirect()->intended(route('homepage'));
         }
 
         $userID = $user->id;

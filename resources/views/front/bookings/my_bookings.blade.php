@@ -398,8 +398,9 @@
                     $('#small_cancel').modal('hide');
                     App.unblockUI('#small_cancel');
 
-                    $("#sample_1").dataTable().fnDestroy();
-                    load_table_date();
+                    setTimeout(function(){
+                        location.reload();
+                    },1500);
                 }
             });
         }
