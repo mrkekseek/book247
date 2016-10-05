@@ -247,7 +247,7 @@
                         <li>
                             <ul class="dropdown-menu-list scroller" style="height: 280px; background-color:#ffffff;" data-handle-color="#637283">
                                 <li>
-                                    <div id="calendar_booking_top_menu" data-date-format="mm/dd/yyyy" style="margin-left:10px;"> </div>
+                                    <div id="calendar_booking_top_menu" data-date="{{ \Carbon\Carbon::today()->format('d-m-Y') }}" data-date-format="mm/dd/yyyy" style="margin-left:10px;"> </div>
                                 </li>
                             </ul>
                         </li>

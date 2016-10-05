@@ -9,6 +9,7 @@ use App\BookingInvoiceItem;
 use App\Invoice;
 use App\InvoiceItem;
 use App\MembershipPlan;
+use App\PersonalDetail;
 use App\ShopLocations;
 use App\ShopResource;
 use App\ShopResourceCategory;
@@ -257,7 +258,7 @@ class BookingController extends Controller
 
         if ($booking){
             //if (in_array($booking->status,['active','pending'])){
-            if ($this->can_cancel_booking($booking->id)){
+            if ($this->can_cancel_booking($booking->id) || $user->is_back_user()){
                 $old_status = $booking->status;
                 if ( $booking->cancel_booking() ){
                     if ($old_status=='active'){
@@ -1090,8 +1091,6 @@ class BookingController extends Controller
      * @return bool
      */
     public function can_cancel_booking($id, $hours = 6){
-        $can_cancel = true;
-
         $booking = Booking::find($id);
         if ($booking){
             $bookingStartDateTime = Carbon::createFromFormat('Y-m-d H:i:s', $booking->date_of_booking.' '.$booking->booking_time_start);
@@ -2657,21 +2656,23 @@ class BookingController extends Controller
             return [];
         }
 
-        // bookings show : paid, unpaid, old
-        $bshows = Booking::where('for_user_id','=',$booking->for_user_id)->whereIn('status',['paid','unpaid','old'])->count();
+        $userDetails = PersonalDetail::select(['about_info'])->where('user_id','=',$booking->for_user_id)->get()->first();
+        $player = User::where('id','=',$booking->for_user_id)->get()->first();
+        $userAvatar  = $player->get_avatar_image();
 
+        // bookings show : paid, unpaid, old
+        $bshows   = Booking::where('for_user_id','=',$booking->for_user_id)->whereIn('status',['paid','unpaid','old'])->count();
         // bookings no_show : no_show
         $bnoshows = Booking::where('for_user_id','=',$booking->for_user_id)->whereIn('status',['noshow'])->count();
-
         // bookings canceled : canceled
-        $bcancel = Booking::where('for_user_id','=',$booking->for_user_id)->whereIn('status',['canceled'])->count();
+        $bcancel  = Booking::where('for_user_id','=',$booking->for_user_id)->whereIn('status',['canceled'])->count();
 
         $stats = [
-            'booking_show' => $bshows,
-            'booking_no_show' => $bnoshows,
-            'booking_cancel' => $bcancel,
-            'player_about' => 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. ',
-            'player_avatar' => asset('assets/pages/media/users/teambg3.jpg'),
+            'booking_show'      => $bshows,
+            'booking_no_show'   => $bnoshows,
+            'booking_cancel'    => $bcancel,
+            'player_about'      => $userDetails->about_info,
+            'player_avatar'     => $userAvatar['avatar_base64'],
         ];
 
         return $stats;

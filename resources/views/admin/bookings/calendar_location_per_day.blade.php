@@ -194,10 +194,10 @@
                                             <span class="icon-close" aria-hidden="true"></span> &nbsp;<span class="cancel_bookings">-</span> : Cancelled bookings </span>
                                     </span>
 
-                                    <blockquote class="bg-grey-cararra bg-font-grey-cararra player_short_note" style="padding:5px; margin:7px 0; font-size:14px;"> - </blockquote>
+                                    <blockquote class="bg-grey-cararra bg-font-grey-cararra player_short_note" style="padding:5px; margin:7px 0; font-size:14px; max-height:79px; height:79px; overflow:hidden;"> - </blockquote>
                                 </div>
                             </div>
-                            <div class="book_details_cancel_place" style="padding:0px 15px; margin-top:5px; clear:both;"></div>
+                            <div id="booking_summary_stats" class="book_details_cancel_place" style="padding:0px 15px; margin-top:5px; clear:both;"></div>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn green no_show_booking_btn" data-toggle="modal" href="#not_show_confirm_box">No show options</button>
@@ -255,14 +255,23 @@
             <!-- END No Show modal window -->
 
             <!-- BEGIN Booking Cancel Confirm modal window show -->
-            <div class="modal fade bs-modal-sm" id="cancel_confirm_box" tabindex="-1" role="dialog" aria-hidden="true">
-                <div class="modal-dialog modal-sm">
-                    <div class="modal-content">
+            <div class="modal fade" id="cancel_confirm_box" tabindex="-1" role="dialog" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content" style="margin-left:20px; margin-right:20px; margin-top:60px;">
                         <div class="modal-header">
                             <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
                             <h4 class="modal-title">Do you want to cancel?</h4>
                         </div>
-                        <div class="modal-body"> By clicking "Cancel Booking" this booking will be canceled and the player notified. Do you want to proceed with the cancellation? </div>
+                        <div class="modal-body">
+                            <div class="note note-warning" id="booking_cancel_rules_no" style="display:none; margin-bottom:0px;">
+                                <h4 class="block">Booking cancellation is outside membership rules</h4>
+                                <p> The booking that you are trying to cancel passed the minimum hours requirements for being able to cancel. Do you still want to cancel this booking? </p>
+                            </div>
+                            <div class="note note-info" id="booking_cancel_rules_yes" style="display:none; margin-bottom:0px;">
+                                <h4 class="block">Cancel selected bookings</h4>
+                                <p> By clicking "Cancel Booking" this booking will be canceled and the player notified. Do you want to proceed with the cancellation? </p>
+                            </div>
+                        </div>
                         <div class="modal-footer">
                             <button type="button" class="btn dark btn-outline" data-dismiss="modal">No, Go Back</button>
                             <button type="button" class="btn green" onclick="javascript:cancel_booking();">Yes, Cancel</button>
@@ -1003,6 +1012,10 @@
                 $('#more_options_bookings_show').find('.no_show_booking_btn').hide();
                 $('#more_options_bookings_show').find('.cancel_booking_btn').show();
             }
+            else if (booking_status == "unpaid" || booking_status == "paid"){
+                $('#more_options_bookings_show').find('.no_show_booking_btn').show();
+                $('#more_options_bookings_show').find('.cancel_booking_btn').hide();
+            }
             else{
                 $('#more_options_bookings_show').find('.no_show_booking_btn').show();
                 $('#more_options_bookings_show').find('.cancel_booking_btn').show();
@@ -1016,6 +1029,13 @@
         });
 
         function get_player_statistics(key, div_container){
+            App.blockUI({
+                target: '#player_summary_stats',
+                overlayColor: 'none',
+                centerX: false,
+                centerY: false,
+                animate: true
+            });
             $.ajax({
                 url: '{{route('ajax/simple_player_bookings_statistic')}}',
                 type: "post",
@@ -1030,6 +1050,7 @@
                     $('.player_short_note').html(data.player_about);
                     $('.player_avatar_img').attr('src', data.player_avatar);
 
+                    App.unblockUI('#player_summary_stats');
                     return true;
 
                     var booking_notes = 'No Notes';
@@ -1061,6 +1082,14 @@
         }
 
         function get_booking_details(key, container){
+            App.blockUI({
+                target: '#booking_summary_stats',
+                overlayColor: 'none',
+                cenrerY: true,
+                cenrerX: true,
+                animate: true
+            });
+
             $.ajax({
                 url: '{{route('ajax/get_single_booking_details')}}',
                 type: "post",
@@ -1082,6 +1111,8 @@
                         booking_notes+='</small>';
                     }
 
+                    $('.player_short_note').html(data.forPlayerDetails);
+
                     var book_details =
                             '<div class="row margin-bottom-5"><div class="col-md-4 bg-grey-salt bg-font-grey-salt"> Booking Date </div><div class="col-md-8 bg-grey-steel bg-font-grey-steel"> ' + data.bookingDate + ' </div></div>' +
                             '<div class="row margin-bottom-5"><div class="col-md-4 bg-grey-salt bg-font-grey-salt"> Time of booking </div><div class="col-md-8 bg-grey-steel bg-font-grey-steel"> ' + data.timeStart + ' - ' + data.timeStop + ' </div></div>' +
@@ -1090,9 +1121,20 @@
                             '<div class="row margin-bottom-5"><div class="col-md-4 bg-grey-salt bg-font-grey-salt"> Player </div><div class="col-md-8 bg-grey-steel bg-font-grey-steel"> ' + data.forUserName + ' </div></div>' +
                             '<div class="row margin-bottom-5"><div class="col-md-4 bg-grey-salt bg-font-grey-salt"> Finance </div><div class="col-md-8 bg-grey-steel bg-font-grey-steel"> ' + data.financialDetails + ' </div></div>' +
                             '<div class="row margin-bottom-5"><div class="col-md-4 bg-grey-salt bg-font-grey-salt"> Notes </div><div class="col-md-8 bg-grey-steel bg-font-grey-steel"> ' + booking_notes + ' </div></div>' +
+                            '<input type="hidden" value="' + data.canCancelRules + '" name="can_cancel_rules" />' +
                             '<input type="hidden" value="' + key + '" name="search_key_selected" />';
-
                     container.find('.book_details_cancel_place').html(book_details);
+
+                    if (data.canCancelRules==1){
+                        $('#booking_cancel_rules_yes').show();
+                        $('#booking_cancel_rules_no').hide();
+                    }
+                    else{
+                        $('#booking_cancel_rules_yes').hide();
+                        $('#booking_cancel_rules_no').show();
+                    }
+
+                    App.unblockUI('#booking_summary_stats');
                 }
             });
         }

@@ -185,6 +185,7 @@ class Booking extends Model
             'forUserName'   => @$madeFor,
             'forUserID'     => @$this->for_user_id,
             'canCancel'     => $canCancel,
+            'canCancelRules'  => $this->can_cancel()==true?1:0,
             'canModify'     => $canModify,
             'invoiceLink'   => $invoiceLink,
             'canNoShow'     => $noShow,
@@ -303,6 +304,34 @@ class Booking extends Model
         catch (Exception $e) {
             return ['success' => false, 'errors' => 'Booking Error'];
         }
+    }
+
+    public function can_cancel($hours = 6){
+        $bookingStartDateTime = Carbon::createFromFormat('Y-m-d H:i:s', $this->date_of_booking.' '.$this->booking_time_start);
+        $can_cancel_hours = $hours;
+
+        $user = User::where('id','=',$this->for_user_id)->get()->first();
+        if (!$user){
+            $can_cancel = true;
+        }
+        else{
+            $restrictions = $user->get_membership_restrictions();
+            foreach ($restrictions as $restriction){
+                if ($restriction['name'] == 'cancellation' && $restriction['value']>$can_cancel_hours) {
+                    $can_cancel_hours = $restriction['value'];
+                }
+            }
+
+            $actualTime = Carbon::now()->addHours($can_cancel_hours);
+            if ($actualTime->lt($bookingStartDateTime)){
+                $can_cancel = true;
+            }
+            else{
+                $can_cancel = false;
+            }
+        }
+
+        return $can_cancel;
     }
 
     public function cancel_booking(){

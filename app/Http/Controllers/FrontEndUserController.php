@@ -2141,82 +2141,8 @@ class FrontEndUserController extends Controller
             $userID = $user->id;
         }
 
-        /*$invoicesList = [];
-        $bookings = Booking::with('invoice')
-            ->where('by_user_id','=',$userID)
-            ->where('invoice_id','!=',-1)
-            ->orderBy('created_at','desc')
-            ->get();
-
-        if (sizeof($bookings)>0){
-            $buttons = [];
-            $colorStatus = '';
-            foreach ($bookings as $booking){
-                if (isset($booking->invoice[0])) {
-                    $the_invoice = $booking->invoice[0];
-                    switch ($the_invoice->status) {
-                        case 'pending':
-                            $colorStatus = 'warning';
-                            $buttons = 'yellow-gold';
-                            break;
-                        case 'ordered':
-                        case 'processing':
-                            $colorStatus = 'info';
-                            $buttons = 'green-meadow';
-                            break;
-                        case 'completed':
-                            $colorStatus = 'success';
-                            $buttons = 'green-jungle';
-                            break;
-                        case 'cancelled':
-                            $colorStatus = 'warning';
-                            $buttons = 'yellow-lemon';
-                            break;
-                        case 'declined':
-                        case 'incomplete':
-                            $colorStatus = 'danger';
-                            $buttons = 'red-thunderbird';
-                            break;
-                        case 'preordered':
-                            $colorStatus = 'info';
-                            $buttons = 'green-meadow';
-                            break;
-                    }
-
-                    $price = 0;
-                    $items = 0;
-                    $location = '';
-                    $invoiceItems = BookingInvoiceItem::where('booking_invoice_id','=',$the_invoice->id)->get();
-                    if ($invoiceItems){
-                        foreach ($invoiceItems as $invItem){
-                            $price+=$invItem->total_price;
-                            $items++;
-                            if ($location==''){
-                                $location = $invItem->location_name;
-                            }
-                        }
-                    }
-                }
-                else{
-                    continue;
-                }
-
-                $addedOn    = Carbon::createFromFormat('Y-m-d H:i:s', $booking->created_at)->format('j/m/Y');
-                $invoicesList[] = [
-                    '<div class="'.$colorStatus.'"></div><a href="javascript:;">Invoice #'.$the_invoice->id.' </a>',
-                    $location,
-                    $items,
-                    $price,
-                    $addedOn,
-                    $the_invoice->status,
-                    '<a class="btn '.$buttons.' btn-sm invoice_details_modal" href="'.route('front/view_invoice/', ['id'=>$the_invoice->invoice_number]).'"> <i class="fa fa-edit"></i> Details </a>',
-                ];
-            }
-            unset($bookings); unset($booking);
-        }*/
-
         $invoicesList = [];
-        $generalInvoices = Invoice::where('user_id','=',$userID)->orderBy('created_at','desc')->get();
+        $generalInvoices = Invoice::where('user_id','=',$userID)->where('status','!=','cancelled')->orderBy('created_at','desc')->get();
         if (sizeof($generalInvoices)>0){
             $buttons = [];
             $colorStatus = '';
@@ -2225,28 +2151,37 @@ class FrontEndUserController extends Controller
                     case 'pending':
                         $colorStatus = 'warning';
                         $buttons = 'yellow-gold';
+                        $explained = 'Not Paid';
                         break;
                     case 'ordered':
                     case 'processing':
                         $colorStatus = 'info';
                         $buttons = 'green-meadow';
+                        $explained = 'Processing';
                         break;
                     case 'completed':
                         $colorStatus = 'success';
                         $buttons = 'green-jungle';
+                        $explained = 'Paid';
                         break;
                     case 'cancelled':
                         $colorStatus = 'warning';
                         $buttons = 'yellow-lemon';
+                        $explained = 'Cancelled';
                         break;
                     case 'declined':
                     case 'incomplete':
                         $colorStatus = 'danger';
                         $buttons = 'red-thunderbird';
+                        $explained = 'Declined';
                         break;
                     case 'preordered':
                         $colorStatus = 'info';
                         $buttons = 'green-meadow';
+                        $explained = '';
+                        break;
+                    default:
+                        $explained = 'Unknown';
                         break;
                 }
 
@@ -2269,19 +2204,6 @@ class FrontEndUserController extends Controller
                     }
                 }
 
-                /*$generalInvoiceList[] = [
-                    'invoice_id'    => $single_invoice->id,
-                    'invoice_no'    => $single_invoice->invoice_number,
-                    'date'          => $addedOn,
-                    'status'        => $single_invoice->status,
-                    'color_status'  => $colorStatus,
-                    'color_button'  => $buttons,
-                    'price_to_pay'  => $price,
-                    'items'         => $items,
-                    'display_name'  => $display_name,
-                    'invoice_type'  => $single_invoice->invoice_type
-                ];*/
-
                 $addedOn    = Carbon::createFromFormat('Y-m-d H:i:s', $single_invoice->created_at)->format('j/m/Y');
                 $invoicesList[] = [
                     '<div class="'.$colorStatus.'"></div><a href="javascript:;"> #'.$single_invoice->invoice_number.' </a>',
@@ -2289,7 +2211,7 @@ class FrontEndUserController extends Controller
                     $items,
                     $price,
                     $addedOn,
-                    $single_invoice->status,
+                    $explained,
                     '<a class="btn '.$buttons.' btn-sm invoice_details_modal" href="'.route('front/view_invoice/', ['id'=>$single_invoice->invoice_number]).'"> <i class="fa fa-edit"></i> Details </a>',
                 ];
             }
