@@ -8,10 +8,10 @@
     <link href="{{ asset('assets/global/css/components-rounded.min.css') }}" rel="stylesheet" id="style_components" type="text/css" />
     <link href="{{ asset('assets/global/css/plugins.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('assets/global/plugins/jquery-notific8/jquery.notific8.min.css') }}" rel="stylesheet" type="text/css" />
-    @endsection
+@endsection
 
-    @section('themeLayoutStyle')
-            <!-- BEGIN PAGE LEVEL STYLES -->
+@section('themeLayoutStyle')
+    <!-- BEGIN PAGE LEVEL STYLES -->
     <link href="{{ asset('assets/pages/css/profile.min.css') }}" rel="stylesheet" type="text/css" />
     <!-- END PAGE LEVEL STYLES -->
     <link href="{{ asset('assets/layouts/layout4/css/layout.min.css') }}" rel="stylesheet" type="text/css" />
@@ -40,7 +40,7 @@
                         <!-- SIDEBAR USER TITLE -->
                         <div class="profile-usertitle">
                             <div class="profile-usertitle-name"> {{$user->first_name.' '.$user->middle_name.' '.$user->last_name}} </div>
-                            <div class="profile-usertitle-job"> Normal User </div>
+                            <div class="profile-usertitle-job"> {{ $user->membership_status() }} </div>
                         </div>
                         <!-- END SIDEBAR USER TITLE -->
                         <!-- SIDEBAR BUTTONS -->
@@ -90,7 +90,7 @@
                                             <a href="#tab_1_1" data-toggle="tab">Current Bookings</a>
                                         </li>
                                         <li>
-                                            <a href="#tab_1_2" data-toggle="tab">History</a>
+                                            <a href="#tab_1_2" data-toggle="tab">Bookings History</a>
                                         </li>
                                     </ul>
                                 </div>
@@ -101,6 +101,7 @@
                                             <div class="row">
                                                 <div class="col-md-12">
                                                     <!-- BEGIN BORDERED TABLE PORTLET-->
+                                                    @if (sizeof($upcomingBookings)>0)
                                                     <div class="portlet light portlet-fit bordered">
                                                         <div class="table-scrollable">
                                                             <table class="table table-bordered table-hover">
@@ -108,35 +109,35 @@
                                                                 <tr>
                                                                     <th> # </th>
                                                                     <th> Date - Time Interval </th>
-                                                                    <th class="hidden-xs"> Player </th>
                                                                     <th> Location and Room </th>
+                                                                    <th class="hidden-xs"> Booked By </th>
+                                                                    <th class="hidden-xs"> Player </th>
                                                                     <th class="hidden-xs"> Added On </th>
-                                                                    <th class="hidden-xs"> Added By </th>
                                                                     <th> Status </th>
                                                                 </tr>
                                                                 </thead>
                                                                 <tbody>
-                                                                <?php $theNr = 1; ?>
-                                                                @foreach($lastTen as $booking)
+                                                                @foreach($upcomingBookings as $key=>$booking)
                                                                     <tr>
-                                                            <?php   if (!isset($booking['colspan'])){
-                                                                        echo '<td rowspan="'.($multipleBookingsIndex[$theNr]).'">'.$theNr.'</td>';
-                                                                        $theNr++;
-                                                                    } else {  } ?>
+                                                                        <td> {{ $key+1 }}</td>
                                                                         <td> <small>{{$booking['date']}} {{$booking['timeInterval']}}</small> </td>
-                                                                        <td class="hidden-xs"> <a href="{{ route('admin/front_users/view_user',['id'=>$booking['player_id']])}}" target="_blank">{{$booking['player_name']}}</a> </td>
                                                                         <td class="hidden-xs"> <small>{{$booking['location']}} {{$booking['room']}}</small> </td>
-                                                                        <td class="hidden-xs"> <small>{{$booking['added_on']}}</small> </td>
                                                                         <td class="hidden-xs"> <small>{{$booking['bookingByName']}}</small> </td>
-                                                                        <td>
-                                                                            <span class="label label-sm {{$booking['status-color']}} booking_details_modal" data-key="{{$booking['search_key']}}"> {{$booking['status']}} </span>
-                                                                        </td>
+                                                                        <td class="hidden-xs"> <a href="{{ route('admin/front_users/view_user',['id'=>$booking['player_id']])}}" target="_blank">{{$booking['player_name']}}</a> </td>
+                                                                        <td class="hidden-xs"> <small>{{$booking['added_on']}}</small> </td>
+                                                                        <td> <a class="label label-sm {{$booking['status-color']}} booking_details_modal" data-key="{{$booking['search_key']}}">{{$booking['status']}}</a> </td>
                                                                     </tr>
                                                                 @endforeach
                                                                 </tbody>
                                                             </table>
                                                         </div>
                                                     </div>
+                                                    @else
+                                                    <div class="note note-warning">
+                                                        <h4 class="block">No upcoming bookings - For old bookings check History</h4>
+                                                        <p> All your old bookings are visible in the "Bookings History" tab. </p>
+                                                    </div>
+                                                    @endif
                                                     <!-- END BORDERED TABLE PORTLET-->
                                                 </div>
                                             </div>
@@ -144,11 +145,10 @@
                                         <!-- END PERSONAL INFO TAB -->
                                         <!-- CHANGE AVATAR TAB -->
                                         <div class="tab-pane" id="tab_1_2">
-                                            <p> Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum
-                                                eiusmod. </p>
                                             <div class="row">
                                                 <div class="col-md-12">
-                                                    <!-- BEGIN SAMPLE TABLE PORTLET-->
+                                                <!-- BEGIN SAMPLE TABLE PORTLET-->
+                                                @if (sizeof($bookings)>0)
                                                     <div class="portlet">
                                                         <div class="portlet-body">
                                                             <div class="table-scrollable">
@@ -158,13 +158,11 @@
                                                                         <th>
                                                                             <i class="fa fa-briefcase"></i> Booking Date </th>
                                                                         <th>
-                                                                            <i class="fa fa-briefcase"></i> Booking Time </th>
-                                                                        <th>
-                                                                            <i class="fa fa-briefcase"></i> Location - Room </th>
+                                                                            <i class="fa fa-briefcase"></i> Booking Time - Location - Room </th>
                                                                         <th class="hidden-xs">
                                                                             <i class="fa fa-user"></i> Player </th>
                                                                         <th>
-                                                                            <i class="fa fa-briefcase"></i> Activity </th>
+                                                                            <i class="fa fa-briefcase"></i> Booked By </th>
                                                                         <th>
                                                                             <i class="fa fa-briefcase"></i> Added On </th>
                                                                         <th>
@@ -177,14 +175,15 @@
                                                                     <tr>
                                                                         <td class="highlight">
                                                                             <div class="{{ $booking['color_status'] }}"></div>
-                                                                            <a href="javascript:;"> {{ $booking['dateShort'] }} </a>
+                                                                            &nbsp; <small><span href="javascript:;"> {{ $booking['dateShort'] }} </span></small>
                                                                         </td>
-                                                                        <td> {{ $booking['timeInterval'] }} </td>
-                                                                        <td> {{ $booking['location'].' - '.$booking['room'] }} </td>
-                                                                        <td class="hidden-xs"> <a href="{{route('admin/front_users/view_user',['id'=>$booking['player_id']])}}" target="_blank">{{$booking['player_name']}}</a> </td>
-                                                                        <td> {{ $booking['activity'] }} </td>
-                                                                        <td> {{ $booking['added_on'] }} </td>
-                                                                        <td> {{ $booking['status'] }} </td>
+                                                                        <td> <small>{{ $booking['timeInterval'] }} - {{ $booking['location']}}  - {{  $booking['room'] }}</small> </td>
+                                                                        <td class="hidden-xs">
+                                                                            <small><a href="{{route('admin/front_users/view_user',['id'=>$booking['player_id']])}}" target="_blank">{{$booking['player_name']}}</a></small>
+                                                                        </td>
+                                                                        <td> <small>{{$booking['bookingByName']}}</small> </td>
+                                                                        <td> <small>{{ $booking['added_on'] }}</small> </td>
+                                                                        <td> <small>{{ $booking['status'] }}</small> </td>
                                                                         <td>
                                                                             <a class="btn {{ $booking['color_button'] }} btn-sm booking_details_modal" data-key="{{$booking['search_key']}}" href="javascript:;">
                                                                                 <i class="fa fa-edit"></i> Details </a>
@@ -196,7 +195,13 @@
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <!-- END SAMPLE TABLE PORTLET-->
+                                                @else
+                                                    <div class="note note-warning">
+                                                        <h4 class="block">No past bookings</h4>
+                                                        <p> Member has no old/passed bookings. Once he adds a new booking, it will be visible here after the booking date/time passed. </p>
+                                                    </div>
+                                                @endif
+                                                <!-- END SAMPLE TABLE PORTLET-->
                                                 </div>
                                             </div>
                                         </div>

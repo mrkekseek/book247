@@ -42,7 +42,7 @@
                         <!-- SIDEBAR USER TITLE -->
                         <div class="profile-usertitle">
                             <div class="profile-usertitle-name"> {{$user->first_name.' '.$user->middle_name.' '.$user->last_name}} </div>
-                            <div class="profile-usertitle-job"> Normal User </div>
+                            <div class="profile-usertitle-job"> {{ $user->membership_status() }} </div>
                         </div>
                         <!-- END SIDEBAR USER TITLE -->
                         <!-- SIDEBAR BUTTONS -->

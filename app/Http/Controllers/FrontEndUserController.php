@@ -549,33 +549,12 @@ class FrontEndUserController extends Controller
                     'added_on'      => $addedOn
                 ];
             }
-
             unset($bookings); unset($booking);
 
-            $nr = 1;
-            $index = [];
-            $lastMan = 0;
-            $lastTime = '';
-            $lastTenBookings = [];
-            foreach($bookingsList as $lastOne){
-                if (!isset($lastMan)){ $lastMan = $lastOne['added_by']; }
-                if (!isset($lastTime)){ $lastTime = $lastOne['last_update']; }
-
-                if ($lastMan==$lastOne['added_by'] && $lastTime==$lastOne['last_update']){
-                    $nr++;
-                    $lastOne['colspan'] = 0;
-                }
-                else{
-                    $lastMan  = $lastOne['added_by'];
-                    $lastTime = $lastOne['last_update'];
-
-                    $indexKey = sizeof($index)+1;
-                    $index[$indexKey-1] = $nr;
-
-                    if ($indexKey>10){
-                        break;
-                    }
-                    $nr=1;
+            $upcomingBookings = [];
+            foreach($bookingsList as $key=>$lastOne){
+                if ($lastOne['status']!='active' && $lastOne['status']!='pending'){
+                    continue;
                 }
 
                 switch ($lastOne['status']) {
@@ -605,9 +584,10 @@ class FrontEndUserController extends Controller
                         break;
                 }
                 $lastOne['status-color'] = $colorStatus;
-                $lastTenBookings[] = $lastOne;
+                $upcomingBookings[] = $lastOne;
+
+                unset($bookingsList[$key]);
             }
-            $index[$indexKey] = $nr;
         }
 
         $avatar = $back_user->get_avatar_image();
@@ -621,14 +601,13 @@ class FrontEndUserController extends Controller
         $sidebar_link= 'admin-frontend-user_details_view';
 
         return view('admin/front_users/view_member_bookings', [
-            'user'      => $back_user,
-            'breadcrumbs' => $breadcrumbs,
-            'text_parts'  => $text_parts,
-            'in_sidebar'  => $sidebar_link,
-            'avatar'      => $avatar['avatar_base64'],
-            'bookings'    => $bookingsList,
-            'multipleBookingsIndex' => isset($index)?$index:[],
-            'lastTen' =>  isset($lastTenBookings)?$lastTenBookings:[]
+            'user'          => $back_user,
+            'breadcrumbs'   => $breadcrumbs,
+            'text_parts'    => $text_parts,
+            'in_sidebar'    => $sidebar_link,
+            'avatar'        => $avatar['avatar_base64'],
+            'bookings'          => $bookingsList,
+            'upcomingBookings'  =>  isset($upcomingBookings)?$upcomingBookings:[]
         ]);
     }
 
@@ -650,167 +629,6 @@ class FrontEndUserController extends Controller
             return redirect()->intended(route('admin/login'));
         }
 
-        $invoicesList = [];
-        $lastTenInvoices = [];
-        $bookings = Booking::with('invoice')
-            ->where('by_user_id','=',$id)
-            ->where('invoice_id','!=',-1)
-            ->orderBy('created_at','desc')
-            ->get();
-        //xdebug_var_dump($bookings); exit;
-
-        if (sizeof($bookings)>0){
-            $buttons = [];
-            $colorStatus = '';
-            foreach ($bookings as $booking){
-                if (isset($booking->invoice[0])) {
-                    $the_invoice = $booking->invoice[0];
-                    switch ($the_invoice->status) {
-                        case 'pending':
-                            $colorStatus = 'warning';
-                            $buttons = 'yellow-gold';
-                            break;
-                        case 'ordered':
-                        case 'processing':
-                            $colorStatus = 'info';
-                            $buttons = 'green-meadow';
-                            break;
-                        case 'completed':
-                            $colorStatus = 'success';
-                            $buttons = 'green-jungle';
-                            break;
-                        case 'cancelled':
-                            $colorStatus = 'warning';
-                            $buttons = 'yellow-lemon';
-                            break;
-                        case 'declined':
-                        case 'incomplete':
-                            $colorStatus = 'danger';
-                            $buttons = 'red-thunderbird';
-                            break;
-                        case 'preordered':
-                            $colorStatus = 'info';
-                            $buttons = 'green-meadow';
-                            break;
-                    }
-
-                    $price = 0;
-                    $items = 0;
-                    $location = '';
-                    $invoiceItems = BookingInvoiceItem::where('booking_invoice_id','=',$the_invoice->id)->get();
-                    if ($invoiceItems){
-                        foreach ($invoiceItems as $invItem){
-                            $price+=$invItem->total_price;
-                            $items++;
-                            if ($location==''){
-                                $location = $invItem->location_name;
-                            }
-                        }
-                    }
-
-                    if ($items==0){
-                        continue;
-                    }
-                }
-                else{
-                    continue;
-                }
-
-                $addedOn    = Carbon::createFromFormat('Y-m-d H:i:s', $booking->created_at)->format('j/m/Y');
-                $invoicesList[] = [
-                    'invoice_id'    => $the_invoice->id,
-                    'invoice_no'    => $the_invoice->invoice_number,
-                    'date'          => $addedOn,
-                    'status'        => $the_invoice->status,
-                    'color_status'  => $colorStatus,
-                    'color_button'  => $buttons,
-                    'price_to_pay'  => $price,
-                    'items'         => $items,
-                    'location'      => $location
-                ];
-            }
-            unset($bookings); unset($booking);
-
-            $nr = 0;
-            foreach($invoicesList as $invoice){
-                if ($nr>10){
-                    break;
-                }
-
-                $sum_price = 0;
-                $sum_discount = 0;
-                $sum_total = 0;
-                $is_first = 0;
-
-                $invoiceItems = BookingInvoiceItem::where('booking_invoice_id','=',$invoice['invoice_id'])->get();
-                if (sizeof($invoiceItems)>0){
-                    foreach($invoiceItems as $item){
-                        $new_set = [
-                            'location'  => $item->location_name,
-                            'resource_name' => $item->resource_name,
-                            'booking_date'  => $item->booking_date,
-                            'booking_time_interval' => $item->booking_time_interval,
-                            'price'     => $item->price,
-                            'discount'  => $item->discount,
-                            'total'     => $item->total_price,
-                        ];
-                        if ($is_first==0){
-                            $is_first=1;
-                            $new_set['colspan'] = sizeof($invoiceItems)+1;
-                            $new_set['invoice_id'] = $invoice['invoice_id'];
-                        }
-
-                        $lastTenInvoices[] = $new_set;
-
-                        $sum_price+= $item->price;
-                        $sum_discount+= $item->discount;
-                        $sum_total+= $item->total_price;
-                    }
-                }
-
-                switch ($invoice['status']) {
-                    case 'pending' :
-                        $colorStatus = 'label-warning';
-                        break;
-                    case 'expired' :
-                        $colorStatus = 'label-default';
-                        break;
-                    case 'active' :
-                        $colorStatus = 'label-success';
-                        break;
-                    case 'paid' :
-                        $colorStatus = 'label-success';
-                        break;
-                    case 'unpaid' :
-                        $colorStatus = 'label-danger';
-                        break;
-                    case 'noshow' :
-                        $colorStatus = 'label-danger';
-                        break;
-                    case 'old' :
-                        $colorStatus = 'label-info';
-                        break;
-                    case 'canceled' :
-                        $colorStatus = 'label-default';
-                        break;
-                }
-
-                $lastTenInvoices[] = [
-                    'location'  => '',
-                    'resource_name' => '',
-                    'booking_date'  => '',
-                    'booking_time_interval' => '',
-                    'status'        => $invoice['status'],
-                    'color_status'  => $colorStatus,
-                    'price'     => $sum_price,
-                    'discount'  => $sum_discount,
-                    'total'     => $sum_total,
-                    'date' => $invoice['date'],
-                ];
-                $nr++;
-            }
-        }
-
         $generalInvoiceList = [];
         $lastTenGeneralInvoice = [];
         $generalInvoices = Invoice::where('user_id','=',$id)->orderBy('created_at','desc')->get();
@@ -822,28 +640,37 @@ class FrontEndUserController extends Controller
                     case 'pending':
                         $colorStatus = 'warning';
                         $buttons = 'yellow-gold';
+                        $explained = 'Not Paid';
                         break;
                     case 'ordered':
                     case 'processing':
                         $colorStatus = 'info';
                         $buttons = 'green-meadow';
+                        $explained = 'Processing';
                         break;
                     case 'completed':
                         $colorStatus = 'success';
                         $buttons = 'green-jungle';
+                        $explained = 'Paid';
                         break;
                     case 'cancelled':
                         $colorStatus = 'warning';
                         $buttons = 'yellow-lemon';
+                        $explained = 'Cancelled';
                         break;
                     case 'declined':
                     case 'incomplete':
                         $colorStatus = 'danger';
                         $buttons = 'red-thunderbird';
+                        $explained = 'Declined';
                         break;
                     case 'preordered':
                         $colorStatus = 'info';
                         $buttons = 'green-meadow';
+                        $explained = '';
+                        break;
+                    default:
+                        $explained = 'Unknown';
                         break;
                 }
 
@@ -879,8 +706,9 @@ class FrontEndUserController extends Controller
                     'invoice_id'    => $single_invoice->id,
                     'invoice_no'    => $single_invoice->invoice_number,
                     'date'          => $addedOn,
-                    'status'        => $single_invoice->status,
-                    'color_status'  => $colorStatus,
+                    'status'            => $single_invoice->status,
+                    'status_explained'  => $explained,
+                    'color_status'      => $colorStatus,
                     'color_button'  => $buttons,
                     'price_to_pay'  => $price,
                     'items'         => $items,
@@ -891,13 +719,13 @@ class FrontEndUserController extends Controller
 
             $nr = 0;
             foreach($generalInvoiceList as $invoice){
-                if ($nr>10){
+                if ($nr>9){
                     break;
                 }
 
-                if ( $invoice['invoice_type'] == 'booking_invoice'){
-                    continue;
-                }
+                //if ( $invoice['invoice_type'] == 'booking_invoice'){
+                //    continue;
+                //}
 
                 $sum_price = 0;
                 $sum_discount = 0;
@@ -905,7 +733,7 @@ class FrontEndUserController extends Controller
                 $is_first = 0;
 
                 $invoiceItems = InvoiceItem::where('invoice_id','=',$invoice['invoice_id'])->get();
-                $invType = ['store_credit_item'=>'Store Credit','user_memberships'=>'Membership Plan'];
+                $invType = ['store_credit_item'=>'Store Credit','user_memberships'=>'Membership Plan','booking_invoice_item'=>'Booking Item'];
                 if (sizeof($invoiceItems)>0){
                     foreach($invoiceItems as $item){
                         $new_set = [
@@ -920,6 +748,7 @@ class FrontEndUserController extends Controller
                             $is_first=1;
                             $new_set['colspan'] = sizeof($invoiceItems)+1;
                             $new_set['invoice_id'] = $invoice['invoice_id'];
+                            $new_set['invoice_no'] = $invoice['invoice_no'];
                         }
 
                         $lastTenGeneralInvoice[] = $new_set;
@@ -960,12 +789,14 @@ class FrontEndUserController extends Controller
                 $lastTenGeneralInvoice[] = [
                     'item_name' => '',
                     'item_type' => '',
-                    'status'    => $invoice['status'],
-                    'color_status'  => $colorStatus,
+                    'status'            => $invoice['status'],
+                    'status_explained'  => $invoice['status_explained'],
+                    'color_status'      => $colorStatus,
                     'price'     => $sum_price,
                     'discount'  => $sum_discount,
                     'total'     => $sum_total,
-                    'date' => $invoice['date'],
+                    'date'      => $invoice['date'],
+                    'invoice_no'=> $invoice['invoice_no']
                 ];
                 $nr++;
             }
@@ -987,7 +818,7 @@ class FrontEndUserController extends Controller
         $sidebar_link= 'admin-frontend-user_details_view';
 
         //xdebug_var_dump($invoicesList);
-        //xdebug_var_dump($lastTenInvoices);
+        //xdebug_var_dump($generalInvoiceList);
         //xdebug_var_dump($lastTenGeneralInvoice);
 
         return view('admin/front_users/view_member_finance', [
@@ -996,8 +827,6 @@ class FrontEndUserController extends Controller
             'text_parts'  => $text_parts,
             'in_sidebar'  => $sidebar_link,
             'avatar'      => $avatar['avatar_base64'],
-            'invoices'    => $invoicesList,
-            'lastTen'     => $lastTenInvoices,
             'generalInvoices' => $generalInvoiceList,
             'lastTenGeneral'  => $lastTenGeneralInvoice,
             'multipleBookingsIndex' => isset($index)?$index:[],

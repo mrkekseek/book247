@@ -112,6 +112,21 @@ class User extends Authenticatable
         return false;
     }
 
+    public function membership_status(){
+        $membership = UserMembership::where('user_id','=',$this->id)->whereIn('status',['active','unpaid'])->orderBy('created_at','DESC')->get()->first();
+        if ($membership){
+            if ($membership->status=='active'){
+                return $membership->membership_name;
+            }
+            else{
+                return $membership->membership_name.' - unpaid';
+            }
+        }
+        else{
+            return 'normal user';
+        }
+    }
+
     public function canDo($permission){
 
     }

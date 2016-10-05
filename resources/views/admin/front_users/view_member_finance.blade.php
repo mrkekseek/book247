@@ -40,7 +40,7 @@
                         <!-- SIDEBAR USER TITLE -->
                         <div class="profile-usertitle">
                             <div class="profile-usertitle-name"> {{$user->first_name.' '.$user->middle_name.' '.$user->last_name}} </div>
-                            <div class="profile-usertitle-job"> Normal User </div>
+                            <div class="profile-usertitle-job"> {{ $user->membership_status() }} </div>
                         </div>
                         <!-- END SIDEBAR USER TITLE -->
                         <!-- SIDEBAR BUTTONS -->
@@ -102,54 +102,7 @@
                                                 <div class="col-md-12">
                                                     <!-- BEGIN BORDERED TABLE PORTLET-->
                                                     <div class="portlet light portlet-fit bordered">
-                                                        <h4> &nbsp; Latest Bookings Invoices </h4>
-                                                        <div class="table-scrollable">
-                                                            <table class="table table-bordered table-hover">
-                                                                <thead>
-                                                                <tr>
-                                                                    <th> #ID </th>
-                                                                    <th> Booking Date </th>
-                                                                    <th> Location / Room </th>
-                                                                    <th> Time Interval </th>
-                                                                    <th class="hidden-xs"> Price </th>
-                                                                    <th class="hidden-xs"> Discount </th>
-                                                                    <th> Total</th>
-                                                                    <th> Status </th>
-                                                                </tr>
-                                                                </thead>
-                                                                <tbody>
-                                                                <?php $theNr = 1; ?>
-                                                                @foreach($lastTen as $invoice)
-                                                                    @if ($invoice['location']!='' && $invoice['resource_name']!='')
-                                                                    <tr>
-                                                                        @if (isset($invoice['colspan']))
-                                                                            <td rowspan="{{$invoice['colspan']}}">{{$invoice['invoice_id']}}</td>
-                                                                        @endif
-                                                                        <td> {{$invoice['booking_date']}} </td>
-                                                                        <td> {{$invoice['location']}} / {{$invoice['resource_name']}} </td>
-                                                                        <td class="hidden-xs"> {{$invoice['booking_time_interval']}} </td>
-                                                                        <td class="hidden-xs"> {{$invoice['price']}} </td>
-                                                                        <td class="hidden-xs"> {{$invoice['discount']}} </td>
-                                                                        <td> {{$invoice['total']}} </td>
-                                                                        <td> </td>
-                                                                    </tr>
-                                                                    @else
-                                                                        <tr>
-                                                                            <td colspan="3"><b>Total Items Value and Invoice Status</b></td>
-                                                                            <td class="hidden-xs"> <b> {{$invoice['price']}} </b> </td>
-                                                                            <td class="hidden-xs"> <b> {{$invoice['discount']}} </b> </td>
-                                                                            <td> <b>{{$invoice['total']}} </b> </td>
-                                                                            <td>
-                                                                                <span class="label label-sm {{$invoice['color_status']}} booking_details_modal" > {{$invoice['status']}} </span>
-                                                                            </td>
-                                                                        </tr>
-                                                                    @endif
-                                                                @endforeach
-                                                                </tbody>
-                                                            </table>
-                                                        </div>
-
-                                                        <h4> &nbsp; Latest General Invoices </h4>
+                                                        <h4> &nbsp; Latest 10 Invoices </h4>
                                                         <div class="table-scrollable">
                                                             <table class="table table-bordered table-hover">
                                                                 <thead>
@@ -169,7 +122,7 @@
                                                                     @if ($invoice['item_name']!='' && $invoice['item_type']!='')
                                                                         <tr>
                                                                             @if (isset($invoice['colspan']))
-                                                                                <td rowspan="{{$invoice['colspan']}}">{{$invoice['invoice_id']}}</td>
+                                                                                <td rowspan="{{$invoice['colspan']}}">{{@$invoice['invoice_no']}}</td>
                                                                             @endif
                                                                             <td> {{$invoice['date']}} </td>
                                                                             <td> {{$invoice['item_name']}} / {{$invoice['item_type']}} </td>
@@ -185,7 +138,7 @@
                                                                             <td class="hidden-xs"> <b> {{$invoice['discount']}} </b> </td>
                                                                             <td> <b>{{$invoice['total']}} </b> </td>
                                                                             <td>
-                                                                                <span class="label label-sm {{$invoice['color_status']}} booking_details_modal" > {{$invoice['status']}} </span>
+                                                                                <a class="label label-sm {{$invoice['color_status']}}" target="_blank" href="{{ route('admin/invoices/view',['id'=>$invoice['invoice_no']]) }}"> {{$invoice['status_explained']}} </a>
                                                                             </td>
                                                                         </tr>
                                                                     @endif
@@ -238,9 +191,9 @@
                                                                             <td> {{ $invoice['items'] }} </td>
                                                                             <td> {{ $invoice['price_to_pay'] }} </td>
                                                                             <td> {{ $invoice['date'] }} </td>
-                                                                            <td> {{ $invoice['status'] }} </td>
+                                                                            <td> {{ $invoice['status_explained'] }} </td>
                                                                             <td>
-                                                                                <a class="btn {{ $invoice['color_button'] }} btn-sm booking_details_modal" target="_blank" href="{{ route('admin/invoices/view',['id'=>$invoice['invoice_no']]) }}">
+                                                                                <a class="btn {{ $invoice['color_button'] }} btn-sm" target="_blank" href="{{ route('admin/invoices/view',['id'=>$invoice['invoice_no']]) }}">
                                                                                     <i class="fa fa-edit"></i> Details </a>
                                                                             </td>
                                                                         </tr>
