@@ -3248,19 +3248,32 @@ class BookingController extends Controller
         $location_bookings = $this->player_get_location_bookings($date_selected, $location->id, $resources_ids, $hours_interval);
         $hours_interval = BookingController::check_bookings_intervals_restrictions( $hours_interval, $date_selected, $activity->id, $user->id);
 
-        $firstKey = "";
-        $hrNr = 1;
-        foreach($hours_interval as $hrKey=>$hrVal){
-            if ( $firstKey=="" && $hrVal['color_stripe']=="purple-stripe" ){
-                $firstKey = $hrKey;
+        if (sizeof($hours_interval)>0) {
+            $firstKey = "";
+            $hrNr = 1;
+            foreach ($hours_interval as $hrKey => $hrVal) {
+                if ($firstKey == "" && $hrVal['color_stripe'] == "purple-stripe") {
+                    $firstKey = $hrKey;
+                } elseif ($hrVal['color_stripe'] == "purple-stripe") {
+                    $hrNr++;
+                }
             }
-            elseif ($hrVal['color_stripe']=="purple-stripe"){
-                $hrNr++;
+            if ($firstKey!="") {
+                $hours_interval[$firstKey]['rowSpan'] = $hrNr;
+
+                $restrictions = $user->get_membership_restrictions();
+                foreach ($restrictions as $onlyOne) {
+                    if (strlen($onlyOne['special_permissions'])) {
+                        $daysToSubtract = json_decode($onlyOne['special_permissions']); //xdebug_var_dump($daysToSubtract->special_current_day); exit;
+                        $hours_interval[$firstKey]['message'] = 'Will become available ' . Carbon::createFromFormat('Y-m-d H:i', $date_selected . ' 00:00')->addDays(-$daysToSubtract->special_current_day)->addMinute()->format('l, M jS Y \a\t H:i');
+                        break;
+                    }
+                }
             }
         }
-        $hours_interval[$firstKey]['rowSpan'] = $hrNr;
 
 //xdebug_var_dump($hours_interval); exit;
+//xdebug_var_dump($restrictions); exit;
         $resources_ids = [];
         foreach($resources as $resource){
             $resources_ids[] = ['name'=>$resource->name, 'id'=>$resource->id];

@@ -104,7 +104,7 @@
                                         @else
                                             @if(isset($hour['rowSpan']))
                                                 <td colspan="{{ sizeof($resources) }}" rowspan="{{$hour['rowSpan']}}" class="bg-purple-studio bg-font-purple-studio" style="vertical-align: middle; text-align: center;">
-                                                    <h1> Booking hours/intervals are outside your membership rules </h1>
+                                                    <h1> Booking hours/intervals are outside your membership rules {{ $hour['message'] }}</h1>
                                                 </td>
                                             @endif
                                         @endif
