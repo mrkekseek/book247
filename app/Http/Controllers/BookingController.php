@@ -1518,6 +1518,182 @@ class BookingController extends Controller
 //xdebug_var_dump($hours); exit;
         return $hours;
     }
+
+    public static function check_single_booking_interval_restrictions($restrictions, $time_start, $date, $categoryId){
+        $time_of_day_result = [];
+        $payment_type = 'membership';
+
+        foreach ($restrictions as $restriction){
+            switch ($restriction['name']){
+                case 'time_of_day' : {
+                    $status = true; //break;
+
+                    //'value' => string '[1,2,3,4,5]' (length=11)
+                    $selected_days  = json_decode($restriction['value']);
+                    //'time_start' => string '06:00' (length=5)
+                    if (substr_count($restriction['time_start'], ':')==1) {
+                        $hour_start = Carbon::createFromFormat('H:i', $restriction['time_start']);
+                    }
+                    else{
+                        $hour_start = Carbon::createFromFormat('H:i:s', $restriction['time_start']);
+                    }
+                    //'time_end' => string '14:00' (length=5)
+                    if (substr_count($restriction['time_end'], ':')==1) {
+                        $hour_end = Carbon::createFromFormat('H:i', $restriction['time_end']);
+                    }
+                    else{
+                        $hour_end = Carbon::createFromFormat('H:i:s', $restriction['time_end']);
+                    }
+                    // booking hour
+                    if (substr_count($time_start, ':')==1) {
+                        $booking_hour = Carbon::createFromFormat('H:i', $time_start);
+                        $booking_day_time   = Carbon::createFromFormat('Y-m-d H:i', $date.' '.$time_start);
+                    }
+                    else{
+                        $booking_hour = Carbon::createFromFormat('H:i:s', $time_start);
+                        $booking_day_time   = Carbon::createFromFormat('Y-m-d H:i:s', $date.' '.$time_start);
+                    }
+                    // day of week for the booking
+                    $booking_day        = Carbon::createFromFormat('Y-m-d', $date)->format('w');
+
+                    // we check the day first
+                    if (!in_array($booking_day, $selected_days)){
+                        // not in selected day
+                        $status = false;
+                    }
+                    // we check the hours interval second
+                    elseif ($booking_hour->lt($hour_start) || $booking_hour->gte($hour_end)){
+                        // not in selected time period
+                        //echo '<br />'.$booking_hour->format('d-m-Y H:i').' - '.$hour_start->format('d-m-Y H:i').' - '.$hour_end->format('d-m-Y H:i');
+                        $status = false;
+                    }
+
+                    $special_restrictions = json_decode($restriction['special_permissions']);
+                    if (sizeof($special_restrictions)>=1){
+                        if (!isset($special_restrictions->special_days_ahead)){
+                            $special_restrictions->special_days_ahead = 1;
+                        }
+
+                        $now_day = Carbon::now();
+                        if ($special_restrictions->special_current_day=='1') {
+                            // we calculate the time when this period can be booked - start interval
+                            $start_interval = Carbon::instance($booking_day_time)->subDays($special_restrictions->special_days_ahead)->startOfDay();
+                            // we calculate the end interval
+                            $end_interval   = Carbon::instance($booking_day_time)->endOfDay();
+                        }
+                        else{
+                            // we calculate the time when this period can be booked - start interval
+                            $start_interval = Carbon::instance($booking_day_time)->subDays($special_restrictions->special_days_ahead)->startOfDay();
+                            // we calculate the end interval
+                            $end_interval   = Carbon::instance($booking_day_time)->subDays(1)->endOfDay();
+                        }
+                        //echo '<br />'.$now_day->toDateTimeString().' : '.$start_interval->toDateTimeString().' to '.$end_interval->toDateTimeString(); //exit;
+
+                        if ($now_day->gte($start_interval) && $now_day->lt($end_interval)){
+                            $status = true;
+                        }
+                        else{
+                            $status = false;
+                        }
+                    }
+//xdebug_var_dump($restriction);
+                    $time_of_day_result[] = $status;
+                }
+                    break;
+                case 'included_activity' : {
+                    $activities_in = json_decode($restriction['value']);
+                    if (!in_array($categoryId, $activities_in)){
+                        $payment_type = 'cash';
+                        return $payment_type;
+                    }
+                }
+                    break;
+                case 'booking_time_interval' : {
+                    // booking must take place x hours from now
+                    $hours_from_now      = $restriction['min_value'];
+                    // bookings must be made until y hours from now
+                    $hours_until_booking = $restriction['max_value'];
+
+                    if (substr_count($time_start, ':')==1) {
+                        $booking_date_time = Carbon::createFromFormat('Y-m-d H:i', $date . ' ' . $time_start);
+                    }
+                    else{
+                        $booking_date_time = Carbon::createFromFormat('Y-m-d H:i:s', $date . ' ' . $time_start);
+                    }
+                    $closest_booking_date_time = Carbon::now()->addHours($hours_from_now);
+                    $farthest_booking_date_time = Carbon::now()->addHours($hours_until_booking);
+
+                    if (!$booking_date_time->gte($closest_booking_date_time) || !$booking_date_time->lt($farthest_booking_date_time)){
+                        //if (!$booking_date_time->gte($closest_booking_date_time) || !$booking_date_time->lt($farthest_booking_date_time)){
+                        $payment_type = 'cash';
+                        return $payment_type;
+                    }
+                }
+                    break;
+            }
+        }
+//xdebug_var_dump($time_of_day_result);
+        foreach ($time_of_day_result as $a){
+            if ($a == true){
+                $payment_type = 'membership';
+                return $payment_type;
+            }
+            else{
+                $payment_type = 'cash';
+            }
+        }
+
+        return $payment_type;
+    }
+
+    public static function check_bookings_intervals_restrictions($hours_interval, $selected_date, $activity, $userID=false){
+        if ($userID==false && Auth::check()){
+            // if no userID is passed to the function then we check this for the current logged in user
+            $user = Auth::user();
+        }
+        elseif ($userID!=false && Auth::check()){
+            $user = Auth::user();
+            if ($user->id==$userID && $user->is_front_user()) {
+
+            }
+            elseif ($user->id!=$userID && $user->is_back_user()){
+                // if the userID is different than the current logged in user, the logged in user is a backend user, we search for the userID in the database
+                $user = User::where('id', '=', $userID)->get()->first();
+                if (!$user){
+                    // no user found with the userID given
+                    return false;
+                }
+            }
+            else{
+                // a front user is requesting this function for another user
+                return false;
+            }
+        }
+        else{
+            // no authenticated user
+            return false;
+        }
+
+        $restrictions = $user->get_membership_restrictions();
+        if (is_array($hours_interval)){
+            foreach($hours_interval as $time_key=>$time_values){
+                //echo $time_key.' : ';
+                $value = BookingController::check_single_booking_interval_restrictions($restrictions, $time_key, $selected_date, $activity);
+                //echo $value.'<br />';
+                if ($value=='cash'){
+                    $hours_interval[$time_key]['color_stripe'] = 'purple-stripe';
+                }
+            }
+        }
+        else{
+            $value = BookingController::check_single_booking_interval_restrictions($restrictions, $hours_interval, $selected_date, $activity);
+            if ($value=='cash'){
+
+            }
+        }
+
+        return $hours_interval;
+    }
 //  -----------------
 
     /**

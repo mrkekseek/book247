@@ -246,7 +246,14 @@ class FrontPageController extends Controller
             }
         }
         else{
+            $hours = BookingController::check_bookings_intervals_restrictions($hours, $vars['date_selected'], $vars['selected_category'], $user->id);
+            //xdebug_var_dump($hours); exit;
+
             foreach($resourcesAvailability as $key=>$percentage){
+                if ($hours[$key]['color_stripe']=='purple-stripe'){
+                    continue;
+                }
+
                 $resourcesAvailability[$key] = FrontPageController::check_time_availability($vars['date_selected'], $key, $allResources);
                 if($resourcesAvailability[$key]==100){
                     $hours[$key]['color_stripe'] = 'red-stripe';

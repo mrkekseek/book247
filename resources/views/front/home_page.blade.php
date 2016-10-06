@@ -279,9 +279,11 @@
                                 </div>
                                 <div class="portlet-title" style="min-height:5px; margin-bottom:5px;"> </div>
                                 @if (Auth::check() && Auth::user()->is_front_user())
-                                    <a href="javascript:;" class="btn default green-jungle-stripe" style="padding:5px 10px; font-size:14px; cursor:default; margin-bottom:5px;"> More than half courts available </a>
-                                    <a href="javascript:;" class="btn default yellow-saffron-stripe" style="padding:5px 10px; font-size:14px; cursor:default; margin-bottom:5px;"> Less than half courts available </a>
+                                    <a href="javascript:;" class="btn default green-jungle-stripe" style="padding:5px 10px; font-size:14px; cursor:default; margin-bottom:5px;"> Many courts available </a>
+                                    <a href="javascript:;" class="btn default yellow-saffron-stripe" style="padding:5px 10px; font-size:14px; cursor:default; margin-bottom:5px;"> Less courts available </a>
                                     <a href="javascript:;" class="btn default red-stripe btn-lg" style="padding:5px 10px; font-size:14px; cursor:default; margin-bottom:5px;"> All courts are booked </a>
+                                    <a href="javascript:;" class="btn default purple-stripe btn-lg" style="padding:5px 10px; font-size:14px; cursor:default; margin-bottom:5px;"> Outside membership rules </a>
+                                    <a href="{{ route('front/active_membership') }}" class="btn default btn-lg" style="padding: 1px 5px 0px; cursor: pointer; margin-bottom: 5px; font-size: 21px;"><span class="item-box"><span class="item"><span aria-hidden="true" class="icon-question"></span></span></span></a>
                                 @else
                                     <a href="javascript:;" class="btn default dark-stripe btn-lg book_step" style="padding:5px 10px; font-size:14px; cursor:default;"> You need to be logged in to view availability </a>
                                 @endif
@@ -1172,7 +1174,7 @@
         function time_of_booking_format_hours(hours){
             var all_hours = '';
             $.each(hours, function(key, value){
-                if (value.color_stripe=='red-stripe'){
+                if (value.color_stripe=='red-stripe' || value.color_stripe=='purple-stripe'){
                     all_hours += '<a class="btn default ' + value.color_stripe + ' btn-lg" disabled href="javascript:;"> ' + key + ' </a> ';
                 }
                 else {
