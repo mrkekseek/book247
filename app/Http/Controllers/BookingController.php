@@ -3246,7 +3246,21 @@ class BookingController extends Controller
 
         $hours_interval = $this->make_hours_interval($date_selected, $open_at, $close_at, 30, false, false);
         $location_bookings = $this->player_get_location_bookings($date_selected, $location->id, $resources_ids, $hours_interval);
+        $hours_interval = BookingController::check_bookings_intervals_restrictions( $hours_interval, $date_selected, $activity->id, $user->id);
 
+        $firstKey = "";
+        $hrNr = 1;
+        foreach($hours_interval as $hrKey=>$hrVal){
+            if ( $firstKey=="" && $hrVal['color_stripe']=="purple-stripe" ){
+                $firstKey = $hrKey;
+            }
+            elseif ($hrVal['color_stripe']=="purple-stripe"){
+                $hrNr++;
+            }
+        }
+        $hours_interval[$firstKey]['rowSpan'] = $hrNr;
+
+//xdebug_var_dump($hours_interval); exit;
         $resources_ids = [];
         foreach($resources as $resource){
             $resources_ids[] = ['name'=>$resource->name, 'id'=>$resource->id];

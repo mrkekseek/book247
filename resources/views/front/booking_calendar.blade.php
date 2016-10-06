@@ -86,29 +86,37 @@
                                         </tr>
                                         </thead>
                                         <tbody>
-                                        @if (sizeof($time_intervals)>0)
-                                            @foreach ($time_intervals as $key=>$hour)
-                                                <tr>
-                                                    <td >{{ $key }} <a class="btn btn-circle btn-icon-only border-white bg-green-meadow bg-font-green-meadow add_custom_bookings_btn" href="javascript:;"> + </a></td>
-                                                    @foreach ($resources as $resource)
-                                                        <td class="{{ isset($location_bookings[$key][$resource['id']]['color_stripe'])?$location_bookings[$key][$resource['id']]['color_stripe']:$hour['color_stripe'] }}
-                                                        {{ ( $hour['color_stripe']=='' && !isset($location_bookings[$key][$resource['id']]['color_stripe']) )?' isfreetime':'' }}" style="padding:4px 8px;">
-                                                            @if ( isset($location_bookings[$key][$resource['id']]) )
-                                                                <span class="font-white">Booked</span>
-                                                            @else
-                                                                <span data-resource="{{ $resource['id'] }}" data-time="{{ $key }}">&nbsp;</span>
-                                                            @endif
-                                                        </td>
-                                                    @endforeach
-                                                </tr>
+                                @if (sizeof($time_intervals)>0)
+                                    @foreach ($time_intervals as $key=>$hour)
+                                        <tr>
+                                            <td >{{ $key }} <a class="btn btn-circle btn-icon-only border-white bg-green-meadow bg-font-green-meadow add_custom_bookings_btn" href="javascript:;"> + </a></td>
+                                        @if ($hour['color_stripe']!='purple-stripe')
+                                            @foreach ($resources as $resource)
+                                                <td class="{{ isset($location_bookings[$key][$resource['id']]['color_stripe'])?$location_bookings[$key][$resource['id']]['color_stripe']:$hour['color_stripe'] }}
+                                                {{ ( $hour['color_stripe']=='' && !isset($location_bookings[$key][$resource['id']]['color_stripe']) )?' isfreetime':'' }}" style="padding:4px 8px;">
+                                                    @if ( isset($location_bookings[$key][$resource['id']]) )
+                                                        <span class="font-white">Booked</span>
+                                                    @else
+                                                        <span data-resource="{{ $resource['id'] }}" data-time="{{ $key }}">&nbsp;</span>
+                                                    @endif
+                                                </td>
                                             @endforeach
                                         @else
-                                            <tr>
-                                                <td colspan="{{sizeof($resources)+1}}" style="height: 300px; vertical-align:middle; text-align:center;">
-                                                    <h1>Location is closed for selected date</h1>
+                                            @if(isset($hour['rowSpan']))
+                                                <td colspan="{{ sizeof($resources) }}" rowspan="{{$hour['rowSpan']}}" class="bg-purple-studio bg-font-purple-studio" style="vertical-align: middle; text-align: center;">
+                                                    <h1> Booking hours/intervals are outside your membership rules </h1>
                                                 </td>
-                                            </tr>
+                                            @endif
                                         @endif
+                                        </tr>
+                                    @endforeach
+                                @else
+                                    <tr>
+                                        <td colspan="{{sizeof($resources)+1}}" style="height: 300px; vertical-align:middle; text-align:center;">
+                                            <h1>Location is closed for selected date</h1>
+                                        </td>
+                                    </tr>
+                                @endif
                                         </tbody>
                                     </table>
                                 </div>
