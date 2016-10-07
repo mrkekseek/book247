@@ -1569,7 +1569,7 @@ class BookingController extends Controller
                     }
 
                     $special_restrictions = json_decode($restriction['special_permissions']);
-                    if (sizeof($special_restrictions)>=1){
+                    if (sizeof($special_restrictions)>=1 && $status!=false){
                         if (!isset($special_restrictions->special_days_ahead)){
                             $special_restrictions->special_days_ahead = 1;
                         }
@@ -1594,6 +1594,7 @@ class BookingController extends Controller
                         }
                         else{
                             $status = false;
+                            //break;
                         }
                     }
 //xdebug_var_dump($restriction);
