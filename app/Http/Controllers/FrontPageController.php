@@ -343,6 +343,8 @@ class FrontPageController extends Controller
             }
         }
         else{
+            $hours = BookingController::check_bookings_intervals_restrictions($hours, $vars['date_selected'], $vars['selected_category'], $user->id);
+
             foreach($resourcesAvailability as $key=>$percentage){
                 $hours[$key]['percent'] = FrontPageController::check_time_availability($vars['date_selected'], $key, $allResources);
             }
@@ -356,7 +358,7 @@ class FrontPageController extends Controller
 
             $available_ones[$key] = $hour;
 
-            if ($hour['percent']==100){
+            if ($hour['percent']==100 || $hour['color_stripe']=='purple-stripe'){
                 break;
             }
         }

@@ -508,7 +508,7 @@ class BookingController extends Controller
                     }
 
                     $special_restrictions = json_decode($restriction['special_permissions']);
-                    if (sizeof($special_restrictions)>=1){
+                    if (sizeof($special_restrictions)>=1 && $status!=false){
                         if (!isset($special_restrictions->special_days_ahead)){
                             $special_restrictions->special_days_ahead = 1;
                         }
@@ -529,7 +529,7 @@ class BookingController extends Controller
                         //echo $now_day->toDateTimeString().' : '.$start_interval->toDateTimeString().' to '.$end_interval->toDateTimeString(); //exit;
 
                         if ($now_day->gte($start_interval) && $now_day->lt($end_interval)){
-                            //$status = true;
+                            $status = true;
                         }
                         else{
                             $status = false;
