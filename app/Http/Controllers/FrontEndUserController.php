@@ -1411,12 +1411,12 @@ class FrontEndUserController extends Controller
 
         // check for existing booking on the same resource, bookings that are already made
         $openBookings = Booking::whereIn('status',['pending','active'])
-            ->where('resource_id','=',$fillable['resource_id'])
-            ->where('location_id','=',$fillable['location_id'])
-            ->where('date_of_booking','=',$fillable['date_of_booking'])
-            ->where('booking_time_start','=',$fillable['booking_time_start'])
-            ->where('search_key','!=',$search_key)
-            ->get();
+            ->where('resource_id',        '=',  $fillable['resource_id'])
+            ->where('location_id',        '=',  $fillable['location_id'])
+            ->where('date_of_booking',    '=',  $fillable['date_of_booking'])
+            ->where('booking_time_start', '=',  $fillable['booking_time_start'])
+            ->where('search_key',         '!=', $search_key)
+            ->get()->first();
         if (sizeof($openBookings)>0){
             // we have another booking with the same details
             $message['status'] = false;
@@ -1616,10 +1616,10 @@ class FrontEndUserController extends Controller
                 return [];
             }
             else{
-                $fillable['search_key']  = $booking->search_key;
-                $fillable['resource_id'] = $booking->resource_id;
-                $fillable['location_id'] = $booking->location_id;
-                $fillable['date_of_booking'] = $booking->date_of_booking;
+                $fillable['search_key']     = $booking->search_key;
+                $fillable['resource_id']    = $booking->resource_id;
+                $fillable['location_id']    = $booking->location_id;
+                $fillable['date_of_booking']    = $booking->date_of_booking;
                 $fillable['booking_time_start'] = $booking->booking_time_start;
             }
         }
@@ -1627,7 +1627,8 @@ class FrontEndUserController extends Controller
             $resource = ShopResource::where('id', '=', $vars['resourceID'])->get()->first();
             if (!$resource) {
                 return [];
-            } else {
+            }
+            else {
                 $fillable['resource_id'] = $resource->id;
                 $fillable['location_id'] = $resource->location_id;
             }
@@ -1655,12 +1656,18 @@ class FrontEndUserController extends Controller
             if (!$user_details){ continue; }
 
             $canBook = $this->validate_booking($fillable, $vars['search_key']);
+            //xdebug_var_dump($fillable);
             //xdebug_var_dump($canBook);
             if ( $canBook['status']==false || $canBook['payment']=='cash' ){
                 continue;
             }
             else {
-                $all_friends[] = ['name' => $user_details->first_name . ' ' . $user_details->middle_name . ' ' . $user_details->last_name, 'id' => $user_details->id];
+                $all_friends[] = [
+                    'name' => $user_details->first_name . ' ' . $user_details->middle_name . ' ' . $user_details->last_name,
+                    'id' => $user_details->id,
+                    //'status'    => $canBook['status'],
+                    //'payment'   => $canBook['payment']
+                ];
             }
         }
         //exit;

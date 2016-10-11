@@ -354,7 +354,7 @@
             clean_booking_popup();
         });
 
-        function save_calendar_booking(own_box, search_key, by_player, for_player){
+        function save_calendar_booking(own_box, own_next, search_key, by_player, for_player){
             $.ajax({
                 url: '{{route('ajax/calendar_booking_save_selected')}}',
                 type: "post",
@@ -376,6 +376,18 @@
                         else{
                             payment_type_book.html('<i class="fa fa-credit-card"></i>');
                         }
+
+                        if (own_next.hasClass('friend_booking')) {
+                            var players_list_select = own_next.find('select[name="friend_booking"]');
+                            var search_key = own_next.find('input[name="time_book_key"]').val();
+                            get_players_list(players_list_select, search_key);
+                        }
+                        else if (own_next.hasClass('booking_summary_box')){
+                            get_booking_summary(own_next);
+                        }
+
+                        own_box.find('.booking_step_content').first().hide();
+                        own_next.find('.booking_step_content').first().show();
                     }
                 }
             });
@@ -682,18 +694,7 @@
             var search_key = own_box.find('input[name="time_book_key"]').val();
             var by_player  = $('#find_customer_name').val();
             var for_player = own_box.find('select[name="friend_booking"]').val();
-            save_calendar_booking(own_box, search_key, by_player, for_player);
-
-            if (own_next.hasClass('friend_booking')) {
-                var players_list_select = own_next.find('select[name="friend_booking"]');
-                get_players_list(players_list_select, search_key);
-            }
-            else if (own_next.hasClass('booking_summary_box')){
-                get_booking_summary(own_next);
-            }
-
-            own_box.find('.booking_step_content').first().hide();
-            own_next.find('.booking_step_content').first().show();
+            save_calendar_booking(own_box, own_next, search_key, by_player, for_player);
         });
 
         $(document).on('click', '.booking_step_back', function(){
