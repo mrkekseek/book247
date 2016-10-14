@@ -60,8 +60,8 @@ class User extends Authenticatable
             case 'POST':
             {
                 return [
-                    'first_name'    => 'required|min:4|max:150',
-                    'last_name'     => 'required|min:4|max:150',
+                    'first_name'    => 'required|min:2|max:150',
+                    'last_name'     => 'required|min:2|max:150',
                     'username'      => 'required|min:6|max:30|unique:users,username',
                     'password'      => 'required|min:8',
                     'email'         => 'required|email|email|unique:users',
@@ -73,8 +73,8 @@ class User extends Authenticatable
             case 'PATCH':
             {
                 return [
-                    'first_name'=> 'required|min:4|max:150',
-                    'last_name' => 'required|min:4|max:150',
+                    'first_name'=> 'required|min:2|max:150',
+                    'last_name' => 'required|min:2|max:150',
                     'username'  => 'required|min:6|max:30|unique:users,username'.($id ? ",$id,id" : ''),
                     'password'  => 'required|min:8',
                     'email'     => 'required|email|email|unique:users,email'.($id ? ",$id,id" : ''),

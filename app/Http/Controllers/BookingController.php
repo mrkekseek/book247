@@ -502,13 +502,13 @@ class BookingController extends Controller
                         $status = false;
                     }
                     // we check the hours interval second
-                    elseif ($booking_hour->lte($hour_start) || $booking_hour->gte($hour_end)){
+                    elseif ($booking_hour->lt($hour_start) || $booking_hour->gte($hour_end)){
                         // not in selected time period
                         $status = false;
                     }
 
                     $special_restrictions = json_decode($restriction['special_permissions']);
-                    if (sizeof($special_restrictions)>=1 && $status!=false){
+                    if (sizeof($special_restrictions)>=1 && $status!=false && $special_restrictions->special_days_ahead!=-1){
                         if (!isset($special_restrictions->special_days_ahead)){
                             $special_restrictions->special_days_ahead = 1;
                         }
@@ -587,7 +587,7 @@ class BookingController extends Controller
                 break;
             }
         }
-
+//xdebug_var_dump($time_of_day_result); exit;
         foreach ($time_of_day_result as $a){
             if ($a == true){
                 $payment_type = 'membership';

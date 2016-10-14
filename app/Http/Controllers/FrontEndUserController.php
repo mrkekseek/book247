@@ -1481,13 +1481,13 @@ class FrontEndUserController extends Controller
                         $status = false;
                     }
                     // we check the hours interval second
-                    elseif ($booking_hour->lte($hour_start) || $booking_hour->gte($hour_end)){
+                    elseif ($booking_hour->lt($hour_start) || $booking_hour->gte($hour_end)){
                         // not in selected time period
                         $status = false;
                     }
 
                     $special_restrictions = json_decode($restriction['special_permissions']);
-                    if (sizeof($special_restrictions)>=1){
+                    if (sizeof($special_restrictions)>=1 && $status!=false && $special_restrictions->special_days_ahead!=-1){
                         if (!isset($special_restrictions->special_days_ahead)){
                             $special_restrictions->special_days_ahead = 1;
                         }
@@ -1665,8 +1665,8 @@ class FrontEndUserController extends Controller
                 $all_friends[] = [
                     'name' => $user_details->first_name . ' ' . $user_details->middle_name . ' ' . $user_details->last_name,
                     'id' => $user_details->id,
-                    //'status'    => $canBook['status'],
-                    //'payment'   => $canBook['payment']
+                    'status'    => $canBook['status'],
+                    'payment'   => $canBook['payment']
                 ];
             }
         }
