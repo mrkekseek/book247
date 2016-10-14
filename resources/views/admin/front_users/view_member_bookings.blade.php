@@ -113,6 +113,7 @@
                                                                     <th class="hidden-xs"> Booked By </th>
                                                                     <th class="hidden-xs"> Player </th>
                                                                     <th class="hidden-xs"> Added On </th>
+                                                                    <th class="hidden-xs"> Type </th>
                                                                     <th> Status </th>
                                                                 </tr>
                                                                 </thead>
@@ -125,6 +126,7 @@
                                                                         <td class="hidden-xs"> <small>{{$booking['bookingByName']}}</small> </td>
                                                                         <td class="hidden-xs"> <a href="{{ route('admin/front_users/view_user',['id'=>$booking['player_id']])}}" target="_blank">{{$booking['player_name']}}</a> </td>
                                                                         <td class="hidden-xs"> <small>{{$booking['added_on']}}</small> </td>
+                                                                        <td class="hidden-xs"> <small>{{$booking['type']}}</small> </td>
                                                                         <td> <a class="label label-sm {{$booking['status-color']}} booking_details_modal" data-key="{{$booking['search_key']}}">{{$booking['status']}}</a> </td>
                                                                     </tr>
                                                                 @endforeach
@@ -166,6 +168,8 @@
                                                                         <th>
                                                                             <i class="fa fa-briefcase"></i> Added On </th>
                                                                         <th>
+                                                                            <i class="fa fa-briefcase"></i> Type </th>
+                                                                        <th>
                                                                             <i class="fa fa-shopping-cart"></i> Status </th>
                                                                         <th> </th>
                                                                     </tr>
@@ -183,6 +187,7 @@
                                                                         </td>
                                                                         <td> <small>{{$booking['bookingByName']}}</small> </td>
                                                                         <td> <small>{{ $booking['added_on'] }}</small> </td>
+                                                                        <td> <small>{{ $booking['type'] }}</small> </td>
                                                                         <td> <small>{{ $booking['status'] }}</small> </td>
                                                                         <td>
                                                                             <a class="btn {{ $booking['color_button'] }} btn-sm booking_details_modal" data-key="{{$booking['search_key']}}" href="javascript:;">
@@ -641,7 +646,7 @@
                     'booking_time_start': '',
                     'booking_day': '',
                     'search_key': key,
-                    'userID': {{ $user->id }},
+                    'userID': '{{ $user->id }}',
                 },
                 success: function(data){
                     var all_list = '<option value="'+ player_id +'" selected="selected">'+ player_name +'</option>';

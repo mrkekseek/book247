@@ -101,10 +101,10 @@ class Booking extends Model
                     $noShow = '1';
                     break;
                 case 'unpaid' :
-                    $canModify  = '1';
+                    $canModify  = '0';
                     $invoiceLink = '1';
                     // if time of booking is less than current time + a time limit of x days
-                    $noShow = '1';
+                    $noShow = '0';
                     break;
                 case 'noshow' :
                     $invoiceLink = '1';

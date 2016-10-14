@@ -546,7 +546,8 @@ class FrontEndUserController extends Controller
                     'last_update'   => $booking->updated_at,
                     'added_by'      => $booking->by_user_id,
                     'search_key'    => $booking->search_key,
-                    'added_on'      => $addedOn
+                    'added_on'      => $addedOn,
+                    'type'          => $booking->payment_type
                 ];
             }
             unset($bookings); unset($booking);
