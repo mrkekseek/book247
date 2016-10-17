@@ -91,7 +91,7 @@ class Booking extends Model
             switch ($this->status) {
                 case'active' :
                     $canCancel  = '1';
-                    $canModify  = '1';
+                    $canModify  = '0';
                     // if time of booking is less than current time + a time limit of x days
                     $noShow = '1';
                     break;

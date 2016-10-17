@@ -2968,7 +2968,8 @@ class BookingController extends Controller
                     }
 
                     if ($booking->by_user_id==$userID && Carbon::now()->lt($format_date)) {
-                        $status.= ' <span data-id="' . $booking->search_key . '" class="modify_booking btn btn-sm blue-steel">Modify</span>';
+                        $status.= '<span data-id="' . $booking->search_key . '" class="details_booking btn btn-sm blue-sharp">Details</span> ';
+                        //$status.= ' <span data-id="' . $booking->search_key . '" class="modify_booking btn btn-sm blue-steel">Modify</span>';
                     }
                 }
 

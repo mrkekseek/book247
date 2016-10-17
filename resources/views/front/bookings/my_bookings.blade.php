@@ -252,7 +252,7 @@
                                         <div class="form-group">
                                             <label class="col-md-3 control-label"> Player </label>
                                             <div class="col-md-9">
-                                                <select class="form-control input-inline input-large" name="book_player"></select>
+                                                <input class="form-control input-inline input-large" name="book_player" readonly />
                                             </div>
                                         </div>
                                         <div class="form-group">
@@ -418,8 +418,8 @@
                     $('input[name="book_location"]').val(data.location);
                     $('input[name="book_room"]').val(data.room);
                     $('input[name="book_activity"]').val(data.category);
-                    //$('select[name="book_player"]').html(data.forUserName);
-                    get_players_list($('select[name="book_player"]'), data.forUserName, data.forUserID, key);
+                    $('input[name="book_player"]').val(data.forUserName);
+                    //get_players_list($('select[name="book_player"]'), data.forUserName, data.forUserID, key);
 
                     /* Get booking notes */
                     if (data.bookingNotes.length !=0){

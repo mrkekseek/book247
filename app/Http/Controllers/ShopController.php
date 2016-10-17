@@ -696,7 +696,7 @@ class ShopController extends Controller
             $shopResourceVars['color_code'] = '#6e6e6e';
         }
         /** Start - Add shop resource to database */
-        $shopResourceValidator = Validator::make($shopResourceVars, ShopResource::rules('POST'), ShopResource::$validationMessages, ShopResource::$attributeNames);
+        $shopResourceValidator = Validator::make($shopResourceVars, ShopResource::rules('POST',$shopResourceVars['location_id']), ShopResource::$validationMessages, ShopResource::$attributeNames);
 
         if ($shopResourceValidator->fails()){
             //return $validator->errors()->all();
@@ -748,7 +748,7 @@ class ShopController extends Controller
             'session_price' => $vars['session_price'],
             'vat_id'        => $vars['vat_rate']
         ];
-        $shopResourceValidator = Validator::make($ResourceVars, ShopResource::rules('PATCH', $shopResource->id), ShopResource::$validationMessages, ShopResource::$attributeNames);
+        $shopResourceValidator = Validator::make($ResourceVars, ShopResource::rules('PATCH',$ResourceVars['location_id'], $shopResource->id), ShopResource::$validationMessages, ShopResource::$attributeNames);
 
         if ($shopResourceValidator->fails()){
             //return $validator->errors()->all();

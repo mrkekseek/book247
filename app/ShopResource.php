@@ -50,7 +50,7 @@ class ShopResource extends Model
         return $this->hasOne('App\VatRate', 'id', 'vat_id');
     }
 
-    public static function rules($method, $id=0){
+    public static function rules($method, $location_id, $id=0){
         switch($method){
             case 'GET':
             case 'DELETE':
@@ -61,7 +61,7 @@ class ShopResource extends Model
             {
                 return [
                     'location_id'   => 'exists:shop_locations,id',
-                    'name'          => 'required|unique:shop_resources,name|min:5|max:75',
+                    'name'          => 'required|unique:shop_resources,name,NULL,id,location_id,'.$location_id.'|min:5|max:75',
                     'category_id'   => 'exists:shop_resource_categories,id',
                     'session_price' => 'numeric',
                     'vat_id'        => 'exists:vat_rates,id',
@@ -72,7 +72,7 @@ class ShopResource extends Model
             {
                 return [
                     'location_id'   => 'exists:shop_locations,id',
-                    'name'          => 'required|min:5|max:75|unique:shop_resources,name'.($id ? ','.$id.',id' : ''),
+                    'name'          => 'required|min:5|max:75|unique:shop_resources,name,'.($id ? $id : 'NULL').',id,location_id,'.$location_id,
                     'category_id'   => 'exists:shop_resource_categories,id',
                     'session_price' => 'numeric',
                     'vat_id'        => 'exists:vat_rates,id',
