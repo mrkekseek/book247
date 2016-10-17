@@ -222,20 +222,13 @@
                         <div class="modal-body form-horizontal" id="book_main_details_container">
                             <div class="form-body">
                                 <div class="form-group">
-                                    <label class="col-md-4 control-label"> Booking Note<br /><small>for external use</small></label>
+                                    <label class="col-md-4 control-label"> Booking Note<br /><small>visible by members</small></label>
                                     <div class="col-md-8">
-                                        <select class="form-control input-inline input-large" name="default_player_messages">
-                                            <option value="">Select default message</option>
-                                            <option value="">First time not show</option>
-                                            <option value="">Second time not show</option>
-                                            <option value="">Three and up times not show</option>
-                                        </select>
-                                        <h5 class="font-blue-steel"> or send Custom Message</h5>
                                         <textarea type="text" class="form-control input-inline input-large" name="custom_player_message"></textarea>
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label class="col-md-4 control-label"> Internal Note<br /><small>for internal use</small> </label>
+                                    <label class="col-md-4 control-label"> Internal Note<br /><small>visible by employees only</small> </label>
                                     <div class="col-md-8">
                                         <textarea type="text" class="form-control input-inline input-large" name="private_player_message"></textarea>
                                     </div>
@@ -1114,6 +1107,8 @@
                     $('.player_short_note').html(data.forPlayerDetails);
 
                     var book_details =
+                            '<div class="row margin-bottom-5"><div class="col-md-4 bg-grey-salt bg-font-grey-salt"> Booked By </div><div class="col-md-8 bg-grey-steel bg-font-grey-steel"> ' + data.byUserName + ' </div></div>' +
+                            '<div class="row margin-bottom-5"><div class="col-md-4 bg-grey-salt bg-font-grey-salt"> Booked On </div><div class="col-md-8 bg-grey-steel bg-font-grey-steel"> ' + data.addedOn + ' </div></div>' +
                             '<div class="row margin-bottom-5"><div class="col-md-4 bg-grey-salt bg-font-grey-salt"> Booking Date </div><div class="col-md-8 bg-grey-steel bg-font-grey-steel"> ' + data.bookingDate + ' </div></div>' +
                             '<div class="row margin-bottom-5"><div class="col-md-4 bg-grey-salt bg-font-grey-salt"> Time of booking </div><div class="col-md-8 bg-grey-steel bg-font-grey-steel"> ' + data.timeStart + ' - ' + data.timeStop + ' </div></div>' +
                             '<div class="row margin-bottom-5"><div class="col-md-4 bg-grey-salt bg-font-grey-salt"> Booking Location </div><div class="col-md-8 bg-grey-steel bg-font-grey-steel"> ' + data.location + ' - ' + data.room + ' </div></div>' +
@@ -1190,7 +1185,7 @@
                 data: {
                     'search_key': search_key,
                     'add_invoice': add_invoice,
-                    'default_message': $('select[name="default_player_messages"]  :selected').val(),
+                    //'default_message': $('select[name="default_player_messages"]  :selected').val(),
                     'custom_message':  $('textarea[name="custom_player_message"]').val(),
                     'private_message': $('textarea[name="private_player_message"]').val()
                 },
