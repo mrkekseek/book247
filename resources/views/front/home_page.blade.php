@@ -174,10 +174,10 @@
                                             <input class="form-control placeholder-no-fix" type="text" placeholder="Email" name="reg_email" /> </div>
                                         <div class="form-group">
                                             <label class="control-label visible-ie8 visible-ie9">Password</label>
-                                            <input class="form-control placeholder-no-fix" type="password" autocomplete="off" id="register_password" placeholder="Password" name="password" /> </div>
+                                            <input class="form-control placeholder-no-fix" type="password" autocomplete="off" id="rpassword" placeholder="Password" name="rpassword" /> </div>
                                         <div class="form-group">
                                             <label class="control-label visible-ie8 visible-ie9">Re-type Your Password</label>
-                                            <input class="form-control placeholder-no-fix" type="password" autocomplete="off" placeholder="Re-type Your Password" name="rpassword" /> </div>
+                                            <input class="form-control placeholder-no-fix" type="password" autocomplete="off" placeholder="Re-type Your Password" name="re_rpassword" /> </div>
                                         <div class="form-group margin-top-20 margin-bottom-20">
                                             <label class="check">
                                                 <input type="checkbox" name="tnc" />
@@ -785,16 +785,16 @@
                                 }
                             }
                         },
-                        password: {
-                            required:true,
-                            minlength: 5,
-                            maxlength: 150,
-                        },
                         rpassword: {
                             required:true,
                             minlength: 5,
                             maxlength: 150,
-                            equalTo:"#register_password"
+                        },
+                        re_rpassword: {
+                            required:true,
+                            minlength: 5,
+                            maxlength: 150,
+                            equalTo:"#rpassword"
                         },
                         tnc: {
                             required: true
@@ -872,7 +872,7 @@
                     'last_name': $('input[name="lastname"]').val(),
                     'email': $('input[name="reg_email"]').val(),
                     'phone_number': $('input[name="phone"]').val(),
-                    'password': $('input[name="password"]').val(),
+                    'password': $('input[name="rpassword"]').val(),
                 },
                 success: function (data) {
                     if (data.success==1) {

@@ -1829,7 +1829,7 @@ class FrontEndUserController extends Controller
 
         $credentials = $vars;
         $text_psw    = $vars['password'];
-        $credentials['password'] = bcrypt($credentials['password']);
+        $credentials['password'] = Hash::make($credentials['password']);
 
         $the_plan = MembershipPlan::where('id','=',$vars['membership_plan'])->where('id','!=',1)->where('status','=','active')->get()->first();
 
