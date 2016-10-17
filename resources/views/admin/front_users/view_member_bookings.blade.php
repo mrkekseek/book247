@@ -225,50 +225,8 @@
                                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
                                 <h4 class="modal-title"> Booking Details </h4>
                             </div>
-                            <div class="modal-body form-horizontal" id="book_main_details_container">
-                                <div class="form-body">
-                                    <div class="form-group">
-                                        <label class="col-md-3 control-label"> Date/Time</label>
-                                        <div class="col-md-9">
-                                            <input type="text" class="form-control input-sm" name="book_date_time" readonly>
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="col-md-3 control-label"> Location</label>
-                                        <div class="col-md-9">
-                                            <input type="text" class="form-control input-sm" name="book_location" readonly>
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="col-md-3 control-label"> Room</label>
-                                        <div class="col-md-9">
-                                            <input class="form-control input-sm" name="book_room" readonly>
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="col-md-3 control-label"> Activity</label>
-                                        <div class="col-md-9">
-                                            <input type="text" class="form-control input-sm" name="book_activity" readonly>
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="col-md-3 control-label"> Player </label>
-                                        <div class="col-md-9">
-                                            <select class="form-control input-sm" name="book_player"></select>
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="col-md-3 control-label"> Financial </label>
-                                        <div class="col-md-9">
-                                            <input class="form-control input-sm" name="book_finance" readonly />
-                                            <!--<select class="form-control input-inline input-large" name="book_finance"></select>-->
-                                        </div>
-                                    </div>
-                                    <div class="form-group" id="all_booking_notes" style="display:none; margin-bottom:0px;">
-                                        <label class="col-md-3 text-right"> Notes </label>
-                                        <div class="col-md-9"> </div>
-                                    </div>
-                                </div>
+                            <div class="modal-body form-horizontal" id="book_main_details_container" style="min-height:200px;">
+
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn green btn_no_show" data-toggle="modal" href="#not_show_confirm_box" style="display:none;" >Not show up</button>
@@ -294,29 +252,24 @@
                             <div class="modal-body form-horizontal" id="book_main_details_container">
                                 <div class="form-body">
                                     <div class="form-group">
-                                        <label class="col-md-4 control-label"> Booking Note<br /><small>for external use</small></label>
+                                        <label class="col-md-4 control-label"> Booking Note</label>
                                         <div class="col-md-8">
-                                            <select class="form-control input-inline input-large" name="default_player_messages">
-                                                <option value="">Select default message</option>
-                                                <option value="">First time not show</option>
-                                                <option value="">Second time not show</option>
-                                                <option value="">Three and up times not show</option>
-                                            </select>
-                                            <h5 class="font-blue-steel"> or send Custom Message</h5>
-                                            <textarea type="text" class="form-control input-inline input-large" name="custom_player_message"></textarea>
+                                            <textarea type="text" class="form-control input-inline input-large" name="custom_player_message" style="font-size:12px;"></textarea>
+                                            <br /><small>visible by members and employees</small>
                                         </div>
                                     </div>
                                     <div class="form-group">
-                                        <label class="col-md-4 control-label"> Internal Note<br /><small>for internal use</small> </label>
+                                        <label class="col-md-4 control-label"> Internal Note</label>
                                         <div class="col-md-8">
-                                            <textarea type="text" class="form-control input-inline input-large" name="private_player_message"></textarea>
+                                            <textarea type="text" class="form-control input-inline input-large" name="private_player_message" style="font-size:12px;"></textarea>
+                                            <br /><small>visible by employees only</small>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                             <div class="modal-footer">
-                                <button type="button" class="btn green btn_no_show" style="display:none;" onclick="javascript:not_show_invoice();">Invoice Customer</button>
-                                <button type="button" class="btn green btn_modify_booking" style="display:none;" onclick="javascript:not_show_warning();">Send Warning</button>
+                                <button type="button" class="btn green btn_no_show_invoice" onclick="javascript:not_show_invoice();">Invoice Customer</button>
+                                <button type="button" class="btn green btn_no_show_warning" onclick="javascript:not_show_warning();">Send Warning</button>
                                 <button type="button" class="btn dark btn-outline" data-dismiss="modal">Return</button>
                             </div>
                         </div>
@@ -483,26 +436,32 @@
                     'the_user': "{{ $user->id }}"
                 },
                 success: function (data) {
-                    $('input[name="book_date_time"]').val(data.bookingDate + ', ' + data.timeStart + ' - ' + data.timeStop);
-                    $('input[name="book_location"]').val(data.location);
-                    $('input[name="book_room"]').val(data.room);
-                    $('input[name="book_activity"]').val(data.category);
-                    var players_dropd = $('select[name="book_player"]');
-                    players_dropd.removeAttr('disabled');
-                    players_dropd.removeAttr('readonly');
-
-                    get_players_list(players_dropd, data.forUserName, data.forUserID, key);
-
-                    if (data.paymentType=='cash'){
-                        var book_finance = '<option value="cash" selected="selected">' + data.financialDetails + '</option>' +
-                                '<option value="membership">Membership</option>';
+                    var allNotes = '<small>';
+                    /* Get booking notes */
+                    if (data.bookingNotes.length !=0){
+                        $.each(data.bookingNotes, function(key, value){
+                            allNotes+= '<dl style="margin-bottom:7px;"><dt class="font-grey-mint"><span>' + value.created_at + '</span> ' +
+                                    'by <span> ' + value.added_by + '</span></dt>' +
+                                    '<dd> <span class="font-blue-steel"> ' + value.note_title + ' </span> : ' +
+                                    '<span class="font-blue-dark">' + value.note_body + '</span></dd></dl>';
+                        });
                     }
                     else{
-                        var book_finance = '<option value="cash"> Payment of ' + data.paymentAmount + ' </option>' +
-                                '<option value="membership" selected="selected">Membership</option>';
+                        allNotes = 'No notes';
                     }
-                    //$('select[name="book_finance"]').html(book_finance);
-                    $('input[name="book_finance"]').val(data.financialDetails);
+                    allNotes+='</small>';
+
+                    var book_details =
+                            '<div class="row margin-bottom-5"><div class="col-md-4 bg-grey-salt bg-font-grey-salt"> Booked By </div><div class="col-md-8 bg-grey-steel bg-font-grey-steel"> ' + data.byUserName + ' </div></div>' +
+                            '<div class="row margin-bottom-5"><div class="col-md-4 bg-grey-salt bg-font-grey-salt"> Booked On </div><div class="col-md-8 bg-grey-steel bg-font-grey-steel"> ' + data.addedOn + ' </div></div>' +
+                            '<div class="row margin-bottom-5"><div class="col-md-4 bg-grey-salt bg-font-grey-salt"> Booking Date </div><div class="col-md-8 bg-grey-steel bg-font-grey-steel"> ' + data.bookingDate + ' </div></div>' +
+                            '<div class="row margin-bottom-5"><div class="col-md-4 bg-grey-salt bg-font-grey-salt"> Time of booking </div><div class="col-md-8 bg-grey-steel bg-font-grey-steel"> ' + data.timeStart + ' - ' + data.timeStop + ' </div></div>' +
+                            '<div class="row margin-bottom-5"><div class="col-md-4 bg-grey-salt bg-font-grey-salt"> Booking Location </div><div class="col-md-8 bg-grey-steel bg-font-grey-steel"> ' + data.location + ' - ' + data.room + ' </div></div>' +
+                            '<div class="row margin-bottom-5"><div class="col-md-4 bg-grey-salt bg-font-grey-salt"> Activity </div><div class="col-md-8 bg-grey-steel bg-font-grey-steel"> ' + data.category + ' </div></div>' +
+                            '<div class="row margin-bottom-5"><div class="col-md-4 bg-grey-salt bg-font-grey-salt"> Player </div><div class="col-md-8 bg-grey-steel bg-font-grey-steel"> ' + data.forUserName + ' </div></div>' +
+                            '<div class="row margin-bottom-5"><div class="col-md-4 bg-grey-salt bg-font-grey-salt"> Finance </div><div class="col-md-8 bg-grey-steel bg-font-grey-steel"> ' + data.financialDetails + ' </div></div>' +
+                            '<div class="row margin-bottom-5"><div class="col-md-4 bg-grey-salt bg-font-grey-salt"> Notes </div><div class="col-md-8 bg-grey-steel bg-font-grey-steel"> ' + allNotes + ' </div></div>';
+                    $('#book_main_details_container').html(book_details);
 
                     if (data.canCancel=="1"){
                         $('.btn_cancel_booking').show();
@@ -514,14 +473,10 @@
                         $('.btn_modify_booking').show();
                     }
                     else{
-                        players_dropd.attr('disabled','disabled');
-                        players_dropd.attr('readonly','readonly');
                         $('.btn_modify_booking').hide();
                     }
                     if (data.canNoShow=="1"){
                         $('.btn_no_show').show();
-                        //players_dropd.attr('disabled','disabled');
-                        //players_dropd.attr('readonly','readonly');
                     }
                     else{
                         $('.btn_no_show').hide();
@@ -618,12 +573,18 @@
                 data: {
                     'search_key': search_key,
                     'add_invoice': add_invoice,
-                    'default_message': $('select[name="default_player_messages"]  :selected').val(),
+                    //'default_message': $('select[name="default_player_messages"]  :selected').val(),
                     'custom_message': $('textarea[name="custom_player_message"]').val(),
                     'private_message': $('textarea[name="private_player_message"]').val()
                 },
                 success: function (data) {
-                    show_notification(data.message_title, data.message_body, 'lemon', 3500, 0);
+                    if (data.success) {
+                        show_notification(data.title, data.message, 'lemon', 3500, 0);
+                    }
+                    else{
+                        show_notification(data.title, data.errors, 'ruby', 3500, 0);
+                    }
+
                     $('#not_show_confirm_box').modal('hide');
                     $('#changeIt').modal('hide');
                 }

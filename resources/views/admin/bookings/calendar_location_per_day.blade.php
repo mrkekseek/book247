@@ -200,6 +200,7 @@
                             <div id="booking_summary_stats" class="book_details_cancel_place" style="padding:0px 15px; margin-top:5px; clear:both;"></div>
                         </div>
                         <div class="modal-footer">
+                            <button type="button" class="btn green show_rec_booking_btn" data-toggle="modal" href="#all_rec_bookings_box">Recurrent lists</button>
                             <button type="button" class="btn green no_show_booking_btn" data-toggle="modal" href="#not_show_confirm_box">No show options</button>
                             <button type="button" class="btn green cancel_booking_btn" data-toggle="modal" href="#cancel_confirm_box">Cancel Booking</button>
                             <button type="button" class="btn dark btn-outline" data-dismiss="modal">Return</button>
@@ -210,6 +211,28 @@
                 <!-- /.modal-dialog -->
             </div>
             <!-- END More Options modal window show -->
+
+            <!-- BEGIN Booking No Show modal window -->
+            <div class="modal fade" id="all_rec_bookings_box" tabindex="-1" role="dialog" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                            <h4 class="modal-title"> List of recurrent bookings </h4>
+                        </div>
+                        <div class="modal-body form-horizontal" id="book_main_details_container" style="min-height:200px;">
+
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn green btn_no_show" onclick="javascript:cancel_selected_bookings_list();">Cancel Selected</button>
+                            <button type="button" class="btn dark btn-outline" data-dismiss="modal">Return</button>
+                        </div>
+                    </div>
+                    <!-- /.modal-content -->
+                </div>
+                <!-- /.modal-dialog -->
+            </div>
+            <!-- END No Show modal window -->
 
             <!-- BEGIN Booking No Show modal window -->
             <div class="modal fade" id="not_show_confirm_box" tabindex="-1" role="dialog" aria-hidden="true">
@@ -1014,6 +1037,8 @@
                 $('#more_options_bookings_show').find('.cancel_booking_btn').show();
             }
 
+            $('#show_rec_booking_btn').hide();
+
             var search_key = $(this).parent().attr('search-key');
 
             get_player_statistics(search_key, $('#player_summary_stats'));
@@ -1105,6 +1130,7 @@
                     }
 
                     $('.player_short_note').html(data.forPlayerDetails);
+                    $('#book_main_details_container').html('');
 
                     var book_details =
                             '<div class="row margin-bottom-5"><div class="col-md-4 bg-grey-salt bg-font-grey-salt"> Booked By </div><div class="col-md-8 bg-grey-steel bg-font-grey-steel"> ' + data.byUserName + ' </div></div>' +
@@ -1129,7 +1155,43 @@
                         $('#booking_cancel_rules_no').show();
                     }
 
+                    if (data.recurrentList==1){
+                        $('.show_rec_booking_btn').show();
+                        get_recurrent_list(key);
+                    }
+                    else{
+                        $('.show_rec_booking_btn').hide();
+                    }
+
                     App.unblockUI('#booking_summary_stats');
+                }
+            });
+        }
+
+        function get_recurrent_list(key){
+            $.ajax({
+                url: '{{route('ajax/get_recurrent_bookings_list')}}',
+                type: "post",
+                cache: false,
+                data: {
+                    'search_key': key,
+                },
+                success: function (data) {
+                    var list = '<div class="row margin-bottom-5">'+
+                            '<div class="col-md-1 bg-blue-steel bg-font-blue-steel" style="min-height:26px;"><input type="checkbox" name="recc_booking_all" value="1" /></div>'+
+                            '<div class="col-md-4 bg-blue-steel bg-font-blue-steel" style="min-height:26px;"> Booking Date </div>' +
+                            '<div class="col-md-2 bg-blue-steel bg-font-blue-steel" style="min-height:26px;"> Start Time </div>' +
+                            '<div class="col-md-5 bg-blue-steel bg-font-blue-steel" style="min-height:26px;"> Location / Room </div>' +
+                            '</div>';
+                    $.each(data.recurrent_list, function(key, value){
+                        list += '<div class="row margin-bottom-5">'+
+                                    '<div class="col-md-1 bg-grey-salt bg-font-grey-salt" style="min-height:22px;"><input type="checkbox" name="recc_booking[]" value="' + value.search_key + '" /></div>'+
+                                    '<div class="col-md-4 bg-grey-steel bg-font-grey-steel" style="min-height:22px;"> ' + value.date_of_booking + ' </div>' +
+                                    '<div class="col-md-2 bg-grey-steel bg-font-grey-steel" style="min-height:22px;"> ' + value.time_of_booking + ' </div>' +
+                                    '<div class="col-md-5 bg-grey-steel bg-font-grey-steel" style="min-height:22px;"> ' + value.location_name + '-' + value.resource_name + ' </div>' +
+                                '</div>';
+                    });
+                    $('#book_main_details_container').html(list);
                 }
             });
         }
@@ -1190,7 +1252,13 @@
                     'private_message': $('textarea[name="private_player_message"]').val()
                 },
                 success: function (data) {
-                    show_notification(data.message_title, data.message_body, 'lemon', 3500, 0);
+                    if (data.success) {
+                        show_notification(data.title, data.message, 'lemon', 3500, 0);
+                    }
+                    else{
+                        show_notification(data.title, data.errors, 'ruby', 3500, 0);
+                    }
+
                     $('#not_show_confirm_box').modal('hide');
                     $('#more_options_bookings_show').modal('hide');
 

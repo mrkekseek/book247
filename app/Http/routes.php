@@ -718,6 +718,11 @@ Route::group(['prefix'=>'ajax', 'middleware' => 'web'], function(){
         'uses'  => 'BookingController@single_booking_details'
     ]);
 
+    Route::post('get_recurrent_bookings_list',[
+        'as'    => 'ajax/get_recurrent_bookings_list',
+        'uses'  => 'BookingController@get_recurrent_bookings_list'
+    ]);
+
     Route::post('not_show_note_to_booking',[
         'as'    => 'ajax/booking_not_show_change_status',
         'uses'  => 'BookingController@not_show_status_change'

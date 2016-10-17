@@ -86,6 +86,7 @@ class Booking extends Model
         $canModify   = '0';
         $invoiceLink = '0';
         $noShow      = '0';
+        $recurrentList = '0';
 
         if ($is_backend_employee){
             switch ($this->status) {
@@ -104,14 +105,16 @@ class Booking extends Model
                     $canModify  = '0';
                     $invoiceLink = '1';
                     // if time of booking is less than current time + a time limit of x days
-                    $noShow = '0';
+                    $noShow = '1';
                     break;
                 case 'noshow' :
                     $invoiceLink = '1';
                     break;
+                case 'old' :
+                    $noShow = '1';
+                    break;
                 case 'pending' :
                 case 'expired' :
-                case 'old' :
                 case 'canceled' :
                 default:
                     break;
@@ -143,6 +146,7 @@ class Booking extends Model
         }
         elseif($this->payment_type == 'recurring'){
             $financeDetails = "Recurrent Booking of ".$this->payment_amount;
+            $recurrentList = '1';
         }
         else{
             $financeDetails = "Membership included";
@@ -190,6 +194,7 @@ class Booking extends Model
             'canModify'     => $canModify,
             'invoiceLink'   => $invoiceLink,
             'canNoShow'     => $noShow,
+            'recurrentList' => $recurrentList,
             'bookingNotes'  => $allNotes,
         ];
 

@@ -1131,8 +1131,11 @@ class BookingController extends Controller
      */
     public function not_show_status_change(Request $request){
         if (!Auth::check()) {
-            //return redirect()->intended(route('admin/login'));
-            return ['error' => 'Authentication Error'];
+            return [
+                'success'   => false,
+                'title'     => 'Authentication Error',
+                'errors'    => 'Please re-login to have access to these functions'
+            ];
         }
         else{
             $user = Auth::user();
@@ -1150,20 +1153,11 @@ class BookingController extends Controller
                 'status'     => 'unread'
             ];
 
-            if ($vars['default_message']==-1){
-                // we have custom message
-                $fillable_visible['note_title'] = 'Booking status changed to NoShow';
-                $fillable_visible['note_body'] = $vars['default_message'];
-            }
-            else{
-                // we have default message
-                // $message = get_default_message();
-                $message = ['body'=>'Default message body', 'title'=>'Default message title'];
-                $fillable_visible['note_body'] = $message['body'];
-                $fillable_visible['note_title'] = $message['title'];
-            }
+            // we have custom message
+            $fillable_visible['note_title'] = 'Booking status changed to NoShow';
+            $fillable_visible['note_body'] = $vars['custom_message'];
+            $booking->add_note($fillable_visible);
 
-            $a = $booking->add_note($fillable_visible);
             if (strlen($vars['private_message'])>5) {
                 $fillable_private = [
                     'by_user_id' => $user->id,
@@ -1212,10 +1206,17 @@ class BookingController extends Controller
                 'updated'       => false,
             ]);
 
-            return ['success' => 'true', 'message' => 'All is good.'];
+            return [
+                'success' => true,
+                'title'   => 'Status changed',
+                'message' => 'Booking status changed to NoShow and messages added to the booking'
+            ];
         }
         else{
-            return ['error' => 'No bookings found to confirm. Please make the booking process again. Remember you have 60 seconds to complete the booking before it expires.'];
+            return [
+                'success'   => false,
+                'title'     => 'Error Updating Booking',
+                'errors'    => 'No bookings found to confirm. Please make the booking process again. Remember you have 60 seconds to complete the booking before it expires.'];
         }
     }
 
@@ -2848,11 +2849,61 @@ class BookingController extends Controller
             'booking_show'      => $bshows,
             'booking_no_show'   => $bnoshows,
             'booking_cancel'    => $bcancel,
-            'player_about'      => $userDetails->about_info,
+            'player_about'      => @$userDetails->about_info,
             'player_avatar'     => $userAvatar['avatar_base64'],
         ];
 
         return $stats;
+    }
+
+    /** Get list of recurrent bookings for the given bookingkey
+     * @param Request $request
+     */
+    public function get_recurrent_bookings_list(Request $request){
+        if (!Auth::check()) {
+            return [
+                'success' => false,
+                'title'   => 'You need to be logged in',
+                'errors'  => 'Login first before using this function'];
+        }
+        else{
+            $user = Auth::user();
+            if ($user->hasRole(['front-member','front-user'])) {
+                return [
+                    'success' => false,
+                    'title'   => 'You need to be logged in',
+                    'errors'  => 'You need to be logged in in the backend to use this function'];
+            }
+        }
+
+        $vars = $request->only('search_key');
+        $booking = Booking::with('location')->with('resource')->where('search_key','=',$vars['search_key'])->where('payment_type','=','recurring')->get()->first();
+        if ($booking){
+            $recurring_list = [];
+            $bookings = Booking::where('invoice_id','=',$booking->invoice_id)->orderBy('date_of_booking','ASC')->get();
+            if (sizeof($bookings)>0){
+                foreach($bookings as $one){
+                    $recurring_list[] = [
+                        'search_key'    => $one->search_key,
+                        'date_of_booking'   => Carbon::createFromFormat('Y-m-d', $one->date_of_booking)->format('l, d-m-Y'),
+                        'time_of_booking'   => Carbon::createFromFormat('H:i:s', $one->booking_time_start)->format('H:i'),
+                        'location_name'     => $one->location->name,
+                        'resource_name'     => $one->resource->name
+                    ];
+                }
+            }
+            else{
+
+            }
+
+            return ['success' => true, 'recurrent_list' => $recurring_list];
+        }
+        else{
+            return [
+                'success' => false,
+                'title'   => 'Booking not found',
+                'errors'  => 'We could not find the recurrent booking. Please reload the page and try again.'];
+        }
     }
 
     /**
