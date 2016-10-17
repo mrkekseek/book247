@@ -76,7 +76,7 @@
                             <tr>
                                 <th width="5%"> Time </th>
                                 @foreach ($resources as $resource)
-                                    <th>{{ $resource['name'] }}</th>
+                                    <th style="width:{{ 95/sizeof($resources) }}%;">{{ $resource['name'] }}</th>
                                 @endforeach
                             </tr>
                             </thead>
@@ -88,10 +88,10 @@
                                     @foreach ($resources as $resource)
                                         <td class="{{ isset($location_bookings[$key][$resource['id']]['color_stripe'])?$location_bookings[$key][$resource['id']]['color_stripe']:$hour['color_stripe'] }}
                                             {{ ( $hour['color_stripe']=='' && !isset($location_bookings[$key][$resource['id']]['color_stripe']) )?' isfreetime':'' }}"
-                                            style="padding:4px 8px; {{ isset($location_bookings[$key][$resource['id']]['custom_color'])?'background-color:'.$location_bookings[$key][$resource['id']]['custom_color'].';':'' }}">
+                                            style="padding:4px 8px; overflow:hidden; {{ isset($location_bookings[$key][$resource['id']]['custom_color'])?'background-color:'.$location_bookings[$key][$resource['id']]['custom_color'].';':'' }}">
                                             @if ( isset($location_bookings[$key][$resource['id']]) )
-                                            <a class="font-white" href="{{ @$location_bookings[$key][$resource['id']]['player_link'] }}" target="_blank">{{ @$location_bookings[$key][$resource['id']]['player_name'] }}</a>
-                                            <div class="actions" search-key="{{ $location_bookings[$key][$resource['id']]['search_key'] }}" style="float:right;">
+                                            <a class="font-white pull-xs-left" href="{{ @$location_bookings[$key][$resource['id']]['player_link'] }}" target="_blank" style="white-space: nowrap;">{{ @$location_bookings[$key][$resource['id']]['player_name'] }}</a>
+                                            <div class="actions pull-xs-left" search-key="{{ $location_bookings[$key][$resource['id']]['search_key'] }}">
                                                 @if ($location_bookings[$key][$resource['id']]['button_show'] == 'is_disabled')
                                                     <a class="btn btn-circle btn-icon-only {{ $button_color['is_disabled'] }} border-white"
                                                        style="height:30px; width:30px; padding:4px 3px 0 0; margin-right:1px; cursor:default;" href="javascript:;"
