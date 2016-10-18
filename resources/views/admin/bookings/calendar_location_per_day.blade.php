@@ -1218,9 +1218,8 @@
                 success: function (data) {
                     var list = '<div class="row margin-bottom-5">'+
                             '<div class="col-md-1 bg-blue-steel bg-font-blue-steel" style="min-height:26px;"><input type="checkbox" name="recc_booking_all" id="recc_booking_all" value="1" /></div>'+
-                            '<div class="col-md-4 bg-blue-steel bg-font-blue-steel" style="min-height:26px;"> Booking Date </div>' +
-                            '<div class="col-md-2 bg-blue-steel bg-font-blue-steel" style="min-height:26px;"> Start Time </div>' +
-                            '<div class="col-md-5 bg-blue-steel bg-font-blue-steel" style="min-height:26px;"> Location / Room </div>' +
+                            '<div class="col-md-5 bg-blue-steel bg-font-blue-steel" style="min-height:26px;"> Booking Date & Time </div>' +
+                            '<div class="col-md-6 bg-blue-steel bg-font-blue-steel" style="min-height:26px;"> Location / Room </div>' +
                             '</div>';
                     $.each(data.recurrent_list, function(key, value){
                         list += '<div class="row margin-bottom-5">';
@@ -1230,9 +1229,8 @@
                         else{
                             list+=  '<div class="col-md-1 bg-grey-salt bg-font-grey-salt" style="min-height:22px;"><input class="sel_rec" type="checkbox" name="recc_booking[]" value="' + value.search_key + '" /></div>';
                         }
-                        list +=     '<div class="col-md-4 bg-grey-steel bg-font-grey-steel" style="min-height:22px;"> ' + value.date_of_booking + ' </div>' +
-                                    '<div class="col-md-2 bg-grey-steel bg-font-grey-steel" style="min-height:22px;"> ' + value.time_of_booking + ' </div>' +
-                                    '<div class="col-md-5 bg-grey-steel bg-font-grey-steel" style="min-height:22px;"> ' + value.location_name + '-' + value.resource_name + ' / ' + value.status + ' </div>' +
+                        list +=     '<div class="col-md-5 bg-grey-steel bg-font-grey-steel" style="min-height:22px;"> ' + value.date_of_booking + ' ' + value.time_of_booking + '</div>' +
+                                    '<div class="col-md-6 bg-grey-steel bg-font-grey-steel" style="min-height:22px;"> ' + value.location_name + '-' + value.resource_name + ' / ' + value.status + ' </div>' +
                                 '</div>';
                     });
                     $('#book_main_details_container').html(list);

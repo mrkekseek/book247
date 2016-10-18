@@ -229,6 +229,7 @@
 
                             </div>
                             <div class="modal-footer">
+                                <button type="button" class="btn green show_rec_booking_btn" data-toggle="modal" href="#all_rec_bookings_box">Recurrent lists</button>
                                 <button type="button" class="btn green btn_no_show" data-toggle="modal" href="#not_show_confirm_box" style="display:none;" >Not show up</button>
                                 <button type="button" class="btn green btn_modify_booking" style="display:none;" onclick="javascript:change_booking_player();">Modify Booking</button>
                                 <button type="button" class="btn green btn_cancel_booking" data-toggle="modal" href="#cancel_confirm_box" style="display:none;">Cancel Booking</button>
@@ -295,6 +296,54 @@
                     </div>
                     <!-- /.modal-dialog -->
                 </div>
+
+                <!-- BEGIN Booking No Show modal window -->
+                <div class="modal fade" id="all_rec_bookings_box" tabindex="-1" role="dialog" aria-hidden="true">
+                    <div class="modal-dialog" style="margin-top:45px;">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                                <h4 class="modal-title"> List of recurrent bookings </h4>
+                            </div>
+                            <div class="modal-body form-horizontal" id="recurring_details_container" style="min-height:200px;">
+
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn green btn_no_show" data-toggle="modal" href="#cancel_recurrent_confirm_box">Cancel Selected</button>
+                                <button type="button" class="btn dark btn-outline" data-dismiss="modal">Return</button>
+                            </div>
+                        </div>
+                        <!-- /.modal-content -->
+                    </div>
+                    <!-- /.modal-dialog -->
+                </div>
+                <!-- END No Show modal window -->
+
+                <!-- BEGIN Recurrent Cancel Confirm modal window show -->
+                <div class="modal fade" id="cancel_recurrent_confirm_box" tabindex="-1" role="dialog" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content" style="margin-left:20px; margin-right:20px; margin-top:60px;">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                                <h4 class="modal-title">Do you want to cancel?</h4>
+                            </div>
+                            <div class="modal-body">
+                                <div class="note note-info" style="margin-bottom:0px;">
+                                    <h4 class="block">Cancel selected bookings</h4>
+                                    <p> By clicking "Yes, Cancel" these recurrent bookings that you selected will be canceled and the player notified. Do you want to proceed with the cancellation? </p>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn dark btn-outline" data-dismiss="modal">No, Go Back</button>
+                                <button type="button" class="btn green" onclick="javascript:cancel_recurrent_booking();">Yes, Cancel</button>
+                            </div>
+                        </div>
+                        <!-- /.modal-content -->
+                    </div>
+                    <!-- /.modal-dialog -->
+                </div>
+                <!-- END Recurrent Cancel Confirm modal window show -->
+
                 <!-- END PROFILE CONTENT -->
             </div>
         </div>
@@ -490,6 +539,14 @@
                         $('.btn_show_invoice').attr({'data-id':''});
                     }
 
+                    if (data.recurrentList==1){
+                        $('.show_rec_booking_btn').show();
+                        get_recurrent_list(key);
+                    }
+                    else{
+                        $('.show_rec_booking_btn').hide();
+                    }
+
                     $('input[name="search_key_selected"]').val(key);
 
                     /* Get booking notes */
@@ -619,6 +676,64 @@
                     container.html(all_list);
 
                     App.unblockUI('#book_main_details_container');
+                }
+            });
+        }
+
+        function get_recurrent_list(key){
+            $.ajax({
+                url: '{{route('ajax/get_recurrent_bookings_list')}}',
+                type: "post",
+                cache: false,
+                data: {
+                    'search_key': key,
+                },
+                success: function (data) {
+                    var list = '<div class="row margin-bottom-5">'+
+                            '<div class="col-md-1 bg-blue-steel bg-font-blue-steel" style="min-height:26px;"><input type="checkbox" name="recc_booking_all" id="recc_booking_all" value="1" /></div>'+
+                            '<div class="col-md-5 bg-blue-steel bg-font-blue-steel" style="min-height:26px;"> Booking Date & Time </div>' +
+                            '<div class="col-md-6 bg-blue-steel bg-font-blue-steel" style="min-height:26px;"> Location / Room </div>' +
+                            '</div>';
+                    $.each(data.recurrent_list, function(key, value){
+                        list += '<div class="row margin-bottom-5">';
+                        if (value.status!='active'){
+                            list+=  '<div class="col-md-1 bg-grey-salt bg-font-grey-salt" style="min-height:22px;"><i class="fa fa-check-square"></i></div>';
+                        }
+                        else{
+                            list+=  '<div class="col-md-1 bg-grey-salt bg-font-grey-salt" style="min-height:22px;"><input class="sel_rec" type="checkbox" name="recc_booking[]" value="' + value.search_key + '" /></div>';
+                        }
+                        list +=     '<div class="col-md-5 bg-grey-steel bg-font-grey-steel" style="min-height:22px;"> ' + value.date_of_booking + ' ' + value.time_of_booking + '</div>' +
+                                '<div class="col-md-6 bg-grey-steel bg-font-grey-steel" style="min-height:22px;"> ' + value.location_name + '-' + value.resource_name + ' / ' + value.status + ' </div>' +
+                                '</div>';
+                    });
+                    $('#recurring_details_container').html(list);
+                }
+            });
+        }
+
+        function cancel_recurrent_booking(){
+            // get keys list to send to bookings cancelation
+            var all_keys = '';
+            $('input:checkbox.sel_rec').each(function () {
+                all_keys += (this.checked ? $(this).val()+',' : "");
+            });
+
+            $.ajax({
+                url: '{{route('ajax/cancel_recurrent_booking')}}',
+                type: "post",
+                cache: false,
+                data: {
+                    'selected_bookings': all_keys,
+                },
+                success: function(data){
+                    $('#cancel_recurrent_confirm_box').modal('hide');
+                    $('#all_rec_bookings_box').modal('hide');
+                    $('#changeIt').modal('hide');
+                    show_notification('Bookings Canceled', 'The selected recurrent bookings were canceled.', 'lemon', 3500, 0);
+
+                    setTimeout(function(){
+                        location.reload();
+                    }, 2000);
                 }
             });
         }
