@@ -316,6 +316,62 @@ class BookingController extends Controller
         }
     }
 
+    /*
+     * Cancel recurrent bookings - selected keys are sent to this function
+     */
+    public function cancel_recurrent_booking(Request $request){
+        if (!Auth::check()) {
+            //return redirect()->intended(route('admin/login'));
+            return ['success'=>false, 'title'=>'Credentials error', 'errors' => 'Please refresh the page and try again'];
+        }
+        else{
+            $user = Auth::user();
+        }
+
+        $is_staff = false;
+        if (!$user->hasRole(['front-member','front-user'])){
+            $is_staff = true;
+        }
+        $this->check_for_expired_pending_bookings();
+
+        $vars = $request->only('selected_bookings');
+        $keys = explode(',',$vars['selected_bookings']);
+        if (sizeof($keys)>0){
+            foreach($keys as $key){
+                if ($key==''){ continue; }
+                if ($is_staff){
+                    Booking::where('status','=','active')->where('payment_type','=','recurring')->where('search_key','=',$key)->update(['status'=>'canceled']);
+
+                    Activity::log([
+                        'contentId'     => $user->id,
+                        'contentType'   => 'bookings',
+                        'action'        => 'Cancel Recurring Booking - by staff',
+                        'description'   => 'Booking canceled for booking key : '.$key,
+                        'details'       => 'User Email : '.$user->email,
+                        'updated'       => true,
+                    ]);
+                }
+                else{
+                    Booking::where('status','=','active')->where('payment_type','=','recurring')->where('by_user_id','=',$user->id)->where('search_key','=',$key)->update(['status'=>'canceled']);
+
+                    Activity::log([
+                        'contentId'     => $user->id,
+                        'contentType'   => 'bookings',
+                        'action'        => 'Cancel Recurring Booking - by member',
+                        'description'   => 'Booking canceled for booking key : '.$key,
+                        'details'       => 'User Email : '.$user->email,
+                        'updated'       => true,
+                    ]);
+                }
+            }
+
+            return ['success' => 'true', 'message' => 'All is good.'];
+        }
+        else{
+            return ['error' => 'No bookings found to confirm. Please make the booking process again. Remember you have 60 seconds to complete the booking before it expires.'];
+        }
+    }
+
     /**
      * Change the player for a selected booking based on search_key
      * @param Request $request - [search_key,player]
@@ -2888,7 +2944,8 @@ class BookingController extends Controller
                         'date_of_booking'   => Carbon::createFromFormat('Y-m-d', $one->date_of_booking)->format('l, d-m-Y'),
                         'time_of_booking'   => Carbon::createFromFormat('H:i:s', $one->booking_time_start)->format('H:i'),
                         'location_name'     => $one->location->name,
-                        'resource_name'     => $one->resource->name
+                        'resource_name'     => $one->resource->name,
+                        'status'            => $one->status
                     ];
                 }
             }

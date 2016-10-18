@@ -698,6 +698,11 @@ Route::group(['prefix'=>'ajax', 'middleware' => 'web'], function(){
         'uses'  => 'BookingController@cancel_pending_bookings'
     ]);
 
+    Route::post('cancel_recurrent_booking', [
+        'as'    => 'ajax/cancel_recurrent_booking',
+        'uses'  => 'BookingController@cancel_recurrent_booking'
+    ]);
+
     Route::post('cancel_one', [
         'as'    => 'ajax/cancel_booking',
         'uses'  => 'BookingController@cancel_booking'
