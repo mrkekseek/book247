@@ -54,13 +54,13 @@
                                                 <label class="control-label col-md-4"> Active Membership </label>
                                                 <div class="col-md-8">
                                                     <select name="membership_period" class="form-control input-inline input-large  inline-block">
-                                                        @if ($membership_plan->id!=1)
+                                                        @if ($membership_plan->membership_id!=1)
                                                             <option> {{$membership_plan->membership_name}} </option>
                                                         @else
                                                             <option> No active Membership Plan </option>
                                                         @endif
                                                     </select>
-                                                    @if ($membership_plan->id!=1 && \Carbon\Carbon::now()->gt(\Carbon\Carbon::createFromFormat('Y-m-d',$membership_plan->day_stop)))
+                                                    @if ($membership_plan->membership_id!=1 && \Carbon\Carbon::now()->gt(\Carbon\Carbon::createFromFormat('Y-m-d',$membership_plan->day_stop)))
                                                         <a href="#cancel_confirm_box" class="btn red-soft input" data-toggle="modal" style="min-width:190px;">
                                                             <i class="fa fa-pencil"></i> Cancel Current Plan</a>
                                                     @endif
@@ -165,7 +165,7 @@
                         @endif
                     </div>
 
-                    @if ($membership_plan->id!=1 && \Carbon\Carbon::now()->gt(\Carbon\Carbon::createFromFormat('Y-m-d',$membership_plan->day_stop)))
+                    @if ($membership_plan->membership_id!=1 && \Carbon\Carbon::now()->gt(\Carbon\Carbon::createFromFormat('Y-m-d',$membership_plan->day_stop)))
                     <div class="modal fade bs-modal-sm" id="cancel_confirm_box" tabindex="-1" role="dialog" aria-hidden="true">
                         <div class="modal-dialog">
                             <div class="modal-content">

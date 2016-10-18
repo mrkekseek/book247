@@ -179,7 +179,7 @@
                                                                 <div class="form-group">
                                                                     <label class="control-label col-md-4"> Active Membership </label>
                                                                     <div class="col-md-8">
-                                                                        @if ($membership_plan->id!=1)
+                                                                        @if ($membership_plan->membership_id!=1)
                                                                             <input class="form-control input-inline input-large inline-block" disabled readonly name="what_is_the_plan" value="{{$membership_plan->membership_name}}" />
                                                                             <a href="#cancel_confirm_box" class="btn red-soft input" data-toggle="modal" style="min-width:190px;">
                                                                                 <i class="fa fa-pencil"></i> Cancel Current Plan</a>
@@ -188,7 +188,7 @@
                                                                         @endif
                                                                     </div>
                                                                 </div>
-                                                                @if ($membership_plan->id!=1)
+                                                                @if ($membership_plan->membership_id!=1)
                                                                 <div class="form-group">
                                                                     <label class="control-label col-md-4"> Current invoice period </label>
                                                                     <div class="col-md-8">
@@ -203,7 +203,7 @@
                                                                 </div>
                                                                 @endif
 
-                                                                @if (sizeof($memberships)>0 && $membership_plan->id==1)
+                                                                @if (sizeof($memberships)>0 && $membership_plan->membership_id==1)
                                                                 <div class="form-group">
                                                                     <label class="control-label col-md-4 inline"> Change Plan To </label>
                                                                     <div class="col-md-8">
@@ -225,7 +225,7 @@
                                                 </div>
                                             </div>
 
-                                            @if ($membership_plan->id!=1)
+                                            @if ($membership_plan->membership_id!=1)
                                             <div class="col-md-12">
                                                 <div class="portlet light bordered">
                                                     <div class="portlet-title">
