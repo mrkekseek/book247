@@ -68,7 +68,7 @@ class InvoiceController extends Controller
             $invoice_user = [
                 'full_name' => $member->first_name.' '.$member->middle_name.' '.$member->last_name,
                 'email_address' => $member->email,
-                'date_of_birth' => $member_personal->date_of_birth,
+                'date_of_birth' => @$member_personal->date_of_birth,
                 'country'   => $country,
             ];
         }

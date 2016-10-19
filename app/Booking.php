@@ -346,7 +346,7 @@ class Booking extends Model
         //xdebug_var_dump($invoice); exit;
 
         // check if the booking is a paid one and cancel the booking item from invoices
-        if ($this->payment_type == "cash"){
+        if ($this->payment_type == "cash" || $this->payment_type == "recurring"){
             if ($invoice->status=='pending'){
                 // no payment was done to this booking/bookings invoice
                 $bookingInvoice = BookingInvoice::with('invoice_items')->where('id','=',$this->invoice_id)->get()->first();

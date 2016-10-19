@@ -339,29 +339,35 @@ class BookingController extends Controller
         if (sizeof($keys)>0){
             foreach($keys as $key){
                 if ($key==''){ continue; }
-                if ($is_staff){
-                    Booking::where('status','=','active')->where('payment_type','=','recurring')->where('search_key','=',$key)->update(['status'=>'canceled']);
 
-                    Activity::log([
-                        'contentId'     => $user->id,
-                        'contentType'   => 'bookings',
-                        'action'        => 'Cancel Recurring Booking - by staff',
-                        'description'   => 'Booking canceled for booking key : '.$key,
-                        'details'       => 'User Email : '.$user->email,
-                        'updated'       => true,
-                    ]);
+                if ($is_staff){
+                    $booking = Booking::where('status','=','active')->where('payment_type','=','recurring')->where('search_key','=',$key)->get()->first();
                 }
                 else{
-                    Booking::where('status','=','active')->where('payment_type','=','recurring')->where('by_user_id','=',$user->id)->where('search_key','=',$key)->update(['status'=>'canceled']);
+                    $booking = Booking::where('status','=','active')->where('payment_type','=','recurring')->where('by_user_id','=',$user->id)->where('search_key','=',$key)->get()->first();
+                }
 
-                    Activity::log([
-                        'contentId'     => $user->id,
-                        'contentType'   => 'bookings',
-                        'action'        => 'Cancel Recurring Booking - by member',
-                        'description'   => 'Booking canceled for booking key : '.$key,
-                        'details'       => 'User Email : '.$user->email,
-                        'updated'       => true,
-                    ]);
+                if ($booking && $booking->cancel_booking()){
+                    if ($is_staff){
+                        Activity::log([
+                            'contentId'     => $user->id,
+                            'contentType'   => 'bookings',
+                            'action'        => 'Cancel Recurring Booking - by staff',
+                            'description'   => 'Booking canceled for booking key : '.$key,
+                            'details'       => 'User Email : '.$user->email,
+                            'updated'       => true,
+                        ]);
+                    }
+                    else{
+                        Activity::log([
+                            'contentId'     => $user->id,
+                            'contentType'   => 'bookings',
+                            'action'        => 'Cancel Recurring Booking - by member',
+                            'description'   => 'Booking canceled for booking key : '.$key,
+                            'details'       => 'User Email : '.$user->email,
+                            'updated'       => true,
+                        ]);
+                    }
                 }
             }
 
