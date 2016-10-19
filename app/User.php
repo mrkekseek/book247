@@ -2,11 +2,15 @@
 
 namespace App;
 
+use App\Http\Controllers\MembershipController;
+use Carbon\Carbon;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Support\Facades\Auth;
 use Zizaco\Entrust\Traits\EntrustUserTrait;
 use App\UserMembership;
 use App\UserAvatars;
 use Storage;
+use Validator;
 
 class User extends Authenticatable
 {
@@ -168,6 +172,47 @@ class User extends Authenticatable
         $user_plan = new UserMembership();
         //$user_plan->assign_plan($this, $the_plan, $signed_by);
         if ( $user_plan->create_new($this, $the_plan, $signed_by) ){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
+    public function freeze_membership_plan(UserMembership $old_plan, $from_date, $to_date){
+        if ($old_plan) {
+            // insert a membership action related to this membership freeze
+            $fillable = [
+                'user_membership_id'    => $old_plan->id,
+                'action_type'   => 'freeze',
+                'start_date'    => $from_date->format('Y-m-d'),
+                'end_date'      => $to_date->format('Y-m-d'),
+                'added_by'      => Auth::user()->id,
+                'notes'         => json_encode([]),
+                'processed'     => 0
+            ];
+
+            $userMembershipAction = Validator::make($fillable, UserMembershipAction::rules('POST'), UserMembershipAction::$message, UserMembershipAction::$attributeNames);
+            if ($userMembershipAction->fails()){
+                //return $validator->errors()->all();
+                return array(
+                    'success'   => false,
+                    'title'     => 'Error Validating Action',
+                    'errors'    => $userMembershipAction->getMessageBag()->toArray()
+                );
+            }
+
+            UserMembershipAction::create($fillable);
+
+            // if the freeze starts today, then we freeze the membership plan
+            if (Carbon::today()->toDateString() == $from_date->toDateString()) {
+                // check the planned invoices that needs to be pushed out of the freeze period
+                MembershipController::freeze_membership_rebuild_invoices($old_plan);
+
+                $old_plan->status = 'suspended';
+                $old_plan->save();
+            }
+
             return true;
         }
         else{

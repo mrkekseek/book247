@@ -177,35 +177,39 @@
                                                         <form action="#" id="new_membership_plan" class="form-horizontal">
                                                             <div class="form-body">
                                                                 <div class="form-group">
-                                                                    <label class="control-label col-md-4"> Active Membership </label>
+                                                                    <label class="control-label col-md-3"> Active Membership </label>
                                                                     <div class="col-md-8">
-                                                                        @if ($membership_plan->membership_id!=1)
+                                                                        @if (isset($membership_plan->membership_id))
                                                                             <input class="form-control input-inline input-large inline-block" disabled readonly name="what_is_the_plan" value="{{$membership_plan->membership_name}}" />
-                                                                            <a href="#cancel_confirm_box" class="btn red-soft input" data-toggle="modal" style="min-width:190px;">
-                                                                                <i class="fa fa-pencil"></i> Cancel Current Plan</a>
+                                                                            @if ($membership_plan->status=='suspended')
+                                                                            <a href="#unfreeze_plan_box" class="btn bg-green-jungle bg-font-green-jungle input" data-toggle="modal" style="min-width:160px;">
+                                                                                <i class="fa fa-pause"></i> Un-Freeze Plan</a>
+                                                                            @else
+                                                                            <a href="#freeze_plan_box" class="btn bg-blue-sharp bg-font-blue-sharp input" data-toggle="modal" style="min-width:160px;">
+                                                                                <i class="fa fa-pause"></i> Freeze Plan</a>
+                                                                            @endif
+                                                                            <a href="#cancel_confirm_box" class="btn red-soft input" data-toggle="modal" style="min-width:160px;">
+                                                                                <i class="fa fa-eject"></i> Cancel Plan</a>
                                                                         @else
                                                                             <input class="form-control input-inline input-large inline-block" disabled readonly name="what_is_the_plan" value="No active Membership Plan" />
                                                                         @endif
                                                                     </div>
                                                                 </div>
-                                                                @if ($membership_plan->membership_id!=1)
+                                                                @if (isset($membership_plan->membership_id))
                                                                 <div class="form-group">
-                                                                    <label class="control-label col-md-4"> Current invoice period </label>
-                                                                    <div class="col-md-8">
-                                                                        <p class="form-control-static"> 22 Feb 2016 to 21 June 2016 </p>
+                                                                    <div class="col-md-5 text-right">
+                                                                        <i class="form-control-static"> Current invoice period : {{ $plan_details['invoicePeriod'] }} </i>
                                                                     </div>
-                                                                </div>
-                                                                <div class="form-group" style="border-bottom:1px solid #f1f1f1;">
-                                                                    <label class="control-label col-md-4"> Next invoice period</label>
-                                                                    <div class="col-md-8">
-                                                                        <p class="form-control-static"> 22 June 2016 to 21 Dec 2016 </p>
+                                                                    <div class="col-md-1"> &nbsp; </div>
+                                                                    <div class="col-md-5">
+                                                                        <i class="form-control-static"> Next invoice period : {{ $plan_details['nextInvoicePeriod'] }} </i>
                                                                     </div>
                                                                 </div>
                                                                 @endif
 
-                                                                @if (sizeof($memberships)>0 && $membership_plan->membership_id==1)
+                                                                @if (sizeof($memberships)>0 && !isset($membership_plan->membership_id))
                                                                 <div class="form-group">
-                                                                    <label class="control-label col-md-4 inline"> Change Plan To </label>
+                                                                    <label class="control-label col-md-3 inline"> Change Plan To </label>
                                                                     <div class="col-md-8">
                                                                         <select name="membership_plans_list" class="form-control input-inline input-large  inline-block list_all_plans">
                                                                             <option value="-1"> Select membership plan </option>
@@ -225,7 +229,7 @@
                                                 </div>
                                             </div>
 
-                                            @if ($membership_plan->membership_id!=1)
+                                            @if (isset($membership_plan->membership_id))
                                             <div class="col-md-12">
                                                 <div class="portlet light bordered">
                                                     <div class="portlet-title">
@@ -241,32 +245,32 @@
                                                     <div class="portlet-body row">
                                                         <!-- BEGIN FORM-->
                                                         @if($restrictions)
-                                                            <div class="col-md-3">
+                                                            <div class="col-md-4">
                                                                 <div class="note note-info font-grey-mint" style="min-height:110px; margin:0 0 10px; padding:5px 20px 10px 10px;">
                                                                     <p> Price </p>
                                                                     <h4 class="block" style="margin-bottom:0px; font-size:32px;"> <b>{{ $plan_details['price'] }} NOK</b> </h4>
                                                                 </div>
                                                             </div>
-                                                            <div class="col-md-3">
+                                                            <div class="col-md-4">
                                                                 <div class="note note-info font-grey-mint" style="min-height:110px; margin:0 0 10px; padding:5px 20px 10px 10px;">
                                                                     <p> Discount </p>
                                                                     <h4 class="block" style="margin-bottom:0px; font-size:32px;"> <b>{{ $plan_details['discount'] }}</b> </h4>
                                                                 </div>
                                                             </div>
-                                                            <div class="col-md-3">
+                                                            <div class="col-md-4">
                                                                 <div class="note note-warning font-grey-mint" style="min-height:110px; margin:0 0 10px; padding:5px 20px 10px 10px;">
                                                                     <p> Invoice Period </p>
                                                                     <h4 class="block" style="margin-bottom:0px; font-size:22px;"> <b>{{ $plan_details['invoice_period'] }}</b> </h4>
                                                                 </div>
                                                             </div>
-                                                            <div class="col-md-3">
+                                                            <div class="col-md-4">
                                                                 <div class="note note-info font-grey-mint" style="min-height:110px; margin:0 0 10px; padding:5px 20px 10px 10px;">
                                                                     <p> Signed On </p>
                                                                     <h4 class="block" style="margin-bottom:0px; font-size:24px;"> {{ $plan_details['day_start'] }} </h4>
                                                                 </div>
                                                             </div>
-                                                            <div class="col-md-6">
-                                                                <div class="note note-info font-purple" style="min-height:95px; margin:0 0 10px; padding:5px 20px 10px 10px;">
+                                                            <div class="col-md-4">
+                                                                <div class="note note-info font-purple" style="min-height:110px; margin:0 0 10px; padding:5px 20px 10px 10px;">
                                                                     <p> Signed By </p>
                                                                     @if($plan_details['signed_by_link']!='')
                                                                         <h4 class="block" style="margin-bottom:0px; font-size:24px;"> <b><a class="font-purple" href="{{ $plan_details['signed_by_link'] }}" target="_blank"> {{ $plan_details['signed_by_name'] }} </a></b> </h4>
@@ -276,13 +280,7 @@
                                                                 </div>
                                                             </div>
                                                             <div class="col-md-4">
-                                                                <div class="note note-warning" style="min-height:95px; margin:0 0 10px; padding:5px 20px 10px 10px;">
-                                                                    <p> Current invoice period </p>
-                                                                    <h4 class="block" style="margin-bottom:0px; font-size:18px;"> {{ $plan_details['invoicePeriod'] }} </h4>
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-md-2">
-                                                                <div class="note note-danger bg-red-flamingo bg-font-red-flamingo color-white" style="min-height:95px; margin:0 0 10px; padding:5px 20px 10px 10px;">
+                                                                <div class="note note-danger bg-red-flamingo bg-font-red-flamingo color-white" style="min-height:110px; margin:0 0 10px; padding:5px 20px 10px 10px;">
                                                                     <p> Invoice Status </p>
                                                                     <h4 class="block" style="margin-bottom:0px; font-size:24px;"> Not Paid </h4>
                                                                 </div>
@@ -621,8 +619,68 @@
                     </div>
                     <!-- /.modal-dialog -->
                 </div>
-                <!-- END PROFILE CONTENT -->
+
+                <!-- BEGIN Booking No Show modal window -->
+                <div class="modal fade" id="freeze_plan_box" tabindex="-1" role="dialog" aria-hidden="true">
+                    <div class="modal-dialog" style="margin-top:45px;">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                                <h4 class="modal-title"> Freeze membership plan </h4>
+                            </div>
+                            <div class="modal-body form-horizontal" id="recurring_details_container" style="min-height:200px;">
+                                <div class="note note-warning">
+                                    <h4 class="block">Freezing the membership plan suspends the membership</h4>
+                                    <p> Please add the date interval for which the membership plan is suspended. Once the end of the interval is reached, the membership will carry on and a new invoice will be generated.<br />
+                                        <br />The membership period will be extended with the period the membership is freezed.</p>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-3">Freeze Interval</label>
+                                    <div class="col-md-8">
+                                        <div class="input-group input-large date-picker input-daterange" data-date-start-date="{{\Carbon\Carbon::today()->addDays(30)->format('d-m-Y')}}" data-date-end-date="{{\Carbon\Carbon::today()->addDays(90)->format('d-m-Y')}}" data-date-format="dd-mm-yyyy">
+                                            <input type="text" class="form-control input-sm" name="freeze_from_date" id="freeze_from_date" value="{{\Carbon\Carbon::today()->addDays(30)->format('d-m-Y')}}">
+                                            <span class="input-group-addon"> to </span>
+                                            <input type="text" class="form-control input-sm" name="freeze_to_date" id="freeze_to_date"> </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn green btn_no_show" data-toggle="modal" href="#freeze_plan_confirm_box">Freeze plan</button>
+                                <button type="button" class="btn dark btn-outline" data-dismiss="modal">Return</button>
+                            </div>
+                        </div>
+                        <!-- /.modal-content -->
+                    </div>
+                    <!-- /.modal-dialog -->
+                </div>
+                <!-- END No Show modal window -->
+
+                <!-- BEGIN Recurrent Cancel Confirm modal window show -->
+                <div class="modal fade" id="freeze_plan_confirm_box" tabindex="-1" role="dialog" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content" style="margin-left:20px; margin-right:20px; margin-top:60px;">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                                <h4 class="modal-title">Membership Freeze Confirmation?</h4>
+                            </div>
+                            <div class="modal-body">
+                                <div class="note note-info" style="margin-bottom:0px;">
+                                    <h4 class="block">Freeze membership plan</h4>
+                                    <p> By clicking "Yes, Freeze" the membership plan will be suspended for the selected date interval and re-activated after the time passes. Do you want to proceed with this action? </p>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn dark btn-outline" data-dismiss="modal">No, Go Back</button>
+                                <button type="button" class="btn green" onclick="javascript:freeze_membership();">Yes, Freeze</button>
+                            </div>
+                        </div>
+                        <!-- /.modal-content -->
+                    </div>
+                    <!-- /.modal-dialog -->
+                </div>
+                <!-- END Recurrent Cancel Confirm modal window show -->
             </div>
+            <!-- END PROFILE CONTENT -->
         </div>
         <!-- END PAGE BASE CONTENT -->
     </div>
@@ -1209,18 +1267,21 @@
             });
         }
 
-        function suspend_membership(){
+        function freeze_membership(){
             var userID = '{{$user->id}}';
 
             $.ajax({
-                url: '{{route('admin/membership_plans/cancel_member_plan')}}',
+                url: '{{route('admin/membership_plans/freeze_member_plan')}}',
                 type: "post",
                 data: {
+                    'from_date': $('input[name="freeze_from_date"]').val(),
+                    'to_date': $('input[name="freeze_to_date"]').val(),
                     'member_id':userID
                 },
                 success: function(data){
                     if (data.success) {
-                        $('#cancel_confirm_box').modal('hide');
+                        $('#freeze_plan_confirm_box').modal('hide');
+                        $('#freeze_plan_box').modal('hide');
                         show_notification(data.title, data.message, 'lime', 3500, 0);
 
                         setTimeout(function(){
@@ -1228,6 +1289,7 @@
                         },2000);
                     }
                     else{
+                        $('#freeze_plan_confirm_box').modal('hide');
                         show_notification(data.title, data.errors, 'tangerine', 3500, 0);
                     }
                 }

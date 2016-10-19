@@ -357,19 +357,24 @@ class FrontEndUserController extends Controller
 
             $currentInvoiceDate = UserMembershipInvoicePlanning::where('status','=','old')->where('user_membership_id','=',$my_plan->id)->orderBy('issued_date','desc')->get()->first();
             if ($currentInvoiceDate) {
-                $invoice_date = Carbon::createFromFormat('Y-m-d', $currentInvoiceDate->issued_date);
-                if ($my_plan->invoice_period == 7 || $my_plan->invoice_period == 14) {
-                    $plan_details['invoicePeriod'] = $invoice_date->format('j M Y') . ' - ' . $invoice_date->addDays($my_plan->invoice_period)->format('j M Y');
-                } elseif ($my_plan->invoice_period == 30 || $my_plan->invoice_period == 90 || $my_plan->invoice_period == 180) {
-                    $plan_details['invoicePeriod'] = $invoice_date->format('j M Y') . ' - ' . $invoice_date->addMonths($my_plan->invoice_period / 30)->format('j M Y');
-                    //echo '2';
-                } else {
-                    $plan_details['invoicePeriod'] = $invoice_date->format('j M Y') . ' - ' . $invoice_date->addYear()->format('j M Y');
-                    //echo '3';
-                }
+                $invoice_date1 = Carbon::createFromFormat('Y-m-d', $currentInvoiceDate->issued_date);
+                $invoice_date2 = Carbon::createFromFormat('Y-m-d', $currentInvoiceDate->last_active_date);
+
+                $plan_details['invoicePeriod'] = $invoice_date1->format('j M Y') . ' - ' . $invoice_date2->format('j M Y');
             }
             else{
                 $plan_details['invoicePeriod'] = '-';
+            }
+
+            $nextInvoiceDate = UserMembershipInvoicePlanning::where('status','=','pending')->where('user_membership_id','=',$my_plan->id)->orderBy('issued_date','asc')->get()->first();
+            if ($nextInvoiceDate) {
+                $invoice_date1 = Carbon::createFromFormat('Y-m-d', $nextInvoiceDate->issued_date);
+                $invoice_date2 = Carbon::createFromFormat('Y-m-d', $nextInvoiceDate->last_active_date);
+
+                $plan_details['nextInvoicePeriod'] = $invoice_date1->format('j M Y') . ' - ' . $invoice_date2->format('j M Y');
+            }
+            else{
+                $plan_details['nextInvoicePeriod'] = '-';
             }
 
             $allPlannedInvoices = UserMembershipInvoicePlanning::where('user_membership_id','=',$my_plan->id)->orderBy('issued_date','asc')->get();

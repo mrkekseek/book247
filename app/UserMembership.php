@@ -334,4 +334,24 @@ class UserMembership extends Model
         $lastInv->status = 'last';
         $lastInv->save();
     }
+
+    public static function invoice_membership_period($invoiceDate, $invoicePeriod){
+        if ($invoicePeriod==7 || $invoicePeriod==14){
+            //$invoiceDate->addDays($invoicePeriod);
+            $invoice_last_active = Carbon::instance($invoiceDate)->addDays($invoicePeriod)->addDays(-1);
+        }
+        elseif($invoicePeriod==30 || $invoicePeriod==90 || $invoicePeriod==180){
+            //$invoiceDate->addMonths($invoicePeriod/30);
+            $invoice_last_active = Carbon::instance($invoiceDate)->addMonths($invoicePeriod/30)->addDays(-1);
+        }
+        else{
+            //$invoiceDate->addYear();
+            $invoice_last_active = Carbon::instance($invoiceDate)->addYear()->addDays(-1);
+        }
+
+        return [
+            'first_day' => $invoiceDate,
+            'last_day'  => $invoice_last_active
+        ];
+    }
 }

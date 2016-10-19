@@ -40,7 +40,7 @@ class UserMembershipAction extends Model
             case 'POST':
             {
                 return [
-                    'user_membership_id' => 'required|exists:membership_plans,id',
+                    'user_membership_id' => 'required|exists:user_memberships,id',
                     'action_type'   => 'required|in:freeze,cancel',
                     'start_date'    => 'required|date',
                     'end_date'  => 'required|date',
@@ -52,7 +52,7 @@ class UserMembershipAction extends Model
             case 'PATCH':
             {
                 return [
-                    'user_membership_id' => 'required|exists:membership_plans,id',
+                    'user_membership_id' => 'required|exists:user_memberships,id',
                     'action_type'   => 'required|in:freeze,cancel',
                     'start_date'    => 'required|date',
                     'end_date'  => 'required|date',
@@ -62,5 +62,11 @@ class UserMembershipAction extends Model
             }
             default:break;
         }
+    }
+
+    public function process_action(){
+
+
+        return true;
     }
 }

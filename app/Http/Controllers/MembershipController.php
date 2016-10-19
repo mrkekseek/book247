@@ -7,6 +7,8 @@ use App\MembershipPlanPrice;
 use App\Role;
 use App\UserMembership;
 use App\ShopResourceCategory;
+use App\UserMembershipAction;
+use App\UserMembershipInvoicePlanning;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Auth;
@@ -90,6 +92,117 @@ class MembershipController extends Controller
                 'errors'    => 'Could not assign plan to member. Please logout/login then try again.',
                 'title'     => 'An error occurred'
             ];
+        }
+    }
+
+    public function freeze_membership_for_member(Request $request){
+        if (!Auth::check()) {
+            return [
+                'success'   => false,
+                'title'     => 'An error occurred',
+                'errors'    => 'You need to be logged in to have access to this function'
+            ];
+        }
+        else{
+            $user = Auth::user();
+            $is_backend_employee = $user->can('members-management');
+        }
+
+        $vars = $request->only('member_id', 'from_date', 'to_date');
+        if ($is_backend_employee==false && $user->id!=$vars['member_id']){
+            return [
+                'success'   => false,
+                'errors'    => 'You don\'t have the permissions to change membership plans.',
+                'title'     => 'An error occurred'
+            ];
+        }
+
+        if ($user->id!=$vars['member_id']){
+            // we have an employee and a member
+            $member = User::where('id','=',$vars['member_id'])->get()->first();
+            if (!$member){
+                return [
+                    'success'   => false,
+                    'errors'    => 'You don\'t have the permissions to change membership plans.',
+                    'title'     => 'An error occurred'
+                ];
+            }
+        }
+        else{
+            $member = $user;
+        }
+
+        try{
+            $from_date = Carbon::createFromFormat('d-m-Y',$vars['from_date']);
+            $to_date = Carbon::createFromFormat('d-m-Y',$vars['to_date']);
+        }
+        catch (\Exception $err){
+            return [
+                'success'   => false,
+                'errors'    => 'Invalid interval dates entered. Please check the dates again',
+                'title'     => 'An error occurred'
+            ];
+        }
+
+        $old_plan = UserMembership::where('user_id','=',$member->id)->whereIn('status',['active','suspended'])->orderBy('created_at','desc')->get()->first();
+        if ($old_plan) {
+            $member->freeze_membership_plan($old_plan, $from_date, $to_date);
+            $this->freeze_membership_rebuild_invoices($old_plan);
+
+            return [
+                'success'   => true,
+                'message'   => 'Membership status changed to freeze. At the end of the selected period the membership will automatically re-activate.',
+                'title'     => 'Membership plan froze'
+            ];
+        }
+        else{
+            return [
+                'success'   => false,
+                'errors'    => 'Could not freeze the current membership plan or no active plan at this moment. Please logout/login then try again.',
+                'title'     => 'An error occurred'
+            ];
+        }
+    }
+
+    public function freeze_membership_rebuild_invoices($membershipPlan){
+        // get freeze period from user_membership_invoice_planning that is unprocessed
+        $freezePeriod = UserMembershipAction::where('user_membership_id','=',$membershipPlan->id)
+            ->where('processed','=','0')
+            ->where('action_type','=','freeze')
+            ->orderBy('created_at','DESC')
+            ->get()
+            ->first();
+        if (!$freezePeriod){
+            return ['success' => false, 'errors' => 'no membership actions found for the given User Membership Plan'];
+        }
+        else{
+            $freezePeriod->processed = 1;
+            $freezePeriod->save();
+        }
+
+        $startDate  = Carbon::createFromFormat('Y-m-d',$freezePeriod->start_date);
+        $endDate    = Carbon::createFromFormat('Y-m-d',$freezePeriod->end_date);
+
+        $planned_invoices = UserMembershipInvoicePlanning::where('user_membership_id','=',$membershipPlan->id)->where('status','=','pending')->orderBy('created_at','ASC')->get();
+        if ($planned_invoices){
+            foreach($planned_invoices as $invoice){
+                $invoiceStart = Carbon::createFromFormat('Y-m-d', $invoice->issued_date);
+                if ($invoiceStart->gte($startDate)){
+                    $dates = UserMembership::invoice_membership_period($endDate->addDay(), $membershipPlan->invoice_period);
+
+                    // freeze start date is less or equal to invoice start date
+                    $invoice->issued_date       = $dates['first_day']->toDateString();
+                    $invoice->last_active_date  = $dates['last_day']->toDateString();
+                    $invoice->save();
+
+                    $endDate = $dates['last_day'];
+                }
+            }
+
+            return ['success' => true, 'message' => 'Invoices updated'];
+        }
+        else{
+            return ['success' => true, 'message' => 'No invoice updated'];
         }
     }
 
