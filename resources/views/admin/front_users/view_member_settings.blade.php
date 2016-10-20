@@ -362,31 +362,9 @@
                                                                 </thead>
                                                                 <tbody>
                                                                 @foreach ($plannedInvoices as $singlePlanned)
-                                                                    <tr>
-                                                                        <td class="highlight">
-                                                                        @if ($singlePlanned['invoiceLink']!='')
-                                                                            <div class="success"></div>
-                                                                            <a href="{{ $singlePlanned['invoiceLink'] }}" target="_blank"> {{ $singlePlanned['item_name'] }} </a>
-                                                                        @else
-                                                                            <div class="success"></div>
-                                                                            <span> &nbsp; &nbsp; {{ $singlePlanned['item_name'] }} </span>
-                                                                        @endif
-                                                                        </td>
-                                                                        <td> {{ $singlePlanned['issued_date'] }} - {{ $singlePlanned['status'] }} </td>
-                                                                        <td> {{ $singlePlanned['last_active_date'] }} </td>
-                                                                        <td class="hidden-xs"> {{ $singlePlanned['price'] }} NOK </td>
-                                                                        <td>
-                                                                            @if ($singlePlanned['invoiceStatus']!='')
-                                                                                <span class="label label-sm label-success"> {{$singlePlanned['invoiceStatus']}} </span>
-                                                                            @endif
-                                                                        </td>
-                                                                        <!--<td> <a href="javascript:;" class="btn btn-sm green"> Group Invoices <i class="fa fa-plus"></i></a>
-                                                                            <a href="javascript:;" class="btn btn-sm purple"> Defer <i class="fa fa-times"></i></a></td>-->
-                                                                    </tr>
-
                                                                     @if (sizeof($plan_requests)>0)
                                                                         @foreach($plan_requests as $one_request)
-                                                                            @if ($one_request['action_type']=='freeze' && $one_request['start_date']->between(\Carbon\Carbon::createFromFormat('Y-m-d H:i:s',$singlePlanned['issued_date'].' 00:00:00'), \Carbon\Carbon::createFromFormat('Y-m-d H:i:s',$singlePlanned['last_active_date'].' 00:00:00')))
+                                                                            @if ($one_request['action_type']=='freeze' && $one_request['after_date']->between(\Carbon\Carbon::createFromFormat('Y-m-d H:i:s',$singlePlanned['issued_date'].' 00:00:00'), \Carbon\Carbon::createFromFormat('Y-m-d H:i:s',$singlePlanned['last_active_date'].' 00:00:00')))
                                                                                 <tr>
                                                                                     <td class="highlight" colspan="5">
                                                                                         @if ($one_request['processed']=='1')
@@ -411,6 +389,28 @@
                                                                             @endif
                                                                         @endforeach
                                                                     @endif
+
+                                                                    <tr>
+                                                                        <td class="highlight">
+                                                                        @if ($singlePlanned['invoiceLink']!='')
+                                                                            <div class="success"></div>
+                                                                            <a href="{{ $singlePlanned['invoiceLink'] }}" target="_blank"> {{ $singlePlanned['item_name'] }} </a>
+                                                                        @else
+                                                                            <div class="success"></div>
+                                                                            <span> &nbsp; &nbsp; {{ $singlePlanned['item_name'] }} </span>
+                                                                        @endif
+                                                                        </td>
+                                                                        <td> {{ $singlePlanned['issued_date'] }} - {{ $singlePlanned['status'] }} </td>
+                                                                        <td> {{ $singlePlanned['last_active_date'] }} </td>
+                                                                        <td class="hidden-xs"> {{ $singlePlanned['price'] }} NOK </td>
+                                                                        <td>
+                                                                            @if ($singlePlanned['invoiceStatus']!='')
+                                                                                <span class="label label-sm label-success"> {{$singlePlanned['invoiceStatus']}} </span>
+                                                                            @endif
+                                                                        </td>
+                                                                        <!--<td> <a href="javascript:;" class="btn btn-sm green"> Group Invoices <i class="fa fa-plus"></i></a>
+                                                                            <a href="javascript:;" class="btn btn-sm purple"> Defer <i class="fa fa-times"></i></a></td>-->
+                                                                    </tr>
                                                                 @endforeach
                                                                 </tbody>
                                                             </table>

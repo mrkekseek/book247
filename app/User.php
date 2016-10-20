@@ -117,10 +117,13 @@ class User extends Authenticatable
     }
 
     public function membership_status(){
-        $membership = UserMembership::where('user_id','=',$this->id)->whereIn('status',['active','unpaid'])->orderBy('created_at','DESC')->get()->first();
+        $membership = UserMembership::where('user_id','=',$this->id)->whereIn('status',['active','unpaid','suspended'])->orderBy('created_at','DESC')->get()->first();
         if ($membership){
             if ($membership->status=='active'){
                 return $membership->membership_name;
+            }
+            elseif($membership->status=='suspended'){
+                return $membership->membership_name.' - frozen';
             }
             else{
                 return $membership->membership_name.' - unpaid';

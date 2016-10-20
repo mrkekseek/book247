@@ -147,7 +147,6 @@ class MembershipController extends Controller
         $old_plan = UserMembership::where('user_id','=',$member->id)->whereIn('status',['active','suspended'])->orderBy('created_at','desc')->get()->first();
         if ($old_plan) {
             $member->freeze_membership_plan($old_plan, $from_date, $to_date);
-            $this->freeze_membership_rebuild_invoices($old_plan);
 
             return [
                 'success'   => true,

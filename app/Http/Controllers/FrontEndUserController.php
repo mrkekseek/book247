@@ -379,6 +379,8 @@ class FrontEndUserController extends Controller
                 $plan_details['nextInvoicePeriod'] = '-';
             }
 
+            $plan_request = $my_plan->get_plan_requests();
+
             $allPlannedInvoices = UserMembershipInvoicePlanning::where('user_membership_id','=',$my_plan->id)->orderBy('issued_date','asc')->get();
             $plannedInvoices = [];
             foreach($allPlannedInvoices as $onlyOne){
@@ -400,9 +402,13 @@ class FrontEndUserController extends Controller
                 }
 
                 $plannedInvoices[$onlyOne->id] = $varInv;
-            }
 
-            $plan_request = $my_plan->get_plan_requests();
+                foreach ($plan_request as $key=>$a_request){
+                    if (!isset($a_request['after_date']) && $a_request['start_date']->lte(Carbon::createFromFormat('Y-m-d H:i:s', $onlyOne->issued_date.' 00:00:00'))){
+                        $plan_request[$key]['after_date'] = Carbon::createFromFormat('Y-m-d H:i:s', $onlyOne->issued_date.' 00:00:00');
+                    }
+                }
+            }
 
             $signOutDate = Carbon::today()->addMonths($my_plan->sign_out_period);
             //xdebug_var_dump($signOutDate);
