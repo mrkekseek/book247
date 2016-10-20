@@ -175,7 +175,7 @@ class Booking extends Model
         }
 
         $bookingDetails = [
-            'addedOn'       => Carbon::createFromFormat('Y-m-d H:i:s', $this->created_at)->format('l, M jS, Y'),
+            'addedOn'       => Carbon::createFromFormat('Y-m-d H:i:s', $this->created_at)->format('l, M jS, Y \a\t H:i'),
             'bookingDate'   => Carbon::createFromFormat('Y-m-d', $this->date_of_booking)->format('l, M jS, Y'),
             'timeStart'     => Carbon::createFromFormat('H:i:s', $this->booking_time_start)->format('H:i'),
             'timeStop'      => Carbon::createFromFormat('H:i:s', $this->booking_time_stop)->format('H:i'),
