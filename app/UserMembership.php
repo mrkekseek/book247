@@ -354,4 +354,33 @@ class UserMembership extends Model
             'last_day'  => $invoice_last_active
         ];
     }
+
+    public function get_plan_requests(){
+        $plan_requests = [];
+        $requests = UserMembershipAction::where('user_membership_id','=',$this->id)->orderBy('start_date','ASC')->get();
+        foreach($requests as $request){
+            $user = User::where('id','=',$request->added_by)->get()->first();
+            $user_name = $user->first_name.' '.$user->middle_name.' '.$user->last_name;
+            if ($user->is_back_user()){
+                $user_link = route('admin/back_users/view_user/personal_info',['id' => $user->id]);
+            }
+            else{
+                $user_link = route('admin/front_users/view_user/personal_info',['id' => $user->id]);
+            }
+
+            $plan_requests[] = [
+                'action_type'   => $request->action_type,
+                'start_date'    => Carbon::createFromFormat('Y-m-d H:i:s',$request->start_date.' 00:00:00'),
+                'end_date'      => Carbon::createFromFormat('Y-m-d H:i:s',$request->end_date.' 00:00:00'),
+                'added_by_name' => $user_name,
+                'added_by_link' => $user_link,
+                'notes'         => $request->notes,
+                'processed'     => $request->processed,
+                'updated_at'    => Carbon::createFromFormat('Y-m-d H:i:s',$request->updated_at)->format('d M Y H:i'),
+                'created_at'    => Carbon::createFromFormat('Y-m-d H:i:s',$request->created_at)->format('d M Y H:i')
+            ];
+        }
+
+        return $plan_requests;
+    }
 }

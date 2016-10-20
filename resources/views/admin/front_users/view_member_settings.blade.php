@@ -183,12 +183,12 @@
                                                                             <input class="form-control input-inline input-large inline-block" disabled readonly name="what_is_the_plan" value="{{$membership_plan->membership_name}}" />
                                                                             @if ($membership_plan->status=='suspended')
                                                                             <a href="#unfreeze_plan_box" class="btn bg-green-jungle bg-font-green-jungle input" data-toggle="modal" style="min-width:160px;">
-                                                                                <i class="fa fa-pause"></i> Un-Freeze Plan</a>
+                                                                                <i class="fa fa-play"></i> Un-Freeze Plan</a>
                                                                             @else
                                                                             <a href="#freeze_plan_box" class="btn bg-blue-sharp bg-font-blue-sharp input" data-toggle="modal" style="min-width:160px;">
                                                                                 <i class="fa fa-pause"></i> Freeze Plan</a>
                                                                             @endif
-                                                                            <a href="#cancel_confirm_box" class="btn red-soft input" data-toggle="modal" style="min-width:160px;">
+                                                                            <a href="#cancel_plan_box" class="btn red-soft input" data-toggle="modal" style="min-width:160px;">
                                                                                 <i class="fa fa-eject"></i> Cancel Plan</a>
                                                                         @else
                                                                             <input class="form-control input-inline input-large inline-block" disabled readonly name="what_is_the_plan" value="No active Membership Plan" />
@@ -362,27 +362,55 @@
                                                                 </thead>
                                                                 <tbody>
                                                                 @foreach ($plannedInvoices as $singlePlanned)
-                                                                <tr>
-                                                                    <td class="highlight">
-                                                                    @if ($singlePlanned['invoiceLink']!='')
-                                                                        <div class="success"></div>
-                                                                        <a href="{{ $singlePlanned['invoiceLink'] }}" target="_blank"> {{ $singlePlanned['item_name'] }} </a>
-                                                                    @else
-                                                                        <div class="success"></div>
-                                                                        <span> &nbsp; &nbsp; {{ $singlePlanned['item_name'] }} </span>
-                                                                    @endif
-                                                                    </td>
-                                                                    <td> {{ $singlePlanned['issued_date'] }} - {{ $singlePlanned['status'] }} </td>
-                                                                    <td> {{ $singlePlanned['last_active_date'] }} </td>
-                                                                    <td class="hidden-xs"> {{ $singlePlanned['price'] }} NOK </td>
-                                                                    <td>
-                                                                        @if ($singlePlanned['invoiceStatus']!='')
-                                                                            <span class="label label-sm label-success"> {{$singlePlanned['invoiceStatus']}} </span>
+                                                                    <tr>
+                                                                        <td class="highlight">
+                                                                        @if ($singlePlanned['invoiceLink']!='')
+                                                                            <div class="success"></div>
+                                                                            <a href="{{ $singlePlanned['invoiceLink'] }}" target="_blank"> {{ $singlePlanned['item_name'] }} </a>
+                                                                        @else
+                                                                            <div class="success"></div>
+                                                                            <span> &nbsp; &nbsp; {{ $singlePlanned['item_name'] }} </span>
                                                                         @endif
-                                                                    </td>
-                                                                    <!--<td> <a href="javascript:;" class="btn btn-sm green"> Group Invoices <i class="fa fa-plus"></i></a>
-                                                                        <a href="javascript:;" class="btn btn-sm purple"> Defer <i class="fa fa-times"></i></a></td>-->
-                                                                </tr>
+                                                                        </td>
+                                                                        <td> {{ $singlePlanned['issued_date'] }} - {{ $singlePlanned['status'] }} </td>
+                                                                        <td> {{ $singlePlanned['last_active_date'] }} </td>
+                                                                        <td class="hidden-xs"> {{ $singlePlanned['price'] }} NOK </td>
+                                                                        <td>
+                                                                            @if ($singlePlanned['invoiceStatus']!='')
+                                                                                <span class="label label-sm label-success"> {{$singlePlanned['invoiceStatus']}} </span>
+                                                                            @endif
+                                                                        </td>
+                                                                        <!--<td> <a href="javascript:;" class="btn btn-sm green"> Group Invoices <i class="fa fa-plus"></i></a>
+                                                                            <a href="javascript:;" class="btn btn-sm purple"> Defer <i class="fa fa-times"></i></a></td>-->
+                                                                    </tr>
+
+                                                                    @if (sizeof($plan_requests)>0)
+                                                                        @foreach($plan_requests as $one_request)
+                                                                            @if ($one_request['action_type']=='freeze' && $one_request['start_date']->between(\Carbon\Carbon::createFromFormat('Y-m-d H:i:s',$singlePlanned['issued_date'].' 00:00:00'), \Carbon\Carbon::createFromFormat('Y-m-d H:i:s',$singlePlanned['last_active_date'].' 00:00:00')))
+                                                                                <tr>
+                                                                                    <td class="highlight" colspan="5">
+                                                                                        @if ($one_request['processed']=='1')
+                                                                                            <div class="warning"></div> <a class="font-green-seagreen"> Processed - </a>
+                                                                                        @else
+                                                                                            <div class="danger"></div> <a class="font-red-thunderbird"> Pending - </a>
+                                                                                        @endif
+                                                                                        Freeze membership between <b class="font-purple-studio">{{ $one_request['start_date']->format('d M Y') }}</b> and <b class="font-purple-studio">{{ $one_request['end_date']->format('d M Y') }}</b>. Action added by <a style="margin-left:0px;" href="{{ $one_request['added_by_link'] }}" target="_blank">{{ $one_request['added_by_name'] }}</a> on {{ $one_request['created_at'] }} (last update on {{ $one_request['updated_at'] }})
+                                                                                    </td>
+                                                                                </tr>
+                                                                            @elseif ($one_request['action_type']=='cancel' && $one_request['start_date']->eq(\Carbon\Carbon::createFromFormat('Y-m-d H:i:s',$singlePlanned['last_active_date'].' 00:00:00')->addDay()))
+                                                                                <tr>
+                                                                                    <td class="highlight" colspan="5">
+                                                                                        @if ($one_request['processed']=='1')
+                                                                                            <div class="warning"></div> <a class="font-green-seagreen"> Processed - </a>
+                                                                                        @else
+                                                                                            <div class="danger"></div> <a class="font-red-thunderbird"> Pending - </a>
+                                                                                        @endif
+                                                                                        Membership cancellation starting with <b class="font-purple-studio">{{ $one_request['start_date']->format('d M Y') }}</b>. Action added by <a style="margin-left:0px;" href="{{ $one_request['added_by_link'] }}" target="_blank">{{ $one_request['added_by_name'] }}</a> on {{ $one_request['created_at'] }} (last update on {{ $one_request['updated_at'] }})
+                                                                                    </td>
+                                                                                </tr>
+                                                                            @endif
+                                                                        @endforeach
+                                                                    @endif
                                                                 @endforeach
                                                                 </tbody>
                                                             </table>
@@ -601,7 +629,32 @@
                     <!-- /.modal-dialog -->
                 </div>
 
-                <div class="modal fade bs-modal-sm" id="cancel_confirm_box" tabindex="-1" role="dialog" aria-hidden="true">
+                <div class="modal fade bs-modal-sm" id="cancel_plan_box" tabindex="-1" role="dialog" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                                <h4 class="modal-title">Do you want to cancel the current membership plan?</h4>
+                            </div>
+                            <div class="modal-body margin-top-10" style="margin-bottom:0px; padding-bottom:5px;"> Please select the first day with no plan from the drop-down list below</div>
+                            <div class="modal-body margin-bottom-20" style="padding-top:5px;">
+                                <select name="date_cancellation_time" id="date_cancellation_time" class="form-control input-inline input-large  inline-block list_all_plans">
+                                    @foreach ($invoiceCancellation as $key=>$val)
+                                        <option value="{{$key}}"> {{$val}} </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn dark btn-outline" data-dismiss="modal">No, Go Back</button>
+                                <button type="button" class="btn green" data-toggle="modal" href="#cancel_plan_confirm_box">Cancel Membership</button>
+                            </div>
+                        </div>
+                        <!-- /.modal-content -->
+                    </div>
+                    <!-- /.modal-dialog -->
+                </div>
+
+                <div class="modal fade bs-modal-sm" id="cancel_plan_confirm_box" tabindex="-1" role="dialog" aria-hidden="true">
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header">
@@ -1303,7 +1356,8 @@
                 url: '{{route('admin/membership_plans/cancel_member_plan')}}',
                 type: "post",
                 data: {
-                    'member_id':userID
+                    'member_id':userID,
+                    'cancellation_date':$('select[name="date_cancellation_time"]').val()
                 },
                 success: function(data){
                     if (data.success) {

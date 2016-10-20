@@ -220,13 +220,53 @@ class User extends Authenticatable
         }
     }
 
-    public function cancel_membership_plan(UserMembership $old_plan){
-        if ($old_plan) {
-            $old_plan->status = 'canceled';
-            $old_plan->save();
+    public function cancel_membership_plan(UserMembership $old_plan, $cancel_date = ''){
+        if ($cancel_date == ''){
+            $cancel_date = Carbon::today();
+        }
+        else{
+            try {
+                $cancel_date = Carbon::createFromFormat('Y-m-d',$cancel_date);
+            }
+            catch (\Exception $ex){
+                $cancel_date = Carbon::today();
+            }
+        }
 
-            $memberRole = Role::where('name','=','front-member')->get()->first();
-            $this->detachRole($memberRole);
+        if ($old_plan) {
+            // insert a membership action related to this membership freeze
+            $fillable = [
+                'user_membership_id'    => $old_plan->id,
+                'action_type'   => 'cancel',
+                'start_date'    => $cancel_date->format('Y-m-d'),
+                'end_date'      => $cancel_date->format('Y-m-d'),
+                'added_by'      => Auth::user()->id,
+                'notes'         => json_encode([]),
+                'processed'     => 0
+            ];
+
+            $userMembershipAction = Validator::make($fillable, UserMembershipAction::rules('POST'), UserMembershipAction::$message, UserMembershipAction::$attributeNames);
+            if ($userMembershipAction->fails()){
+                //return $validator->errors()->all();
+                return array(
+                    'success'   => false,
+                    'title'     => 'Error Validating Action',
+                    'errors'    => $userMembershipAction->getMessageBag()->toArray()
+                );
+            }
+
+            UserMembershipAction::create($fillable);
+
+            // if the freeze starts today, then we freeze the membership plan
+            if (Carbon::today()->toDateString() == $cancel_date->toDateString()) {
+                // check the planned invoices that needs to be pushed out of the freeze period
+                MembershipController::cancel_membership_rebuild_invoices($old_plan);
+
+                $old_plan->status = 'canceled';
+                $old_plan->save();
+                $memberRole = Role::where('name','=','front-member')->get()->first();
+                $this->detachRole($memberRole);
+            }
 
             return true;
         }

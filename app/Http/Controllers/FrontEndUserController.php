@@ -350,6 +350,8 @@ class FrontEndUserController extends Controller
 
         $userDocuments = UserDocuments::where('user_id','=',$id)->where('category','=','account_documents')->get();
 
+        $plan_request = [];
+        $invoiceCancellation = [];
         $my_plan = UserMembership::where('user_id','=',$back_user->id)->whereIn('status',['active','suspended'])->get()->first();
         if ($my_plan){
             $restrictions = $my_plan->get_plan_restrictions();
@@ -399,6 +401,19 @@ class FrontEndUserController extends Controller
 
                 $plannedInvoices[$onlyOne->id] = $varInv;
             }
+
+            $plan_request = $my_plan->get_plan_requests();
+
+            $signOutDate = Carbon::today()->addMonths($my_plan->sign_out_period);
+            //xdebug_var_dump($signOutDate);
+            foreach($allPlannedInvoices as $onlyOne){
+                //xdebug_var_dump(Carbon::createFromFormat('Y-m-d',$onlyOne->issued_date));
+                if ($signOutDate->lte(Carbon::createFromFormat('Y-m-d',$onlyOne->issued_date))){
+                    $invoiceCancellation[$onlyOne->id] = $onlyOne->issued_date;
+                }
+            }
+            //xdebug_var_dump($invoiceCancellation);
+            //exit;
         }
         else {
             $my_plan = MembershipPlan::where('id','=',1)->get()->first();
@@ -418,8 +433,8 @@ class FrontEndUserController extends Controller
             'userRole'  => $userRole,
             'professional' => $userProfessional,
             'personal'  => $userPersonal,
-            'personalAddress' => $personalAddress,
-            'countryDetails' => $userCountry,
+            'personalAddress'   => $personalAddress,
+            'countryDetails'    => $userCountry,
             'countries' => $countries,
             'roles'     => $roles,
             'breadcrumbs' => $breadcrumbs,
@@ -430,12 +445,14 @@ class FrontEndUserController extends Controller
             'documents'   => $userDocuments,
             // membership plan
             'membership_plan'   => $my_plan,
+            'plan_requests'     => $plan_request,
             //'activities'    => $activities,
             'restrictions'  => @$restrictions,
             'plan_details'  => @$plan_details,
             'memberships'   => $membership_plans,
             'old_avatars'   => $avatarArchive,
-            'plannedInvoices'   => @$plannedInvoices
+            'plannedInvoices'       => @$plannedInvoices,
+            'invoiceCancellation'   => $invoiceCancellation
         ]);
     }
 

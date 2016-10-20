@@ -164,7 +164,7 @@ class MembershipController extends Controller
         }
     }
 
-    public function freeze_membership_rebuild_invoices($membershipPlan){
+    public static function freeze_membership_rebuild_invoices($membershipPlan){
         // get freeze period from user_membership_invoice_planning that is unprocessed
         $freezePeriod = UserMembershipAction::where('user_membership_id','=',$membershipPlan->id)
             ->where('processed','=','0')
@@ -219,7 +219,7 @@ class MembershipController extends Controller
             $is_backend_employee = $user->can('members-management');
         }
 
-        $vars = $request->only('member_id');
+        $vars = $request->only('member_id', 'cancellation_date');
         if ($is_backend_employee==false && $user->id!=$vars['member_id']){
             return [
                 'success'   => false,
@@ -245,7 +245,16 @@ class MembershipController extends Controller
 
         $old_plan = UserMembership::where('user_id','=',$member->id)->whereIn('status',['active','suspended'])->orderBy('created_at','desc')->get()->first();
         if ($old_plan) {
-            $member->cancel_membership_plan($old_plan);
+            $plannedInvoiceCancelled = UserMembershipInvoicePlanning::where('id','=',$vars['cancellation_date'])->where('user_membership_id','=',$old_plan->id)->get()->first();
+            if (!$plannedInvoiceCancelled){
+                return [
+                    'success'   => false,
+                    'errors'    => 'The selected date is not valid and is outside the valid range',
+                    'title'     => 'Error Validating Date'
+                ];
+            }
+
+            $member->cancel_membership_plan($old_plan, $plannedInvoiceCancelled->issued_date);
 
             return [
                 'success'   => true,
@@ -259,6 +268,44 @@ class MembershipController extends Controller
                 'errors'    => 'Could not cancel the current membership plan or no active plan at this moment. Please logout/login then try again.',
                 'title'     => 'An error occurred'
             ];
+        }
+    }
+
+    public static function cancel_membership_rebuild_invoices($membershipPlan){
+        // get cancel date from user_membership_invoice_planning that is unprocessed
+        $cancelDate = UserMembershipAction::where('user_membership_id','=',$membershipPlan->id)
+            ->where('processed','=','0')
+            ->where('action_type','=','cancel')
+            ->orderBy('created_at','DESC')
+            ->get()
+            ->first();
+        if (!$cancelDate){
+            return ['success' => false, 'errors' => 'no membership actions found for the given User Membership Plan'];
+        }
+        else{
+            $cancelDate->processed = 1;
+            $cancelDate->save();
+        }
+
+        $startDate  = Carbon::createFromFormat('Y-m-d',$cancelDate->start_date);
+
+        $planned_invoices = UserMembershipInvoicePlanning::where('user_membership_id','=',$membershipPlan->id)->where('status','!=','old')->orderBy('created_at','ASC')->get();
+        if ($planned_invoices){
+            foreach($planned_invoices as $invoice){
+                $invoiceStart = Carbon::createFromFormat('Y-m-d', $invoice->issued_date);
+                if ($invoiceStart->gte($startDate)){
+                    // delete the planned invoices that have the issue day greater or equal to cancelation date
+                    $invoice->delete();
+                }
+            }
+
+            $lastInvoice = UserMembershipInvoicePlanning::where('user_membership_id','=',$membershipPlan->id)->where('status','=','pending')->orderBy('created_at','DESC')
+                ->get()->first()->update(['status'=>'last']);
+
+            return ['success' => true, 'message' => 'Invoices updated'];
+        }
+        else{
+            return ['success' => true, 'message' => 'No invoice updated'];
         }
     }
 }
