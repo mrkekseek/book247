@@ -2539,7 +2539,7 @@ class BookingController extends Controller
                 $booking_start_time = Carbon::createFromFormat('G:i:s', $booking->booking_time_start)->format('G:i');
                 $booking_end_time   = Carbon::createFromFormat('G:i:s', $booking->booking_time_start)->addMinutes($intervalDuration)->format('G:i');
                 $endDate = Carbon::createFromFormat('d-m-Y',$vars['end_time']);
-                while ($endDate->diffInDays($nextBookingDay, false) < 0){
+                while ($endDate->diffInDays($nextBookingDay, false) < 1){
                     $fillable = [
                         'by_user_id'            => $by_user->id,
                         'for_user_id'           => $for_user->id,
