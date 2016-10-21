@@ -18,6 +18,7 @@ class Booking extends Model
     public static $attributeNames = array(
         'by_user_id'    => 'By Member',
         'for_user_id'   => 'For Member',
+        'employee_involved_id'  => 'By Employee',
         'location_id'   => 'Location ID',
         'resource_id'   => 'Resource ID',
         'status'        => 'Booking Status',
@@ -35,6 +36,7 @@ class Booking extends Model
     protected $fillable = [
         'by_user_id',
         'for_user_id',
+        'employee_involved_id',
         'location_id',
         'resource_id',
         'status',
@@ -136,9 +138,13 @@ class Booking extends Model
         if ($userBy) {
             $madeBy = $userBy->first_name . ' ' . $userBy->middle_name . ' ' . $userBy->last_name;
         }
-        $userFor= User::find($this->for_user_id);
+        $userFor = User::find($this->for_user_id);
         if ($userFor) {
             $madeFor = $userFor->first_name . ' ' . $userFor->middle_name . ' ' . $userFor->last_name;
+        }
+        $employeeID = User::find($this->employee_involved_id);
+        if ($employeeID) {
+            $employeeInvolved = $employeeID->first_name . ' ' . $employeeID->middle_name . ' ' . $employeeID->last_name.' [employee]';
         }
 
         if ($this->payment_type == 'cash'){
@@ -186,8 +192,9 @@ class Booking extends Model
             'room'          => $roomName,
             'roomPrice'     => $roomPrice,
             'category'      => $categoryName,
-            'byUserName'    => @$madeBy,
-            'forUserName'   => @$madeFor,
+            'byUserName'        => isset($madeBy)?$madeBy:'',
+            'forUserName'       => isset($madeFor)?$madeFor:'',
+            'employee_involved' => isset($employeeInvolved)?$employeeInvolved:'',
             'forUserID'     => @$this->for_user_id,
             'canCancel'     => $canCancel,
             'canCancelRules'  => $this->can_cancel()==true?1:0,

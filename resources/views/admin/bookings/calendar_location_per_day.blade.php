@@ -1171,8 +1171,15 @@
                     $('.player_short_note').html(data.forPlayerDetails);
                     $('#book_main_details_container').html('');
 
+                    if (data.employee_involved!=''){
+                        var bookedBy = data.employee_involved;
+                    }
+                    else{
+                        var bookedBy = data.byUserName;
+                    }
+
                     var book_details =
-                            '<div class="row margin-bottom-5"><div class="col-md-4 bg-grey-salt bg-font-grey-salt"> Booked By </div><div class="col-md-8 bg-grey-steel bg-font-grey-steel"> ' + data.byUserName + ' </div></div>' +
+                            '<div class="row margin-bottom-5"><div class="col-md-4 bg-grey-salt bg-font-grey-salt"> Booked By </div><div class="col-md-8 bg-grey-steel bg-font-grey-steel"> ' + bookedBy + ' </div></div>' +
                             '<div class="row margin-bottom-5"><div class="col-md-4 bg-grey-salt bg-font-grey-salt"> Booked On </div><div class="col-md-8 bg-grey-steel bg-font-grey-steel"> ' + data.addedOn + ' </div></div>' +
                             '<div class="row margin-bottom-5"><div class="col-md-4 bg-grey-salt bg-font-grey-salt"> Booking Date </div><div class="col-md-8 bg-grey-steel bg-font-grey-steel"> ' + data.bookingDate + ' </div></div>' +
                             '<div class="row margin-bottom-5"><div class="col-md-4 bg-grey-salt bg-font-grey-salt"> Time of booking </div><div class="col-md-8 bg-grey-steel bg-font-grey-steel"> ' + data.timeStart + ' - ' + data.timeStop + ' </div></div>' +

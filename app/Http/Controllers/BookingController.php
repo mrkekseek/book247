@@ -70,6 +70,12 @@ class BookingController extends Controller
         }
         else{
             $user = Auth::user();
+            if ($user->is_back_user()){
+                $employee_involved = $user->id;
+            }
+            else{
+                $employee_involved = 0;
+            }
         }
 
         $vars = $request->only('selected_activity', 'selected_date', 'selected_location', 'selected_payment', 'selected_resource', 'selected_time', 'book_key', 'player');
@@ -92,6 +98,7 @@ class BookingController extends Controller
         $fillable = [
             'by_user_id'    => $user->id,
             'for_user_id'   => isset($vars['player'])?$vars['player']:$user->id,
+            'employee_involved_id'  => $employee_involved,
             'location_id'   => $vars['selected_location'],
             'resource_id'   => $vars['selected_resource'],
             'status'        => 'pending',
@@ -2669,8 +2676,12 @@ class BookingController extends Controller
         }
 
         $is_staff = false;
-        if (!$user->hasRole(['front-member','front-user'])){
+        if ($user->is_back_user()){
             $is_staff = true;
+            $fillable['employee_involved_id'] = $user->id;
+        }
+        else{
+            $fillable['employee_involved_id'] = 0;
         }
 
         $search_key = Booking::new_search_key();
