@@ -554,6 +554,11 @@ Route::group(['middleware'=>'web', 'prefix'=>'admin'], function(){
         'uses'  => 'MembershipController@cancel_membership_for_member'
     ]);
 
+    Route::post('membership_plans/delete_pending_action', [
+        'as'    => 'admin/membership_plans/delete_pending_action',
+        'uses'  => 'MembershipController@cancel_membership_planned_action'
+    ]);
+
     /** Stop  - Membership Management */
 });
 

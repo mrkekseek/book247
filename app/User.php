@@ -192,7 +192,8 @@ class User extends Authenticatable
                 'end_date'      => $to_date->format('Y-m-d'),
                 'added_by'      => Auth::user()->id,
                 'notes'         => json_encode([]),
-                'processed'     => 0
+                'processed'     => 0,
+                'status'        => 'active'
             ];
 
             $userMembershipAction = Validator::make($fillable, UserMembershipAction::rules('POST'), UserMembershipAction::$message, UserMembershipAction::$attributeNames);
@@ -245,7 +246,8 @@ class User extends Authenticatable
                 'end_date'      => $cancel_date->format('Y-m-d'),
                 'added_by'      => Auth::user()->id,
                 'notes'         => json_encode([]),
-                'processed'     => 0
+                'processed'     => 0,
+                'status'        => 'active'
             ];
 
             $userMembershipAction = Validator::make($fillable, UserMembershipAction::rules('POST'), UserMembershipAction::$message, UserMembershipAction::$attributeNames);

@@ -15,7 +15,8 @@ class UserMembershipAction extends Model
         'end_date'  => 'End Date',
         'added_by'  => 'Added By',
         'notes'     => 'Notes',
-        'processed' => 'Processed'
+        'processed' => 'Processed',
+        'status'    => 'Status'
     );
 
     public static $message = array();
@@ -27,7 +28,8 @@ class UserMembershipAction extends Model
         'end_date',
         'added_by',
         'notes',
-        'processed'
+        'processed',
+        'status'
     ];
 
     public static function rules($method, $id=0){
@@ -46,6 +48,7 @@ class UserMembershipAction extends Model
                     'end_date'  => 'required|date',
                     'added_by'  => 'required|exists:users,id',
                     'processed' => 'required|in:0,1',
+                    'status'    => 'required|in:active,old,cancelled'
                 ];
             }
             case 'PUT':
@@ -58,6 +61,7 @@ class UserMembershipAction extends Model
                     'end_date'  => 'required|date',
                     'added_by'  => 'required|exists:users,id',
                     'processed' => 'required|in:0,1',
+                    'status'    => 'required|in:active,old,cancelled'
                 ];
             }
             default:break;

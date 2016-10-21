@@ -147,6 +147,7 @@ class MembershipController extends Controller
         $old_plan = UserMembership::where('user_id','=',$member->id)->whereIn('status',['active','suspended'])->orderBy('created_at','desc')->get()->first();
         if ($old_plan) {
             $member->freeze_membership_plan($old_plan, $from_date, $to_date);
+            MembershipController::freeze_membership_rebuild_invoices($old_plan);
 
             return [
                 'success'   => true,
@@ -182,19 +183,49 @@ class MembershipController extends Controller
         $startDate  = Carbon::createFromFormat('Y-m-d',$freezePeriod->start_date);
         $endDate    = Carbon::createFromFormat('Y-m-d',$freezePeriod->end_date);
 
+        $invoicesDate = UserMembership::invoice_membership_period(Carbon::createFromFormat('Y-m-d',$membershipPlan->day_start), $membershipPlan->invoice_period);
+        while (Carbon::today()->addMonths(28)->gte($invoicesDate['first_day'])){
+            if ($endDate->between($invoicesDate['first_day'], $invoicesDate['last_day']) or $endDate->lt($invoicesDate['first_day'])) {
+                $allInvoicesDates[] = $invoicesDate;
+            }
+            $invoicesDate = UserMembership::invoice_membership_period(Carbon::instance($invoicesDate['last_day'])->addDay(), $membershipPlan->invoice_period);
+        }
+
+        $started = false;
+        $nr = 0;
         $planned_invoices = UserMembershipInvoicePlanning::where('user_membership_id','=',$membershipPlan->id)->where('status','=','pending')->orderBy('created_at','ASC')->get();
         if ($planned_invoices){
             foreach($planned_invoices as $invoice){
                 $invoiceStart = Carbon::createFromFormat('Y-m-d', $invoice->issued_date);
-                if ($invoiceStart->gte($startDate)){
-                    $dates = UserMembership::invoice_membership_period($endDate->addDay(), $membershipPlan->invoice_period);
+                $invoiceEnd = Carbon::createFromFormat('Y-m-d', $invoice->last_active_date);
+                // start freeze is in an invoice so we break it
+                if ($startDate->between($invoiceStart, $invoiceEnd)){
+                    $daysInInvoice = $invoiceStart->diffInDays($invoiceEnd);
+                    $newDaysInInvoice = $invoiceStart->diffInDays(Carbon::instance($startDate)->addDays(-1));
+                    $pricePerDay   = $invoice->price / $daysInInvoice;
 
-                    // freeze start date is less or equal to invoice start date
-                    $invoice->issued_date       = $dates['first_day']->toDateString();
-                    $invoice->last_active_date  = $dates['last_day']->toDateString();
+                    $invoice->price = ceil(($newDaysInInvoice+1)*$pricePerDay);
+                    $invoice->last_active_date  = Carbon::instance($startDate)->addDays(-1)->toDateString();
+
                     $invoice->save();
+                    $started = true;
+                }
+                elseif ($started==true){
+                    if ($nr==0){
+                        $daysInInvoice = $invoiceStart->diffInDays($invoiceEnd);
+                        $newDaysInInvoice = Carbon::instance($endDate)->addDay()->diffInDays($invoiceEnd);
+                        $pricePerDay   = $invoice->price / $daysInInvoice;
 
-                    $endDate = $dates['last_day'];
+                        $invoice->price = ceil(($newDaysInInvoice+1)*$pricePerDay);
+                        $invoice->issued_date = Carbon::instance($endDate)->addDay()->toDateString();
+                    }
+                    else{
+                        $invoice->issued_date = $allInvoicesDates[$nr]['first_day']->toDateString();
+                    }
+                    $invoice->last_active_date = $allInvoicesDates[$nr]['last_day']->toDateString();
+
+                    $invoice->save();
+                    $nr++;
                 }
             }
 
@@ -305,6 +336,80 @@ class MembershipController extends Controller
         }
         else{
             return ['success' => true, 'message' => 'No invoice updated'];
+        }
+    }
+
+    public function cancel_membership_planned_action(Request $request){
+        if (!Auth::check()) {
+            return [
+                'success'   => false,
+                'title'     => 'An error occurred',
+                'errors'    => 'You need to be logged in to have access to this function'
+            ];
+        }
+        else{
+            $user = Auth::user();
+            $is_backend_employee = $user->is_back_user();
+        }
+
+        $vars = $request->only('member_id', 'selected_action');
+        if ($is_backend_employee==false && $user->id!=$vars['member_id']){
+            return [
+                'success'   => false,
+                'errors'    => 'You don\'t have the permissions to change membership planned actions.',
+                'title'     => 'An error occurred'
+            ];
+        }
+
+        if ($user->id!=$vars['member_id']){
+            // we have an employee and a member
+            $member = User::where('id','=',$vars['member_id'])->get()->first();
+            if (!$member){
+                return [
+                    'success'   => false,
+                    'errors'    => 'You don\'t have the permissions to change membership planned actions.',
+                    'title'     => 'An error occurred'
+                ];
+            }
+        }
+        else{
+            $member = $user;
+        }
+
+        $plan = UserMembership::where('user_id','=',$member->id)
+            ->whereIn('status',['active','suspended'])
+            ->orderBy('created_at','desc')
+            ->get()->first();
+        if ($plan) {
+            $actionPlan = UserMembershipAction::where('id','=',$vars['selected_action'])
+                ->where('user_membership_id','=',$plan->id)
+                ->where('status','=','active')
+                ->where('processed','=','0')
+                ->get()->first();
+            if ($actionPlan){
+                $actionPlan->status = 'cancelled';
+                $actionPlan->save();
+
+                return [
+                    'success'   => true,
+                    'message'   => 'Membership planned action cancelled. Page will reload now to reflect changes.',
+                    'title'     => 'Planned Action Cancelled'
+                ];
+            }
+            else{
+                return [
+                    'success'   => true,
+                    'message'   => 'Selected user does not have an active/frozen membership plan.',
+                    'title'     => 'Planned Action Cancellation Error'
+                ];
+            }
+        }
+        else{
+            return [
+                'success'   => false,
+                'errors'    => 'Could not find an active membership plan at this moment. Please logout/login then try again.',
+                'title'     => 'An error occurred'
+            ];
         }
     }
 }

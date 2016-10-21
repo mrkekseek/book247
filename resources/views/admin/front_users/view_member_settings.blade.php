@@ -372,7 +372,12 @@
                                                                                         @else
                                                                                             <div class="danger"></div> <a class="font-red-thunderbird"> Pending - </a>
                                                                                         @endif
-                                                                                        Freeze membership between <b class="font-purple-studio">{{ $one_request['start_date']->format('d M Y') }}</b> and <b class="font-purple-studio">{{ $one_request['end_date']->format('d M Y') }}</b>. Action added by <a style="margin-left:0px;" href="{{ $one_request['added_by_link'] }}" target="_blank">{{ $one_request['added_by_name'] }}</a> on {{ $one_request['created_at'] }} (last update on {{ $one_request['updated_at'] }})
+                                                                                        Freeze membership between <b class="font-purple-studio">{{ $one_request['start_date']->format('d M Y') }}</b> and <b class="font-purple-studio">{{ $one_request['end_date']->format('d M Y') }}</b>.
+                                                                                        Action added by <a style="margin-left:0px;" href="{{ $one_request['added_by_link'] }}" target="_blank">{{ $one_request['added_by_name'] }}</a>
+                                                                                        on {{ $one_request['created_at'] }} (last update on {{ $one_request['updated_at'] }})
+                                                                                        @if ($one_request['processed']=='0')
+                                                                                            | <a class="label label-sm label-danger remove_pending_action" data-id="{{ $one_request['id'] }}"> delete </a>
+                                                                                        @endif
                                                                                     </td>
                                                                                 </tr>
                                                                             @elseif ($one_request['action_type']=='cancel' && $one_request['start_date']->eq(\Carbon\Carbon::createFromFormat('Y-m-d H:i:s',$singlePlanned['last_active_date'].' 00:00:00')->addDay()))
@@ -383,7 +388,12 @@
                                                                                         @else
                                                                                             <div class="danger"></div> <a class="font-red-thunderbird"> Pending - </a>
                                                                                         @endif
-                                                                                        Membership cancellation starting with <b class="font-purple-studio">{{ $one_request['start_date']->format('d M Y') }}</b>. Action added by <a style="margin-left:0px;" href="{{ $one_request['added_by_link'] }}" target="_blank">{{ $one_request['added_by_name'] }}</a> on {{ $one_request['created_at'] }} (last update on {{ $one_request['updated_at'] }})
+                                                                                        Membership cancellation starting with <b class="font-purple-studio">{{ $one_request['start_date']->format('d M Y') }}</b>.
+                                                                                        Action added by <a style="margin-left:0px;" href="{{ $one_request['added_by_link'] }}" target="_blank">{{ $one_request['added_by_name'] }}</a>
+                                                                                        on {{ $one_request['created_at'] }} (last update on {{ $one_request['updated_at'] }})
+                                                                                        @if ($one_request['processed']=='0')
+                                                                                            | <a class="label label-sm label-danger" data-id="{{ $one_request['id'] }}"> delete </a>
+                                                                                        @endif
                                                                                     </td>
                                                                                 </tr>
                                                                             @endif
@@ -732,6 +742,25 @@
                     <!-- /.modal-dialog -->
                 </div>
                 <!-- END Recurrent Cancel Confirm modal window show -->
+
+                <div class="modal fade bs-modal-sm" id="cancel_planned_action_confirm_box" tabindex="-1" role="dialog" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                                <h4 class="modal-title">Do you want to remove the selected planned action?</h4>
+                            </div>
+                            <div class="modal-body margin-top-10 margin-bottom-10"> By clicking "Yes, Remove" the action planned will be deleted and no action will be taken on the current membership plan.</div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn dark btn-outline" data-dismiss="modal">No, Go Back</button>
+                                <button type="button" class="btn green" onclick="javascript:remove_pending_action();">Yes, Remove</button>
+                            </div>
+                            <input type="hidden" name="remove_action_id" value="0" />
+                        </div>
+                        <!-- /.modal-content -->
+                    </div>
+                    <!-- /.modal-dialog -->
+                </div>
             </div>
             <!-- END PROFILE CONTENT -->
         </div>
@@ -1285,6 +1314,38 @@
                 }
             });
         });
+
+        $('.remove_pending_action').on('click', function(){
+            $('input[name="remove_action_id"]').val($(this).attr('data-id'));
+
+            $('#cancel_planned_action_confirm_box').modal('show');
+        });
+
+        function remove_pending_action(){
+            var userID = '{{$user->id}}';
+
+            $.ajax({
+                url: '{{route('admin/membership_plans/delete_pending_action')}}',
+                type: "post",
+                data: {
+                    'selected_action': $('input[name=remove_action_id]').val(),
+                    'member_id':       userID
+                },
+                success: function(data){
+                    if (data.success) {
+                        $('#cancel_planned_action_confirm_box').modal('hide');
+                        show_notification(data.title, data.message, 'lime', 3500, 0);
+
+                        setTimeout(function(){
+                            location.reload();
+                        },2000);
+                    }
+                    else{
+                        show_notification(data.title, data.errors, 'tangerine', 3500, 0);
+                    }
+                }
+            });
+        }
 
         function change_membership_plan(){
             var userID = '{{$user->id}}';

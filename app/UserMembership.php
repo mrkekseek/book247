@@ -355,9 +355,16 @@ class UserMembership extends Model
         ];
     }
 
-    public function get_plan_requests(){
+    public function get_plan_requests($all = false){
         $plan_requests = [];
-        $requests = UserMembershipAction::where('user_membership_id','=',$this->id)->orderBy('start_date','ASC')->get();
+        if ($all==false){
+            $status = ['active','old'];
+        }
+        else{
+            $status = ['active','old','cancelled'];
+        }
+
+        $requests = UserMembershipAction::where('user_membership_id','=',$this->id)->whereIn('status',$status)->orderBy('start_date','ASC')->get();
         foreach($requests as $request){
             $user = User::where('id','=',$request->added_by)->get()->first();
             $user_name = $user->first_name.' '.$user->middle_name.' '.$user->last_name;
@@ -369,6 +376,7 @@ class UserMembership extends Model
             }
 
             $plan_requests[] = [
+                'id'            => $request->id,
                 'action_type'   => $request->action_type,
                 'start_date'    => Carbon::createFromFormat('Y-m-d H:i:s',$request->start_date.' 00:00:00'),
                 'end_date'      => Carbon::createFromFormat('Y-m-d H:i:s',$request->end_date.' 00:00:00'),
