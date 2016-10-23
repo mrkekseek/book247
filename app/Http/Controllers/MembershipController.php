@@ -133,8 +133,8 @@ class MembershipController extends Controller
         }
 
         try{
-            $from_date = Carbon::createFromFormat('d-m-Y',$vars['from_date']);
-            $to_date = Carbon::createFromFormat('d-m-Y',$vars['to_date']);
+            $from_date = Carbon::createFromFormat('d-m-Y H:i:s',$vars['from_date'].' 00:00:00');
+            $to_date = Carbon::createFromFormat('d-m-Y H:i:s',$vars['to_date'].' 00:00:00');
         }
         catch (\Exception $err){
             return [
@@ -147,7 +147,7 @@ class MembershipController extends Controller
         $old_plan = UserMembership::where('user_id','=',$member->id)->whereIn('status',['active','suspended'])->orderBy('created_at','desc')->get()->first();
         if ($old_plan) {
             $member->freeze_membership_plan($old_plan, $from_date, $to_date);
-            MembershipController::freeze_membership_rebuild_invoices($old_plan);
+            //MembershipController::freeze_membership_rebuild_invoices($old_plan);
 
             return [
                 'success'   => true,
@@ -193,27 +193,38 @@ class MembershipController extends Controller
 
         $started = false;
         $nr = 0;
-        $planned_invoices = UserMembershipInvoicePlanning::where('user_membership_id','=',$membershipPlan->id)->where('status','=','pending')->orderBy('created_at','ASC')->get();
+        $planned_invoices = UserMembershipInvoicePlanning::where('user_membership_id','=',$membershipPlan->id)->whereIn('status',['pending','last'])->orderBy('created_at','ASC')->get();
         if ($planned_invoices){
             foreach($planned_invoices as $invoice){
                 $invoiceStart = Carbon::createFromFormat('Y-m-d', $invoice->issued_date);
                 $invoiceEnd = Carbon::createFromFormat('Y-m-d', $invoice->last_active_date);
                 // start freeze is in an invoice so we break it
                 if ($startDate->between($invoiceStart, $invoiceEnd)){
-                    $daysInInvoice = $invoiceStart->diffInDays($invoiceEnd);
-                    $newDaysInInvoice = $invoiceStart->diffInDays(Carbon::instance($startDate)->addDays(-1));
-                    $pricePerDay   = $invoice->price / $daysInInvoice;
+                    if ($startDate->eq($invoiceStart)){
+                        $started = true;
+                    }
+                    else{
+                        $daysInInvoice = $invoiceStart->diffInDays($invoiceEnd);
+                        $newDaysInInvoice = $invoiceStart->diffInDays(Carbon::instance($startDate)->addDays(-1));
+                        $pricePerDay   = $invoice->price / $daysInInvoice;
 
-                    $invoice->price = ceil(($newDaysInInvoice+1)*$pricePerDay);
-                    $invoice->last_active_date  = Carbon::instance($startDate)->addDays(-1)->toDateString();
+                        $invoice->price = ceil(($newDaysInInvoice+1)*$pricePerDay);
+                        $invoice->last_active_date  = Carbon::instance($startDate)->addDays(-1)->toDateString();
 
-                    $invoice->save();
-                    $started = true;
+                        $invoice->save();
+                        $started = true;
+                        continue;
+                    }
                 }
-                elseif ($started==true){
+
+                if ($started==true){
+                    if ($nr==0 && $endDate->eq($allInvoicesDates[$nr]['last_day'])){
+                        $nr++;
+                    }
+
                     if ($nr==0){
                         $daysInInvoice = $invoiceStart->diffInDays($invoiceEnd);
-                        $newDaysInInvoice = Carbon::instance($endDate)->addDay()->diffInDays($invoiceEnd);
+                        $newDaysInInvoice = Carbon::instance($endDate)->addDay()->diffInDays($allInvoicesDates[$nr]['last_day']);
                         $pricePerDay   = $invoice->price / $daysInInvoice;
 
                         $invoice->price = ceil(($newDaysInInvoice+1)*$pricePerDay);
@@ -253,7 +264,7 @@ class MembershipController extends Controller
         if ($is_backend_employee==false && $user->id!=$vars['member_id']){
             return [
                 'success'   => false,
-                'errors'    => 'You don\'t have the permissions to change membership plans.',
+                'errors'    => 'You don\'t have the permissions to plan cancellation membership plans.',
                 'title'     => 'An error occurred'
             ];
         }
@@ -264,7 +275,7 @@ class MembershipController extends Controller
             if (!$member){
                 return [
                     'success'   => false,
-                    'errors'    => 'You don\'t have the permissions to change membership plans.',
+                    'errors'    => 'You don\'t have the permissions to plan a cancellation.',
                     'title'     => 'An error occurred'
                 ];
             }
@@ -288,14 +299,14 @@ class MembershipController extends Controller
 
             return [
                 'success'   => true,
-                'message'   => 'Membership status changed to canceled. Another plan can be applied now.',
-                'title'     => 'Membership plan Canceled'
+                'message'   => 'Membership plan is set to cancel on the requested date. Another plan can be applied after that date.',
+                'title'     => 'Membership plan - Planned Canceled'
             ];
         }
         else{
             return [
                 'success'   => false,
-                'errors'    => 'Could not cancel the current membership plan or no active plan at this moment. Please logout/login then try again.',
+                'errors'    => 'Could not plan a cancellation to current membership plan or no active plan at this moment. Please logout/login then try again.',
                 'title'     => 'An error occurred'
             ];
         }

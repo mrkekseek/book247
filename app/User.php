@@ -207,14 +207,17 @@ class User extends Authenticatable
             }
 
             UserMembershipAction::create($fillable);
+            // get first next invoice and check if the start date is included there
+            $nextInvoice = UserMembershipInvoicePlanning::where('user_membership_id','=',$old_plan->id)->where('status','=','pending')->orderBy('issued_date','ASC')->get()->first();
+            if ($nextInvoice){
+                // if the freeze starts between next invoices start/end date, then we rebuild the invoices
+                $invoiceStart   = Carbon::createFromFormat('Y-m-d H:i:s', $nextInvoice->issued_date.' 00:00:00');
+                $invoiceEnd     = Carbon::createFromFormat('Y-m-d H:i:s', $nextInvoice->last_active_date.' 00:00:00');
 
-            // if the freeze starts today, then we freeze the membership plan
-            if (Carbon::today()->toDateString() == $from_date->toDateString()) {
-                // check the planned invoices that needs to be pushed out of the freeze period
-                MembershipController::freeze_membership_rebuild_invoices($old_plan);
-
-                $old_plan->status = 'suspended';
-                $old_plan->save();
+                if ($from_date->between($invoiceStart, $invoiceEnd)) {
+                    // check the planned invoices that needs to be pushed out of the freeze period
+                    MembershipController::freeze_membership_rebuild_invoices($old_plan);
+                }
             }
 
             return true;

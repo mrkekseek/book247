@@ -380,6 +380,16 @@ class FrontEndUserController extends Controller
             }
 
             $plan_request = $my_plan->get_plan_requests();
+            $canCancel = true;
+            $canFreeze = true;
+            foreach($plan_request as $a_request){
+                if ($a_request['action_type'] == 'cancel' && $a_request['status']!='cancelled'){
+                    $canCancel = false;
+                }
+                elseif ($a_request['action_type'] == 'freeze' && $a_request['status']=='active'){
+                    $canFreeze = false;
+                }
+            }
 
             $allPlannedInvoices = UserMembershipInvoicePlanning::where('user_membership_id','=',$my_plan->id)->orderBy('issued_date','asc')->get();
             $plannedInvoices = [];
@@ -458,7 +468,9 @@ class FrontEndUserController extends Controller
             'memberships'   => $membership_plans,
             'old_avatars'   => $avatarArchive,
             'plannedInvoices'       => @$plannedInvoices,
-            'invoiceCancellation'   => $invoiceCancellation
+            'invoiceCancellation'   => $invoiceCancellation,
+            'canCancel'     => $canCancel,
+            'canFreeze'     => $canFreeze
         ]);
     }
 

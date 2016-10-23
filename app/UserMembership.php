@@ -383,6 +383,7 @@ class UserMembership extends Model
                 'added_by_name' => $user_name,
                 'added_by_link' => $user_link,
                 'notes'         => $request->notes,
+                'status'        => $request->status,
                 'processed'     => $request->processed,
                 'updated_at'    => Carbon::createFromFormat('Y-m-d H:i:s',$request->updated_at)->format('d M Y H:i'),
                 'created_at'    => Carbon::createFromFormat('Y-m-d H:i:s',$request->created_at)->format('d M Y H:i')

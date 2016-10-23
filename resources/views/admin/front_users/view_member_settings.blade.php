@@ -188,8 +188,11 @@
                                                                             <a href="#freeze_plan_box" class="btn bg-blue-sharp bg-font-blue-sharp input" data-toggle="modal" style="min-width:160px;">
                                                                                 <i class="fa fa-pause"></i> Freeze Plan</a>
                                                                             @endif
+
+                                                                            @if($canCancel==true)
                                                                             <a href="#cancel_plan_box" class="btn red-soft input" data-toggle="modal" style="min-width:160px;">
                                                                                 <i class="fa fa-eject"></i> Cancel Plan</a>
+                                                                            @endif
                                                                         @else
                                                                             <input class="form-control input-inline input-large inline-block" disabled readonly name="what_is_the_plan" value="No active Membership Plan" />
                                                                         @endif
@@ -392,7 +395,7 @@
                                                                                         Action added by <a style="margin-left:0px;" href="{{ $one_request['added_by_link'] }}" target="_blank">{{ $one_request['added_by_name'] }}</a>
                                                                                         on {{ $one_request['created_at'] }} (last update on {{ $one_request['updated_at'] }})
                                                                                         @if ($one_request['processed']=='0')
-                                                                                            | <a class="label label-sm label-danger" data-id="{{ $one_request['id'] }}"> delete </a>
+                                                                                            | <a class="label label-sm label-danger remove_pending_action" data-id="{{ $one_request['id'] }}"> delete </a>
                                                                                         @endif
                                                                                     </td>
                                                                                 </tr>
@@ -700,7 +703,7 @@
                                 <div class="form-group">
                                     <label class="control-label col-md-3">Freeze Interval</label>
                                     <div class="col-md-8">
-                                        <div class="input-group input-large date-picker input-daterange" data-date-start-date="{{\Carbon\Carbon::today()->addDays(30)->format('d-m-Y')}}" data-date-end-date="{{\Carbon\Carbon::today()->addDays(90)->format('d-m-Y')}}" data-date-format="dd-mm-yyyy">
+                                        <div class="input-group input-large date-picker input-daterange" data-date-start-date="{{\Carbon\Carbon::today()->addDays(30)->format('d-m-Y')}}" data-date-end-date="{{\Carbon\Carbon::today()->addDays(360)->format('d-m-Y')}}" data-date-format="dd-mm-yyyy">
                                             <input type="text" class="form-control input-sm" name="freeze_from_date" id="freeze_from_date" value="{{\Carbon\Carbon::today()->addDays(30)->format('d-m-Y')}}">
                                             <span class="input-group-addon"> to </span>
                                             <input type="text" class="form-control input-sm" name="freeze_to_date" id="freeze_to_date"> </div>
