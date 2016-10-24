@@ -35,7 +35,7 @@ class ShopLocations extends Model
     );
 
     public function address(){
-        return $this->hasOne('App\Address');
+        return $this->hasOne('App\Address','id','address_id');
     }
 
     public function opening_hours(){

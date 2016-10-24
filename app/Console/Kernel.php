@@ -17,6 +17,7 @@ class Kernel extends ConsoleKernel
         Commands\BookingsCheck::class,
         Commands\UserMembershipPlannedActionsCheck::class,
         Commands\UserMembershipPendingInvoices::class,
+        Commands\BookingDailyPlannerEmail::class,
     ];
 
     /**
@@ -42,5 +43,10 @@ class Kernel extends ConsoleKernel
             //->everyMinute()
             ->dailyAt('01:00')
             ->sendOutputTo('PendingInvoice_output.log');
+
+        $schedule->command('booking:daily_morning_bookings_plan')
+            //->everyMinute()
+            ->twiceDaily('00:00','05:00')
+            ->sendOutputTo('BookingDailyPlanner_output.log');
     }
 }
