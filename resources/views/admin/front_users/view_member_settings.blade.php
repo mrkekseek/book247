@@ -383,22 +383,6 @@
                                                                                         @endif
                                                                                     </td>
                                                                                 </tr>
-                                                                            @elseif ($one_request['action_type']=='cancel' && $one_request['start_date']->eq(\Carbon\Carbon::createFromFormat('Y-m-d H:i:s',$singlePlanned['issued_date'].' 00:00:00')))
-                                                                                <tr>
-                                                                                    <td class="highlight" colspan="5">
-                                                                                        @if ($one_request['processed']=='1')
-                                                                                            <div class="warning"></div> <a class="font-green-seagreen"> Processed - </a>
-                                                                                        @else
-                                                                                            <div class="danger"></div> <a class="font-red-thunderbird"> Pending - </a>
-                                                                                        @endif
-                                                                                        Membership cancellation starting with <b class="font-purple-studio">{{ $one_request['start_date']->format('d M Y') }}</b>.
-                                                                                        Action added by <a style="margin-left:0px;" href="{{ $one_request['added_by_link'] }}" target="_blank">{{ $one_request['added_by_name'] }}</a>
-                                                                                        on {{ $one_request['created_at'] }} (last update on {{ $one_request['updated_at'] }})
-                                                                                        @if ($one_request['processed']=='0')
-                                                                                            | <a class="label label-sm label-danger remove_pending_action" data-id="{{ $one_request['id'] }}"> delete </a>
-                                                                                        @endif
-                                                                                    </td>
-                                                                                </tr>
                                                                             @endif
                                                                         @endforeach
                                                                     @endif
@@ -424,6 +408,28 @@
                                                                         <!--<td> <a href="javascript:;" class="btn btn-sm green"> Group Invoices <i class="fa fa-plus"></i></a>
                                                                             <a href="javascript:;" class="btn btn-sm purple"> Defer <i class="fa fa-times"></i></a></td>-->
                                                                     </tr>
+
+                                                                    @if (sizeof($plan_requests)>0)
+                                                                        @foreach($plan_requests as $one_request)
+                                                                            @if ($one_request['action_type']=='cancel' && $one_request['end_date']->eq(\Carbon\Carbon::createFromFormat('Y-m-d H:i:s',$singlePlanned['last_active_date'].' 00:00:00')))
+                                                                                <tr>
+                                                                                    <td class="highlight" colspan="5">
+                                                                                        @if ($one_request['processed']=='1')
+                                                                                            <div class="warning"></div> <a class="font-green-seagreen"> Processed - </a>
+                                                                                        @else
+                                                                                            <div class="danger"></div> <a class="font-red-thunderbird"> Pending - </a>
+                                                                                        @endif
+                                                                                        Membership cancellation starting with <b class="font-purple-studio">{{ \Carbon\Carbon::instance($one_request['end_date'])->addDay()->format('d M Y') }}</b>.
+                                                                                        Action added by <a style="margin-left:0px;" href="{{ $one_request['added_by_link'] }}" target="_blank">{{ $one_request['added_by_name'] }}</a>
+                                                                                        on {{ $one_request['created_at'] }} (last update on {{ $one_request['updated_at'] }})
+                                                                                        @if ($one_request['processed']=='0')
+                                                                                            | <a class="label label-sm label-danger remove_pending_action" data-id="{{ $one_request['id'] }}"> delete </a>
+                                                                                        @endif
+                                                                                    </td>
+                                                                                </tr>
+                                                                            @endif
+                                                                        @endforeach
+                                                                    @endif
                                                                 @endforeach
                                                                 </tbody>
                                                             </table>
