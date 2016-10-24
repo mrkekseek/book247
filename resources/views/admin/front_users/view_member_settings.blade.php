@@ -383,7 +383,7 @@
                                                                                         @endif
                                                                                     </td>
                                                                                 </tr>
-                                                                            @elseif ($one_request['action_type']=='cancel' && $one_request['start_date']->eq(\Carbon\Carbon::createFromFormat('Y-m-d H:i:s',$singlePlanned['last_active_date'].' 00:00:00')->addDay()))
+                                                                            @elseif ($one_request['action_type']=='cancel' && $one_request['start_date']->eq(\Carbon\Carbon::createFromFormat('Y-m-d H:i:s',$singlePlanned['issued_date'].' 00:00:00')))
                                                                                 <tr>
                                                                                     <td class="highlight" colspan="5">
                                                                                         @if ($one_request['processed']=='1')
@@ -698,15 +698,45 @@
                                 <div class="note note-warning">
                                     <h4 class="block">Freezing the membership plan suspends the membership</h4>
                                     <p> Please add the date interval for which the membership plan is suspended. Once the end of the interval is reached, the membership will carry on and a new invoice will be generated.<br />
-                                        <br />The membership period will be extended with the period the membership is freezed.</p>
+                                        <br />The membership period will be extended with the period the membership is frozen.</p>
                                 </div>
                                 <div class="form-group">
-                                    <label class="control-label col-md-3">Freeze Interval</label>
-                                    <div class="col-md-8">
+                                    <label class="control-label col-md-4">Freeze Interval</label>
+                                    <div class="col-md-7">
                                         <div class="input-group input-large date-picker input-daterange" data-date-start-date="{{\Carbon\Carbon::today()->addDays(30)->format('d-m-Y')}}" data-date-end-date="{{\Carbon\Carbon::today()->addDays(360)->format('d-m-Y')}}" data-date-format="dd-mm-yyyy">
                                             <input type="text" class="form-control input-sm" name="freeze_from_date" id="freeze_from_date" value="{{\Carbon\Carbon::today()->addDays(30)->format('d-m-Y')}}">
                                             <span class="input-group-addon"> to </span>
                                             <input type="text" class="form-control input-sm" name="freeze_to_date" id="freeze_to_date"> </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="col-md-12 text-center"> ---- OR ---- </label>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="control-label col-md-4">Freeze period start date</label>
+                                    <div class="col-md-7">
+                                        <select name="freeze_start_date" id="freeze_start_date" class="form-control input input-sm list_all_plans">
+                                            <option value="-1"> Select Date </option>
+                                        @foreach ($invoiceFreeze as $key=>$oneInv)
+                                            <option value="{{ $key }}"> {{ $oneInv }}</option>
+                                        @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-4">how many months</label>
+                                    <div class="col-md-7">
+                                        <select name="freeze_no_months" id="freeze_no_months" class="form-control input input-sm list_all_plans">
+                                            <option value="-1"> Select Number </option>
+                                            <option value="1"> One Month </option>
+                                            <option value="2"> Two Months </option>
+                                            <option value="3"> Three Months </option>
+                                            <option value="4"> Four Months </option>
+                                            <option value="5"> Five Months </option>
+                                            <option value="6"> Six Months </option>
+                                        </select>
                                     </div>
                                 </div>
                             </div>
@@ -1393,6 +1423,8 @@
                 data: {
                     'from_date': $('input[name="freeze_from_date"]').val(),
                     'to_date': $('input[name="freeze_to_date"]').val(),
+                    'invoice_date':$('select[name=freeze_start_date]').val(),
+                    'no_of_months':$('select[name=freeze_no_months]').val(),
                     'member_id':userID
                 },
                 success: function(data){

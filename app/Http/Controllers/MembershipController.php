@@ -108,7 +108,7 @@ class MembershipController extends Controller
             $is_backend_employee = $user->can('members-management');
         }
 
-        $vars = $request->only('member_id', 'from_date', 'to_date');
+        $vars = $request->only('member_id', 'from_date', 'to_date', 'invoice_date', 'no_of_months');
         if ($is_backend_employee==false && $user->id!=$vars['member_id']){
             return [
                 'success'   => false,
@@ -132,21 +132,37 @@ class MembershipController extends Controller
             $member = $user;
         }
 
-        try{
-            $from_date = Carbon::createFromFormat('d-m-Y H:i:s',$vars['from_date'].' 00:00:00');
-            $to_date = Carbon::createFromFormat('d-m-Y H:i:s',$vars['to_date'].' 00:00:00');
-        }
-        catch (\Exception $err){
-            return [
-                'success'   => false,
-                'errors'    => 'Invalid interval dates entered. Please check the dates again',
-                'title'     => 'An error occurred'
-            ];
-        }
+        $the_plan = UserMembership::where('user_id','=',$member->id)->whereIn('status',['active','suspended'])->orderBy('created_at','desc')->get()->first();
+        if ($the_plan) {
+            if ($vars['invoice_date']=='-1' || $vars['no_of_months']=='-1'){
+                try{
+                    $from_date = Carbon::createFromFormat('d-m-Y H:i:s',$vars['from_date'].' 00:00:00');
+                    $to_date = Carbon::createFromFormat('d-m-Y H:i:s',$vars['to_date'].' 00:00:00');
+                }
+                catch (\Exception $err){
+                    return [
+                        'success'   => false,
+                        'errors'    => 'Invalid interval dates entered. Please check the dates again',
+                        'title'     => 'An error occurred'
+                    ];
+                }
+            }
+            else{
+                $pendingInvoice = UserMembershipInvoicePlanning::where('user_membership_id','=',$the_plan->id)->where('id','=',$vars['invoice_date'])->where('status','=','pending')->get()->first();
+                if ($pendingInvoice){
+                    $from_date = Carbon::createFromFormat('Y-m-d H:i:s',$pendingInvoice->issued_date.' 00:00:00');
+                    $to_date = Carbon::createFromFormat('Y-m-d H:i:s',$pendingInvoice->issued_date.' 00:00:00')->addMonths(abs(ceil($vars['no_of_months'])))->addDays(-1);
+                }
+                else{
+                    return [
+                        'success'   => false,
+                        'errors'    => 'Could not freeze the current membership plan or no active plan at this moment. Please logout/login then try again.',
+                        'title'     => 'An error occurred'
+                    ];
+                }
+            }
 
-        $old_plan = UserMembership::where('user_id','=',$member->id)->whereIn('status',['active','suspended'])->orderBy('created_at','desc')->get()->first();
-        if ($old_plan) {
-            $member->freeze_membership_plan($old_plan, $from_date, $to_date);
+            $member->freeze_membership_plan($the_plan, $from_date, $to_date);
             //MembershipController::freeze_membership_rebuild_invoices($old_plan);
 
             return [

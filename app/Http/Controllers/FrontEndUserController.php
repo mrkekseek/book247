@@ -352,6 +352,10 @@ class FrontEndUserController extends Controller
 
         $plan_request = [];
         $invoiceCancellation = [];
+        $invoiceFreeze = [];
+        $canCancel = true;
+        $canFreeze = true;
+
         $my_plan = UserMembership::where('user_id','=',$back_user->id)->whereIn('status',['active','suspended'])->get()->first();
         if ($my_plan){
             $restrictions = $my_plan->get_plan_restrictions();
@@ -380,8 +384,6 @@ class FrontEndUserController extends Controller
             }
 
             $plan_request = $my_plan->get_plan_requests();
-            $canCancel = true;
-            $canFreeze = true;
             foreach($plan_request as $a_request){
                 if ($a_request['action_type'] == 'cancel' && $a_request['status']!='cancelled'){
                     $canCancel = false;
@@ -423,6 +425,10 @@ class FrontEndUserController extends Controller
             $signOutDate = Carbon::today()->addMonths($my_plan->sign_out_period);
             //xdebug_var_dump($signOutDate);
             foreach($allPlannedInvoices as $onlyOne){
+                if ($onlyOne->status == 'pending'){
+                    $invoiceFreeze[$onlyOne->id] = $onlyOne->issued_date;
+                }
+
                 //xdebug_var_dump(Carbon::createFromFormat('Y-m-d',$onlyOne->issued_date));
                 if ($signOutDate->lte(Carbon::createFromFormat('Y-m-d',$onlyOne->issued_date))){
                     $invoiceCancellation[$onlyOne->id] = $onlyOne->issued_date;
@@ -469,6 +475,7 @@ class FrontEndUserController extends Controller
             'old_avatars'   => $avatarArchive,
             'plannedInvoices'       => @$plannedInvoices,
             'invoiceCancellation'   => $invoiceCancellation,
+            'invoiceFreeze'         => $invoiceFreeze,
             'canCancel'     => $canCancel,
             'canFreeze'     => $canFreeze
         ]);
