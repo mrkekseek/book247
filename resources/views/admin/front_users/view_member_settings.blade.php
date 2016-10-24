@@ -649,7 +649,7 @@
                                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
                                 <h4 class="modal-title">Do you want to cancel the current membership plan?</h4>
                             </div>
-                            <div class="modal-body margin-top-10" style="margin-bottom:0px; padding-bottom:5px;"> Please select the first day with no plan from the drop-down list below</div>
+                            <div class="modal-body margin-top-10" style="margin-bottom:0px; padding-bottom:5px;"> Please select the first day with no plan, from the drop-down list below</div>
                             <div class="modal-body margin-bottom-20" style="padding-top:5px;">
                                 <select name="date_cancellation_time" id="date_cancellation_time" class="form-control input-inline input-large  inline-block list_all_plans">
                                     @foreach ($invoiceCancellation as $key=>$val)

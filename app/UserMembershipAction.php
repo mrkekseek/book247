@@ -68,9 +68,10 @@ class UserMembershipAction extends Model
         }
     }
 
-    public function process_action(){
-
-
-        return true;
+    public function add_note($noteText){
+        $notes = json_decode($this->notes);
+        $notes[] = $noteText;
+        $this->notes = json_encode($notes);
+        $this->save();
     }
 }

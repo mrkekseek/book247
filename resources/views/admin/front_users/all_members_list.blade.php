@@ -46,8 +46,8 @@
                                 <th>
                                     <input type="checkbox" class="group-checkable" data-set="#sample_1 .checkboxes" /> </th>
                                 <th> Full Name </th>
-                                <th> Username </th>
                                 <th> Email </th>
+                                <th> Membership Plan </th>
                                 <th> Joined </th>
                                 <th> Status </th>
                             </tr>
@@ -59,10 +59,10 @@
                                     <td>
                                         <input type="checkbox" class="checkboxes" value="{{$user->id}}" /> </td>
                                     <td> <a href="{{route("admin/front_users/view_user", $user->id)}}">{{$user->first_name}} {{$user->middle_name}} {{$user->last_name}}</a> </td>
-                                    <td> {{$user->username}} </td>
                                     <td>
                                         <a href="mailto:{{$user->email}}"> {{$user->email}} </a>
                                     </td>
+                                    <td> {{$user->membership_status()}} </td>
                                     <td class="center"> {{$user->created_at}} </td>
                                     <td>
                                         <span class="label label-sm label-success"> Approved </span>

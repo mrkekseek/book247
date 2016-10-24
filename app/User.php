@@ -227,16 +227,19 @@ class User extends Authenticatable
         }
     }
 
-    public function cancel_membership_plan(UserMembership $old_plan, $cancel_date = ''){
+    public function cancel_membership_plan(UserMembership $old_plan, $cancel_date = '', $last_date = ''){
         if ($cancel_date == ''){
             $cancel_date = Carbon::today();
+            $last_date   = Carbon::tomorrow();
         }
         else{
             try {
                 $cancel_date = Carbon::createFromFormat('Y-m-d',$cancel_date);
+                $last_date = Carbon::createFromFormat('Y-m-d',$last_date);
             }
             catch (\Exception $ex){
                 $cancel_date = Carbon::today();
+                $last_date   = Carbon::tomorrow();
             }
         }
 
@@ -246,7 +249,7 @@ class User extends Authenticatable
                 'user_membership_id'    => $old_plan->id,
                 'action_type'   => 'cancel',
                 'start_date'    => $cancel_date->format('Y-m-d'),
-                'end_date'      => $cancel_date->format('Y-m-d'),
+                'end_date'      => $last_date->format('Y-m-d'),
                 'added_by'      => Auth::user()->id,
                 'notes'         => json_encode([]),
                 'processed'     => 0,

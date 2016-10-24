@@ -15,6 +15,8 @@ class Kernel extends ConsoleKernel
     protected $commands = [
         Commands\Inspire::class,
         Commands\BookingsCheck::class,
+        Commands\UserMembershipPlannedActionsCheck::class,
+        Commands\UserMembershipPendingInvoices::class,
     ];
 
     /**
@@ -30,5 +32,15 @@ class Kernel extends ConsoleKernel
 
         $schedule->command('booking:check_past_bookings')
             ->everyFiveMinutes();
+
+        $schedule->command('userMembership:planned_actions_check')
+            //->everyMinute()
+            ->dailyAt('00:01')
+            ->sendOutputTo('PlannedActions.log');
+
+        $schedule->command('userFinance:issue_pending_invoices')
+            //->everyMinute()
+            ->dailyAt('01:00')
+            ->sendOutputTo('PendingInvoice_output.log');
     }
 }

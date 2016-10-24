@@ -234,8 +234,8 @@ class FrontEndUserController extends Controller
         }
 
         $roles = Role::all();
-        $countries = Countries::orderBy('name')->get();
-        $userCountry = Countries::find($back_user->country_id);
+        $countries = Countries::select(['id','currency','full_name','name','citizenship'])->orderBy('name','asc')->get();
+        $userCountry = Countries::select(['id','currency','full_name','name','citizenship'])->find($back_user->country_id);
 
         $avatar = $back_user->get_avatar_image();
 
@@ -423,15 +423,15 @@ class FrontEndUserController extends Controller
             }
 
             $signOutDate = Carbon::today()->addMonths($my_plan->sign_out_period);
-            //xdebug_var_dump($signOutDate);
+            //xdebug_var_dump($allPlannedInvoices[0]); exit;
             foreach($allPlannedInvoices as $onlyOne){
                 if ($onlyOne->status == 'pending'){
-                    $invoiceFreeze[$onlyOne->id] = $onlyOne->issued_date;
+                    $invoiceFreeze[$onlyOne->id] = Carbon::createFromFormat('Y-m-d',$onlyOne->issued_date)->format('jS \o\f F, Y');
                 }
 
                 //xdebug_var_dump(Carbon::createFromFormat('Y-m-d',$onlyOne->issued_date));
                 if ($signOutDate->lte(Carbon::createFromFormat('Y-m-d',$onlyOne->issued_date))){
-                    $invoiceCancellation[$onlyOne->id] = $onlyOne->issued_date;
+                    $invoiceCancellation[$onlyOne->id] = Carbon::createFromFormat('Y-m-d',$onlyOne->last_active_date)->addDay()->format('jS \o\f F, Y');
                 }
             }
             //xdebug_var_dump($invoiceCancellation);

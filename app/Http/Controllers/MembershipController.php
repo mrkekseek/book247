@@ -311,7 +311,7 @@ class MembershipController extends Controller
                 ];
             }
 
-            $member->cancel_membership_plan($old_plan, $plannedInvoiceCancelled->issued_date);
+            $member->cancel_membership_plan($old_plan, $plannedInvoiceCancelled->issued_date, $plannedInvoiceCancelled->last_active_date);
 
             return [
                 'success'   => true,
