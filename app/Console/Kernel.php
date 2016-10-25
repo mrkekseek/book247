@@ -37,16 +37,16 @@ class Kernel extends ConsoleKernel
         $schedule->command('userMembership:planned_actions_check')
             //->everyMinute()
             ->dailyAt('00:01')
-            ->sendOutputTo('PlannedActions.log');
+            ->sendOutputTo('storage/logs/PlannedActions.log');
 
         $schedule->command('userFinance:issue_pending_invoices')
             //->everyMinute()
             ->dailyAt('01:00')
-            ->sendOutputTo('PendingInvoice_output.log');
+            ->sendOutputTo('storage/logs/PendingInvoice_output.log');
 
         $schedule->command('booking:daily_morning_bookings_plan')
             //->everyMinute()
-            ->twiceDaily('00:00','05:00')
-            ->sendOutputTo('BookingDailyPlanner_output.log');
+            ->dailyAt('11:20')
+            ->sendOutputTo('storage/logs/BookingDailyPlanner_output.log');
     }
 }

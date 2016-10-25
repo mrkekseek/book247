@@ -43,8 +43,7 @@ class BookingDailyPlannerEmail extends Command
     public function handle()
     {
         $today = Carbon::today()->format('Y-m-d');
-        $email_body = '<h1>Bookings summary for '.Carbon::today()->format('d-m-Y').' generated at '.Carbon::now()->format('H:i:s').'</h1> &nbsp;
-        ';
+        $email_body = '<h2>Bookings summary for '.Carbon::today()->format('d-m-Y').' generated at '.Carbon::now()->format('H:i:s').'</h2>';
 
         $allCategories = ShopResourceCategory::orderBy('name','asc')->get();
         $categories = [];
@@ -76,7 +75,7 @@ class BookingDailyPlannerEmail extends Command
                     foreach($bookings as $booking){
                         $playerName = $booking->by_user->first_name.' '.$booking->by_user->middle_name.' '.$booking->by_user->last_name;
                         $resourceName = isset($resource_name[$booking->resource_id])?$resource_name[$booking->resource_id]:'unknown';
-                        $email_body.= '- '.$booking->booking_time_start.' to '.$booking->booking_time_stop.' ;
+                        $email_body.= '- '.Carbon::createFromFormat('H:i:s',$booking->booking_time_start)->format('H:i').' to '.Carbon::createFromFormat('H:i:s',$booking->booking_time_stop)->format('H:i').' ;
                         Player : '.$playerName.' ;
                         Room : '.$resourceName.' ;
                         Activity : '.(isset($categories[$booking->resource->category_id])?$categories[$booking->resource->category_id]:'unknown').' ;

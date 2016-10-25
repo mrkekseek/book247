@@ -13,7 +13,7 @@
     </tr>
     <tr>
         <td class="paragraph">
-            {{$bookings}}
+            {!! $bookings !!}
         </td>
     </tr>
     <tr>
