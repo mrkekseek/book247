@@ -216,7 +216,7 @@ class User extends Authenticatable
 
                 if ($from_date->between($invoiceStart, $invoiceEnd)) {
                     // check the planned invoices that needs to be pushed out of the freeze period
-                    MembershipController::freeze_membership_rebuild_invoices($old_plan);
+                    //MembershipController::freeze_membership_rebuild_invoices($old_plan);
                 }
             }
 

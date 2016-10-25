@@ -46,7 +46,7 @@ class Kernel extends ConsoleKernel
 
         $schedule->command('booking:daily_morning_bookings_plan')
             //->everyMinute()
-            ->dailyAt('11:20')
+            ->dailyAt('06:00')
             ->sendOutputTo('storage/logs/BookingDailyPlanner_output.log');
     }
 }

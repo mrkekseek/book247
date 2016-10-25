@@ -370,8 +370,10 @@
                                                                             @if ($one_request['action_type']=='freeze' && $one_request['after_date']->between(\Carbon\Carbon::createFromFormat('Y-m-d H:i:s',$singlePlanned['issued_date'].' 00:00:00'), \Carbon\Carbon::createFromFormat('Y-m-d H:i:s',$singlePlanned['last_active_date'].' 00:00:00')))
                                                                                 <tr>
                                                                                     <td class="highlight" colspan="5">
-                                                                                        @if ($one_request['processed']=='1')
+                                                                                        @if ($one_request['processed']=='1' && $one_request['status']=='old')
                                                                                             <div class="warning"></div> <a class="font-green-seagreen"> Processed - </a>
+                                                                                        @elseif ($one_request['processed']=='1')
+                                                                                            <div class="warning"></div> <a class="font-green-seagreen"> Waiting Activation - </a>
                                                                                         @else
                                                                                             <div class="danger"></div> <a class="font-red-thunderbird"> Pending - </a>
                                                                                         @endif
