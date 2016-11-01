@@ -9,6 +9,7 @@ use App\BookingInvoiceItem;
 use App\Invoice;
 use App\InvoiceItem;
 use App\MembershipPlan;
+use App\MembershipProduct;
 use App\PersonalDetail;
 use App\ShopLocations;
 use App\ShopResource;
@@ -833,6 +834,7 @@ class BookingController extends Controller
         $cash_amount = 0;
         $recurring_nr = 0;
         $recurring_cash = 0;
+        $membership_products = '';
 
         if (sizeof($keys)>0){
             foreach($keys as $key){
@@ -866,12 +868,26 @@ class BookingController extends Controller
                 }
             }
 
+            if ($cash_nr>0){
+                // get available products from list
+                $all_membership_products = Cache::remember('membership_products_table',720,function(){
+                    return MembershipProduct::orderBy('name','asc')->get();
+                });
+                foreach ($all_membership_products as $single){
+                    $membership_products[] = [
+                        'id'    => $single->id,
+                        'name'  => $single->name
+                    ];
+                }
+            }
+
             return ['success' => 'true',
                     'membership_nr'     => $membership_nr,
                     'recurring_nr'      => $recurring_nr,
                     'recurring_cash'    => $recurring_cash,
                     'cash_nr'       => $cash_nr,
-                    'cash_amount'   => $cash_amount.' NOK' ];
+                    'cash_amount'   => $cash_amount.' NOK',
+                    'membership_products'   => $membership_products];
         }
         else{
             return ['error' => 'No bookings found to confirm. Please make the booking process again. Remember you have 60 seconds to complete the booking before it expires.'];
@@ -899,7 +915,16 @@ class BookingController extends Controller
 
         $this->check_for_expired_pending_bookings();
 
-        $vars = $request->only('selected_bookings');
+        $vars = $request->only('selected_bookings', 'membership_product');
+
+        $membershipProductID = -1;
+        if (isset($vars['membership_product'])){
+            $selectedProduct = MembershipProduct::where('id','=',$vars['membership_product'])->get()->first();
+            if ($selectedProduct){
+                $membershipProductID = $selectedProduct->id;
+            }
+        }
+
         $keys = explode(',',$vars['selected_bookings']);
         $return_key = [];
 
@@ -985,6 +1010,10 @@ class BookingController extends Controller
                         ];
                         $abcd = $general_invoice->add_invoice_item($generalFillable);
                     }
+                }
+
+                if ($booking->payment_type == "cash" && $membershipProductID!=-1){
+                    $booking->membership_product_id = $membershipProductID;
                 }
 
                 $booking->status = 'active';
@@ -1824,11 +1853,23 @@ class BookingController extends Controller
         ];
 
         // get custom membership colors
-        $allPlans = MembershipPlan::select('id', 'plan_calendar_color')->get();
+        $allPlans = Cache::remember('membership_plans_table', 720, function(){
+           return MembershipPlan::select('id', 'plan_calendar_color')->get();
+        });
         $plansCalendarColor = [];
         if ($allPlans){
             foreach($allPlans as $thePlan){
                 $plansCalendarColor[$thePlan->id] = $thePlan->plan_calendar_color;
+            }
+        }
+
+        $membership_products = Cache::remember('membership_products_table',720,function(){
+            return MembershipProduct::orderBy('name','asc')->get();
+        });
+        $membershipProductColor = [];
+        if ($membership_products){
+            foreach($membership_products as $singleProduct){
+                $membershipProductColor[$singleProduct->id] = ['color_code' => $singleProduct->color_code, 'name' => $singleProduct->name];
             }
         }
 
@@ -1852,20 +1893,13 @@ class BookingController extends Controller
         $bookings = $q->get();
 
         if ($bookings){
-            /*$value = Cache::remember('users', 60, function() {
-                return DB::table('users')->get();
-            });
-
-            foreach($value as $k=>$a){
-                Cache::put('user-'.$a->id,$a,60);
-            }*/
-
             foreach ($bookings as $booking){
                 $formatted_booking = [
                     'search_key' => $booking->search_key,
                     'location' => $booking->location_id,
                     'resource' => $booking->resource_id,
                     'status'   => $booking->status,
+                    'membership_product' => $booking->membership_product_id,
                     'color_stripe' => 'bg-red-flamingo bg-font-red-flamingo'];
 
                 if ($show_more){
@@ -1902,6 +1936,10 @@ class BookingController extends Controller
                     }
                     elseif($booking->status=='pending'){
                         $formatted_booking['color_stripe'] = 'bg-yellow-soft bg-font-yellow-soft';
+                    }
+
+                    if ($booking->membership_product_id!=-1 && isset($membershipProductColor[$booking->membership_product_id])){
+                        $formatted_booking['custom_color'] = $membershipProductColor[$booking->membership_product_id]['color_code'].' !important';
                     }
 
                     $formatted_booking['button_show'] = 'is_disabled';

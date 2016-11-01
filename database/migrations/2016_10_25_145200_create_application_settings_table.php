@@ -14,6 +14,11 @@ class CreateApplicationSettingsTable extends Migration
     {
         Schema::create('application_settings', function (Blueprint $table) {
             $table->increments('id');
+            $table->integer('setting_id')->unsigned()->nullable();
+            $table->integer('allowed_setting_value_id')->nullable();
+            $table->string('unconstrained_value', 25)->nullable();
+            $table->integer('updated_by_id')->unsigned();
+
             $table->timestamps();
         });
     }

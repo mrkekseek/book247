@@ -17,8 +17,9 @@ class CreateSettingsTable extends Migration
             $table->string('name',200);
             $table->string('description',400);
             $table->boolean('constrained');
-            $table->string('min_value',9)->nullable();
-            $table->string('max_value',9)->nullable();
+            $table->string('data_type',25);
+            $table->string('min_value',25)->nullable();
+            $table->string('max_value',25)->nullable();
 
             $table->timestamps();
         });

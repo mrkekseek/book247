@@ -28,6 +28,7 @@ class Booking extends Model
         'custom_color_code' => 'Custom Color for Booking',
         'payment_type'  => 'Payment Type',
         'membership_id' => 'Membership ID',
+        'membership_product_id' => 'Membership Product ID',
         'invoice_id'    => 'Invoice ID',
         'search_key'    => 'Search Key'
     );
@@ -47,6 +48,7 @@ class Booking extends Model
         'custom_color',
         'payment_type',
         'membership_id',
+        'membership_product_id',
         'invoice_id',
         'search_key',
         'payment_amount',
@@ -494,6 +496,7 @@ class Booking extends Model
                     'custom_color_code' => 'size:7',
                     'payment_type'      => 'required|in:cash,membership,recurring',
                     'membership_id'     => '',
+                    'membership_product_id' => 'exists:membership_product_id,id',
                     'invoice_id'        => '',
                     'search_key'        => 'required|unique:bookings,search_key',
                     'payment_amount'    => 'numeric',
@@ -514,6 +517,7 @@ class Booking extends Model
                     'custom_color_code' => 'size:7',
                     'payment_type'      => 'required|in:cash,membership,recurring',
                     'membership_id'     => '',
+                    'membership_product_id' => 'exists:membership_product_id,id',
                     'invoice_id'        => '',
                     'search_key'        => 'required|unique:bookings,search_key'.($id ? ",$id,id" : ''),
                     'payment_amount'    => 'numeric',

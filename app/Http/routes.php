@@ -510,6 +510,13 @@ Route::group(['middleware' => 'web'], function () {
         'uses'  => 'InvoiceController@view_invoice'
     ]);
     /** Stop Finance Part */
+
+    /* Start General Settings Part */
+    Route::get('admin/settings/list_all', [
+        'as'    => 'admin/settings/list_all',
+        'uses'  => 'AppSettings@index'
+    ]);
+    /* Stop General Settings Part */
 });
 
 Route::group(['middleware'=>'web', 'prefix'=>'admin'], function(){
@@ -557,6 +564,36 @@ Route::group(['middleware'=>'web', 'prefix'=>'admin'], function(){
     Route::post('membership_plans/delete_pending_action', [
         'as'    => 'admin/membership_plans/delete_pending_action',
         'uses'  => 'MembershipController@cancel_membership_planned_action'
+    ]);
+
+    Route::get('membership_products/list_all', [
+        'as'    => 'admin/membership_products/list_all',
+        'uses'  => 'MembershipProductsController@index'
+    ]);
+
+    Route::get('membership_products/add_new', [
+        'as'    => 'admin/membership_products/add_new',
+        'uses'  => 'MembershipProductsController@create'
+    ]);
+
+    Route::post('membership_products/add_new', [
+        'as'    => 'admin/membership_products/add_new',
+        'uses'  => 'MembershipProductsController@store'
+    ]);
+
+    Route::get('membership_products/{id}', [
+        'as'    => 'admin/membership_products/view',
+        'uses'  => 'MembershipProductsController@show'
+    ]);
+
+    Route::get('membership_products/{id}/edit', [
+        'as'    => 'admin/membership_products/edit',
+        'uses'  => 'MembershipProductsController@edit'
+    ]);
+
+    Route::post('membership_products/{id}/update', [
+        'as'    => 'admin/membership_products/update',
+        'uses'  => 'MembershipProductsController@update'
     ]);
 
     /** Stop  - Membership Management */
@@ -826,5 +863,10 @@ Route::group(['prefix'=>'ajax', 'middleware' => 'web'], function(){
     Route::post('password_reset_request',[
         'as'    => 'ajax/password_reset_request',
         'uses'  => 'FrontEndUserController@password_reset_request'
+    ]);
+
+    Route::post('register_new_setting',[
+        'as'    => 'ajax/register_new_setting',
+        'uses'  => 'AppSettings@register_new_setting'
     ]);
 });

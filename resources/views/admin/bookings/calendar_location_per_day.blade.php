@@ -136,6 +136,12 @@
                                                         <i class="icon-speech"></i>
                                                     </a>
                                                 @endif
+
+                                                @if ($location_bookings[$key][$resource['id']]['button_finance'] != 'is_disabled')
+                                                <a style="height:30px; width:30px; padding-top:4px; margin-right:4px;" href="javascript:;" data-id="{{ $location_bookings[$key][$resource['id']]['membership_product'] }}" class="btn btn-circle btn-icon-only btn-default border-white open_product_options">
+                                                    <i class="icon-notebook"></i>
+                                                </a>
+                                                @endif
                                             </div>
                                             @else
                                             <span data-resource="{{ $resource['id'] }}" data-time="{{ $key }}">&nbsp;</span>
@@ -504,6 +510,62 @@
                 <!-- /.modal-dialog -->
             </div>
             <!-- END REGISTRATION FORM -->
+
+            <!-- BEGIN Booking Membership Products modal window show -->
+            <div class="modal fade" id="membership_product_options" tabindex="-1" role="dialog" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content" style="margin-left:20px; margin-right:20px; margin-top:60px;">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                            <h4 class="modal-title">Do you want to cancel?</h4>
+                        </div>
+                        <div class="modal-body">
+                            <div class="note note-info" style="margin-bottom:0px;">
+                                <h4 class="block">Selected membership product</h4>
+                                <p> If this booking is assigned to a membership product, it will be selected in the list below. If not you can assign one to it and click update button at the bottom of the popup window. </p>
+                            </div>
+
+                                <div class="form-group form-md-radios">
+                                    <label>Checkboxes</label>
+                                    <div class="md-radio-inline">
+                                        <div class="md-radio">
+                                            <input type="radio" id="radio14" name="radio2" class="md-radiobtn">
+                                            <label for="radio14">
+                                                <span></span>
+                                                <span class="check"></span>
+                                                <span class="box"></span> Option 1 </label>
+                                        </div>
+                                        <div class="md-radio has-error">
+                                            <input type="radio" id="radio15" name="radio2" class="md-radiobtn" checked>
+                                            <label for="radio15">
+                                                <span></span>
+                                                <span class="check"></span>
+                                                <span class="box"></span> Option 2 </label>
+                                        </div>
+                                        <div class="md-radio has-warning">
+                                            <input type="radio" id="radio16" name="radio2" class="md-radiobtn">
+                                            <label for="radio16">
+                                                <span></span>
+                                                <span class="check"></span>
+                                                <span class="box"></span> Option 3 </label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                        </div>
+                        <div class="modal-footer">
+                            <input type="hidden" name="mp_search_key" value="" />
+                            <input type="hidden" name="mp_id" value="" />
+
+                            <button type="button" class="btn dark btn-outline" data-dismiss="modal">No, Go Back</button>
+                            <button type="button" class="btn green" onclick="javascript:cancel_booking();">Yes, Cancel</button>
+                        </div>
+                    </div>
+                    <!-- /.modal-content -->
+                </div>
+                <!-- /.modal-dialog -->
+            </div>
+            <!-- END Cancel Membership Products modal window show -->
         </div>
         <!-- END PAGE BASE CONTENT -->
     </div>
@@ -1085,6 +1147,16 @@
             $('#more_options_bookings_show').modal('show');
         });
 
+        $(document).on('click', '.open_product_options', function(){
+            var search_key = $(this).parent().attr('search-key');
+            var membership_product = $(this).attr('data-id');
+
+            $('input[name=mp_search_key]').val(search_key);
+            $('input[name=mp_id]').val(membership_product);
+
+            $('#membership_product_options').modal('show');
+        });
+
         function get_player_statistics(key, div_container){
             App.blockUI({
                 target: '#player_summary_stats',
@@ -1527,6 +1599,7 @@
                     all_bookings += $(this).val() + ',';
                 }
             });
+            var selected_product = $('select[name=membership_products]').val();
 
             $.ajax({
                 url: '{{route('ajax/confirm_bookings')}}',
@@ -1534,6 +1607,7 @@
                 cache: false,
                 data: {
                     'selected_bookings': all_bookings,
+                    'membership_product': selected_product,
                 },
                 success: function(data){
                     $('input[name="booking_made_for"]').val(1);
@@ -1758,7 +1832,22 @@
                             recurring = '<h5>Recurring bookings : <span id="membership_bookings_nr">' + data.recurring_nr + '</span> bookings of <span>' + data.recurring_cash + '</span> in total</h5>';
                         }
 
-                        $('.booking_summary_price_membership').html(membership_bookings + ' ' + cash_bookings + ' ' + recurring);
+                        var membership_products = '';
+                        if (data.membership_products.length > 0){
+                            var all_products = '<option value="-1">Select Product</option>';
+                            $.each(data.membership_products, function(key, value){
+                                all_products += '<option value="'+ value.id +'">'+ value.name +'</option>';
+                            });
+
+                            membership_products = '<div class="membership_products" style="">' +
+                                    '<label><small>Membership Products associated to paid bookings</small></label>' +
+                                    '<select class="form-control margin-bottom-5 input-sm" name="membership_products">' +
+                                    all_products +
+                                    '</select>' +
+                                '</div>';
+                        }
+
+                        $('.booking_summary_price_membership').html(membership_bookings + ' ' + cash_bookings + ' ' + recurring + ' ' + membership_products);
                     }
                     else {
                         show_notification(data.error.title, data.error.message, 'lemon', 3500, 0);

@@ -92,6 +92,25 @@
                 </li>
             </ul>
         </li>
+        <li class="nav-item {{ in_array($in_sidebar, array('admin-backend-membership_products-list_all','admin-backend-membership_products-new_product','admin-backend-membership_products-show_product','admin-backend-membership_products-edit_product'))?'active open':'' }} ">
+            <a href="javascript:;" class="nav-link nav-toggle">
+                <i class="icon-shield"></i>
+                <span class="title"> Membership Products </span>
+                <span class="arrow"></span>
+            </a>
+            <ul class="sub-menu">
+                <li class="nav-item {{ $in_sidebar=='admin-backend-membership_products-new_product'?'active open':'' }}">
+                    <a href="{{route('admin/membership_products/add_new')}}" class="nav-link ">
+                        <span class="title">Add New Product</span>
+                    </a>
+                </li>
+                <li class="nav-item {{ $in_sidebar=='admin-backend-membership_products-list_all'?'active open':'' }}">
+                    <a href="{{ route('admin/membership_products/list_all') }}" class="nav-link ">
+                        <span class="title">List All Products</span>
+                    </a>
+                </li>
+            </ul>
+        </li>
         <li class="nav-item {{ in_array($in_sidebar, array('admin-backend-user_roles', 'admin-backend-all_users', 'admin-backend-roles_permission', 'admin-backend-user_details_view', 'admin-backend-permission_details_view'))?'active open':'' }} ">
             <a href="javascript:;" class="nav-link nav-toggle">
                 <i class="icon-calculator"></i>
@@ -198,6 +217,20 @@
                 <li class="nav-item {{ $in_sidebar=='admin-backend-shops-employees-work-plan'?'active open':'' }} ">
                     <a href="{{ route('admin/shops/employee_work_plan') }}" class="nav-link ">
                         <span class="title"> Working Schedule </span>
+                    </a>
+                </li>
+            </ul>
+        </li>
+        <li class="nav-item {{ in_array($in_sidebar, ['admin-settings-all_list'])?'active open':'' }} ">
+            <a href="javascript:;" class="nav-link nav-toggle">
+                <i class="icon-shield"></i>
+                <span class="title"> General Settings </span>
+                <span class="arrow"></span>
+            </a>
+            <ul class="sub-menu">
+                <li class="nav-item {{ $in_sidebar=='admin-settings-all_list'?'active open':'' }}">
+                    <a href="{{route('admin/settings/list_all')}}" class="nav-link ">
+                        <span class="title">List all settings</span>
                     </a>
                 </li>
             </ul>

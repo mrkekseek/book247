@@ -30,6 +30,7 @@ use App\ShopResource;
 use App\ShopResourceCategory;
 use App\MembershipPlan;
 use App\MembershipRestriction;
+use Illuminate\Support\Facades\Cache;
 use Mockery\CountValidator\Exception;
 use Webpatser\Countries\Countries;
 use Auth;
@@ -332,7 +333,9 @@ class FrontEndUserController extends Controller
         }
 
         $roles = Role::all();
-        $countries = Countries::orderBy('name')->get();
+        $countries = Cache::remember('countries', 3660, function() {
+                return Countries::orderBy('name')->get();
+            });
         $userCountry = Countries::find($back_user->country_id);
 
         $avatar = $back_user->get_avatar_image();

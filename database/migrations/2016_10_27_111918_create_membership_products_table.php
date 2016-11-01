@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateAllowedSettingValuesTable extends Migration
+class CreateMembershipProductsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -12,11 +12,10 @@ class CreateAllowedSettingValuesTable extends Migration
      */
     public function up()
     {
-        Schema::create('allowed_setting_values', function (Blueprint $table) {
+        Schema::create('membership_products', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('setting_id')->unsigned()->nullable();
-            $table->string('item_value',25);
-            $table->string('caption',50);
+            $table->string('name', 150);
+            $table->string('color_code', 7);
             $table->timestamps();
         });
     }
@@ -28,6 +27,6 @@ class CreateAllowedSettingValuesTable extends Migration
      */
     public function down()
     {
-        Schema::drop('allowed_setting_values');
+        Schema::drop('membership_products');
     }
 }
