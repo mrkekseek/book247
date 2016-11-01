@@ -63,10 +63,10 @@
                         </div>
                     </div>
                     <div class="portlet-body flip-scroll">
-                        <div class="row" style="margin-bottom:10px;">
+                        <div class="row" style="padding-left:5px; margin-bottom:10px;">
                             @foreach($membership_legend as $each_legend)
-                                <div class="col-md-3">
-                                    <a class="border-grey-salt" style="background-color:{{ $each_legend['color'] }}; padding:0px 15px; margin-right:10px;"> &nbsp; </a> {{ $each_legend['name'] }}
+                                <div style="display:inline-block; margin-bottom:4px;">
+                                    <a class="border-grey-salt" style="background-color:{{ $each_legend['color'] }}; padding:0px 10px; border-radius: {{ $each_legend['status']=='product'?'0px':'10px' }};  margin-left:10px; margin-right:5px;"> </a><small>{{ $each_legend['name'] }}</small>
                                 </div>
                             @endforeach
                         </div>
@@ -161,11 +161,11 @@
                             </tbody>
                         </table>
 
-                        <div class="row">
+                        <div class="row" style="padding-left:5px;">
                             @foreach($membership_legend as $each_legend)
-                                <div class="col-md-3">
-                                    <a class="border-grey-salt" style="background-color:{{ $each_legend['color'] }}; padding:0px 15px; margin-right:10px;"> &nbsp; </a> {{ $each_legend['name'].' - '.$each_legend['status'] }}
-                                </div>
+                            <div style="display:inline-block; margin-bottom:4px;">
+                                <a class="border-grey-salt" style="background-color:{{ $each_legend['color'] }}; padding:0px 10px; border-radius: {{ $each_legend['status']=='product'?'0px':'10px' }};  margin-left:10px; margin-right:5px;"> </a><small>{{ $each_legend['name'] }}</small>
+                            </div>
                             @endforeach
                         </div>
                     </div>
@@ -526,29 +526,23 @@
                             </div>
 
                                 <div class="form-group form-md-radios">
-                                    <label>Checkboxes</label>
                                     <div class="md-radio-inline">
                                         <div class="md-radio">
-                                            <input type="radio" id="radio14" name="radio2" class="md-radiobtn">
+                                            <input type="radio" id="radio14" value="-1" checked="checked" name="mp_radio" class="md-radiobtn">
                                             <label for="radio14">
                                                 <span></span>
                                                 <span class="check"></span>
-                                                <span class="box"></span> Option 1 </label>
+                                                <span class="box"></span> No Product </label>
                                         </div>
-                                        <div class="md-radio has-error">
-                                            <input type="radio" id="radio15" name="radio2" class="md-radiobtn" checked>
-                                            <label for="radio15">
-                                                <span></span>
-                                                <span class="check"></span>
-                                                <span class="box"></span> Option 2 </label>
-                                        </div>
-                                        <div class="md-radio has-warning">
-                                            <input type="radio" id="radio16" name="radio2" class="md-radiobtn">
-                                            <label for="radio16">
-                                                <span></span>
-                                                <span class="check"></span>
-                                                <span class="box"></span> Option 3 </label>
-                                        </div>
+                                        @foreach ($membership_products as $single)
+                                            <div class="md-radio">
+                                                <input type="radio" id="radio{{$single->id}}" value="{{$single->id}}" name="mp_radio" class="md-radiobtn" checked>
+                                                <label for="radio{{$single->id}}" style="color:{!! $single->color_code !!};">
+                                                    <span></span>
+                                                    <span class="check"></span>
+                                                    <span class="box"></span> {{$single->name}} </label>
+                                            </div>
+                                        @endforeach
                                     </div>
                                 </div>
 
@@ -558,7 +552,7 @@
                             <input type="hidden" name="mp_id" value="" />
 
                             <button type="button" class="btn dark btn-outline" data-dismiss="modal">No, Go Back</button>
-                            <button type="button" class="btn green" onclick="javascript:cancel_booking();">Yes, Cancel</button>
+                            <button type="button" class="btn green" onclick="javascript:update_membership_product();">Yes, Update</button>
                         </div>
                     </div>
                     <!-- /.modal-content -->
@@ -1154,6 +1148,12 @@
             $('input[name=mp_search_key]').val(search_key);
             $('input[name=mp_id]').val(membership_product);
 
+            $('input:radio[name=mp_radio]').each(function(){
+                if ($(this).val()==membership_product){
+                    $(this).trigger('click');
+                }
+            });
+
             $('#membership_product_options').modal('show');
         });
 
@@ -1621,6 +1621,34 @@
                     setTimeout(function(){
                         location.reload();
                     },1500);
+                }
+            });
+        }
+
+        function update_membership_product(){
+            var booking_key = $('input[name=mp_search_key]').val();
+            var selected_product = $('input[name=mp_radio]:checked').val();
+
+            $.ajax({
+                url: '{{route('ajax/booking_membership_product_update')}}',
+                type: "post",
+                cache: false,
+                data: {
+                    'selected_booking': booking_key,
+                    'membership_product': selected_product,
+                },
+                success: function(data){
+                    if (data.success) {
+                        show_notification(data.title, data.message, 'lemon', 3500, 0);
+                        setTimeout(function(){
+                            location.reload();
+                        },2000);
+                    }
+                    else{
+                        show_notification(data.title, data.errors, 'ruby', 3500, 0);
+                    }
+
+                    $('#membership_product_options').modal('hide');
                 }
             });
         }

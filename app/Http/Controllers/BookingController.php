@@ -1440,6 +1440,26 @@ class BookingController extends Controller
             }
         }
 
+        $all_products = [];
+        $membership_products = Cache::remember('membership_products_table',720,function(){
+            return MembershipProduct::orderBy('name','asc')->get();
+        });
+        foreach ($membership_products as $single){
+            $membership_legend[] = [
+                'name' => $single->name,
+                'status'=> 'product',
+                'color' => $single->color_code
+            ];
+        }
+
+        if ($membership_products){
+            $i = 1;
+            foreach($membership_products as $single){
+                $all_products[$i] = $single;
+                $i++;
+            }
+        }
+
         $buttons_color = [
             'is_show'           => 'bg-green-jungle bg-font-green-jungle',
             'is_no_show'        => 'bg-red-thunderbird bg-font-red-thunderbird',
@@ -1474,7 +1494,8 @@ class BookingController extends Controller
             'all_activities'=> $locationActivities,
             'is_close_menu' => true,
             'memberships'   => $membership_plans,
-            'membership_legend'=> $membership_legend
+            'membership_legend'   => $membership_legend,
+            'membership_products' => $membership_products
         ]);
     }
 
@@ -3062,6 +3083,47 @@ class BookingController extends Controller
         }
 
         return $fillable;
+    }
+
+    public function update_booking_membership_product(Request $request){
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
+            return [
+                'success' => false,
+                'title'   => 'You need to be logged in',
+                'errors'  => 'You need to be logged in in the backend to use this function'];
+        }
+
+        $vars = $request->only('selected_booking','membership_product');
+        $booking = Booking::where('search_key','=',$vars['selected_booking'])->get()->first();
+        if (!$booking){
+            return [
+                'success' => false,
+                'title'   => 'Error getting booking',
+                'errors'  => 'The specified booking was not found in the system. Please reload page and try again.'];
+        }
+
+        $membershipProduct = MembershipProduct::where('id','=',$vars['membership_product'])->get()->first();
+        if (!$membershipProduct && $vars['membership_product']!=-1){
+            return [
+                'success' => false,
+                'title'   => 'Error getting product',
+                'errors'  => 'The selected product option could not be found in the system. Try reloading the page.'];
+        }
+
+        $booking->membership_product_id = $vars['membership_product'];
+        if ($booking->save()){
+            return [
+                'success' => true,
+                'title'   => 'Booking Product Updated',
+                'message'  => 'The page will reload now to reflect your change. Please wait.'];
+        }
+        else{
+            return [
+                'success' => false,
+                'title'   => 'Error changing product',
+                'errors'  => 'Could not change product option. Try reloading the page.'];
+        }
     }
     /* Single Booking - quick actions END */
 

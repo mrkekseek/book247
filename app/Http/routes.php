@@ -840,6 +840,11 @@ Route::group(['prefix'=>'ajax', 'middleware' => 'web'], function(){
         'uses'  => 'BookingController@calendar_booking_save_recurring'
     ]);
 
+    Route::post('booking_membership_product_update', [
+        'as'    => 'ajax/booking_membership_product_update',
+        'uses'  => 'BookingController@update_booking_membership_product'
+    ]);
+
     Route::post('validate_phone_number_for_registration', [
         'as'    => 'ajax/check_phone_for_member_registration',
         'uses'  => 'FrontEndUserController@validate_phone_for_member'
