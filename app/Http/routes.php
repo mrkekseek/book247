@@ -870,6 +870,16 @@ Route::group(['prefix'=>'ajax', 'middleware' => 'web'], function(){
         'uses'  => 'FrontEndUserController@password_reset_request'
     ]);
 
+    Route::post('general_note_add_new', [
+        'as'    => 'ajax/general_note_add_new',
+        'uses'  => 'GeneralNotesController@create'
+    ]);
+
+    Route::post('front_member_change_status', [
+        'as'    => 'ajax/front_member_change_status',
+        'uses'  => 'FrontEndUserController@change_account_status'
+    ]);
+
     Route::post('register_new_setting',[
         'as'    => 'ajax/register_new_setting',
         'uses'  => 'AppSettings@register_new_setting'

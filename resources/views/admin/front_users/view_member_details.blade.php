@@ -45,8 +45,8 @@
                         <!-- END SIDEBAR USER TITLE -->
                         <!-- SIDEBAR BUTTONS -->
                         <div class="profile-userbuttons">
-                            <button type="button" class="btn btn-circle green btn-sm">Follow</button>
-                            <button type="button" class="btn btn-circle red btn-sm">Message</button>
+                            <button type="button" class="btn btn-circle yellow-mint btn-sm member_send_message">Send Message</button>
+                            <button type="button" class="btn btn-circle btn-sm member_suspend_access {{ $user->status=='active'?'red':'green-jungle' }}">{{ $user->status=='active'?'Suspend ':'Reactivate ' }} Member</button>
                         </div>
                         <!-- END SIDEBAR BUTTONS -->
                         <!-- SIDEBAR MENU -->
@@ -79,33 +79,21 @@
                         <div class="row list-separated profile-stat">
                             <div class="col-md-4 col-sm-4 col-xs-6">
                                 <div class="uppercase profile-stat-title"> 37 </div>
-                                <div class="uppercase profile-stat-text"> Projects </div>
+                                <div class="uppercase profile-stat-text"> Pending </div>
                             </div>
                             <div class="col-md-4 col-sm-4 col-xs-6">
                                 <div class="uppercase profile-stat-title"> 51 </div>
-                                <div class="uppercase profile-stat-text"> Tasks </div>
+                                <div class="uppercase profile-stat-text"> Old/Passed </div>
                             </div>
                             <div class="col-md-4 col-sm-4 col-xs-6">
                                 <div class="uppercase profile-stat-title"> 61 </div>
-                                <div class="uppercase profile-stat-text"> Uploads </div>
+                                <div class="uppercase profile-stat-text"> Cancelled </div>
                             </div>
                         </div>
                         <!-- END STAT -->
                         <div>
                             <h4 class="profile-desc-title">About Marcus Doe</h4>
                             <span class="profile-desc-text"> Lorem ipsum dolor sit amet diam nonummy nibh dolore. </span>
-                            <div class="margin-top-20 profile-desc-link">
-                                <i class="fa fa-globe"></i>
-                                <a href="http://www.keenthemes.com">www.keenthemes.com</a>
-                            </div>
-                            <div class="margin-top-20 profile-desc-link">
-                                <i class="fa fa-twitter"></i>
-                                <a href="http://www.twitter.com/keenthemes/">@keenthemes</a>
-                            </div>
-                            <div class="margin-top-20 profile-desc-link">
-                                <i class="fa fa-facebook"></i>
-                                <a href="http://www.facebook.com/keenthemes/">keenthemes</a>
-                            </div>
                         </div>
                     </div>
                     <!-- END PORTLET MAIN -->
@@ -1207,6 +1195,79 @@
                     </div>
                 </div>
                 <!-- END PROFILE CONTENT -->
+                <!-- BEGIN General Message modal window -->
+                <div class="modal fade" id="general_message_box" tabindex="-1" role="dialog" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                                <h4 class="modal-title"> Send a message to this member or about this member </h4>
+                            </div>
+                            <div class="modal-body form-horizontal">
+                                <div class="form-body">
+                                    <div class="form-group">
+                                        <label class="col-md-4 control-label"> Title / Topic </label>
+                                        <div class="col-md-8">
+                                            <input class="form-control input-large input-sm" name="title_general_message" placeholder="message title or topic" type="text" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-4 control-label"> Public Message<br /><small>visible by members</small></label>
+                                        <div class="col-md-8">
+                                            <textarea type="text" class="form-control input-inline input-large input-sm" name="custom_general_message"></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-4 control-label"> Internal Message<br /><small>visible by employees only</small> </label>
+                                        <div class="col-md-8">
+                                            <textarea type="text" class="form-control input-inline input-large input-sm" name="private_general_message"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn green btn_modify_booking" onclick="javascript:send_member_general_message();">Send Message</button>
+                                <button type="button" class="btn dark btn-outline" data-dismiss="modal">Return</button>
+                            </div>
+                        </div>
+                        <!-- /.modal-content -->
+                    </div>
+                    <!-- /.modal-dialog -->
+                </div>
+                <!-- END General Message modal window -->
+                <!-- BEGIN Status Change modal window -->
+                <div class="modal fade" id="change_member_status" tabindex="-1" role="dialog" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <form role="form" id="form_account_change_status" action="#">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                                    <h4 class="modal-title"> {{ $user->status=='active'?'Suspend ':'Reactivate ' }} member </h4>
+                                </div>
+                                <div class="modal-body form-horizontal">
+                                    <div class="alert alert-danger display-hide">
+                                        <button class="close" data-close="alert"></button> Please add a short message about your action - more than 15 characters. </div>
+                                    <div class="alert alert-success display-hide">
+                                        <button class="close" data-close="alert"></button> Your form validation is successful! </div>
+                                    <div class="note note-info" style="margin-bottom:0px;">
+                                        <p> Current status : <span style="text-transform: uppercase; font-weight:bold;">{{ $user->status }}</span> . In order to change user status you have to provide a reason / note to this action. </p>
+                                        <div class="form-group" style="margin:0px -15px 0px 0px;">
+                                            <label class="control-label"> Public Message <small>visible by members</small></label>
+                                            <textarea class="form-control input-sm" name="custom_status_change_message"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" onclick="javascript: $('#form_account_change_status').submit();" class="btn green btn_modify_booking">{{ $user->status=='active'?'Suspend User':'Reactivate User' }}</button>
+                                    <button type="button" class="btn dark btn-outline" data-dismiss="modal">Return</button>
+                                </div>
+                            </form>
+                        </div>
+                        <!-- /.modal-content -->
+                    </div>
+                    <!-- /.modal-dialog -->
+                </div>
+                <!-- END Status Change modal window -->
             </div>
         </div>
         <!-- END PAGE BASE CONTENT -->
@@ -1255,8 +1316,8 @@
 
         var FormValidation = function () {
 
-            var handleValidation1 = function() {
-                var form1 = $('#form_acc_personal');
+            var handleValidationAccChange = function() {
+                var form1 = $('#form_account_change_status');
                 var error1 = $('.alert-danger', form1);
                 var success1 = $('.alert-success', form1);
 
@@ -1266,22 +1327,9 @@
                     focusInvalid: false, // do not focus the last invalid input
                     ignore: "",  // validate all fields including form hidden input
                     rules: {
-                        personalFirstName: {
-                            minlength: 3,
+                        custom_status_change_message: {
+                            minlength: 15,
                             required: true
-                        },
-                        personalLastName: {
-                            minlength: 3,
-                            required: true
-                        },
-                        personalDOB: {
-                            required: true,
-                            datePickerDate:true
-                        },
-                        personalEmail: {
-                            required: true,
-                            email: true,
-                            validate_email: true
                         },
                     },
 
@@ -1315,299 +1363,7 @@
                     submitHandler: function (form) {
                         success1.show();
                         error1.hide();
-                        store_account_personal(); // submit the form
-                    }
-                });
-            }
-
-            var handleValidation2 = function() {
-                // for more info visit the official plugin documentation:
-                // http://docs.jquery.com/Plugins/Validation
-                var form2 = $('#form_acc_info');
-                var error2 = $('.alert-danger', form2);
-                var success2 = $('.alert-success', form2);
-
-                form2.validate({
-                    errorElement: 'span', //default input error message container
-                    errorClass: 'help-block help-block-error', // default input error message class
-                    focusInvalid: false, // do not focus the last invalid input
-                    ignore: "",  // validate all fields including form hidden input
-                    rules: {
-                        accountUsername: {
-                            minlength: 3,
-                            required: true
-                        },
-                        accountEmail: {
-                            required: true,
-                            email: true,
-                            validate_email: true
-                        },
-                    },
-
-                    invalidHandler: function (event, validator) { //display error alert on form submit
-                        success2.hide();
-                        error2.show();
-                        App.scrollTo(error2, -200);
-                    },
-
-                    errorPlacement: function (error, element) { // render error placement for each input type
-                        var icon = $(element).parent('.input-icon').children('i');
-                        icon.removeClass('fa-check').addClass("fa-warning");
-                        icon.attr("data-original-title", error.text()).tooltip({'container': 'body'});
-                    },
-
-                    highlight: function (element) { // hightlight error inputs
-                        $(element)
-                                .closest('.form-group').removeClass("has-success").addClass('has-error'); // set error class to the control group
-                    },
-
-                    unhighlight: function (element) { // revert the change done by hightlight
-
-                    },
-
-                    success: function (label, element) {
-                        var icon = $(element).parent('.input-icon').children('i');
-                        $(element).closest('.form-group').removeClass('has-error').addClass('has-success'); // set success class to the control group
-                        icon.removeClass("fa-warning").addClass("fa-check");
-                    },
-
-                    submitHandler: function (form) {
-                        success2.show();
-                        error2.hide();
-                        store_account_info(); // submit the form
-                    }
-                });
-            }
-
-            var handleValidation3 = function() {
-                var form3 = $('#form_personal_address');
-                var error3 = $('.alert-danger', form3);
-                var success3 = $('.alert-success', form3);
-
-                form3.validate({
-                    errorElement: 'span', //default input error message container
-                    errorClass: 'help-block help-block-error', // default input error message class
-                    focusInvalid: false, // do not focus the last invalid input
-                    ignore: "",  // validate all fields including form hidden input
-                    rules: {
-                        personal_addr1: {
-                            minlength: 5,
-                            required: true
-                        },
-                        personal_addr_city: {
-                            minlength: 3,
-                            required: true
-                        },
-                        personal_addr_region: {
-                            minlength:2,
-                            required: true
-                        },
-                        personal_addr_pcode: {
-                            minlength: 2,
-                            required: true
-                        },
-                    },
-
-                    invalidHandler: function (event, validator) { //display error alert on form submit
-                        success3.hide();
-                        error3.show();
-                        App.scrollTo(error3, -200);
-                    },
-
-                    errorPlacement: function (error, element) { // render error placement for each input type
-                        var icon = $(element).parent('.input-icon').children('i');
-                        icon.removeClass('fa-check').addClass("fa-warning");
-                        icon.attr("data-original-title", error.text()).tooltip({'container': 'body'});
-                    },
-
-                    highlight: function (element) { // hightlight error inputs
-                        $(element)
-                                .closest('.form-group').removeClass("has-success").addClass('has-error'); // set error class to the control group
-                    },
-
-                    unhighlight: function (element) { // revert the change done by hightlight
-
-                    },
-
-                    success: function (label, element) {
-                        var icon = $(element).parent('.input-icon').children('i');
-                        $(element).closest('.form-group').removeClass('has-error').addClass('has-success'); // set success class to the control group
-                        icon.removeClass("fa-warning").addClass("fa-check");
-                    },
-
-                    submitHandler: function (form) {
-                        success3.show();
-                        error3.hide();
-                        update_personal_address(); // submit the form
-                    }
-                });
-            }
-
-            var handleValidation4 = function() {
-                var form4 = $('#form_password_update');
-                var error4 = $('.alert-danger', form4);
-                var success4 = $('.alert-success', form4);
-
-                form4.validate({
-                    errorElement: 'span', //default input error message container
-                    errorClass: 'help-block help-block-error', // default input error message class
-                    focusInvalid: false, // do not focus the last invalid input
-                    ignore: "",  // validate all fields including form hidden input
-                    rules: {
-                        old_password: {
-                            minlength: 8,
-                            required: true,
-                        },
-                        new_password1: {
-                            minlength: 8,
-                            required: true,
-                        },
-                        new_password2: {
-                            minlength: 8,
-                            required: true,
-                            equalTo: '#new_password1',
-                        },
-                    },
-
-                    invalidHandler: function (event, validator) { //display error alert on form submit
-                        success4.hide();
-                        error4.show();
-                        App.scrollTo(error4, -200);
-                    },
-
-                    errorPlacement: function (error, element) { // render error placement for each input type
-                        var icon = $(element).parent('.input-icon').children('i');
-                        icon.removeClass('fa-check').addClass("fa-warning");
-                        icon.attr("data-original-title", error.text()).tooltip({'container': 'body'});
-                    },
-
-                    highlight: function (element) { // hightlight error inputs
-                        $(element)
-                                .closest('.form-group').removeClass("has-success").addClass('has-error'); // set error class to the control group
-                    },
-
-                    unhighlight: function (element) { // revert the change done by hightlight
-
-                    },
-
-                    success: function (label, element) {
-                        var icon = $(element).parent('.input-icon').children('i');
-                        $(element).closest('.form-group').removeClass('has-error').addClass('has-success'); // set success class to the control group
-                        icon.removeClass("fa-warning").addClass("fa-check");
-                    },
-
-                    submitHandler: function (form) {
-                        success4.show();
-                        error4.hide();
-                        update_passwd(); // submit the form
-                    }
-                });
-            }
-
-            var handleValidation5 = function() {
-                var form5 = $('#user_picture_upload1');
-                var error5 = $('.alert-danger', form5);
-                var success5 = $('.alert-success', form5);
-
-                form5.validate({
-                    errorElement: 'span', //default input error message container
-                    errorClass: 'help-block help-block-error', // default input error message class
-                    focusInvalid: false, // do not focus the last invalid input
-                    ignore: "",  // validate all fields including form hidden input
-                    rules: {
-                        user_avatar: {
-                            required: true,
-                            accept: "image/*",
-                            filesize: 1048576,
-                        },
-                    },
-                    messages: {
-                        user_avatar: {
-                            required: "We need your avatar before submitting the form",
-                            accept: "The uploaded file must be an image",
-                            filesize: "File must be JPG, GIF or PNG, less than 1MB",
-                        }
-                    },
-
-                    invalidHandler: function (event, validator) { //display error alert on form submit
-                        success5.hide();
-                        error5.show();
-                        App.scrollTo(error5, -200);
-                    },
-
-                    highlight: function (element) { // hightlight error inputs
-                        $(element)
-                                .closest('.form-group').addClass('has-error'); // set error class to the control group
-                    },
-
-                    unhighlight: function (element) { // revert the change done by hightlight
-                        $(element)
-                                .closest('.form-group').removeClass('has-error'); // set error class to the control group
-                    },
-
-                    success: function (label) {
-                        label
-                                .closest('.form-group').removeClass('has-error'); // set success class to the control group
-                    },
-
-                    submitHandler: function (form) {
-                        success5.show();
-                        error5.hide();
-                        form.submit();
-                    }
-                });
-            }
-
-            var handleValidation6 = function() {
-                var form6 = $('#user_picture_upload2');
-                var error6 = $('.alert-danger', form6);
-                var success6 = $('.alert-success', form6);
-
-                form5.validate({
-                    errorElement: 'span', //default input error message container
-                    errorClass: 'help-block help-block-error', // default input error message class
-                    focusInvalid: false, // do not focus the last invalid input
-                    ignore: "",  // validate all fields including form hidden input
-                    rules: {
-                        user_avatar: {
-                            required: true,
-                            accept: "image/*",
-                            filesize: 1048576,
-                        },
-                    },
-                    messages: {
-                        user_avatar: {
-                            required: "We need your avatar before submitting the form",
-                            accept: "The uploaded file must be an image",
-                            filesize: "File must be JPG, GIF or PNG, less than 1MB",
-                        }
-                    },
-
-                    invalidHandler: function (event, validator) { //display error alert on form submit
-                        success6.hide();
-                        error6.show();
-                        App.scrollTo(error6, -200);
-                    },
-
-                    highlight: function (element) { // hightlight error inputs
-                        $(element)
-                                .closest('.form-group').addClass('has-error'); // set error class to the control group
-                    },
-
-                    unhighlight: function (element) { // revert the change done by hightlight
-                        $(element)
-                                .closest('.form-group').removeClass('has-error'); // set error class to the control group
-                    },
-
-                    success: function (label) {
-                        label
-                                .closest('.form-group').removeClass('has-error'); // set success class to the control group
-                    },
-
-                    submitHandler: function (form) {
-                        success6.show();
-                        error6.hide();
-                        form.submit();
+                        change_member_status(); // submit the form
                     }
                 });
             }
@@ -1615,11 +1371,7 @@
             return {
                 //main function to initiate the module
                 init: function () {
-                    handleValidation1();
-                    handleValidation2();
-                    handleValidation3();
-                    handleValidation4();
-                    handleValidation5();
+                    handleValidationAccChange();
                 }
             };
         }();
@@ -1726,5 +1478,63 @@
         $(".user_avatar_select_btn2").on("change", function(){
             App.unblockUI('#user_picture_upload2');
         });
+
+        /* Start general - send message */
+        $(".member_send_message").on("click", function(){
+            $('#general_message_box').modal('show');
+        });
+
+        function send_member_general_message(){
+            $.ajax({
+                url: '{{route('ajax/general_note_add_new')}}',
+                type: "post",
+                cache: false,
+                data: {
+                    'title_message':    $('input[name=title_general_message]').val(),
+                    'memberID':         '{{ $user->id }}',
+                    'custom_message':   $('textarea[name="custom_general_message"]').val(),
+                    'private_message':  $('textarea[name="private_general_message"]').val()
+                },
+                success: function (data) {
+                    if (data.success) {
+                        show_notification(data.title, data.message, 'lemon', 3500, 0);
+                    }
+                    else{
+                        show_notification(data.title, data.errors, 'ruby', 3500, 0);
+                    }
+
+                    $('#general_message_box').modal('hide');
+                }
+            });
+        }
+        /* Stop general - send message */
+
+        /* Start general - suspend user access */
+        $(".member_suspend_access").on("click", function(){
+            $('#change_member_status').modal('show');
+        });
+
+        function change_member_status(){
+            $.ajax({
+                url: '{{route('ajax/front_member_change_status')}}',
+                type: "post",
+                cache: false,
+                data: {
+                    'memberID':         '{{ $user->id }}',
+                    'custom_message':   $('textarea[name="custom_status_change_message"]').val(),
+                },
+                success: function (data) {
+                    if (data.success) {
+                        $('#change_member_status').modal('hide');
+                        show_notification(data.title, data.message, 'lemon', 3500, 0);
+                        location.reload();
+                    }
+                    else{
+                        show_notification(data.title, data.errors, 'ruby', 3500, 0);
+                    }
+                }
+            });
+        }
+        /* Stop general - suspend user access */
     </script>
 @endsection

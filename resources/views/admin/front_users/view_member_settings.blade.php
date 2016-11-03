@@ -47,8 +47,8 @@
                         <!-- END SIDEBAR USER TITLE -->
                         <!-- SIDEBAR BUTTONS -->
                         <div class="profile-userbuttons">
-                            <button type="button" class="btn btn-circle green btn-sm">Follow</button>
-                            <button type="button" class="btn btn-circle red btn-sm">Message</button>
+                            <button type="button" class="btn btn-circle yellow-mint btn-sm member_send_message">Send Message</button>
+                            <button type="button" class="btn btn-circle btn-sm member_suspend_access {{ $user->status=='active'?'red':'green-jungle' }}">{{ $user->status=='active'?'Suspend ':'Reactivate ' }} Member</button>
                         </div>
                         <!-- END SIDEBAR BUTTONS -->
                         <!-- SIDEBAR MENU -->
@@ -802,6 +802,79 @@
                     </div>
                     <!-- /.modal-dialog -->
                 </div>
+                <!-- BEGIN General Message modal window -->
+                <div class="modal fade" id="general_message_box" tabindex="-1" role="dialog" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                                <h4 class="modal-title"> Send a message to this member or about this member </h4>
+                            </div>
+                            <div class="modal-body form-horizontal">
+                                <div class="form-body">
+                                    <div class="form-group">
+                                        <label class="col-md-4 control-label"> Title / Topic </label>
+                                        <div class="col-md-8">
+                                            <input class="form-control input-large input-sm" name="title_general_message" placeholder="message title or topic" type="text" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-4 control-label"> Public Message<br /><small>visible by members</small></label>
+                                        <div class="col-md-8">
+                                            <textarea type="text" class="form-control input-inline input-large input-sm" name="custom_general_message"></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-4 control-label"> Internal Message<br /><small>visible by employees only</small> </label>
+                                        <div class="col-md-8">
+                                            <textarea type="text" class="form-control input-inline input-large input-sm" name="private_general_message"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn green btn_modify_booking" onclick="javascript:send_member_general_message();">Send Message</button>
+                                <button type="button" class="btn dark btn-outline" data-dismiss="modal">Return</button>
+                            </div>
+                        </div>
+                        <!-- /.modal-content -->
+                    </div>
+                    <!-- /.modal-dialog -->
+                </div>
+                <!-- END General Message modal window -->
+                <!-- BEGIN Status Change modal window -->
+                <div class="modal fade" id="change_member_status" tabindex="-1" role="dialog" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <form role="form" id="form_account_change_status" action="#">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                                    <h4 class="modal-title"> {{ $user->status=='active'?'Suspend ':'Reactivate ' }} member </h4>
+                                </div>
+                                <div class="modal-body form-horizontal">
+                                    <div class="alert alert-danger display-hide">
+                                        <button class="close" data-close="alert"></button> Please add a short message about your action - more than 15 characters. </div>
+                                    <div class="alert alert-success display-hide">
+                                        <button class="close" data-close="alert"></button> Your form validation is successful! </div>
+                                    <div class="note note-info" style="margin-bottom:0px;">
+                                        <p> Current status : <span style="text-transform: uppercase; font-weight:bold;">{{ $user->status }}</span> . In order to change user status you have to provide a reason / note to this action. </p>
+                                        <div class="form-group" style="margin:0px -15px 0px 0px;">
+                                            <label class="control-label"> Public Message <small>visible by members</small></label>
+                                            <textarea class="form-control input-sm" name="custom_status_change_message"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" onclick="javascript: $('#form_account_change_status').submit();" class="btn green btn_modify_booking">{{ $user->status=='active'?'Suspend User':'Reactivate User' }}</button>
+                                    <button type="button" class="btn dark btn-outline" data-dismiss="modal">Return</button>
+                                </div>
+                            </form>
+                        </div>
+                        <!-- /.modal-content -->
+                    </div>
+                    <!-- /.modal-dialog -->
+                </div>
+                <!-- END Status Change modal window -->
             </div>
             <!-- END PROFILE CONTENT -->
         </div>
@@ -1160,6 +1233,58 @@
                 });
             }
 
+            var handleValidationAccChange = function() {
+                var form1 = $('#form_account_change_status');
+                var error1 = $('.alert-danger', form1);
+                var success1 = $('.alert-success', form1);
+
+                form1.validate({
+                    errorElement: 'span', //default input error message container
+                    errorClass: 'help-block help-block-error', // default input error message class
+                    focusInvalid: false, // do not focus the last invalid input
+                    ignore: "",  // validate all fields including form hidden input
+                    rules: {
+                        custom_status_change_message: {
+                            minlength: 15,
+                            required: true
+                        },
+                    },
+
+                    invalidHandler: function (event, validator) { //display error alert on form submit
+                        success1.hide();
+                        error1.show();
+                        App.scrollTo(error1, -200);
+                    },
+
+                    errorPlacement: function (error, element) { // render error placement for each input type
+                        var icon = $(element).parent('.input-icon').children('i');
+                        icon.removeClass('fa-check').addClass("fa-warning");
+                        icon.attr("data-original-title", error.text()).tooltip({'container': 'body'});
+                    },
+
+                    highlight: function (element) { // hightlight error inputs
+                        $(element)
+                                .closest('.form-group').removeClass("has-success").addClass('has-error'); // set error class to the control group
+                    },
+
+                    unhighlight: function (element) { // revert the change done by hightlight
+
+                    },
+
+                    success: function (label, element) {
+                        var icon = $(element).parent('.input-icon').children('i');
+                        $(element).closest('.form-group').removeClass('has-error').addClass('has-success'); // set success class to the control group
+                        icon.removeClass("fa-warning").addClass("fa-check");
+                    },
+
+                    submitHandler: function (form) {
+                        success1.show();
+                        error1.hide();
+                        change_member_status(); // submit the form
+                    }
+                });
+            }
+
             return {
                 //main function to initiate the module
                 init: function () {
@@ -1168,6 +1293,7 @@
                     handleValidation3();
                     handleValidation4();
                     handleValidation5();
+                    handleValidationAccChange();
                 }
             };
         }();
@@ -1478,5 +1604,63 @@
                 }
             });
         }
+
+        /* Start general - send message */
+        $(".member_send_message").on("click", function(){
+            $('#general_message_box').modal('show');
+        });
+
+        function send_member_general_message(){
+            $.ajax({
+                url: '{{route('ajax/general_note_add_new')}}',
+                type: "post",
+                cache: false,
+                data: {
+                    'title_message':    $('input[name=title_general_message]').val(),
+                    'memberID':         '{{ $user->id }}',
+                    'custom_message':   $('textarea[name="custom_general_message"]').val(),
+                    'private_message':  $('textarea[name="private_general_message"]').val()
+                },
+                success: function (data) {
+                    if (data.success) {
+                        show_notification(data.title, data.message, 'lemon', 3500, 0);
+                    }
+                    else{
+                        show_notification(data.title, data.errors, 'ruby', 3500, 0);
+                    }
+
+                    $('#general_message_box').modal('hide');
+                }
+            });
+        }
+        /* Stop general - send message */
+
+        /* Start general - suspend user access */
+        $(".member_suspend_access").on("click", function(){
+            $('#change_member_status').modal('show');
+        });
+
+        function change_member_status(){
+            $.ajax({
+                url: '{{route('ajax/front_member_change_status')}}',
+                type: "post",
+                cache: false,
+                data: {
+                    'memberID':         '{{ $user->id }}',
+                    'custom_message':   $('textarea[name="custom_status_change_message"]').val(),
+                },
+                success: function (data) {
+                    if (data.success) {
+                        $('#change_member_status').modal('hide');
+                        show_notification(data.title, data.message, 'lemon', 3500, 0);
+                        location.reload();
+                    }
+                    else{
+                        show_notification(data.title, data.errors, 'ruby', 3500, 0);
+                    }
+                }
+            });
+        }
+        /* Stop general - suspend user access */
     </script>
 @endsection

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Booking;
 use App\BookingInvoice;
 use App\BookingInvoiceItem;
+use App\GeneralNote;
 use App\Invoice;
 use App\InvoiceItem;
 use App\UserFriends;
@@ -2665,4 +2666,73 @@ class FrontEndUserController extends Controller
         return DB::delete('delete from password_resets where created_at < :date_time', ['date_time'=>$expire_date]);
     }
     /* Reset Password functions - STOP */
+
+    public function change_account_status(Request $request){
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
+            return [
+                'success' => false,
+                'title'   => 'You need to be logged in',
+                'errors'  => 'You need to be logged in as an employee in order to use this function'];
+        }
+
+        $vars = $request->only('memberID','custom_message');
+        $member = User::where('id','=',$vars['memberID'])->get()->first();
+        if (!$member){
+            return [
+                'success' => false,
+                'title'   => 'Member not found',
+                'errors'  => 'The member you want to suspend/reactivate was not found in the system'];
+        }
+
+        $oldStatus = $member->status;
+        if ($member->status == 'active'){
+            $title = 'Member status updated to "SUSPENDED"';
+            $newStatus = 'suspended';
+        }
+        else{
+            $title = 'Member status updated to "ACTIVE"';
+            $newStatus = 'active';
+        }
+
+        $note_fill = [
+            'by_user_id'    => $user->id,
+            'for_user_id'   => $member->id,
+            'note_title'    => $title,
+            'note_body'     => '',
+            'note_type'     => 'member status update',
+            'privacy'       => '',
+            'status'        => 'unread'];
+        if (strlen($vars['custom_message'])){
+            $note_fill['note_body'] = $vars['custom_message'];
+            $note_fill['privacy']   = 'everyone';
+
+            $validator = Validator::make($note_fill, GeneralNote::rules('POST'), GeneralNote::$message, GeneralNote::$attributeNames);
+            if ($validator->fails()){
+                // note could not be created
+                return [
+                    'success' => false,
+                    'title'   => 'Could not add note',
+                    'errors'  => 'There is something wrong with the validity of the message attached to this action!'];
+            }
+            else {
+                $generalNote = GeneralNote::create($note_fill);
+                $generalNote->save();
+
+                $member->status = $newStatus;
+                $member->save();
+
+                return [
+                    'success' => true,
+                    'title'   => 'Member status updated',
+                    'message'  => 'You have update this member status from '.$oldStatus.' to '.$newStatus.''];
+            }
+        }
+        else{
+            return [
+                'success' => false,
+                'title'   => 'Member not found',
+                'errors'  => 'The member you want to suspend/reactivate was not found in the system'];
+        }
+    }
 }

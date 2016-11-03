@@ -25,10 +25,12 @@ class User extends Authenticatable
         'first_name',
         'middle_name',
         'last_name',
+        'gender',
         'username',
         'email',
         'password',
-        'gender'
+        'country_id',
+        'status'
     ];
 
     public static $messages = [
@@ -42,7 +44,9 @@ class User extends Authenticatable
         'middle_name'   => 'First Name',
         'last_name'     => 'Last Name',
         'password'      => 'Password',
-        'gender'        => 'Gender'
+        'gender'        => 'Gender',
+        'country_id'    => 'Country ID',
+        'status'        => 'User Status'
         ];
 
     /**
@@ -70,7 +74,8 @@ class User extends Authenticatable
                     'password'      => 'required|min:8',
                     'email'         => 'required|email|email|unique:users',
                     'user_type'     => 'required|exists:roles,id',
-                    'gender'        => 'in:M,F'
+                    'gender'        => 'in:M,F',
+                    'status'        => 'in:active,suspended,deleted,pending'
                 ];
             }
             case 'PUT':
@@ -83,7 +88,8 @@ class User extends Authenticatable
                     'password'  => 'required|min:8',
                     'email'     => 'required|email|email|unique:users,email'.($id ? ",$id,id" : ''),
                     'user_type' => 'required|exists:roles,id',
-                    'gender'    => 'in:M,F'
+                    'gender'    => 'in:M,F',
+                    'status'    => 'in:active,suspended,deleted,pending'
                 ];
             }
             default:break;
@@ -94,7 +100,7 @@ class User extends Authenticatable
     {
         foreach ($this->roles()->get() as $role)
         {
-            if ($role->name != 'front-user' && $role->name != 'front-member')
+            if ($role->name != 'front-user' && $role->name != 'front-member' && $this->status == "active")
             {
                 return true;
             }
@@ -107,7 +113,7 @@ class User extends Authenticatable
     {
         foreach ($this->roles()->get() as $role)
         {
-            if ($role->name == 'front-user' || $role->name == 'front-member')
+            if (($role->name == 'front-user' || $role->name == 'front-member') && $this->status == "active")
             {
                 return true;
             }
