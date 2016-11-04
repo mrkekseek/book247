@@ -47,7 +47,7 @@
                         <!-- END SIDEBAR USER TITLE -->
                         <!-- SIDEBAR BUTTONS -->
                         <div class="profile-userbuttons">
-                            <button type="button" class="btn btn-circle yellow-mint btn-sm member_send_message">Send Message</button>
+                            <button type="button" class="btn btn-circle yellow-mint btn-sm member_send_message">Add Message</button>
                             <button type="button" class="btn btn-circle btn-sm member_suspend_access {{ $user->status=='active'?'red':'green-jungle' }}">{{ $user->status=='active'?'Suspend ':'Reactivate ' }} Member</button>
                         </div>
                         <!-- END SIDEBAR BUTTONS -->
