@@ -149,7 +149,7 @@ class BookingController extends Controller
                 $the_booking = Booking::create($fillable);
 
                 Activity::log([
-                    'contentId'     => $user->id,
+                    'contentId'     => $fillable->for_user_id,
                     'contentType'   => 'bookings',
                     'action'        => 'New Booking',
                     'description'   => 'New booking created : '.$the_booking->id,
@@ -165,7 +165,7 @@ class BookingController extends Controller
                     $the_booking->save();
 
                     Activity::log([
-                        'contentId'     => $user->id,
+                        'contentId'     => $fillable->for_user_id,
                         'contentType'   => 'bookings',
                         'action'        => 'New Booking',
                         'description'   => 'New booking created : '.$the_booking->id,
@@ -286,7 +286,7 @@ class BookingController extends Controller
                     }
 
                     Activity::log([
-                        'contentId'     => $user->id,
+                        'contentId'     => $booking->for_user_id,
                         'contentType'   => 'bookings',
                         'action'        => 'Cancel Booking',
                         'description'   => 'Booking cancelled with the ID : '.$booking->id,
@@ -358,7 +358,7 @@ class BookingController extends Controller
                 if ($booking && $booking->cancel_booking()){
                     if ($is_staff){
                         Activity::log([
-                            'contentId'     => $user->id,
+                            'contentId'     => $booking->for_user_id,
                             'contentType'   => 'bookings',
                             'action'        => 'Cancel Recurring Booking - by staff',
                             'description'   => 'Booking canceled for booking key : '.$key,
@@ -368,7 +368,7 @@ class BookingController extends Controller
                     }
                     else{
                         Activity::log([
-                            'contentId'     => $user->id,
+                            'contentId'     => $booking->for_user_id,
                             'contentType'   => 'bookings',
                             'action'        => 'Cancel Recurring Booking - by member',
                             'description'   => 'Booking canceled for booking key : '.$key,
@@ -407,7 +407,7 @@ class BookingController extends Controller
                 Booking::whereIn('status', ['active', 'pending'])->where('search_key', '=', $vars['search_key'])->update(['for_user_id' => $vars['player']]);
 
                 Activity::log([
-                    'contentId'     => $user->id,
+                    'contentId'     => $vars['player'],
                     'contentType'   => 'bookings',
                     'action'        => 'Change Booking Player',
                     'description'   => 'booking player changed to : '.$booking->for_user_id,
@@ -941,7 +941,7 @@ class BookingController extends Controller
                     }
 
                     Activity::log([
-                        'contentId'     => $user->id,
+                        'contentId'     => $booking->for_user_id,
                         'contentType'   => 'bookings',
                         'action'        => 'Confirm Booking - by staff',
                         'description'   => 'Booking confirmed for booking key : '.$key,
@@ -956,7 +956,7 @@ class BookingController extends Controller
                     }
 
                     Activity::log([
-                        'contentId'     => $user->id,
+                        'contentId'     => $booking->for_user_id,
                         'contentType'   => 'bookings',
                         'action'        => 'Confirm Booking - by member',
                         'description'   => 'Booking confirmed for booking key : '.$key,
@@ -1077,10 +1077,10 @@ class BookingController extends Controller
             foreach($keys as $key){
                 if ($key==''){ continue; }
                 if ($is_staff){
-                    Booking::where('status','=','pending')->where('search_key','=',$key)->update(['status'=>'canceled']);
+                    $booking = Booking::where('status','=','pending')->where('search_key','=',$key)->update(['status'=>'canceled']);
 
                     Activity::log([
-                        'contentId'     => $user->id,
+                        'contentId'     => $booking->for_user_id,
                         'contentType'   => 'bookings',
                         'action'        => 'Confirm Booking - by staff',
                         'description'   => 'Booking confirmed for booking key : '.$key,
@@ -1089,10 +1089,10 @@ class BookingController extends Controller
                     ]);
                 }
                 else{
-                    Booking::where('status','=','pending')->where('by_user_id','=',$user->id)->where('search_key','=',$key)->update(['status'=>'canceled']);
+                    $booking = Booking::where('status','=','pending')->where('by_user_id','=',$user->id)->where('search_key','=',$key)->update(['status'=>'canceled']);
 
                     Activity::log([
-                        'contentId'     => $user->id,
+                        'contentId'     => $booking->for_user_id,
                         'contentType'   => 'bookings',
                         'action'        => 'Confirm Booking - by member',
                         'description'   => 'Booking confirmed for booking key : '.$key,
@@ -1268,7 +1268,7 @@ class BookingController extends Controller
                 $booking->add_note($fillable_private);
 
                 Activity::log([
-                    'contentId'     => $user->id,
+                    'contentId'     => $booking->for_user_id,
                     'contentType'   => 'booking_notes',
                     'action'        => 'Add note to Booking',
                     'description'   => 'New booking note : '.$vars['private_message'],
@@ -1283,7 +1283,7 @@ class BookingController extends Controller
                     $booking->invoice_id = $booking_invoice->id;
 
                     Activity::log([
-                        'contentId'     => $user->id,
+                        'contentId'     => $booking->for_user_id,
                         'contentType'   => 'booking_invoices',
                         'action'        => 'Add invoice to booking',
                         'description'   => 'New booking invoice created : booking ID '.$booking_invoice->id,
@@ -1296,7 +1296,7 @@ class BookingController extends Controller
             $booking->save();
 
             Activity::log([
-                'contentId'     => $user->id,
+                'contentId'     => $booking->for_user_id,
                 'contentType'   => 'bookings',
                 'action'        => 'Update Booking',
                 'description'   => 'No show status change for booking ID : '.$booking->id,
@@ -2325,7 +2325,7 @@ class BookingController extends Controller
         $booking->save();
 
         Activity::log([
-            'contentId'     => $user->id,
+            'contentId'     => $booking->for_user_id,
             'contentType'   => 'bookings',
             'action'        => 'Save Selected Booking',
             'description'   => 'Set the player and the member that created the booking',
@@ -2446,7 +2446,7 @@ class BookingController extends Controller
                 usleep(1000);
 
                 Activity::log([
-                    'contentId'     => $user->id,
+                    'contentId'     => $booking->for_user_id,
                     'contentType'   => 'bookings',
                     'action'        => 'Save Booking',
                     'description'   => 'Calendar bookings play alone save',
@@ -2543,7 +2543,7 @@ class BookingController extends Controller
                 $booking->for_user_id = $for_user->id;
                 $booking->save();
                 Activity::log([
-                    'contentId'     => $user->id,
+                    'contentId'     => $booking->for_user_id,
                     'contentType'   => 'bookings',
                     'action'        => 'Save Booking',
                     'description'   => 'save player booking recurring membership',
@@ -2782,7 +2782,7 @@ class BookingController extends Controller
             usleep(1000);
 
             Activity::log([
-                'contentId'     => $user->id,
+                'contentId'     => $the_booking->for_user_id,
                 'contentType'   => 'bookings',
                 'action'        => 'New Booking',
                 'description'   => 'New booking created',

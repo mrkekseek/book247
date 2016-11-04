@@ -40,7 +40,7 @@
                     <div class="portlet-title">
                         <div class="caption">
                             <i class="icon-equalizer font-red-sunglo"></i>
-                            <span class="caption-subject font-red-sunglo bold uppercase">Create new membership product</span>
+                            <span class="caption-subject font-red-sunglo bold uppercase">Create new calendar product</span>
                             <span class="caption-helper">add basic details...</span>
                         </div>
                     </div>
@@ -51,7 +51,7 @@
                                 <div class="row">
                                     <div class="col-md-12">
                                         <div class="form-group">
-                                            <label class="control-label col-md-3"> Membership Product Name </label>
+                                            <label class="control-label col-md-3"> Calendar Product Name </label>
                                             <div class="col-md-9">
                                                 <input type="text" class="form-control" name="membership_product_name" placeholder="New product name">
                                             </div>

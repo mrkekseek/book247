@@ -44,7 +44,7 @@
                             <thead>
                             <tr>
                                 <th> No. </th>
-                                <th> Membership Product Name </th>
+                                <th> Calendar Product Name </th>
                                 <th> Calendar Color </th>
                             </tr>
                             </thead>

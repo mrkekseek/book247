@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Booking;
 use App\BookingInvoice;
 use App\BookingInvoiceItem;
+use App\BookingNote;
 use App\GeneralNote;
 use App\Invoice;
 use App\InvoiceItem;
@@ -33,6 +34,7 @@ use App\MembershipPlan;
 use App\MembershipRestriction;
 use Illuminate\Support\Facades\Cache;
 use Mockery\CountValidator\Exception;
+use Regulus\ActivityLog\Models\Activity;
 use Webpatser\Countries\Countries;
 use Auth;
 use Hash;
@@ -207,72 +209,120 @@ class FrontEndUserController extends Controller
             return redirect()->intended(route('admin/login'));
         }
 
-        $back_user = User::with('roles')->find($id);
-
-        @$userRole = $back_user->roles[0];
-        if (!$userRole){
-            $defaultRole = Role::where('name','employee')->get();
-            $userRole = $defaultRole[0];
-        }
-        $permissions = Permission::all();
-
-        $userProfessional = $back_user->ProfessionalDetail;
-        if (!isset($userProfessional)){
-            $userProfessional = new ProfessionalDetail();
+        $member = User::with('personalDetail')->where('id','=',$id)->get()->first();
+        if (!$member){
+            return redirect(route('error_404'));
         }
 
-        $userPersonal = $back_user->PersonalDetail;
-        if (isset($userPersonal)) {
-            $userPersonal->dob_format = Carbon::createFromFormat('Y-m-d', $userPersonal->date_of_birth)->format('d-m-Y');
-            $userPersonal->dob_to_show = Carbon::createFromFormat('Y-m-d', $userPersonal->date_of_birth)->format('d M Y');
+        $publicNote  = [];
+        $privateNote = [];
+        $allNotes = GeneralNote::where('for_user_id','=',$member->id)->orderBy('updated_at','desc')->get();
+        if ($allNotes){
+            foreach($allNotes as $note){
+                $byUser = Cache::remember('user_table_'.$note->by_user_id,720,function() use ($note){
+                    return User::where('id',$note->by_user_id)->get()->first();
+                });
+
+                $formattedNote = [
+                    'by_user'   => $byUser->first_name.' '.$byUser->middle_name.' '.$byUser->last_name,
+                    'by_user_avatar'=> $byUser->get_avatar_image(),
+                    'by_user_link'  => $byUser,
+                    'note_title'=> $note->note_title,
+                    'note_body' => $note->note_body,
+                    'note_type' => $note->note_type,
+                    'status'    => $note->status,
+                    'addedOn'   => Carbon::createFromFormat('Y-m-d H:i:s', $note->updated_at)->diffForHumans(),
+                    'timestamp' => Carbon::createFromFormat('Y-m-d H:i:s', $note->updated_at)->timestamp
+                ];
+
+                if ($note->privacy == 'everyone'){
+                    $publicNote[] = $formattedNote;
+                }
+                else{
+                    $privateNote[] = $formattedNote;
+                }
+            }
         }
-        else{
-            $userPersonal = new PersonalDetail();
+
+        $bookingNotes = BookingNote::whereHas('booking', function($query) use ($member){
+            $query->where('for_user_id','=',$member->id);
+        })->orderBy('updated_at','desc')->get();
+        if ($bookingNotes){
+            foreach($bookingNotes as $note){
+                $byUser = Cache::remember('user_table_'.$note->by_user_id,720,function() use ($note){
+                    return User::where('id',$note->by_user_id)->get()->first();
+                });
+
+                $formattedNote = [
+                    'by_user'   => $byUser->first_name.' '.$byUser->middle_name.' '.$byUser->last_name,
+                    'by_user_avatar'=> $byUser->get_avatar_image(),
+                    'by_user_link'  => $byUser,
+                    'note_title'=> $note->note_title,
+                    'note_body' => $note->note_body,
+                    'note_type' => $note->note_type,
+                    'status'    => $note->status,
+                    'addedOn'   => Carbon::createFromFormat('Y-m-d H:i:s', $note->updated_at)->diffForHumans(),
+                    'timestamp' => Carbon::createFromFormat('Y-m-d H:i:s', $note->updated_at)->timestamp
+                ];
+
+                if ($note->privacy == 'everyone'){
+                    $publicNote[] = $formattedNote;
+                }
+                else{
+                    $privateNote[] = $formattedNote;
+                }
+            }
         }
 
-        $personalAddress = Address::find($userPersonal->address_id);
-        if (!isset($personalAddress)){
-            $personalAddress = new Address();
+        uasort($publicNote, 'self::desc_cmp');
+        uasort($privateNote, 'self::desc_cmp');
+
+        $activityLogs = Activity::where('content_id','=',$member->id)->orderBy('created_at','DESC')->take(30)->get();
+        $memberLogs = [];
+        if ($activityLogs){
+            foreach($activityLogs as $singleLog){
+                $memberLogs[] = [
+                    'content_type'  => $singleLog->content_type,
+                    'action'        => $singleLog->action,
+                    'description'   => $singleLog->description,
+                    'addedOn'       => Carbon::createFromFormat('Y-m-d H:i:s', $singleLog->updated_at)->diffForHumans(),
+                ];
+            }
         }
 
-        $roles = Role::all();
-        $countries = Countries::select(['id','currency','full_name','name','citizenship'])->orderBy('name','asc')->get();
-        $userCountry = Countries::select(['id','currency','full_name','name','citizenship'])->find($back_user->country_id);
-
-        $avatar = $back_user->get_avatar_image();
-
-        $userDocuments = UserDocuments::where('user_id','=',$id)->where('category','=','account_documents')->get();
+        $avatar = $member->get_avatar_image();
 
         $text_parts  = [
             'title'     => 'Back-End Users',
             'subtitle'  => 'view all users',
             'table_head_text1' => 'Backend User List'
         ];
-
         $breadcrumbs = [
             'Home'              => route('admin'),
             'Administration'    => route('admin'),
             'Back End Users'    => route('admin/back_users'),
-            $back_user->first_name.' '.$back_user->middle_name.' '.$back_user->last_name => '',
+            $member->first_name.' '.$member->middle_name.' '.$member->last_name => '',
         ];
         $sidebar_link= 'admin-frontend-user_details_view';
 
         return view('admin/front_users/view_member_details', [
-            'user'      => $back_user,
-            'userRole'  => $userRole,
-            'professional' => $userProfessional,
-            'personal'  => $userPersonal,
-            'personalAddress' => $personalAddress,
-            'countryDetails' => $userCountry,
-            'countries' => $countries,
-            'roles'     => $roles,
-            'breadcrumbs' => $breadcrumbs,
-            'text_parts'  => $text_parts,
-            'in_sidebar'  => $sidebar_link,
-            'avatar'      => $avatar['avatar_base64'],
-            'permissions' => $permissions,
-            'documents'   => $userDocuments,
+            'user'          => $member,
+            'breadcrumbs'   => $breadcrumbs,
+            'text_parts'    => $text_parts,
+            'in_sidebar'    => $sidebar_link,
+            'avatar'        => $avatar['avatar_base64'],
+            'publicNote'    => $publicNote,
+            'privateNote'   => $privateNote,
+            'activityLog'   => $memberLogs,
+            'redFlagLog'    => $memberLogs,
         ]);
+    }
+
+    function desc_cmp($a, $b){
+        if ($a == $b) {
+            return 0;
+        }
+        return ($a < $b) ? -1 : 1;
     }
 
     /**
@@ -2705,7 +2755,7 @@ class FrontEndUserController extends Controller
             'status'        => 'unread'];
         if (strlen($vars['custom_message'])){
             $note_fill['note_body'] = $vars['custom_message'];
-            $note_fill['privacy']   = 'everyone';
+            $note_fill['privacy']   = 'employees';
 
             $validator = Validator::make($note_fill, GeneralNote::rules('POST'), GeneralNote::$message, GeneralNote::$attributeNames);
             if ($validator->fails()){

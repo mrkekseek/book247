@@ -95,7 +95,7 @@
         <li class="nav-item {{ in_array($in_sidebar, array('admin-backend-membership_products-list_all','admin-backend-membership_products-new_product','admin-backend-membership_products-show_product','admin-backend-membership_products-edit_product'))?'active open':'' }} ">
             <a href="javascript:;" class="nav-link nav-toggle">
                 <i class="icon-shield"></i>
-                <span class="title"> Membership Products </span>
+                <span class="title"> Calendar Products </span>
                 <span class="arrow"></span>
             </a>
             <ul class="sub-menu">

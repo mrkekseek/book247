@@ -43,7 +43,7 @@
                         <div class="portlet-title">
                             <div class="caption">
                                 <i class="icon-equalizer font-purple-studio"></i>
-                                <span class="caption-subject font-purple-studio bold uppercase"> Membership product details</span>
+                                <span class="caption-subject font-purple-studio bold uppercase"> Calendar product details</span>
                                 <span class="caption-helper">product details here...</span>
                             </div>
                             <div class="tools">
@@ -57,13 +57,13 @@
                                     <div class="row">
                                         <div class="col-md-12">
                                             <div class="form-group">
-                                                <label class="control-label col-md-3"> Membership Product Name </label>
+                                                <label class="control-label col-md-3"> Calendar Product Name </label>
                                                 <div class="col-md-9">
                                                     <p class="form-control-static form-control border-blue-steel"> {{$membership_product->name}} </p>
                                                 </div>
                                             </div>
                                             <div class="form-group">
-                                                <label class="control-label col-md-3">Plan Color</label>
+                                                <label class="control-label col-md-3">Product Color</label>
                                                 <div class="col-md-9">
                                                     <p class="form-control-static form-control border-blue-steel input-small" style="background-color: {{$membership_product->color_code}};"> &nbsp; </p>
                                                     <span class="help-inline  block-inline"> Color to be displayed in calendar booking </span>
@@ -84,7 +84,7 @@
                         <div class="portlet-body">
                             <div class="note note-warning">
                                 <h4 class="block">An error occurred</h4>
-                                <p> The membership product that you are searching for could not be found.
+                                <p> The calendar product that you are searching for could not be found.
                                     Go back to the page you came here and try refreshing it, then access the link again.<br /><br />
                                     Thank you!</p>
                             </div>

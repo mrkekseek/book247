@@ -859,7 +859,7 @@
                                     <div class="note note-info" style="margin-bottom:0px;">
                                         <p> Current status : <span style="text-transform: uppercase; font-weight:bold;">{{ $user->status }}</span> . In order to change user status you have to provide a reason / note to this action. </p>
                                         <div class="form-group" style="margin:0px -15px 0px 0px;">
-                                            <label class="control-label"> Public Message <small>visible by members</small></label>
+                                            <label class="control-label"> Internal Message <small>visible by employees</small> </label>
                                             <textarea class="form-control input-sm" name="custom_status_change_message"></textarea>
                                         </div>
                                     </div>

@@ -65,4 +65,8 @@ class BookingNote extends Model
             default:break;
         }
     }
+
+    public function booking(){
+        return $this->belongsTo('App\Booking', 'booking_id', 'id');
+    }
 }

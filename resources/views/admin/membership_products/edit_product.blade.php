@@ -47,7 +47,7 @@
                                     <div class="row">
                                         <div class="col-md-12">
                                             <div class="form-group">
-                                                <label class="control-label col-md-3"> Membership Product Name </label>
+                                                <label class="control-label col-md-3"> Calendar Product Name </label>
                                                 <div class="col-md-9">
                                                     <input type="text" class="form-control" name="membership_product_name" placeholder="New product name" value="{{$membership_product->name}}">
                                                 </div>
@@ -77,7 +77,7 @@
                                         <div class="col-md-6">
                                             <div class="row">
                                                 <div class="col-md-offset-3 col-md-9">
-                                                    <button type="submit" class="btn green">Save Plan</button>
+                                                    <button type="submit" class="btn green">Save Product</button>
                                                     <button type="button" class="btn default">Cancel</button>
                                                 </div>
                                             </div>
@@ -96,7 +96,7 @@
                         <div class="portlet-body">
                             <div class="note note-warning">
                                 <h4 class="block">An error occurred</h4>
-                                <p> The membership product you are searching for could not be found.
+                                <p> The calendar product you are searching for could not be found.
                                     Go back to the page you came here and try refreshing it, then access the link again.<br /><br />
                                     Thank you!</p>
                             </div>
