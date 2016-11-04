@@ -319,11 +319,10 @@
                                     <div class="caption caption-md">
                                         <i class="icon-bar-chart theme-font hide"></i>
                                         <span class="caption-subject font-green-soft bold uppercase">User Messages</span>
-                                        <span class="caption-helper">45 pending</span>
                                     </div>
                                 </div>
                                 <div class="portlet-body">
-                                    <div class="scroller" style="height: 305px;" data-always-visible="1" data-rail-visible1="0" data-handle-color="#D7DCE2">
+                                    <div class="scroller" style="height: 282px;" data-always-visible="1" data-rail-visible1="0" data-handle-color="#D7DCE2">
                                         <div class="general-item-list">
                                             @if (sizeof($publicNote)>0)
                                                 @foreach($publicNote as $note)
@@ -341,7 +340,9 @@
                                                     </div>
                                                 @endforeach
                                             @else
-
+                                                <div class="note note-info">
+                                                    <p>There is no user messages sent to this member. Once the member starts receiving messages from the system or backend users they will be shown here.</p>
+                                                </div>
                                             @endif
                                         </div>
                                     </div>
@@ -351,34 +352,52 @@
                         </div>
                         <div class="col-md-6">
                             <!-- BEGIN PORTLET -->
-                            <div class="portlet light bordered">
+                            <div class="portlet light bordered tasks-widget">
                                 <div class="portlet-title">
                                     <div class="caption caption-md">
                                         <i class="icon-bar-chart theme-font hide"></i>
                                         <span class="caption-subject font-yellow-gold bold uppercase">Internal Messages</span>
-                                        <span class="caption-helper">45 pending</span>
                                     </div>
                                 </div>
                                 <div class="portlet-body">
-                                    <div class="scroller" style="height: 305px;" data-always-visible="1" data-rail-visible1="0" data-handle-color="#D7DCE2">
-                                        <div class="general-item-list">
+                                    <div class="task-content">
+                                        <div class="scroller" style="height: 282px;" data-always-visible="1" data-rail-visible1="0" data-handle-color="#D7DCE2">
                                             @if (sizeof($privateNote)>0)
+                                                <ul class="task-list">
                                                 @foreach($privateNote as $note)
-                                                    <div class="item">
-                                                        <div class="item-head">
-                                                            <div class="item-details">
-                                                                <img class="item-pic" src="../assets/pages/media/users/avatar4.jpg">
-                                                                <a href="" class="item-name primary-link">{{ $note['by_user'] }}</a>
-                                                                <span class="item-label">{{ $note['addedOn'] }}</span>
-                                                            </div>
-                                                            <span class="item-status">
-                                                                <span class="badge badge-empty badge-success"></span> {{ $note['status'] }}</span>
+                                                    <li>
+                                                        <div class="task-checkbox">
+                                                            <input type="hidden" value="1" name="test" />
                                                         </div>
-                                                        <div class="item-body"> <span class="font-blue-dark">{{ $note['note_title'] }}</span> - {{ $note['note_body'] }} </div>
-                                                    </div>
+                                                        <div class="task-title">
+                                                            <span class="task-title-sp">  <span class="font-blue-dark">{{ $note['note_title'] }} - {{ $note['note_body'] }} by </span> {{ $note['by_user'] }} {{ $note['addedOn'] }}  </span>
+                                                            <span class="label label-sm label-success">{{ $note['status'] }}</span>
+                                                        </div>
+                                                        <div class="task-config">
+                                                            <div class="task-config-btn btn-group">
+                                                                <a class="btn btn-sm default" href="javascript:;" data-toggle="dropdown" data-hover="dropdown" data-close-others="true">
+                                                                    <i class="fa fa-cog"></i>
+                                                                    <i class="fa fa-angle-down"></i>
+                                                                </a>
+                                                                <ul class="dropdown-menu pull-right">
+                                                                    <li>
+                                                                        <a href="javascript:;">
+                                                                            <i class="fa fa-check"></i> Complete </a>
+                                                                    </li>
+                                                                    <li>
+                                                                        <a href="javascript:;">
+                                                                            <i class="fa fa-trash-o"></i> Cancel/Delete </a>
+                                                                    </li>
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+                                                    </li>
                                                 @endforeach
+                                                </ul>
                                             @else
-
+                                                <div class="note note-info">
+                                                    <p>There is no user messages sent to this member. Once the member starts receiving messages from the system or backend users they will be shown here.</p>
+                                                </div>
                                             @endif
                                         </div>
                                     </div>

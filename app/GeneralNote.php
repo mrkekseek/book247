@@ -46,7 +46,7 @@ class GeneralNote extends Model
                     'note_body'     => 'required|min:10',
                     'note_type'     => 'required|min:5',
                     'privacy'       => 'required|in:admin,employees,everyone',
-                    'status'        => 'required|in:unread,read,deleted',
+                    'status'        => 'required|in:unread,read,deleted,pending,completed',
                 ];
             }
             case 'PUT':
@@ -59,7 +59,7 @@ class GeneralNote extends Model
                     'note_body'     => 'required|min:10',
                     'note_type'     => 'required|min:5',
                     'privacy'       => 'required|in:admin,employees,everyone',
-                    'status'        => 'required|in:unread,read,deleted',
+                    'status'        => 'required|in:unread,read,deleted,pending,completed',
                 ];
             }
             default:break;

@@ -286,7 +286,19 @@
                                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
                                 <h4 class="modal-title">Do you want to cancel?</h4>
                             </div>
-                            <div class="modal-body"> By clicking "Cancel Booking" this booking will be canceled and the player notified. Do you want to proceed with the cancellation? </div>
+                            <div class="modal-body">
+                                By clicking "Cancel Booking" this booking will be canceled and the player notified. Do you want to proceed with the cancellation?
+                                <div class="form-body" style="margin-top:5px;">
+                                    <div class="form-group" style="margin-bottom:5px;">
+                                        <label class="control-label"> Public Note <small>visible by member</small></label>
+                                        <textarea class="form-control input-sm" name="cancellation_player_message" rows="2"></textarea>
+                                    </div>
+                                    <div class="form-group" style="margin-bottom:0px;">
+                                        <label class="control-label"> Internal Note <small>visible by employees only</small> </label>
+                                        <textarea class="form-control input-sm" name="cancellation_internal_message" rows="2"></textarea>
+                                    </div>
+                                </div>
+                            </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn dark btn-outline" data-dismiss="modal">No, Go Back</button>
                                 <button type="button" class="btn green" onclick="javascript:cancel_booking();">Yes, Cancel</button>
@@ -701,13 +713,17 @@
 
         function cancel_booking() {
             var search_key = $('input[name="search_key_selected"]').val();
+            var public_note = $('textarea[name=cancellation_player_message]').val();
+            var internal_note = $('textarea[name=cancellation_internal_message]').val();
 
             $.ajax({
                 url: '{{route('ajax/cancel_booking')}}',
                 type: "post",
                 cache: false,
                 data: {
-                    'search_key': search_key
+                    'search_key': search_key,
+                    'public_note': public_note,
+                    'internal_note': internal_note
                 },
                 success: function (data) {
                     show_notification('Booking Canceled', 'The selected booking was canceled.', 'lemon', 3500, 0);

@@ -253,7 +253,7 @@ class BookingController extends Controller
             $user = Auth::user();
         }
 
-        $vars = $request->only('search_key');
+        $vars = $request->only('search_key','public_note','internal_note');
         if ($user->can('booking-change-update')){
             $booking = Booking::where('search_key','=',$vars['search_key'])->get()->first();
         }
@@ -269,6 +269,30 @@ class BookingController extends Controller
             if ($this->can_cancel_booking($booking->id) || $user->is_back_user()){
                 $old_status = $booking->status;
                 if ( $booking->cancel_booking() ){
+                    if (strlen($vars['public_note'])>5 || strlen($vars['internal_note'])>5){
+                        $fillable_note = [
+                            'by_user_id' => $user->id,
+                            'note_title' => 'Booking Cancelled',
+                            'note_body'  => '',
+                            'note_type'  => 'booking_cancelled',
+                            'privacy'    => '',
+                            'status'     => 'unread'
+                        ];
+
+                        // we have custom message
+                        if (strlen($vars['public_note'])>5){
+                            $fillable_note['note_body'] = $vars['public_note'];
+                            $fillable_note['privacy'] = 'everyone';
+                        }
+                        $booking->add_note($fillable_note);
+
+                        if (strlen($vars['internal_note'])>5){
+                            $fillable_note['note_body'] = $vars['internal_note'];
+                            $fillable_note['privacy'] = 'employees';
+                        }
+                        $booking->add_note($fillable_note);
+                    }
+
                     if ($old_status=='active'){
                         // send_email_to_user
                         $player = User::where('id','=',$booking->for_user_id)->get()->first();

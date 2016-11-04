@@ -318,6 +318,16 @@
                                 <h4 class="block">Cancel selected bookings</h4>
                                 <p> By clicking "Cancel Booking" this booking will be canceled and the player notified. Do you want to proceed with the cancellation? </p>
                             </div>
+                            <div class="form-body" style="margin-top:5px;">
+                                <div class="form-group" style="margin-bottom:5px;">
+                                    <label class="control-label"> Public Note <small>visible by member</small></label>
+                                    <textarea class="form-control input-sm" name="cancellation_player_message" rows="2"></textarea>
+                                </div>
+                                <div class="form-group" style="margin-bottom:0px;">
+                                    <label class="control-label"> Internal Note <small>visible by employees only</small> </label>
+                                    <textarea class="form-control input-sm" name="cancellation_internal_message" rows="2"></textarea>
+                                </div>
+                            </div>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn dark btn-outline" data-dismiss="modal">No, Go Back</button>
@@ -1134,6 +1144,8 @@
 
             $('#show_rec_booking_btn').hide();
 
+            $("textarea[name=cancellation_player_message]").val('');
+            $("textarea[name=cancellation_internal_message]").val('');
             var search_key = $(this).parent().attr('search-key');
 
             get_player_statistics(search_key, $('#player_summary_stats'));
@@ -1342,13 +1354,17 @@
 
         function cancel_booking() {
             var search_key = $('input[name="search_key_selected"]').val();
+            var public_note = $('textarea[name=cancellation_player_message]').val();
+            var internal_note = $('textarea[name=cancellation_internal_message]').val();
 
             $.ajax({
                 url: '{{route('ajax/cancel_booking')}}',
                 type: "post",
                 cache: false,
                 data: {
-                    'search_key': search_key
+                    'search_key': search_key,
+                    'public_note': public_note,
+                    'internal_note': internal_note
                 },
                 success: function (data) {
                     if (data.success){
