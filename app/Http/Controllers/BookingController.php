@@ -2269,9 +2269,13 @@ class BookingController extends Controller
                 'search_key'            => '',
             ];
             $msg = $this->add_single_calendar_booking($fillable);
+
+            if ($msg['booking_key']==false){
+                return ['success' => false, 'title' => 'Available hours changed', 'errors' => 'One of the bookings could not be saved. Page will reload.'];
+            }
             $booking_return[] = $msg;
         }
-        return $booking_return;
+        return ['success' => true, 'bookings' => $booking_return];
     }
 
     /**
@@ -2752,7 +2756,7 @@ class BookingController extends Controller
      */
     private function add_single_calendar_booking($fillable, $recurring = false){
         if (!Auth::check()) {
-            return [];
+            return ['success' => false, 'booking_key' => ''];
         }
         else{
             $user = Auth::user();
@@ -2772,7 +2776,7 @@ class BookingController extends Controller
 
         $canBook = BookingController::validate_booking($fillable, $fillable['search_key'], $recurring, $is_staff);
         if ($canBook['status']==false){
-            return ['booking_key' => '', 'error_msg' => 'booking date unavailable or outside membership range'];
+            return ['booking_key' => '', 'error_msg' => 'booking date unavailable or outside membership range', 'success' => false];
         }
         else{
             $fillable['payment_type'] = $canBook['payment'];
@@ -2796,40 +2800,17 @@ class BookingController extends Controller
         $validator = Validator::make($fillable, Booking::rules('POST'), Booking::$message, Booking::$attributeNames);
         if ($validator->fails()){
             return array(
-                'success' => false,
-                'errors' => $validator->getMessageBag()->toArray()
+                'booking_key' => '',
+                'success'     => false,
+                'errors'      => $validator->getMessageBag()->toArray()
             );
         }
 
         try {
             $the_booking = Booking::create($fillable);
-            usleep(1000);
-
-            Activity::log([
-                'contentId'     => $the_booking->for_user_id,
-                'contentType'   => 'bookings',
-                'action'        => 'New Booking',
-                'description'   => 'New booking created',
-                'details'       => 'User Email : '.$user->email,
-                'updated'       => false,
-            ]);
-
-            /*
-            if ($the_booking->payment_type=='cash' && $is_staff){
-                $the_booking->add_invoice();
-
-                Activity::log([
-                    'contentId'     => $user->id,
-                    'contentType'   => 'booking_invoices',
-                    'action'        => 'New Booking Invoice',
-                    'description'   => 'New booking invoice created for booking ID : '.$the_booking->id,
-                    'details'       => 'User Email : '.$user->email,
-                    'updated'       => false,
-                ]);
-            }
-            */
 
             return [
+                'success' => true,
                 'booking_resource'  => $the_booking->resource_id,
                 'booking_start_time'=> $the_booking->booking_time_start,
                 'booking_key'       => $the_booking->search_key,
@@ -2837,7 +2818,7 @@ class BookingController extends Controller
                 'booking_price'     => $the_booking->payment_amount];
         }
         catch (Exception $e) {
-            return Response::json(['error' => 'Booking Error'], Response::HTTP_CONFLICT);
+            return ['booking_key' => '', 'error_msg' => 'booking date unavailable or outside membership range', 'success' => false];
         }
     }
 

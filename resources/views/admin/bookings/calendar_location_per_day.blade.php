@@ -1469,17 +1469,25 @@
                     'time_interval': time_intervals,
                 },
                 success: function(data){
-                    $.each(data, function(index, value){
-                        $('span[data-time="'+ value.booking_start_time +'"][data-resource="'+ value.booking_resource +'"]').attr({ 'booking-key':value.booking_key });
-                    });
+                    if (data.success){
+                        $.each(data.bookings, function(index, value){
+                            $('span[data-time="'+ value.booking_start_time +'"][data-resource="'+ value.booking_resource +'"]').attr({ 'booking-key':value.booking_key });
+                        });
 
-                    $('#booking_modal_end_time').modal('show');
+                        $('#booking_modal_end_time').modal('show');
 
-                    if(typeof timeinterval !== "undefined"){
-                        clearInterval(timeinterval);
+                        if(typeof timeinterval !== "undefined"){
+                            clearInterval(timeinterval);
+                        }
+                        var deadline = new Date(Date.parse(new Date()) + 300 * 1000);
+                        initializeClock('countdown_60', deadline);
                     }
-                    var deadline = new Date(Date.parse(new Date()) + 300 * 1000);
-                    initializeClock('countdown_60', deadline);
+                    else{
+                        show_notification(data.title, data.errors, 'ruby', 3500, 0);
+                        setTimeout(function(){
+                            location.reload();
+                        }, 500);
+                    }
                 }
             });
         });
