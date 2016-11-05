@@ -227,10 +227,10 @@
                                         <span class="caption-subject font-blue-madison bold uppercase">User Actions</span>
                                     </div>
                                     <ul class="nav nav-tabs">
-                                        <li>
+                                        <li {!! sizeof($redFlagLog)==0?'class="active"':'' !!}>
                                             <a href="#tab_1_1" data-toggle="tab"> All Actions </a>
                                         </li>
-                                        <li class="active">
+                                        <li {!! sizeof($redFlagLog)>0?'class="active"':'' !!}>
                                             <a href="#tab_1_2" data-toggle="tab"> Red Flagged </a>
                                         </li>
                                     </ul>
@@ -238,7 +238,7 @@
                                 <div class="portlet-body">
                                     <!--BEGIN TABS-->
                                     <div class="tab-content">
-                                        <div class="tab-pane" id="tab_1_1">
+                                        <div class="tab-pane {!! sizeof($redFlagLog)==0?' active':'' !!}" id="tab_1_1">
                                             <div class="scroller" style="height: 320px;" data-always-visible="1" data-rail-visible1="0" data-handle-color="#D7DCE2">
                                                 @if (sizeof($activityLog)>0)
                                                     <ul class="feeds">
@@ -252,16 +252,14 @@
                                                                         </div>
                                                                     </div>
                                                                     <div class="cont-col2">
-                                                                        <div class="desc"> {{ $logView['description'] }}
-                                                                        <span class="label label-sm label-info"> {{ $logView['action'] }}
-                                                                            <i class="fa fa-share"></i>
-                                                                        </span>
+                                                                        <div class="desc">
+                                                                            {{ $logView['logDate'] }} - <span class="font-blue-soft">{{ $logView['description'] }}</span>
                                                                         </div>
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                            <div class="col2">
-                                                                <div class="date"> {{ $logView['addedOn'] }} </div>
+                                                            <div class="col2" style="width:100px; margin-left:-100px;">
+                                                                <div class="date"> <small style="font-size:10px;" class="font-purple-studio">{{ $logView['ip_address'] }}</small> </div>
                                                             </div>
                                                         </li>
                                                     @endforeach
@@ -273,7 +271,7 @@
                                                 @endif
                                             </div>
                                         </div>
-                                        <div class="tab-pane active" id="tab_1_2">
+                                        <div class="tab-pane {!! sizeof($redFlagLog)>0?' active':'' !!}" id="tab_1_2">
                                             <div class="scroller" style="height: 320px;" data-always-visible="1" data-rail-visible1="0" data-handle-color="#D7DCE2">
                                                 @if (sizeof($redFlagLog)>0)
                                                     <ul class="feeds">
@@ -291,7 +289,7 @@
                                                                         </div>
                                                                     </div>
                                                                 </div>
-                                                                <div class="col2">
+                                                                <div class="col2" style="width:100px; margin-left:-100px;">
                                                                     <div class="date"> {{ $logView['addedOn'] }} </div>
                                                                 </div>
                                                             </li>

@@ -9,6 +9,7 @@ use App\UserSettings;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Auth;
+use Regulus\ActivityLog\Models\Activity;
 use Session;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
@@ -39,6 +40,16 @@ class FrontPageController extends Controller
 
         if (Auth::attempt(['email' => $request->input('username'), 'password' => $request->input('password')], $remember)) {
             // Authentication passed...
+            $user = Auth::user();
+            Activity::log([
+                'contentId'     => $user->id,
+                'contentType'   => 'login',
+                'action'        => 'Front end login',
+                'description'   => 'Successful login for '.$user->first_name.' '.$user->middle_name.' '.$user->last_name,
+                'details'       => 'User Email : '.$user->email,
+                'updated'       => false,
+            ]);
+
             return redirect()->intended('/');
         }
         else {

@@ -285,7 +285,9 @@ class FrontEndUserController extends Controller
                     'content_type'  => $singleLog->content_type,
                     'action'        => $singleLog->action,
                     'description'   => $singleLog->description,
-                    'addedOn'       => Carbon::createFromFormat('Y-m-d H:i:s', $singleLog->updated_at)->diffForHumans(),
+                    'addedOn'       => Carbon::createFromFormat('Y-m-d H:i:s', $singleLog->updated_at)->diffForHumans(null, true),
+                    'logDate'       => Carbon::createFromFormat('Y-m-d H:i:s', $singleLog->created_at)->format('d-m-Y H:i'),
+                    'ip_address'    => $singleLog->ip_address
                 ];
             }
         }
@@ -314,7 +316,7 @@ class FrontEndUserController extends Controller
             'publicNote'    => $publicNote,
             'privateNote'   => $privateNote,
             'activityLog'   => $memberLogs,
-            'redFlagLog'    => $memberLogs,
+            'redFlagLog'    => [],
         ]);
     }
 

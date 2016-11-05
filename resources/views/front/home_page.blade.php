@@ -43,9 +43,8 @@
                 <div class="page-content-inner">
                     <div class="row ">
                         <div class="col-md-6 login " style="background-color:transparent!important;">
-
                             @if (Auth::check() && Auth::user()->is_front_user())
-                                    <!-- BEGIN PORTLET -->
+                            <!-- BEGIN PORTLET -->
                             <div class="portlet light margin-bottom-15">
                                 <div class="portlet-title">
                                     <div class="caption caption-md">
@@ -79,7 +78,7 @@
                             </div>
                             <!-- END PORTLET -->
                             @else
-                                <div class="content" style="background-color:#ffffff; margin-top:0px;">
+                            <div class="content" style="background-color:#ffffff; margin-top:0px;">
                                     <!-- BEGIN LOGIN FORM -->
                                     <form class="login-form portlet light " action="{{ url('/login') }}" method="post" name="user_login_form" id="user_login_form">
                                         {!! csrf_field() !!}
