@@ -198,7 +198,7 @@ class Invoice extends Model
             'invoice_id'    => $this->id,
             'invoice_items' => $invoiceItems,
             'transaction_amount'    => $transactionAmount,
-            'transaction_currency'  => 'NOK',
+            'transaction_currency'  => Config::get('constants.finance.currency'),
             'transaction_type'  => $transaction_type,
             'transaction_date'  => Carbon::now()->format('Y-m-d'),
             'status'        => $status,

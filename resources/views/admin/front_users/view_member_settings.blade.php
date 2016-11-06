@@ -251,7 +251,7 @@
                                                             <div class="col-md-4">
                                                                 <div class="note note-info font-grey-mint" style="min-height:110px; margin:0 0 10px; padding:5px 20px 10px 10px;">
                                                                     <p> Price </p>
-                                                                    <h4 class="block" style="margin-bottom:0px; font-size:32px;"> <b>{{ $plan_details['price'] }} NOK</b> </h4>
+                                                                    <h4 class="block" style="margin-bottom:0px; font-size:32px;"> <b>{{ $plan_details['price'].' '.Config::get('constants.finance.currency') }} </b> </h4>
                                                                 </div>
                                                             </div>
                                                             <div class="col-md-4">
@@ -401,7 +401,7 @@
                                                                         </td>
                                                                         <td> {{ $singlePlanned['issued_date'] }} - {{ $singlePlanned['status'] }} </td>
                                                                         <td> {{ $singlePlanned['last_active_date'] }} </td>
-                                                                        <td class="hidden-xs"> {{ $singlePlanned['price'] }} NOK </td>
+                                                                        <td class="hidden-xs"> {{ $singlePlanned['price'].' '.Config::get('constants.finance.currency') }} </td>
                                                                         <td>
                                                                             @if ($singlePlanned['invoiceStatus']!='')
                                                                                 <span class="label label-sm label-success"> {{$singlePlanned['invoiceStatus']}} </span>

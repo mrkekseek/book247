@@ -71,7 +71,7 @@
                                         <div class="form-group">
                                             <label class="control-label col-md-3 inline"> Membership Price </label>
                                             <div class="col-md-4">
-                                                <input type="text" class="form-control input-inline input-small" name="membership_price" placeholder="NOK" value="{{$membership_plan->price[0]->price}}">
+                                                <input type="text" class="form-control input-inline input-small" name="membership_price" placeholder="{{Config::get('constants.finance.currency')}}" value="{{$membership_plan->price[0]->price}}">
                                             </div>
                                         </div>
                                         <div class="form-group">

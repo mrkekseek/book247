@@ -145,7 +145,7 @@ class BookingInvoice extends Model
             'booking_invoice_item_id'   => $bookingItemID,
             'user_id'               => $userId,
             'transaction_amount'    => $totalAmount,
-            'transaction_currency'  => 'NOK',
+            'transaction_currency'  => Config::get('constants.finance.currency'),
             'transaction_type'  => $method,
             'transaction_date'  => Carbon::now(),
             'other_details'     => $details,

@@ -575,10 +575,10 @@ class MembershipPlansController extends Controller
             $details = [
                 'success'   => true,
                 'name'      => $the_plan->name,
-                'price'     => $the_plan->price[0]->price.' NOK',
+                'price'     => $the_plan->price[0]->price.' '.Config::get('constants.finance.currency'),
                 'invoice_time'  => $the_plan->plan_period,
                 'one_time_fee_name' => $the_plan->administration_fee_name,
-                'one_time_fee_value'=> $the_plan->administration_fee_amount.' NOK',
+                'one_time_fee_value'=> $the_plan->administration_fee_amount.' '.Config::get('constants.finance.currency'),
                 'description'   => $the_plan->short_description,
                 'plan_order_id' => $the_plan->id,
                 'sign_out_period'   => $the_plan->sign_out_period

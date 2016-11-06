@@ -21,7 +21,7 @@ class GeneralNotesController extends Controller
                 'errors'  => 'You need to be logged in as an employee in order to use this function'];
         }
 
-        $vars = $request->only('memberID','custom_message','private_message','title_message','privacy','note_type');
+        $vars = $request->only('memberID','custom_message','private_message','title_message','privacy','note_type','note_action');
         $allGood = true;
         $returnMessage = '';
 
@@ -31,6 +31,13 @@ class GeneralNotesController extends Controller
                 'success' => false,
                 'title'   => 'Member not found',
                 'errors'  => 'The member you want to send this message to was not found in the system'];
+        }
+
+        if (isset($vars['note_action']) && $vars['note_action']==1){
+            $privateStatus = 'pending';
+        }
+        else{
+            $privateStatus = 'unread';
         }
 
         $note_fill = [
@@ -59,6 +66,7 @@ class GeneralNotesController extends Controller
 
         if ($vars['private_message']){
             $note_fill['note_body'] = $vars['private_message'];
+            $note_fill['status'] = $privateStatus;
             $note_fill['privacy']   = isset($vars['privacy'])?$vars['privacy']:'employees';
 
             $validator = Validator::make($note_fill, GeneralNote::rules('POST'), GeneralNote::$message, GeneralNote::$attributeNames);

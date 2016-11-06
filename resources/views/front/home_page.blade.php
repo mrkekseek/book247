@@ -1363,7 +1363,7 @@
                             var cash_bookings = '<h5>Paid bookings : <span id="membership_bookings_nr"> None </span></h5>';
                         }
                         else{
-                            var cash_bookings = '<h5>Paid bookings : <span id="membership_bookings_nr">' + data.cash_nr + '</span> of <span>' + data.cash_amount + '</span> in total</h5>';
+                            var cash_bookings = '<h5>Paid bookings : <span id="membership_bookings_nr">' + data.cash_nr + '</span>, priced <span>' + data.cash_amount + '{{ Config::get('constants.finance.currency') }}</span> in total</h5>';
                         }
 
                         $('.booking_summary_price_membership').html(membership_bookings + ' ' + cash_bookings);

@@ -149,7 +149,7 @@ class BookingController extends Controller
                 $the_booking = Booking::create($fillable);
 
                 Activity::log([
-                    'contentId'     => $fillable->for_user_id,
+                    'contentId'     => $fillable['for_user_id'],
                     'contentType'   => 'bookings',
                     'action'        => 'New Booking',
                     'description'   => 'New booking created : '.$the_booking->id,
@@ -165,7 +165,7 @@ class BookingController extends Controller
                     $the_booking->save();
 
                     Activity::log([
-                        'contentId'     => $fillable->for_user_id,
+                        'contentId'     => $fillable['for_user_id'],
                         'contentType'   => 'bookings',
                         'action'        => 'New Booking',
                         'description'   => 'New booking created : '.$the_booking->id,
@@ -910,7 +910,7 @@ class BookingController extends Controller
                     'recurring_nr'      => $recurring_nr,
                     'recurring_cash'    => $recurring_cash,
                     'cash_nr'       => $cash_nr,
-                    'cash_amount'   => $cash_amount.' NOK',
+                    'cash_amount'   => $cash_amount,
                     'membership_products'   => $membership_products];
         }
         else{

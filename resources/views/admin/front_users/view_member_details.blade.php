@@ -371,6 +371,7 @@
                                                             <span class="task-title-sp">  <span class="font-blue-dark">{{ $note['note_title'] }} - {{ $note['note_body'] }} by </span> {{ $note['by_user'] }} {{ $note['addedOn'] }}  </span>
                                                             <span class="label label-sm label-success">{{ $note['status'] }}</span>
                                                         </div>
+                                                        @if ($note['status']=='pending')
                                                         <div class="task-config">
                                                             <div class="task-config-btn btn-group">
                                                                 <a class="btn btn-sm default" href="javascript:;" data-toggle="dropdown" data-hover="dropdown" data-close-others="true">
@@ -389,6 +390,7 @@
                                                                 </ul>
                                                             </div>
                                                         </div>
+                                                        @endif
                                                     </li>
                                                 @endforeach
                                                 </ul>
@@ -423,7 +425,9 @@
                                         </div>
                                     </div>
                                     <div class="form-group">
-                                        <label class="col-md-4 control-label"> Public Message<br /><small>visible by members</small></label>
+                                        <label class="col-md-4 control-label">
+                                            Public Message<br /><small>visible by members</small><br />
+                                        </label>
                                         <div class="col-md-8">
                                             <textarea type="text" class="form-control input-inline input-large input-sm" name="custom_general_message"></textarea>
                                         </div>
@@ -431,7 +435,8 @@
                                     <div class="form-group">
                                         <label class="col-md-4 control-label"> Internal Message<br /><small>visible by employees only</small> </label>
                                         <div class="col-md-8">
-                                            <textarea type="text" class="form-control input-inline input-large input-sm" name="private_general_message"></textarea>
+                                            <textarea type="text" class="form-control input-inline input-large input-sm" name="private_general_message"></textarea><br />
+                                            <input value="1" name="private_general_action" type="checkbox"><small>check if this note will require future action </small>
                                         </div>
                                     </div>
                                 </div>
@@ -696,6 +701,13 @@
         });
 
         function send_member_general_message(){
+            if ($('input[name=private_general_action]').is(':checked')){
+                var pending_action = 1;
+            }
+            else{
+                var pending_action = 0;
+            }
+
             $.ajax({
                 url: '{{route('ajax/general_note_add_new')}}',
                 type: "post",
@@ -704,7 +716,8 @@
                     'title_message':    $('input[name=title_general_message]').val(),
                     'memberID':         '{{ $user->id }}',
                     'custom_message':   $('textarea[name="custom_general_message"]').val(),
-                    'private_message':  $('textarea[name="private_general_message"]').val()
+                    'private_message':  $('textarea[name="private_general_message"]').val(),
+                    'note_action':      pending_action,
                 },
                 success: function (data) {
                     if (data.success) {
