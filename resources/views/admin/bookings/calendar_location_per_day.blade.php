@@ -1613,6 +1613,9 @@
 
             $('#register_new_user_popup').modal('hide');
 
+            $('a[data-id=play_with_friends_booking]').hide();
+            $('a[data-id=play_alone_booking]').hide();
+            $('a[data-id=is_recurring_booking]').hide();
             //$('#search_for_player > .form-body > .note-info > .booking_step_content > .form-actions').hide();
         }
 

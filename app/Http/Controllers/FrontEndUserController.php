@@ -216,7 +216,7 @@ class FrontEndUserController extends Controller
 
         $publicNote  = [];
         $privateNote = [];
-        $allNotes = GeneralNote::where('for_user_id','=',$member->id)->orderBy('updated_at','desc')->get();
+        $allNotes = GeneralNote::where('for_user_id','=',$member->id)->orderBy('created_at','desc')->get();
         if ($allNotes){
             foreach($allNotes as $note){
                 $byUser = Cache::remember('user_table_'.$note->by_user_id,720,function() use ($note){
@@ -247,7 +247,7 @@ class FrontEndUserController extends Controller
 
         $bookingNotes = BookingNote::whereHas('booking', function($query) use ($member){
             $query->where('for_user_id','=',$member->id);
-        })->orderBy('updated_at','desc')->get();
+        })->orderBy('created_at','desc')->get();
         if ($bookingNotes){
             foreach($bookingNotes as $note){
                 $byUser = Cache::remember('user_table_'.$note->by_user_id,720,function() use ($note){
@@ -263,8 +263,8 @@ class FrontEndUserController extends Controller
                     'note_body' => $note->note_body,
                     'note_type' => $note->note_type,
                     'status'    => $note->status,
-                    'addedOn'   => Carbon::createFromFormat('Y-m-d H:i:s', $note->updated_at)->diffForHumans(),
-                    'timestamp' => Carbon::createFromFormat('Y-m-d H:i:s', $note->updated_at)->timestamp
+                    'addedOn'   => Carbon::createFromFormat('Y-m-d H:i:s', $note->created_at)->diffForHumans(),
+                    'timestamp' => Carbon::createFromFormat('Y-m-d H:i:s', $note->created_at)->timestamp
                 ];
 
                 if ($note->privacy == 'everyone'){
@@ -287,7 +287,7 @@ class FrontEndUserController extends Controller
                     'content_type'  => $singleLog->content_type,
                     'action'        => $singleLog->action,
                     'description'   => $singleLog->description,
-                    'addedOn'       => Carbon::createFromFormat('Y-m-d H:i:s', $singleLog->updated_at)->diffForHumans(null, true),
+                    'addedOn'       => Carbon::createFromFormat('Y-m-d H:i:s', $singleLog->created_at)->diffForHumans(null, true),
                     'logDate'       => Carbon::createFromFormat('Y-m-d H:i:s', $singleLog->created_at)->format('d-m-Y H:i'),
                     'ip_address'    => $singleLog->ip_address
                 ];
