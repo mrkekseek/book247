@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Booking;
+use App\GeneralNote;
 use App\ShopLocations;
 use App\ShopResourceCategory;
 use App\UserSettings;
@@ -75,7 +76,6 @@ class FrontPageController extends Controller
     public function index()
     {
         $errors = Session::get('errors', new MessageBag);
-        //xdebug_var_dump($errors);
 
         //BookingController::check_for_passed_bookings();
         BookingController::check_for_expired_pending_bookings();
@@ -93,9 +93,24 @@ class FrontPageController extends Controller
             }
         }
 
+        $unreadNotes= [];
         if (isset($user)) {
             $own_friends_bookings = $this::get_own_and_friends_bookings($user->id);
             $settings   = UserSettings::get_general_settings($user->id, ['settings_preferred_location','settings_preferred_activity']);
+
+            $notes = GeneralNote::where('for_user_id','=',$user->id)->where('privacy','=','everyone')->where('status','=','unread')->get();
+            if ($notes){
+                foreach($notes as $note){
+                    $unreadNotes[] = [
+                        'note_body' => $note->note_body,
+                        'note_id'   => $note->id,
+                        'note_date' => Carbon::createFromFormat('Y-m-d H:i:s', $note->created_at)->format('d-m-Y H:i')
+                    ];
+
+                    $note->status = 'read';
+                    $note->save();
+                }
+            }
         }
 
         $breadcrumbs = [
@@ -117,7 +132,8 @@ class FrontPageController extends Controller
             'shops' => $shopLocations,
             'resourceCategories' => $resourceCategories,
             'meAndFriendsBookings' => @$own_friends_bookings,
-            'settings'  => @$settings
+            'settings'  => @$settings,
+            'unredNotes'=> $unreadNotes
         ]);
     }
 

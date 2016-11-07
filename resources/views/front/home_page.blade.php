@@ -432,6 +432,72 @@
                 </div>
                 <!-- /.modal-dialog -->
             </div>
+
+            <div class="modal fade draggable-modal" id="unread_notes_modal" tabindex="-1" role="basic" aria-hidden="true" data-keyboard="false" data-backdrop="static">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-body form-horizontal">
+                            <div class="portlet light " style="padding:0px;margin:0px;">
+                                <div class="portlet-body form">
+                                    <div class="portlet light bordered" style="margin-bottom:0px;">
+                                        <div class="portlet-title tabbable-line">
+                                            <div class="caption caption-md">
+                                                <i class="icon-globe theme-font hide"></i>
+                                                <span class="caption-subject font-blue-madison bold uppercase">Notes & Messages</span>
+                                            </div>
+                                            <ul class="nav nav-tabs">
+                                                <li class="active">
+                                                    <a href="#tab_1_1" data-toggle="tab"> General </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                        <div class="portlet-body">
+                                            <!--BEGIN TABS-->
+                                            <div class="tab-content">
+                                                <div class="tab-pane active" id="tab_1_1">
+                                                    <div class="scroller" style="height: 320px;" data-always-visible="1" data-rail-visible1="0" data-handle-color="#D7DCE2">
+                                                        <ul class="feeds">
+                                                        @if (sizeof($unredNotes)>0)
+                                                            @foreach($unredNotes as $note)
+                                                                <li>
+                                                                    <div class="col1">
+                                                                        <div class="cont" style="margin-right:0px;">
+                                                                            <div class="cont-col1">
+                                                                                <div class="label label-sm label-default">
+                                                                                    <i class="fa fa-bullhorn"></i>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="cont-col2">
+                                                                                <div class="desc">
+                                                                                    {{ $note['note_date'] }} - {{ $note['note_body'] }}
+                                                                                    <span class="label label-sm label-info"> Take action
+                                                                                        <i class="fa fa-share"></i>
+                                                                                    </span>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </li>
+                                                            @endforeach
+                                                        @endif
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!--END TABS-->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn dark btn-outline submit_form_2" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                    <!-- /.modal-content -->
+                </div>
+                <!-- /.modal-dialog -->
+            </div>
             @endif
         </div>
         <!-- END PAGE CONTENT BODY -->
@@ -1589,6 +1655,10 @@
         setTimeout(function() {
             show_notification('{{$errors->first('header')}}', '{{$errors->first('message_body')}}', 'ruby', 10000, false);
         }, 500);
+        @endif
+
+        @if (sizeof($unredNotes)>0)
+        $('#unread_notes_modal').modal('show');
         @endif
 
         function show_notification(title_heading, message, theme, life, sticky) {
