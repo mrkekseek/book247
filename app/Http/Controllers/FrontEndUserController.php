@@ -2581,6 +2581,48 @@ class FrontEndUserController extends Controller
 
         return $this->updatePassword($request, $user->id);
     }
+
+    public function front_view_all_messages(){
+        $user = Auth::user();
+        if (!$user || !$user->is_front_user()) {
+            return redirect()->intended(route('homepage'));
+        }
+
+        $allNotes = [];
+        $notes = GeneralNote::where('for_user_id','=',$user->id)->where('privacy','=','everyone')->get();
+        if ($notes){
+            foreach($notes as $note){
+                $allNotes[] = [
+                    'note_body' => $note->note_body,
+                    'note_id'   => $note->id,
+                    'status'    => $note->status,
+                    'note_date' => Carbon::createFromFormat('Y-m-d H:i:s', $note->created_at)->format('d-m-Y H:i')
+                ];
+            }
+        }
+
+        $avatar = $user->get_avatar_image();
+
+        $breadcrumbs = [
+            'Home'      => route('admin'),
+            'Dashboard' => '',
+        ];
+        $text_parts  = [
+            'title'     => 'Home',
+            'subtitle'  => 'users dashboard',
+            'table_head_text1' => 'Dashboard Summary'
+        ];
+        $sidebar_link= 'front-settings_personal';
+
+        return view('front/settings/all_messages',[
+            'breadcrumbs'   => $breadcrumbs,
+            'text_parts'    => $text_parts,
+            'in_sidebar'    => $sidebar_link,
+            'user'          => $user,
+            'avatar'        => $avatar['avatar_base64'],
+            'notes'         => $allNotes
+        ]);
+    }
     /* Front end pages part - STOP */
 
     /* Reset Password Functions - START */

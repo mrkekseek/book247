@@ -433,6 +433,9 @@
                                             <li class=" {{ $in_sidebar=='front-settings_finance'?'active':'' }}">
                                                 <a href="#" class="nav-link  "> Financial Settings [not finished] </a>
                                             </li>
+                                            <li class=" {{ $in_sidebar=='front-settings_finance'?'active':'' }}">
+                                                <a href="{{ route('my_messages') }}" class="nav-link  "> Messages & Notes </a>
+                                            </li>
                                         </ul>
                                     </div>
                                 </div>

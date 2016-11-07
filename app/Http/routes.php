@@ -691,6 +691,11 @@ Route::group(['prefix'=>'front', 'middleware'=>'web'], function(){
         'uses'  => 'FrontEndUserController@password_reset_form'
     ]);
 
+    Route::get('my_messages',[
+        'as'    => 'my_messages',
+        'uses'  => 'FrontEndUserController@front_view_all_messages'
+    ]);
+
     Route::post('reset_password/{token}',[
         'as'    => 'reset_password',
         'uses'  => 'FrontEndUserController@password_reset_action'
