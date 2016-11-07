@@ -311,7 +311,7 @@
                         </div>
                         <div class="modal-body">
                             <div class="note note-warning" id="booking_cancel_rules_no" style="display:none; margin-bottom:0px;">
-                                <h4 class="block">Booking cancellation is outside membership rules</h4>
+                                <h4 class="block">Booking cancellation is outside booking rules.</h4>
                                 <p> The booking that you are trying to cancel passed the minimum hours requirements for being able to cancel. Do you still want to cancel this booking? </p>
                             </div>
                             <div class="note note-info" id="booking_cancel_rules_yes" style="display:none; margin-bottom:0px;">
@@ -1873,7 +1873,7 @@
                             var cash_bookings = '<h5>Paid bookings : <span id="membership_bookings_nr"> None </span></h5>';
                         }
                         else if (data.cash_nr > 0 && data.recurring_nr == 0){
-                            var cash_bookings = '<h5>Paid bookings : <span id="membership_bookings_nr">' + data.cash_nr + '</span>, priced  <span>' + data.cash_amount + '</span> in total</h5>';
+                            var cash_bookings = '<h5>Paid bookings : <span id="membership_bookings_nr">' + data.cash_nr + '</span>, priced <span>' + data.cash_amount + '{{ Config::get('constants.finance.currency') }}</span> in total</h5>';
                         }
                         else{
                             var cash_bookings = '';
@@ -1881,7 +1881,7 @@
 
                         var recurring = '';
                         if (data.recurring_nr > 0){
-                            recurring = '<h5>Recurring bookings : <span id="membership_bookings_nr">' + data.recurring_nr + '</span>, priced <span>' + data.recurring_cash + '</span> in total</h5>';
+                            recurring = '<h5>Recurring bookings : <span id="membership_bookings_nr">' + data.recurring_nr + '</span>, priced <span>' + data.recurring_cash + '{{ Config::get('constants.finance.currency') }}</span> in total</h5>';
                         }
 
                         var membership_products = '';
