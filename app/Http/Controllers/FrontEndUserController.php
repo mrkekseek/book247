@@ -224,6 +224,7 @@ class FrontEndUserController extends Controller
                 });
 
                 $formattedNote = [
+                    'id'        => $note->id,
                     'by_user'   => $byUser->first_name.' '.$byUser->middle_name.' '.$byUser->last_name,
                     'by_user_avatar'=> $byUser->get_avatar_image(),
                     'by_user_link'  => $byUser,
@@ -254,6 +255,7 @@ class FrontEndUserController extends Controller
                 });
 
                 $formattedNote = [
+                    'id'        => $note->id,
                     'by_user'   => $byUser->first_name.' '.$byUser->middle_name.' '.$byUser->last_name,
                     'by_user_avatar'=> $byUser->get_avatar_image(),
                     'by_user_link'  => $byUser,

@@ -875,6 +875,11 @@ Route::group(['prefix'=>'ajax', 'middleware' => 'web'], function(){
         'uses'  => 'GeneralNotesController@create'
     ]);
 
+    Route::post('internal_note_status_change', [
+        'as'    => 'ajax/internal_note_status_change',
+        'uses'  => 'GeneralNotesController@status_update'
+    ]);
+
     Route::post('front_member_change_status', [
         'as'    => 'ajax/front_member_change_status',
         'uses'  => 'FrontEndUserController@change_account_status'

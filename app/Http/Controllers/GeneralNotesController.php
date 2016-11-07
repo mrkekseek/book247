@@ -96,4 +96,35 @@ class GeneralNotesController extends Controller
             ];
         }
     }
+
+    public function status_update(Request $request){
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
+            return [
+                'success' => false,
+                'title'   => 'You need to be logged in',
+                'errors'  => 'You need to be logged in as an employee in order to use this function'];
+        }
+
+        $note_status = ['cancel'=>'deleted', 'complete'=>'completed', 'read'=>'read'];
+        $vars = $request->only('noteID','status');
+        $note = GeneralNote::where('id','=',$vars['noteID'])->whereIn('status',['pending','unread'])->get()->first();
+        if ($note && isset($note_status[$vars['status']])){
+            $note->status = $note_status[$vars['status']];
+            $note->save();
+
+            return [
+                'success'   => true,
+                'title'     => 'Message Status Updated',
+                'message'   => 'Message status updated to '.strtoupper($vars['status']).'. Page will reload.'
+            ];
+        }
+        else{
+            return [
+                'success'   => false,
+                'title'     => 'Something went wrong',
+                'errors'    => 'Status update could not be processed. Reload the page and try again'
+            ];
+        }
+    }
 }

@@ -334,7 +334,7 @@
                                                             <span class="item-status">
                                                                 <span class="badge badge-empty badge-success"></span> {{ $note['status'] }}</span>
                                                         </div>
-                                                        <div class="item-body"> <span class="font-blue-dark">{{ $note['note_title'] }}</span> - {{ $note['note_body'] }} </div>
+                                                        <div class="item-body"> {{ $note['note_body'] }} </div>
                                                     </div>
                                                 @endforeach
                                             @else
@@ -368,8 +368,17 @@
                                                             <input type="hidden" value="1" name="test" />
                                                         </div>
                                                         <div class="task-title">
-                                                            <span class="task-title-sp">  <span class="font-blue-dark">{{ $note['note_title'] }} - {{ $note['note_body'] }} by </span> {{ $note['by_user'] }} {{ $note['addedOn'] }}  </span>
-                                                            <span class="label label-sm label-success">{{ $note['status'] }}</span>
+                                                            <span class="task-title-sp">  <span class="font-blue-dark">{{ $note['note_body'] }} by </span> {{ $note['by_user'] }} {{ $note['addedOn'] }}  </span>
+                                                            @if($note['status']=='pending')
+                                                            <span class="label label-sm label-danger">{{ $note['status'] }}</span>
+                                                            <span class="task-bell"><i class="fa fa-bell-o"></i></span>
+                                                            @elseif($note['status']=='completed')
+                                                            <span class="label label-sm label-info">{{ $note['status'] }}</span>
+                                                            @elseif($note['status']=='deleted')
+                                                            <span class="label label-sm label-default">{{ $note['status'] }}</span>
+                                                            @elseif ($note['status']=='unread')
+                                                            <span class="label label-sm label-success mark_note_as_read" data-id="{{ $note['id'] }}" style="cursor:pointer;">{{ $note['status'] }}</span>
+                                                            @endif
                                                         </div>
                                                         @if ($note['status']=='pending')
                                                         <div class="task-config">
@@ -380,11 +389,11 @@
                                                                 </a>
                                                                 <ul class="dropdown-menu pull-right">
                                                                     <li>
-                                                                        <a href="javascript:;">
+                                                                        <a href="javascript:;" class="note_mark_complete" data-id="{{ $note['id'] }}">
                                                                             <i class="fa fa-check"></i> Complete </a>
                                                                     </li>
                                                                     <li>
-                                                                        <a href="javascript:;">
+                                                                        <a href="javascript:;" data-id="{{ $note['id'] }}" class="note_mark_cancel">
                                                                             <i class="fa fa-trash-o"></i> Cancel/Delete </a>
                                                                     </li>
                                                                 </ul>
@@ -418,12 +427,6 @@
                             </div>
                             <div class="modal-body form-horizontal">
                                 <div class="form-body">
-                                    <div class="form-group">
-                                        <label class="col-md-4 control-label"> Title / Topic </label>
-                                        <div class="col-md-8">
-                                            <input class="form-control input-large input-sm" name="title_general_message" placeholder="message title or topic" type="text" />
-                                        </div>
-                                    </div>
                                     <div class="form-group">
                                         <label class="col-md-4 control-label">
                                             Public Message<br /><small>visible by members</small><br />
@@ -713,7 +716,7 @@
                 type: "post",
                 cache: false,
                 data: {
-                    'title_message':    $('input[name=title_general_message]').val(),
+                    'title_message':    'General Note',
                     'memberID':         '{{ $user->id }}',
                     'custom_message':   $('textarea[name="custom_general_message"]').val(),
                     'private_message':  $('textarea[name="private_general_message"]').val(),
@@ -722,6 +725,54 @@
                 success: function (data) {
                     if (data.success) {
                         show_notification(data.title, data.message, 'lemon', 3500, 0);
+                        setTimeout(function(){
+                            location.reload();
+                        }, 1000);
+                    }
+                    else{
+                        show_notification(data.title, data.errors, 'ruby', 3500, 0);
+                    }
+
+                    $('#general_message_box').modal('hide');
+                }
+            });
+        }
+
+        $(".note_mark_complete").on('click', function(){
+            var noteID = $(this).attr('data-id');
+            internal_note_status_change(noteID, 'complete');
+        });
+
+        $(".note_mark_cancel").on('click', function(){
+            var noteID = $(this).attr('data-id');
+            internal_note_status_change(noteID, 'cancel');
+        });
+
+        $(".mark_note_as_read").on('click', function(){
+            var noteID = $(this).attr('data-id');
+            internal_note_status_change(noteID, 'read');
+        });
+
+        function internal_note_status_change(noteID, status){
+            $.ajax({
+                url: '{{route('ajax/internal_note_status_change')}}',
+                type: "post",
+                cache: false,
+                data: {
+                    'noteID': noteID,
+                    'status': status
+                },
+                success: function (data) {
+                    if (data.success) {
+                        show_notification(data.title, data.message, 'lemon', 3500, 0);
+                        if (status=='read'){
+                            $('span[data-id='+noteID+']').remove();
+                        }
+                        else{
+                            setTimeout(function(){
+                                location.reload();
+                            }, 1000);
+                        }
                     }
                     else{
                         show_notification(data.title, data.errors, 'ruby', 3500, 0);
