@@ -539,10 +539,10 @@
                                     <div class="md-radio-inline">
                                         <div class="md-radio">
                                             <input type="radio" id="radio14" value="-1" checked="checked" name="mp_radio" class="md-radiobtn">
-                                            <label for="radio14">
+                                            <label for="radio14" style="color:{!! $defaultProductColor !!};">
                                                 <span></span>
                                                 <span class="check"></span>
-                                                <span class="box"></span> No Product </label>
+                                                <span class="box"></span> Default Free Plan </label>
                                         </div>
                                         @foreach ($membership_products as $single)
                                             <div class="md-radio">
@@ -1873,7 +1873,7 @@
                             var cash_bookings = '<h5>Paid bookings : <span id="membership_bookings_nr"> None </span></h5>';
                         }
                         else if (data.cash_nr > 0 && data.recurring_nr == 0){
-                            var cash_bookings = '<h5>Paid bookings : <span id="membership_bookings_nr">' + data.cash_nr + '</span> of <span>' + data.cash_amount + '</span> in total</h5>';
+                            var cash_bookings = '<h5>Paid bookings : <span id="membership_bookings_nr">' + data.cash_nr + '</span>, priced  <span>' + data.cash_amount + '</span> in total</h5>';
                         }
                         else{
                             var cash_bookings = '';
@@ -1881,7 +1881,7 @@
 
                         var recurring = '';
                         if (data.recurring_nr > 0){
-                            recurring = '<h5>Recurring bookings : <span id="membership_bookings_nr">' + data.recurring_nr + '</span> bookings of <span>' + data.recurring_cash + '</span> in total</h5>';
+                            recurring = '<h5>Recurring bookings : <span id="membership_bookings_nr">' + data.recurring_nr + '</span>, priced <span>' + data.recurring_cash + '</span> in total</h5>';
                         }
 
                         var membership_products = '';

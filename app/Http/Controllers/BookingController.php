@@ -1102,27 +1102,9 @@ class BookingController extends Controller
                 if ($key==''){ continue; }
                 if ($is_staff){
                     $booking = Booking::where('status','=','pending')->where('search_key','=',$key)->update(['status'=>'canceled']);
-
-                    Activity::log([
-                        'contentId'     => $booking->for_user_id,
-                        'contentType'   => 'bookings',
-                        'action'        => 'Confirm Booking - by staff',
-                        'description'   => 'Booking confirmed for booking key : '.$key,
-                        'details'       => 'User Email : '.$user->email,
-                        'updated'       => true,
-                    ]);
                 }
                 else{
                     $booking = Booking::where('status','=','pending')->where('by_user_id','=',$user->id)->where('search_key','=',$key)->update(['status'=>'canceled']);
-
-                    Activity::log([
-                        'contentId'     => $booking->for_user_id,
-                        'contentType'   => 'bookings',
-                        'action'        => 'Confirm Booking - by member',
-                        'description'   => 'Booking confirmed for booking key : '.$key,
-                        'details'       => 'User Email : '.$user->email,
-                        'updated'       => true,
-                    ]);
                 }
             }
 
@@ -1456,8 +1438,12 @@ class BookingController extends Controller
         $membership_legend = [];
         if ($memberships){
             foreach($memberships as $membership){
+                if ($membership->id == 1){
+                    $defaultProductColor = $membership->plan_calendar_color;
+                }
+
                 $membership_legend[] = [
-                    'name' => $membership->name,
+                    'name'  => $membership->name,
                     'status'=> $membership->status,
                     'color' => $membership->plan_calendar_color
                 ];
@@ -1519,7 +1505,8 @@ class BookingController extends Controller
             'is_close_menu' => true,
             'memberships'   => $membership_plans,
             'membership_legend'   => $membership_legend,
-            'membership_products' => $membership_products
+            'membership_products' => $membership_products,
+            'defaultProductColor' => $defaultProductColor
         ]);
     }
 

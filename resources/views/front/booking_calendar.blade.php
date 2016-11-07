@@ -675,7 +675,7 @@
 
                         var recurring = '';
                         if (data.recurring_nr > 0){
-                            recurring = '<h5>Recurring bookings : <span id="membership_bookings_nr">' + data.recurring_nr + '</span> bookings, priced <span>' + data.recurring_cash + '{{ Config::get('constants.finance.currency') }}</span> in total</h5>';
+                            recurring = '<h5>Recurring bookings : <span id="membership_bookings_nr">' + data.recurring_nr + '</span>, priced <span>' + data.recurring_cash + '{{ Config::get('constants.finance.currency') }}</span> in total</h5>';
                         }
 
                         $('.booking_summary_price_membership').html(membership_bookings + ' ' + cash_bookings + ' ' + recurring);
