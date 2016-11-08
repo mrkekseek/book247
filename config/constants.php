@@ -2,7 +2,7 @@
 
 return [
     'globalWebsite' => [
-        'url' => 'http://bookingsys/',
+        'url' => env('MY_SERVER_URL','http://bookingsys/'),
         // etc
     ],
     'finance' => [

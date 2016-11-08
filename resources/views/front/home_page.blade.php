@@ -470,9 +470,6 @@
                                                                             <div class="cont-col2">
                                                                                 <div class="desc">
                                                                                     {{ $note['note_date'] }} - {{ $note['note_body'] }}
-                                                                                    <span class="label label-sm label-info"> Take action
-                                                                                        <i class="fa fa-share"></i>
-                                                                                    </span>
                                                                                 </div>
                                                                             </div>
                                                                         </div>
