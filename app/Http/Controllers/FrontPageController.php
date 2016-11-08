@@ -97,20 +97,7 @@ class FrontPageController extends Controller
         if (isset($user)) {
             $own_friends_bookings = $this::get_own_and_friends_bookings($user->id);
             $settings   = UserSettings::get_general_settings($user->id, ['settings_preferred_location','settings_preferred_activity']);
-
-            $notes = GeneralNote::where('for_user_id','=',$user->id)->where('privacy','=','everyone')->where('status','=','unread')->get();
-            if ($notes){
-                foreach($notes as $note){
-                    $unreadNotes[] = [
-                        'note_body' => $note->note_body,
-                        'note_id'   => $note->id,
-                        'note_date' => Carbon::createFromFormat('Y-m-d H:i:s', $note->created_at)->format('d-m-Y H:i')
-                    ];
-
-                    $note->status = 'read';
-                    $note->save();
-                }
-            }
+            $unreadNotes = $user->get_public_notes('DESC', 'unread', true);
         }
 
         $breadcrumbs = [

@@ -6,6 +6,7 @@ use App\Http\Controllers\MembershipController;
 use Carbon\Carbon;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Zizaco\Entrust\Traits\EntrustUserTrait;
 use App\UserMembership;
 use App\UserAvatars;
@@ -343,4 +344,176 @@ class User extends Authenticatable
             'avatar_base64'     => 'data:'.$avatarType.';base64,'.base64_encode($avatarContent)
         ];
     }
+
+    /**
+     * @param string $ord - order the notes ascending or descending
+     * @param string $status - all, read, unread
+     * @param bool   $update - true or false, updates the unread to read
+     * @return array
+     */
+    public function get_public_notes($ord = 'DESC', $status = 'all', $update = false){
+        $publicNote  = [];
+        if ($status=='all'){
+            $allNotes = GeneralNote::where('for_user_id','=',$this->id)->where('privacy','=','everyone')->orderBy('created_at','desc')->get();
+        }
+        else{
+            $allNotes = GeneralNote::where('for_user_id','=',$this->id)->where('privacy','=','everyone')->where('status','=',$status)->orderBy('created_at','desc')->get();
+        }
+
+        if ($allNotes){
+            foreach($allNotes as $note){
+                $byUser = Cache::remember('user_table_'.$note->by_user_id,720,function() use ($note){
+                    return User::where('id',$note->by_user_id)->get()->first();
+                });
+
+                $publicNote[] = [
+                    'id'        => $note->id,
+                    'by_user'   => $byUser->first_name.' '.$byUser->middle_name.' '.$byUser->last_name,
+                    'by_user_avatar'=> $byUser->get_avatar_image(),
+                    'by_user_link'  => $byUser,
+                    'note_title'=> $note->note_title,
+                    'note_body' => $note->note_body,
+                    'note_type' => $note->note_type,
+                    'status'    => $note->status,
+                    'dateAdded' => Carbon::createFromFormat('Y-m-d H:i:s', $note->created_at)->format('d-m-Y H:i'),
+                    'addedOn'   => Carbon::createFromFormat('Y-m-d H:i:s', $note->created_at)->diffForHumans(),
+                    'timestamp' => Carbon::createFromFormat('Y-m-d H:i:s', $note->created_at)->timestamp
+                ];
+
+                if ($note->status == 'unread' && $update == true){
+                    $note->status = 'read';
+                    $note->save();
+                }
+            }
+        }
+
+        $userID = $this->id;
+        if ($status=='all'){
+            $bookingNotes = BookingNote::whereHas('booking', function($query) use ($userID){
+                $query->where('for_user_id','=',$userID);
+            })->where('privacy','=','everyone')->orderBy('created_at','desc')->get();
+        }
+        else{
+            $bookingNotes = BookingNote::whereHas('booking', function($query) use ($userID){
+                $query->where('for_user_id','=',$userID);
+            })->where('privacy','=','everyone')->where('status','=',$status)->orderBy('created_at','desc')->get();
+        }
+
+        if ($bookingNotes){
+            foreach($bookingNotes as $note){
+                $byUser = Cache::remember('user_table_'.$note->by_user_id,720,function() use ($note){
+                    return User::where('id',$note->by_user_id)->get()->first();
+                });
+
+                $publicNote[] = [
+                    'id'        => $note->id,
+                    'by_user'   => $byUser->first_name.' '.$byUser->middle_name.' '.$byUser->last_name,
+                    'by_user_avatar'=> $byUser->get_avatar_image(),
+                    'by_user_link'  => $byUser,
+                    'note_title'=> $note->note_title,
+                    'note_body' => $note->note_body,
+                    'note_type' => $note->note_type,
+                    'status'    => $note->status,
+                    'dateAdded' => Carbon::createFromFormat('Y-m-d H:i:s', $note->created_at)->format('d-m-Y H:i'),
+                    'addedOn'   => Carbon::createFromFormat('Y-m-d H:i:s', $note->created_at)->diffForHumans(),
+                    'timestamp' => Carbon::createFromFormat('Y-m-d H:i:s', $note->created_at)->timestamp
+                ];
+
+                if ($note->status == 'unread' && $update == true){
+                    $note->status = 'read';
+                    $note->save();
+                }
+            }
+        }
+
+        if (sizeof($publicNote)>0){
+            if ($ord == "DESC"){
+                uasort($publicNote, 'self::notes_desc_cmp');
+            }
+            else{
+                uasort($publicNote, 'self::notes_asc_cmp');
+            }
+        }
+
+        return $publicNote;
+    }
+
+    public function get_private_notes($ord = 'DESC'){
+        $privateNote = [];
+        $allNotes = GeneralNote::where('for_user_id','=',$this->id)->where('privacy','!=','everyone')->orderBy('created_at','desc')->get();
+        if ($allNotes){
+            foreach($allNotes as $note){
+                $byUser = Cache::remember('user_table_'.$note->by_user_id,720,function() use ($note){
+                    return User::where('id',$note->by_user_id)->get()->first();
+                });
+
+                $privateNote[] = [
+                    'id'        => $note->id,
+                    'by_user'   => $byUser->first_name.' '.$byUser->middle_name.' '.$byUser->last_name,
+                    'by_user_avatar'=> $byUser->get_avatar_image(),
+                    'by_user_link'  => $byUser,
+                    'note_title'=> $note->note_title,
+                    'note_body' => $note->note_body,
+                    'note_type' => $note->note_type,
+                    'status'    => $note->status,
+                    'dateAdded' => Carbon::createFromFormat('Y-m-d H:i:s', $note->created_at)->format('d-m-Y H:i'),
+                    'addedOn'   => Carbon::createFromFormat('Y-m-d H:i:s', $note->created_at)->diffForHumans(),
+                    'timestamp' => Carbon::createFromFormat('Y-m-d H:i:s', $note->created_at)->timestamp
+                ];
+            }
+        }
+
+        $userID = $this->id;
+        $bookingNotes = BookingNote::whereHas('booking', function($query) use ($userID){
+                            $query->where('for_user_id','=',$userID);
+                        })->where('privacy','!=','everyone')->orderBy('created_at','desc')->get();
+        if ($bookingNotes){
+            foreach($bookingNotes as $note){
+                $byUser = Cache::remember('user_table_'.$note->by_user_id,720,function() use ($note){
+                    return User::where('id',$note->by_user_id)->get()->first();
+                });
+
+                $privateNote[] = [
+                    'id'        => $note->id,
+                    'by_user'   => $byUser->first_name.' '.$byUser->middle_name.' '.$byUser->last_name,
+                    'by_user_avatar'=> $byUser->get_avatar_image(),
+                    'by_user_link'  => $byUser,
+                    'note_title'=> $note->note_title,
+                    'note_body' => $note->note_body,
+                    'note_type' => $note->note_type,
+                    'status'    => $note->status,
+                    'dateAdded' => Carbon::createFromFormat('Y-m-d H:i:s', $note->created_at)->format('d-m-Y H:i'),
+                    'addedOn'   => Carbon::createFromFormat('Y-m-d H:i:s', $note->created_at)->diffForHumans(),
+                    'timestamp' => Carbon::createFromFormat('Y-m-d H:i:s', $note->created_at)->timestamp
+                ];
+            }
+        }
+
+        if (sizeof($privateNote)>0){
+            if ($ord == "DESC"){
+                uasort($privateNote, 'self::notes_desc_cmp');
+            }
+            else{
+                uasort($privateNote, 'self::notes_asc_cmp');
+            }
+        }
+
+        return $privateNote;
+    }
+
+    /* Multi dimensional array sort START */
+    function notes_desc_cmp($a, $b){
+        if ($a['timestamp'] == $b['timestamp']) {
+            return 0;
+        }
+        return ($a['timestamp'] > $b['timestamp']) ? -1 : 1;
+    }
+
+    function notes_asc_cmp($a, $b){
+        if ($a['timestamp'] == $b['timestamp']) {
+            return 0;
+        }
+        return ($a['timestamp'] < $b['timestamp']) ? -1 : 1;
+    }
+    /* Multi dimensional array sort END */
 }

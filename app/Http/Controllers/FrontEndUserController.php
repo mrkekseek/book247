@@ -214,70 +214,8 @@ class FrontEndUserController extends Controller
             return redirect(route('error_404'));
         }
 
-        $publicNote  = [];
-        $privateNote = [];
-        $allNotes = GeneralNote::where('for_user_id','=',$member->id)->orderBy('created_at','desc')->get();
-        if ($allNotes){
-            foreach($allNotes as $note){
-                $byUser = Cache::remember('user_table_'.$note->by_user_id,720,function() use ($note){
-                    return User::where('id',$note->by_user_id)->get()->first();
-                });
-
-                $formattedNote = [
-                    'id'        => $note->id,
-                    'by_user'   => $byUser->first_name.' '.$byUser->middle_name.' '.$byUser->last_name,
-                    'by_user_avatar'=> $byUser->get_avatar_image(),
-                    'by_user_link'  => $byUser,
-                    'note_title'=> $note->note_title,
-                    'note_body' => $note->note_body,
-                    'note_type' => $note->note_type,
-                    'status'    => $note->status,
-                    'addedOn'   => Carbon::createFromFormat('Y-m-d H:i:s', $note->updated_at)->diffForHumans(),
-                    'timestamp' => Carbon::createFromFormat('Y-m-d H:i:s', $note->updated_at)->timestamp
-                ];
-
-                if ($note->privacy == 'everyone'){
-                    $publicNote[] = $formattedNote;
-                }
-                else{
-                    $privateNote[] = $formattedNote;
-                }
-            }
-        }
-
-        $bookingNotes = BookingNote::whereHas('booking', function($query) use ($member){
-            $query->where('for_user_id','=',$member->id);
-        })->orderBy('created_at','desc')->get();
-        if ($bookingNotes){
-            foreach($bookingNotes as $note){
-                $byUser = Cache::remember('user_table_'.$note->by_user_id,720,function() use ($note){
-                    return User::where('id',$note->by_user_id)->get()->first();
-                });
-
-                $formattedNote = [
-                    'id'        => $note->id,
-                    'by_user'   => $byUser->first_name.' '.$byUser->middle_name.' '.$byUser->last_name,
-                    'by_user_avatar'=> $byUser->get_avatar_image(),
-                    'by_user_link'  => $byUser,
-                    'note_title'=> $note->note_title,
-                    'note_body' => $note->note_body,
-                    'note_type' => $note->note_type,
-                    'status'    => $note->status,
-                    'addedOn'   => Carbon::createFromFormat('Y-m-d H:i:s', $note->created_at)->diffForHumans(),
-                    'timestamp' => Carbon::createFromFormat('Y-m-d H:i:s', $note->created_at)->timestamp
-                ];
-
-                if ($note->privacy == 'everyone'){
-                    $publicNote[] = $formattedNote;
-                }
-                else{
-                    $privateNote[] = $formattedNote;
-                }
-            }
-        }
-
-        uasort($publicNote, 'self::desc_cmp');
-        uasort($privateNote, 'self::desc_cmp');
+        $publicNote = $member->get_public_notes("DESC");
+        $privateNote = $member->get_private_notes("DESC");
 
         $activityLogs = Activity::where('content_id','=',$member->id)->orderBy('created_at','DESC')->take(30)->get();
         $memberLogs = [];
@@ -2588,19 +2526,7 @@ class FrontEndUserController extends Controller
             return redirect()->intended(route('homepage'));
         }
 
-        $allNotes = [];
-        $notes = GeneralNote::where('for_user_id','=',$user->id)->where('privacy','=','everyone')->get();
-        if ($notes){
-            foreach($notes as $note){
-                $allNotes[] = [
-                    'note_body' => $note->note_body,
-                    'note_id'   => $note->id,
-                    'status'    => $note->status,
-                    'note_date' => Carbon::createFromFormat('Y-m-d H:i:s', $note->created_at)->format('d-m-Y H:i')
-                ];
-            }
-        }
-
+        $allNotes = $user->get_public_notes('DESC','all',false);
         $avatar = $user->get_avatar_image();
 
         $breadcrumbs = [

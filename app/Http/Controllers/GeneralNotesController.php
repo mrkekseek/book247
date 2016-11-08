@@ -113,10 +113,17 @@ class GeneralNotesController extends Controller
             $note->status = $note_status[$vars['status']];
             $note->save();
 
+            if ($vars['status']=="read"){
+                $return_message = 'Message status updated to '.strtoupper($vars['status']);
+            }
+            else{
+                $return_message = 'Message status updated to '.strtoupper($vars['status']).'. Page will reload.';
+            }
+
             return [
                 'success'   => true,
                 'title'     => 'Message Status Updated',
-                'message'   => 'Message status updated to '.strtoupper($vars['status']).'. Page will reload.'
+                'message'   => $return_message
             ];
         }
         else{

@@ -469,7 +469,7 @@
                                                                             </div>
                                                                             <div class="cont-col2">
                                                                                 <div class="desc">
-                                                                                    {{ $note['note_date'] }} - {{ $note['note_body'] }}
+                                                                                    {{ $note['dateAdded'] }} - {{ $note['note_body'] }}
                                                                                 </div>
                                                                             </div>
                                                                         </div>

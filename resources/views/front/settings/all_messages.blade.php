@@ -31,18 +31,16 @@
                                     <thead>
                                     <tr>
                                         <th>
-                                            <i class="fa fa-briefcase"></i> Date </th>
+                                            <i class="fa fa-calendar"></i> Date </th>
                                         <th class="hidden-xs">
-                                            <i class="fa fa-question"></i> Message / Note </th>
+                                            <i class="fa fa-briefcase"></i> Message / Note </th>
                                     </tr>
                                     </thead>
                                     <tbody>
                                     @foreach($notes as $note)
                                     <tr>
-                                        <td>
-                                            <a href="javascript:;"> {{ $note['note_date'] }} </a>
-                                        </td>
-                                        <td class="hidden-xs"> {{ $note['note_body'] }} </td>
+                                        <td class="hidden-xs font-blue-hoki"> {{ $note['dateAdded'] }} </td>
+                                        <td class="font-blue-chambray"> {{ $note['note_body'] }} </td>
                                     </tr>
                                     @endforeach
                                     </tbody>
