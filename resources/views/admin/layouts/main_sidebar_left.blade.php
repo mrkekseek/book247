@@ -36,7 +36,7 @@
         <li class="nav-item {{ in_array($in_sidebar, array('admin-frontend-all_members','admin-frontend-user_details_view', 'admin-frontend-add_member'))?'active open':'' }}">
             <a href="javascript:;" class="nav-link nav-toggle">
                 <i class="icon-users"></i>
-                <span class="title"> Company Clients </span>
+                <span class="title"> Clients </span>
                 <span class="arrow"></span>
             </a>
             <ul class="sub-menu">
@@ -114,7 +114,7 @@
         <li class="nav-item {{ in_array($in_sidebar, array('admin-backend-user_roles', 'admin-backend-all_users', 'admin-backend-roles_permission', 'admin-backend-user_details_view', 'admin-backend-permission_details_view'))?'active open':'' }} ">
             <a href="javascript:;" class="nav-link nav-toggle">
                 <i class="icon-calculator"></i>
-                <span class="title"> Company Employees </span>
+                <span class="title"> Employees </span>
                 <span class="arrow"></span>
             </a>
             <ul class="sub-menu">

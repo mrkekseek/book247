@@ -94,31 +94,31 @@
                                             <div class="actions pull-xs-left" search-key="{{ $location_bookings[$key][$resource['id']]['search_key'] }}">
                                                 @if ($location_bookings[$key][$resource['id']]['button_show'] == 'is_disabled')
                                                     <a class="btn btn-circle btn-icon-only {{ $button_color['is_disabled'] }} border-white"
-                                                       style="height:30px; width:30px; padding:4px 3px 0 0; margin-right:1px; cursor:default;" href="javascript:;"
+                                                       style="height:30px; width:30px; padding:4px 3px 0 0; margin-right:1px; cursor:default; margin-left: -3px;" href="javascript:;"
                                                        data-status="{{ $location_bookings[$key][$resource['id']]['status'] }}" >
                                                        <i class="icon-login"></i>
                                                     </a>
                                                 @elseif ($location_bookings[$key][$resource['id']]['button_show'] == 'is_no_show')
                                                     <a class="btn btn-circle btn-icon-only {{ $button_color[$location_bookings[$key][$resource['id']]['button_show']] }} border-white"
-                                                       style="height:30px; width:30px; padding:4px 3px 0 0; margin-right:1px; cursor:default;" href="javascript:;"
+                                                       style="height:30px; width:30px; padding:4px 3px 0 0; margin-right:1px; cursor:default; margin-left: -3px;" href="javascript:;"
                                                        data-status="{{ $location_bookings[$key][$resource['id']]['status'] }}" >
                                                        <i class="icon-login"></i>
                                                     </a>
                                                 @else
-                                                    <a class="btn btn-circle btn-icon-only {{ $button_color[$location_bookings[$key][$resource['id']]['button_show']] }} border-white check_as_in" style="height:30px; width:30px; padding:4px 3px 0 0; margin-right:1px;" href="javascript:;"
+                                                    <a class="btn btn-circle btn-icon-only {{ $button_color[$location_bookings[$key][$resource['id']]['button_show']] }} border-white check_as_in"
+                                                       style="margin-left: -3px; height:30px; width:30px; padding:4px 3px 0 0; margin-right:1px;" href="javascript:;"
                                                        data-status="{{ $location_bookings[$key][$resource['id']]['status'] }}" >
                                                        <i class="icon-login"></i>
                                                     </a>
                                                 @endif
-
                                                 @if ($location_bookings[$key][$resource['id']]['button_finance'] == 'is_disabled')
-                                                    <a style="height:30px; width:30px; padding-top:0px; margin-right:1px; font-size:20px; line-height:26px; cursor:default;" href="javascript:;"
+                                                    <a style="margin-left: -3px; height:30px; width:30px; padding-top:0px; margin-right:1px; font-size:20px; line-height:26px; cursor:default;" href="javascript:;"
                                                        class="btn btn-circle btn-icon-only {{ $button_color['is_disabled'] }} border-white "> $ </a>
                                                 @elseif ($location_bookings[$key][$resource['id']]['button_finance'] == 'is_paid_cash' || $location_bookings[$key][$resource['id']]['button_finance'] == 'is_paid_card' || $location_bookings[$key][$resource['id']]['button_finance'] == 'is_paid_online')
-                                                    <a style="height:30px; width:30px; padding-top:0px; margin-right:1px; font-size:20px; line-height:26px; cursor:default;" href="javascript:;"
+                                                    <a style="margin-left: -3px; height:30px; width:30px; padding-top:0px; margin-right:1px; font-size:20px; line-height:26px; cursor:default;" href="javascript:;"
                                                        class="btn btn-circle btn-icon-only {{ $button_color[$location_bookings[$key][$resource['id']]['button_finance']] }} border-white "> $ </a>
                                                 @else
-                                                    <a style="height:30px; width:30px; padding-top:0px; margin-right:1px; font-size:20px; line-height:26px;" href="javascript:;"
+                                                    <a style="margin-left: -3px; height:30px; width:30px; padding-top:0px; margin-right:1px; font-size:20px; line-height:26px;" href="javascript:;"
                                                        data-key="{{ $location_bookings[$key][$resource['id']]['search_key'] }}"
                                                        class="btn btn-circle btn-icon-only {{ $button_color[$location_bookings[$key][$resource['id']]['button_finance']] }} border-white invoice_cash_card"
                                                        data-toggle="confirmation" data-original-title="How would you pay?"
@@ -127,18 +127,18 @@
                                                 @endif
 
                                                 @if ($location_bookings[$key][$resource['id']]['button_more'] == 'is_disabled')
-                                                    <a style="height:30px; width:30px; padding-top:4px; margin-right:4px; cursor:default;" href="javascript:;"
+                                                    <a style="margin-left: -3px; height:30px; width:30px; padding-top:4px; margin-right:4px; cursor:default;" href="javascript:;"
                                                        class="btn btn-circle btn-icon-only {{ $button_color['is_disabled'] }} border-white">
                                                         <i class="icon-speech"></i>
                                                     </a>
                                                 @else
-                                                    <a style="height:30px; width:30px; padding-top:4px; margin-right:4px;" href="javascript:;" class="btn btn-circle btn-icon-only btn-default border-white open_more_options">
+                                                    <a style="margin-left: -3px; height:30px; width:30px; padding-top:4px; margin-right:4px;" href="javascript:;" class="btn btn-circle btn-icon-only btn-default border-white open_more_options">
                                                         <i class="icon-speech"></i>
                                                     </a>
                                                 @endif
 
                                                 @if ($location_bookings[$key][$resource['id']]['button_finance'] != 'is_disabled')
-                                                <a style="height:30px; width:30px; padding-top:4px; margin-right:4px;" href="javascript:;" data-id="{{ $location_bookings[$key][$resource['id']]['membership_product'] }}" class="btn btn-circle btn-icon-only btn-default border-white open_product_options">
+                                                <a style="margin-left: -4px; height:30px; width:30px; padding-top:4px; margin-right:4px;" href="javascript:;" data-id="{{ $location_bookings[$key][$resource['id']]['membership_product'] }}" class="btn btn-circle btn-icon-only btn-default border-white open_product_options">
                                                     <i class="icon-notebook"></i>
                                                 </a>
                                                 @endif

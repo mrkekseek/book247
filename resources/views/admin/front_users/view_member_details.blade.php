@@ -377,7 +377,7 @@
                                                             @elseif($note['status']=='deleted')
                                                             <span class="label label-sm label-default">{{ $note['status'] }}</span>
                                                             @elseif ($note['status']=='unread')
-                                                            <span class="label label-sm label-success mark_note_as_read" data-id="{{ $note['id'] }}" style="cursor:pointer;">{{ $note['status'] }}</span>
+                                                            <span class="label label-sm label-success mark_note_as_read" data-id="{{ $note['id'] }}" is-general="{{ $note['is_general'] }}" style="cursor:pointer;">{{ $note['status'] }}</span>
                                                             @endif
                                                         </div>
                                                         @if ($note['status']=='pending')
@@ -389,11 +389,11 @@
                                                                 </a>
                                                                 <ul class="dropdown-menu pull-right">
                                                                     <li>
-                                                                        <a href="javascript:;" class="note_mark_complete" data-id="{{ $note['id'] }}">
+                                                                        <a href="javascript:;" class="note_mark_complete" data-id="{{ $note['id'] }}" is-general="{{ $note['is_general'] }}">
                                                                             <i class="fa fa-check"></i> Complete </a>
                                                                     </li>
                                                                     <li>
-                                                                        <a href="javascript:;" data-id="{{ $note['id'] }}" class="note_mark_cancel">
+                                                                        <a href="javascript:;" data-id="{{ $note['id'] }}"  is-general="{{ $note['is_general'] }}" class="note_mark_cancel">
                                                                             <i class="fa fa-trash-o"></i> Cancel/Delete </a>
                                                                     </li>
                                                                 </ul>
@@ -740,27 +740,31 @@
 
         $(".note_mark_complete").on('click', function(){
             var noteID = $(this).attr('data-id');
-            internal_note_status_change(noteID, 'complete');
+            var isGeneral = $(this).attr('is-general');
+            internal_note_status_change(noteID, 'complete', isGeneral);
         });
 
         $(".note_mark_cancel").on('click', function(){
             var noteID = $(this).attr('data-id');
-            internal_note_status_change(noteID, 'cancel');
+            var isGeneral = $(this).attr('is-general');
+            internal_note_status_change(noteID, 'cancel', isGeneral);
         });
 
         $(".mark_note_as_read").on('click', function(){
             var noteID = $(this).attr('data-id');
-            internal_note_status_change(noteID, 'read');
+            var isGeneral = $(this).attr('is-general');
+            internal_note_status_change(noteID, 'read', isGeneral);
         });
 
-        function internal_note_status_change(noteID, status){
+        function internal_note_status_change(noteID, status, is_general){
             $.ajax({
                 url: '{{route('ajax/internal_note_status_change')}}',
                 type: "post",
                 cache: false,
                 data: {
                     'noteID': noteID,
-                    'status': status
+                    'status': status,
+                    'is_general': is_general
                 },
                 success: function (data) {
                     if (data.success) {

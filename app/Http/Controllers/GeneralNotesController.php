@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+use App\BookingNote;
 use Auth;
 
 use App\GeneralNote;
@@ -107,8 +108,14 @@ class GeneralNotesController extends Controller
         }
 
         $note_status = ['cancel'=>'deleted', 'complete'=>'completed', 'read'=>'read'];
-        $vars = $request->only('noteID','status');
-        $note = GeneralNote::where('id','=',$vars['noteID'])->whereIn('status',['pending','unread'])->get()->first();
+        $vars = $request->only('noteID','status','is_general');
+        if ($vars['is_general']==1){
+            $note = GeneralNote::where('id','=',$vars['noteID'])->whereIn('status',['pending','unread'])->get()->first();
+        }
+        else{
+            $note = BookingNote::where('id','=',$vars['noteID'])->whereIn('status',['pending','unread'])->get()->first();
+        }
+
         if ($note && isset($note_status[$vars['status']])){
             $note->status = $note_status[$vars['status']];
             $note->save();

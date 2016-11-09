@@ -375,6 +375,7 @@ class User extends Authenticatable
                     'note_body' => $note->note_body,
                     'note_type' => $note->note_type,
                     'status'    => $note->status,
+                    'is_general'=> 1,
                     'dateAdded' => Carbon::createFromFormat('Y-m-d H:i:s', $note->created_at)->format('d-m-Y H:i'),
                     'addedOn'   => Carbon::createFromFormat('Y-m-d H:i:s', $note->created_at)->diffForHumans(),
                     'timestamp' => Carbon::createFromFormat('Y-m-d H:i:s', $note->created_at)->timestamp
@@ -414,6 +415,7 @@ class User extends Authenticatable
                     'note_body' => $note->note_body,
                     'note_type' => $note->note_type,
                     'status'    => $note->status,
+                    'is_general'=> 0,
                     'dateAdded' => Carbon::createFromFormat('Y-m-d H:i:s', $note->created_at)->format('d-m-Y H:i'),
                     'addedOn'   => Carbon::createFromFormat('Y-m-d H:i:s', $note->created_at)->diffForHumans(),
                     'timestamp' => Carbon::createFromFormat('Y-m-d H:i:s', $note->created_at)->timestamp
@@ -456,6 +458,7 @@ class User extends Authenticatable
                     'note_body' => $note->note_body,
                     'note_type' => $note->note_type,
                     'status'    => $note->status,
+                    'is_general'=> 1,
                     'dateAdded' => Carbon::createFromFormat('Y-m-d H:i:s', $note->created_at)->format('d-m-Y H:i'),
                     'addedOn'   => Carbon::createFromFormat('Y-m-d H:i:s', $note->created_at)->diffForHumans(),
                     'timestamp' => Carbon::createFromFormat('Y-m-d H:i:s', $note->created_at)->timestamp
@@ -482,6 +485,7 @@ class User extends Authenticatable
                     'note_body' => $note->note_body,
                     'note_type' => $note->note_type,
                     'status'    => $note->status,
+                    'is_general'=> 0,
                     'dateAdded' => Carbon::createFromFormat('Y-m-d H:i:s', $note->created_at)->format('d-m-Y H:i'),
                     'addedOn'   => Carbon::createFromFormat('Y-m-d H:i:s', $note->created_at)->diffForHumans(),
                     'timestamp' => Carbon::createFromFormat('Y-m-d H:i:s', $note->created_at)->timestamp
