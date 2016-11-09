@@ -45,7 +45,7 @@
                         <div class="col-md-6 login " style="background-color:transparent!important;">
                             @if (Auth::check() && Auth::user()->is_front_user())
                             <!-- BEGIN PORTLET -->
-                            <div class="portlet light margin-bottom-15">
+                            <div class="portlet light margin-bottom-15 hidden-xs hidden-sm">
                                 <div class="portlet-title">
                                     <div class="caption caption-md">
                                         <i class="icon-bar-chart theme-font hide"></i>
@@ -251,7 +251,7 @@
                             </div>
 
                             @if (Auth::check() && Auth::user()->is_front_user())
-                            <div class="portlet light margin-bottom-15 " id="all_friends_men">
+                            <div class="portlet light margin-bottom-15 hidden-xs" id="all_friends_men">
                                 <dt>Friends List</dt>
                                 <div class="portlet-body">
                                     <div class="clearfix util-btn-margin-bottom-5">

@@ -1889,13 +1889,13 @@
 
                         var membership_products = '';
                         if (data.membership_products.length > 0){
-                            var all_products = '<option value="-1">Select Product</option>';
+                            var all_products = '<option value="-1">Paid Booking</option>';
                             $.each(data.membership_products, function(key, value){
                                 all_products += '<option value="'+ value.id +'">'+ value.name +'</option>';
                             });
 
                             membership_products = '<div class="membership_products" style="">' +
-                                    '<label><small>Membership Products associated to paid bookings</small></label>' +
+                                    '<label><small><i>Optional : calendar products associated to these paid bookings</i></small></label>' +
                                     '<select class="form-control margin-bottom-5 input-sm" name="membership_products">' +
                                     all_products +
                                     '</select>' +
