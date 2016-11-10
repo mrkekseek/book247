@@ -45,6 +45,11 @@
                         <span class="title"> Add New Client </span>
                     </a>
                 </li>
+                <li class="nav-item {{ $in_sidebar=='admin-frontend-import_members'?'active open':'' }} ">
+                    <a href="{{ route('admin/front_users/import_members') }}" class="nav-link ">
+                        <span class="title"> Import Clients </span>
+                    </a>
+                </li>
                 <li class="nav-item {{ $in_sidebar=='admin-frontend-all_members'?'active open':'' }} ">
                     <a href="{{ route('admin/front_users/view_all_members') }}" class="nav-link ">
                         <span class="title"> List All Clients </span>

@@ -459,6 +459,21 @@ Route::group(['middleware' => 'web'], function () {
         'uses'  => 'FrontEndUserController@create'
     ]);
 
+    Route::get('admin/front_users/import_members', [
+        'as'    => 'admin/front_users/import_members',
+        'uses'  => 'FrontEndUserController@import_from_file'
+    ]);
+
+    Route::post('admin/front_users/import_members', [
+        'as'    => 'admin/front_users/import_members',
+        'uses'  => 'FrontEndUserController@import_from_file'
+    ]);
+
+    Route::put('admin/front_users/import_members', [
+        'as'    => 'admin/front_users/import_members',
+        'uses'  => 'FrontEndUserController@import_from_file'
+    ]);
+
     Route::get('admin/front_users/{id}/view_user', [
         'as'    => 'admin/front_users/view_user',
         'uses'  => 'FrontEndUserController@show'

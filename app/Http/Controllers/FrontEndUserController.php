@@ -33,6 +33,8 @@ use App\ShopResourceCategory;
 use App\MembershipPlan;
 use App\MembershipRestriction;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\File;
+use Maatwebsite\Excel\Facades\Excel;
 use Mockery\CountValidator\Exception;
 use Regulus\ActivityLog\Models\Activity;
 use Webpatser\Countries\Countries;
@@ -1991,6 +1993,70 @@ class FrontEndUserController extends Controller
                 'errors'  => 'Saved settings could not be stored.'
             ];
         }
+    }
+
+    public function import_from_file(Request $request){
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
+            return redirect()->intended(route('admin/login'));
+        }
+
+        $allRows = [];
+        $vars = $request->only('_method');
+
+        $memberships = MembershipPlan::orderBy('name','ASC')->get();
+
+        if ($request->hasFile('clients_import_list')){
+            if ($request->file('clients_import_list')->isValid()){
+                // upload file to storage
+                $file = $request->file('clients_import_list');
+                $extension = $file->getClientOriginalExtension();
+                $name = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME).'-'.time().'-'.rand(100,999);
+                Storage::disk('local')->put('temp/'.$name.'.'.$extension,  File::get($file));
+
+                // get file from storage
+                $importList = Storage::disk('local')->get('temp/'.$name.'.'.$extension);
+                $formattedList = Excel::load('storage/app/temp/'.$name.'.'.$extension)->get();
+
+                $fname = 'navn1';
+                $lname = 'navn2';
+                $email = 'e_post';
+                $phone = 'tlf_mobil';
+                foreach ($formattedList->toArray() as $row) {
+                    $allRows[] = [
+                        'first_name'=> $row[$fname],
+                        'last_name' => $row[$lname],
+                        'phone'     => $row[$phone],
+                        'email'     => $row[$email],
+                    ];
+                }
+            }
+            elseif(isset($vars['_method'])) {
+
+            }
+        }
+
+
+        $text_parts  = [
+            'title'     => 'Back-End Users',
+            'subtitle'  => 'view all users',
+            'table_head_text1' => 'Backend User List'
+        ];
+        $breadcrumbs = [
+            'Home'              => route('admin'),
+            'Administration'    => route('admin'),
+            'Back End Users'    => route('admin/back_users'),
+        ];
+        $sidebar_link= 'admin-frontend-user_details_view';
+
+        return view('admin/front_users/import_from_file', [
+            'breadcrumbs' => $breadcrumbs,
+            'text_parts'  => $text_parts,
+            'in_sidebar'  => $sidebar_link,
+            'importedRows'=> $allRows,
+            'memberships' => $memberships,
+            'selectedMembership' => 1
+        ]);
     }
 
     /* Front end pages part - START */
