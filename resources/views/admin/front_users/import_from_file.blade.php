@@ -66,8 +66,9 @@
                                                             </div>
                                                         </div>
                                                         <div class="form-actions right" style="padding-top:15px; padding-bottom:0px;">
-                                                            <div class="input-group input-small date date-picker" data-date="12-02-2012" data-date-format="dd-mm-yyyy" data-date-viewmode="years" style="display:inline-flex; margin-top:2px; margin-right:40px;">
-                                                                <input type="text" class="form-control" readonly style="background-color:#ffffff;">
+                                                            <span class="">Membership Start Date</span>
+                                                            <div class="input-group input-small date date-picker" data-date="{{ \Carbon\Carbon::today()->format('d-m-Y') }}" data-date-format="dd-mm-yyyy" data-date-viewmode="years" style="display:inline-flex; margin-top:2px; margin-right:40px;">
+                                                                <input type="text" class="form-control" name="start_date" readonly style="background-color:#ffffff;">
                                                                 <span class="input-group-btn">
                                                                     <button class="btn default" type="button">
                                                                         <i class="fa fa-calendar"></i>
@@ -75,14 +76,14 @@
                                                                 </span>
                                                             </div>
 
-                                                            <select class="form-control input-medium input-inline" name="all_membership" style="margin-top:-2px;">
+                                                            <span class="">Membership Type</span>
+                                                            <select class="form-control input-medium input-inline" name="membership_type" style="margin-top:-2px;">
                                                                 @foreach($memberships as $single)
                                                                     <option value="{{ $single->id }}" {!! $selectedMembership==$single->id?'selected':'' !!}>{{ $single->name }}</option>
                                                                 @endforeach
                                                             </select>
 
-                                                            <button type="button" class="btn default" style="margin-top:-2px;">Cancel</button>
-                                                            <button type="submit" class="btn green" style="margin-top:-2px;">Submit</button>
+                                                            <button type="submit" class="btn green" style="margin-top:-2px;">Upload List and Details</button>
                                                             <input type="hidden" name="_token" value="{{ csrf_token() }}">
                                                         </div>
                                                     </form>
@@ -96,28 +97,37 @@
                                                         <span class="caption-subject bold uppercase"> Imported values from the uploaded file </span>
                                                     </div>
                                                 </div>
-                                                <div class="portlet-body">
+                                                <div class="portlet-body" style="overflow:auto; width:100%; max-height:800px;">
                                                     <form name="add_members" method="post" action="{{ route('admin/front_users/import_members') }}">
-                                                        <table class="table table-striped table-bordered table-hover table-header-fixed" id="sample_1">
+                                                        <table class="table table-striped table-bordered table-hover table-header-fixed" id="sample_1" style="width:{{250*$per_line}}px;">
                                                             <thead>
                                                             <tr>
-                                                                <th width="2%"> <input type="checkbox" name="all_inputs" value="-1" /> </th>
-                                                                <th width="20%"> First Name </th>
-                                                                <th width="20%"> Last Name </th>
-                                                                <th width="30%"> Email Address </th>
-                                                                <th> Phone Number </th>
-                                                                <th width="15%"> Membership Type </th>
+                                                                <th style="width:10px;"> <input type="checkbox" name="all_inputs" checked value="-1" id="members_import_all" /> </th>
+                                                                @for ($i=1; $i<$per_line; $i++)
+                                                                    <th style="width:250px;"> <select name="col_explain[]">
+                                                                            <option>Select Field</option>
+                                                                            <option value="first_name">First Name</option>
+                                                                            <option value="last_name">Last Name</option>
+                                                                            <option value="email">Email</option>
+                                                                            <option value="phone">Phone No.</option>
+                                                                            <option value="dob">Date of birth</option>
+                                                                            <option value="about_info">About Note</option>
+                                                                            <option value="street">Address/Street</option>
+                                                                            <option value="postal_code">Postal Code</option>
+                                                                            <option value="city">City</option>
+                                                                        </select> </th>
+                                                                @endfor
+                                                                <th style="width:150px;"> Membership Type </th>
                                                             </tr>
                                                             </thead>
                                                             <tbody>
                                                             @if (sizeof($importedRows)>0)
                                                                 @foreach ($importedRows as $key=>$row)
                                                                     <tr>
-                                                                        <td> <input type="checkbox" name="selected_lines" checked value="{{ $key }}" /> </td>
-                                                                        <td> <input style="width:100%;" type="text" name="first_name_{{ $key }}" value="{{ $row['first_name'] }}" /> </td>
-                                                                        <td> <input style="width:100%;" type="text" name="last_name_{{ $key }}" value="{{ $row['last_name'] }}" /> </td>
-                                                                        <td> <input style="width:100%;" type="text" name="email_{{ $key }}" value="{{ $row['email'] }}" /> </td>
-                                                                        <td> <input style="width:100%;" type="text" name="phone_{{ $key }}" value="{{ $row['phone'] }}" /> </td>
+                                                                        <td> <input type="checkbox" name="line_{{$key}}" checked value="{{ $key }}" class="inline_member_select" /> </td>
+                                                                        @for ($i=1; $i<$per_line; $i++)
+                                                                            <td> <input style="width:100%;" type="text" name="col_{{$key}}[]" value="{{ $row[$i] }}" /> </td>
+                                                                        @endfor
                                                                         <td>
                                                                             <select name="membership_{{ $key }}">
                                                                                 @foreach($memberships as $single)
@@ -129,9 +139,12 @@
                                                                 @endforeach
                                                             @endif
                                                             <tr>
-                                                                <td colspan="6" class="right">
+                                                                <td colspan="{{ $per_line+1 }}" class="right">
                                                                     <input type="hidden" name="_method" value="put" />
                                                                     <input type="hidden" name="key_return" value="{{ @$key }}" />
+                                                                    <input type="hidden" name="date_start" value="{{ $date_start }}" />
+                                                                    <input type="hidden" name="per_line" value="{{ $per_line }}" />
+                                                                    <input type="hidden" name="_token" value="{{ csrf_token() }}">
                                                                     <button type="submit" class="btn uppercase green-jungle" style="float:right;"> Import Loaded List </button>
                                                                 </td>
                                                             </tr>
@@ -595,6 +608,20 @@
         $(document).ready(function(){
             FormValidation.init();
             ComponentsDateTimePickers.init();
+        });
+
+        $("#members_import_all").click(function(){
+            if(this.checked){
+                $('div.checker').each(function(){
+                    $(this).find('span').addClass('checked');
+                    $(this).find('input:checkbox').attr('checked', 'checked');;
+                });
+            }else{
+                $('div.checker').each(function(){
+                    $(this).find('span').removeClass('checked');
+                    $(this).find('input:checkbox').removeAttr('checked');
+                });
+            }
         });
     </script>
 @endsection

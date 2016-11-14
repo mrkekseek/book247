@@ -33,6 +33,7 @@ use App\ShopResourceCategory;
 use App\MembershipPlan;
 use App\MembershipRestriction;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\File;
 use Maatwebsite\Excel\Facades\Excel;
 use Mockery\CountValidator\Exception;
@@ -966,8 +967,8 @@ class FrontEndUserController extends Controller
             'date_of_birth' => $vars["date_of_birth"]);
 
         $validator = Validator::make($userVars, [
-            'first_name'    => 'required|min:4|max:150',
-            'last_name'     => 'required|min:4|max:150',
+            'first_name'    => 'required|min:2|max:150',
+            'last_name'     => 'required|min:2|max:150',
             'date_of_birth' => 'required|date',
             'country_id'    => 'required|exists:countries,id',
             'gender'        => 'required|in:M,F'
@@ -1933,6 +1934,72 @@ class FrontEndUserController extends Controller
         }
     }
 
+    public function register_new_client($client_vars){
+        //$client_vars = ['first_name', 'middle_name', 'last_name', 'email', 'phone_number', 'password', 'membership_plan', 'username', 'user_type'];
+        if (!isset($client_vars['middle_name'])){
+            $client_vars['middle_name'] = '';
+        }
+
+        if (!isset($client_vars['username']) || $client_vars['username']==''){
+            $client_vars['username'] = $client_vars['email'];
+        }
+
+        if (!isset($client_vars['user_type'])){
+            $client_vars['user_type'] = Role::where('name','=','front-user')->get()->first()->id;
+        }
+
+        if ($client_vars['password']==""){
+            $client_vars['password'] = substr(bcrypt(str_random(12)),0,8);
+        }
+
+        $validator = Validator::make($client_vars, User::rules('POST'), User::$messages, User::$attributeNames);
+
+        if ($validator->fails()){
+            //return $validator->errors()->all();
+            return [
+                'success'   => false,
+                'errors'    => $validator->getMessageBag()->toArray()
+            ];
+        }
+
+        $credentials = $client_vars;
+        $text_psw    = $client_vars['password'];
+        $credentials['password'] = Hash::make($credentials['password']);
+
+        try {
+            $user = User::create($credentials);
+            $user->attachRole($client_vars['user_type']);
+
+            if (isset($client_vars['phone_number']) && strlen($client_vars['phone_number'])>4){
+                $personalData = [
+                    'personal_email'=> $client_vars['email'],
+                    'date_of_birth' => $client_vars['date_of_birth'],
+                    'mobile_number' => $client_vars['phone_number'],
+                    'bank_acc_no'   => 0,
+                    'social_sec_no' => 0,
+                    'about_info'    => $client_vars['about_info'],
+                    'user_id'       => $user->id
+                ];
+                $personalDetails = PersonalDetail::firstOrNew(['user_id'=>$user->id]);
+                $personalData['date_of_birth'] = $client_vars['date_of_birth']!=''?$client_vars['date_of_birth']:Carbon::today()->toDateString();
+                $personalDetails->fill($personalData);
+                $personalDetails->save();
+            }
+
+            return [
+                'success'   => true,
+                'password'  => $text_psw,
+                'user'      => $user
+            ];
+        }
+        catch (Exception $e) {
+            return [
+                'success'   => false,
+                'error'     => 'User already exists.'
+            ];
+        }
+    }
+
     public function validate_phone_for_member(Request $request){
         $vars = $request->only('phone');
         $user = PersonalDetail::where('mobile_number','=',$vars['phone'])->get()->first();
@@ -2000,10 +2067,14 @@ class FrontEndUserController extends Controller
         if (!$user || !$user->is_back_user()) {
             return redirect()->intended(route('admin/login'));
         }
+        $vars = $request->only('_method','start_date','membership_type');
 
         $allRows = [];
-        $vars = $request->only('_method');
-
+        $members = [];
+        $nr = 1;
+        $selectMembership = 1;
+        $date_start = '';
+        $returnMessages = [];
         $memberships = MembershipPlan::orderBy('name','ASC')->get();
 
         if ($request->hasFile('clients_import_list')){
@@ -2017,25 +2088,213 @@ class FrontEndUserController extends Controller
                 // get file from storage
                 $importList = Storage::disk('local')->get('temp/'.$name.'.'.$extension);
                 $formattedList = Excel::load('storage/app/temp/'.$name.'.'.$extension)->get();
-
-                $fname = 'navn1';
-                $lname = 'navn2';
-                $email = 'e_post';
-                $phone = 'tlf_mobil';
                 foreach ($formattedList->toArray() as $row) {
-                    $allRows[] = [
-                        'first_name'=> $row[$fname],
-                        'last_name' => $row[$lname],
-                        'phone'     => $row[$phone],
-                        'email'     => $row[$email],
-                    ];
-                }
-            }
-            elseif(isset($vars['_method'])) {
+                    $singleRow = [];
+                    $nr = 1;
+                    foreach($row as $vals){
+                        $singleRow[$nr++] = $vals;
+                    }
 
+                    $allRows[] = $singleRow;
+                }
+
+                $selectMembership = $vars['membership_type'];
+                $date_start = $vars['start_date'];
+            }
+            else{
+                // file upload error
             }
         }
+        elseif(isset($vars['_method']) && $vars['_method']=='put') {
+            $vars = $request->toArray();
 
+            try{
+                $the_date = Carbon::createFromFormat('d-m-Y', $vars['date_start'])->format('Y-m-d');
+            }
+            catch (Exception $ex){
+                $the_date = Carbon::today()->format('Y-m-d');
+            }
+
+            $fname      = 999;
+            $mname      = 999;
+            $lname      = 999;
+            $phone      = 999;
+            $email      = 999;
+            $passwd     = 999;
+            $uname      = 999;
+            $utype      = 999;
+            $dob        = 999;
+            $uinfo      = 999;
+            $uaddress   = 999;
+            $upostalcode= 999;
+            $ucity      = 999;
+
+            // get how lines are ordered
+            foreach($vars['col_explain'] as $key=>$val){
+                switch($val){
+                    case 'first_name' :
+                        $fname = $key;
+                        break;
+                    case 'middle_name' :
+                        $mname = $key;
+                        break;
+                    case 'last_name' :
+                        $lname = $key;
+                        break;
+                    case 'phone' :
+                        $phone = $key;
+                        break;
+                    case 'email' :
+                        $email = $key;
+                        break;
+                    case 'password' :
+                        $passwd = $key;
+                        break;
+                    case 'username' :
+                        $uname = $key;
+                        break;
+                    case 'user_type' :
+                        $utype = $key;
+                        break;
+                    case 'dob' :
+                        $dob = $key;
+                        break;
+                    case 'about_info' :
+                        $uinfo = $key;
+                        break;
+                    case 'street' :
+                        $uaddress = $key;
+                        break;
+                    case 'postal_code' :
+                        $upostalcode = $key;
+                        break;
+                    case 'city' :
+                        $ucity = $key;
+                        break;
+                }
+            }
+
+            // create $users array of imported value
+            for ($i=0; $i<$vars['key_return']; $i++){
+                if (!isset($vars['line_'.$i])){
+                    continue;
+                }
+
+                try{
+                    $dob = Carbon::createFromFormat('Y-m-d H:i:s', @$vars['col_'.$i][$dob])->format('Y-m-d');
+                }
+                catch(\Exception $ex){
+                    $dob = Carbon::today()->format('Y-m-d');
+                }
+
+                $importUser = [
+                    'first_name'        => @$vars['col_'.$i][$fname],
+                    'middle_name'       => @$vars['col_'.$i][$mname],
+                    'last_name'         => @$vars['col_'.$i][$lname],
+                    'email'             => @$vars['col_'.$i][$email],
+                    'phone_number'      => @$vars['col_'.$i][$phone],
+                    'password'          => strlen(@$vars['col_'.$i][$passwd])>7?@$vars['col_'.$i][$passwd]:@$vars['col_'.$i][$phone],
+                    'membership_plan'   => @$vars['membership_'.$i],
+                    'username'          => @$vars['col_'.$i][$uname],
+                    'user_type'         => @$vars['col_'.$i][$utype],
+                    'date_of_birth'     => $dob,
+                    'about_info'        => isset($vars['col_'.$i][$uinfo])?$vars['col_'.$i][$uinfo]:'',
+                    'address1'          => @$vars['col_'.$i][$uaddress],
+                    'postal_code'       => @$vars['col_'.$i][$upostalcode],
+                    'city'              => @$vars['col_'.$i][$ucity],
+                ];
+
+                $members[] = $importUser;
+            }
+            $membershipPlans = MembershipPlan::get();
+            $arrayPlan = [];
+            foreach($membershipPlans as $plan){
+                $arrayPlan[$plan->id] = [
+                    'id'    => $plan->id,
+                    'name'  => $plan->name,
+                    'full_plan' => $plan
+                ];
+            }
+
+            foreach ($members as $member){
+                // add member
+                $newUser = FrontEndUserController::register_new_client($member);
+
+                if ($newUser['success']==false){
+                    $msg = 'Following errors occurred : <br />';
+                    foreach ($newUser['errors'] as $key=>$error){
+                        $msg.= $key.' : '.implode(', ',$error).'; <br />';
+                    }
+                }
+                else{
+                    $new_member = $newUser['user'];
+                    $msg = 'User added successfully : <br />';
+
+                    if (strlen($member['address1'])>1 && strlen($member['postal_code'])>1 && strlen($member['city'])>1 ){
+                        // we add the address
+                        $userPersonal = PersonalDetail::where('user_id','=',$new_member->id)->get()->first();
+
+                        $vars = [
+                            'address1'      => $member['address1'],
+                            'address2'      => isset($member['address2'])?$member['address2']:'',
+                            'city'          => $member['city'],
+                            'country_id'    => Config::get('constants.globalWebsite.defaultCountryId'),
+                            'postal_code'   => $member['postal_code'],
+                            'region'        => $member['city'],
+                        ];
+                        $validator = Validator::make($vars, [
+                            'address1'    => 'required|min:5|max:150',
+                            'city'        => 'required|min:3|max:150',
+                            'region'      => 'required|min:2',
+                            'postal_code' => 'required|min:2',
+                            'country_id'  => 'required|exists:countries,id',
+                        ]);
+
+                        if ($validator->fails()){
+                            $valErr = $validator->getMessageBag()->toArray();
+                            $msg.= 'Error adding address : ';
+                            foreach ($valErr as $key=>$error){
+                                $msg.= $key.' : '.implode(', ',$error).'; ';
+                            }
+                            $msg.='<br /> ';
+                        }
+                        else{
+                            $personalAddress = new Address();
+                            $personalAddress->fill([
+                                'user_id'       => $new_member->id,
+                                'address1'      => $vars['address1'],
+                                'address2'      => $vars['address2'],
+                                'city'          => $vars['city'],
+                                'region'        => $vars['region'],
+                                'postal_code'   => $vars['postal_code'],
+                                'country_id'    => $vars['country_id'],
+                            ]);
+                            $personalAddress->save();
+
+                            $userPersonal->address_id = $personalAddress->id;
+                            $userPersonal->save();
+
+                            $msg.= 'User address added successfully : '.implode(',',$vars).' <br />';
+                        }
+                    }
+
+                    // assign membership
+                    if (strlen($member['membership_plan'])>0 && isset($arrayPlan[$member['membership_plan']])){
+                        // we have a plan and we apply it
+                        //xdebug_var_dump($new_member);
+                        $new_member->attach_membership_plan($arrayPlan[$member['membership_plan']]['full_plan'], $user, $the_date);
+
+                        $msg.= 'Membership plan assigned : '.$arrayPlan[$member['membership_plan']]['full_plan']->name.' <br />';
+                    }
+                }
+
+                $returnMessages[] = [
+                    'inputData' => $member,
+                    'returnMsg' => $msg
+                ];
+            }
+            xdebug_var_dump($returnMessages); exit;
+        }
 
         $text_parts  = [
             'title'     => 'Back-End Users',
@@ -2054,8 +2313,11 @@ class FrontEndUserController extends Controller
             'text_parts'  => $text_parts,
             'in_sidebar'  => $sidebar_link,
             'importedRows'=> $allRows,
+            'per_line'    => $nr,
             'memberships' => $memberships,
-            'selectedMembership' => 1
+            'selectedMembership'=> $selectMembership,
+            'date_start'        => $date_start,
+            'importedMembers'   => $members
         ]);
     }
 

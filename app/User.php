@@ -71,7 +71,7 @@ class User extends Authenticatable
                 return [
                     'first_name'    => 'required|min:2|max:150',
                     'last_name'     => 'required|min:2|max:150',
-                    'username'      => 'required|min:6|max:30|unique:users,username',
+                    'username'      => 'required|min:6|max:150|unique:users,username',
                     'password'      => 'required|min:8',
                     'email'         => 'required|email|email|unique:users',
                     'user_type'     => 'required|exists:roles,id',
@@ -85,7 +85,7 @@ class User extends Authenticatable
                 return [
                     'first_name'=> 'required|min:2|max:150',
                     'last_name' => 'required|min:2|max:150',
-                    'username'  => 'required|min:6|max:30|unique:users,username'.($id ? ",$id,id" : ''),
+                    'username'  => 'required|min:6|max:150|unique:users,username'.($id ? ",$id,id" : ''),
                     'password'  => 'required|min:8',
                     'email'     => 'required|email|email|unique:users,email'.($id ? ",$id,id" : ''),
                     'user_type' => 'required|exists:roles,id',
@@ -178,10 +178,10 @@ class User extends Authenticatable
         return $this->hasMany('App\UserMembership');
     }
 
-    public function attach_membership_plan(MembershipPlan $the_plan, User $signed_by){
+    public function attach_membership_plan(MembershipPlan $the_plan, User $signed_by, $day_start = false){
         $user_plan = new UserMembership();
         //$user_plan->assign_plan($this, $the_plan, $signed_by);
-        if ( $user_plan->create_new($this, $the_plan, $signed_by) ){
+        if ( $user_plan->create_new($this, $the_plan, $signed_by, $day_start) ){
             return true;
         }
         else{

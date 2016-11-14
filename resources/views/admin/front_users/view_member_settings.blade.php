@@ -932,11 +932,11 @@
                     ignore: "",  // validate all fields including form hidden input
                     rules: {
                         personalFirstName: {
-                            minlength: 3,
+                            minlength: 2,
                             required: true
                         },
                         personalLastName: {
-                            minlength: 3,
+                            minlength: 2,
                             required: true
                         },
                         personalDOB: {

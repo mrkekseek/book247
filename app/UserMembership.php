@@ -165,14 +165,23 @@ class UserMembership extends Model
         return $plan_details;
     }
 
-    public function create_new(User $user, MembershipPlan $plan, User $signed_by) {
+    public function create_new(User $user, MembershipPlan $plan, User $signed_by, $day_start = false) {
         $to_be_paid = $plan->get_price();
+
+        if ($day_start==false){
+            $day_start = Carbon::today();
+            $day_stop  = Carbon::today()->addMonths($plan->binding_period);
+        }
+        else{
+            $day_start = Carbon::createFromFormat('Y-m-d H:i:s', $day_start.' 00:00:00');
+            $day_stop  = Carbon::instance($day_start)->addMonths($plan->binding_period);
+        }
 
         $fillable = [
             'user_id'       => $user->id,
             'membership_id' => $plan->id,
-            'day_start' => Carbon::today()->toDateString(),
-            'day_stop'  => Carbon::today()->addMonths($plan->binding_period)->toDateString(),
+            'day_start' => $day_start->toDateString(),
+            'day_stop'  => $day_stop->toDateString(),
             'membership_name'   => $plan->name,
             'invoice_period'    => $plan->plan_period,
             'binding_period'    => $plan->binding_period,
