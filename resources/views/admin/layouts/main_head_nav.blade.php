@@ -245,10 +245,11 @@
                     </a>
                     <ul class="dropdown-menu extended tasks" style="width:240px;">
                         <li>
-                            <ul class="dropdown-menu-list scroller" style="height: 280px; background-color:#ffffff;" data-handle-color="#637283">
+                            <ul class="dropdown-menu-list scroller" style="height: 270px; background-color:#ffffff;" data-handle-color="#637283">
                                 <li>
                                     <div id="calendar_booking_top_menu" data-date="{{ \Carbon\Carbon::today()->format('d-m-Y') }}" data-date-format="mm/dd/yyyy" style="margin-left:10px;"> </div>
                                 </li>
+                                <li class="text-center bg-blue-madison bg-font-blue-madison"> <b>{{ Auth::user()->get_preferred_location_name() }}</b> </li>
                             </ul>
                         </li>
                     </ul>

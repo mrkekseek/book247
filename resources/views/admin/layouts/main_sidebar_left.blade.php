@@ -33,7 +33,7 @@
         <li class="heading">
             <h3 class="uppercase"> Registered Clients </h3>
         </li>
-        <li class="nav-item {{ in_array($in_sidebar, array('admin-frontend-all_members','admin-frontend-user_details_view', 'admin-frontend-add_member'))?'active open':'' }}">
+        <li class="nav-item {{ in_array($in_sidebar, array('admin-frontend-all_members','admin-frontend-user_details_view', 'admin-frontend-add_member','admin-frontend-import_members'))?'active open':'' }}">
             <a href="javascript:;" class="nav-link nav-toggle">
                 <i class="icon-users"></i>
                 <span class="title"> Clients </span>

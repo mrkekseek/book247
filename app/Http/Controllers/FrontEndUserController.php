@@ -2308,7 +2308,7 @@ class FrontEndUserController extends Controller
             'Administration'    => route('admin'),
             'Back End Users'    => route('admin/back_users'),
         ];
-        $sidebar_link= 'admin-frontend-user_details_view';
+        $sidebar_link= 'admin-frontend-import_members';
 
         return view('admin/front_users/import_from_file', [
             'breadcrumbs' => $breadcrumbs,

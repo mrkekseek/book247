@@ -520,4 +520,20 @@ class User extends Authenticatable
         return ($a['timestamp'] < $b['timestamp']) ? -1 : 1;
     }
     /* Multi dimensional array sort END */
+
+    public function get_preferred_location_name(){
+        $setting = UserSettings::where('user_id','=',$this->id)->where('var_name','=','settings_preferred_location')->get()->first();
+        if ($setting){
+            $location = ShopLocations::where('id','=',$setting->var_value)->get()->first();
+            if ($location){
+                return $location->name;
+            }
+            else{
+                return 'no location found';
+            }
+        }
+        else{
+            return 'no location set';
+        }
+    }
 }

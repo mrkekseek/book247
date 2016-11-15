@@ -1367,6 +1367,24 @@ class BookingController extends Controller
             // redirect not found
             $default_location = 7;
         }
+        else{
+            // we update the default location for this employee
+            if ( !isset($settings['settings_preferred_location']) || $settings['settings_preferred_location']!=$default_location ){
+                $defaultLocationSetting = UserSettings::where('user_id','=',$user->id)->where('var_name','=','settings_preferred_location')->get()->first();
+                if (!$defaultLocationSetting){
+                    $defaultLocationSetting = new UserSettings();
+                    $defaultLocationSetting->fill([
+                        'user_id'   => $user->id,
+                        'var_name'  => 'settings_preferred_location',
+                        'var_value' => $default_location,
+                    ]);
+                }
+                else{
+                    $defaultLocationSetting->var_value = $default_location;
+                }
+                $defaultLocationSetting->save();
+            }
+        }
         unset($location);
         $header_vals['selected_location'] = $default_location;
 
@@ -1397,6 +1415,24 @@ class BookingController extends Controller
         if (!in_array($default_activity, $checkLocations)){
             // redirect to default first activity in the location
             return redirect()->intended(route('bookings/location_calendar_day_view_all',['day'=>$header_vals['date_selected'], 'location'=>$location->id, 'activity'=>$first_line_activity]));
+        }
+        else{
+            // we update the default activity for this employee
+            if ( !isset($settings['settings_preferred_activity']) || $settings['settings_preferred_activity']!=$default_activity ){
+                $defaultActivitySetting = UserSettings::where('user_id','=',$user->id)->where('var_name','=','settings_preferred_activity')->get()->first();
+                if (!$defaultActivitySetting){
+                    $defaultActivitySetting = new UserSettings();
+                    $defaultActivitySetting->fill([
+                        'user_id'   => $user->id,
+                        'var_name'  => 'settings_preferred_activity',
+                        'var_value' => $default_activity,
+                    ]);
+                }
+                else{
+                    $defaultActivitySetting->var_value = $default_activity;
+                }
+                $defaultActivitySetting->save();
+            }
         }
 
         $header_vals['selected_activity'] = $default_activity;
