@@ -160,8 +160,7 @@ return [
         Snowfire\Beautymail\BeautymailServiceProvider::class,
         Regulus\ActivityLog\ActivityLogServiceProvider::class,
         Barryvdh\Debugbar\ServiceProvider::class,
-        //Maatwebsite\Excel\ExcelServiceProvider::class,
-
+        Maatwebsite\Excel\ExcelServiceProvider::class,
     ],
 
     /*
@@ -210,8 +209,8 @@ return [
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View'      => Illuminate\Support\Facades\View::class,
         'Activity'  => Regulus\ActivityLog\Models\Activity::class,
-        'Debugbar' => Barryvdh\Debugbar\Facade::class,
-        //'Excel' => Maatwebsite\Excel\Facades\Excel::class,
+        'Debugbar'  => Barryvdh\Debugbar\Facade::class,
+        'Excel'     => Maatwebsite\Excel\Facades\Excel::class,
     ],
 
 ];
