@@ -11,8 +11,7 @@
         "nesbot/carbon": "^1.21",
         "snowfire/beautymail": "dev-master",
         "regulus/activity-log": "0.6.*",
-        "barryvdh/laravel-debugbar": "^2.2",
-        "maatwebsite/excel": "~2.1.0"
+        "barryvdh/laravel-debugbar": "^2.2"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",
@@ -21,7 +20,8 @@
         "symfony/css-selector": "2.8.*|3.0.*",
         "symfony/dom-crawler": "2.8.*|3.0.*",
         "zizaco/entrust": "dev-laravel-5",
-        "webpatser/laravel-countries": "dev-master"
+        "webpatser/laravel-countries": "dev-master",
+        "maatwebsite/excel": "~2.1.0"
     },
     "autoload": {
         "classmap": [
