@@ -2111,7 +2111,7 @@ class FrontEndUserController extends Controller
             try{
                 $the_date = Carbon::createFromFormat('d-m-Y', $vars['date_start'])->format('Y-m-d');
             }
-            catch (Exception $ex){
+            catch (\Exception $ex){
                 $the_date = Carbon::today()->format('Y-m-d');
             }
 
