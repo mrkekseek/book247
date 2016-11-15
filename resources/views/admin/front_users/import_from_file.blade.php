@@ -50,10 +50,10 @@
                                                     <div class="caption">
                                                         <i class="fa fa-gift"></i>Upload Document </div>
                                                     <div class="tools">
-                                                        <a class="{{sizeof($importedRows)>0?'collapse':'expand'}}" href="javascript:;" data-original-title="" title=""> </a>
+                                                        <a class="{{(sizeof($importedRows)>0 || sizeof($returnMessages)>0)?'expand':'collapse'}}" href="javascript:;" data-original-title="" title=""> </a>
                                                     </div>
                                                 </div>
-                                                <div class="portlet-body" {!!sizeof($importedRows)>0?'style="display:none;"':''!!}>
+                                                <div class="portlet-body" {!!(sizeof($importedRows)>0 || sizeof($returnMessages)>0)?'style="display:none;"':''!!}>
                                                     <form action="{{ route('admin/front_users/import_members') }}" method="post" class="form" enctype="multipart/form-data">
                                                         <div class="m-heading-1 border-green m-bordered row">
                                                             <div class="col-md-8">
@@ -148,6 +148,47 @@
                                                                     <button type="submit" class="btn uppercase green-jungle" style="float:right;"> Import Loaded List </button>
                                                                 </td>
                                                             </tr>
+                                                            </tbody>
+                                                        </table>
+                                                    </form>
+                                                </div>
+                                            </div>
+
+                                            <div class="portlet light bordered" {!! sizeof($returnMessages)>0?'':' style="display:none;" ' !!}>
+                                                <div class="portlet-title">
+                                                    <div class="caption font-dark">
+                                                        <i class="icon-settings font-dark"></i>
+                                                        <span class="caption-subject bold uppercase"> Inserted Values </span>
+                                                    </div>
+                                                </div>
+                                                <div class="portlet-body" style="width:100%;">
+                                                    <form name="add_members" method="post" action="{{ route('admin/front_users/import_members') }}">
+                                                        <table class="table table-striped table-bordered table-hover table-header-fixed" id="sample_1">
+                                                            <thead>
+                                                            <tr>
+                                                                <th style="width:20px;"> No. </th>
+                                                                <th> Inserted Data and Information </th>
+                                                            </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                            @foreach ($returnMessages as $key=>$row)
+                                                                <tr>
+                                                                    <td> {{ $key+1 }} </td>
+                                                                    <td>
+                                                                        {{ $row['inputData']['first_name'].' '.$row['inputData']['middle_name'].' '.$row['inputData']['last_name'] }} |
+                                                                        [ EMAIL : {{ $row['inputData']['email'] }} / PHONE NO. :  {{ $row['inputData']['phone_number'] }}] |
+                                                                        Password : {{ $row['inputData']['password'] }} <br />
+                                                                        <small class="{{ $row['userID']==-1?'font-red-soft':'font-green-steel' }}"> Return message : {!! $row['returnMsg'] !!}</small>
+                                                                    </td>
+                                                                    <td>
+                                                                        @if($row['userID']!=-1)
+                                                                        <a href="{{ route('admin/front_users/view_account_settings', $row['userID']) }}" target="_blank">View Profile</a>
+                                                                        @else
+                                                                        -
+                                                                        @endif
+                                                                    </td>
+                                                                </tr>
+                                                            @endforeach
                                                             </tbody>
                                                         </table>
                                                     </form>

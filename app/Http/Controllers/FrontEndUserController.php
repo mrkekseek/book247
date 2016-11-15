@@ -1935,7 +1935,7 @@ class FrontEndUserController extends Controller
     }
 
     public function register_new_client($client_vars){
-        //$client_vars = ['first_name', 'middle_name', 'last_name', 'email', 'phone_number', 'password', 'membership_plan', 'username', 'user_type'];
+        //$client_vars = ['first_name', 'middle_name', 'last_name', 'email', 'phone_number', 'password', 'membership_plan', 'username', 'user_type', 'country_id'];
         if (!isset($client_vars['middle_name'])){
             $client_vars['middle_name'] = '';
         }
@@ -2192,6 +2192,7 @@ class FrontEndUserController extends Controller
                     'middle_name'       => @$vars['col_'.$i][$mname],
                     'last_name'         => @$vars['col_'.$i][$lname],
                     'email'             => @$vars['col_'.$i][$email],
+                    'country_id'        => Config::get('constants.globalWebsite.defaultCountryId'),
                     'phone_number'      => @$vars['col_'.$i][$phone],
                     'password'          => strlen(@$vars['col_'.$i][$passwd])>7?@$vars['col_'.$i][$passwd]:@$vars['col_'.$i][$phone],
                     'membership_plan'   => @$vars['membership_'.$i],
@@ -2290,10 +2291,11 @@ class FrontEndUserController extends Controller
 
                 $returnMessages[] = [
                     'inputData' => $member,
-                    'returnMsg' => $msg
+                    'returnMsg' => $msg,
+                    'userID'    => isset($new_member->id)?$new_member->id:-1
                 ];
             }
-            xdebug_var_dump($returnMessages); exit;
+            //xdebug_var_dump($returnMessages); exit;
         }
 
         $text_parts  = [
@@ -2317,7 +2319,8 @@ class FrontEndUserController extends Controller
             'memberships' => $memberships,
             'selectedMembership'=> $selectMembership,
             'date_start'        => $date_start,
-            'importedMembers'   => $members
+            'importedMembers'   => $members,
+            'returnMessages'    => $returnMessages
         ]);
     }
 
