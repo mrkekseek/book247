@@ -1389,6 +1389,11 @@ class BookingController extends Controller
         $header_vals['selected_location'] = $default_location;
 
         $location = ShopLocations::select('id','name')->where('id','=',$default_location)->get()->first();
+        if (!$location){
+            // there is an error here with no location
+            return redirect(route('error_404'));
+            exit;
+        }
 
         // activity/category validation and variables assignation
         $locationActivities = [];
