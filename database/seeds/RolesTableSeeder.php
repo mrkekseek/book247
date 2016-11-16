@@ -34,5 +34,22 @@ class RolesTableSeeder extends Seeder
             'display_name'  => 'Employee',
             'description'   => 'This user role has most of the restrictions and can do only the basic actions',
         ]);
+
+        DB::table('roles')->insert([
+            'name'          => 'front-member',
+            'display_name'  => 'Registered User with Membership',
+            'description'   => 'A registered front end user with membership',
+        ]);
+
+        DB::table('roles')->insert([
+            'name'          => 'front-user',
+            'display_name'  => 'Registered User without Membership',
+            'description'   => 'A registered front end user without membership, on a pay-as-you-go status',
+        ]);
+        DB::table('roles')->insert([
+            'name'          => 'system-agent',
+            'display_name'  => 'System Agent',
+            'description'   => 'Sends messages to users/members - the automated process',
+        ]);
     }
 }
