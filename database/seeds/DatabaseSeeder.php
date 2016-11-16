@@ -12,24 +12,27 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         $this->call('MembershipRestrictionTypesTableSeeder');
-        $this->command->info('Seeded the countries!');
+        $this->command->info('Seeded : Member Restrictions Table');
 
         $this->call('CountriesSeeder');
-        $this->command->info('Seeded the countries!');
+        $this->command->info('Seeded : Countries Table!');
 
         $this->call(VatRatesTableSeeder::class);
-        $this->command->info('VAT added to DB!');
+        $this->command->info('Seeded : VAT rates added to VAT Table!');
 
         $this->call(ShopResourceCategoriesTableSeeder::class);
-        $this->command->info('Shop Resource category seeded');
+        $this->command->info('Seeded : Shop Resource category Table');
 
         $this->call(DiscountTypeSeeder::class);
-        $this->command->info('Seeded the users with random data!');
+        $this->command->info('Seeded : Discounts type Table');
 
         $this->call(PermissionsTableSeeder::class);
-        $this->command->info('Seeded the users with random data!');
+        $this->command->info('Seeded : Permissions Table');
+
+        $this->call(RolesTableSeeder::class);
+        $this->command->info('Seeded : Roles Table');
 
         $this->call(UserTableSeeder::class);
-        $this->command->info('Seeded the users with random data!');
+        $this->command->info('Seeded : User admin + role');
     }
 }
