@@ -17,7 +17,7 @@ class AddVatRateToShopResourcesTable extends Migration
         });
 
         DB::statement('SET FOREIGN_KEY_CHECKS = 0');
-        Schema::table('shop_resource_prices', function($table) {
+        Schema::table('shop_resources', function($table) {
             $table->foreign('vat_id')->references('id')->on('vat_rates');
         });
         DB::statement('SET FOREIGN_KEY_CHECKS = 1');

@@ -77,7 +77,10 @@ class Settings extends Model
     public static function get_formatted(){
         $formattedSettings = [];
 
-        $allSettings = Settings::all();
+        $allSettings = Cache::remember('settings', 3660, function() {
+            return Settings::all();
+        });
+
         if ($allSettings){
             foreach($allSettings as $single){
                 $formattedSettings[$single->system_internal_name] = $single;
@@ -85,5 +88,37 @@ class Settings extends Model
         }
 
         return $formattedSettings;
+    }
+
+    public static function getValue($settingName){
+        $value = Cache::remember('setting_'.$settingName, 3660, function() use ($settingName) {
+            $setting = Settings::with('applicationSetting')->where('system_internal_name','=',$settingName)->get()->first();
+            if ($setting){
+                if (isset($setting->applicationSetting)) {
+                    // check type of setting and return correct variable value
+                    if ($setting->constrained == 1){
+                        // we have preselected values
+                        $returnVal = allowedSettingValue::where('id','=',$setting->applicationSetting->allowed_setting_value_id)->get()->first();
+                        if ($returnVal){
+                            return $returnVal->item_value;
+                        }
+                        else{
+                            return '-';
+                        }
+                    }
+                    else{
+                        return $setting->applicationSetting->unconstrained_value;
+                    }
+                }
+                else {
+                    return '-';
+                }
+            }
+            else{
+                return '-';
+            }
+        });
+
+        return $value;
     }
 }

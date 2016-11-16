@@ -168,6 +168,7 @@
                                                             <tr>
                                                                 <th style="width:20px;"> No. </th>
                                                                 <th> Inserted Data and Information </th>
+                                                                <th> Profile Link </th>
                                                             </tr>
                                                             </thead>
                                                             <tbody>

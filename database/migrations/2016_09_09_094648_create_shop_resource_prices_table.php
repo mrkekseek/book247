@@ -30,10 +30,7 @@ class CreateShopResourcePricesTable extends Migration
 
         DB::statement('SET FOREIGN_KEY_CHECKS = 0');
         Schema::table('shop_resource_prices', function($table) {
-            $table->foreign('resource_id')
-                ->references('id')
-                ->on('shop_resources')
-                ->onDelete('cascade');
+            $table->foreign('resource_id')->references('id')->on('shop_resources');
             $table->foreign('vat_id')->references('id')->on('vat_rates');
         });
         DB::statement('SET FOREIGN_KEY_CHECKS = 1');
