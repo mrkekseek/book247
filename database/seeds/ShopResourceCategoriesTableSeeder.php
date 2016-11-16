@@ -12,20 +12,16 @@ class ShopResourceCategoriesTableSeeder extends Seeder
     public function run()
     {
         DB::table('shop_resource_categories')->insert([
-            'name'  => 'Squash Court XS',
-            'url'   => 'squash-court-xs',
+            'name'  => 'Tennis',
+            'url'   => 'tennis',
         ]);
         DB::table('shop_resource_categories')->insert([
-            'name'  => 'Squash Court S',
-            'url'   => 'squash-court-s',
+            'name'  => 'Squash',
+            'url'   => 'squash',
         ]);
         DB::table('shop_resource_categories')->insert([
-            'name'  => 'Squash Court M',
-            'url'   => 'squash-court-m',
-        ]);
-        DB::table('shop_resource_categories')->insert([
-            'name'  => 'Squash Court L',
-            'url'   => 'squash-court-l',
+            'name'  => 'Golf',
+            'url'   => 'golf',
         ]);
     }
 }

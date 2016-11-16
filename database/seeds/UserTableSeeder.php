@@ -1,7 +1,8 @@
 <?php
 
 use Illuminate\Database\Seeder;
-use App\User as User;
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class UserTableSeeder extends Seeder
 {
