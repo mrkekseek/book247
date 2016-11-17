@@ -386,11 +386,13 @@
                         </li>
                     </ul>
                 </li>
+                @if (isset($show_membership_types))
                 <li class="menu-dropdown mega-menu-dropdown {{$in_sidebar=="front-type_of_memberships"?"active":""}}">
                     <a href="{{ route('front/membership_types') }}"> Membership Types
                         <span class="arrow"></span>
                     </a>
                 </li>
+                @endif
                 <li class="menu-dropdown mega-menu-dropdown {{$in_sidebar=="front-bookings_list"?"active":""}}">
                     <a href="{{ route('front/my_bookings') }}"> My Bookings
                         <span class="arrow"></span>
@@ -406,9 +408,11 @@
                         <span class="arrow"></span>
                     </a>
                     <ul class="dropdown-menu pull-left">
+                        @if (isset($show_list_of_invoices))
                         <li class=" {{ $in_sidebar=='front-finance_invoice_list'?'active':'' }}">
                             <a href="{{ route('front/member_invoice_list') }}" class="nav-link  "> List of Invoices </a>
                         </li>
+                        @endif
                         <li class=" {{ $in_sidebar=='front-finance_active_membership'?'active':'' }}">
                             <a href="{{ route('front/active_membership') }}"> Active Membership </a>
                         </li>
@@ -424,15 +428,19 @@
                                 <div class="row">
                                     <div class="col-md-12">
                                         <ul class="mega-menu-submenu">
+                                            @if(isset($show_account_settings))
                                             <li class=" {{ $in_sidebar=='front-settings_account'?'active':'' }}">
                                                 <a href="{{ route('settings/account') }}"> Account Settings [not finished] </a>
                                             </li>
+                                            @endif
                                             <li class=" {{ $in_sidebar=='front-settings_personal'?'active':'' }}">
                                                 <a href="{{ route('settings/personal') }}"> Personal Settings </a>
                                             </li>
+                                            @if (isset($show_account_finance_settings))
                                             <li class=" {{ $in_sidebar=='front-settings_finance'?'active':'' }}">
                                                 <a href="#" class="nav-link  "> Financial Settings [not finished] </a>
                                             </li>
+                                            @endif
                                             <li class=" {{ $in_sidebar=='front-settings_finance'?'active':'' }}">
                                                 <a href="{{ route('my_messages') }}" class="nav-link  "> Messages & Notes </a>
                                             </li>
