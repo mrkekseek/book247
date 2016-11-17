@@ -140,7 +140,7 @@
                                                             @endif
                                                             <tr>
                                                                 <td colspan="{{ $per_line+1 }}" class="right">
-                                                                    <input type="hidden" name="_method" value="put" />
+                                                                    <input type="hidden" name="_method" value="PUT" />
                                                                     <input type="hidden" name="key_return" value="{{ @$key }}" />
                                                                     <input type="hidden" name="date_start" value="{{ $date_start }}" />
                                                                     <input type="hidden" name="per_line" value="{{ $per_line }}" />
