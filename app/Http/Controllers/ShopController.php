@@ -91,27 +91,8 @@ class ShopController extends Controller
         $shop_vars = $request->only('name', 'bank_acc_no', 'phone', 'fax', 'email', 'registered_no');
         $address_vars = $request->only('address1', 'address2', 'city', 'country_id', 'postal_code', 'region');
 
-        /** Start - Add shop location to database */
-        $shopValidator = Validator::make($shop_vars, ShopLocations::rules('POST'), ShopLocations::$validationMessages, ShopLocations::$attributeNames);
-
-        if ($shopValidator->fails()){
-            //return $validator->errors()->all();
-            return array(
-                'success'   => false,
-                'title'     => 'Error Shop Details',
-                'errors'    => $shopValidator->getMessageBag()->toArray()
-            );
-        }
-        else{
-            $shopLocation = new ShopLocations();
-            $shopLocation->fill($shop_vars);
-            $shopLocation->save();
-        }
-        /** Stop - Add shop location to database */
-
         /** Start - Add address to database */
         $addressValidator = Validator::make($address_vars, Address::rules('POST'), Address::$validationMessages, Address::$attributeNames);
-
         if ($addressValidator->fails()){
             return array(
                 'success'   => false,
@@ -124,16 +105,33 @@ class ShopController extends Controller
             $shopAddress->fill($address_vars);
             $shopAddress->save();
 
-            $shopLocation->address_id = $shopAddress->id;
+            $shop_vars['address_id'] = $shopAddress->id;;
+        }
+        /** Stop - Add address to database */
+
+        /** Start - Add shop location to database */
+        $shopValidator = Validator::make($shop_vars, ShopLocations::rules('POST'), ShopLocations::$validationMessages, ShopLocations::$attributeNames);
+        if ($shopValidator->fails()){
+            //return $validator->errors()->all();
+            return array(
+                'success'   => false,
+                'title'     => 'Error Shop Details',
+                'errors'    => $shopValidator->getMessageBag()->toArray()
+            );
+        }
+        else{
+            $shopLocation = new ShopLocations();
+            $shopLocation->fill($shop_vars);
             $shopLocation->save();
 
             return [
                 'success'   => true,
                 'title'     => 'New Shop Added',
-                'message'   => 'A new shop location was added. Page will reload...'
+                'message'   => 'A new shop location was added. Page will reload...',
+                'redirect_link' => route('admin/shops/locations/view',['id'=>$shopLocation->id]),
             ];
         }
-        /** Stop - Add address to database */
+        /** Stop - Add shop location to database */
     }
 
     public function get_shop_location($id){
