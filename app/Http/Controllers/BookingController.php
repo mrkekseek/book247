@@ -3448,7 +3448,7 @@ class BookingController extends Controller
         }
         if ($location_found==false){
             // redirect not found
-            $default_location = 7;
+            $default_location = 1;
         }
         unset($location);
         $header_vals['selected_location'] = $default_location;

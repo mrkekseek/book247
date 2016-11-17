@@ -49,7 +49,7 @@
                                             <a href="#tab_1_1" data-toggle="tab">Upcoming Bookings</a>
                                         </li>
                                         <li>
-                                            <a href="#tab_1_2" data-toggle="tab">Bookings History</a>
+                                            <a href="#tab_1_2" data-toggle="tab">Booking History</a>
                                         </li>
                                     </ul>
                                 </div>
@@ -57,7 +57,7 @@
                                     <div class="tab-content">
                                         <!-- PERSONAL INFO TAB -->
                                         <div class="tab-pane active" id="tab_1_1">
-                                            <p> Here you can see all your upcoming bookings, the old/canceled ones are shown in "Bookings History" </p>
+                                            <p> Here you can see all your upcoming bookings, the old/canceled ones are shown in "Booking History" </p>
                                             <div class="row">
                                                 <div class="col-md-12">
                                                     <!-- BEGIN BORDERED TABLE PORTLET-->
@@ -101,7 +101,7 @@
                                                     @else
                                                     <div class="note note-warning">
                                                         <h4 class="block">No upcoming bookings - Book some more</h4>
-                                                        <p> All your old bookings are visible in the "Bookings History" tab. </p>
+                                                        <p> All your old bookings are visible in the "Booking History" tab. </p>
                                                     </div>
                                                     @endif
                                                     <!-- END BORDERED TABLE PORTLET-->
