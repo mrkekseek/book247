@@ -56,22 +56,29 @@
                                 <div class="portlet-body">
                                     <div class="scroller" style="height: 305px;" data-always-visible="1" data-rail-visible1="0" data-handle-color="#D7DCE2">
                                         <div class="general-item-list">
-                                            @foreach ($meAndFriendsBookings as $knownBooking)
-                                                <div class="item">
-                                                    <div class="item-head">
-                                                        <div class="item-details">
-                                                            <img class="item-pic" src="../assets/pages/media/users/avatar4.jpg">
-                                                            <a href="" class="item-name primary-link">{{ $knownBooking['breated_by'] }}</a>
-                                                            <span class="item-label">{{ $knownBooking['passed_time_since_creation'] }}</span>
+                                            @if (sizeof($meAndFriendsBookings)>0)
+                                                @foreach ($meAndFriendsBookings as $knownBooking)
+                                                    <div class="item">
+                                                        <div class="item-head">
+                                                            <div class="item-details">
+                                                                <img class="item-pic" src="../assets/pages/media/users/avatar4.jpg">
+                                                                <a href="" class="item-name primary-link">{{ $knownBooking['breated_by'] }}</a>
+                                                                <span class="item-label">{{ $knownBooking['passed_time_since_creation'] }}</span>
+                                                            </div>
+                                                            <span class="item-status">
+                                                                <span class="badge badge-empty {{ $knownBooking['status']=='active'?'bg-green-jungle':'' }}
+                                                                {{ $knownBooking['status']=='pending'?'bg-red-thunderbird':'' }} "></span> {{ $knownBooking['status'] }} </span>
                                                         </div>
-                                                        <span class="item-status">
-                                                            <span class="badge badge-empty {{ $knownBooking['status']=='active'?'bg-green-jungle':'' }}
-                                                            {{ $knownBooking['status']=='pending'?'bg-red-thunderbird':'' }} "></span> {{ $knownBooking['status'] }} </span>
+                                                        <div class="item-body"> Own booking for <span class="font-blue-hoki">{{ $knownBooking['book_date_format'] }}</span> in <span class="font-purple-sharp">{{ $knownBooking['on_location'] }}</span>
+                                                            for <span class="font-blue-hoki">{{ $knownBooking['categoryName'] }}</span> activity. Reserved resource -  <span class="font-purple-sharp">{{ $knownBooking['on_resource'] }}</span> room. </div>
                                                     </div>
-                                                    <div class="item-body"> Own booking for <span class="font-blue-hoki">{{ $knownBooking['book_date_format'] }}</span> in <span class="font-purple-sharp">{{ $knownBooking['on_location'] }}</span>
-                                                        for <span class="font-blue-hoki">{{ $knownBooking['categoryName'] }}</span> activity. Reserved resource -  <span class="font-purple-sharp">{{ $knownBooking['on_resource'] }}</span> room. </div>
+                                                @endforeach
+                                            @else
+                                                <div class="note note-warning">
+                                                    <h4 class="block">No available activities</h4>
+                                                    <p> There is no recorded activity on your account or your friends account. Once you and your friends start booking hours they will be visible here. </p>
                                                 </div>
-                                            @endforeach
+                                            @endif
                                         </div>
                                     </div>
                                 </div>
