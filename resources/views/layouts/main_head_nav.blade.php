@@ -331,10 +331,12 @@
                             <a href="{{ route('settings/personal') }}">
                                 <i class="icon-user"></i> Personal Settings </a>
                         </li>
+                        @if(isset($show_account_settings))
                         <li>
                             <a href="{{ route('settings/account') }}">
                                 <i class="icon-calendar"></i> Account Settings </a>
                         </li>
+                        @endif
                         <li class="divider"> </li>
                         <li>
                             <a href="{{'/logout' }}">

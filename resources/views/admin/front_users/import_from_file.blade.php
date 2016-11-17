@@ -228,6 +228,13 @@
 
 @section('pageCustomJScripts')
     <script type="text/javascript">
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            cache: false,
+        });
+
         $.validator.addMethod("datePickerDate",function(value, element) {
             // put your own logic here, this is just a (crappy) example
             return value.match(/^\d\d?-\d\d?-\d\d\d\d$/);
