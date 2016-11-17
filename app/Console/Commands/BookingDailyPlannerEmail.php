@@ -95,7 +95,7 @@ class BookingDailyPlannerEmail extends Command
                 function($message) use ($bookings)
                 {
                     $message
-                        ->from('bogdan@bestintest.eu')
+                        ->from(Config::get('constants.globalWebsite.system_email'))
                         ->to('stefan.bogdan@ymail.com', 'Booking System Admin')
                         //->to('stefan.bogdan@ymail.com', $player->first_name.' '.$player->middle_name.' '.$player->last_name)
                         ->subject('Booking System - morning bookings summary for all locations - '.Carbon::today()->format('d-m-Y'));

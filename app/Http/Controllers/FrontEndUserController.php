@@ -1905,7 +1905,7 @@ class FrontEndUserController extends Controller
                 ['user'=>$user, 'personal_details'=>$personalDetails, 'raw_password' => $text_psw, 'logo' => ['path' => 'http://sqf.se/wp-content/uploads/2012/12/sqf-logo.png']],
                 function($message) use ($user){
                     $message
-                        ->from('bogdan@bestintest.eu')
+                        ->from(Config::get('constants.globalWebsite.system_email'))
                         ->to($user->email, $user->first_name.' '.$user->middle_name.' '.$user->last_name)
                         //->to('stefan.bogdan@ymail.com', $user->first_name.' '.$user->middle_name.' '.$user->last_name)
                         ->subject('Booking System - You are registered!');
@@ -2955,7 +2955,7 @@ class FrontEndUserController extends Controller
             ['user'=>$user, 'logo' => ['path' => 'http://sqf.se/wp-content/uploads/2012/12/sqf-logo.png']],
             function($message) use ($user) {
                 $message
-                    ->from('bogdan@bestintest.eu')
+                    ->from(Config::get('constants.globalWebsite.system_email'))
                     ->to($user->email, $user->first_name.' '.$user->middle_name.' '.$user->last_name)
                     //->to('stefan.bogdan@ymail.com', $player->first_name.' '.$player->middle_name.' '.$player->last_name)
                     ->subject('Booking System - Password successfully changed');
@@ -2998,7 +2998,7 @@ class FrontEndUserController extends Controller
                 ['user'=>$user, 'token'=>$generateKey, 'logo' => ['path' => 'http://sqf.se/wp-content/uploads/2012/12/sqf-logo.png']],
                 function($message) use ($user) {
                     $message
-                        ->from('bogdan@bestintest.eu')
+                        ->from(Config::get('constants.globalWebsite.system_email'))
                         ->to($user->email, $user->first_name.' '.$user->middle_name.' '.$user->last_name)
                         //->to('stefan.bogdan@ymail.com', $player->first_name.' '.$player->middle_name.' '.$player->last_name)
                         ->subject('Booking System - Password reset request');
