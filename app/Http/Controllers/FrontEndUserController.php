@@ -1863,6 +1863,10 @@ class FrontEndUserController extends Controller
             $vars['password'] = substr(bcrypt(str_random(12)),0,8);
         }
 
+        if (!isset($vars['country_id'])){
+            $vars['country_id'] = Config::get('constants.globalWebsite.defaultCountryId');
+        }
+
         $validator = Validator::make($vars, User::rules('POST'), User::$messages, User::$attributeNames);
 
         if ($validator->fails()){

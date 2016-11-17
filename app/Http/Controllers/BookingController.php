@@ -1365,7 +1365,7 @@ class BookingController extends Controller
         }
         if ($location_found==false){
             // redirect not found
-            $default_location = 7;
+            $default_location = 2;
         }
         else{
             // we update the default location for this employee
