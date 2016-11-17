@@ -16,6 +16,7 @@ use Regulus\ActivityLog\Models\Activity;
 use Validator;
 use App\ShopLocations;
 use App\CashTerminal;
+use Illuminate\Support\Facades\Config;
 
 class MembershipPlansController extends Controller
 {

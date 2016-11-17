@@ -8,6 +8,7 @@ use Carbon\Carbon;
 use Illuminate\Console\Command;
 use App\Booking;
 use Snowfire\Beautymail\Beautymail;
+use Illuminate\Support\Facades\Config;
 
 class BookingDailyPlannerEmail extends Command
 {

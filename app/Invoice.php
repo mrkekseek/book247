@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Validator;
 use App\InvoiceItems;
+use Illuminate\Support\Facades\Config;
 
 class Invoice extends Model
 {

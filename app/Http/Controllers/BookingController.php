@@ -33,6 +33,7 @@ use DB;
 use Regulus\ActivityLog\Models\Activity;
 use Snowfire\Beautymail\Beautymail;
 use Cache;
+use Illuminate\Support\Facades\Config;
 
 class BookingController extends Controller
 {
