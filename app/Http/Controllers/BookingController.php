@@ -1352,7 +1352,18 @@ class BookingController extends Controller
 
         // location validation and variables assignation
         if ($selected_location==0){
-            $default_location = isset($settings['settings_preferred_location'])?$settings['settings_preferred_location']:7;
+            if (isset($settings['settings_preferred_location'])){
+                $default_location = $settings['settings_preferred_location'];
+            }
+            else{
+                $first_location = ShopLocations::where('visibility','!=','warehouse')->get()->first();
+                if (!$first_location){
+                    // no locations found, redirect 404
+                }
+                else{
+                    $default_location = $first_location->id;
+                }
+            }
         }
         else{
             $default_location = $selected_location;
@@ -1362,6 +1373,7 @@ class BookingController extends Controller
         foreach ($all_locations as $location){
             if ($location->id==$default_location){
                 $location_found=true;
+                break;
             }
         }
         if ($location_found==false){
@@ -3434,7 +3446,18 @@ class BookingController extends Controller
 
         // location validation and variables assignation
         if ($selected_location==0){
-            $default_location = isset($settings['settings_preferred_location'])?$settings['settings_preferred_location']:7;
+            if (isset($settings['settings_preferred_location'])){
+                $default_location = $settings['settings_preferred_location'];
+            }
+            else{
+                $first_location = ShopLocations::where('visibility','!=','warehouse')->get()->first();
+                if (!$first_location){
+                    // no locations found, redirect 404
+                }
+                else{
+                    $default_location = $first_location->id;
+                }
+            }
         }
         else{
             $default_location = $selected_location;
