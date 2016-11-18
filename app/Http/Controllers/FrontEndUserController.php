@@ -2289,7 +2289,6 @@ class FrontEndUserController extends Controller
             return redirect()->intended(route('admin/login'));
         }
         $vars = $request->only('_token','_method','start_date','membership_type');
-        var_dump($vars);
 
         $allRows = [];
         $members = [];
@@ -2329,7 +2328,6 @@ class FrontEndUserController extends Controller
         }
         elseif(isset($vars['_method']) && $vars['_method']=='PUT') {
             $vars = $request->toArray();
-            //var_dump($vars);
             try{
                 $the_date = Carbon::createFromFormat('d-m-Y', $vars['date_start'])->format('Y-m-d');
             }
