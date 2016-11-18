@@ -2326,7 +2326,7 @@ class FrontEndUserController extends Controller
                 // file upload error
             }
         }
-        elseif(isset($vars['_method']) && $vars['_method']=='put') {
+        elseif(isset($vars['_method']) && $vars['_method']=='PUT') {
             $vars = $request->toArray();
 
             try{
