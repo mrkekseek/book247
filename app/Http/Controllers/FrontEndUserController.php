@@ -2327,8 +2327,10 @@ class FrontEndUserController extends Controller
             }
         }
         elseif(isset($vars['_method']) && $vars['_method']=='PUT') {
+xdebug_var_dump($vars);
+xdebug_var_dump($request);
             $vars = $request->except('_token')->toArray();
-
+xdebug_var_dump($vars);
             try{
                 $the_date = Carbon::createFromFormat('d-m-Y', $vars['date_start'])->format('Y-m-d');
             }
