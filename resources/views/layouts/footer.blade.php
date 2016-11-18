@@ -47,9 +47,9 @@
             </div>-->
             <div class="col-md-3 col-sm-6 col-xs-12 footer-block">
                 <h2>Contacts</h2>
-                <address class="margin-bottom-40"> Phone: 800 123 456
+                <address class="margin-bottom-40"> Phone: 22 20 70 60
                     <br> Email:
-                    <a href="mailto:info@sqf.no">info@sqf.no</a>
+                    <a href="mailto:drammen@sqf.no">drammen@sqf.no</a>
                 </address>
             </div>
         </div>
