@@ -1366,7 +1366,7 @@ class BookingController extends Controller
         }
         if ($location_found==false){
             // redirect not found
-            $default_location = 2;
+            $default_location = 4;
         }
         else{
             // we update the default location for this employee
@@ -3448,7 +3448,7 @@ class BookingController extends Controller
         }
         if ($location_found==false){
             // redirect not found
-            $default_location = 1;
+            $default_location = 4;
         }
         unset($location);
         $header_vals['selected_location'] = $default_location;
