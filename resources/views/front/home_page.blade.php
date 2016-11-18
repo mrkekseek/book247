@@ -229,7 +229,7 @@
                                         </a>
                                         @endif
                                     @endforeach
-                                    <input type="hidden" name="selected_location" value="{{ isset($settings['settings_preferred_location'])?$settings['settings_preferred_location']:1 }}" />
+                                    <input type="hidden" name="selected_location" value="{{ isset($settings['settings_preferred_location'])?$settings['settings_preferred_location']:4 }}" />
                                 </div>
                             </div>
 
@@ -1649,7 +1649,7 @@
 
         jQuery(document).ready(function() {
             $('.is_resource[data-id="{{ isset($settings['settings_preferred_activity'])?$settings['settings_preferred_activity']:2 }}"]').click();
-            $('.location_btn[data-id="{{ isset($settings['settings_preferred_location'])?$settings['settings_preferred_location']:1 }}"]').click();
+            $('.location_btn[data-id="{{ isset($settings['settings_preferred_location'])?$settings['settings_preferred_location']:4 }}"]').click();
 
             //get_booking_hours();
             get_friends_list();
