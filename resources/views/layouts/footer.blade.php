@@ -2,11 +2,11 @@
 <div class="page-prefooter">
     <div class="container">
         <div class="row">
-            <div class="col-md-3 col-sm-6 col-xs-12 footer-block">
+            <div class="col-md-4 col-sm-6 col-xs-12 footer-block">
                 <h2>About</h2>
                 <p> Er du interessert i å jobbe med squash og trening? Da kan det hende du passer til våre jobber. </p>
             </div>
-            <div class="col-md-3 col-sm-6 col-xs12 footer-block">
+            <!--<div class="col-md-3 col-sm-6 col-xs12 footer-block">
                 <h2>Subscribe Email</h2>
                 <div class="subscribe-form">
                     <form action="javascript:;">
@@ -18,8 +18,8 @@
                         </div>
                     </form>
                 </div>
-            </div>
-            <div class="col-md-3 col-sm-6 col-xs-12 footer-block">
+            </div>-->
+            <!--<div class="col-md-3 col-sm-6 col-xs-12 footer-block">
                 <h2>Follow Us On</h2>
                 <ul class="social-icons">
                     <li>
@@ -44,7 +44,7 @@
                         <a href="javascript:;" data-original-title="vimeo" class="vimeo"></a>
                     </li>
                 </ul>
-            </div>
+            </div>-->
             <div class="col-md-3 col-sm-6 col-xs-12 footer-block">
                 <h2>Contacts</h2>
                 <address class="margin-bottom-40"> Phone: 800 123 456
