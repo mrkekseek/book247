@@ -2290,7 +2290,7 @@ class FrontEndUserController extends Controller
         }
         $vars = $request->only('_token','_method','start_date','membership_type');
         var_dump($vars);
-        var_dump($request);
+        
         $allRows = [];
         $members = [];
         $nr = 1;
