@@ -2501,7 +2501,8 @@ class FrontEndUserController extends Controller
                     }
 
                     // assign membership
-                    if (strlen($member['membership_plan'])>0 && isset($arrayPlan[$member['membership_plan']])){
+                    // Default free plan is the first plan
+                    if (strlen($member['membership_plan'])>1 && isset($arrayPlan[$member['membership_plan']])){
                         // we have a plan and we apply it
                         //xdebug_var_dump($new_member);
                         $new_member->attach_membership_plan($arrayPlan[$member['membership_plan']]['full_plan'], $user, $the_date);
