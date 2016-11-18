@@ -114,6 +114,11 @@ Route::group(['middleware' => 'web'], function () {
         'uses' => 'BackEndUserController@update_personal_address',
     ]);
 
+    Route::post('admin/front_users/view_user/{id}/personal_address', [
+        'as' => 'admin/front_users/view_user/personal_address',
+        'uses' => 'FrontEndUserController@update_personal_address',
+    ]);
+
     Route::post('admin/back_users/view_user/{id}/avatar_image', [
         'as' => 'admin/back_users/view_user/avatar_image',
         'uses' => 'BackEndUserController@update_personal_avatar',
@@ -482,6 +487,11 @@ Route::group(['middleware' => 'web'], function () {
     Route::get('admin/front_users/{id}/view_account_settings', [
         'as'    => 'admin/front_users/view_account_settings',
         'uses'  => 'FrontEndUserController@show_account_settings'
+    ]);
+
+    Route::get('admin/front_users/{id}/view_personal_settings', [
+        'as'    => 'admin/front_users/view_personal_settings',
+        'uses'  => 'FrontEndUserController@show_personal_settings'
     ]);
 
     Route::get('admin/front_users/{id}/view_bookings', [

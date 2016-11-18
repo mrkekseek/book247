@@ -1,8 +1,6 @@
 @extends('admin.layouts.main')
 
 @section('pageLevelPlugins')
-    <link href="{{ asset('assets/global/plugins/dropzone/dropzone.min.css') }}" rel="stylesheet" type="text/css" />
-    <link href="{{ asset('assets/global/plugins/dropzone/basic.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('assets/global/plugins/bootstrap-fileinput/bootstrap-fileinput.css') }}" rel="stylesheet" type="text/css" />
 @endsection
 
@@ -10,10 +8,10 @@
     <link href="{{ asset('assets/global/css/components-rounded.min.css') }}" rel="stylesheet" id="style_components" type="text/css" />
     <link href="{{ asset('assets/global/css/plugins.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('assets/global/plugins/jquery-notific8/jquery.notific8.min.css') }}" rel="stylesheet" type="text/css" />
-@endsection
+    @endsection
 
-@section('themeLayoutStyle')
-    <!-- BEGIN PAGE LEVEL STYLES -->
+    @section('themeLayoutStyle')
+            <!-- BEGIN PAGE LEVEL STYLES -->
     <link href="{{ asset('assets/pages/css/profile.min.css') }}" rel="stylesheet" type="text/css" />
     <!-- END PAGE LEVEL STYLES -->
     <link href="{{ asset('assets/layouts/layout4/css/layout.min.css') }}" rel="stylesheet" type="text/css" />
@@ -59,6 +57,10 @@
                                         <i class="icon-home"></i> Overview </a>
                                 </li>
                                 <li class="active">
+                                    <a href="{{route("admin/front_users/view_personal_settings", $user->id)}}">
+                                        <i class="icon-settings"></i> Personal Settings </a>
+                                </li>
+                                <li>
                                     <a href="{{route("admin/front_users/view_account_settings", $user->id)}}">
                                         <i class="icon-settings"></i> Account Settings </a>
                                 </li>
@@ -89,19 +91,16 @@
                                     </div>
                                     <ul class="nav nav-tabs">
                                         <li class="active">
-                                            <a href="#tab_1_1" data-toggle="tab">Personal Info</a>
+                                            <a href="#tab_1_1" data-toggle="tab">General Info</a>
                                         </li>
                                         <li>
-                                            <a href="#tab_1_5" data-toggle="tab">Membership Plan</a>
+                                            <a href="#tab_1_4" data-toggle="tab">Address</a>
                                         </li>
                                         <li>
                                             <a href="#tab_1_2" data-toggle="tab">Change Avatar</a>
                                         </li>
                                         <li>
                                             <a href="#tab_1_3" data-toggle="tab">Change Password</a>
-                                        </li>
-                                        <li>
-                                            <a href="#tab_1_4" data-toggle="tab">Documents</a>
                                         </li>
                                     </ul>
                                 </div>
@@ -168,281 +167,6 @@
                                             </form>
                                         </div>
                                         <!-- END PERSONAL INFO TAB -->
-                                        <!-- Membership Plan TAB -->
-                                        <div class="tab-pane row" id="tab_1_5">
-                                            <div class="col-md-12">
-                                                <div class="portlet light bordered">
-                                                    <div class="portlet-body form">
-                                                        <!-- BEGIN FORM-->
-                                                        <form action="#" id="new_membership_plan" class="form-horizontal">
-                                                            <div class="form-body">
-                                                                <div class="form-group">
-                                                                    <label class="control-label col-md-3"> Active Membership </label>
-                                                                    <div class="col-md-8">
-                                                                        @if (isset($membership_plan->membership_id))
-                                                                            <input class="form-control input-inline input-large inline-block" disabled readonly name="what_is_the_plan" value="{{$membership_plan->membership_name}}" />
-                                                                            @if ($membership_plan->status=='suspended')
-                                                                            <a href="#unfreeze_plan_box" class="btn bg-green-jungle bg-font-green-jungle input" data-toggle="modal" style="min-width:160px;">
-                                                                                <i class="fa fa-play"></i> Un-Freeze Plan</a>
-                                                                            @else
-                                                                            <a href="#freeze_plan_box" class="btn bg-blue-sharp bg-font-blue-sharp input" data-toggle="modal" style="min-width:160px;">
-                                                                                <i class="fa fa-pause"></i> Freeze Plan</a>
-                                                                            @endif
-
-                                                                            @if($canCancel==true)
-                                                                            <a href="#cancel_plan_box" class="btn red-soft input" data-toggle="modal" style="min-width:160px;">
-                                                                                <i class="fa fa-eject"></i> Cancel Plan</a>
-                                                                            @endif
-                                                                        @else
-                                                                            <input class="form-control input-inline input-large inline-block" disabled readonly name="what_is_the_plan" value="No active Membership Plan" />
-                                                                        @endif
-                                                                    </div>
-                                                                </div>
-                                                                @if (isset($membership_plan->membership_id))
-                                                                <div class="form-group">
-                                                                    <div class="col-md-5 text-right">
-                                                                        <i class="form-control-static"> Current invoice period : {{ $plan_details['invoicePeriod'] }} </i>
-                                                                    </div>
-                                                                    <div class="col-md-1"> &nbsp; </div>
-                                                                    <div class="col-md-5">
-                                                                        <i class="form-control-static"> Next invoice period : {{ $plan_details['nextInvoicePeriod'] }} </i>
-                                                                    </div>
-                                                                </div>
-                                                                @endif
-
-                                                                @if (sizeof($memberships)>0 && !isset($membership_plan->membership_id))
-                                                                <div class="form-group">
-                                                                    <label class="control-label col-md-3 inline"> Change Plan To </label>
-                                                                    <div class="col-md-8">
-                                                                        <select name="membership_plans_list" class="form-control input-inline input-large  inline-block list_all_plans">
-                                                                            <option value="-1"> Select membership plan </option>
-                                                                            @foreach ($memberships as $membership)
-                                                                                <option value="{{$membership->id}}"> {{$membership->name}} </option>
-                                                                            @endforeach
-                                                                        </select>
-                                                                        <a class="btn green apply_new_membership_plan input" style="min-width:190px; display:none;">
-                                                                            <i class="fa fa-pencil"></i> Apply New Plan </a>
-                                                                    </div>
-                                                                </div>
-                                                                @endif
-                                                            </div>
-                                                        </form>
-                                                        <!-- END FORM-->
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            @if (isset($membership_plan->membership_id))
-                                            <div class="col-md-12">
-                                                <div class="portlet light bordered">
-                                                    <div class="portlet-title">
-                                                        <div class="caption">
-                                                            <i class="icon-equalizer font-blue-steel"></i>
-                                                            <span class="caption-subject font-blue-steel bold uppercase"> Membership Plan Details </span>
-                                                            <span class="caption-helper">for the signed membership plan</span>
-                                                        </div>
-                                                        <div class="tools">
-                                                            <a class="collapse" href="" data-original-title="" title=""> </a>
-                                                        </div>
-                                                    </div>
-                                                    <div class="portlet-body row">
-                                                        <!-- BEGIN FORM-->
-                                                        @if($restrictions)
-                                                            <div class="col-md-4">
-                                                                <div class="note note-info font-grey-mint" style="min-height:110px; margin:0 0 10px; padding:5px 20px 10px 10px;">
-                                                                    <p> Price </p>
-                                                                    <h4 class="block" style="margin-bottom:0px; font-size:32px;"> <b>{{ $plan_details['price'].' '.Config::get('constants.finance.currency') }} </b> </h4>
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-md-4">
-                                                                <div class="note note-info font-grey-mint" style="min-height:110px; margin:0 0 10px; padding:5px 20px 10px 10px;">
-                                                                    <p> Discount </p>
-                                                                    <h4 class="block" style="margin-bottom:0px; font-size:32px;"> <b>{{ $plan_details['discount'] }}</b> </h4>
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-md-4">
-                                                                <div class="note note-warning font-grey-mint" style="min-height:110px; margin:0 0 10px; padding:5px 20px 10px 10px;">
-                                                                    <p> Invoice Period </p>
-                                                                    <h4 class="block" style="margin-bottom:0px; font-size:22px;"> <b>{{ $plan_details['invoice_period'] }}</b> </h4>
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-md-4">
-                                                                <div class="note note-info font-grey-mint" style="min-height:110px; margin:0 0 10px; padding:5px 20px 10px 10px;">
-                                                                    <p> Signed On </p>
-                                                                    <h4 class="block" style="margin-bottom:0px; font-size:24px;"> {{ $plan_details['day_start'] }} </h4>
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-md-4">
-                                                                <div class="note note-info font-purple" style="min-height:110px; margin:0 0 10px; padding:5px 20px 10px 10px;">
-                                                                    <p> Signed By </p>
-                                                                    @if($plan_details['signed_by_link']!='')
-                                                                        <h4 class="block" style="margin-bottom:0px; font-size:24px;"> <b><a class="font-purple" href="{{ $plan_details['signed_by_link'] }}" target="_blank"> {{ $plan_details['signed_by_name'] }} </a></b> </h4>
-                                                                    @else
-                                                                        <h4 class="block" style="margin-bottom:0px; font-size:24px;"> <b>{{ $plan_details['signed_by_name'] }}</b> </h4>
-                                                                    @endif
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-md-4">
-                                                                <div class="note note-danger bg-red-flamingo bg-font-red-flamingo color-white" style="min-height:110px; margin:0 0 10px; padding:5px 20px 10px 10px;">
-                                                                    <p> Invoice Status </p>
-                                                                    <h4 class="block" style="margin-bottom:0px; font-size:24px;"> Not Paid </h4>
-                                                                </div>
-                                                            </div>
-                                                        @endif
-                                                        <!-- END FORM-->
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            @endif
-
-                                            @if (sizeof($restrictions))
-                                            <div class="col-md-12">
-                                                <div class="portlet light bordered">
-                                                    <div class="portlet-title">
-                                                        <div class="caption">
-                                                            <i class="icon-equalizer font-blue-steel"></i>
-                                                            <span class="caption-subject font-blue-steel bold uppercase"> Active Attributes & Restrictions </span>
-                                                            <span class="caption-helper">for the signed membership plan</span>
-                                                        </div>
-                                                        <div class="tools">
-                                                            <a class="collapse" href="" data-original-title="" title=""> </a>
-                                                        </div>
-                                                    </div>
-                                                    <div class="portlet-body row">
-                                                        <!-- BEGIN FORM-->
-                                                        @if($restrictions)
-                                                            @foreach ($restrictions as $restriction)
-                                                                <div class="col-md-4">
-                                                                    <div class="note {{ $restriction['color'] }}" style="min-height:140px; margin:0 0 15px; padding:5px 20px 10px 10px;">
-                                                                        <h4 class="block"> {{ $restriction['title'] }} Rule </h4>
-                                                                        <p> {!! $restriction['description'] !!} </p>
-                                                                    </div>
-                                                                </div>
-                                                            @endforeach
-                                                        @else
-                                                            <div class="note note-warning" style="margin-left:15px; margin-right:15px;">
-                                                                <h4 class="block">You have no attributes added to this plan</h4>
-                                                                <p> Please use the "Add Membership Attributes" to customize and configure the membership plan so you create the perfect plan for your business. </p>
-                                                            </div>
-                                                            @endif
-                                                                    <!-- END FORM-->
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            @endif
-
-                                            @if (sizeof($plannedInvoices))
-                                            <div class="col-md-12">
-                                                <div class="portlet light bordered">
-                                                    <div class="portlet-title">
-                                                        <div class="caption">
-                                                            <i class="icon-equalizer font-blue-steel"></i>
-                                                            <span class="caption-subject font-blue-steel bold uppercase"> Membership planned invoices </span>
-                                                            <span class="caption-helper">for the signed membership plan</span>
-                                                        </div>
-                                                        <div class="tools">
-                                                            <a class="expand" href="" data-original-title="" title=""> </a>
-                                                        </div>
-                                                    </div>
-                                                    <div class="portlet-body row" style="display:none;">
-                                                        <!-- BEGIN FORM-->
-                                                        <div class="table-scrollable">
-                                                            <table class="table table-striped table-bordered table-advance table-hover">
-                                                                <thead>
-                                                                <tr>
-                                                                    <th>
-                                                                        <i class="fa fa-calendar-minus-o"></i> Invoice Name </th>
-                                                                    <th class="hidden-xs">
-                                                                        <i class="fa fa-calendar"></i> To be issued on </th>
-                                                                    <th class="hidden-xs">
-                                                                        <i class="fa fa-calendar"></i> Last active day </th>
-                                                                    <th>
-                                                                        <i class="fa fa-dollar"></i> Price </th>
-                                                                    <th class="hidden-xs">
-                                                                        <i class="fa fa-asterisk"></i> Payment Status </th>
-                                                                    <!--<th> Options </th>-->
-                                                                </tr>
-                                                                </thead>
-                                                                <tbody>
-                                                                @foreach ($plannedInvoices as $singlePlanned)
-                                                                    @if (sizeof($plan_requests)>0)
-                                                                        @foreach($plan_requests as $one_request)
-                                                                            @if ($one_request['action_type']=='freeze' && $one_request['after_date']->between(\Carbon\Carbon::createFromFormat('Y-m-d H:i:s',$singlePlanned['issued_date'].' 00:00:00'), \Carbon\Carbon::createFromFormat('Y-m-d H:i:s',$singlePlanned['last_active_date'].' 00:00:00')))
-                                                                                <tr>
-                                                                                    <td class="highlight" colspan="5">
-                                                                                        @if ($one_request['processed']=='1' && $one_request['status']=='old')
-                                                                                            <div class="warning"></div> <a class="font-green-seagreen"> Processed - </a>
-                                                                                        @elseif ($one_request['processed']=='1')
-                                                                                            <div class="warning"></div> <a class="font-green-seagreen"> Waiting Activation - </a>
-                                                                                        @else
-                                                                                            <div class="danger"></div> <a class="font-red-thunderbird"> Pending - </a>
-                                                                                        @endif
-                                                                                        Freeze membership between <b class="font-purple-studio">{{ $one_request['start_date']->format('d M Y') }}</b> and <b class="font-purple-studio">{{ $one_request['end_date']->format('d M Y') }}</b>.
-                                                                                        Action added by <a style="margin-left:0px;" href="{{ $one_request['added_by_link'] }}" target="_blank">{{ $one_request['added_by_name'] }}</a>
-                                                                                        on {{ $one_request['created_at'] }} (last update on {{ $one_request['updated_at'] }})
-                                                                                        @if ($one_request['processed']=='0')
-                                                                                            | <a class="label label-sm label-danger remove_pending_action" data-id="{{ $one_request['id'] }}"> delete </a>
-                                                                                        @endif
-                                                                                    </td>
-                                                                                </tr>
-                                                                            @endif
-                                                                        @endforeach
-                                                                    @endif
-
-                                                                    <tr>
-                                                                        <td class="highlight">
-                                                                        @if ($singlePlanned['invoiceLink']!='')
-                                                                            <div class="success"></div>
-                                                                            <a href="{{ $singlePlanned['invoiceLink'] }}" target="_blank"> {{ $singlePlanned['item_name'] }} </a>
-                                                                        @else
-                                                                            <div class="success"></div>
-                                                                            <span> &nbsp; &nbsp; {{ $singlePlanned['item_name'] }} </span>
-                                                                        @endif
-                                                                        </td>
-                                                                        <td> {{ $singlePlanned['issued_date'] }} - {{ $singlePlanned['status'] }} </td>
-                                                                        <td> {{ $singlePlanned['last_active_date'] }} </td>
-                                                                        <td class="hidden-xs"> {{ $singlePlanned['price'].' '.Config::get('constants.finance.currency') }} </td>
-                                                                        <td>
-                                                                            @if ($singlePlanned['invoiceStatus']!='')
-                                                                                <span class="label label-sm label-success"> {{$singlePlanned['invoiceStatus']}} </span>
-                                                                            @endif
-                                                                        </td>
-                                                                        <!--<td> <a href="javascript:;" class="btn btn-sm green"> Group Invoices <i class="fa fa-plus"></i></a>
-                                                                            <a href="javascript:;" class="btn btn-sm purple"> Defer <i class="fa fa-times"></i></a></td>-->
-                                                                    </tr>
-
-                                                                    @if (sizeof($plan_requests)>0)
-                                                                        @foreach($plan_requests as $one_request)
-                                                                            @if ($one_request['action_type']=='cancel' && $one_request['end_date']->eq(\Carbon\Carbon::createFromFormat('Y-m-d H:i:s',$singlePlanned['last_active_date'].' 00:00:00')))
-                                                                                <tr>
-                                                                                    <td class="highlight" colspan="5">
-                                                                                        @if ($one_request['processed']=='1')
-                                                                                            <div class="warning"></div> <a class="font-green-seagreen"> Processed - </a>
-                                                                                        @else
-                                                                                            <div class="danger"></div> <a class="font-red-thunderbird"> Pending - </a>
-                                                                                        @endif
-                                                                                        Membership cancellation starting with <b class="font-purple-studio">{{ \Carbon\Carbon::instance($one_request['end_date'])->addDay()->format('d M Y') }}</b>.
-                                                                                        Action added by <a style="margin-left:0px;" href="{{ $one_request['added_by_link'] }}" target="_blank">{{ $one_request['added_by_name'] }}</a>
-                                                                                        on {{ $one_request['created_at'] }} (last update on {{ $one_request['updated_at'] }})
-                                                                                        @if ($one_request['processed']=='0')
-                                                                                            | <a class="label label-sm label-danger remove_pending_action" data-id="{{ $one_request['id'] }}"> delete </a>
-                                                                                        @endif
-                                                                                    </td>
-                                                                                </tr>
-                                                                            @endif
-                                                                        @endforeach
-                                                                    @endif
-                                                                @endforeach
-                                                                </tbody>
-                                                            </table>
-                                                        </div>
-                                                        <!-- END FORM-->
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            @endif
-                                        </div>
-                                        <!-- END Membership Plan TAB -->
                                         <!-- CHANGE AVATAR TAB -->
                                         <div class="tab-pane" id="tab_1_2">
                                             <form action="{{ route('admin/front_users/view_user/avatar_image', ['id'=>$user->id]) }}" id="user_picture_upload1" class="form-horizontal" method="post" enctype="multipart/form-data">
@@ -532,56 +256,38 @@
                                         <!-- END CHANGE PASSWORD TAB -->
                                         <!-- DOCUMENTS TAB -->
                                         <div class="tab-pane" id="tab_1_4">
-                                            <div class="portlet box blue">
-                                                <div class="portlet-title">
-                                                    <div class="caption">
-                                                        <i class="fa fa-gift"></i>Upload Documents </div>
-                                                    <div class="tools">
-                                                        <a class="expand" href="javascript:;" data-original-title="" title=""> </a>
-                                                    </div>
+                                            <form action="#" name="form_personal_address" id="form_personal_address">
+                                                <div class="alert alert-danger display-hide">
+                                                    <button class="close" data-close="alert"></button> You have some form errors. Please check below. </div>
+                                                <div class="alert alert-success display-hide">
+                                                    <button class="close" data-close="alert"></button> Your form validation is successful! </div>
+                                                <div class="form-group">
+                                                    <label class="control-label">Address Line1</label>
+                                                    <input type="text" name="personal_addr1" id="personal_addr1" placeholder="Address1" value="{{ @$personalAddress->address1 }}" class="form-control" /> </div>
+                                                <div class="form-group">
+                                                    <label class="control-label">Address Line2</label>
+                                                    <input type="text" name="personal_addr2" id="personal_addr2" placeholder="Address2" value="{{ @$personalAddress->address2 }}" class="form-control" /> </div>
+                                                <div class="form-group">
+                                                    <label class="control-label">City</label>
+                                                    <input type="text" name="personal_addr_city" id="personal_addr_city" placeholder="City" value="{{ @$personalAddress->city }}" class="form-control" /> </div>
+                                                <div class="form-group">
+                                                    <label class="control-label">Region</label>
+                                                    <input type="text" name="personal_addr_region" id="personal_addr_region" placeholder="Region" value="{{ @$personalAddress->region }}" class="form-control" /> </div>
+                                                <div class="form-group">
+                                                    <label class="control-label">Postal Code</label>
+                                                    <input type="text" name="personal_addr_pcode" id="personal_addr_pcode" placeholder="Postal Code" value="{{ @$personalAddress->postal_code }}" class="form-control" /> </div>
+                                                <div class="form-group">
+                                                    <label class="control-label">Country</label>
+                                                    <select class="form-control" name="personal_addr_country" id="personal_addr_country">
+                                                        @foreach ($countries as $country)
+                                                            <option value="{{ $country->id }}" {!! @$personalAddress->country_id==$country->id?'selected':'' !!}>{{ $country->name }}</option>
+                                                        @endforeach
+                                                    </select></div>
+                                                <div class="margiv-top-10">
+                                                    <a href="javascript:;" class="btn green" onclick="javascript: $('#form_personal_address').submit();"> Save Changes </a>
+                                                    <a href="javascript:;" class="btn default"> Cancel </a>
                                                 </div>
-                                                <div class="portlet-body" style="display: none;">
-                                                    <div class="m-heading-1 border-green m-bordered">
-                                                        <h3>Documents Dropzone</h3>
-                                                        <p> Select the documents you want to add, documents related to this specific user, and upload them once you added all of them to the dropbox area. </p>
-                                                    </div>
-                                                    <form action="{{ route('admin/front_users/view_user/add_document', ['id'=>$user->id]) }}" class="dropzone dropzone-file-area" id="my-dropzone" style="width: 500px; margin-top: 50px;">
-                                                        <h3 class="sbold">Drop files here or click to upload</h3>
-                                                        <p> This is just a demo dropzone. Selected files are not actually uploaded. </p>
-                                                    </form>
-                                                </div>
-                                            </div>
-
-                                            <div class="portlet light portlet-fit bordered">
-                                                <div class="portlet-title">
-                                                    <div class="caption">
-                                                        <i class=" icon-layers font-green"></i>
-                                                        <span class="caption-subject font-green bold uppercase">Uploaded documents [page needs to be reloaded for latest files to be shown]</span>
-                                                        <div class="caption-desc font-grey-cascade"> hire documents, national identification card, etc. </div>
-                                                    </div>
-                                                </div>
-                                                <div class="portlet-body">
-                                                    <div class="mt-element-list">
-                                                        <div class="mt-list-container list-simple ext-1">
-                                                            <ul>
-                                                                @foreach ($documents as $document)
-                                                                    <li class="mt-list-item">
-                                                                        <div class="list-icon-container">
-                                                                            <i class="icon-check"></i>
-                                                                        </div>
-                                                                        <div class="list-datetime"> {{ $document->created_at->format('m/d/y') }} </div>
-                                                                        <div class="list-item-content">
-                                                                            <h3 class="uppercase">
-                                                                                <a href="{{ route('admin/front_user/get_document', [ 'id' => $user->id , 'document_name'=> $document->file_name ]) }}" target="_blank">{{ $document->file_name }}</a>
-                                                                            </h3>
-                                                                        </div>
-                                                                    </li>
-                                                                @endforeach
-                                                            </ul>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
+                                            </form>
                                         </div>
                                         <!-- END DOCUMENTS TAB -->
                                     </div>
@@ -727,9 +433,9 @@
                                     <div class="col-md-7">
                                         <select name="freeze_start_date" id="freeze_start_date" class="form-control input input-sm list_all_plans">
                                             <option value="-1"> Select Date </option>
-                                        @foreach ($invoiceFreeze as $key=>$oneInv)
-                                            <option value="{{ $key }}"> {{ $oneInv }}</option>
-                                        @endforeach
+                                            @foreach ($invoiceFreeze as $key=>$oneInv)
+                                                <option value="{{ $key }}"> {{ $oneInv }}</option>
+                                            @endforeach
                                         </select>
                                     </div>
                                 </div>
@@ -888,7 +594,6 @@
     <script src="{{ asset('assets/global/plugins/jquery-notific8/jquery.notific8.min.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/global/plugins/jquery.blockui.min.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/pages/scripts/profile.min.js') }}" type="text/javascript"></script>
-    <script src="{{ asset('assets/global/plugins/dropzone/dropzone.min.js') }}" type="text/javascript"></script>
 @endsection
 
 @section('themeBelowLayoutScripts')
@@ -1318,53 +1023,9 @@
 
         }();
 
-        var FormDropzone = function () {
-            return {
-                //main function to initiate the module
-                init: function () {
-
-                    Dropzone.options.myDropzone = {
-                        paramName: "user_doc", // The name that will be used to transfer the file
-                        maxFilesize: 20, // MB
-                        acceptedFiles: "image/jpeg,image/png,application/pdf,.psd,.doc,.docx,.xls,.xlsx,.JPG",
-                        dictDefaultMessage: '',
-                        dictResponseError: 'Error uploading file!',
-                        init: function() {
-                            this.on("sending", function(file, xhr, data) {
-                                data.append("_token", '{{ csrf_token() }}');
-                            });
-                            this.on("addedfile", function(file) {
-                                // Create the remove button
-                                var removeButton = Dropzone.createElement("<a href='javascript:;'' class='btn red btn-sm btn-block'>Remove</a>");
-
-                                // Capture the Dropzone instance as closure.
-                                var _this = this;
-
-                                // Listen to the click event
-                                removeButton.addEventListener("click", function(e) {
-                                    // Make sure the button click doesn't submit the form:
-                                    e.preventDefault();
-                                    e.stopPropagation();
-
-                                    // Remove the file preview.
-                                    _this.removeFile(file);
-                                    // If you want to the delete the file on the server as well,
-                                    // you can do the AJAX request here.
-                                });
-
-                                // Add the button to the file preview element.
-                                file.previewElement.appendChild(removeButton);
-                            });
-                        }
-                    }
-                }
-            };
-        }();
-
         $(document).ready(function(){
             FormValidation.init();
             ComponentsDateTimePickers.init();
-            FormDropzone.init();
         });
 
         /* Done */
@@ -1441,154 +1102,21 @@
             App.unblockUI('#user_picture_upload2');
         });
 
-        $('.list_all_plans').on('change', function(){
-            var button = $('.apply_new_membership_plan');
-            if ($(this).val()==-1 || $(this).val()=='{{$membership_plan->id}}'){
-                button.hide();
-            }
-            else{
-                button.show();
-            }
-        });
-
-        $('.apply_new_membership_plan').on('click', function(){
+        function update_personal_address(){
             $.ajax({
-                url: '{{route('admin/membership_plans/ajax_get_details')}}',
+                url: '{{route('admin/front_users/view_user/personal_address', ['id'=>$user->id])}}',
                 type: "post",
                 data: {
-                    'selected_plan': $('select[name=membership_plans_list]').val(),
+                    'address1':     $('input[name=personal_addr1]').val(),
+                    'address2':     $('input[name=personal_addr2]').val(),
+                    'city':         $('input[name=personal_addr_city]').val(),
+                    'region':       $('input[name=personal_addr_region]').val(),
+                    'postal_code':  $('input[name=personal_addr_pcode]').val(),
+                    'country_id':   $('select[name=personal_addr_country]').val(),
                 },
                 success: function(data){
                     if (data.success) {
-                        $('input[name="membership_name"]').val(data.name);
-                        $('input[name="membership_price"]').val(data.price);
-                        $('input[name="membership_one_fee_name"]').val(data.one_time_fee_name);
-                        $('input[name="membership_one_fee_value"]').val(data.one_time_fee_value);
-                        $('input[name="membership_invoice_period"]').val(data.invoice_time);
-                        $('textarea[name="membership_description"]').html(data.description);
-                        $('input[name="selected_plan_number"]').val(data.plan_order_id);
-
-                        $('#changeIt').modal('show');
-                    }
-                    else{
-                        show_notification(data.title, data.errors, 'tangerine', 3500, 0);
-                    }
-                }
-            });
-        });
-
-        $('.remove_pending_action').on('click', function(){
-            $('input[name="remove_action_id"]').val($(this).attr('data-id'));
-
-            $('#cancel_planned_action_confirm_box').modal('show');
-        });
-
-        function remove_pending_action(){
-            var userID = '{{$user->id}}';
-
-            $.ajax({
-                url: '{{route('admin/membership_plans/delete_pending_action')}}',
-                type: "post",
-                data: {
-                    'selected_action': $('input[name=remove_action_id]').val(),
-                    'member_id':       userID
-                },
-                success: function(data){
-                    if (data.success) {
-                        $('#cancel_planned_action_confirm_box').modal('hide');
                         show_notification(data.title, data.message, 'lime', 3500, 0);
-
-                        setTimeout(function(){
-                            location.reload();
-                        },2000);
-                    }
-                    else{
-                        show_notification(data.title, data.errors, 'tangerine', 3500, 0);
-                    }
-                }
-            });
-        }
-
-        function change_membership_plan(){
-            var userID = '{{$user->id}}';
-
-            $.ajax({
-                url: '{{route('admin/membership_plans/assign_to_member')}}',
-                type: "post",
-                data: {
-                    'selected_plan':    $('select[name=membership_plans_list]').val(),
-                    'member_id':        userID
-                },
-                success: function(data){
-                    if (data.success) {
-                        $('input[name="membership_name"]').val('');
-                        $('input[name="membership_price"]').val('');
-                        $('input[name="membership_one_fee_name"]').val('');
-                        $('input[name="membership_one_fee_value"]').val('');
-                        $('input[name="membership_invoice_period"]').val('');
-                        $('textarea[name="membership_description"]').html('');
-                        $('input[name="selected_plan_number"]').html(-1);
-
-                        $('#changeIt').modal('hide');
-                        show_notification(data.title, data.message, 'lime', 3500, 0);
-
-                        setTimeout(function(){
-                            location.reload();
-                        },2000);
-                    }
-                    else{
-                        show_notification(data.title, data.errors, 'tangerine', 3500, 0);
-                    }
-                }
-            });
-        }
-
-        function freeze_membership(){
-            var userID = '{{$user->id}}';
-
-            $.ajax({
-                url: '{{route('admin/membership_plans/freeze_member_plan')}}',
-                type: "post",
-                data: {
-                    'from_date': $('input[name="freeze_from_date"]').val(),
-                    'to_date': $('input[name="freeze_to_date"]').val(),
-                    'invoice_date':$('select[name=freeze_start_date]').val(),
-                    'no_of_months':$('select[name=freeze_no_months]').val(),
-                    'member_id':userID
-                },
-                success: function(data){
-                    if (data.success) {
-                        $('#freeze_plan_confirm_box').modal('hide');
-                        $('#freeze_plan_box').modal('hide');
-                        show_notification(data.title, data.message, 'lime', 3500, 0);
-
-                        setTimeout(function(){
-                            location.reload();
-                        },2000);
-                    }
-                    else{
-                        $('#freeze_plan_confirm_box').modal('hide');
-                        show_notification(data.title, data.errors, 'tangerine', 3500, 0);
-                    }
-                }
-            });
-        }
-
-        function cancel_membership(){
-            var userID = '{{$user->id}}';
-
-            $.ajax({
-                url: '{{route('admin/membership_plans/cancel_member_plan')}}',
-                type: "post",
-                data: {
-                    'member_id':userID,
-                    'cancellation_date':$('select[name="date_cancellation_time"]').val()
-                },
-                success: function(data){
-                    if (data.success) {
-                        $('#cancel_confirm_box').modal('hide');
-                        show_notification(data.title, data.message, 'lime', 3500, 0);
-
                         setTimeout(function(){
                             location.reload();
                         },2000);

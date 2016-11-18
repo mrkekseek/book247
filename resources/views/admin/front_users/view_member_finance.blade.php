@@ -57,6 +57,10 @@
                                         <i class="icon-home"></i> Overview </a>
                                 </li>
                                 <li>
+                                    <a href="{{route("admin/front_users/view_personal_settings", $user->id)}}">
+                                        <i class="icon-settings"></i> Personal Settings </a>
+                                </li>
+                                <li>
                                     <a href="{{route("admin/front_users/view_account_settings", $user->id)}}">
                                         <i class="icon-settings"></i> Account Settings </a>
                                 </li>

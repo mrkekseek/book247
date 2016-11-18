@@ -449,7 +449,206 @@ class FrontEndUserController extends Controller
         ];
         $sidebar_link= 'admin-frontend-user_details_view';
 
-        return view('admin/front_users/view_member_settings', [
+        return view('admin/front_users/view_member_account_settings', [
+            'user'      => $back_user,
+            'userRole'  => $userRole,
+            'professional' => $userProfessional,
+            'personal'  => $userPersonal,
+            'personalAddress'   => $personalAddress,
+            'countryDetails'    => $userCountry,
+            'countries' => $countries,
+            'roles'     => $roles,
+            'breadcrumbs' => $breadcrumbs,
+            'text_parts'  => $text_parts,
+            'in_sidebar'  => $sidebar_link,
+            'avatar'      => $avatar['avatar_base64'],
+            'permissions' => $permissions,
+            'documents'   => $userDocuments,
+            // membership plan
+            'membership_plan'   => $my_plan,
+            'plan_requests'     => $plan_request,
+            //'activities'    => $activities,
+            'restrictions'  => @$restrictions,
+            'plan_details'  => @$plan_details,
+            'memberships'   => $membership_plans,
+            'old_avatars'   => $avatarArchive,
+            'plannedInvoices'       => @$plannedInvoices,
+            'invoiceCancellation'   => $invoiceCancellation,
+            'invoiceFreeze'         => $invoiceFreeze,
+            'canCancel'     => $canCancel,
+            'canFreeze'     => $canFreeze
+        ]);
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show_personal_settings($id)
+    {
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
+            return redirect()->intended(route('admin/login'));
+        }
+
+        $back_user = User::with('roles')->find($id);
+
+        $text_parts  = [
+            'title'     => 'Back-End Users',
+            'subtitle'  => 'view all users',
+            'table_head_text1' => 'Backend User List'
+        ];
+
+        @$userRole = $back_user->roles[0];
+        if (!$userRole){
+            $defaultRole = Role::where('name','employee')->get();
+            $userRole = $defaultRole[0];
+        }
+        $permissions = Permission::all();
+
+        $userProfessional = $back_user->ProfessionalDetail;
+        if (!isset($userProfessional)){
+            $userProfessional = new ProfessionalDetail();
+        }
+
+        $userPersonal = $back_user->PersonalDetail;
+        if (isset($userPersonal)) {
+            $userPersonal->dob_format = Carbon::createFromFormat('Y-m-d', $userPersonal->date_of_birth)->format('d-m-Y');
+            $userPersonal->dob_to_show = Carbon::createFromFormat('Y-m-d', $userPersonal->date_of_birth)->format('d M Y');
+        }
+        else{
+            $userPersonal = new PersonalDetail();
+        }
+
+        $personalAddress = Address::find($userPersonal->address_id);
+        if (!isset($personalAddress)){
+            $personalAddress = new Address();
+        }
+
+        $roles = Role::all();
+        $countries = Cache::remember('countries', 3660, function() {
+                return Countries::orderBy('name')->get();
+            });
+        $userCountry = Countries::find($back_user->country_id);
+
+        $avatar = $back_user->get_avatar_image();
+
+        $avatarArchive = [];
+        $old_avatars = Storage::disk('local')->files($avatar['file_location']);
+        if ($old_avatars){
+            foreach($old_avatars as $old_avatar){
+                $avatarArchive[] = [
+                    'type'  => Storage::disk('local')->mimeType($old_avatar),
+                    'data'  => Storage::disk('local')->get($old_avatar)
+                ];
+            }
+        }
+
+        $userDocuments = UserDocuments::where('user_id','=',$id)->where('category','=','account_documents')->get();
+
+        $plan_request = [];
+        $invoiceCancellation = [];
+        $invoiceFreeze = [];
+        $canCancel = true;
+        $canFreeze = true;
+
+        $my_plan = UserMembership::where('user_id','=',$back_user->id)->whereIn('status',['active','suspended'])->get()->first();
+        if ($my_plan){
+            $restrictions = $my_plan->get_plan_restrictions();
+            $plan_details = $my_plan->get_plan_details();
+
+            $currentInvoiceDate = UserMembershipInvoicePlanning::where('status','=','old')->where('user_membership_id','=',$my_plan->id)->orderBy('issued_date','desc')->get()->first();
+            if ($currentInvoiceDate) {
+                $invoice_date1 = Carbon::createFromFormat('Y-m-d', $currentInvoiceDate->issued_date);
+                $invoice_date2 = Carbon::createFromFormat('Y-m-d', $currentInvoiceDate->last_active_date);
+
+                $plan_details['invoicePeriod'] = $invoice_date1->format('j M Y') . ' - ' . $invoice_date2->format('j M Y');
+            }
+            else{
+                $plan_details['invoicePeriod'] = '-';
+            }
+
+            $nextInvoiceDate = UserMembershipInvoicePlanning::where('status','=','pending')->where('user_membership_id','=',$my_plan->id)->orderBy('issued_date','asc')->get()->first();
+            if ($nextInvoiceDate) {
+                $invoice_date1 = Carbon::createFromFormat('Y-m-d', $nextInvoiceDate->issued_date);
+                $invoice_date2 = Carbon::createFromFormat('Y-m-d', $nextInvoiceDate->last_active_date);
+
+                $plan_details['nextInvoicePeriod'] = $invoice_date1->format('j M Y') . ' - ' . $invoice_date2->format('j M Y');
+            }
+            else{
+                $plan_details['nextInvoicePeriod'] = '-';
+            }
+
+            $plan_request = $my_plan->get_plan_requests();
+            foreach($plan_request as $a_request){
+                if ($a_request['action_type'] == 'cancel' && $a_request['status']!='cancelled'){
+                    $canCancel = false;
+                }
+                elseif ($a_request['action_type'] == 'freeze' && $a_request['status']=='active'){
+                    $canFreeze = false;
+                }
+            }
+
+            $allPlannedInvoices = UserMembershipInvoicePlanning::where('user_membership_id','=',$my_plan->id)->orderBy('issued_date','asc')->get();
+            $plannedInvoices = [];
+            foreach($allPlannedInvoices as $onlyOne){
+                $varInv = [
+                    'invoiceLink'   => '',
+                    'invoiceStatus' => '',
+                    'item_name' => $onlyOne->item_name,
+                    'price'     => $onlyOne->price,
+                    'status'    => $onlyOne->status,
+                    'issued_date'   => $onlyOne->issued_date,
+                    'last_active_date'   => $onlyOne->last_active_date
+                ];
+
+                if ($onlyOne->invoice_id!=-1){
+                    $getInvoice = Invoice::where('id','=',$onlyOne->invoice_id)->get()->first();
+                    $varInv['status']= 'issued';
+                    $varInv['invoiceStatus']= $getInvoice->status;
+                    $varInv['invoiceLink']  = route('admin/invoices/view', ['id' => $getInvoice->invoice_number]);
+                }
+
+                $plannedInvoices[$onlyOne->id] = $varInv;
+
+                foreach ($plan_request as $key=>$a_request){
+                    if (!isset($a_request['after_date']) && $a_request['start_date']->lte(Carbon::createFromFormat('Y-m-d H:i:s', $onlyOne->issued_date.' 00:00:00'))){
+                        $plan_request[$key]['after_date'] = Carbon::createFromFormat('Y-m-d H:i:s', $onlyOne->issued_date.' 00:00:00');
+                    }
+                }
+            }
+
+            $signOutDate = Carbon::today()->addMonths($my_plan->sign_out_period);
+            //xdebug_var_dump($allPlannedInvoices[0]); exit;
+            foreach($allPlannedInvoices as $onlyOne){
+                if ($onlyOne->status == 'pending'){
+                    $invoiceFreeze[$onlyOne->id] = Carbon::createFromFormat('Y-m-d',$onlyOne->issued_date)->format('jS \o\f F, Y');
+                }
+
+                //xdebug_var_dump(Carbon::createFromFormat('Y-m-d',$onlyOne->issued_date));
+                if ($signOutDate->lte(Carbon::createFromFormat('Y-m-d',$onlyOne->issued_date))){
+                    $invoiceCancellation[$onlyOne->id] = Carbon::createFromFormat('Y-m-d',$onlyOne->last_active_date)->addDay()->format('jS \o\f F, Y');
+                }
+            }
+            //xdebug_var_dump($invoiceCancellation);
+            //exit;
+        }
+        else {
+            $my_plan = MembershipPlan::where('id','=',1)->get()->first();
+        }
+        $membership_plans = MembershipPlan::where('id','!=','1')->where('status','=','active')->get()->sortBy('name');
+
+        $breadcrumbs = [
+            'Home'              => route('admin'),
+            'Administration'    => route('admin'),
+            'Back End Users'    => route('admin/back_users'),
+            $back_user->first_name.' '.$back_user->middle_name.' '.$back_user->last_name => '',
+        ];
+        $sidebar_link= 'admin-frontend-user_details_view';
+
+        return view('admin/front_users/view_member_personal_settings', [
             'user'      => $back_user,
             'userRole'  => $userRole,
             'professional' => $userProfessional,
@@ -917,7 +1116,7 @@ class FrontEndUserController extends Controller
         );
 
         //return redirect('admin/back_users/view_user/'.$id);
-        return redirect()->intended(route('admin/front_users/view_account_settings', ['id' => $id]));
+        return redirect()->intended(route('admin/front_users/view_personal_settings', ['id' => $id]));
     }
 
     /**
@@ -1011,7 +1210,20 @@ class FrontEndUserController extends Controller
     {
         $user = Auth::user();
         if (!$user || !$user->is_back_user()) {
-            return redirect()->intended(route('admin/login'));
+            return [
+                'success' => false,
+                'title'   => 'Authentication Error',
+                'errors'  => 'Please reload the page and try again'
+            ];
+        }
+
+        $client = User::where('id','=',$id)->get()->first();
+        if (!$client){
+            return [
+                'success' => false,
+                'title'   => 'Client not found',
+                'errors'  => 'No client found with the given details'
+            ];
         }
 
         $userPersonal = PersonalDetail::find($id);
@@ -1026,16 +1238,17 @@ class FrontEndUserController extends Controller
         ]);
 
         if ($validator->fails()){
-            //return array(
-            //    'success' => false,
-            //    'errors' => $validator->getMessageBag()->toArray()
-            //);
+            return array(
+                'success' => false,
+                'title'   => 'Error validating',
+                'errors'  => $validator->getMessageBag()->toArray()
+            );
         }
         else{
             if ( !isset($userPersonal) || $userPersonal->address_id==0 ){
                 $personalAddress = new Address();
                 $userPersonal = new PersonalDetail();
-                $userPersonal->user_id = $id;
+                $userPersonal->user_id = $client->id;
             }
             else {
                 $addressID = $userPersonal->address_id;
@@ -1055,9 +1268,13 @@ class FrontEndUserController extends Controller
 
             $userPersonal->address_id = $personalAddress->id;
             $userPersonal->save();
-        }
 
-        return "bine";
+            return [
+                'success' => true,
+                'title'   => 'Address Added/Updated',
+                'message' => 'Client address details successfully updated'
+            ];
+        }
     }
 
     /**
