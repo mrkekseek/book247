@@ -2328,7 +2328,7 @@ class FrontEndUserController extends Controller
             }
         }
         elseif(isset($vars['_method']) && $vars['_method']=='PUT') {
-            //dd($request->input);
+            dd($request->input);
 
             $vars = $request->except('_token')->toArray();
             //var_dump($vars);
