@@ -2289,7 +2289,8 @@ class FrontEndUserController extends Controller
             return redirect()->intended(route('admin/login'));
         }
         $vars = $request->only('_method','start_date','membership_type');
-
+        xdebug_var_dump($vars);
+        xdebug_var_dump($request);
         $allRows = [];
         $members = [];
         $nr = 1;
