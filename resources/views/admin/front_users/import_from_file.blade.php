@@ -98,7 +98,7 @@
                                                     </div>
                                                 </div>
                                                 <div class="portlet-body" style="overflow:auto; width:100%; max-height:800px;">
-                                                    <form name="add_members" method="post" action="{{ route('admin/front_users/import_members') }}">
+                                                    <form name="add_members" method="post" action="{{ route('admin/front_users/import_selected_members') }}">
                                                         <table class="table table-striped table-bordered table-hover table-header-fixed" id="sample_1" style="width:{{250*$per_line}}px;">
                                                             <thead>
                                                             <tr>
@@ -140,7 +140,6 @@
                                                             @endif
                                                             <tr>
                                                                 <td colspan="{{ $per_line+1 }}" class="right">
-                                                                    <input type="hidden" name="_method" value="PUT" />
                                                                     <input type="hidden" name="key_return" value="{{ @$key }}" />
                                                                     <input type="hidden" name="date_start" value="{{ $date_start }}" />
                                                                     <input type="hidden" name="per_line" value="{{ $per_line }}" />
