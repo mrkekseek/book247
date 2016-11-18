@@ -474,8 +474,8 @@ Route::group(['middleware' => 'web'], function () {
         'uses'  => 'FrontEndUserController@import_from_file'
     ]);
 
-    Route::post('admin/front_users/import_selected_members', [
-        'as'    => 'admin/front_users/import_selected_members',
+    Route::put('admin/front_users/import_members', [
+        'as'    => 'admin/front_users/import_members',
         'uses'  => 'FrontEndUserController@import_from_file'
     ]);
 
