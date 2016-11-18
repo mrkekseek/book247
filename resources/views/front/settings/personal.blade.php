@@ -67,22 +67,6 @@
                                         </div>
                                     </div>
                                     <!-- END STAT -->
-                                    <div>
-                                        <h4 class="profile-desc-title">About Me</h4>
-                                        <span class="profile-desc-text"> {{@$personal->about_info}} </span>
-                                        <div class="margin-top-20 profile-desc-link">
-                                            <i class="fa fa-globe"></i>
-                                            <a href="">www.keenthemes.com</a>
-                                        </div>
-                                        <div class="margin-top-20 profile-desc-link">
-                                            <i class="fa fa-twitter"></i>
-                                            <a href="">@keenthemes</a>
-                                        </div>
-                                        <div class="margin-top-20 profile-desc-link">
-                                            <i class="fa fa-facebook"></i>
-                                            <a href="">keenthemes</a>
-                                        </div>
-                                    </div>
                                 </div>
                                 <!-- END PORTLET MAIN -->
                             </div>
@@ -160,10 +144,6 @@
                                                             <div class="form-group">
                                                                 <label class="control-label">Mobile Phone Number</label>
                                                                 <input type="text" name="personalPhone" id="personalPhone" placeholder="+1 234 567 8910 (6284)" class="form-control" value="{{@$personal->mobile_number}}" /> </div>
-                                                            <div class="form-group">
-                                                                <label class="control-label">About</label>
-                                                                <textarea class="form-control" rows="3" placeholder="About Me!!!" id="personalAbout" name="personalAbout">{{@$personal->about_info}}</textarea>
-                                                            </div>
                                                             <div class="margiv-top-10">
                                                                 <a href="javascript:;" onclick="javascript: $('#form_acc_personal').submit();" class="btn green"> Update Details </a>
                                                                 <a href="javascript:;" class="btn default"> Cancel </a>
@@ -732,13 +712,15 @@
                     'date_of_birth':    $('input[name=personalDOB]').val(),
                     'personal_email':   $('input[name=personalEmail]').val(),
                     'mobile_number':    $('input[name=personalPhone]').val(),
-                    'about_info':       $('textarea[name=personalAbout]').val(),
                     'country_id':       $('select[name=personalCountry]').val(),
                     'gender':           $('select[name=gender]').val()
                 },
                 success: function(data){
                     if (data.success) {
                         show_notification(data.title, data.message, 'lime', 3500, 0);
+                        setTimeout(function(){
+                            location.reload();
+                        }, 1500);
                     }
                     else{
                         show_notification(data.title, data.errors, 'tangerine', 3500, 0);
