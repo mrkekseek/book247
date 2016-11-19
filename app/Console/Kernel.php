@@ -31,8 +31,10 @@ class Kernel extends ConsoleKernel
         $schedule->command('inspire')
                  ->hourly();
 
-        $schedule->command('booking:check_past_bookings')
-            ->everyFiveMinutes();
+        if (Config::get('constants.globalWebsite.auto_show_status_change')==true){
+            $schedule->command('booking:check_past_bookings')
+                ->everyFiveMinutes();
+        }
 
         $schedule->command('userMembership:planned_actions_check')
             //->everyMinute()
