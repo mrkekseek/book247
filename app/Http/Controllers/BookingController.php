@@ -284,14 +284,16 @@ class BookingController extends Controller
                         if (strlen($vars['public_note'])>5){
                             $fillable_note['note_body'] = $vars['public_note'];
                             $fillable_note['privacy'] = 'everyone';
+
+                            $booking->add_note($fillable_note);
                         }
-                        $booking->add_note($fillable_note);
 
                         if (strlen($vars['internal_note'])>5){
                             $fillable_note['note_body'] = $vars['internal_note'];
                             $fillable_note['privacy'] = 'employees';
+
+                            $booking->add_note($fillable_note);
                         }
-                        $booking->add_note($fillable_note);
                     }
 
                     if ($old_status=='active'){

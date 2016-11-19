@@ -166,7 +166,6 @@
                 if (repo.phone) {
                     markup += " <div class='select2-result-repository__forks'><span class='fa fa-phone-square'></span> " + repo.phone + "</div> ";
                 }
-
                 markup += '<br />';
 
                 if (repo.city || repo.region) {
