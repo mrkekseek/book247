@@ -1226,7 +1226,7 @@ class FrontEndUserController extends Controller
             ];
         }
 
-        $userPersonal = PersonalDetail::find($id);
+        $userPersonal = PersonalDetail::where('user_id','=',$client->id)->get()->first();
 
         $vars = $request->only('address1', 'address2', 'city', 'country_id', 'postal_code', 'region');
         $validator = Validator::make($vars, [
@@ -1245,14 +1245,19 @@ class FrontEndUserController extends Controller
             );
         }
         else{
-            if ( !isset($userPersonal) || $userPersonal->address_id==0 ){
-                $personalAddress = new Address();
+            if ( !isset($userPersonal) ){
                 $userPersonal = new PersonalDetail();
                 $userPersonal->user_id = $client->id;
+                $personalAddress = new Address();
             }
             else {
                 $addressID = $userPersonal->address_id;
-                $personalAddress = Address::find($addressID);
+                if ($addressID==0){
+                    $personalAddress = new Address();
+                }
+                else{
+                    $personalAddress = Address::find($addressID);
+                }
             }
 
             $personalAddress->fill([
