@@ -1,19 +1,20 @@
 @extends('admin.layouts.main')
 
 @section('pageLevelPlugins')
-    <link href="../assets/global/plugins/datatables/datatables.min.css" rel="stylesheet" type="text/css" />
-    <link href="../assets/global/plugins/datatables/plugins/bootstrap/datatables.bootstrap.css" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/global/plugins/datatables/datatables.min.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/global/plugins/datatables/plugins/bootstrap/datatables.bootstrap.css') }}" rel="stylesheet" type="text/css" />
 @endsection
 
 @section('themeGlobalStyle')
-    <link href="../assets/global/css/components-rounded.min.css" rel="stylesheet" id="style_components" type="text/css" />
-    <link href="../assets/global/css/plugins.min.css" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/global/plugins/jquery-notific8/jquery.notific8.min.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/global/css/components-rounded.min.css') }}" rel="stylesheet" id="style_components" type="text/css" />
+    <link href="{{ asset('assets/global/css/plugins.min.css') }}" rel="stylesheet" type="text/css" />
 @endsection
 
 @section('themeLayoutStyle')
-    <link href="../assets/layouts/layout4/css/layout.min.css" rel="stylesheet" type="text/css" />
-    <link href="../assets/layouts/layout4/css/themes/light.min.css" rel="stylesheet" type="text/css" id="style_color" />
-    <link href="../assets/layouts/layout4/css/custom.min.css" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/layouts/layout4/css/layout.min.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/layouts/layout4/css/themes/light.min.css') }}" rel="stylesheet" type="text/css" id="style_color" />
+    <link href="{{ asset('assets/layouts/layout4/css/custom.min.css') }}" rel="stylesheet" type="text/css" />
 
     <meta name="csrf-token" content="{{ csrf_token() }}" />
 @endsection
@@ -194,38 +195,39 @@
 @endsection
 
 @section('pageBelowCorePlugins')
-    <script src="../assets/global/plugins/jquery.min.js" type="text/javascript"></script>
-    <script src="../assets/global/plugins/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
-    <script src="../assets/global/plugins/js.cookie.min.js" type="text/javascript"></script>
-    <script src="../assets/global/plugins/bootstrap-hover-dropdown/bootstrap-hover-dropdown.min.js" type="text/javascript"></script>
-    <script src="../assets/global/plugins/jquery-slimscroll/jquery.slimscroll.min.js" type="text/javascript"></script>
-    <script src="../assets/global/plugins/jquery.blockui.min.js" type="text/javascript"></script>
-    <script src="../assets/global/plugins/uniform/jquery.uniform.min.js" type="text/javascript"></script>
-    <script src="../assets/global/plugins/bootstrap-switch/js/bootstrap-switch.min.js" type="text/javascript"></script>
+    <script src="{{ asset('assets/global/plugins/jquery.min.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('assets/global/plugins/bootstrap/js/bootstrap.min.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('assets/global/plugins/js.cookie.min.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('assets/global/plugins/bootstrap-hover-dropdown/bootstrap-hover-dropdown.min.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('assets/global/plugins/jquery-slimscroll/jquery.slimscroll.min.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('assets/global/plugins/jquery.blockui.min.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('assets/global/plugins/uniform/jquery.uniform.min.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('assets/global/plugins/bootstrap-switch/js/bootstrap-switch.min.js') }}" type="text/javascript"></script>
 @endsection
 
 @section('pageBelowLevelPlugins')
-    <script src="../assets/global/plugins/select2/js/select2.full.min.js" type="text/javascript"></script>
-    <script src="../assets/global/plugins/jquery-validation/js/jquery.validate.min.js" type="text/javascript"></script>
-    <script src="../assets/global/plugins/jquery-validation/js/additional-methods.min.js" type="text/javascript"></script>
+    <script src="{{ asset('assets/global/plugins/select2/js/select2.full.min.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('assets/global/plugins/jquery-validation/js/jquery.validate.min.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('assets/global/plugins/jquery-validation/js/additional-methods.min.js') }}" type="text/javascript"></script>
 
-    <script src="../assets/global/scripts/datatable.js" type="text/javascript"></script>
-    <script src="../assets/global/plugins/datatables/datatables.min.js" type="text/javascript"></script>
-    <script src="../assets/global/plugins/datatables/plugins/bootstrap/datatables.bootstrap.js" type="text/javascript"></script>
+    <script src="{{ asset('assets/global/scripts/datatable.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('assets/global/plugins/datatables/datatables.min.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('assets/global/plugins/datatables/plugins/bootstrap/datatables.bootstrap.js') }}" type="text/javascript"></script>
 @endsection
 
 @section('themeBelowGlobalScripts')
-    <script src="../assets/global/scripts/app.min.js" type="text/javascript"></script>
+    <script src="{{ asset('assets/global/scripts/app.min.js') }}" type="text/javascript"></script>
 @endsection
 
 @section('pageBelowLevelScripts')
-    <script src="../assets/pages/scripts/table-datatables-managed.min.js" type="text/javascript"></script>
+    <script src="{{ asset('assets/pages/scripts/table-datatables-managed.min.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('assets/global/plugins/jquery-notific8/jquery.notific8.min.js') }}" type="text/javascript"></script>
 @endsection
 
 @section('themeBelowLayoutScripts')
-    <script src="../assets/layouts/layout4/scripts/layout.min.js" type="text/javascript"></script>
-    <script src="../assets/layouts/layout4/scripts/demo.min.js" type="text/javascript"></script>
-    <script src="../assets/layouts/global/scripts/quick-sidebar.min.js" type="text/javascript"></script>
+    <script src="{{ asset('assets/layouts/layout4/scripts/layout.min.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('assets/layouts/layout4/scripts/demo.min.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('assets/layouts/global/scripts/quick-sidebar.min.js') }}" type="text/javascript"></script>
 @endsection
 
 @section('pageCustomJScripts')

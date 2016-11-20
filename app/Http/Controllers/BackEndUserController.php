@@ -129,7 +129,6 @@ class BackEndUserController extends Controller
         $credentials['password'] = bcrypt($credentials['password']);
         try {
             $user = User::create($credentials);
-
             // attach the roles to the new created user
             $user->attachRole($vars['user_type']);
 

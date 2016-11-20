@@ -221,7 +221,7 @@
                 escapeMarkup: function(markup) {
                     return markup;
                 }, // let our custom formatter work
-                minimumInputLength: 1,
+                minimumInputLength: 2,
                 templateResult: formatUserData,
                 templateSelection: formatUserDataSelection
             });
