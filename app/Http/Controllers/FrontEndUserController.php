@@ -2107,8 +2107,6 @@ class FrontEndUserController extends Controller
 
         try {
             $user = User::create($credentials);
-            $user->attachRole($vars['user_type']);
-
             $personalData = [
                 'personal_email'=> $vars['email'],
                 'mobile_number' => $vars['phone_number'],
@@ -2141,9 +2139,16 @@ class FrontEndUserController extends Controller
                     if (!$user->hasRole($memberRole)) {
                         $user->attachRole($memberRole);
                     }
+                    else{
+                        @$user->detachAllRoles();
+                        $user->attachRole($memberRole);
+                    }
                 } else {
-                    // could not assign plan to member
+                    $user->attachRole($vars['user_type']);
                 }
+            }
+            else{
+                $user->attachRole($vars['user_type']);
             }
 
             return [
