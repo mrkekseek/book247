@@ -2317,16 +2317,28 @@ class FrontEndUserController extends Controller
                 Storage::disk('local')->put('temp/'.$name.'.'.$extension,  File::get($file));
 
                 // get file from storage
+                $empty_lines = 0;
                 $importList = Storage::disk('local')->get('temp/'.$name.'.'.$extension);
                 $formattedList = Excel::load('storage/app/temp/'.$name.'.'.$extension)->get();
                 foreach ($formattedList->toArray() as $row) {
                     $singleRow = [];
                     $nr = 1;
+                    $chars = 0;
                     foreach($row as $vals){
-                        $singleRow[$nr++] = $vals;
+                        $singleRow[$nr++] = trim($vals);
+                        $chars+=trim($vals);
                     }
 
-                    $allRows[] = $singleRow;
+                    if ($chars>0){
+                        $allRows[] = $singleRow;
+                    }
+                    else{
+                        $empty_lines++;
+                    }
+
+                    if ($empty_lines>5){
+                        break;
+                    }
                 }
 
                 $selectMembership = $vars['membership_type'];

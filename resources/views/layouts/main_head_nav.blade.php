@@ -464,12 +464,14 @@
                         <i class="icon-bar-chart"></i> Squash Fitness Homepage
                     </a>
                 </li>
+                @if (isset($show_membership_types))
                 <li class="menu-dropdown mega-menu-dropdown {{$in_sidebar=="front-type_of_memberships"?"active":""}}">
                     <a href="{{ route('front/membership_types') }}">
                         <i class="icon-bar-chart"></i> Membership Types
                         <!--<span class="badge badge-success">New</span>-->
                     </a>
                 </li>
+                @endif
                 <li class="menu-dropdown mega-menu-dropdown {{$in_sidebar=="front-contact_or_locations"?"active":""}}">
                     <a href="{{ route('front/contact_locations') }}">
                         <i class="icon-bar-chart"></i> Contact/Locations
