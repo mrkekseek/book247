@@ -238,7 +238,9 @@
                 //init datepickers
                 $('.date-picker').datepicker({
                     rtl: App.isRTL(),
-                    autoclose: true
+                    autoclose: true,
+                    daysOfWeekHighlighted: "0",
+                    weekStart:1,
                 });
 
                 //init datetimepickers

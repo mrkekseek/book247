@@ -656,7 +656,9 @@
                     $('.date-picker').datepicker({
                         rtl: App.isRTL(),
                         orientation: "left",
-                        autoclose: true
+                        autoclose: true,
+                        daysOfWeekHighlighted: "0",
+                        weekStart:1,
                     });
                     //$('body').removeClass("modal-open"); // fix bug when inline picker is used in modal
                 }

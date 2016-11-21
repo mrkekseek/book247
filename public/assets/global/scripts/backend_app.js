@@ -12,6 +12,8 @@ var ComponentsMenuDatePickers = function () {
                     isRTL: App.isRTL(),
                     todayBtn: false,
                     format:"dd-mm-yyyy",
+                    daysOfWeekHighlighted: "0",
+                    weekStart:1,
                 })
                 //Listen for the change even on the input
                 .on('changeDate', function(ev){
