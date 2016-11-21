@@ -1481,7 +1481,16 @@ class BookingController extends Controller
         $hours_interval     = $this->make_hours_interval($date_selected, $open_at, $close_at, 30, true, false);
         $location_bookings  = $this->get_location_bookings($date_selected, $location->id, $resources_ids, $hours_interval);
 
-    //$this->make_hours_interval1($date_selected, $open_at, $close_at, 30, false, false);
+        $jump_to = [];
+        $nowTime = Carbon::now()->addMinutes(-30)->format('H:i');
+        if (Carbon::today()->eq(Carbon::createFromFormat('Y-m-d H:i:s',$date_selected.' 00:00:00'))){
+            foreach($hours_interval as $key=>$val){
+                if ($key>$nowTime){
+                    $jump_to[$key] = 'jump_here_place';
+                    break;
+                }
+            }
+        }
 
         $resources_ids = [];
         foreach($resources as $resource){
@@ -1562,7 +1571,8 @@ class BookingController extends Controller
             'memberships'   => $membership_plans,
             'membership_legend'   => $membership_legend,
             'membership_products' => $membership_products,
-            'defaultProductColor' => $defaultProductColor
+            'defaultProductColor' => $defaultProductColor,
+            'jump_to'       => @$jump_to
         ]);
     }
 

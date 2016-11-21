@@ -84,7 +84,7 @@
                             @if (sizeof($time_intervals)>0)
                                 @foreach ($time_intervals as $key=>$hour)
                                 <tr>
-                                    <td >{{ $key }} <a class="btn btn-circle btn-icon-only border-white bg-green-meadow bg-font-green-meadow add_custom_bookings_btn" href="javascript:;"> + </a></td>
+                                    <td {!! isset($jump_to[$key])?'id="jump_right_here"':'' !!} >{{ $key }} <a class="btn btn-circle btn-icon-only border-white bg-green-meadow bg-font-green-meadow add_custom_bookings_btn" href="javascript:;"> + </a></td>
                                     @foreach ($resources as $resource)
                                         <td class="{{ isset($location_bookings[$key][$resource['id']]['color_stripe'])?$location_bookings[$key][$resource['id']]['color_stripe']:$hour['color_stripe'] }}
                                             {{ ( $hour['color_stripe']=='' && !isset($location_bookings[$key][$resource['id']]['color_stripe']) )?' isfreetime':'' }}"
@@ -982,6 +982,15 @@
 
         }();
 
+        function scrollToAvailableHours(){
+            var jumpTo = $("#jump_right_here").offset().top - 74;
+            console.log(jumpTo);
+
+            $('html, body').animate({
+                scrollTop: jumpTo
+            }, 500);
+        }
+
         if (App.isAngularJsApp() === false) {
             jQuery(document).ready(function () {
                 // initialize select2 drop downs
@@ -990,6 +999,8 @@
                 ComponentsDateTimePickers.init();
                 // initialize the forms validation part
                 FormValidation.init();
+                //scroll to first available hour in calendar
+                scrollToAvailableHours();
             });
         }
 
