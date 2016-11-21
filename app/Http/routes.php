@@ -915,6 +915,11 @@ Route::group(['prefix'=>'ajax', 'middleware' => 'web'], function(){
         'uses'  => 'FrontEndUserController@change_account_status'
     ]);
 
+    Route::post('front_member_update_access_card', [
+        'as'    => 'ajax/front_member_update_access_card',
+        'uses'  => 'FrontEndUserController@update_access_card'
+    ]);
+
     Route::post('register_new_setting',[
         'as'    => 'ajax/register_new_setting',
         'uses'  => 'AppSettings@register_new_setting'

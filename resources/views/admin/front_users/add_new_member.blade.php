@@ -22,17 +22,6 @@
 
 @section('pageContentBody')
     <div class="page-content">
-        <!-- BEGIN PAGE HEAD-->
-        <div class="page-head">
-            <!-- BEGIN PAGE TITLE -->
-            <div class="page-title">
-                <h1>{!!$text_parts['title']!!}
-                    <small>{!!$text_parts['subtitle']!!}</small>
-                </h1>
-            </div>
-            <!-- END PAGE TITLE -->
-        </div>
-        <!-- END PAGE HEAD-->
         <!-- BEGIN PAGE BASE CONTENT -->
         <div class="row">
             <div class="col-md-12">
@@ -52,43 +41,123 @@
                                         <button class="close" data-close="alert"></button> You have some errors in the form. Please check below. </div>
                                     <div class="alert alert-success display-hide">
                                         <button class="close" data-close="alert"></button> Information is valid, please wait! </div>
-                                    <p class="hint"> Enter personal details below: </p>
-                                    <div class="form-group">
-                                        <label class="control-label visible-ie8 visible-ie9">First Name</label>
-                                        <input class="form-control placeholder-no-fix" type="text" placeholder="First Name" name="firstname" /> </div>
-                                    <div class="form-group">
-                                        <label class="control-label visible-ie8 visible-ie9">Middle Name</label>
-                                        <input class="form-control placeholder-no-fix" type="text" placeholder="Middle Name" name="middlename" /> </div>
-                                    <div class="form-group">
-                                        <label class="control-label visible-ie8 visible-ie9">Last Name</label>
-                                        <input class="form-control placeholder-no-fix" type="text" placeholder="Last Name" name="lastname" /> </div>
-                                    <div class="form-group">
-                                        <label class="control-label visible-ie8 visible-ie9">Phone Number</label>
-                                        <input class="form-control placeholder-no-fix" type="text" placeholder="Phone Number" name="phone" /> </div>
 
-                                    <p class="hint"> Enter account details below: </p>
-                                    <div class="form-group">
-                                        <!--ie8, ie9 does not support html5 placeholder, so we just show field title for that-->
-                                        <label class="control-label visible-ie8 visible-ie9">Email</label>
-                                        <input class="form-control placeholder-no-fix" type="text" placeholder="Email" name="reg_email" /> </div>
-                                    <div class="form-group">
-                                        <label class="control-label visible-ie8 visible-ie9">Password</label>
-                                        <input class="form-control placeholder-no-fix" type="password" autocomplete="off" id="register_password" placeholder="Password" name="password" /> </div>
-                                    <div class="form-group">
-                                        <label class="control-label visible-ie8 visible-ie9">Re-type Your Password</label>
-                                        <input class="form-control placeholder-no-fix" type="password" autocomplete="off" placeholder="Re-type Your Password" name="rpassword" /> </div>
+                                    <div class="panel panel-primary">
+                                        <div class="panel-heading">
+                                            <h3 class="panel-title">Enter personal details below</h3>
+                                        </div>
+                                        <div class="panel-body">
+                                            <div class="form-group">
+                                                <label class="control-label visible-ie8 visible-ie9">First Name</label>
+                                                <input class="form-control placeholder-no-fix" type="text" placeholder="First Name" name="firstname" /> </div>
+                                            <div class="form-group">
+                                                <label class="control-label visible-ie8 visible-ie9">Middle Name</label>
+                                                <input class="form-control placeholder-no-fix" type="text" placeholder="Middle Name" name="middlename" /> </div>
+                                            <div class="form-group">
+                                                <label class="control-label visible-ie8 visible-ie9">Last Name</label>
+                                                <input class="form-control placeholder-no-fix" type="text" placeholder="Last Name" name="lastname" /> </div>
+                                            <div class="form-group">
+                                                <label class="control-label visible-ie8 visible-ie9">Phone Number</label>
+                                                <input class="form-control placeholder-no-fix" type="text" placeholder="Phone Number" name="phone" /> </div>
+                                            <div class="form-group">
+                                                <label class="control-label visible-ie8 visible-ie9">Gender</label>
+                                                <select class="form-control" name="member_gender">
+                                                    <option value="" selected="selected">Select Gender</option>
+                                                    <option value="F">Female</option>
+                                                    <option value="M">Male</option>
+                                                </select>
+                                            </div>
+                                            <div class="form-group">
+                                                <span class="help-inline">Date of Birth</span>
+                                                <div class="input-group input-medium date date-picker" data-date="{{ \Carbon\Carbon::today()->format('d-m-Y') }}" data-date-format="dd-mm-yyyy" data-date-viewmode="years" style="display:inline-flex; margin-top:2px; margin-right:40px;">
+                                                    <input type="text" class="form-control" name="date_of_birth" readonly style="background-color:#ffffff;">
+                                                        <span class="input-group-btn">
+                                                            <button class="btn default" type="button">
+                                                                <i class="fa fa-calendar"></i>
+                                                            </button>
+                                                        </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="panel panel-primary">
+                                        <div class="panel-heading">
+                                            <h3 class="panel-title">Enter account details below</h3>
+                                        </div>
+                                        <div class="panel-body">
+                                            <div class="form-group">
+                                                <!--ie8, ie9 does not support html5 placeholder, so we just show field title for that-->
+                                                <label class="control-label visible-ie8 visible-ie9">Email</label>
+                                                <input class="form-control placeholder-no-fix" type="text" placeholder="Email" name="reg_email" /> </div>
+                                            <div class="form-group">
+                                                <label class="control-label visible-ie8 visible-ie9">Password</label>
+                                                <input class="form-control placeholder-no-fix" type="password" autocomplete="off" id="register_password" placeholder="Password" name="password" /> </div>
+                                            <div class="form-group">
+                                                <label class="control-label visible-ie8 visible-ie9">Re-type Your Password</label>
+                                                <input class="form-control placeholder-no-fix" type="password" autocomplete="off" placeholder="Re-type Your Password" name="rpassword" /> </div>
+                                        </div>
+                                    </div>
 
                                     @if (sizeof($memberships)>0)
-                                    <p class="hint"> Select membership plan (if needed): </p>
-                                    <div class="form-group">
-                                        <select class="form-control" name="membership_plan">
-                                            <option value="1" selected="selected">No membership plan</option>
-                                            @foreach($memberships as $plan)
-                                            <option value="{{ $plan->id }}">{{ $plan->name }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
+                                        <div class="panel panel-info">
+                                            <div class="panel-heading">
+                                                <h3 class="panel-title">Select membership plan - optional</h3>
+                                            </div>
+                                            <div class="panel-body">
+                                                <div class="form-group">
+                                                    <span class="help-inline">Membership Start Date</span>
+                                                    <div class="input-group input-medium date date-picker" data-date="{{ \Carbon\Carbon::today()->format('d-m-Y') }}" data-date-format="dd-mm-yyyy" data-date-viewmode="years" style="display:inline-flex; margin-top:2px; margin-right:40px;">
+                                                        <input type="text" class="form-control" name="start_date" readonly style="background-color:#ffffff;">
+                                                        <span class="input-group-btn">
+                                                            <button class="btn default" type="button">
+                                                                <i class="fa fa-calendar"></i>
+                                                            </button>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <span class="help-inline">Membership Start Date</span>
+                                                    <select class="form-control input-group input-inline input-medium" name="membership_plan">
+                                                        <option value="1" selected="selected">No membership plan</option>
+                                                        @foreach($memberships as $plan)
+                                                        <option value="{{ $plan->id }}">{{ $plan->name }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
                                     @endif
+
+                                    <div class="panel panel-info">
+                                        <div class="panel-heading">
+                                            <h3 class="panel-title">Member Address - optional</h3>
+                                        </div>
+                                        <div class="panel-body">
+                                            <div class="form-group">
+                                                <label class="control-label">Address Line1</label>
+                                                <input type="text" name="personal_addr1" id="personal_addr1" placeholder="Address1" value="{{ @$personalAddress->address1 }}" class="form-control" /> </div>
+                                            <div class="form-group">
+                                                <label class="control-label">Address Line2</label>
+                                                <input type="text" name="personal_addr2" id="personal_addr2" placeholder="Address2" value="{{ @$personalAddress->address2 }}" class="form-control" /> </div>
+                                            <div class="form-group">
+                                                <label class="control-label">City</label>
+                                                <input type="text" name="personal_addr_city" id="personal_addr_city" placeholder="City" value="{{ @$personalAddress->city }}" class="form-control" /> </div>
+                                            <div class="form-group">
+                                                <label class="control-label">Region</label>
+                                                <input type="text" name="personal_addr_region" id="personal_addr_region" placeholder="Region" value="{{ @$personalAddress->region }}" class="form-control" /> </div>
+                                            <div class="form-group">
+                                                <label class="control-label">Postal Code</label>
+                                                <input type="text" name="personal_addr_pcode" id="personal_addr_pcode" placeholder="Postal Code" value="{{ @$personalAddress->postal_code }}" class="form-control" /> </div>
+                                            <div class="form-group">
+                                                <label class="control-label">Country</label>
+                                                <select class="form-control" name="personal_addr_country" id="personal_addr_country">
+                                                    @foreach ($countries as $country)
+                                                        <option value="{{ $country->id }}" {!! @$personalAddress->country_id==$country->id?'selected':'' !!}>{{ $country->name }}</option>
+                                                    @endforeach
+                                                </select></div>
+                                        </div>
+                                    </div>
 
                                     <div class="form-actions">
                                         <button type="submit" class="btn red uppercase pull-right">Register New</button>
@@ -201,6 +270,27 @@
                             maxlength: 150,
                             equalTo:"#register_password"
                         },
+                        member_gender: {
+                            required:true,
+                            minlength: 1,
+                        },
+                        date_of_birth: {
+                            required: true,
+                            datePickerDate: true,
+                        },
+
+                        personal_addr1: {
+                            minlength: 5,
+                        },
+                        personal_addr_city: {
+                            minlength: 3,
+                        },
+                        personal_addr_region: {
+                            minlength:2,
+                        },
+                        personal_addr_pcode: {
+                            minlength: 2,
+                        },
                     },
 
                     messages: { // custom messages for radio buttons and checkboxes
@@ -251,6 +341,31 @@
             };
         }();
 
+        var ComponentsDateTimePickers = function () {
+
+            var handleDatePickers = function () {
+
+                if (jQuery().datepicker) {
+                    $('.date-picker').datepicker({
+                        rtl: App.isRTL(),
+                        orientation: "left",
+                        autoclose: true
+                    });
+                    //$('body').removeClass("modal-open"); // fix bug when inline picker is used in modal
+                }
+
+                /* Workaround to restrict daterange past date select: http://stackoverflow.com/questions/11933173/how-to-restrict-the-selectable-date-ranges-in-bootstrap-datepicker */
+            }
+
+            return {
+                //main function to initiate the module
+                init: function () {
+                    handleDatePickers();
+                }
+            };
+
+        }();
+
         function register_member(){
             $.ajax({
                 url: '{{route('ajax/register_new_member')}}',
@@ -260,10 +375,23 @@
                     'first_name': $('input[name="firstname"]').val(),
                     'middle_name': $('input[name="middlename"]').val(),
                     'last_name': $('input[name="lastname"]').val(),
-                    'email': $('input[name="reg_email"]').val(),
                     'phone_number': $('input[name="phone"]').val(),
+                    'gender': $('select[name="member_gender"]').val(),
+                    'dob': $('input[name="date_of_birth"]').val(),
+
+                    'email': $('input[name="reg_email"]').val(),
                     'password': $('input[name="password"]').val(),
-                    'membership_plan': $('select[name="membership_plan"]').val()
+                    'rpassword': $('input[name="rpassword"]').val(),
+
+                    'membership_plan': $('select[name="membership_plan"]').val(),
+                    'start_date': $('input[name="start_date"]').val(),
+
+                    'address1':     $('input[name=personal_addr1]').val(),
+                    'address2':     $('input[name=personal_addr2]').val(),
+                    'city':         $('input[name=personal_addr_city]').val(),
+                    'region':       $('input[name=personal_addr_region]').val(),
+                    'postal_code':  $('input[name=personal_addr_pcode]').val(),
+                    'adr_country_id':   $('select[name=personal_addr_country]').val(),
                 },
                 success: function (data) {
                     if (data.success) {
@@ -281,6 +409,8 @@
 
         $(document).ready(function(){
             FormValidation.init();
+
+            ComponentsDateTimePickers.init();
         });
     </script>
 @endsection

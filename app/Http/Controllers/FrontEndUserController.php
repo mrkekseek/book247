@@ -9,6 +9,7 @@ use App\BookingNote;
 use App\GeneralNote;
 use App\Invoice;
 use App\InvoiceItem;
+use App\UserAccessCard;
 use App\UserFriends;
 use App\UserMembership;
 use App\UserMembershipInvoicePlanning;
@@ -118,6 +119,10 @@ class FrontEndUserController extends Controller
             $query->where('name', 'front-member');
         })->get();
 
+        $countries = Cache::remember('countries', 3660, function() {
+            return Countries::orderBy('name')->get();
+        });
+
         $role = Role::where('name','=','front-user')->get()->first();
         $memberships = MembershipPlan::where('status','=','active')->where('id','!=','1')->get();
 
@@ -135,12 +140,13 @@ class FrontEndUserController extends Controller
         $sidebar_link= 'admin-frontend-add_member';
 
         return view('admin/front_users/add_new_member', [
-            'users' => $back_users,
-            'breadcrumbs' => $breadcrumbs,
-            'text_parts'  => $text_parts,
-            'in_sidebar'  => $sidebar_link,
-            'role'   => $role,
-            'memberships' => $memberships
+            'users'         => $back_users,
+            'breadcrumbs'   => $breadcrumbs,
+            'text_parts'    => $text_parts,
+            'in_sidebar'    => $sidebar_link,
+            'role'          => $role,
+            'memberships'   => $memberships,
+            'countries'     => $countries
         ]);
     }
 
@@ -302,18 +308,6 @@ class FrontEndUserController extends Controller
             'table_head_text1' => 'Backend User List'
         ];
 
-        @$userRole = $back_user->roles[0];
-        if (!$userRole){
-            $defaultRole = Role::where('name','employee')->get();
-            $userRole = $defaultRole[0];
-        }
-        $permissions = Permission::all();
-
-        $userProfessional = $back_user->ProfessionalDetail;
-        if (!isset($userProfessional)){
-            $userProfessional = new ProfessionalDetail();
-        }
-
         $userPersonal = $back_user->PersonalDetail;
         if (isset($userPersonal)) {
             $userPersonal->dob_format = Carbon::createFromFormat('Y-m-d', $userPersonal->date_of_birth)->format('d-m-Y');
@@ -328,25 +322,7 @@ class FrontEndUserController extends Controller
             $personalAddress = new Address();
         }
 
-        $roles = Role::all();
-        $countries = Cache::remember('countries', 3660, function() {
-                return Countries::orderBy('name')->get();
-            });
-        $userCountry = Countries::find($back_user->country_id);
-
         $avatar = $back_user->get_avatar_image();
-
-        $avatarArchive = [];
-        $old_avatars = Storage::disk('local')->files($avatar['file_location']);
-        if ($old_avatars){
-            foreach($old_avatars as $old_avatar){
-                $avatarArchive[] = [
-                    'type'  => Storage::disk('local')->mimeType($old_avatar),
-                    'data'  => Storage::disk('local')->get($old_avatar)
-                ];
-            }
-        }
-
         $userDocuments = UserDocuments::where('user_id','=',$id)->where('category','=','account_documents')->get();
 
         $plan_request = [];
@@ -441,6 +417,11 @@ class FrontEndUserController extends Controller
         }
         $membership_plans = MembershipPlan::where('id','!=','1')->where('status','=','active')->get()->sortBy('name');
 
+        $cardNo = UserAccessCard::where('user_id','=',$back_user->id)->where('status','=','active')->get()->first();
+        if ($cardNo){
+            $accessCardNo = $cardNo->key_no;
+        }
+
         $breadcrumbs = [
             'Home'              => route('admin'),
             'Administration'    => route('admin'),
@@ -450,33 +431,24 @@ class FrontEndUserController extends Controller
         $sidebar_link= 'admin-frontend-user_details_view';
 
         return view('admin/front_users/view_member_account_settings', [
-            'user'      => $back_user,
-            'userRole'  => $userRole,
-            'professional' => $userProfessional,
-            'personal'  => $userPersonal,
+            'user'              => $back_user,
             'personalAddress'   => $personalAddress,
-            'countryDetails'    => $userCountry,
-            'countries' => $countries,
-            'roles'     => $roles,
-            'breadcrumbs' => $breadcrumbs,
-            'text_parts'  => $text_parts,
-            'in_sidebar'  => $sidebar_link,
-            'avatar'      => $avatar['avatar_base64'],
-            'permissions' => $permissions,
-            'documents'   => $userDocuments,
-            // membership plan
+            'breadcrumbs'       => $breadcrumbs,
+            'text_parts'        => $text_parts,
+            'in_sidebar'        => $sidebar_link,
+            'avatar'            => $avatar['avatar_base64'],
+            'documents'         => $userDocuments,
             'membership_plan'   => $my_plan,
             'plan_requests'     => $plan_request,
-            //'activities'    => $activities,
-            'restrictions'  => @$restrictions,
-            'plan_details'  => @$plan_details,
-            'memberships'   => $membership_plans,
-            'old_avatars'   => $avatarArchive,
+            'restrictions'          => @$restrictions,
+            'plan_details'          => @$plan_details,
+            'memberships'           => $membership_plans,
             'plannedInvoices'       => @$plannedInvoices,
             'invoiceCancellation'   => $invoiceCancellation,
             'invoiceFreeze'         => $invoiceFreeze,
-            'canCancel'     => $canCancel,
-            'canFreeze'     => $canFreeze
+            'canCancel'         => $canCancel,
+            'canFreeze'         => $canFreeze,
+            'accessCardNo'      => @$accessCardNo
         ]);
     }
 
@@ -2059,15 +2031,20 @@ class FrontEndUserController extends Controller
     }
 
     public function new_member_registration(Request $request){
-        if (Auth::check()) {
-            $by_user = Auth::user();
-            if (!$by_user->hasRole(['front-member','front-user'])){
-                // is an employee
-                $is_employee = true;
-            }
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
+            return [
+                'success' => false,
+                'title'   => 'You need to be logged in',
+                'errors'  => 'You need to be logged in as an employee in order to use this function'];
+        }
+        else{
+            $by_user = $user;
         }
 
-        $vars = $request->only('first_name', 'middle_name', 'last_name', 'email', 'phone_number', 'password', 'membership_plan', 'username', 'user_type');
+        $vars = $request->only('first_name', 'middle_name', 'last_name', 'gender', 'email', 'phone_number', 'dob', 'password', 'rpassword', 'username', 'user_type',
+            'address1', 'address2', 'city', 'adr_country_id', 'postal_code', 'region',
+            'membership_plan', 'start_date'); //exit;
 
         if (!isset($vars['middle_name'])){
             $vars['middle_name'] = '';
@@ -2089,20 +2066,38 @@ class FrontEndUserController extends Controller
             $vars['country_id'] = Config::get('constants.globalWebsite.defaultCountryId');
         }
 
-        $validator = Validator::make($vars, User::rules('POST'), User::$messages, User::$attributeNames);
+        if (!isset($vars['dob']) || $vars['dob']==''){
+            $vars['date_of_birth'] = Carbon::today()->toDateString();
+        }
+        else{
+            $vars['date_of_birth'] = Carbon::createFromFormat('d-m-Y',$vars['dob'])->toDateString();
+        }
+
+        $credentials = [
+            'first_name'    => $vars['first_name'],
+            'middle_name'   => $vars['middle_name'],
+            'last_name'     => $vars['last_name'],
+            'gender'        => $vars['gender'],
+            'username'      => $vars['username'],
+            'email'         => $vars['email'],
+            'password'      => $vars['password'],
+            'country_id'    => $vars['country_id'],
+            'status'        => 'active',
+            'user_type'     => $vars['user_type']
+        ];
+        $validator = Validator::make($credentials, User::rules('POST'), User::$messages, User::$attributeNames);
 
         if ($validator->fails()){
             //return $validator->errors()->all();
             return array(
                 'success'   => false,
+                'title'     => 'Error validating',
                 'errors'    => $validator->getMessageBag()->toArray()
             );
         }
 
-        $credentials = $vars;
         $text_psw    = $vars['password'];
         $credentials['password'] = Hash::make($credentials['password']);
-
         $the_plan = MembershipPlan::where('id','=',$vars['membership_plan'])->where('id','!=',1)->where('status','=','active')->get()->first();
 
         try {
@@ -2110,13 +2105,13 @@ class FrontEndUserController extends Controller
             $personalData = [
                 'personal_email'=> $vars['email'],
                 'mobile_number' => $vars['phone_number'],
+                'date_of_birth' => $vars['date_of_birth'],
                 'bank_acc_no'   => 0,
                 'social_sec_no' => 0,
                 'about_info'    => '',
                 'user_id'       => $user->id
             ];
             $personalDetails = PersonalDetail::firstOrNew(['user_id'=>$user->id]);
-            $personalData['date_of_birth'] = Carbon::today()->toDateString();
             $personalDetails->fill($personalData);
             $personalDetails->save();
 
@@ -2131,10 +2126,43 @@ class FrontEndUserController extends Controller
                         ->subject('Booking System - You are registered!');
                 });
 
+            $addressFill = [
+                'user_id'       => $user->id,
+                'address1'      => $vars['address1'],
+                'address2'      => $vars['address2'],
+                'city'          => $vars['city'],
+                'region'        => $vars['region'],
+                'postal_code'   => $vars['postal_code'],
+                'country_id'    => $vars['adr_country_id'],
+            ];
+            $validator = Validator::make($addressFill, [
+                'address1'    => 'required|min:5|max:150',
+                'city'        => 'required|min:3|max:150',
+                'region'      => 'required|min:2',
+                'postal_code' => 'required|min:2',
+                'country_id'  => 'required|exists:countries,id',
+            ]);
+            if ($validator->fails()){ }
+            else {
+                $personalAddress = new Address();
+                $personalAddress->fill($addressFill);
+                $personalAddress->save();
+
+                $personalDetails->address_id = $personalAddress->id;
+                $personalDetails->save();
+            }
+
             // if membership plan selected
             if ($the_plan) {
+                try{
+                    $the_date = Carbon::createFromFormat('d-m-Y', $vars['start_date'])->format('Y-m-d');
+                }
+                catch (\Exception $ex){
+                    $the_date = Carbon::today()->format('Y-m-d');
+                }
+
                 // add the membership plan to the new registered user
-                if ($user->attach_membership_plan($the_plan, $is_employee ? $by_user : $user)) {
+                if ($user->attach_membership_plan($the_plan, $by_user, $the_date)) {
                     $memberRole = Role::where('name', '=', 'front-member')->get()->first();
                     if (!$user->hasRole($memberRole)) {
                         $user->attachRole($memberRole);
@@ -2153,6 +2181,8 @@ class FrontEndUserController extends Controller
 
             return [
                 'success'       => true,
+                'title'         => 'New member registered',
+                'message'       => 'You registered a new member : '.$user->first_name.' '.$user->last_name,
                 'member_id'     => $user->id,
                 'member_name'   => $user->first_name.' '.$user->last_name,
             ];
@@ -2160,7 +2190,8 @@ class FrontEndUserController extends Controller
         catch (Exception $e) {
             return [
                 'success'   => false,
-                'error'     => 'User already exists.'
+                'title'     => 'User already exists',
+                'errors'    => 'User already exists and could not be registered.'
             ];
         }
     }
@@ -2318,19 +2349,21 @@ class FrontEndUserController extends Controller
 
                 // get file from storage
                 $empty_lines = 0;
-                $importList = Storage::disk('local')->get('temp/'.$name.'.'.$extension);
+                //Storage::disk('local')->get('temp/'.$name.'.'.$extension);
+
                 $formattedList = Excel::load('storage/app/temp/'.$name.'.'.$extension)->get();
                 foreach ($formattedList->toArray() as $row) {
                     $singleRow = [];
                     $nr = 1;
                     $chars = 0;
+
                     foreach($row as $vals){
-                        $singleRow[$nr++] = trim($vals);
-                        $chars+=trim($vals);
+                        $singleRow[$nr++] = $vals;
                     }
 
+                    $allRows[] = $singleRow;
                     if ($chars>0){
-                        $allRows[] = $singleRow;
+
                     }
                     else{
                         $empty_lines++;
@@ -2340,7 +2373,7 @@ class FrontEndUserController extends Controller
                         break;
                     }
                 }
-
+                //xdebug_var_dump($allRows);
                 $selectMembership = $vars['membership_type'];
                 $date_start = $vars['start_date'];
             }
@@ -2417,7 +2450,7 @@ class FrontEndUserController extends Controller
             }
 
             // create $users array of imported value
-            for ($i=0; $i<$vars['key_return']; $i++){
+            for ($i=0; $i<=$vars['key_return']; $i++){
                 if (!isset($vars['line_'.$i])){
                     continue;
                 }
@@ -2446,7 +2479,6 @@ class FrontEndUserController extends Controller
                     'postal_code'       => @$vars['col_'.$i][$upostalcode],
                     'city'              => @$vars['col_'.$i][$ucity],
                 ];
-
                 $members[] = $importUser;
             }
             $membershipPlans = MembershipPlan::get();
@@ -3329,6 +3361,50 @@ class FrontEndUserController extends Controller
                 'success' => false,
                 'title'   => 'Member not found',
                 'errors'  => 'The member you want to suspend/reactivate was not found in the system'];
+        }
+    }
+
+    public function update_access_card(Request $request){
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
+            return [
+                'success' => false,
+                'title'   => 'You need to be logged in',
+                'errors'  => 'You need to be logged in as an employee in order to use this function'];
+        }
+
+        $vars = $request->only('memberID','card_value');
+        $member = User::where('id','=',$vars['memberID'])->get()->first();
+        if (!$member){
+            return [
+                'success' => false,
+                'title'   => 'Member not found',
+                'errors'  => 'The member you want to assign an access card was not found in the system'];
+        }
+
+        $access_card_fill = [
+            'user_id'   => $member->id,
+            'key_no'    => $vars['card_value'],
+            'status'    => 'active',
+        ];
+
+        $validator = Validator::make($access_card_fill, UserAccessCard::rules('POST'), UserAccessCard::$message, UserAccessCard::$attributeNames);
+        if ($validator->fails()){
+            // note could not be created
+            return [
+                'success' => false,
+                'title'   => 'Could not update card',
+                'errors'  => 'There is something wrong with the validity of the access card you want to add!'];
+        }
+        else {
+            $access_card = UserAccessCard::firstOrNew(['user_id'=>$member->id]);
+            $access_card->fill($access_card_fill);
+            $access_card->save();
+
+            return [
+                'success' => true,
+                'title'   => 'Access card added',
+                'message' => 'You have updated the access card number for this member.'];
         }
     }
 }
