@@ -1935,30 +1935,47 @@ class FrontEndUserController extends Controller
 
         $friends = PersonalDetail::where('mobile_number','=',$vars['phone_no'])->get()->first();
         if (sizeof($friends)==0){
-            $msg = ['success'=>'false', 'error'=> ['title'=>'An error occurred', 'message'=>'Please check the number and add it again. You have a limited number of attempts']];
+            $msg = [
+                'success'=>'false',
+                'error'=> [
+                    'title'=>'An error occurred',
+                    'message'=>'Please check the number and add it again. You have a limited number of attempts'
+                ]
+            ];
         }
         else {
-            // one friend found
-            //xdebug_var_dump($friends); exit;
-            $friend_fill = ['user_id'=>$user_id, 'friend_id'=>$friends->user_id];
-            $validator = Validator::make($friend_fill, UserFriends::rules('POST'), UserFriends::$message, UserFriends::$attributeNames);
-
-            if ($validator->fails()){
-                $msg = array(
-                    'success' => 'false',
-                    'error' => [
-                        'validator' => $validator->getMessageBag()->toArray(),
-                        'title' => 'An error occurred',
-                        'message'=>'Please check the number and add it again. You have a limited number of attempts'
+            // one friend found, now we search to see if he's a front user/member
+            $newFriend = User::where('id','=',$friends->user_id)->get()->first();
+            if ($newFriend->is_back_user()){
+                $msg = [
+                    'success'=>'false',
+                    'error'=> [
+                        'title'   => 'An error occurred',
+                        'message' => 'Please check the number for errors; no player found with that number'
                     ]
-                );
+                ];
             }
-            else {
-                $new_friend = UserFriends::firstOrCreate($friend_fill);
-                $new_friend->save();
+            else{
+                $friend_fill = ['user_id'=>$user_id, 'friend_id'=>$friends->user_id];
+                $validator = Validator::make($friend_fill, UserFriends::rules('POST'), UserFriends::$message, UserFriends::$attributeNames);
 
-                $friend = User::where('id','=',$friends->user_id)->get()->first();
-                $msg = ['success'=>'true', 'message' => 'You have a new friend', 'full_name' => $friend->first_name.' '.$friend->middle_name.' '.$friend->last_name ];
+                if ($validator->fails()){
+                    $msg = array(
+                        'success' => 'false',
+                        'error' => [
+                            'validator' => $validator->getMessageBag()->toArray(),
+                            'title' => 'An error occurred',
+                            'message'=>'Please check the number and add it again. You have a limited number of attempts'
+                        ]
+                    );
+                }
+                else {
+                    $new_friend = UserFriends::firstOrCreate($friend_fill);
+                    $new_friend->save();
+
+                    $friend = User::where('id','=',$friends->user_id)->get()->first();
+                    $msg = ['success'=>'true', 'message' => 'You have a new friend', 'full_name' => $friend->first_name.' '.$friend->middle_name.' '.$friend->last_name ];
+                }
             }
         }
 

@@ -983,12 +983,14 @@
         }();
 
         function scrollToAvailableHours(){
-            var jumpTo = $("#jump_right_here").offset().top - 74;
-            console.log(jumpTo);
+            if($("#jump_right_here").length != 0) {
+                var jumpTo = $("#jump_right_here").offset().top - 74;
+                console.log(jumpTo);
 
-            $('html, body').animate({
-                scrollTop: jumpTo
-            }, 500);
+                $('html, body').animate({
+                    scrollTop: jumpTo
+                }, 500);
+            }
         }
 
         if (App.isAngularJsApp() === false) {

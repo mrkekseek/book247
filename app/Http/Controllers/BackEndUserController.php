@@ -624,7 +624,7 @@ class BackEndUserController extends Controller
         if ($results){
             foreach($results as $result){
                 $user_temp = User::where('id','=',$result->id)->get()->first();
-                $user_link = route('admin/front_users/view_account_settings',['id'=>$user_temp->id]);
+                $user_link = route('admin/front_users/view_user',['id'=>$user_temp->id]);
                 $avatar = $user_temp->get_avatar_image();
 
                 $userMembership = UserMembership::where('user_id','=',$result->id)->where('status','=','active')->get()->first();
