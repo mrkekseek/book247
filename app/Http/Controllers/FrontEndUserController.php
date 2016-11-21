@@ -3090,11 +3090,13 @@ class FrontEndUserController extends Controller
 
     public function settings_personal_avatar(Request $request){
         $user = Auth::user();
-        if (!$user || !$user->is_back_user()) {
-            return redirect()->intended(route('admin/login'));
+        if (!$user || $user->is_back_user()) {
+            return [
+                'success' => false,
+                'title'   => 'Authentication Error',
+                'errors'  => 'You need to be logged in to access this function. Please login...'
+            ];
         }
-
-        //$user = User::findOrFail($id);
 
         $avatarLocation = 'members/'.$user->id.'/avatars/';
         $avatarFilename = $user->username.'.'.$request->file('user_avatar')->getClientOriginalExtension();
