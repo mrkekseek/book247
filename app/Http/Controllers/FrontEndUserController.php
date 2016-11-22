@@ -2049,13 +2049,7 @@ class FrontEndUserController extends Controller
 
     public function new_member_registration(Request $request){
         $user = Auth::user();
-        if (!$user || !$user->is_back_user()) {
-            return [
-                'success' => false,
-                'title'   => 'You need to be logged in',
-                'errors'  => 'You need to be logged in as an employee in order to use this function'];
-        }
-        else{
+        if ($user && $user->is_back_user()) {
             $by_user = $user;
         }
 
@@ -2170,7 +2164,7 @@ class FrontEndUserController extends Controller
             }
 
             // if membership plan selected
-            if ($the_plan) {
+            if ($the_plan && isset($by_user)) {
                 try{
                     $the_date = Carbon::createFromFormat('d-m-Y', $vars['start_date'])->format('Y-m-d');
                 }
