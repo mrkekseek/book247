@@ -221,6 +221,19 @@
                                                                                 <option value="{{$membership->id}}"> {{$membership->name}} </option>
                                                                             @endforeach
                                                                         </select>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="form-group">
+                                                                    <label class="control-label col-md-3 inline"> Membership Start Date </label>
+                                                                    <div class="col-md-8">
+                                                                        <div class="input-group input date date-picker" data-date="{{ \Carbon\Carbon::today()->format('d-m-Y') }}" data-date-format="dd-mm-yyyy" data-date-viewmode="years" style="display:inline-flex; margin-top:2px; margin-right:40px;">
+                                                                            <input type="text" class="form-control" name="start_date" readonly style="background-color:#ffffff;" value="{{ \Carbon\Carbon::today()->format('d-m-Y') }}">
+                                                                            <span class="input-group-btn">
+                                                                                <button class="btn default" type="button">
+                                                                                    <i class="fa fa-calendar"></i>
+                                                                                </button>
+                                                                            </span>
+                                                                        </div>
                                                                         <a class="btn green apply_new_membership_plan input" style="min-width:190px; display:none;">
                                                                             <i class="fa fa-pencil"></i> Apply New Plan </a>
                                                                     </div>
@@ -954,7 +967,7 @@
                 if (jQuery().datepicker) {
                     $('.date-picker').datepicker({
                         rtl: App.isRTL(),
-                        orientation: "left",
+                        orientation: "left bottom",
                         autoclose: true,
                         daysOfWeekHighlighted: "0",
                         weekStart:1,
@@ -1099,6 +1112,7 @@
                 type: "post",
                 data: {
                     'selected_plan':    $('select[name=membership_plans_list]').val(),
+                    'start_date':       $('input[name="start_date"]').val(),
                     'member_id':        userID
                 },
                 success: function(data){

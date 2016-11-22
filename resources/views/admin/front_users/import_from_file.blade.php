@@ -68,7 +68,7 @@
                                                         <div class="form-actions right" style="padding-top:15px; padding-bottom:0px;">
                                                             <span class="">Membership Start Date</span>
                                                             <div class="input-group input-small date date-picker" data-date="{{ \Carbon\Carbon::today()->format('d-m-Y') }}" data-date-format="dd-mm-yyyy" data-date-viewmode="years" style="display:inline-flex; margin-top:2px; margin-right:40px;">
-                                                                <input type="text" class="form-control" name="start_date" readonly style="background-color:#ffffff;">
+                                                                <input type="text" class="form-control" name="start_date" readonly style="background-color:#ffffff;" value="{{ \Carbon\Carbon::today()->format('d-m-Y') }}">
                                                                 <span class="input-group-btn">
                                                                     <button class="btn default" type="button">
                                                                         <i class="fa fa-calendar"></i>

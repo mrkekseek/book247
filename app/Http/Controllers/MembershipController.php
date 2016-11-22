@@ -32,7 +32,7 @@ class MembershipController extends Controller
             $is_backend_employee = $user->can('members-management');
         }
 
-        $vars = $request->only('member_id', 'selected_plan');
+        $vars = $request->only('member_id', 'selected_plan', 'start_date');
         if ($is_backend_employee==false && $user->id!=$vars['member_id']){
             return [
                 'success'   => false,
@@ -65,11 +65,23 @@ class MembershipController extends Controller
             ];
         }
 
+        if (!isset($vars['start_date'])){
+            $startDate = Carbon::today()->format('Y-m-d');
+        }
+        else{
+            try{
+                $startDate = Carbon::createFromFormat('d-m-Y', $vars['start_date'])->format('Y-m-d');
+            }
+            catch(\Exception $ex){
+                $startDate = Carbon::today()->format('Y-m-d');
+            }
+        }
+
         // check for old plans that are active
         $old_plan = UserMembership::where('user_id','=',$member->id)->whereIn('status',['active','suspended'])->orderBy('created_at','desc')->get()->first();
 
         $new_plan = new UserMembership();
-        if ($new_plan->create_new($member, $the_plan, $user)){
+        if ($new_plan->create_new($member, $the_plan, $user, $startDate)){
             if ($old_plan) {
                 $old_plan->status = 'canceled';
                 $old_plan->save();
