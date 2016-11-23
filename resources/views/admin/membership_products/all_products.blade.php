@@ -53,7 +53,10 @@
                                 <tr class="odd gradeX">
                                     <td> {{$key}} </td>
                                     <td>
-                                        <a href="{{ route('admin/membership_products/edit',['id' => $product['id']]) }}"> {{ $product['name'] }} </a> or <a href="{{ route('admin/membership_products/view',['id' => $product['id']]) }}"> View Product as Read-Only </a>
+                                        <a href="{{ route('admin/membership_products/view',['id' => $product['id']]) }}"> View {{ $product['name'] }} </a>
+                                        @if (Auth::user()->can('manage-calendar-products'))
+                                        or <a href="{{ route('admin/membership_products/edit',['id' => $product['id']]) }}"> Edit {{ $product['name'] }} </a>
+                                        @endif
                                     </td>
                                     <td class="center"> <div style="width:25%; height:25px; background-color:{{ $product['color_code'] }};"></div>  </td>
                                 </tr>

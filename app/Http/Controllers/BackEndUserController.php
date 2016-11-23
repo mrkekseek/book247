@@ -45,6 +45,13 @@ class BackEndUserController extends Controller
         if (!$user || !$user->is_back_user()) {
             return redirect()->intended(route('admin/login'));
         }
+        elseif (!$user->can('manage-employees')){
+            /*return [
+                'success'   => false,
+                'errors'    => 'You don\'t have permission to access this page',
+                'title'     => 'Permission Error'];*/
+            return redirect()->intended(route('admin/error/permission_denied'));
+        }
 
         $back_users = User::whereHas('roles', function($query){
             $query->where('name', '!=', 'front-user');
@@ -85,15 +92,19 @@ class BackEndUserController extends Controller
      */
     public function create(Request $request)
     {
-        if (!Auth::check()) {
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
+            return [
+                'success' => false,
+                'errors'  => 'Error while trying to authenticate. Login first then use this function.',
+                'title'   => 'Not logged in'];
+        }
+        elseif (!$user->can('manage-employees')){
             return [
                 'success'   => false,
-                'title'     => 'Login Error',
-                'errors'    => 'You need to be logged in for this action.'
-            ];
-        }
-        else{
-            $user = Auth::user();
+                'errors'    => 'You don\'t have permission to access this page',
+                'title'     => 'Permission Error'];
+            /*return redirect()->intended(route('admin/error/permission_denied'));*/
         }
 
         $vars = $request->only('first_name', 'middle_name', 'last_name', 'email', 'user_type', 'username', 'password', 'user_type');
@@ -169,6 +180,13 @@ class BackEndUserController extends Controller
         $user = Auth::user();
         if (!$user || !$user->is_back_user()) {
             return redirect()->intended(route('admin/login'));
+        }
+        elseif (!$user->can('manage-employees') && $user->id!=$id){
+            /*return [
+                'success'   => false,
+                'errors'    => 'You don\'t have permission to access this page',
+                'title'     => 'Permission Error'];*/
+            return redirect()->intended(route('admin/error/permission_denied'));
         }
 
         $back_user = User::with('roles')->find($id);

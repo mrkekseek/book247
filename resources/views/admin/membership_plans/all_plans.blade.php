@@ -57,7 +57,10 @@
                                 <tr class="odd gradeX">
                                     <td> {{$key}} </td>
                                     <td>
-                                        <a href="{{ route('admin.membership_plan.edit',['id' => $plan['id']]) }}"> {{ $plan['name'] }} </a> or <a href="{{ route('admin.membership_plan.show',['id' => $plan['id']]) }}"> View Plan as Read-Only </a>
+                                        <a href="{{ route('admin.membership_plan.show',['id' => $plan['id']]) }}"> View {{ $plan['name'] }} </a>
+                                        @if (Auth::user()->can('manage-membership-plans'))
+                                        or <a href="{{ route('admin.membership_plan.edit',['id' => $plan['id']]) }}"> Edit {{ $plan['name'] }} </a>
+                                        @endif
                                     </td>
                                     <td> {{ $plan['price'] }} </td>
                                     <td> {{ $plan['admin_fee'] }} </td>

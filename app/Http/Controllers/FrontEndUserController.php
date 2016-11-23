@@ -69,6 +69,9 @@ class FrontEndUserController extends Controller
         if (!$user || !$user->is_back_user()) {
             return redirect()->intended(route('admin/login'));
         }
+        elseif (!$user->can('view-clients-list-all-clients')) {
+            return redirect()->intended(route('admin/error/permission_denied'));
+        }
 
         $back_users = User::whereHas('roles', function($query){
             $query->where('name', 'front-user');
@@ -111,6 +114,9 @@ class FrontEndUserController extends Controller
         $user = Auth::user();
         if (!$user || !$user->is_back_user()) {
             return redirect()->intended(route('admin/login'));
+        }
+        elseif (!$user->can('manage-clients')){
+            return redirect()->intended(route('admin/error/permission_denied'));
         }
 
         $back_users = User::whereHas('roles', function($query){
@@ -160,7 +166,17 @@ class FrontEndUserController extends Controller
     {
         $user = Auth::user();
         if (!$user || !$user->is_back_user()) {
-            return redirect()->intended(route('admin/login'));
+            return [
+                'success' => false,
+                'errors'  => 'Error while trying to authenticate. Login first then use this function.',
+                'title'   => 'Not logged in'];
+        }
+        elseif (!$user->can('manage-clients')){
+            return [
+                'success'   => false,
+                'errors'    => 'You don\'t have permission to access this page',
+                'title'     => 'Permission Error'];
+            /*return redirect()->intended(route('admin/error/permission_denied'));*/
         }
 
         $vars = $request->only('first_name', 'middle_name', 'last_name', 'email', 'user_type', 'username', 'password', 'user_type');
@@ -2340,6 +2356,10 @@ class FrontEndUserController extends Controller
         if (!$user || !$user->is_back_user()) {
             return redirect()->intended(route('admin/login'));
         }
+        elseif (!$user->can('manage-calendar-products')){
+            return redirect()->intended(route('admin/error/permission_denied'));
+        }
+
         $vars = $request->only('_token','_method','start_date','membership_type');
 
         $allRows = [];

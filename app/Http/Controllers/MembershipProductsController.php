@@ -109,6 +109,13 @@ class MembershipProductsController extends Controller
                 'errors' => 'Error while trying to authenticate. Login first then use this function.',
                 'title' => 'Not logged in'];
         }
+        elseif (!$user->can('manage-calendar-products')){
+            return [
+                'success'   => false,
+                'errors'    => 'You don\'t have permission to access this page',
+                'title'     => 'Permission Error'];
+            //return redirect()->intended(route('admin/error/permission_denied'));
+        }
 
         $vars = $request->only('name', 'color_code');
         $fillable = [
@@ -206,6 +213,13 @@ class MembershipProductsController extends Controller
         if (!$user || !$user->is_back_user()) {
             return redirect()->intended(route('admin/login'));
         }
+        elseif (!$user->can('manage-calendar-products')){
+            /*return [
+                'success'   => false,
+                'errors'    => 'You don\'t have permission to access this page',
+                'title'     => 'Permission Error'];*/
+            return redirect()->intended(route('admin/error/permission_denied'));
+        }
 
         $the_product = MembershipProduct::where('id','=',$id)->get()->first();
         if (!$the_product){
@@ -248,6 +262,13 @@ class MembershipProductsController extends Controller
                 'success' => false,
                 'errors' => 'Error while trying to authenticate. Login first then use this function.',
                 'title' => 'Not logged in'];
+        }
+        elseif (!$user->can('manage-calendar-products')){
+            /*return [
+                'success'   => false,
+                'errors'    => 'You don\'t have permission to access this page',
+                'title'     => 'Permission Error'];*/
+            return redirect()->intended(route('admin/error/permission_denied'));
         }
 
         $the_product = MembershipProduct::where('id', '=', $id)->get()->first();

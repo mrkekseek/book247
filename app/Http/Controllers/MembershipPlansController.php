@@ -122,15 +122,20 @@ class MembershipPlansController extends Controller
      */
     public function store(Request $request)
     {
-        if (!Auth::check()) {
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
             //return redirect()->intended(route('admin/login'));
             return [
                 'success' => false,
                 'errors' => 'Error while trying to authenticate. Login first then use this function.',
                 'title' => 'Not logged in'];
         }
-        else{
-            $user = Auth::user();
+        elseif (!$user->can('manage-membership-plans')){
+            return [
+                'success'   => false,
+                'errors'    => 'You don\'t have permission to access this page',
+                'title'     => 'Permission Error'];
+            //return redirect()->intended(route('admin/error/permission_denied'));
         }
 
         $vars = $request->only('name', 'price', 'plan_period', 'binding_period', 'sign_out_period', 'administration_fee_name', 'administration_fee_amount', 'plan_calendar_color', 'membership_short_description', 'membership_long_description');
@@ -271,6 +276,13 @@ class MembershipPlansController extends Controller
         if (!$user || !$user->is_back_user()) {
             return redirect()->intended(route('admin/login'));
         }
+        elseif (!$user->can('manage-membership-plans')){
+            /*return [
+                'success'   => false,
+                'errors'    => 'You don\'t have permission to access this page',
+                'title'     => 'Permission Error'];*/
+            return redirect()->intended(route('admin/error/permission_denied'));
+        }
 
         $the_plan = MembershipPlan::with('price')->with('restrictions')->where('id','=',$id)->get()->first();
         if (!$the_plan){
@@ -323,12 +335,20 @@ class MembershipPlansController extends Controller
      */
     public function update(Request $request, $id)
     {
-        if (!Auth::check()) {
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
             //return redirect()->intended(route('admin/login'));
-            return ['success' => false, 'errors' => 'Error while trying to authenticate. Login first then use this function.', 'title' => 'Not logged in'];
+            return [
+                'success'   => false,
+                'errors'    => 'Error while trying to authenticate. Login first then use this function.',
+                'title'     => 'Not logged in'];
         }
-        else{
-            $user = Auth::user();
+        elseif (!$user->can('manage-membership-plans')){
+            return [
+                'success'   => false,
+                'errors'    => 'You don\'t have permission to access this page',
+                'title'     => 'Permission Error'];
+            //return redirect()->intended(route('admin/error/permission_denied'));
         }
 
         $the_plan = MembershipPlan::with('price')->where('id', '=', $id)->get()->first();
@@ -424,7 +444,17 @@ class MembershipPlansController extends Controller
     public function add_plan_restriction(Request $request){
         $user = Auth::user();
         if (!$user || !$user->is_back_user()) {
-            return redirect()->intended(route('admin/login'));
+            return [
+                'success'   => false,
+                'errors'    => 'Error while trying to authenticate. Login first then use this function.',
+                'title'     => 'Not logged in'];
+        }
+        elseif (!$user->can('manage-membership-plans')){
+            return [
+                'success'   => false,
+                'errors'    => 'You don\'t have permission to access this page',
+                'title'     => 'Permission Error'];
+            //return redirect()->intended(route('admin/error/permission_denied'));
         }
 
         $vars = $request->only('type','activities','membership_id','min_val','max_val','hour_start','hour_stop','minute_start',
@@ -531,15 +561,19 @@ class MembershipPlansController extends Controller
     }
 
     public function remove_plan_restriction(Request $request){
-        if (!Auth::check()) {
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
             return [
-                'success' => false,
-                'title'  => 'You have to be logged in',
-                'errors' => 'Please login to use this function'
-            ];
+                'success'   => false,
+                'errors'    => 'Error while trying to authenticate. Login first then use this function.',
+                'title'     => 'Not logged in'];
         }
-        else{
-            $user = Auth::user();
+        elseif (!$user->can('manage-membership-plans')){
+            return [
+                'success'   => false,
+                'errors'    => 'You don\'t have permission to access this page',
+                'title'     => 'Permission Error'];
+            //return redirect()->intended(route('admin/error/permission_denied'));
         }
 
         $vars = $request->only('membership_id','restriction_id');
