@@ -63,6 +63,11 @@ Route::group(['middleware' => 'web'], function () {
         'uses'  => 'AdminController@index'
     ]);
 
+    Route::get('/admin/error/permission_denied', [
+        'as'    => 'admin/error/permission_denied',
+        'uses'  => 'AdminController@permission_denied'
+    ]);
+
     /** Start - Back end users route */
     Route::get('/admin/back_users/', [
         'as'    =>  'admin/back_users',

@@ -56,7 +56,7 @@ class AdminController extends Controller
         if (Auth::attempt(['email' => $request->input('username'), 'password' => $request->input('password')])) {
             // Authentication passed...
             $user = Auth::user();
-            if ($user->hasRole(['owner','manager'])){
+            if ($user->hasRole(['manager','employee'])){
                 return redirect()->route('bookings/location_calendar_day_view',['day'=>\Carbon\Carbon::now()->format('d-m-Y')]);
             }
             else{
@@ -81,5 +81,31 @@ class AdminController extends Controller
     public function logout(){
         Auth::logout();
         return redirect()->intended(route('admin/login'));
+    }
+
+    public function permission_denied(){
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
+            return redirect()->intended(route('admin/login'));
+        }
+
+        $breadcrumbs = [
+            'Home'              => route('admin'),
+            'Administration'    => route('admin'),
+            'Back End User'     => route('admin'),
+            'Permissions'        => '',
+        ];
+        $text_parts  = [
+            'title'     => 'Add new membership plan',
+            'subtitle'  => '',
+            'table_head_text1' => 'Membership Plans - Create New'
+        ];
+        $sidebar_link = 'admin-backend-membership_products-new_product';
+
+        return view('admin/errors/permission_denied', [
+            'breadcrumbs' => $breadcrumbs,
+            'text_parts'  => $text_parts,
+            'in_sidebar'  => $sidebar_link,
+        ]);
     }
 }

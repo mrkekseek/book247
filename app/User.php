@@ -99,28 +99,22 @@ class User extends Authenticatable
 
     public function is_back_user()
     {
-        foreach ($this->roles()->get() as $role)
-        {
-            if ($role->name != 'front-user' && $role->name != 'front-member' && $this->status == "active")
-            {
-                return true;
-            }
+        if (!$this->hasRole(['front-user', 'front-member']) && $this->status == "active") {
+            return true;
         }
-
-        return false;
+        else {
+            return false;
+        }
     }
 
     public function is_front_user()
     {
-        foreach ($this->roles()->get() as $role)
-        {
-            if (($role->name == 'front-user' || $role->name == 'front-member') && $this->status == "active")
-            {
-                return true;
-            }
+        if ($this->hasRole(['front-user', 'front-member']) && $this->status == "active") {
+            return true;
         }
-
-        return false;
+        else {
+            return false;
+        }
     }
 
     public function membership_status(){

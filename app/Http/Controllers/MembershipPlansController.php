@@ -85,6 +85,9 @@ class MembershipPlansController extends Controller
         if (!$user || !$user->is_back_user()) {
             return redirect()->intended(route('admin/login'));
         }
+        elseif (!$user->can('create-membership-plans')){
+            return redirect()->intended(route('admin/error/permission_denied'));
+        }
 
         $cash_terminals = CashTerminal::with('shopLocation')->get();
         $shops = ShopLocations::all();

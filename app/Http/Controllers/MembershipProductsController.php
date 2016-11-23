@@ -69,6 +69,9 @@ class MembershipProductsController extends Controller
         if (!$user || !$user->is_back_user()) {
             return redirect()->intended(route('admin/login'));
         }
+        elseif (!$user->can('create-calendar-products')){
+            return redirect()->intended(route('admin/error/permission_denied'));
+        }
 
         $breadcrumbs = [
             'Home'              => route('admin'),

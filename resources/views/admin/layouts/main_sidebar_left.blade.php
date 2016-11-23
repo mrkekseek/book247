@@ -45,16 +45,20 @@
                         <span class="title"> Add New Client </span>
                     </a>
                 </li>
+                @if (Auth::user()->can('view-clients-import-list'))
                 <li class="nav-item {{ $in_sidebar=='admin-frontend-import_members'?'active open':'' }} ">
                     <a href="{{ route('admin/front_users/import_members') }}" class="nav-link ">
                         <span class="title"> Import Clients </span>
                     </a>
                 </li>
+                @endif
+                @if (Auth::user()->can('view-clients-list-all-clients'))
                 <li class="nav-item {{ $in_sidebar=='admin-frontend-all_members'?'active open':'' }} ">
                     <a href="{{ route('admin/front_users/view_all_members') }}" class="nav-link ">
                         <span class="title"> List All Clients </span>
                     </a>
                 </li>
+                @endif
                 @if ($in_sidebar=='admin-frontend-user_details_view')
                 <li class="nav-item {{ $in_sidebar=='admin-frontend-user_details_view'?'active open':'' }} ">
                     <a class="nav-link ">
@@ -85,11 +89,13 @@
                 <span class="arrow"></span>
             </a>
             <ul class="sub-menu">
+                @if (Auth::user()->can('view-membership-plans-add-new-plan'))
                 <li class="nav-item {{ $in_sidebar=='admin-backend-memberships-new_plans'?'active open':'' }}">
                     <a href="{{route('admin.membership_plan.create')}}" class="nav-link ">
                         <span class="title">Add New Plan</span>
                     </a>
                 </li>
+                @endif
                 <li class="nav-item {{ $in_sidebar=='admin-backend-memberships-all_plans'?'active open':'' }}">
                     <a href="{{ route('admin.membership_plan.index') }}" class="nav-link ">
                         <span class="title">List All Plans</span>
@@ -104,11 +110,13 @@
                 <span class="arrow"></span>
             </a>
             <ul class="sub-menu">
+                @if (Auth::user()->can('view-calendar-products-add-new-products'))
                 <li class="nav-item {{ $in_sidebar=='admin-backend-membership_products-new_product'?'active open':'' }}">
                     <a href="{{route('admin/membership_products/add_new')}}" class="nav-link ">
                         <span class="title">Add New Product</span>
                     </a>
                 </li>
+                @endif
                 <li class="nav-item {{ $in_sidebar=='admin-backend-membership_products-list_all'?'active open':'' }}">
                     <a href="{{ route('admin/membership_products/list_all') }}" class="nav-link ">
                         <span class="title">List All Products</span>
@@ -116,6 +124,8 @@
                 </li>
             </ul>
         </li>
+
+        @if (Auth::user()->can('view-employees-menu'))
         <li class="nav-item {{ in_array($in_sidebar, array('admin-backend-user_roles', 'admin-backend-all_users', 'admin-backend-roles_permission', 'admin-backend-user_details_view', 'admin-backend-permission_details_view'))?'active open':'' }} ">
             <a href="javascript:;" class="nav-link nav-toggle">
                 <i class="icon-calculator"></i>
@@ -154,6 +164,9 @@
                 @endif
             </ul>
         </li>
+        @endif
+
+        @if (Auth::user()->can('view-shop-menu'))
         <li class="nav-item {{ in_array($in_sidebar, ['admin-backend-inventory-and-transfers','admin-backend-shop-locations-list','admin-backend-shop-products-list','admin-backend-shop-products-inventory', 'admin-backend-shop-locations-details-view', 'admin-backend-product-details-view', 'admin-backend-all-products-inventory', 'admin-backend-shops-employees-work-plan', 'admin-backend-shops-add-invoice', 'admin-backend-shop-new_order', 'admin-backend-shop-all_orders', 'admin-backend-shops-cash_terminals', 'admin-backend-locations-resource-details-view'])?'active open':'' }} ">
             <a href="javascript:;" class="nav-link nav-toggle">
                 <i class="icon-settings"></i>
@@ -226,6 +239,9 @@
                 </li>
             </ul>
         </li>
+        @endif
+
+        @if (Auth::user()->can('view-general-settings-menu'))
         <li class="nav-item {{ in_array($in_sidebar, ['admin-settings-all_list'])?'active open':'' }} ">
             <a href="javascript:;" class="nav-link nav-toggle">
                 <i class="icon-shield"></i>
@@ -240,6 +256,7 @@
                 </li>
             </ul>
         </li>
+        @endif
     </ul>
     <!-- END SIDEBAR MENU -->
 </div>
