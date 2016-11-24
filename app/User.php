@@ -99,11 +99,11 @@ class User extends Authenticatable
 
     public function is_back_user()
     {
-        if (!$this->hasRole(['front-user', 'front-member']) && $this->status == "active") {
-            return true;
+        if ($this->hasRole(['front-user', 'front-member']) || $this->status != "active") {
+            return false;
         }
         else {
-            return false;
+            return true;
         }
     }
 
