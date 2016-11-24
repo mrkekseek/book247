@@ -496,38 +496,52 @@ class BackEndUserController extends Controller
     {
         $user = Auth::user();
         if (!$user || !$user->is_back_user()) {
-            return redirect()->intended(route('admin/login'));
+            return ['success' => false,
+                    'errors'  => 'Error while trying to authenticate. Login first then use this function.',
+                    'title'   => 'Not logged in'];
         }
 
-        $user = User::findOrFail($id);
-        $userVars = $request->only('old_password','password1','password2');
+        $backUser = User::where('id','=',$id)->get()->first();
+        if (!$backUser){
+            return ['success' => false,
+                    'title'   => 'User error',
+                    'errors'  => 'Something went wrong while trying to access requested user.'];
+        }
 
-        // Validate the new password length...
-        $validator = Validator::make($userVars, [
-            'old_password'  => 'required|min:8',
-            'password1'     => 'required|min:8',
-            'password2'     => 'required|min:8|same:password1',
-        ]);
+        $userVars = $request->only('old_password','password1','password2');
+        if ($user->id!=$backUser->id && !$user->can('manage-employees')){
+            $validator = Validator::make($userVars, [
+                'old_password'  => 'required|min:8',
+                'password1'     => 'required|min:8',
+                'password2'     => 'required|min:8|same:password1',
+            ]);
+        }
+        else{
+            $validator = Validator::make($userVars, [
+                'password1'     => 'required|min:8',
+                'password2'     => 'required|min:8|same:password1',
+            ]);
+        }
 
         if ($validator->fails()){
-            //return array(
-            //    'success' => false,
-            //    'errors' => $validator->getMessageBag()->toArray()
-            //);
+            return ['success' => false,
+                    'title'   => 'Validation error',
+                    'errors'  => 'Entered passwords are not within minimum requirements.'];
         }
         else {
             $auth = auth();
-            if ($auth->attempt([ 'id' => $id, 'password' => $userVars['old_password'] ])) {
-                $user->fill([
-                    'password' => Hash::make($request->password1)
-                ])->save();
+            if ($auth->attempt([ 'id' => $id, 'password' => $userVars['old_password'] ]) || $user->can('manage-employees')) {
+                $backUser->fill(['password' => Hash::make($request->password1)])->save();
+                return ['success' => true,
+                        'title'   => 'Password changed',
+                        'message' => 'Everything went well, password was changed'];
             }
             else{
-                return 'Old password mismatch';
+                return ['success' => false,
+                        'title'   => 'Permission/Old password error',
+                        'errors'  => 'You don\'t have permission to change this user password or old password error.'];
             }
         }
-
-        return 'bine';
     }
 
     public function update_personal_avatar(Request $request, $id){

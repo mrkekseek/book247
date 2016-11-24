@@ -434,12 +434,14 @@
                                                 <button class="close" data-close="alert"></button> You have some form errors. Please check below. </div>
                                             <div class="alert alert-success display-hide">
                                                 <button class="close" data-close="alert"></button> Your form validation is successful! </div>
+                                            @if (Auth::user()->id!=$user->id && !Auth::user()->can('manage-employees'))
                                             <div class="form-group">
                                                 <label class="control-label">Old Password</label>
                                                 <div class="input-icon">
                                                     <i class="fa"></i>
                                                     <input type="password" name="old_password" id="old_password" class="form-control" /> </div>
                                             </div>
+                                            @endif
                                             <div class="form-group">
                                                 <label class="control-label">New Password</label>
                                                 <div class="input-icon">
@@ -1149,10 +1151,12 @@
                     focusInvalid: false, // do not focus the last invalid input
                     ignore: "",  // validate all fields including form hidden input
                     rules: {
+                        @if (Auth::user()->id!=$user->id || !$user->can('manage-employees'))
                         old_password: {
                             minlength: 8,
                             required: true,
                         },
+                        @endif
                         new_password1: {
                             minlength: 8,
                             required: true,
@@ -1384,7 +1388,13 @@
                     '_method': 'post',
                 },
                 success: function(data){
-                    alert(data);
+                    if (data.success) {
+                        $('#change_member_status').modal('hide');
+                        show_notification(data.title, data.message, 'lemon', 3500, 0);
+                    }
+                    else{
+                        show_notification(data.title, data.errors, 'ruby', 3500, 0);
+                    }
                 }
             });
         }
@@ -1408,7 +1418,13 @@
                     '_method': 'post',
                 },
                 success: function(data){
-                    alert(data);
+                    if (data.success) {
+                        $('#change_member_status').modal('hide');
+                        show_notification(data.title, data.message, 'lemon', 3500, 0);
+                    }
+                    else{
+                        show_notification(data.title, data.errors, 'ruby', 3500, 0);
+                    }
                 }
             });
         }
@@ -1427,7 +1443,13 @@
                     '_method': 'post',
                 },
                 success: function(data){
-                    alert(data);
+                    if (data.success) {
+                        $('#change_member_status').modal('hide');
+                        show_notification(data.title, data.message, 'lemon', 3500, 0);
+                    }
+                    else{
+                        show_notification(data.title, data.errors, 'ruby', 3500, 0);
+                    }
                 }
             });
         }
@@ -1437,13 +1459,23 @@
                 url: '{{route('admin/back_users/view_user/password_update', ['id'=>$user->id])}}',
                 type: "post",
                 data: {
+                    @if (Auth::user()->id!=$user->id && !Auth::user()->can('manage-employees'))
                     'old_password': $('input[name=old_password]').val(),
+                    @endif
                     'password1':    $('input[name=new_password1]').val(),
                     'password2':    $('input[name=new_password2]').val(),
-                    '_method': 'post',
                 },
                 success: function(data){
-                    alert(data);
+                    if (data.success) {
+                        $('#change_member_status').modal('hide');
+                        show_notification(data.title, data.message, 'lemon', 3500, 0);
+                        setTimeout(function(){
+                            location.reload();
+                        },2000);
+                    }
+                    else{
+                        show_notification(data.title, data.errors, 'ruby', 3500, 0);
+                    }
                 }
             });
         }

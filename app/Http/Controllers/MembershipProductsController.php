@@ -260,8 +260,8 @@ class MembershipProductsController extends Controller
         if (!$user || !$user->is_back_user()) {
             return [
                 'success' => false,
-                'errors' => 'Error while trying to authenticate. Login first then use this function.',
-                'title' => 'Not logged in'];
+                'errors'  => 'Error while trying to authenticate. Login first then use this function.',
+                'title'   => 'Not logged in'];
         }
         elseif (!$user->can('manage-calendar-products')){
             /*return [
