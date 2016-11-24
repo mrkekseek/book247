@@ -68,6 +68,11 @@ Route::group(['middleware' => 'web'], function () {
         'uses'  => 'AdminController@permission_denied'
     ]);
 
+    Route::get('/admin/error/not_found', [
+        'as'    => 'admin/error/not_found',
+        'uses'  => 'AdminController@not_found'
+    ]);
+
     /** Start - Back end users route */
     Route::get('/admin/back_users/', [
         'as'    =>  'admin/back_users',

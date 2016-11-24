@@ -97,9 +97,8 @@ class User extends Authenticatable
         }
     }
 
-    public function is_back_user()
-    {
-        if ($this->hasRole(['front-user', 'front-member']) || $this->status != "active") {
+    public function is_back_user() {
+        if ( $this->hasRole('front-user') || $this->hasRole('front-member') || $this->status != "active") {
             return false;
         }
         else {
@@ -109,7 +108,12 @@ class User extends Authenticatable
 
     public function is_front_user()
     {
-        if ($this->hasRole(['front-user', 'front-member']) && $this->status == "active") {
+        xdebug_var_dump($this->hasRole('front-user'));
+        xdebug_var_dump($this->hasRole('front-member'));
+        xdebug_var_dump($this->hasRole('front-user') || $this->hasRole('front-member'));
+        xdebug_var_dump($this->status);
+        xdebug_var_dump(($this->hasRole('front-user') || $this->hasRole('front-member')) && $this->status == "active");
+        if ( ($this->hasRole('front-user') || $this->hasRole('front-member')) && $this->status == "active") {
             return true;
         }
         else {

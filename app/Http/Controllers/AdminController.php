@@ -100,9 +100,35 @@ class AdminController extends Controller
             'subtitle'  => '',
             'table_head_text1' => 'Membership Plans - Create New'
         ];
-        $sidebar_link = 'admin-backend-membership_products-new_product';
+        $sidebar_link = 'error_permission_denied';
 
         return view('admin/errors/permission_denied', [
+            'breadcrumbs' => $breadcrumbs,
+            'text_parts'  => $text_parts,
+            'in_sidebar'  => $sidebar_link,
+        ]);
+    }
+
+    public function not_found(){
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
+            return redirect()->intended(route('admin/login'));
+        }
+
+        $breadcrumbs = [
+            'Home'              => route('admin'),
+            'Administration'    => route('admin'),
+            'Back End User'     => route('admin'),
+            'Permissions'        => '',
+        ];
+        $text_parts  = [
+            'title'     => 'Add new membership plan',
+            'subtitle'  => '',
+            'table_head_text1' => 'Membership Plans - Create New'
+        ];
+        $sidebar_link = 'error_not_found';
+
+        return view('admin/errors/not_found', [
             'breadcrumbs' => $breadcrumbs,
             'text_parts'  => $text_parts,
             'in_sidebar'  => $sidebar_link,

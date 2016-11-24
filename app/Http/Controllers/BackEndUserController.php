@@ -53,12 +53,16 @@ class BackEndUserController extends Controller
             return redirect()->intended(route('admin/error/permission_denied'));
         }
 
-        $back_users = User::whereHas('roles', function($query){
-            $query->where('name', '!=', 'front-user');
-        })->WhereHas('roles', function($query){
-            $query->where('name', '!=', 'front-member');
+        $back_users = User::
+            whereHas('roles', function($query){
+            $query->where('name', '=', 'employee');
+        })->orWhereHas('roles', function($query){
+            $query->where('name', '=', 'finance ');
+        })->orWhereHas('roles', function($query){
+            $query->where('name', '=', 'manager');
+        })->orWhereHas('roles', function($query){
+            $query->where('name', '=', 'owner');
         })->get();
-        //$back_users = User::all();
 
         $breadcrumbs = [
             'Home'              => route('admin'),
@@ -190,6 +194,9 @@ class BackEndUserController extends Controller
         }
 
         $back_user = User::with('roles')->find($id);
+        if ($back_user->is_back_user() === false){
+            return redirect()->intended(route('admin/error/not_found'));
+        }
 
         @$userRole = $back_user->roles[0];
         if (!$userRole){
