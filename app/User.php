@@ -106,13 +106,7 @@ class User extends Authenticatable
         }
     }
 
-    public function is_front_user()
-    {
-        xdebug_var_dump($this->hasRole('front-user'));
-        xdebug_var_dump($this->hasRole('front-member'));
-        xdebug_var_dump($this->hasRole('front-user') || $this->hasRole('front-member'));
-        xdebug_var_dump($this->status);
-        xdebug_var_dump(($this->hasRole('front-user') || $this->hasRole('front-member')) && $this->status == "active");
+    public function is_front_user() {
         if ( ($this->hasRole('front-user') || $this->hasRole('front-member')) && $this->status == "active") {
             return true;
         }

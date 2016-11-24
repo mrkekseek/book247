@@ -25,6 +25,7 @@ use Mockery\CountValidator\Exception;
 use \App\Role;
 use Webpatser\Countries\Countries;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Config;
 
 class BackEndUserController extends Controller
 {
@@ -112,35 +113,49 @@ class BackEndUserController extends Controller
         }
 
         $vars = $request->only('first_name', 'middle_name', 'last_name', 'email', 'user_type', 'username', 'password', 'user_type');
-        $messages = array(
-            'email.unique' => 'Please use an email that is not in the database',
-        );
-        $attributeNames = array(
-            'email' => 'Email address',
-            'username' => 'Username',
-            'first_name' => 'First Name',
-            'last_name' => 'Last Name',
-            'password'  => 'Password',
-        );
-        $validator = Validator::make($vars, [
-            'first_name' => 'required|min:4|max:150',
-            'last_name' => 'required|min:4|max:150',
-            'username' => 'required|min:6|max:30|unique:users,username',
-            'password' => 'required|min:8',
-            'email' => 'required|email|email|unique:users',
-            'user_type' => 'required|exists:roles,id',
-        ], $messages, $attributeNames);
 
-        if ($validator->fails()){
-            //return $validator->errors()->all();
-            return [
-                'success'   => false,
-                'title'     => 'Error Validating Fields',
-                'errors'    => $validator->getMessageBag()->toArray()
-            ];
+        if (!isset($vars['middle_name'])){
+            $vars['middle_name'] = '';
         }
 
-        $credentials = $vars;
+        if (!isset($vars['username'])){
+            $vars['username'] = $vars['email'];
+        }
+
+        if (!isset($vars['user_type'])){
+            $vars['user_type'] = Role::where('name','=','employee')->get()->first()->id;
+        }
+
+        if ($vars['password']==""){
+            $vars['password'] = substr(bcrypt(str_random(12)),0,8);
+        }
+
+        if (!isset($vars['country_id'])){
+            $vars['country_id'] = Config::get('constants.globalWebsite.defaultCountryId');
+        }
+
+        $credentials = [
+            'first_name'    => $vars['first_name'],
+            'middle_name'   => $vars['middle_name'],
+            'last_name'     => $vars['last_name'],
+            'gender'        => $vars['gender'],
+            'username'      => $vars['username'],
+            'email'         => $vars['email'],
+            'password'      => $vars['password'],
+            'country_id'    => $vars['country_id'],
+            'status'        => 'active',
+            'user_type'     => $vars['user_type']
+        ];
+        $validator = Validator::make($credentials, User::rules('POST'), User::$messages, User::$attributeNames);
+        if ($validator->fails()){
+            //return $validator->errors()->all();
+            return array(
+                'success'   => false,
+                'title'     => 'Error validating',
+                'errors'    => $validator->getMessageBag()->toArray()
+            );
+        }
+
         $credentials['password'] = bcrypt($credentials['password']);
         try {
             $user = User::create($credentials);
