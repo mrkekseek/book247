@@ -2031,6 +2031,7 @@ class BookingController extends Controller
                     }
                     elseif ($formatted_booking['payment_type'] == 'recurring' && $booking->status!='pending'){
                         $formatted_booking['color_stripe'] = 'bg-purple-wisteria bg-font-purple-wisteria';
+                        $formatted_booking['custom_color'] = '#00bfff !important';
                     }
                     elseif($booking->status=='pending'){
                         $formatted_booking['color_stripe'] = 'bg-yellow-soft bg-font-yellow-soft';

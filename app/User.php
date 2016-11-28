@@ -329,12 +329,17 @@ class User extends Authenticatable
             $avatarType         = Storage::disk('local')->mimeType('members/default/avatars/default.jpg');
         }
 
-        return [
-            'file_location'     => $avatar->file_location,
-            'avatar_content'    => $avatarContent,
-            'avatar_type'       => $avatarType,
-            'avatar_base64'     => 'data:'.$avatarType.';base64,'.base64_encode($avatarContent)
-        ];
+        if ($is_link==true){
+            return 'data:'.$avatarType.';base64,'.base64_encode($avatarContent);
+        }
+        else{
+            return [
+                'file_location'     => $avatar->file_location,
+                'avatar_content'    => $avatarContent,
+                'avatar_type'       => $avatarType,
+                'avatar_base64'     => 'data:'.$avatarType.';base64,'.base64_encode($avatarContent)
+            ];
+        }
     }
 
     /**

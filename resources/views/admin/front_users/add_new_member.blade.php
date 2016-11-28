@@ -117,7 +117,7 @@
                                                     </div>
                                                 </div>
                                                 <div class="form-group">
-                                                    <span class="help-inline">Membership Start Date</span>
+                                                    <span class="help-inline">Membership Type</span>
                                                     <select class="form-control input-group input-inline input-medium" name="membership_plan">
                                                         <option value="1" selected="selected">No membership plan</option>
                                                         @foreach($memberships as $plan)

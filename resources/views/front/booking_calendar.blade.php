@@ -254,6 +254,7 @@
                         rtl: App.isRTL(),
                         orientation: "left",
                         autoclose: true,
+                        weekStart:1,
                     });
                     //$('body').removeClass("modal-open"); // fix bug when inline picker is used in modal
                 }

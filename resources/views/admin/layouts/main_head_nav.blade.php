@@ -261,7 +261,7 @@
                     <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true">
                         <span class="username username-hide-on-mobile"> {{ Auth::user()->name }} </span>
                         <!-- DOC: Do not remove below empty space(&nbsp;) as its purposely used -->
-                        <img alt="" class="img-circle" src="{{ asset('assets/layouts/layout4/img/avatar9.jpg') }}" /> </a>
+                        <img alt="" class="img-circle" src="{{ Auth::user()->get_avatar_image(true) }}" /> </a>
                     <ul class="dropdown-menu dropdown-menu-default">
                         <li>
                             <a href="{{ route('admin/back_users/view_user/', ['id' => Auth::user()->id ]) }}">
