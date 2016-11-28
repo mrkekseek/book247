@@ -470,8 +470,6 @@ class BookingController extends Controller
         }
 
         $message = ['status'=>true, 'payment'=>'membership'];
-        usleep(1000);
-
         if ($recurring==true){
             $free_open_bookings = 999;
             $message['payment'] = 'recurring';
@@ -1478,7 +1476,8 @@ class BookingController extends Controller
             $open_at  = '07:00';
             $close_at = '23:00';
         }
-        $hours_interval     = $this->make_hours_interval($date_selected, $open_at, $close_at, 30, true, false);
+
+        $hours_interval     = $this->make_hours_interval($date_selected, $open_at, $close_at, 30, true, false, true);
         $location_bookings  = $this->get_location_bookings($date_selected, $location->id, $resources_ids, $hours_interval);
 
         $jump_to = [];
@@ -1658,7 +1657,7 @@ class BookingController extends Controller
      * @param bool $show_last
      * @return array
      */
-    public static function make_hours_interval($date_selected, $start_time='07:00', $end_time='23:00', $time_period=30, $show_all = false, $show_last = false){
+    public static function make_hours_interval($date_selected, $start_time='07:00', $end_time='23:00', $time_period=30, $show_all = false, $show_last = false, $all_free_available = false){
 //echo 'Date : '.$date_selected.' ; time_start : '.$start_time.' ; time_end : '.$end_time;
         $dateSelected = Carbon::createFromFormat("Y-m-d H:i", $date_selected.' 00:00');
         if (!$dateSelected){
@@ -1705,7 +1704,7 @@ class BookingController extends Controller
         $today          = $dateSelected->eq(Carbon::today()) ? true : false;
         foreach ( $period as $dt ) {
             $key = $dt->format( "H:i" );
-            if ( ($key<$current_time && $today) || $yesterday ) {
+            if ( ($key<$current_time && $today && $all_free_available==false) || $yesterday ) {
                 $hours[$key] = ['color_stripe' => "bg-grey-salt bg-font-grey-salt"];
             }
             else{
