@@ -84,11 +84,11 @@
                             @if (sizeof($time_intervals)>0)
                                 @foreach ($time_intervals as $key=>$hour)
                                 <tr>
-                                    <td {!! isset($jump_to[$key])?'id="jump_right_here"':'' !!} {!! isset($jump_to[$key])?'style="border-top:3px solid #26c281;"':'' !!} >{{ $key }} <a class="btn btn-circle btn-icon-only border-white bg-green-meadow bg-font-green-meadow add_custom_bookings_btn" href="javascript:;"> + </a></td>
+                                    <td {!! isset($jump_to[$key])?'id="jump_right_here"':'' !!} {!! isset($jump_to[$key])?'style="border-bottom:3px solid #26c281;"':'' !!} >{{ $key }} <a class="btn btn-circle btn-icon-only border-white bg-green-meadow bg-font-green-meadow add_custom_bookings_btn" href="javascript:;"> + </a></td>
                                     @foreach ($resources as $resource)
                                         <td class="{{ isset($location_bookings[$key][$resource['id']]['color_stripe'])?$location_bookings[$key][$resource['id']]['color_stripe']:$hour['color_stripe'] }}
                                             {{ ( $hour['color_stripe']=='' && !isset($location_bookings[$key][$resource['id']]['color_stripe']) )?' isfreetime':'' }}"
-                                            style="padding:4px 8px; overflow:hidden; {{ isset($location_bookings[$key][$resource['id']]['custom_color'])?'background-color:'.$location_bookings[$key][$resource['id']]['custom_color'].';':'' }} {!! isset($jump_to[$key])?'border-top:3px solid #26c281;':'' !!}">
+                                            style="padding:4px 8px; overflow:hidden; {{ isset($location_bookings[$key][$resource['id']]['custom_color'])?'background-color:'.$location_bookings[$key][$resource['id']]['custom_color'].';':'' }} {!! isset($jump_to[$key])?'border-bottom:3px solid #26c281;':'' !!}">
                                             @if ( isset($location_bookings[$key][$resource['id']]) )
                                             <a class="font-white pull-xs-left" href="{{ @$location_bookings[$key][$resource['id']]['player_link'] }}" target="_blank" style="white-space: nowrap;">{{ @$location_bookings[$key][$resource['id']]['player_name'] }}</a>
                                             <div class="actions pull-xs-left" search-key="{{ $location_bookings[$key][$resource['id']]['search_key'] }}">
