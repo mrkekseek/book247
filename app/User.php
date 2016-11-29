@@ -170,6 +170,11 @@ class User extends Authenticatable
         return $this->hasMany('App\UserMembership');
     }
 
+    public function get_active_membership(){
+        $membership = UserMembership::where('user_id','=',$this->id)->whereIn('status',['active','suspended'])->get()->first();
+        return $membership;
+    }
+
     public function attach_membership_plan(MembershipPlan $the_plan, User $signed_by, $day_start = false){
         $user_plan = new UserMembership();
         //$user_plan->assign_plan($this, $the_plan, $signed_by);
@@ -276,6 +281,53 @@ class User extends Authenticatable
                 $old_plan->save();
                 $memberRole = Role::where('name','=','front-member')->get()->first();
                 $this->detachRole($memberRole);
+            }
+
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
+    public function update_membership_plan(UserMembership $old_plan, $new_plan, $start_date = '', $is_update = false){
+        $start_date = Carbon::today();
+        $additional_values = [
+            'old_membership_plan'   => $old_plan->id,
+            'new_membership_plan'   => $new_plan->id,
+            'is_update'     => $is_update
+        ];
+
+        if ($old_plan) {
+            // insert a membership action related to this membership freeze
+            $fillable = [
+                'user_membership_id'    => $old_plan->id,
+                'action_type'           => 'update_plan',
+                'additional_values'     => json_encode($additional_values),
+                'start_date'    => $start_date->format('Y-m-d'),
+                'end_date'      => $start_date->format('Y-m-d'),
+                'added_by'      => Auth::user()->id,
+                'notes'         => json_encode([]),
+                'processed'     => 0,
+                'status'        => 'active'
+            ];
+
+            $userMembershipAction = Validator::make($fillable, UserMembershipAction::rules('POST'), UserMembershipAction::$message, UserMembershipAction::$attributeNames);
+            if ($userMembershipAction->fails()){
+                //return $validator->errors()->all();
+                return array(
+                    'success'   => false,
+                    'title'     => 'Error Validating Action',
+                    'errors'    => $userMembershipAction->getMessageBag()->toArray()
+                );
+            }
+
+            UserMembershipAction::create($fillable);
+
+            // if the freeze starts today, then we freeze the membership plan
+            if (Carbon::today()->toDateString() == $start_date->toDateString()) {
+                // check the planned invoices that needs to be pushed out of the freeze period
+                MembershipController::update_membership_rebuild_invoices($old_plan);
             }
 
             return true;

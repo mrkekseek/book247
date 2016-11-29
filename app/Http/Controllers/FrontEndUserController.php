@@ -431,7 +431,15 @@ class FrontEndUserController extends Controller
         else {
             $my_plan = MembershipPlan::where('id','=',1)->get()->first();
         }
-        $membership_plans = MembershipPlan::where('id','!=','1')->where('status','=','active')->get()->sortBy('name');
+        $membership_plans = MembershipPlan::with('price')->where('id','!=','1')->where('status','=','active')->get()->sortBy('name');
+        $membership_plans_update = [];
+        foreach ($membership_plans as $single){
+            $membership_plans_update[] = [
+                'id'    => $single->id,
+                'name'  => $single->name,
+                'up_or_down'    => $single->price[0]->price>=$my_plan->price ? 'UPGRADE' : 'DOWNGRADE',
+            ];
+        }
 
         $cardNo = UserAccessCard::where('user_id','=',$back_user->id)->where('status','=','active')->get()->first();
         if ($cardNo){
@@ -459,6 +467,7 @@ class FrontEndUserController extends Controller
             'restrictions'          => @$restrictions,
             'plan_details'          => @$plan_details,
             'memberships'           => $membership_plans,
+            'update_memberships'    => $membership_plans_update,
             'plannedInvoices'       => @$plannedInvoices,
             'invoiceCancellation'   => $invoiceCancellation,
             'invoiceFreeze'         => $invoiceFreeze,

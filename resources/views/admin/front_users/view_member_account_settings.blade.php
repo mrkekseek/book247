@@ -10,6 +10,7 @@
     <link href="{{ asset('assets/global/css/components-rounded.min.css') }}" rel="stylesheet" id="style_components" type="text/css" />
     <link href="{{ asset('assets/global/css/plugins.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('assets/global/plugins/jquery-notific8/jquery.notific8.min.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/global/plugins/ladda/ladda-themeless.min.css') }}" rel="stylesheet" type="text/css" />
 @endsection
 
 @section('themeLayoutStyle')
@@ -92,10 +93,10 @@
                                         <span class="caption-subject font-blue-madison bold uppercase">Profile Account</span>
                                     </div>
                                     <ul class="nav nav-tabs">
-                                        <li class="active">
+                                        <li>
                                             <a href="#tab_1_3" data-toggle="tab">Access Card</a>
                                         </li>
-                                        <li>
+                                        <li class="active">
                                             <a href="#tab_1_5" data-toggle="tab">Membership Plan</a>
                                         </li>
                                         <li>
@@ -106,7 +107,7 @@
                                 <div class="portlet-body">
                                     <div class="tab-content">
                                         <!-- Membership Plan TAB -->
-                                        <div class="tab-pane active row" id="tab_1_3">
+                                        <div class="tab-pane row" id="tab_1_3">
                                             <div class="col-md-12">
                                                 <div class="portlet light bordered">
                                                     <div class="portlet-body form">
@@ -170,42 +171,46 @@
                                         </div>
                                         <!-- END Membership Plan TAB -->
                                         <!-- Membership Plan TAB -->
-                                        <div class="tab-pane row" id="tab_1_5">
+                                        <div class="tab-pane active row" id="tab_1_5">
                                             <div class="col-md-12">
                                                 <div class="portlet light bordered">
                                                     <div class="portlet-body form">
                                                         <!-- BEGIN FORM-->
                                                         <form action="#" id="new_membership_plan" class="form-horizontal">
-                                                            <div class="form-body">
+                                                            <div class="form-body" style="padding-bottom:0px;">
                                                                 <div class="form-group">
                                                                     <label class="control-label col-md-3"> Active Membership </label>
-                                                                    <div class="col-md-8">
+                                                                    <div class="col-md-9">
                                                                         @if (isset($membership_plan->membership_id))
-                                                                            <input class="form-control input-inline input-large inline-block" disabled readonly name="what_is_the_plan" value="{{$membership_plan->membership_name}}" />
+                                                                            <input class="form-control input-inline input-large inline-block margin-bottom-10" disabled readonly name="what_is_the_plan" value="{{$membership_plan->membership_name}}" />
+
+                                                                            <a href="#change_plan_box" class="btn bg-green-jungle bg-font-green-jungle input margin-bottom-10" data-toggle="modal" style="min-width:160px;">
+                                                                                <i class="fa fa-play"></i> Upgrade/Downgrade Plan</a>
+                                                                            <br />
                                                                             @if ($membership_plan->status=='suspended')
-                                                                            <a href="#unfreeze_plan_box" class="btn bg-green-jungle bg-font-green-jungle input" data-toggle="modal" style="min-width:160px;">
+                                                                            <a href="#unfreeze_plan_box" class="btn bg-green-jungle bg-font-green-jungle input margin-bottom-10" data-toggle="modal" style="min-width:158px;">
                                                                                 <i class="fa fa-play"></i> Un-Freeze Plan</a>
                                                                             @else
-                                                                            <a href="#freeze_plan_box" class="btn bg-blue-sharp bg-font-blue-sharp input" data-toggle="modal" style="min-width:160px;">
+                                                                            <a href="#freeze_plan_box" class="btn bg-blue-sharp bg-font-blue-sharp input margin-bottom-10" data-toggle="modal" style="min-width:158px;">
                                                                                 <i class="fa fa-pause"></i> Freeze Plan</a>
                                                                             @endif
 
                                                                             @if($canCancel==true)
-                                                                            <a href="#cancel_plan_box" class="btn red-soft input" data-toggle="modal" style="min-width:160px;">
+                                                                            <a href="#cancel_plan_box" class="btn red-soft input margin-bottom-10" data-toggle="modal" style="min-width:158px;">
                                                                                 <i class="fa fa-eject"></i> Cancel Plan</a>
                                                                             @endif
                                                                         @else
-                                                                            <input class="form-control input-inline input-large inline-block" disabled readonly name="what_is_the_plan" value="No active Membership Plan" />
+                                                                            <input class="form-control input-inline input-large inline-block margin-bottom-10" disabled readonly name="what_is_the_plan" value="No active Membership Plan" />
                                                                         @endif
                                                                     </div>
                                                                 </div>
                                                                 @if (isset($membership_plan->membership_id))
-                                                                <div class="form-group">
-                                                                    <div class="col-md-5 text-right">
+                                                                <div class="form-group" style="margin-bottom:0px;">
+                                                                    <div class="col-md-5 border-green-jungle" style="border: 1px solid #ffffff;">
                                                                         <i class="form-control-static"> Current invoice period : {{ $plan_details['invoicePeriod'] }} </i>
                                                                     </div>
-                                                                    <div class="col-md-1"> &nbsp; </div>
-                                                                    <div class="col-md-5">
+                                                                    <div class="col-md-2"></div>
+                                                                    <div class="col-md-5 text-right border-purple-studio" style="border: 1px solid #ffffff;">
                                                                         <i class="form-control-static"> Next invoice period : {{ $plan_details['nextInvoicePeriod'] }} </i>
                                                                     </div>
                                                                 </div>
@@ -259,35 +264,36 @@
                                                             <a class="collapse" href="" data-original-title="" title=""> </a>
                                                         </div>
                                                     </div>
-                                                    <div class="portlet-body row">
-                                                        <!-- BEGIN FORM-->
+                                                    <div class="portlet-body">
+                                                        <!-- BEGIN membership details-->
                                                         @if($restrictions)
+                                                        <div class="row">
                                                             <div class="col-md-4">
-                                                                <div class="note note-info font-grey-mint" style="min-height:110px; margin:0 0 10px; padding:5px 20px 10px 10px;">
+                                                                <div class="note note-info font-grey-mint membership_options" style="margin:0 0 10px; padding:5px 20px 10px 10px;">
                                                                     <p> Price </p>
                                                                     <h4 class="block" style="margin-bottom:0px; font-size:32px;"> <b>{{ $plan_details['price'].' '.Config::get('constants.finance.currency') }} </b> </h4>
                                                                 </div>
                                                             </div>
                                                             <div class="col-md-4">
-                                                                <div class="note note-info font-grey-mint" style="min-height:110px; margin:0 0 10px; padding:5px 20px 10px 10px;">
+                                                                <div class="note note-info font-grey-mint membership_options" style="margin:0 0 10px; padding:5px 20px 10px 10px;">
                                                                     <p> Discount </p>
                                                                     <h4 class="block" style="margin-bottom:0px; font-size:32px;"> <b>{{ $plan_details['discount'] }}</b> </h4>
                                                                 </div>
                                                             </div>
                                                             <div class="col-md-4">
-                                                                <div class="note note-warning font-grey-mint" style="min-height:110px; margin:0 0 10px; padding:5px 20px 10px 10px;">
+                                                                <div class="note note-warning font-grey-mint membership_options" style="margin:0 0 10px; padding:5px 20px 10px 10px;">
                                                                     <p> Invoice Period </p>
                                                                     <h4 class="block" style="margin-bottom:0px; font-size:22px;"> <b>{{ $plan_details['invoice_period'] }}</b> </h4>
                                                                 </div>
                                                             </div>
                                                             <div class="col-md-4">
-                                                                <div class="note note-info font-grey-mint" style="min-height:110px; margin:0 0 10px; padding:5px 20px 10px 10px;">
+                                                                <div class="note note-info font-grey-mint membership_options" style="margin:0 0 10px; padding:5px 20px 10px 10px;">
                                                                     <p> Signed On </p>
                                                                     <h4 class="block" style="margin-bottom:0px; font-size:24px;"> {{ $plan_details['day_start'] }} </h4>
                                                                 </div>
                                                             </div>
                                                             <div class="col-md-4">
-                                                                <div class="note note-info font-purple" style="min-height:110px; margin:0 0 10px; padding:5px 20px 10px 10px;">
+                                                                <div class="note note-info font-purple membership_options" style="margin:0 0 10px; padding:5px 20px 10px 10px;">
                                                                     <p> Signed By </p>
                                                                     @if($plan_details['signed_by_link']!='')
                                                                         <h4 class="block" style="margin-bottom:0px; font-size:24px;"> <b><a class="font-purple" href="{{ $plan_details['signed_by_link'] }}" target="_blank"> {{ $plan_details['signed_by_name'] }} </a></b> </h4>
@@ -297,11 +303,12 @@
                                                                 </div>
                                                             </div>
                                                             <div class="col-md-4">
-                                                                <div class="note note-danger bg-red-flamingo bg-font-red-flamingo color-white" style="min-height:110px; margin:0 0 10px; padding:5px 20px 10px 10px;">
+                                                                <div class="note note-danger bg-red-flamingo bg-font-red-flamingo color-white membership_options" style="margin:0 0 10px; padding:5px 20px 10px 10px;">
                                                                     <p> Invoice Status </p>
                                                                     <h4 class="block" style="margin-bottom:0px; font-size:24px;"> Not Paid </h4>
                                                                 </div>
                                                             </div>
+                                                        </div>
                                                         @endif
                                                         <!-- END FORM-->
                                                     </div>
@@ -322,12 +329,13 @@
                                                             <a class="collapse" href="" data-original-title="" title=""> </a>
                                                         </div>
                                                     </div>
-                                                    <div class="portlet-body row">
-                                                        <!-- BEGIN FORM-->
+                                                    <div class="portlet-body">
+                                                        <!-- BEGIN restriction boxes-->
+                                                        <div class="row">
                                                         @if($restrictions)
-                                                            @foreach ($restrictions as $restriction)
+                                                            @foreach ($restrictions as $key=>$restriction)
                                                                 <div class="col-md-4">
-                                                                    <div class="note {{ $restriction['color'] }}" style="min-height:140px; margin:0 0 15px; padding:5px 20px 10px 10px;">
+                                                                    <div class="note {{ $restriction['color'] }} membership_rules" style="margin:0 0 15px; padding:5px 20px 10px 10px;">
                                                                         <h4 class="block"> {{ $restriction['title'] }} Rule </h4>
                                                                         <p> {!! $restriction['description'] !!} </p>
                                                                     </div>
@@ -338,8 +346,9 @@
                                                                 <h4 class="block">You have no attributes added to this plan</h4>
                                                                 <p> Please use the "Add Membership Attributes" to customize and configure the membership plan so you create the perfect plan for your business. </p>
                                                             </div>
-                                                            @endif
-                                                                    <!-- END FORM-->
+                                                        @endif
+                                                        </div>
+                                                        <!-- END restriction boxes-->
                                                     </div>
                                                 </div>
                                             </div>
@@ -516,6 +525,47 @@
                             </div>
                         </div>
                     </div>
+                </div>
+
+                <div class="modal fade" id="change_plan_box" tabindex="-1" role="dialog" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                                <h4 class="modal-title"> Membership Plan Change [Upgrade / Downgrade] </h4>
+                            </div>
+                            <div class="modal-body form-horizontal" id="book_main_details_container">
+                                <div class="form-body">
+                                    <div class="form-group">
+                                        <label class="control-label col-md-4 inline"> Change Plan To </label>
+                                        <div class="col-md-8">
+                                            <select name="change_membership_plans_list" class="form-control input-inline input-large  inline-block list_all_plans">
+                                                <option value="" selected="selected"> Select membership plan </option>
+                                                @foreach ($update_memberships as $membership)
+                                                    <option value="{{$membership['id']}}"> {{$membership['name']}} - {{$membership['up_or_down']}} </option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label col-md-4 inline"> Change From </label>
+                                        <div class="col-md-8">
+                                            <select name="membership_plans_list" class="form-control input-inline input-large  inline-block list_all_plans">
+                                                <option value="0" selected> Start Today </option>
+                                                <option value="1">Next Invoice Period</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn green btn_no_show" data-toggle="modal" href="#changeIt"> Return </button>
+                                <button type="button" class="btn btn-primary mt-ladda-btn ladda-button update_downgrade_membership" data-style="expand-right" onclick="javascript:update_assigned_membership_plan();"> <span class="ladda-label"> Apply Change </span> </button>
+                            </div>
+                        </div>
+                        <!-- /.modal-content -->
+                    </div>
+                    <!-- /.modal-dialog -->
                 </div>
 
                 <div class="modal fade" id="changeIt" tabindex="-1" role="dialog" aria-hidden="true">
@@ -816,6 +866,9 @@
     <script src="{{ asset('assets/global/plugins/jquery.blockui.min.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/pages/scripts/profile.min.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/global/plugins/dropzone/dropzone.min.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('assets/global/scripts/jquery.matchHeight.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('assets/global/plugins/ladda/spin.min.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('assets/global/plugins/ladda/ladda.min.js') }}" type="text/javascript"></script>
 @endsection
 
 @section('themeBelowLayoutScripts')
@@ -1139,6 +1192,39 @@
             });
         }
 
+        function update_assigned_membership_plan(){
+            var userID = '{{$user->id}}';
+
+            var btn = document.querySelector(".update_downgrade_membership");
+            var la = Ladda.create(btn);
+            la.start();
+
+            $.ajax({
+                url: '{{route('admin/membership_plans/changed_active_plan')}}',
+                type: "post",
+                data: {
+                    'selected_plan':    $('select[name=change_membership_plans_list]').val(),
+                    'start_date':       $('select[name=membership_plans_list]').val(),
+                    'member_id':        {{ $user->id }}
+                },
+                success: function(data){
+                    la.stop();
+
+                    if (data.success) {
+                        $('#change_plan_box').modal('hide');
+                        show_notification(data.title, data.message, 'lime', 3500, 0);
+
+                        setTimeout(function(){
+                            location.reload();
+                        },3500);
+                    }
+                    else{
+                        show_notification(data.title, data.errors, 'tangerine', 5000, 0);
+                    }
+                }
+            });
+        }
+
         function freeze_membership(){
             var userID = '{{$user->id}}';
 
@@ -1217,6 +1303,12 @@
                 }
             });
         }
+
+        var options = { byRow: true, property: 'height', target: null, remove: false};
+        $(function() {
+            $('.membership_rules').matchHeight(options);
+            $('.membership_options').matchHeight(options);
+        });
 
         /* Start general - send message */
         $(".member_send_message").on("click", function(){

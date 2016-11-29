@@ -586,6 +586,11 @@ Route::group(['middleware'=>'web', 'prefix'=>'admin'], function(){
         'uses'  => 'MembershipController@assign_membership_to_member'
     ]);
 
+    Route::post('membership_plans/changed_active_plan', [
+        'as'    => 'admin/membership_plans/changed_active_plan',
+        'uses'  => 'MembershipController@change_active_membership_for_member'
+    ]);
+
     Route::post('membership_plans/freeze_member_plan', [
         'as'    => 'admin/membership_plans/freeze_member_plan',
         'uses'  => 'MembershipController@freeze_membership_for_member'

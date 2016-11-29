@@ -451,4 +451,78 @@ class MembershipController extends Controller
             ];
         }
     }
+
+    public function change_active_membership_for_member(Request $request){
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
+            return [
+                'success' => false,
+                'errors'  => 'Error while trying to authenticate. Login first then use this function.',
+                'title'   => 'Not logged in'];
+        }
+        /*elseif (!$user->can('manage-calendar-products')){
+            return [
+                'success'   => false,
+                'errors'    => 'You don\'t have permission to access this page',
+                'title'     => 'Permission Error'];
+        }*/
+
+        $vars = $request->only('selected_plan', 'start_date', 'member_id');
+
+        // check if user is valid
+        $member = User::where('id','=',$vars['member_id'])->get()->first();
+        if (!$member){
+            return [
+                'success' => false,
+                'errors'  => 'Could not find the selected member to upgrade/downgrade',
+                'title'   => 'Member error'];
+        }
+
+        // check if updated membership exists and get price
+        $new_plan = MembershipPlan::with('price')->where('id','=',$vars['selected_plan'])->get()->first();
+        if (!$new_plan){
+            return [
+                'success' => false,
+                'errors'  => 'Could not find the new membership plan',
+                'title'   => 'Membership plan error'];
+        }
+
+        // check if membership active and get price
+        $old_plan = $member->get_active_membership();
+        if (!$old_plan){
+            return [
+                'success' => false,
+                'errors'  => 'No active membership plan found for selected member',
+                'title'   => 'Member plan error'];
+        }
+
+        // get first day for new membership plan
+        if ($vars['start_date']==1){
+            // next invoice period
+            $nextInvoice = UserMembershipInvoicePlanning::where('user_membership_id','=',$old_plan->id)->where('status','=','pending')->orderBy('issued_date','ASC')->get()->first();
+            $start_date = Carbon::createFromFormat('Y-m-d H:i:s',$nextInvoice->issued_date.' 00:00:00');
+        }
+        else{
+            // today date
+            $start_date = Carbon::today();
+        }
+
+        // check if is an update or an downgrade
+        if ( $new_plan->price->price >= $old_plan->price){
+            // we have an upgrade
+        }
+        else{
+            // we have a downgrade and we check restrictions
+
+            // check if current membership has at least the minimum number of old invoices
+
+
+        }
+
+        return [];
+    }
+
+    public static function update_membership_rebuild_invoices($membershipPlan){
+
+    }
 }

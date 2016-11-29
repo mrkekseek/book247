@@ -11,6 +11,7 @@ class UserMembershipAction extends Model
     public static $attributeNames = array(
         'user_membership_id' => 'Membership ID',
         'action_type'   => 'Action Type',
+        'additional_values'  => 'Additional Values',
         'start_date'    => 'Start Date',
         'end_date'  => 'End Date',
         'added_by'  => 'Added By',
@@ -24,6 +25,7 @@ class UserMembershipAction extends Model
     protected $fillable = [
         'user_membership_id',
         'action_type',
+        'additional_values',
         'start_date',
         'end_date',
         'added_by',
@@ -44,6 +46,7 @@ class UserMembershipAction extends Model
                 return [
                     'user_membership_id' => 'required|exists:user_memberships,id',
                     'action_type'   => 'required|in:freeze,cancel',
+                    'additional_values'  => 'min:2|max:600',
                     'start_date'    => 'required|date',
                     'end_date'  => 'required|date',
                     'added_by'  => 'required|exists:users,id',
@@ -57,6 +60,7 @@ class UserMembershipAction extends Model
                 return [
                     'user_membership_id' => 'required|exists:user_memberships,id',
                     'action_type'   => 'required|in:freeze,cancel',
+                    'additional_values'  => 'min:2|max:600',
                     'start_date'    => 'required|date',
                     'end_date'  => 'required|date',
                     'added_by'  => 'required|exists:users,id',
