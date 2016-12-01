@@ -184,7 +184,7 @@
                                                                         @if (isset($membership_plan->membership_id))
                                                                             <input class="form-control input-inline input-large inline-block margin-bottom-10" disabled readonly name="what_is_the_plan" value="{{$membership_plan->membership_name}}" />
 
-                                                                            <a href="#change_plan_box" class="btn bg-green-jungle bg-font-green-jungle input margin-bottom-10" data-toggle="modal" style="min-width:160px;">
+                                                                            <a href="#upgrade_downgrade_plan_box" class="btn bg-green-jungle bg-font-green-jungle input margin-bottom-10" data-toggle="modal" style="min-width:160px;">
                                                                                 <i class="fa fa-play"></i> Upgrade/Downgrade Plan</a>
                                                                             <br />
                                                                             @if ($membership_plan->status=='suspended')
@@ -408,6 +408,22 @@
                                                                                         @endif
                                                                                     </td>
                                                                                 </tr>
+                                                                            @elseif ($one_request['action_type']=='update' && $one_request['start_date']->between(\Carbon\Carbon::createFromFormat('Y-m-d H:i:s',$singlePlanned['issued_date'].' 00:00:00'), \Carbon\Carbon::createFromFormat('Y-m-d H:i:s',$singlePlanned['last_active_date'].' 00:00:00')) )
+                                                                                <tr>
+                                                                                    <td class="highlight" colspan="5">
+                                                                                        @if ($one_request['processed']=='1')
+                                                                                            <div class="warning"></div> <a class="font-green-seagreen"> Processed - </a>
+                                                                                        @else
+                                                                                            <div class="danger"></div> <a class="font-red-thunderbird"> Pending - </a>
+                                                                                        @endif
+                                                                                        Membership update/downgrade starting with <b class="font-purple-studio">{{ \Carbon\Carbon::instance($one_request['start_date'])->format('d M Y') }}</b>.
+                                                                                        Action added by <a style="margin-left:0px;" href="{{ $one_request['added_by_link'] }}" target="_blank">{{ $one_request['added_by_name'] }}</a>
+                                                                                        on {{ $one_request['created_at'] }} (last update on {{ $one_request['updated_at'] }})
+                                                                                        @if ($one_request['processed']=='0')
+                                                                                            | <a class="label label-sm label-danger remove_pending_action" data-id="{{ $one_request['id'] }}"> delete </a>
+                                                                                        @endif
+                                                                                    </td>
+                                                                                </tr>
                                                                             @endif
                                                                         @endforeach
                                                                     @endif
@@ -527,7 +543,8 @@
                     </div>
                 </div>
 
-                <div class="modal fade" id="change_plan_box" tabindex="-1" role="dialog" aria-hidden="true">
+                <!--  -->
+                <div class="modal fade" id="upgrade_downgrade_plan_box" tabindex="-1" role="dialog" aria-hidden="true">
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header">

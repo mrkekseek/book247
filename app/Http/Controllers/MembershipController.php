@@ -486,6 +486,7 @@ class MembershipController extends Controller
                 'errors'  => 'Could not find the new membership plan',
                 'title'   => 'Membership plan error'];
         }
+        $membership_restriction = $new_plan->get_restrictions(true);
 
         // check if membership active and get price
         $old_plan = $member->get_active_membership();
@@ -507,19 +508,64 @@ class MembershipController extends Controller
             $start_date = Carbon::today();
         }
 
+        $additional_values = [
+            'old_membership_plan_id'  => $old_plan->membership_id,
+            'old_membership_plan_name'=> $old_plan->membership_name,
+            'old_membership_invoice_period' => $old_plan->invoice_period,
+            'old_membership_binding_period' => $old_plan->binding_period,
+            'old_membership_sign_out_period'=> $old_plan->sign_out_period,
+            'old_membership_price'      => $old_plan->price,
+            'old_membership_discount'   => $old_plan->discount,
+            'old_membership_restrictions'   => $old_plan->membership_restrictions,
+            'new_membership_plan_id'    => $new_plan->id,
+            'new_membership_plan_name'  => $new_plan->name,
+            'new_membership_restrictions'   => json_encode($membership_restriction),
+        ];
+
         // check if is an update or an downgrade
-        if ( $new_plan->price->price >= $old_plan->price){
+        if ( $new_plan->price[0]->price >= $old_plan->price){
             // we have an upgrade
+            $additional_values['is_update'] = true;
+            $return =  $member->update_membership_plan($old_plan, $start_date, $additional_values);
+
+            return [
+                'success' => true,
+                'message' => 'Membership updated from '.$old_plan->membership_name.' to '.$new_plan->name.' from '.$start_date->format('d M Y'),
+                'title'   => 'Membership Planned Update'];
         }
         else{
-            // we have a downgrade and we check restrictions
+            // we have a downgrade and we check restrictions : verify if the member is outside binding period
+            $firstPlanInvoice = UserMembershipInvoicePlanning::where('user_membership_id','=',$old_plan->id)->orderBy('issued_date','ASC')->get()->first();
+            if (!$firstPlanInvoice){
+                return [
+                    'success' => false,
+                    'errors'  => 'Could not get first issued invoice for this membership plan',
+                    'title'   => 'Upgrade/Downgrade error'];
+            }
 
-            // check if current membership has at least the minimum number of old invoices
+            // we add the binding period to the first invoice data (start of the membership) and check it against start date
+            $verification_date = Carbon::createFromFormat('Y-m-d H:i:s', $firstPlanInvoice->issued_date.' 00:00:00')->addMonths($old_plan->binding_period);
+            if (Carbon::today()->gte($verification_date)){
+                $additional_values['is_update'] = false;
 
+                // for downgrade, the first day for new membership is the first day of next active invoice
+                $nextInvoice = UserMembershipInvoicePlanning::where('user_membership_id','=',$old_plan->id)->where('status','=','pending')->orderBy('issued_date','ASC')->get()->first();
+                $start_date = Carbon::createFromFormat('Y-m-d H:i:s',$nextInvoice->issued_date.' 00:00:00');
 
+                $return =  $member->update_membership_plan($old_plan, $start_date, $additional_values);
+            }
+            else{
+                return [
+                    'success' => false,
+                    'errors'  => 'The current membership plan is in it\'s binding period until '.$verification_date->format('d-m-Y').', after that it can be downgraded',
+                    'title'   => 'Upgrade/Downgrade error'];
+            }
+
+            return [
+                'success' => true,
+                'message' => 'Membership downgraded from '.$old_plan->membership_name.' to '.$new_plan->day.' from '.$start_date->format('d M Y'),
+                'title'   => 'Membership Planned Downgrade'];
         }
-
-        return [];
     }
 
     public static function update_membership_rebuild_invoices($membershipPlan){

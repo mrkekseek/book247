@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AddAdditionalValuesToUserMembershipActionsTable extends Migration
+class ChangeActionTypeValuesToUserMembershipActionsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class AddAdditionalValuesToUserMembershipActionsTable extends Migration
     public function up()
     {
         Schema::table('user_membership_actions', function (Blueprint $table) {
-            $table->text('additional_values', 6000)->default('[]')->after('action_type');
+            DB::statement("ALTER TABLE `user_membership_actions` CHANGE `action_type` `action_type` ENUM('freeze','cancel','update','unknown')");
         });
     }
 
@@ -25,7 +25,7 @@ class AddAdditionalValuesToUserMembershipActionsTable extends Migration
     public function down()
     {
         Schema::table('user_membership_actions', function (Blueprint $table) {
-            $table->dropColumn(['additional_values']);
+            DB::statement("ALTER TABLE `user_membership_actions` CHANGE `action_type` `action_type` ENUM('freeze','cancel')");
         });
     }
 }

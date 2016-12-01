@@ -9,11 +9,11 @@ class UserMembershipAction extends Model
     protected $table = 'user_membership_actions';
 
     public static $attributeNames = array(
-        'user_membership_id' => 'Membership ID',
-        'action_type'   => 'Action Type',
-        'additional_values'  => 'Additional Values',
-        'start_date'    => 'Start Date',
-        'end_date'  => 'End Date',
+        'user_membership_id'=> 'Membership ID',
+        'action_type'       => 'Action Type',
+        'additional_values' => 'Additional Values',
+        'start_date'        => 'Start Date',
+        'end_date'          => 'End Date',
         'added_by'  => 'Added By',
         'notes'     => 'Notes',
         'processed' => 'Processed',
@@ -45,8 +45,8 @@ class UserMembershipAction extends Model
             {
                 return [
                     'user_membership_id' => 'required|exists:user_memberships,id',
-                    'action_type'   => 'required|in:freeze,cancel',
-                    'additional_values'  => 'min:2|max:600',
+                    'action_type'   => 'required|in:freeze,cancel,update,unknown',
+                    'additional_values'  => 'min:2|max:6000',
                     'start_date'    => 'required|date',
                     'end_date'  => 'required|date',
                     'added_by'  => 'required|exists:users,id',
@@ -59,8 +59,8 @@ class UserMembershipAction extends Model
             {
                 return [
                     'user_membership_id' => 'required|exists:user_memberships,id',
-                    'action_type'   => 'required|in:freeze,cancel',
-                    'additional_values'  => 'min:2|max:600',
+                    'action_type'   => 'required|in:freeze,cancel,update,unknown',
+                    'additional_values'  => 'min:2|max:6000',
                     'start_date'    => 'required|date',
                     'end_date'  => 'required|date',
                     'added_by'  => 'required|exists:users,id',

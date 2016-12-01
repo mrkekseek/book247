@@ -290,31 +290,28 @@ class User extends Authenticatable
         }
     }
 
-    public function update_membership_plan(UserMembership $old_plan, $new_plan, $start_date = '', $is_update = false){
-        $start_date = Carbon::today();
-        $additional_values = [
-            'old_membership_plan'   => $old_plan->id,
-            'new_membership_plan'   => $new_plan->id,
-            'is_update'     => $is_update
-        ];
+    public function update_membership_plan(UserMembership $old_plan, $start_date = '', $additional_values = [], $notes = []){
+        if ($start_date==''){
+            $start_date = Carbon::today();
+        }
 
         if ($old_plan) {
             // insert a membership action related to this membership freeze
             $fillable = [
                 'user_membership_id'    => $old_plan->id,
-                'action_type'           => 'update_plan',
+                'action_type'           => 'update',
                 'additional_values'     => json_encode($additional_values),
                 'start_date'    => $start_date->format('Y-m-d'),
                 'end_date'      => $start_date->format('Y-m-d'),
                 'added_by'      => Auth::user()->id,
-                'notes'         => json_encode([]),
+                'notes'         => json_encode($notes),
                 'processed'     => 0,
                 'status'        => 'active'
             ];
 
             $userMembershipAction = Validator::make($fillable, UserMembershipAction::rules('POST'), UserMembershipAction::$message, UserMembershipAction::$attributeNames);
             if ($userMembershipAction->fails()){
-                //return $validator->errors()->all();
+                xdebug_var_dump($userMembershipAction->getMessageBag()->toArray()); exit;
                 return array(
                     'success'   => false,
                     'title'     => 'Error Validating Action',

@@ -374,7 +374,7 @@ class FrontEndUserController extends Controller
                 $plan_details['nextInvoicePeriod'] = '-';
             }
 
-            $plan_request = $my_plan->get_plan_requests();
+            $plan_request = $my_plan->get_plan_requests(); //xdebug_var_dump($plan_request);
             foreach($plan_request as $a_request){
                 if ($a_request['action_type'] == 'cancel' && $a_request['status']!='cancelled'){
                     $canCancel = false;
@@ -434,10 +434,17 @@ class FrontEndUserController extends Controller
         $membership_plans = MembershipPlan::with('price')->where('id','!=','1')->where('status','=','active')->get()->sortBy('name');
         $membership_plans_update = [];
         foreach ($membership_plans as $single){
+            if (!isset($my_plan->short_description) && $single->get_price()->price>=$my_plan->price){
+                $status = 'UPGRADE';
+            }
+            else{
+                $status = 'DOWNGRADE';
+            }
+
             $membership_plans_update[] = [
-                'id'    => $single->id,
-                'name'  => $single->name,
-                'up_or_down'    => $single->price[0]->price>=$my_plan->price ? 'UPGRADE' : 'DOWNGRADE',
+                'id'         => $single->id,
+                'name'       => $single->name,
+                'up_or_down' => $status,
             ];
         }
 
