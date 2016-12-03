@@ -311,7 +311,6 @@ class User extends Authenticatable
 
             $userMembershipAction = Validator::make($fillable, UserMembershipAction::rules('POST'), UserMembershipAction::$message, UserMembershipAction::$attributeNames);
             if ($userMembershipAction->fails()){
-                xdebug_var_dump($userMembershipAction->getMessageBag()->toArray()); exit;
                 return array(
                     'success'   => false,
                     'title'     => 'Error Validating Action',

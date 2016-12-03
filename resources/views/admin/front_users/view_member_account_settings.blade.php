@@ -184,8 +184,10 @@
                                                                         @if (isset($membership_plan->membership_id))
                                                                             <input class="form-control input-inline input-large inline-block margin-bottom-10" disabled readonly name="what_is_the_plan" value="{{$membership_plan->membership_name}}" />
 
+                                                                            @if($canUpdate==true)
                                                                             <a href="#upgrade_downgrade_plan_box" class="btn bg-green-jungle bg-font-green-jungle input margin-bottom-10" data-toggle="modal" style="min-width:160px;">
                                                                                 <i class="fa fa-play"></i> Upgrade/Downgrade Plan</a>
+                                                                            @endif
                                                                             <br />
                                                                             @if ($membership_plan->status=='suspended')
                                                                             <a href="#unfreeze_plan_box" class="btn bg-green-jungle bg-font-green-jungle input margin-bottom-10" data-toggle="modal" style="min-width:158px;">
@@ -416,9 +418,11 @@
                                                                                         @else
                                                                                             <div class="danger"></div> <a class="font-red-thunderbird"> Pending - </a>
                                                                                         @endif
-                                                                                        Membership update/downgrade starting with <b class="font-purple-studio">{{ \Carbon\Carbon::instance($one_request['start_date'])->format('d M Y') }}</b>.
-                                                                                        Action added by <a style="margin-left:0px;" href="{{ $one_request['added_by_link'] }}" target="_blank">{{ $one_request['added_by_name'] }}</a>
-                                                                                        on {{ $one_request['created_at'] }} (last update on {{ $one_request['updated_at'] }})
+                                                                                        Membership {{ $one_request['additional_values']->is_update===true?'upgraded':'downgraded' }}
+                                                                                            from <b>{{ $one_request['additional_values']->old_membership_plan_name }}</b> to <b>{{ $one_request['additional_values']->new_membership_plan_name }}</b>
+                                                                                            starting with <b class="font-purple-studio">{{ \Carbon\Carbon::instance($one_request['start_date'])->format('d M Y') }}</b>.
+                                                                                            Action added by <a style="margin-left:0px;" href="{{ $one_request['added_by_link'] }}" target="_blank">{{ $one_request['added_by_name'] }}</a>
+                                                                                            on {{ $one_request['created_at'] }} (last update on {{ $one_request['updated_at'] }})
                                                                                         @if ($one_request['processed']=='0')
                                                                                             | <a class="label label-sm label-danger remove_pending_action" data-id="{{ $one_request['id'] }}"> delete </a>
                                                                                         @endif
@@ -576,7 +580,7 @@
                                 </div>
                             </div>
                             <div class="modal-footer">
-                                <button type="button" class="btn green btn_no_show" data-toggle="modal" href="#changeIt"> Return </button>
+                                <button type="button" class="btn green btn_no_show" data-dismiss="modal"> Return </button>
                                 <button type="button" class="btn btn-primary mt-ladda-btn ladda-button update_downgrade_membership" data-style="expand-right" onclick="javascript:update_assigned_membership_plan();"> <span class="ladda-label"> Apply Change </span> </button>
                             </div>
                         </div>

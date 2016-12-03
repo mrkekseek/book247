@@ -346,6 +346,7 @@ class FrontEndUserController extends Controller
         $invoiceFreeze = [];
         $canCancel = true;
         $canFreeze = true;
+        $canUpdate = true;
 
         $my_plan = UserMembership::where('user_id','=',$back_user->id)->whereIn('status',['active','suspended'])->get()->first();
         if ($my_plan){
@@ -381,6 +382,9 @@ class FrontEndUserController extends Controller
                 }
                 elseif ($a_request['action_type'] == 'freeze' && $a_request['status']=='active'){
                     $canFreeze = false;
+                }
+                elseif ($a_request['action_type'] == 'update' && $a_request['status']=='active'){
+                    $canUpdate = false;
                 }
             }
 
@@ -434,6 +438,10 @@ class FrontEndUserController extends Controller
         $membership_plans = MembershipPlan::with('price')->where('id','!=','1')->where('status','=','active')->get()->sortBy('name');
         $membership_plans_update = [];
         foreach ($membership_plans as $single){
+            if ($single->plan_period!=$my_plan->invoice_period){
+                continue;
+            }
+
             if (!isset($my_plan->short_description) && $single->get_price()->price>=$my_plan->price){
                 $status = 'UPGRADE';
             }
@@ -480,6 +488,7 @@ class FrontEndUserController extends Controller
             'invoiceFreeze'         => $invoiceFreeze,
             'canCancel'         => $canCancel,
             'canFreeze'         => $canFreeze,
+            'canUpdate'         => $canUpdate,
             'accessCardNo'      => @$accessCardNo
         ]);
     }

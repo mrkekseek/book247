@@ -500,7 +500,7 @@ class MembershipController extends Controller
         // get first day for new membership plan
         if ($vars['start_date']==1){
             // next invoice period
-            $nextInvoice = UserMembershipInvoicePlanning::where('user_membership_id','=',$old_plan->id)->where('status','=','pending')->orderBy('issued_date','ASC')->get()->first();
+            $nextInvoice = UserMembershipInvoicePlanning::where('user_membership_id','=',$old_plan->id)->whereIn('status',['pending','last'])->orderBy('issued_date','ASC')->get()->first();
             $start_date = Carbon::createFromFormat('Y-m-d H:i:s',$nextInvoice->issued_date.' 00:00:00');
         }
         else{
@@ -508,17 +508,27 @@ class MembershipController extends Controller
             $start_date = Carbon::today();
         }
 
+        // check if invoice period is the same for both plans, if not no actions can be performed
+        if ($old_plan->invoice_period!=$new_plan->plan_period){
+            return [
+                'success' => false,
+                'errors'  => 'The old and the new membership plan have different invoice periods; must be the same',
+                'title'   => 'Invoice Period Mismatched'];
+        }
+
         $additional_values = [
-            'old_membership_plan_id'  => $old_plan->membership_id,
-            'old_membership_plan_name'=> $old_plan->membership_name,
+            'old_membership_plan_id'        => $old_plan->membership_id,
+            'old_membership_plan_name'      => $old_plan->membership_name,
             'old_membership_invoice_period' => $old_plan->invoice_period,
             'old_membership_binding_period' => $old_plan->binding_period,
             'old_membership_sign_out_period'=> $old_plan->sign_out_period,
-            'old_membership_price'      => $old_plan->price,
-            'old_membership_discount'   => $old_plan->discount,
+            'old_membership_price'          => $old_plan->price,
+            'old_membership_discount'       => $old_plan->discount,
             'old_membership_restrictions'   => $old_plan->membership_restrictions,
-            'new_membership_plan_id'    => $new_plan->id,
-            'new_membership_plan_name'  => $new_plan->name,
+            'new_membership_plan_id'        => $new_plan->id,
+            'new_membership_plan_name'      => $new_plan->name,
+            'new_membership_plan_price'     => $new_plan->get_price()->price,
+            'new_membership_plan_discount'  => $new_plan->get_price()->discount,
             'new_membership_restrictions'   => json_encode($membership_restriction),
         ];
 
@@ -530,7 +540,7 @@ class MembershipController extends Controller
 
             return [
                 'success' => true,
-                'message' => 'Membership updated from '.$old_plan->membership_name.' to '.$new_plan->name.' from '.$start_date->format('d M Y'),
+                'message' => 'From '.$old_plan->membership_name.' to '.$new_plan->name.' starting '.$start_date->format('d M Y'),
                 'title'   => 'Membership Planned Update'];
         }
         else{
@@ -563,12 +573,83 @@ class MembershipController extends Controller
 
             return [
                 'success' => true,
-                'message' => 'Membership downgraded from '.$old_plan->membership_name.' to '.$new_plan->day.' from '.$start_date->format('d M Y'),
+                'message' => 'From '.$old_plan->membership_name.' to '.$new_plan->day.' starting '.$start_date->format('d M Y'),
                 'title'   => 'Membership Planned Downgrade'];
         }
     }
 
     public static function update_membership_rebuild_invoices($membershipPlan){
+        // get freeze period from user_membership_invoice_planning that is unprocessed
+        $updateAction = UserMembershipAction::where('user_membership_id','=',$membershipPlan->id)
+            ->where('processed','=','0')
+            ->where('action_type','=','update')
+            ->orderBy('created_at','DESC')
+            ->get()
+            ->first();
+        if (!$updateAction){
+            return [
+                'success' => false,
+                'title'   => 'Error Processing',
+                'errors'  => 'no membership actions found for the given User Membership Plan'
+            ];
+        }
+        else{
+            $updatedActionValues = json_decode($updateAction->additional_values);
+            $updateAction->processed = 1;
+            $updateAction->save();
+        }
 
+        $startDate  = Carbon::createFromFormat('Y-m-d',$updateAction->start_date);
+        // get all invoices and process the action
+        $planned_invoices = UserMembershipInvoicePlanning::where('user_membership_id','=',$membershipPlan->id)->whereIn('status',['old','pending','last'])->orderBy('created_at','ASC')->get();
+        if ($planned_invoices){
+            $started = false;
+
+            foreach($planned_invoices as $invoice){
+                $invoiceStart   = Carbon::createFromFormat('Y-m-d', $invoice->issued_date);
+                $invoiceEnd     = Carbon::createFromFormat('Y-m-d', $invoice->last_active_date);
+                // start freeze is in an invoice so we break it
+                if ($startDate->between($invoiceStart, $invoiceEnd)){
+                    $started = true;
+                    if (!$startDate->eq($invoiceStart)){
+                        $daysInInvoice    = $invoiceStart->diffInDays($invoiceEnd);
+                        $newDaysInInvoice = $invoiceStart->diffInDays(Carbon::instance($startDate)->addDays(-1));
+                        $pricePerDay      = $updatedActionValues->new_membership_plan_price / $daysInInvoice;
+
+                        $diff_price = ceil(($newDaysInInvoice+1)*$pricePerDay);
+
+                        // add new planned invoice and/or generate it if starts today or start date less than today
+                        $fillable = [
+                            'user_membership_id'=> $membershipPlan->id,
+                            'item_name'         => 'Membership Update Difference',
+                            'price'             => $diff_price,
+                            'discount'          => 0,
+                            'issued_date'       => $startDate->format('Y-m-d'),
+                            'last_active_date'  => $invoiceEnd->format('Y-m-d'),
+                            'status'            => 'pending'
+                        ];
+                        UserMembershipInvoicePlanning::create($fillable);
+                        continue;
+                    }
+                }
+
+                // first invoice was changed so from now we change all invoices - change price and name of the item
+                if ($started==true){
+                    $re = '/#([0-9]+)/';
+                    $str = $invoice->item_name;
+                    preg_match_all($re, $str, $matches); //xdebug_var_dump($matches); exit;
+
+                    $invoice->item_name = "Invoice #".$matches[1][0].' for '.$updatedActionValues->new_membership_plan_name;
+                    $invoice->price     = $updatedActionValues->new_membership_plan_price;
+                    $invoice->discount  = $updatedActionValues->new_membership_plan_discount;
+                    $invoice->save();
+                }
+            }
+
+            return ['success' => true, 'message' => 'Invoices updated'];
+        }
+        else{
+            return ['success' => true, 'message' => 'No invoice updated'];
+        }
     }
 }

@@ -391,6 +391,7 @@ class UserMembership extends Model
                 'end_date'      => Carbon::createFromFormat('Y-m-d H:i:s',$request->end_date.' 00:00:00'),
                 'added_by_name' => $user_name,
                 'added_by_link' => $user_link,
+                'additional_values' => json_decode($request->additional_values),
                 'notes'         => $request->notes,
                 'status'        => $request->status,
                 'processed'     => $request->processed,
