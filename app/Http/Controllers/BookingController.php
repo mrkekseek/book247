@@ -2025,7 +2025,7 @@ class BookingController extends Controller
                         }
 
                         // we use this to show a star in calendar view for admins
-                        if ($date==$userMembership->day_start){
+                        if ($userMembership && $date==$userMembership->day_start){
                             $formatted_booking['membership_starts_today'] = true;
                         }
                     }
