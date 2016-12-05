@@ -613,13 +613,13 @@ class MembershipController extends Controller
         if ($planned_invoices){
             $started = false;
 
-            foreach($planned_invoices as $invoice){
+            foreach($planned_invoices as $keys=>$invoice){
                 $invoiceStart   = Carbon::createFromFormat('Y-m-d', $invoice->issued_date);
                 $invoiceEnd     = Carbon::createFromFormat('Y-m-d', $invoice->last_active_date);
                 // start freeze is in an invoice so we break it
                 if ($startDate->between($invoiceStart, $invoiceEnd)){
                     $started = true;
-                    if (!$startDate->eq($invoiceStart) && $updatedActionValues->is_update==true){
+                    if ( (!$startDate->eq($invoiceStart) || $keys==0 ) && $updatedActionValues->is_update==true){
                         // we only create the difference invoice if it's an update
                         $daysSoFar     = $invoiceStart->diffInDays(Carbon::instance($startDate));
                         $daysInInvoice = $invoiceStart->diffInDays(Carbon::instance($invoiceEnd))+1;
