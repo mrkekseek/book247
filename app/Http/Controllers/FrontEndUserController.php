@@ -382,9 +382,11 @@ class FrontEndUserController extends Controller
                 }
                 elseif ($a_request['action_type'] == 'freeze' && $a_request['status']=='active'){
                     $canFreeze = false;
+                    $canUpdate = false;
                 }
                 elseif ($a_request['action_type'] == 'update' && $a_request['status']=='active'){
                     $canUpdate = false;
+                    $canFreeze = false;
                 }
             }
 
@@ -2154,6 +2156,8 @@ class FrontEndUserController extends Controller
 
         try {
             $user = User::create($credentials);
+            //$user->attachRole($vars['user_type']);
+
             $personalData = [
                 'personal_email'=> $vars['email'],
                 'mobile_number' => $vars['phone_number'],
@@ -2216,13 +2220,9 @@ class FrontEndUserController extends Controller
                 // add the membership plan to the new registered user
                 if ($user->attach_membership_plan($the_plan, $by_user, $the_date)) {
                     $memberRole = Role::where('name', '=', 'front-member')->get()->first();
-                    if (!$user->hasRole($memberRole)) {
-                        $user->attachRole($memberRole);
-                    }
-                    else{
-                        @$user->detachAllRoles();
-                        $user->attachRole($memberRole);
-                    }
+
+                    @$user->detachAllRoles();
+                    $user->attachRole($memberRole);
                 } else {
                     $user->attachRole($vars['user_type']);
                 }

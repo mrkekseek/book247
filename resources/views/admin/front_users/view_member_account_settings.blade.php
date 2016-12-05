@@ -192,7 +192,7 @@
                                                                             @if ($membership_plan->status=='suspended')
                                                                             <a href="#unfreeze_plan_box" class="btn bg-green-jungle bg-font-green-jungle input margin-bottom-10" data-toggle="modal" style="min-width:158px;">
                                                                                 <i class="fa fa-play"></i> Un-Freeze Plan</a>
-                                                                            @else
+                                                                            @elseif($canFreeze==true)
                                                                             <a href="#freeze_plan_box" class="btn bg-blue-sharp bg-font-blue-sharp input margin-bottom-10" data-toggle="modal" style="min-width:158px;">
                                                                                 <i class="fa fa-pause"></i> Freeze Plan</a>
                                                                             @endif

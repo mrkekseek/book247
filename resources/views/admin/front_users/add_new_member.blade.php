@@ -44,7 +44,7 @@
 
                                     <div class="panel panel-primary">
                                         <div class="panel-heading">
-                                            <h3 class="panel-title">Enter personal details below</h3>
+                                            <h3 class="panel-title">Enter personal details - mandatory</h3>
                                         </div>
                                         <div class="panel-body">
                                             <div class="form-group">
@@ -67,6 +67,14 @@
                                                     <option value="M">Male</option>
                                                 </select>
                                             </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="panel panel-info">
+                                        <div class="panel-heading">
+                                            <h3 class="panel-title">Personal details - optional</h3>
+                                        </div>
+                                        <div class="panel-body">
                                             <div class="form-group">
                                                 <span class="help-inline">Date of Birth</span>
                                                 <div class="input-group input-medium date date-picker" data-date="{{ \Carbon\Carbon::today()->format('d-m-Y') }}" data-date-format="dd-mm-yyyy" data-date-viewmode="years" style="display:inline-flex; margin-top:2px; margin-right:40px;">
@@ -275,8 +283,8 @@
                             minlength: 1,
                         },
                         date_of_birth: {
-                            required: true,
-                            datePickerDate: true,
+                            //required:false,
+                            //datePickerDate: true,
                         },
 
                         personal_addr1: {
