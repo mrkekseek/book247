@@ -112,8 +112,12 @@
                                                     </a>
                                                 @endif
                                                 @if ($location_bookings[$key][$resource['id']]['button_finance'] == 'is_disabled')
-                                                    <a style="margin-left: -3px; height:30px; width:30px; padding-top:0px; margin-right:1px; font-size:20px; line-height:26px; cursor:default;" href="javascript:;"
-                                                       class="btn btn-circle btn-icon-only {{ $button_color['is_disabled'] }} border-white "> $ </a>
+                                                    @if(isset($location_bookings[$key][$resource['id']]['membership_starts_today']))
+                                                        <a style="margin-left: -3px; height:30px; width:30px; padding-top:0px; margin-right:1px; font-size:20px; line-height:26px; cursor:default;" href="javascript:;"
+                                                           class="btn btn-circle btn-icon-only bg-yellow-gold bg-font-yellow-gold border-white "> <i class="icon-star"></i> </a>
+                                                    @else
+                                                        
+                                                    @endif
                                                 @elseif ($location_bookings[$key][$resource['id']]['button_finance'] == 'is_paid_cash' || $location_bookings[$key][$resource['id']]['button_finance'] == 'is_paid_card' || $location_bookings[$key][$resource['id']]['button_finance'] == 'is_paid_online')
                                                     <a style="margin-left: -3px; height:30px; width:30px; padding-top:0px; margin-right:1px; font-size:20px; line-height:26px; cursor:default;" href="javascript:;"
                                                        class="btn btn-circle btn-icon-only {{ $button_color[$location_bookings[$key][$resource['id']]['button_finance']] }} border-white "> $ </a>

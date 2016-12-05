@@ -2023,6 +2023,11 @@ class BookingController extends Controller
                         if ($userMembership && isset($plansCalendarColor[$userMembership->membership_id])){
                             $formatted_booking['custom_color'] = $plansCalendarColor[$userMembership->membership_id].' !important';
                         }
+
+                        // we use this to show a star in calendar view for admins
+                        if ($date==$userMembership->day_start){
+                            $formatted_booking['membership_starts_today'] = true;
+                        }
                     }
                     elseif ($formatted_booking['payment_type'] == 'cash' && $booking->status!='pending'){
                         $formatted_booking['color_stripe'] = 'bg-yellow-gold bg-font-yellow-gold';
