@@ -1232,7 +1232,7 @@
                     la.stop();
 
                     if (data.success) {
-                        $('#change_plan_box').modal('hide');
+                        $('#upgrade_downgrade_plan_box').modal('hide');
                         show_notification(data.title, data.message, 'lime', 3500, 0);
 
                         setTimeout(function(){

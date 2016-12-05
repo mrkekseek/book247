@@ -611,30 +611,36 @@ class MembershipController extends Controller
                 // start freeze is in an invoice so we break it
                 if ($startDate->between($invoiceStart, $invoiceEnd)){
                     $started = true;
-                    if (!$startDate->eq($invoiceStart)){
-                        $daysInInvoice    = $invoiceStart->diffInDays($invoiceEnd);
-                        $newDaysInInvoice = $invoiceStart->diffInDays(Carbon::instance($startDate)->addDays(-1));
-                        $pricePerDay      = $updatedActionValues->new_membership_plan_price / $daysInInvoice;
+                    if (!$startDate->eq($invoiceStart) && $updatedActionValues->is_update==true){
+                        // we only create the difference invoice if it's an update
+                        $daysSoFar     = $invoiceStart->diffInDays(Carbon::instance($startDate)->addDays(-1));
+                        $daysInInvoice = $invoiceStart->diffInDays(Carbon::instance($invoiceEnd));
+                        $newDaysInInvoice = ceil($daysInInvoice-$daysSoFar);
+                        $pricePerDay      = $membershipPlan->price / $daysInInvoice;
 
-                        $diff_price = ceil(($newDaysInInvoice+1)*$pricePerDay);
+                        $diff_price = ceil( ($updatedActionValues->new_membership_plan_price - $invoice->price) - ($daysSoFar*$pricePerDay) );
+                        if ($diff_price<0){
+                            $diff_price = 0;
+                        }
 
                         // add new planned invoice and/or generate it if starts today or start date less than today
                         $fillable = [
                             'user_membership_id'=> $membershipPlan->id,
-                            'item_name'         => 'Membership Update Difference',
+                            'item_name'         => 'Membership Update Difference - '.$updatedActionValues->old_membership_plan_name.' to '.$updatedActionValues->new_membership_plan_name.' - '.$newDaysInInvoice.' days',
                             'price'             => $diff_price,
                             'discount'          => 0,
                             'issued_date'       => $startDate->format('Y-m-d'),
                             'last_active_date'  => $invoiceEnd->format('Y-m-d'),
                             'status'            => 'pending'
                         ];
-                        UserMembershipInvoicePlanning::create($fillable);
+                        $diffInvoice = UserMembershipInvoicePlanning::create($fillable);
+                        $diffInvoice->issue_invoice();
                         continue;
                     }
                 }
 
                 // first invoice was changed so from now we change all invoices - change price and name of the item
-                if ($started==true){
+                if ($started==true && $invoice->status!='old'){
                     $re = '/#([0-9]+)/';
                     $str = $invoice->item_name;
                     preg_match_all($re, $str, $matches); //xdebug_var_dump($matches); exit;

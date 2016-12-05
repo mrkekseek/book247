@@ -318,12 +318,26 @@ class User extends Authenticatable
                 );
             }
 
-            UserMembershipAction::create($fillable);
+            $currentAction = UserMembershipAction::create($fillable);
 
             // if the freeze starts today, then we freeze the membership plan
             if (Carbon::today()->toDateString() == $start_date->toDateString()) {
+                $additional_values = json_decode($currentAction->additional_values);
+
+                // change active membership details : name, price, discount, restrictions
+                $old_plan->membership_id    = $additional_values->new_membership_plan_id;
+                $old_plan->membership_name  = $additional_values->new_membership_plan_name;
+                $old_plan->price            = $additional_values->new_membership_plan_price;
+                $old_plan->discount         = $additional_values->new_membership_plan_discount;
+                $old_plan->membership_restrictions = $additional_values->new_membership_restrictions;
+                $old_plan->save();
+
                 // check the planned invoices that needs to be pushed out of the freeze period
                 MembershipController::update_membership_rebuild_invoices($old_plan);
+
+                // mark action as old
+                $currentAction->status = 'old';
+                $currentAction->save();
             }
 
             return true;
