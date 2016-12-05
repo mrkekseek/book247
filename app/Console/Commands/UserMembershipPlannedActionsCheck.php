@@ -110,6 +110,27 @@ class UserMembershipPlannedActionsCheck extends Command
                                 $singleAction->save();
                             }
                             break;
+                        case 'update' :
+                            if (Carbon::today()->eq($from_date)){
+                                $additional_values = json_decode($singleAction->additional_values);
+
+                                // check the planned invoices that needs to be pushed out of the freeze period
+                                MembershipController::update_membership_rebuild_invoices($userMembership);
+
+                                // change active membership details : name, price, discount, restrictions
+                                $userMembership->membership_id          = $additional_values->new_membership_plan_id;
+                                $userMembership->membership_name        = $additional_values->new_membership_plan_name;
+                                $userMembership->price                  = $additional_values->new_membership_plan_price;
+                                $userMembership->discount               = $additional_values->new_membership_plan_discount;
+                                $userMembership->membership_restrictions = $additional_values->new_membership_restrictions;
+                                $userMembership->save();
+
+                                // mark action as old
+                                $singleAction->processed = 1;
+                                $singleAction->status = 'old';
+                                $singleAction->save();
+                            }
+                            break;
                         default :
                             $singleAction->processed = 1;
                             $singleAction->status = 'old';

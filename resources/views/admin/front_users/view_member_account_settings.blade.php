@@ -391,7 +391,7 @@
                                                                 <tbody>
                                                                 @foreach ($plannedInvoices as $singlePlanned)
                                                                     @if (sizeof($plan_requests)>0)
-                                                                        @foreach($plan_requests as $one_request)
+                                                                        @foreach($plan_requests as $keys=>$one_request)
                                                                             @if ($one_request['action_type']=='freeze' && $one_request['after_date']->between(\Carbon\Carbon::createFromFormat('Y-m-d H:i:s',$singlePlanned['issued_date'].' 00:00:00'), \Carbon\Carbon::createFromFormat('Y-m-d H:i:s',$singlePlanned['last_active_date'].' 00:00:00')))
                                                                                 <tr>
                                                                                     <td class="highlight" colspan="5">
@@ -410,6 +410,7 @@
                                                                                         @endif
                                                                                     </td>
                                                                                 </tr>
+                                                                                <?php unset($plan_requests[$keys]); ?>
                                                                             @elseif ($one_request['action_type']=='update' && $one_request['start_date']->between(\Carbon\Carbon::createFromFormat('Y-m-d H:i:s',$singlePlanned['issued_date'].' 00:00:00'), \Carbon\Carbon::createFromFormat('Y-m-d H:i:s',$singlePlanned['last_active_date'].' 00:00:00')) )
                                                                                 <tr>
                                                                                     <td class="highlight" colspan="5">
@@ -428,6 +429,7 @@
                                                                                         @endif
                                                                                     </td>
                                                                                 </tr>
+                                                                                <?php unset($plan_requests[$keys]); ?>
                                                                             @endif
                                                                         @endforeach
                                                                     @endif
@@ -455,7 +457,7 @@
                                                                     </tr>
 
                                                                     @if (sizeof($plan_requests)>0)
-                                                                        @foreach($plan_requests as $one_request)
+                                                                        @foreach($plan_requests as $keys=>$one_request)
                                                                             @if ($one_request['action_type']=='cancel' && $one_request['end_date']->eq(\Carbon\Carbon::createFromFormat('Y-m-d H:i:s',$singlePlanned['last_active_date'].' 00:00:00')))
                                                                                 <tr>
                                                                                     <td class="highlight" colspan="5">
@@ -472,6 +474,7 @@
                                                                                         @endif
                                                                                     </td>
                                                                                 </tr>
+                                                                                <?php unset($plan_requests[$keys]); ?>
                                                                             @endif
                                                                         @endforeach
                                                                     @endif

@@ -497,6 +497,14 @@ class MembershipController extends Controller
                 'title'   => 'Member plan error'];
         }
 
+        $updatePlannedActions = UserMembershipAction::where('user_membership_id','=',$old_plan->id)->where('action_type','=','update')->where('status','=','active')->get()->first();
+        if ($updatePlannedActions){
+            return [
+                'success' => false,
+                'errors'  => 'Could not add a planned update/downgrade action because another exists',
+                'title'   => 'Another action found'];
+        }
+
         // get first day for new membership plan
         if ($vars['start_date']==1){
             // next invoice period
@@ -613,12 +621,23 @@ class MembershipController extends Controller
                     $started = true;
                     if (!$startDate->eq($invoiceStart) && $updatedActionValues->is_update==true){
                         // we only create the difference invoice if it's an update
-                        $daysSoFar     = $invoiceStart->diffInDays(Carbon::instance($startDate)->addDays(-1));
-                        $daysInInvoice = $invoiceStart->diffInDays(Carbon::instance($invoiceEnd));
+                        $daysSoFar     = $invoiceStart->diffInDays(Carbon::instance($startDate));
+                        $daysInInvoice = $invoiceStart->diffInDays(Carbon::instance($invoiceEnd))+1;
                         $newDaysInInvoice = ceil($daysInInvoice-$daysSoFar);
                         $pricePerDay      = $membershipPlan->price / $daysInInvoice;
 
-                        $diff_price = ceil( ($updatedActionValues->new_membership_plan_price - $invoice->price) - ($daysSoFar*$pricePerDay) );
+                        $updateAction['notes'] = json_encode([
+                            'daysSoFar'         => $daysSoFar,
+                            'daysininvoice'     => $daysInInvoice,
+                            'newdaysininvoice'  => $newDaysInInvoice,
+                            'priceperday'       => $pricePerDay,
+                            'oldplanprice'      => $updatedActionValues->old_membership_price,
+                            'newplanprice'      => $updatedActionValues->new_membership_plan_price,
+
+                        ]);
+                        $updateAction->save();
+
+                        $diff_price = ceil( ($updatedActionValues->new_membership_plan_price - $updatedActionValues->old_membership_price) - ($daysSoFar*$pricePerDay) );
                         if ($diff_price<0){
                             $diff_price = 0;
                         }

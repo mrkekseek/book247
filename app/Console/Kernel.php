@@ -44,7 +44,7 @@ class Kernel extends ConsoleKernel
 
         $schedule->command('userFinance:issue_pending_invoices')
             //->everyMinute()
-            ->dailyAt('01:00')
+            ->dailyAt('02:00')
             ->sendOutputTo('storage/logs/PendingInvoice_output.log');
 
         $schedule->command('booking:daily_morning_bookings_plan')
