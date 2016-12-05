@@ -13,7 +13,7 @@ class AddAdditionalValuesToUserMembershipActionsTable extends Migration
     public function up()
     {
         Schema::table('user_membership_actions', function (Blueprint $table) {
-            $table->text('additional_values', 6000)->default('[]')->after('action_type');
+            $table->text('additional_values', 6000)->after('action_type');
         });
     }
 
