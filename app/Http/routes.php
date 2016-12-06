@@ -745,6 +745,11 @@ Route::group(['prefix'=>'front', 'middleware'=>'web'], function(){
         'as'    => 'error_404',
         'uses'  => 'FrontPageController@error_404'
     ]);
+
+    Route::get('back_error_404', [
+        'as'    => 'back_error_404',
+        'uses'  => 'AdminController@error_404'
+    ]);
 });
 /** Stop Routes for front end */
 

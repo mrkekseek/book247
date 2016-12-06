@@ -236,7 +236,7 @@ class FrontEndUserController extends Controller
 
         $member = User::with('personalDetail')->where('id','=',$id)->get()->first();
         if (!$member || !$member->is_front_user()){
-            return redirect(route('error_404'));
+            return redirect(route('admin/error/not_found'));
         }
 
         $publicNote = $member->get_public_notes("DESC");
@@ -318,7 +318,7 @@ class FrontEndUserController extends Controller
 
         $member = User::with('roles')->find($id);
         if (!$member || !$member->is_front_user()){
-            return redirect(route('error_404'));
+            return redirect(route('admin/error/not_found'));
         }
 
         $text_parts  = [
@@ -513,7 +513,7 @@ class FrontEndUserController extends Controller
 
         $member = User::with('roles')->find($id);
         if (!$member || !$member->is_front_user()){
-            return redirect(route('error_404'));
+            return redirect(route('admin/error/not_found'));
         }
 
         $text_parts  = [
@@ -714,7 +714,7 @@ class FrontEndUserController extends Controller
 
         $member = User::with('roles')->find($id);
         if (!$member || !$member->is_front_user()){
-            return redirect(route('error_404'));
+            return redirect(route('admin/error/not_found'));
         }
 
         $text_parts  = [
@@ -896,7 +896,7 @@ class FrontEndUserController extends Controller
 
         $member = User::find($id);
         if (!$member || !$member->is_front_user()){
-            return redirect(route('error_404'));
+            return redirect(route('admin/error/not_found'));
         }
 
         $generalInvoiceList = [];
