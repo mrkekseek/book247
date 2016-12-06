@@ -235,7 +235,7 @@ class FrontEndUserController extends Controller
         }
 
         $member = User::with('personalDetail')->where('id','=',$id)->get()->first();
-        if (!$member){
+        if (!$member || !$member->is_front_user()){
             return redirect(route('error_404'));
         }
 
@@ -316,7 +316,10 @@ class FrontEndUserController extends Controller
             return redirect()->intended(route('admin/login'));
         }
 
-        $back_user = User::with('roles')->find($id);
+        $member = User::with('roles')->find($id);
+        if (!$member || !$member->is_front_user()){
+            return redirect(route('error_404'));
+        }
 
         $text_parts  = [
             'title'     => 'Back-End Users',
@@ -324,7 +327,7 @@ class FrontEndUserController extends Controller
             'table_head_text1' => 'Backend User List'
         ];
 
-        $userPersonal = $back_user->PersonalDetail;
+        $userPersonal = $member->PersonalDetail;
         if (isset($userPersonal)) {
             $userPersonal->dob_format = Carbon::createFromFormat('Y-m-d', $userPersonal->date_of_birth)->format('d-m-Y');
             $userPersonal->dob_to_show = Carbon::createFromFormat('Y-m-d', $userPersonal->date_of_birth)->format('d M Y');
@@ -338,7 +341,7 @@ class FrontEndUserController extends Controller
             $personalAddress = new Address();
         }
 
-        $avatar = $back_user->get_avatar_image();
+        $avatar = $member->get_avatar_image();
         $userDocuments = UserDocuments::where('user_id','=',$id)->where('category','=','account_documents')->get();
 
         $plan_request = [];
@@ -348,7 +351,7 @@ class FrontEndUserController extends Controller
         $canFreeze = true;
         $canUpdate = true;
 
-        $my_plan = UserMembership::where('user_id','=',$back_user->id)->whereIn('status',['active','suspended'])->get()->first();
+        $my_plan = UserMembership::where('user_id','=',$member->id)->whereIn('status',['active','suspended'])->get()->first();
         if ($my_plan){
             $restrictions = $my_plan->get_plan_restrictions();
             $plan_details = $my_plan->get_plan_details();
@@ -458,7 +461,7 @@ class FrontEndUserController extends Controller
             ];
         }
 
-        $cardNo = UserAccessCard::where('user_id','=',$back_user->id)->where('status','=','active')->get()->first();
+        $cardNo = UserAccessCard::where('user_id','=',$member->id)->where('status','=','active')->get()->first();
         if ($cardNo){
             $accessCardNo = $cardNo->key_no;
         }
@@ -467,12 +470,12 @@ class FrontEndUserController extends Controller
             'Home'              => route('admin'),
             'Administration'    => route('admin'),
             'Back End Users'    => route('admin/back_users'),
-            $back_user->first_name.' '.$back_user->middle_name.' '.$back_user->last_name => '',
+            $member->first_name.' '.$member->middle_name.' '.$member->last_name => '',
         ];
         $sidebar_link= 'admin-frontend-user_details_view';
 
         return view('admin/front_users/view_member_account_settings', [
-            'user'              => $back_user,
+            'user'              => $member,
             'personalAddress'   => $personalAddress,
             'breadcrumbs'       => $breadcrumbs,
             'text_parts'        => $text_parts,
@@ -508,7 +511,10 @@ class FrontEndUserController extends Controller
             return redirect()->intended(route('admin/login'));
         }
 
-        $back_user = User::with('roles')->find($id);
+        $member = User::with('roles')->find($id);
+        if (!$member || !$member->is_front_user()){
+            return redirect(route('error_404'));
+        }
 
         $text_parts  = [
             'title'     => 'Back-End Users',
@@ -516,19 +522,19 @@ class FrontEndUserController extends Controller
             'table_head_text1' => 'Backend User List'
         ];
 
-        @$userRole = $back_user->roles[0];
+        @$userRole = $member->roles[0];
         if (!$userRole){
             $defaultRole = Role::where('name','employee')->get();
             $userRole = $defaultRole[0];
         }
         $permissions = Permission::all();
 
-        $userProfessional = $back_user->ProfessionalDetail;
+        $userProfessional = $member->ProfessionalDetail;
         if (!isset($userProfessional)){
             $userProfessional = new ProfessionalDetail();
         }
 
-        $userPersonal = $back_user->PersonalDetail;
+        $userPersonal = $member->PersonalDetail;
         if (isset($userPersonal)) {
             $userPersonal->dob_format = Carbon::createFromFormat('Y-m-d', $userPersonal->date_of_birth)->format('d-m-Y');
             $userPersonal->dob_to_show = Carbon::createFromFormat('Y-m-d', $userPersonal->date_of_birth)->format('d M Y');
@@ -546,9 +552,9 @@ class FrontEndUserController extends Controller
         $countries = Cache::remember('countries', 3660, function() {
                 return Countries::orderBy('name')->get();
             });
-        $userCountry = Countries::find($back_user->country_id);
+        $userCountry = Countries::find($member->country_id);
 
-        $avatar = $back_user->get_avatar_image();
+        $avatar = $member->get_avatar_image();
 
         $avatarArchive = [];
         $old_avatars = Storage::disk('local')->files($avatar['file_location']);
@@ -569,7 +575,7 @@ class FrontEndUserController extends Controller
         $canCancel = true;
         $canFreeze = true;
 
-        $my_plan = UserMembership::where('user_id','=',$back_user->id)->whereIn('status',['active','suspended'])->get()->first();
+        $my_plan = UserMembership::where('user_id','=',$member->id)->whereIn('status',['active','suspended'])->get()->first();
         if ($my_plan){
             $restrictions = $my_plan->get_plan_restrictions();
             $plan_details = $my_plan->get_plan_details();
@@ -659,12 +665,12 @@ class FrontEndUserController extends Controller
             'Home'              => route('admin'),
             'Administration'    => route('admin'),
             'Back End Users'    => route('admin/back_users'),
-            $back_user->first_name.' '.$back_user->middle_name.' '.$back_user->last_name => '',
+            $member->first_name.' '.$member->middle_name.' '.$member->last_name => '',
         ];
         $sidebar_link= 'admin-frontend-user_details_view';
 
         return view('admin/front_users/view_member_personal_settings', [
-            'user'      => $back_user,
+            'user'      => $member,
             'userRole'  => $userRole,
             'professional' => $userProfessional,
             'personal'  => $userPersonal,
@@ -706,7 +712,10 @@ class FrontEndUserController extends Controller
             return redirect()->intended(route('admin/login'));
         }
 
-        $back_user = User::with('roles')->find($id);
+        $member = User::with('roles')->find($id);
+        if (!$member || !$member->is_front_user()){
+            return redirect(route('error_404'));
+        }
 
         $text_parts  = [
             'title'     => 'Back-End Users',
@@ -851,18 +860,18 @@ class FrontEndUserController extends Controller
             }
         }
 
-        $avatar = $back_user->get_avatar_image();
+        $avatar = $member->get_avatar_image();
 
         $breadcrumbs = [
             'Home'              => route('admin'),
             'Administration'    => route('admin'),
             'Back End Users'    => route('admin/back_users'),
-            $back_user->first_name.' '.$back_user->middle_name.' '.$back_user->last_name => '',
+            $member->first_name.' '.$member->middle_name.' '.$member->last_name => '',
         ];
         $sidebar_link= 'admin-frontend-user_details_view';
 
         return view('admin/front_users/view_member_bookings', [
-            'user'          => $back_user,
+            'user'          => $member,
             'breadcrumbs'   => $breadcrumbs,
             'text_parts'    => $text_parts,
             'in_sidebar'    => $sidebar_link,
@@ -885,9 +894,9 @@ class FrontEndUserController extends Controller
             return redirect()->intended(route('admin/login'));
         }
 
-        $back_user = User::find($id);
-        if (!$back_user){
-            return redirect()->intended(route('admin/login'));
+        $member = User::find($id);
+        if (!$member || !$member->is_front_user()){
+            return redirect(route('error_404'));
         }
 
         $generalInvoiceList = [];
@@ -1063,7 +1072,7 @@ class FrontEndUserController extends Controller
             }
         }
 
-        $avatar = $back_user->get_avatar_image();
+        $avatar = $member->get_avatar_image();
 
         $text_parts  = [
             'title'     => 'Back-End Users',
@@ -1074,7 +1083,7 @@ class FrontEndUserController extends Controller
             'Home'              => route('admin'),
             'Administration'    => route('admin'),
             'Back End Users'    => route('admin/back_users'),
-            $back_user->first_name.' '.$back_user->middle_name.' '.$back_user->last_name => '',
+            $member->first_name.' '.$member->middle_name.' '.$member->last_name => '',
         ];
         $sidebar_link= 'admin-frontend-user_details_view';
 
@@ -1083,7 +1092,7 @@ class FrontEndUserController extends Controller
         //xdebug_var_dump($lastTenGeneralInvoice);
 
         return view('admin/front_users/view_member_finance', [
-            'user'      => $back_user,
+            'user'      => $member,
             'breadcrumbs' => $breadcrumbs,
             'text_parts'  => $text_parts,
             'in_sidebar'  => $sidebar_link,
