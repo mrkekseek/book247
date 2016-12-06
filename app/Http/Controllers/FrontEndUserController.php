@@ -2109,7 +2109,13 @@ class FrontEndUserController extends Controller
         }
 
         if (!isset($vars['user_type'])){
-            $vars['user_type'] = Role::where('name','=','front-user')->get()->first()->id;
+            $userType = Role::where('name','=','front-user')->get()->first();
+        }
+        else{
+            $userType = Role::where('id','=',$vars['user_type'])->get()->first();
+            if (!$userType){
+                $userType = Role::where('name','=','front-user')->get()->first();
+            }
         }
 
         if ($vars['password']==""){
@@ -2127,6 +2133,14 @@ class FrontEndUserController extends Controller
             $vars['date_of_birth'] = Carbon::createFromFormat('d-m-Y',$vars['dob'])->toDateString();
         }
 
+        if (!isset($userType)){
+            return [
+                'success'   => false,
+                'title'     => 'No User Types',
+                'errors'    => 'User type not found for front member'
+            ];
+        }
+
         $credentials = [
             'first_name'    => $vars['first_name'],
             'middle_name'   => $vars['middle_name'],
@@ -2137,7 +2151,7 @@ class FrontEndUserController extends Controller
             'password'      => $vars['password'],
             'country_id'    => $vars['country_id'],
             'status'        => 'active',
-            'user_type'     => $vars['user_type']
+            'user_type'     => @$userType->id
         ];
         $validator = Validator::make($credentials, User::rules('POST'), User::$messages, User::$attributeNames);
 
@@ -2156,7 +2170,6 @@ class FrontEndUserController extends Controller
 
         try {
             $user = User::create($credentials);
-            //$user->attachRole($vars['user_type']);
 
             $personalData = [
                 'personal_email'=> $vars['email'],
@@ -2224,11 +2237,11 @@ class FrontEndUserController extends Controller
                     @$user->detachAllRoles();
                     $user->attachRole($memberRole);
                 } else {
-                    $user->attachRole($vars['user_type']);
+                    $user->attachRole($userType);
                 }
             }
             else{
-                $user->attachRole($vars['user_type']);
+                $user->attachRole($userType);
             }
 
             return [

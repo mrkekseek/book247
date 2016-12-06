@@ -7,6 +7,7 @@ use Carbon\Carbon;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Zizaco\Entrust\Traits\EntrustUserTrait;
 use App\UserMembership;
 use App\UserAvatars;
@@ -594,5 +595,17 @@ class User extends Authenticatable
         else{
             return 'no location set';
         }
+    }
+
+    /**
+     * Detach all roles from a user
+     *
+     * @return object
+     */
+    public function detachAllRoles()
+    {
+        DB::table('role_user')->where('user_id', $this->id)->delete();
+
+        return $this;
     }
 }
