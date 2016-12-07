@@ -201,10 +201,9 @@
                             <div class="modal-content">
                                 <div class="modal-header">
                                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
-                                    <h4 class="modal-title">Booking Details</h4>
+                                    <h4 class="modal-title">Booking details and notes</h4>
                                 </div>
                                 <div class="modal-body">
-                                    <h4>You are seeing here the booking details and the available notes :</h4>
                                     <div class="book_details_cancel_place" style="padding:0px 15px;"></div>
                                 </div>
                                 <div class="modal-footer">

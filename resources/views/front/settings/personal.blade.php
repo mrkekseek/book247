@@ -54,16 +54,16 @@
                                     <!-- STAT -->
                                     <div class="row list-separated profile-stat">
                                         <div class="col-md-4 col-sm-4 col-xs-6">
-                                            <div class="uppercase profile-stat-title"> {{ $countBookings }} </div>
-                                            <div class="uppercase profile-stat-text"> Bookings </div>
+                                            <div class="uppercase profile-stat-title"> {{ $countOldBookings }} </div>
+                                            <div class="uppercase profile-stat-text"> Old Bookings </div>
                                         </div>
                                         <div class="col-md-4 col-sm-4 col-xs-6">
-                                            <div class="uppercase profile-stat-title"> {{$countFriends}} </div>
-                                            <div class="uppercase profile-stat-text"> Friends </div>
+                                            <div class="uppercase profile-stat-title"> {{$countCancelledBookings}} </div>
+                                            <div class="uppercase profile-stat-text"> Cancelled Bookings </div>
                                         </div>
                                         <div class="col-md-4 col-sm-4 col-xs-6">
-                                            <div class="uppercase profile-stat-title"> 61 </div>
-                                            <div class="uppercase profile-stat-text"> Logins </div>
+                                            <div class="uppercase profile-stat-title"> {{$countActiveBookings}} </div>
+                                            <div class="uppercase profile-stat-text"> Active Bookings </div>
                                         </div>
                                     </div>
                                     <!-- END STAT -->

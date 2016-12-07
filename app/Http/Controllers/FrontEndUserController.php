@@ -259,6 +259,11 @@ class FrontEndUserController extends Controller
 
         $avatar = $member->get_avatar_image();
 
+        $old_bookings = Booking::select('id')->where('for_user_id','=',$member->id)->whereIn('status',['paid','unpaid','old','no_show'])->count();
+        $new_bookings = Booking::select('id')->where('for_user_id','=',$member->id)->whereIn('status',['active'])->count();
+        $cancelled_bookings = Booking::select('id')->where('for_user_id','=',$member->id)->whereIn('status',['canceled'])->count();
+        $own_friends  = UserFriends::select('id')->where('user_id','=',$member->id)->orWhere('friend_id','=',$member->id)->count();
+
         $text_parts  = [
             'title'     => 'Back-End Users',
             'subtitle'  => 'view all users',
@@ -282,6 +287,10 @@ class FrontEndUserController extends Controller
             'privateNote'   => $privateNote,
             'activityLog'   => $memberLogs,
             'redFlagLog'    => [],
+            'countOldBookings'    => $old_bookings,
+            'countCancelledBookings'    => $cancelled_bookings,
+            'countActiveBookings' => $new_bookings,
+            'countFriends'        => $own_friends
         ]);
     }
 
@@ -3105,8 +3114,10 @@ class FrontEndUserController extends Controller
             $membershipName = 'No Membership Plan';
         }
 
-        $own_bookings = Booking::where('for_user_id','=',$user->id)->whereIn('status',['active','paid','unpaid','old','canceled','no_show'])->count();
-        $own_friends  = UserFriends::where('user_id','=',$user->id)->orWhere('friend_id','=',$user->id)->count();
+        $old_bookings = Booking::select('id')->where('for_user_id','=',$user->id)->whereIn('status',['paid','unpaid','old','no_show'])->count();
+        $new_bookings = Booking::select('id')->where('for_user_id','=',$user->id)->whereIn('status',['active'])->count();
+        $cancelled_bookings = Booking::select('id')->where('for_user_id','=',$user->id)->whereIn('status',['canceled'])->count();
+        $own_friends  = UserFriends::select('id')->where('user_id','=',$user->id)->orWhere('friend_id','=',$user->id)->count();
         //$own_logins   = ;
 
         $breadcrumbs = [
@@ -3129,8 +3140,10 @@ class FrontEndUserController extends Controller
             'personal'      => $userPersonal,
             'avatar'        => $avatar['avatar_base64'],
             'membershipName'=> $membershipName,
-            'countBookings' => $own_bookings,
-            'countFriends'  => $own_friends
+            'countOldBookings'    => $old_bookings,
+            'countCancelledBookings'    => $cancelled_bookings,
+            'countActiveBookings' => $new_bookings,
+            'countFriends'        => $own_friends
         ]);
     }
 
