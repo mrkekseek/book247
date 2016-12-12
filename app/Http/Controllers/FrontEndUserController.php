@@ -38,6 +38,7 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\File;
 use Maatwebsite\Excel\Facades\Excel;
 use Mockery\CountValidator\Exception;
+use PhpParser\Node\Expr\Cast\Bool_;
 use Regulus\ActivityLog\Models\Activity;
 use Webpatser\Countries\Countries;
 use Auth;
@@ -264,6 +265,8 @@ class FrontEndUserController extends Controller
         $cancelled_bookings = Booking::select('id')->where('for_user_id','=',$member->id)->whereIn('status',['canceled'])->count();
         $own_friends  = UserFriends::select('id')->where('user_id','=',$member->id)->orWhere('friend_id','=',$member->id)->count();
 
+        $front_statistics = $this->get_member_bookings_statistics($member);
+
         $text_parts  = [
             'title'     => 'Back-End Users',
             'subtitle'  => 'view all users',
@@ -290,7 +293,8 @@ class FrontEndUserController extends Controller
             'countOldBookings'    => $old_bookings,
             'countCancelledBookings'    => $cancelled_bookings,
             'countActiveBookings' => $new_bookings,
-            'countFriends'        => $own_friends
+            'countFriends'        => $own_friends,
+            'top_stats'     => $front_statistics
         ]);
     }
 
@@ -3499,5 +3503,207 @@ class FrontEndUserController extends Controller
                 'title'   => 'Access card added',
                 'message' => 'You have updated the access card number for this member.'];
         }
+    }
+
+    public function get_member_bookings_statistics(User $member, $simple=true){
+        $stats = [
+            'this_week' => [
+                'ord'   => 1,
+                'drop_ins'  => [
+                    'nr'    => 0,
+                    'money' => 0,
+                    'rate'  => 0
+                ],
+                'membership'=> [
+                    'nr'    => 0,
+                    'money' => 0,
+                    'rate'  => 0
+                ],
+                'active'    => [
+                    'nr'    => 0,
+                    'money' => 0,
+                    'rate'  => 0
+                ],
+                'show'      => [
+                    'nr'    => 0,
+                    'money' => 0,
+                    'rate'  => 0
+                ],
+                'no_show'   => [
+                    'nr'    => 0,
+                    'money' => 0,
+                    'rate'  => 0
+                ],
+                'canceled' => [
+                    'nr'    => 0,
+                    'money' => 0,
+                    'rate'  => 0
+                ]
+            ],
+            'this_month'    => [
+                'ord'   => 2,
+                'drop_ins'  => [
+                    'nr'    => 0,
+                    'money' => 0,
+                    'rate'  => 0
+                ],
+                'membership'=> [
+                    'nr'    => 0,
+                    'money' => 0,
+                    'rate'  => 0
+                ],
+                'active'    => [
+                    'nr'    => 0,
+                    'money' => 0,
+                    'rate'  => 0
+                ],
+                'show'      => [
+                    'nr'    => 0,
+                    'money' => 0,
+                    'rate'  => 0
+                ],
+                'no_show'   => [
+                    'nr'    => 0,
+                    'money' => 0,
+                    'rate'  => 0
+                ],
+                'canceled' => [
+                    'nr'    => 0,
+                    'money' => 0,
+                    'rate'  => 0
+                ]
+            ],
+            'last_3months'  => [
+                'ord'   => 3,
+                'drop_ins'  => [
+                    'nr'    => 0,
+                    'money' => 0,
+                    'rate'  => 0
+                ],
+                'membership'=> [
+                    'nr'    => 0,
+                    'money' => 0,
+                    'rate'  => 0
+                ],
+                'active'    => [
+                    'nr'    => 0,
+                    'money' => 0,
+                    'rate'  => 0
+                ],
+                'show'      => [
+                    'nr'    => 0,
+                    'money' => 0,
+                    'rate'  => 0
+                ],
+                'no_show'   => [
+                    'nr'    => 0,
+                    'money' => 0,
+                    'rate'  => 0
+                ],
+                'canceled' => [
+                    'nr'    => 0,
+                    'money' => 0,
+                    'rate'  => 0
+                ]
+            ],
+            'last_all'  => [
+                'ord'   => 3,
+                'drop_ins'  => [
+                    'nr'    => 0,
+                    'money' => 0,
+                    'rate'  => 0
+                ],
+                'membership'=> [
+                    'nr'    => 0,
+                    'money' => 0,
+                    'rate'  => 0
+                ],
+                'active'    => [
+                    'nr'    => 0,
+                    'money' => 0,
+                    'rate'  => 0
+                ],
+                'show'      => [
+                    'nr'    => 0,
+                    'money' => 0,
+                    'rate'  => 0
+                ],
+                'no_show'   => [
+                    'nr'    => 0,
+                    'money' => 0,
+                    'rate'  => 0
+                ],
+                'canceled' => [
+                    'nr'    => 0,
+                    'money' => 0,
+                    'rate'  => 0
+                ]
+            ]
+        ];
+
+        $all_bookings = Booking::where('for_user_id','=',$member->id)->where('status','!=','expired')->where('status','!=','pending')->get();
+        if ($all_bookings){
+            foreach($all_bookings as $booking){
+                $bookingDate = Carbon::createFromFormat('Y-m-d H:i:s', $booking->created_at);
+                $status_for = ['last_all'];
+
+                if ($bookingDate->between(Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek())){
+                    // this week only
+                    $status_for[] = 'this_week';
+                }
+
+                if ($bookingDate->between(Carbon::now()->startOfMonth(), Carbon::now()->endOfMonth())){
+                    // this month only
+                    $status_for[] = 'this_month';
+                }
+
+                if($bookingDate->between(Carbon::now()->startOfMonth()->addMonths(-3), Carbon::now()->startOfMonth()->addDays(-1))){
+                    // start of month three months ago until first of today's month minus one day
+                    $status_for[] = 'last_3months';
+                }
+
+                foreach ($status_for as $single_status){
+                    if ($booking->payment_type=='cash' || $booking->payment_type=='recurring'){
+                        $stats[$single_status]['drop_ins']['nr']++;
+                        $stats[$single_status]['drop_ins']['money']+=$booking->payment_amount;
+                    }
+                    elseif($booking->payment_type=='membership'){
+                        $stats[$single_status]['membership']['nr']++;
+                        $stats[$single_status]['membership']['money']+=0;
+                    }
+
+                    if ($booking->status=='active'){
+                        $stats[$single_status]['active']['nr']++;
+                        $stats[$single_status]['active']['money']+=     $booking=='membership'?0:$booking->payment_amount;
+                    }
+                    elseif($booking->status=='noshow'){
+                        $stats[$single_status]['no_show']['nr']++;
+                        $stats[$single_status]['no_show']['money']+=    $booking=='membership'?0:$booking->payment_amount;
+                    }
+                    elseif($booking->status=='canceled'){
+                        $stats[$single_status]['canceled']['nr']++;
+                        $stats[$single_status]['canceled']['money']+=   $booking=='membership'?0:$booking->payment_amount;
+                    }
+                    elseif($booking->status=='paid' || $booking->status=='unpaid' || $booking->status=='old'){
+                        $stats[$single_status]['show']['nr']++;
+                        $stats[$single_status]['show']['money']+=       $booking=='membership'?0:$booking->payment_amount;
+                    }
+                }
+            }
+
+            foreach ($stats as $key=>$stat){
+                $total1 = $stat['drop_ins']['nr'] + $stat['membership']['nr'];
+                $stats[$key]['drop_ins']['rate']   = $total1==0?'-':round(($stat['drop_ins']['nr']*100)/$total1);
+                $stats[$key]['membership']['rate'] = $total1==0?'-':round(($stat['membership']['nr']*100)/$total1);
+
+                $total2 = $stat['active']['nr'] + $stat['show']['nr'] + $stat['no_show']['nr'] + $stat['canceled']['nr'];
+                $stats[$key]['active']['rate']      = $total2==0?'-':round(($stat['active']['nr']*100)/$total2);
+                $stats[$key]['show']['rate']        = $total2==0?'-':round(($stat['show']['nr']*100)/$total2);;
+                $stats[$key]['no_show']['rate']     = $total2==0?'-':round(($stat['no_show']['nr']*100)/$total2);;
+                $stats[$key]['canceled']['rate']    = $total2==0?'-':round(($stat['canceled']['nr']*100)/$total2);;
+            }
+        }
+
+        return $stats;
     }
 }

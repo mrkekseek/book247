@@ -109,24 +109,24 @@
                         <div class="col-md-6">
                             <!-- BEGIN PORTLET -->
                             <div class="portlet light bordered">
-                                <div class="portlet-title">
+                                <div class="portlet-title tabbable-line">
                                     <div class="caption caption-md">
-                                        <i class="icon-bar-chart theme-font hide"></i>
-                                        <span class="caption-subject font-blue-madison bold uppercase">Your Activity</span>
-                                        <span class="caption-helper hide">weekly stats...</span>
+                                        <i class="icon-globe theme-font hide"></i>
+                                        <span class="caption-subject font-blue-madison bold uppercase">User Bookings</span>
                                     </div>
-                                    <div class="actions">
-                                        <div class="btn-group btn-group-devided" data-toggle="buttons">
-                                            <label class="btn btn-transparent grey-salsa btn-circle btn-sm active">
-                                                <input type="radio" name="options" class="toggle" id="option1">Today</label>
-                                            <label class="btn btn-transparent grey-salsa btn-circle btn-sm">
-                                                <input type="radio" name="options" class="toggle" id="option2">Week</label>
-                                            <label class="btn btn-transparent grey-salsa btn-circle btn-sm">
-                                                <input type="radio" name="options" class="toggle" id="option2">Month</label>
-                                        </div>
-                                    </div>
+                                    <ul class="nav nav-tabs">
+                                        <li class="active">
+                                            <a href="#tab_2_1" data-toggle="tab"> This Week </a>
+                                        </li>
+                                        <li>
+                                            <a href="#tab_2_2" data-toggle="tab"> This Month </a>
+                                        </li>
+                                        <li>
+                                            <a href="#tab_2_3" data-toggle="tab"> Last 3 Months </a>
+                                        </li>
+                                    </ul>
                                 </div>
-                                <div class="portlet-body">
+                                <div class="portlet-body tab-content">
                                     <div class="row number-stats margin-bottom-30">
                                         <div class="col-md-6 col-sm-6 col-xs-6">
                                             <div class="stat-left">
@@ -135,7 +135,7 @@
                                                     <div id="sparkline_bar"></div>
                                                 </div>
                                                 <div class="stat-number">
-                                                    <div class="title"> Total </div>
+                                                    <div class="title"> All Payments </div>
                                                     <div class="number"> 2460 </div>
                                                 </div>
                                             </div>
@@ -147,77 +147,87 @@
                                                     <div id="sparkline_bar2"></div>
                                                 </div>
                                                 <div class="stat-number">
-                                                    <div class="title"> New </div>
+                                                    <div class="title"> DropIns </div>
                                                     <div class="number"> 719 </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="table-scrollable table-scrollable-borderless">
-                                        <table class="table table-hover table-light">
-                                            <thead>
-                                            <tr class="uppercase">
-                                                <th colspan="2"> MEMBER </th>
-                                                <th> Earnings </th>
-                                                <th> CASES </th>
-                                                <th> CLOSED </th>
-                                                <th> RATE </th>
-                                            </tr>
-                                            </thead>
-                                            <tr>
-                                                <td class="fit">
-                                                    <img class="user-pic" src="../assets/pages/media/users/avatar4.jpg"> </td>
-                                                <td>
-                                                    <a href="javascript:;" class="primary-link">Brain</a>
-                                                </td>
-                                                <td> $345 </td>
-                                                <td> 45 </td>
-                                                <td> 124 </td>
-                                                <td>
-                                                    <span class="bold theme-font">80%</span>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td class="fit">
-                                                    <img class="user-pic" src="../assets/pages/media/users/avatar5.jpg"> </td>
-                                                <td>
-                                                    <a href="javascript:;" class="primary-link">Nick</a>
-                                                </td>
-                                                <td> $560 </td>
-                                                <td> 12 </td>
-                                                <td> 24 </td>
-                                                <td>
-                                                    <span class="bold theme-font">67%</span>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td class="fit">
-                                                    <img class="user-pic" src="../assets/pages/media/users/avatar6.jpg"> </td>
-                                                <td>
-                                                    <a href="javascript:;" class="primary-link">Tim</a>
-                                                </td>
-                                                <td> $1,345 </td>
-                                                <td> 450 </td>
-                                                <td> 46 </td>
-                                                <td>
-                                                    <span class="bold theme-font">98%</span>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td class="fit">
-                                                    <img class="user-pic" src="../assets/pages/media/users/avatar7.jpg"> </td>
-                                                <td>
-                                                    <a href="javascript:;" class="primary-link">Tom</a>
-                                                </td>
-                                                <td> $645 </td>
-                                                <td> 50 </td>
-                                                <td> 89 </td>
-                                                <td>
-                                                    <span class="bold theme-font">58%</span>
-                                                </td>
-                                            </tr>
-                                        </table>
-                                    </div>
+
+                                    @foreach ($top_stats as $stat)
+                                        <div class="table-scrollable table-scrollable-borderless tab-pane {{ $stat['ord']==1?'active':'' }}" id="tab_2_{{ $stat['ord']  }}">
+                                            <table class="table table-hover table-light">
+                                                <thead>
+                                                <tr class="uppercase">
+                                                    <th> Bookings </th>
+                                                    <th style="text-align:center"> NUMBER </th>
+                                                    <th> MONEY </th>
+                                                    <th> RATE </th>
+                                                </tr>
+                                                </thead>
+                                                <tr>
+                                                    <td>
+                                                        <a href="javascript:;" class="primary-link">Paid</a>
+                                                    </td>
+                                                    <td align="center"> {{ $stat['drop_ins']['nr'] }} </td>
+                                                    <td> {{ $stat['drop_ins']['money'] }} {{ Config::get('constants.finance.currency') }} </td>
+                                                    <td>
+                                                        <span class="bold theme-font">{{ $stat['drop_ins']['rate']=='-'?'-':$stat['drop_ins']['rate'].'%' }}</span>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <a href="javascript:;" class="primary-link">Membership</a>
+                                                    </td>
+                                                    <td align="center"> {{ $stat['membership']['nr'] }} </td>
+                                                    <td> {{ $stat['membership']['money'] }} {{ Config::get('constants.finance.currency') }} </td>
+                                                    <td>
+                                                        <span class="bold theme-font">{{ $stat['membership']['rate']=='-'?'-':$stat['membership']['rate'].'%' }}</span>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <a href="javascript:;" class="primary-link">Active</a>
+                                                    </td>
+                                                    <td align="center"> {{ $stat['active']['nr'] }} </td>
+                                                    <td> {{ $stat['active']['money'] }} {{ Config::get('constants.finance.currency') }} </td>
+                                                    <td>
+                                                        <span class="bold theme-font">{{ $stat['active']['rate']=='-'?'-':$stat['active']['rate'].'%' }}</span>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <a href="javascript:;" class="primary-link">Show</a>
+                                                    </td>
+                                                    <td align="center"> {{ $stat['show']['nr'] }} </td>
+                                                    <td> {{ $stat['show']['money'] }} {{ Config::get('constants.finance.currency') }} </td>
+                                                    <td>
+                                                        <span class="bold theme-font">{{ $stat['show']['rate']=='-'?'-':$stat['show']['rate'].'%' }}</span>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <a href="javascript:;" class="primary-link">No Show</a>
+                                                    </td>
+                                                    <td align="center"> {{ $stat['no_show']['nr'] }} </td>
+                                                    <td> {{ $stat['no_show']['money'] }} {{ Config::get('constants.finance.currency') }} </td>
+                                                    <td>
+                                                        <span class="bold theme-font">{{ $stat['no_show']['rate']=='-'?'-':$stat['no_show']['rate'].'%' }}</span>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <a href="javascript:;" class="primary-link">Cancelled</a>
+                                                    </td>
+                                                    <td align="center"> {{ $stat['canceled']['nr'] }} </td>
+                                                    <td> {{ $stat['canceled']['money'] }} {{ Config::get('constants.finance.currency') }} </td>
+                                                    <td>
+                                                        <span class="bold theme-font">{{ $stat['canceled']['rate']=='-'?'-':$stat['canceled']['rate'].'%' }}</span>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                    @endforeach
                                 </div>
                             </div>
                             <!-- END PORTLET -->
@@ -243,7 +253,7 @@
                                     <!--BEGIN TABS-->
                                     <div class="tab-content">
                                         <div class="tab-pane {!! sizeof($redFlagLog)==0?' active':'' !!}" id="tab_1_1">
-                                            <div class="scroller" style="height: 320px;" data-always-visible="1" data-rail-visible1="0" data-handle-color="#D7DCE2">
+                                            <div class="scroller" style="height: 355px;" data-always-visible="1" data-rail-visible1="0" data-handle-color="#D7DCE2">
                                                 @if (sizeof($activityLog)>0)
                                                     <ul class="feeds">
                                                     @foreach($activityLog as $logView)
@@ -276,7 +286,7 @@
                                             </div>
                                         </div>
                                         <div class="tab-pane {!! sizeof($redFlagLog)>0?' active':'' !!}" id="tab_1_2">
-                                            <div class="scroller" style="height: 320px;" data-always-visible="1" data-rail-visible1="0" data-handle-color="#D7DCE2">
+                                            <div class="scroller" style="height: 355px;" data-always-visible="1" data-rail-visible1="0" data-handle-color="#D7DCE2">
                                                 @if (sizeof($redFlagLog)>0)
                                                     <ul class="feeds">
                                                         @foreach($redFlagLog as $logView)
