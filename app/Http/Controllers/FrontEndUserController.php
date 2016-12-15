@@ -266,6 +266,17 @@ class FrontEndUserController extends Controller
         $own_friends  = UserFriends::select('id')->where('user_id','=',$member->id)->orWhere('friend_id','=',$member->id)->count();
 
         $front_statistics = $this->get_member_bookings_statistics($member);
+        $finance_statistics = $this->get_member_financial_statistics($member);
+
+        $all_paid = [];     $total_paid = 0;
+        $dropins_paid = []; $total_dropins = 0;
+        foreach ($finance_statistics as $one_finance){
+            $all_paid[]     = $one_finance['total_paid'];
+            $total_paid+=$one_finance['total_paid'];;
+
+            $dropins_paid[] = $one_finance['bookings_paid'];
+            $total_dropins+=$one_finance['bookings_paid'];
+        }
 
         $text_parts  = [
             'title'     => 'Back-End Users',
@@ -294,7 +305,11 @@ class FrontEndUserController extends Controller
             'countCancelledBookings'    => $cancelled_bookings,
             'countActiveBookings' => $new_bookings,
             'countFriends'        => $own_friends,
-            'top_stats'     => $front_statistics
+            'top_stats'     => $front_statistics,
+            'finance_total' => $total_paid,
+            'finance_paid_list' => $all_paid,
+            'bookings_total'=> $total_dropins,
+            'bookings_paid_list'=> $dropins_paid,
         ]);
     }
 
@@ -3704,6 +3719,38 @@ class FrontEndUserController extends Controller
             }
         }
 
+        unset($stats['this_week']);
+
         return $stats;
+    }
+
+    public function get_member_financial_statistics(User $member, $simple=true){
+        $months = [];
+        $current_month = Carbon::today();
+        $months[$current_month->month] = ['bookings_paid'=>0,'total_paid'=>0];
+        for ($i=-1; $i>-12; $i--){
+            $step_month = Carbon::today()->addMonths($i);
+            $months[$step_month->month] = ['bookings_paid'=>0,'total_paid'=>0];
+        }
+
+        $first_day = $step_month->firstOfMonth();
+        $all_invoices = Invoice::with('items')->where('user_id','=',$member->id)->where('created_at','>=',$first_day)->get();
+        if ($all_invoices){
+            foreach ($all_invoices as $invoice){
+                $key = $invoice->created_at->month;
+
+                foreach ($invoice->items as $item){
+                    if ($item->item_type=='booking_invoice_item'){
+                        $months[$key]['bookings_paid']+=$item->total_price;
+                        $months[$key]['total_paid']+=$item->total_price;
+                    }
+                    else{
+                        $months[$key]['total_paid']+=$item->total_price;
+                    }
+                }
+            }
+        }
+
+        return $months;
     }
 }

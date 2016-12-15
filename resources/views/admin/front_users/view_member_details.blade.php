@@ -115,14 +115,15 @@
                                         <span class="caption-subject font-blue-madison bold uppercase">User Bookings</span>
                                     </div>
                                     <ul class="nav nav-tabs">
+                                        <!--<li class="active"><a href="#tab_2_1" data-toggle="tab"> This Week </a></li>-->
                                         <li class="active">
-                                            <a href="#tab_2_1" data-toggle="tab"> This Week </a>
-                                        </li>
-                                        <li>
                                             <a href="#tab_2_2" data-toggle="tab"> This Month </a>
                                         </li>
                                         <li>
                                             <a href="#tab_2_3" data-toggle="tab"> Last 3 Months </a>
+                                        </li>
+                                        <li>
+                                            <a href="#tab_2_4" data-toggle="tab"> All Time </a>
                                         </li>
                                     </ul>
                                 </div>
@@ -136,7 +137,7 @@
                                                 </div>
                                                 <div class="stat-number">
                                                     <div class="title"> All Payments </div>
-                                                    <div class="number"> 2460 </div>
+                                                    <div class="number"> {{ $finance_total }} </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -148,14 +149,14 @@
                                                 </div>
                                                 <div class="stat-number">
                                                     <div class="title"> DropIns </div>
-                                                    <div class="number"> 719 </div>
+                                                    <div class="number"> {{ $bookings_total }} </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
 
                                     @foreach ($top_stats as $stat)
-                                        <div class="table-scrollable table-scrollable-borderless tab-pane {{ $stat['ord']==1?'active':'' }}" id="tab_2_{{ $stat['ord']  }}">
+                                        <div class="table-scrollable table-scrollable-borderless tab-pane {{ $stat['ord']==2?'active':'' }}" id="tab_2_{{ $stat['ord'] }}">
                                             <table class="table table-hover table-light">
                                                 <thead>
                                                 <tr class="uppercase">
@@ -167,7 +168,7 @@
                                                 </thead>
                                                 <tr>
                                                     <td>
-                                                        <a href="javascript:;" class="primary-link">Paid</a>
+                                                        <a href="javascript:;" class="primary-link">Calendar Products</a>
                                                     </td>
                                                     <td align="center"> {{ $stat['drop_ins']['nr'] }} </td>
                                                     <td> {{ $stat['drop_ins']['money'] }} {{ Config::get('constants.finance.currency') }} </td>
@@ -517,7 +518,6 @@
 @section('pageBelowLevelScripts')
     <script src="{{ asset('assets/global/plugins/jquery-notific8/jquery.notific8.min.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/global/plugins/jquery.blockui.min.js') }}" type="text/javascript"></script>
-    <script src="{{ asset('assets/pages/scripts/profile.min.js') }}" type="text/javascript"></script>
 @endsection
 
 @section('themeBelowLayoutScripts')
@@ -609,8 +609,40 @@
             };
         }();
 
+        var Profile = function() {
+            var dashboardMainChart = null;
+            return {
+                //main function
+                init: function() {
+                    Profile.initMiniCharts();
+                },
+
+                initMiniCharts: function() {
+                    $("#sparkline_bar").sparkline([{{ implode(',', $finance_paid_list) }}], {
+                        type: 'bar',
+                        width: '100',
+                        barWidth: 6,
+                        height: '45',
+                        barColor: '#F36A5B',
+                        negBarColor: '#e02222'
+                    });
+
+                    $("#sparkline_bar2").sparkline([{{ implode(',', $bookings_paid_list) }}], {
+                        type: 'bar',
+                        width: '100',
+                        barWidth: 6,
+                        height: '45',
+                        barColor: '#5C9BD1',
+                        negBarColor: '#e02222'
+                    });
+                }
+            };
+        }();
+
         $(document).ready(function(){
             FormValidation.init();
+
+            Profile.init();
         });
 
         function store_account_info(){
