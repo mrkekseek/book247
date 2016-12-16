@@ -198,7 +198,7 @@
                             @if($restrictions)
                                 @foreach ($restrictions as $restriction)
                                     <div class="col-md-4">
-                                        <div class="note {{ $restriction['color'] }}" style="min-height:132px;">
+                                        <div class="note {{ $restriction['color'] }} membership_rules">
                                             <h4 class="block"> {{ $restriction['title'] }} Rule </h4>
                                             <p> {!! $restriction['description'] !!} </p>
                                         </div>
@@ -241,6 +241,7 @@
 
 @section('pageBelowLevelScripts')
     <script src="{{ asset('assets/global/plugins/jquery-notific8/jquery.notific8.min.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('assets/global/scripts/jquery.matchHeight.js') }}" type="text/javascript"></script>
 @endsection
 
 @section('themeBelowLayoutScripts')
@@ -251,6 +252,9 @@
 
 @section('pageCustomJScripts')
     <script type="text/javascript">
-
+        var options = { byRow: true, property: 'height', target: null, remove: false};
+        $(function() {
+            $('.membership_rules').matchHeight(options);
+        });
     </script>
 @endsection

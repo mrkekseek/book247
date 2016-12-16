@@ -509,7 +509,7 @@
                         @if($restrictions)
                             @foreach ($restrictions as $restriction)
                                 <div class="col-md-4">
-                                    <div class="note {{ $restriction['color'] }}" style="min-height:145px;">
+                                    <div class="note {{ $restriction['color'] }} membership_rules">
                                         @if ($membership_plan->status != 'active')
                                         <button class="close remove_restriction" data-id="{{$restriction['id']}}" type="button"></button>
                                         @endif
@@ -576,6 +576,8 @@
 
 @section('pageBelowLevelScripts')
     <script src="{{ asset('assets/global/plugins/jquery-notific8/jquery.notific8.min.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('assets/global/scripts/jquery.matchHeight.js') }}" type="text/javascript"></script>
+
 @endsection
 
 @section('themeBelowLayoutScripts')
@@ -914,6 +916,11 @@
                 }
             });
         };
+
+        var options = { byRow: true, property: 'height', target: null, remove: false};
+        $(function() {
+            $('.membership_rules').matchHeight(options);
+        });
 
         /**
          * Convert select to array with values

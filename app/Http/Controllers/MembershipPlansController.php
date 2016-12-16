@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Auth;
 use App\Http\Requests;
 
+use Illuminate\Support\Facades\Cache;
 use Regulus\ActivityLog\Models\Activity;
 use Validator;
 use App\ShopLocations;
@@ -171,6 +172,7 @@ class MembershipPlansController extends Controller
 
         try {
             $the_plan = MembershipPlan::create($fillable);
+            Cache::forget('membership_plans_table');
 
             $fillable = [
                 'membership_id' => $the_plan->id,
@@ -393,6 +395,7 @@ class MembershipPlansController extends Controller
         }
         else{
             $the_plan->update($fillable);
+            Cache::forget('membership_plans_table');
         }
 
         if ($vars['price'] != $the_plan->price[0]->price) {
@@ -439,6 +442,7 @@ class MembershipPlansController extends Controller
     public function destroy($id)
     {
         //
+        Cache::forget('membership_plans_table');
     }
 
     public function add_plan_restriction(Request $request){

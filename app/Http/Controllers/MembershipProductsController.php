@@ -133,9 +133,6 @@ class MembershipProductsController extends Controller
 
         Cache::forget('membership_products_table');
         $the_product = MembershipProduct::create($fillable);
-        Cache::remember('membership_products_table',720,function(){
-            return MembershipProduct::orderBy('name','asc')->get();
-        });
 
         if ($the_product){
             Activity::log([
@@ -296,9 +293,6 @@ class MembershipProductsController extends Controller
         else {
             Cache::forget('membership_products_table');
             $the_product->update($fillable);
-            Cache::remember('membership_products_table', 720, function () {
-                return MembershipProduct::orderBy('name', 'asc')->get();
-            });
         }
 
         Activity::log([
@@ -326,5 +320,6 @@ class MembershipProductsController extends Controller
     public function destroy($id)
     {
         //
+        Cache::forget('membership_products_table');
     }
 }
