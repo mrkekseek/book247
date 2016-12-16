@@ -3622,7 +3622,7 @@ class FrontEndUserController extends Controller
                 ]
             ],
             'last_all'  => [
-                'ord'   => 3,
+                'ord'   => 4,
                 'drop_ins'  => [
                     'nr'    => 0,
                     'money' => 0,
