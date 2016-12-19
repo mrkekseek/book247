@@ -2,6 +2,8 @@
 
 @section('pageLevelPlugins')
     <link href="{{ asset('assets/global/plugins/bootstrap-datepicker/css/bootstrap-datepicker3.min.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/global/plugins/datatables/datatables.min.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/global/plugins/datatables/plugins/bootstrap/datatables.bootstrap.css') }}" rel="stylesheet" type="text/css" />
 @endsection
 
 @section('themeGlobalStyle')
@@ -11,16 +13,16 @@
 @endsection
 
 @section('themeLayoutStyle')
-    <link href="{{ asset('assets/pages/css/location_calendar_day_view.css') }}" rel="stylesheet" type="text/css" />
-
     <link href="{{ asset('assets/layouts/layout4/css/layout.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('assets/layouts/layout4/css/themes/light.min.css') }}" rel="stylesheet" type="text/css" id="style_color" />
     <link href="{{ asset('assets/layouts/layout4/css/custom.min.css') }}" rel="stylesheet" type="text/css" />
+
+    <link href="{{ asset('assets/pages/css/location_calendar_day_view.css') }}" rel="stylesheet" type="text/css" />
     <meta name="csrf-token" content="{{ csrf_token() }}" />
 @endsection
 
 @section('title', 'Back-end bookings - Calendar View per Location')
-@section('pageBodyClass','page-container-bg-solid page-header-fixed page-sidebar-closed-hide-logo page-sidebar-closed')
+@section('pageBodyClass','page-container-bg-solid page-header-fixed page-sidebar-closed-hide-logo page-sidebar-closed page-header-fixed')
 
 @section('pageContentBody')
     <div class="page-content fix_padding_top_0">
@@ -31,7 +33,7 @@
                 <div class="portlet box green">
                     <div class="portlet-title">
                         <div class="caption">
-                            <div class="form-inline" style="margin-bottom:0px;">
+                            <div class="form-inline margin-bottom-0">
                                 <div class="input-group input-small date date-picker" data-date="{{ $header_vals['date_selected'] }}" data-date-format="dd-mm-yyyy" data-date-viewmode="years">
                                     <input type="text" id="header_date_selected" class="form-control reload_calendar_page" value="{{ $header_vals['date_selected'] }}" readonly>
                                     <span class="input-group-btn">
@@ -57,22 +59,20 @@
                             </div>
                         </div>
                         <div class="tools margin-top-10">
-                            <a href="{{ route('bookings/location_calendar_day_view_all', ['day'=>$header_vals['prev_date'],'location'=>$header_vals['selected_location'],'activity'=>$header_vals['selected_activity']]) }}" class="bs-glyphicons font-white" style="margin-bottom:0px;"> <span class="glyphicon glyphicon-chevron-left"> </span> Prev </a>
-                            <a href="javascript:;" class="bs-glyphicons font-white" style="margin-bottom:0px;"> <span class="glyphicon glyphicon-repeat"> </span> Reload </a>
-                            <a href="{{ route('bookings/location_calendar_day_view_all', ['day'=>$header_vals['next_date'],'location'=>$header_vals['selected_location'],'activity'=>$header_vals['selected_activity']]) }}" class="bs-glyphicons font-white" style="margin-bottom:0px;"> Next <span class="glyphicon glyphicon-chevron-right"> </span> </a>
+                            <a href="{{ route('bookings/location_calendar_day_view_all', ['day'=>$header_vals['prev_date'],'location'=>$header_vals['selected_location'],'activity'=>$header_vals['selected_activity']]) }}" class="bs-glyphicons font-white margin-bottom-0"> <span class="glyphicon glyphicon-chevron-left"> </span> Prev </a>
+                            <a href="javascript:;" class="bs-glyphicons font-white margin-bottom-0"> <span class="glyphicon glyphicon-repeat"> </span> Reload </a>
+                            <a href="{{ route('bookings/location_calendar_day_view_all', ['day'=>$header_vals['next_date'],'location'=>$header_vals['selected_location'],'activity'=>$header_vals['selected_activity']]) }}" class="bs-glyphicons font-white margin-bottom-0"> Next <span class="glyphicon glyphicon-chevron-right"> </span> </a>
                         </div>
                     </div>
-                    <div class="portlet-body flip-scroll">
-                        <div class="row" style="padding-left:5px; margin-bottom:10px;">
+                    <div class="portlet-body">
+                        <div class="row legend-calendar-products">
                             @foreach($membership_legend as $each_legend)
-                                <div style="display:inline-block; margin-bottom:4px;">
-                                    <a class="border-grey-salt" style="background-color:{{ $each_legend['color'] }}; padding:0px 10px; border-radius: {{ $each_legend['status']=='product'?'0px':'10px' }};  margin-left:10px; margin-right:5px;"> </a><small>{{ $each_legend['name'] }}</small>
-                                </div>
+                                <div><a class="border-grey-salt" style="background-color:{{ $each_legend['color'] }}; border-radius: {{ $each_legend['status']=='product'?'0px':'10px' }};"> </a><small>{{ $each_legend['name'] }}</small></div>
                             @endforeach
                         </div>
 
-                        <table class="table table-striped table-bordered table-hover" id="bookings_calendar_view_admin">
-                            <thead class="flip-content">
+                        <table class="table table-striped table-bordered table-hover table-header-fixed" id="bookings_calendar_view_admin">
+                            <thead>
                             <tr>
                                 <th width="5%"> Time </th>
                                 @foreach ($resources as $resource)
@@ -80,6 +80,14 @@
                                 @endforeach
                             </tr>
                             </thead>
+                            <tfoot>
+                            <tr>
+                                <th width="5%"> Time </th>
+                                @foreach ($resources as $resource)
+                                    <th style="width:{{ 95/sizeof($resources) }}%;">{{ $resource['name'] }}</th>
+                                @endforeach
+                            </tr>
+                            </tfoot>
                             <tbody>
                             @if (sizeof($time_intervals)>0)
                                 @foreach ($time_intervals as $key=>$hour)
@@ -93,58 +101,28 @@
                                             <a class="font-white pull-xs-left" href="{{ @$location_bookings[$key][$resource['id']]['player_link'] }}" target="_blank" style="white-space: nowrap;">{{ @$location_bookings[$key][$resource['id']]['player_name'] }}</a>
                                             <div class="actions pull-xs-left" search-key="{{ $location_bookings[$key][$resource['id']]['search_key'] }}">
                                                 @if ($location_bookings[$key][$resource['id']]['button_show'] == 'is_disabled')
-                                                    <a class="btn btn-circle btn-icon-only {{ $button_color['is_disabled'] }} border-white"
-                                                       style="height:30px; width:30px; padding:4px 3px 0 0; margin-right:1px; cursor:default; margin-left: -3px;" href="javascript:;"
-                                                       data-status="{{ $location_bookings[$key][$resource['id']]['status'] }}" >
-                                                       <i class="icon-login"></i>
-                                                    </a>
+                                                    <a class="btn btn-icon-only {{ $button_color['is_disabled'] }} border-white show-no-show" href="javascript:;" data-status="{{ $location_bookings[$key][$resource['id']]['status'] }}" ><i class="icon-login"></i></a>
                                                 @elseif ($location_bookings[$key][$resource['id']]['button_show'] == 'is_no_show')
-                                                    <a class="btn btn-circle btn-icon-only {{ $button_color[$location_bookings[$key][$resource['id']]['button_show']] }} border-white"
-                                                       style="height:30px; width:30px; padding:4px 3px 0 0; margin-right:1px; cursor:default; margin-left: -3px;" href="javascript:;"
-                                                       data-status="{{ $location_bookings[$key][$resource['id']]['status'] }}" >
-                                                       <i class="icon-login"></i>
-                                                    </a>
+                                                    <a class="btn btn-icon-only {{ $button_color[$location_bookings[$key][$resource['id']]['button_show']] }} border-white show-no-show" href="javascript:;" data-status="{{ $location_bookings[$key][$resource['id']]['status'] }}" ><i class="icon-login"></i></a>
                                                 @else
-                                                    <a class="btn btn-circle btn-icon-only {{ $button_color[$location_bookings[$key][$resource['id']]['button_show']] }} border-white check_as_in"
-                                                       style="margin-left: -3px; height:30px; width:30px; padding:4px 3px 0 0; margin-right:1px;" href="javascript:;"
-                                                       data-status="{{ $location_bookings[$key][$resource['id']]['status'] }}" >
-                                                       <i class="icon-login"></i>
-                                                    </a>
+                                                    <a class="btn btn-icon-only {{ $button_color[$location_bookings[$key][$resource['id']]['button_show']] }} border-white check_as_in show-no-show" href="javascript:;" data-status="{{ $location_bookings[$key][$resource['id']]['status'] }}" > <i class="icon-login"></i> </a>
                                                 @endif
                                                 @if ($location_bookings[$key][$resource['id']]['button_finance'] == 'is_disabled')
                                                     @if(isset($location_bookings[$key][$resource['id']]['membership_starts_today']))
-                                                        <a style="margin-left: -3px; height:30px; width:30px; padding-top:1px; margin-right:1px; font-size:20px; line-height:26px; cursor:default;" href="javascript:;"
-                                                           class="btn btn-circle btn-icon-only bg-blue-sharp bg-font-blue-sharp border-white "> <i class="icon-star"></i> </a>
-                                                    @else
-
+                                                        <a href="javascript:;" class="btn btn-icon-only bg-blue-sharp bg-font-blue-sharp border-white finance-btn"> <i class="icon-star"></i> </a>
                                                     @endif
                                                 @elseif ($location_bookings[$key][$resource['id']]['button_finance'] == 'is_paid_cash' || $location_bookings[$key][$resource['id']]['button_finance'] == 'is_paid_card' || $location_bookings[$key][$resource['id']]['button_finance'] == 'is_paid_online')
-                                                    <a style="margin-left: -3px; height:30px; width:30px; padding-top:0px; margin-right:1px; font-size:20px; line-height:26px; cursor:default;" href="javascript:;"
-                                                       class="btn btn-circle btn-icon-only {{ $button_color[$location_bookings[$key][$resource['id']]['button_finance']] }} border-white "> $ </a>
+                                                    <a href="javascript:;" class="btn btn-icon-only {{ $button_color[$location_bookings[$key][$resource['id']]['button_finance']] }} border-white finance-btn"> $ </a>
                                                 @else
-                                                    <a style="margin-left: -3px; height:30px; width:30px; padding-top:0px; margin-right:1px; font-size:20px; line-height:26px;" href="javascript:;"
-                                                       data-key="{{ $location_bookings[$key][$resource['id']]['search_key'] }}"
-                                                       class="btn btn-circle btn-icon-only {{ $button_color[$location_bookings[$key][$resource['id']]['button_finance']] }} border-white invoice_cash_card"
-                                                       data-toggle="confirmation" data-original-title="How would you pay?"
-                                                       data-btn-ok-label="CASH" data-btn-ok-icon=""
-                                                       data-btn-cancel-label="CARD" data-btn-cancel-icon=""> $ </a>
+                                                    <a href="javascript:;" class="btn btn-icon-only {{ $button_color[$location_bookings[$key][$resource['id']]['button_finance']] }} border-white invoice_cash_card finance-btn" data-key="{{ $location_bookings[$key][$resource['id']]['search_key'] }}" data-toggle="confirmation" data-original-title="How would you pay?" data-btn-ok-label="CASH" data-btn-ok-icon="" data-btn-cancel-label="CARD" data-btn-cancel-icon=""> $ </a>
                                                 @endif
-
                                                 @if ($location_bookings[$key][$resource['id']]['button_more'] == 'is_disabled')
-                                                    <a style="margin-left: -3px; height:30px; width:30px; padding-top:4px; margin-right:4px; cursor:default;" href="javascript:;"
-                                                       class="btn btn-circle btn-icon-only {{ $button_color['is_disabled'] }} border-white">
-                                                        <i class="icon-speech"></i>
-                                                    </a>
+                                                    <a href="javascript:;" class="btn btn-icon-only {{ $button_color['is_disabled'] }} border-white more-info-btn"><i class="icon-speech"></i></a>
                                                 @else
-                                                    <a style="margin-left: -3px; height:30px; width:30px; padding-top:4px; margin-right:4px;" href="javascript:;" class="btn btn-circle btn-icon-only btn-default border-white open_more_options">
-                                                        <i class="icon-speech"></i>
-                                                    </a>
+                                                    <a href="javascript:;" class="btn btn-icon-only btn-default border-white open_more_options more-info-btn"><i class="icon-speech"></i></a>
                                                 @endif
-
                                                 @if ($location_bookings[$key][$resource['id']]['button_finance'] != 'is_disabled')
-                                                <a style="margin-left: -4px; height:30px; width:30px; padding-top:4px; margin-right:4px;" href="javascript:;" data-id="{{ $location_bookings[$key][$resource['id']]['membership_product'] }}" class="btn btn-circle btn-icon-only btn-default border-white open_product_options">
-                                                    <i class="icon-notebook"></i>
-                                                </a>
+                                                <a href="javascript:;" class="btn btn-icon-only btn-default border-white open_product_options membership-product-btn" data-id="{{ $location_bookings[$key][$resource['id']]['membership_product'] }}"><i class="icon-notebook"></i></a>
                                                 @endif
                                             </div>
                                             @else
@@ -583,6 +561,10 @@
     <script src="{{ asset('assets/global/plugins/jquery-validation/js/jquery.validate.min.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/global/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/global/plugins/bootstrap-confirmation-2-2/bootstrap-confirmation.min.js') }}" type="text/javascript"></script>
+
+    <script src="{{ asset('assets/global/scripts/datatable.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('assets/global/plugins/datatables/datatables.min.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('assets/global/plugins/datatables/plugins/bootstrap/datatables.bootstrap.js') }}" type="text/javascript"></script>
 @endsection
 
 @section('pageBelowLevelScripts')
@@ -999,18 +981,91 @@
             }
         }
 
-        if (App.isAngularJsApp() === false) {
-            jQuery(document).ready(function () {
-                // initialize select2 drop downs
-                ComponentsSelectCalendarView.init();
-                // initialize date/time pickersz
-                ComponentsDateTimePickers.init();
-                // initialize the forms validation part
-                FormValidation.init();
-                //scroll to first available hour in calendar
-                scrollToAvailableHours();
-            });
-        }
+        var TableDatatablesFixedHeader = function () {
+            var initTable2 = function () {
+                var table = $('#bookings_calendar_view_admin');
+                var fixedHeaderOffset = 0;
+                if (App.getViewPort().width < App.getResponsiveBreakpoint('md')) {
+                    if ($('.page-header').hasClass('page-header-fixed-mobile')) {
+                        fixedHeaderOffset = $('.page-header').outerHeight(true);
+                    }
+                } else if ($('.page-header').hasClass('navbar-fixed-top')) {
+                    fixedHeaderOffset = $('.page-header').outerHeight(true);
+                }
+
+                var oTable = table.dataTable({
+
+                    // Internationalisation. For more info refer to http://datatables.net/manual/i18n
+                    "language": {
+                        "aria": {
+                            "sortAscending": ": activate to sort column ascending",
+                            "sortDescending": ": activate to sort column descending"
+                        },
+                        "emptyTable": "No data available in table",
+                        "info": "Showing _START_ to _END_ of _TOTAL_ entries",
+                        "infoEmpty": "No entries found",
+                        "infoFiltered": "(filtered1 from _MAX_ total entries)",
+                        "lengthMenu": "_MENU_ entries",
+                        "search": "Search:",
+                        "zeroRecords": "No matching records found"
+                    },
+
+                    // Or you can use remote translation file
+                    //"language": {
+                    //   url: '//cdn.datatables.net/plug-ins/3cfcc339e89/i18n/Portuguese.json'
+                    //},
+
+                    // setup rowreorder extension: http://datatables.net/extensions/fixedheader/
+                    fixedHeader: {
+                        header: true,
+                        footer: true,
+                        headerOffset: fixedHeaderOffset
+                    },
+
+                    "order": [
+                        [0, 'asc']
+                    ],
+
+                    "lengthMenu": [
+                        [5, 10, 15, 30, -1],
+                        [5, 10, 15, 30, "All"] // change per page values here
+                    ],
+                    // set the initial value
+                    "pageLength": 40,
+                    "bSort": false,
+                    "aaSorting":[[]],
+                    "dom":'rti',
+                    // Uncomment below line("dom" parameter) to fix the dropdown overflow issue in the datatable cells. The default datatable layout
+                    // setup uses scrollable div(table-scrollable) with overflow:auto to enable vertical scroll(see: assets/global/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.js).
+                    // So when dropdowns used the scrollable div should be removed.
+                    //"dom": "<'row' <'col-md-12'T>><'row'<'col-md-6 col-sm-12'l><'col-md-6 col-sm-12'f>r>t<'row'<'col-md-5 col-sm-12'i><'col-md-7 col-sm-12'p>>",
+                });
+            }
+
+            return {
+                //main function to initiate the module
+                init: function () {
+                    if (!jQuery().dataTable) {
+                        return;
+                    }
+                    initTable2();
+                }
+            };
+        }();
+
+        jQuery(document).ready(function () {
+            // initialize select2 drop downs
+            ComponentsSelectCalendarView.init();
+            // initialize date/time pickersz
+            ComponentsDateTimePickers.init();
+            // initialize the forms validation part
+            FormValidation.init();
+            //
+            TableDatatablesFixedHeader.init();
+
+            //scroll to first available hour in calendar
+            scrollToAvailableHours();
+        });
 
         $( "body" ).on( "click", "#recc_booking_all",function(event) {
             if(this.checked) {
