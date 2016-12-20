@@ -31,8 +31,8 @@
             <div class="col-md-12">
                 <!-- BEGIN SAMPLE TABLE PORTLET-->
                 <div class="portlet box green">
-                    <div class="portlet-title">
-                        <div class="caption">
+                    <div class="portlet-title" style="height:1px !important; min-height:1px;">
+                        <!--<div class="caption">
                             <div class="form-inline margin-bottom-0">
                                 <div class="input-group input-small date date-picker" data-date="{{ $header_vals['date_selected'] }}" data-date-format="dd-mm-yyyy" data-date-viewmode="years">
                                     <input type="text" id="header_date_selected" class="form-control reload_calendar_page" value="{{ $header_vals['date_selected'] }}" readonly>
@@ -62,7 +62,7 @@
                             <a href="{{ route('bookings/location_calendar_day_view_all', ['day'=>$header_vals['prev_date'],'location'=>$header_vals['selected_location'],'activity'=>$header_vals['selected_activity']]) }}" class="bs-glyphicons font-white margin-bottom-0"> <span class="glyphicon glyphicon-chevron-left"> </span> Prev </a>
                             <a href="javascript:;" class="bs-glyphicons font-white margin-bottom-0"> <span class="glyphicon glyphicon-repeat"> </span> Reload </a>
                             <a href="{{ route('bookings/location_calendar_day_view_all', ['day'=>$header_vals['next_date'],'location'=>$header_vals['selected_location'],'activity'=>$header_vals['selected_activity']]) }}" class="bs-glyphicons font-white margin-bottom-0"> Next <span class="glyphicon glyphicon-chevron-right"> </span> </a>
-                        </div>
+                        </div>-->
                     </div>
                     <div class="portlet-body">
                         <div class="row legend-calendar-products">
@@ -73,6 +73,41 @@
 
                         <table class="table table-striped table-bordered table-hover table-header-fixed" id="bookings_calendar_view_admin">
                             <thead>
+                            <tr class="portlet box">
+                                <td colspan="{{ sizeof($resources)+1 }}" class="portlet-title" style="min-height:45px; border-bottom:1px solid #e7ecf1; border-radius:0px; border-top-width: 0px;">
+                                    <div class="caption" style="padding:4px 0px;">
+                                        <div class="form-inline margin-bottom-0">
+                                            <div class="input-group input-small date date-picker" data-date="{{ $header_vals['date_selected'] }}" data-date-format="dd-mm-yyyy" data-date-viewmode="years">
+                                                <input type="text" id="header_date_selected" class="form-control reload_calendar_page" value="{{ $header_vals['date_selected'] }}" readonly>
+                                                <span class="input-group-btn">
+                                                    <button class="btn default" type="button">
+                                                        <i class="fa fa-calendar"></i>
+                                                    </button>
+                                                </span>
+                                            </div>
+                                            <div class="input-group input-medium">
+                                                <select id="header_location_selected" class="form-control reload_calendar_page" style="border-radius:4px;">
+                                                    @foreach($all_locations as $a_location)
+                                                        <option value="{{ $a_location->id }}" {{ $a_location->id==$header_vals['selected_location']?" selected ":'' }} >{{ $a_location->name }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                            <div class="input-group input-medium">
+                                                <select id="header_activity_selected" class="form-control reload_calendar_page" style="border-radius:4px;">
+                                                    @foreach($all_activities as $an_activity)
+                                                        <option value="{{ $an_activity['id'] }}" {{ $an_activity['id']==$header_vals['selected_activity']?" selected ":'' }} >{{ $an_activity['name'] }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="tools margin-top-0">
+                                        <a href="{{ route('bookings/location_calendar_day_view_all', ['day'=>$header_vals['prev_date'],'location'=>$header_vals['selected_location'],'activity'=>$header_vals['selected_activity']]) }}" class="bs-glyphicons font-blue-steel margin-bottom-0"> <span class="glyphicon glyphicon-chevron-left"> </span> Prev </a>
+                                        <a href="javascript:;" class="bs-glyphicons font-blue-steel margin-bottom-0"> <span class="glyphicon glyphicon-repeat"> </span> Reload </a>
+                                        <a href="{{ route('bookings/location_calendar_day_view_all', ['day'=>$header_vals['next_date'],'location'=>$header_vals['selected_location'],'activity'=>$header_vals['selected_activity']]) }}" class="bs-glyphicons font-blue-steel margin-bottom-0"> Next <span class="glyphicon glyphicon-chevron-right"> </span> </a>
+                                    </div>
+                                </td>
+                            </tr>
                             <tr>
                                 <th width="5%"> Time </th>
                                 @foreach ($resources as $resource)
@@ -1034,7 +1069,7 @@
                     "pageLength": 40,
                     "bSort": false,
                     "aaSorting":[[]],
-                    "dom":'rti',
+                    "dom":'rt',
                     // Uncomment below line("dom" parameter) to fix the dropdown overflow issue in the datatable cells. The default datatable layout
                     // setup uses scrollable div(table-scrollable) with overflow:auto to enable vertical scroll(see: assets/global/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.js).
                     // So when dropdowns used the scrollable div should be removed.
