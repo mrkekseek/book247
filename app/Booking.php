@@ -423,16 +423,9 @@ class Booking extends Model
                     //xdebug_var_dump($invoiceItem); exit;
                     return false;
                 }
-//exit;
+
                 $creditInvoice = new Invoice();
                 $creditInvoice->add_credit_invoice($invoiceItem);
-
-                // create credit invoice for canceled item if the item canceled was paid
-                //$invoiceItem->delete();
-                //if (sizeof($invoice->items)==1){
-                //    $invoice->status = 'cancelled';
-                //    $invoice->save();
-                //}
 
                 // delete bookingInvoiceItem then check the bookingInvoice if it has more items; if no items found, leave the bookingInvoice empty
                 $bookingInvoiceItem->delete();

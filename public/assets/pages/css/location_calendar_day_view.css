@@ -10,3 +10,6 @@ table td.highlighted { background-color:#999;}
 .finance-btn {margin-left: 0px !important; height:26px; width:26px; padding-top:0px; margin-right:1px !important; font-size:20px; line-height:24px !important; cursor:default;}
 .more-info-btn {margin-left: 0px !important; height:26px; width:26px; padding-top:4px; margin-right:1px !important; cursor:default;}
 .membership-product-btn {margin-left: 0px !important; height:26px; width:26px; padding-top:4px; margin-right:1px !important;}
+
+.move-booking-available{ background: #1bbc9b none repeat scroll 0 0 !important; }
+.move-booking-selected-btn{ background: #9a12b3 none repeat scroll 0 0 !important; color:#ffffff !important; border-color:#9a12b3 !important;}

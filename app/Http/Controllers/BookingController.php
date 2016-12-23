@@ -1533,7 +1533,7 @@ class BookingController extends Controller
                 $i++;
             }
         }
-
+//xdebug_var_dump($hours_interval); exit;
         $buttons_color = [
             'is_show'           => 'bg-green-jungle bg-font-green-jungle',
             'is_no_show'        => 'bg-red-thunderbird bg-font-red-thunderbird',
@@ -1549,7 +1549,6 @@ class BookingController extends Controller
 
             'is_disabled'       => 'bg-default bg-font-default',
         ];
-
         $breadcrumbs = [
             'Home'          => route('admin'),
             'Bookings'      => route('admin'),
@@ -1992,12 +1991,12 @@ class BookingController extends Controller
         if ($bookings){
             foreach ($bookings as $booking){
                 $formatted_booking = [
-                    'search_key' => $booking->search_key,
-                    'location' => $booking->location_id,
-                    'resource' => $booking->resource_id,
-                    'status'   => $booking->status,
-                    'membership_product' => $booking->membership_product_id,
-                    'color_stripe' => 'bg-red-flamingo bg-font-red-flamingo'];
+                    'search_key'        => $booking->search_key,
+                    'location'          => $booking->location_id,
+                    'resource'          => $booking->resource_id,
+                    'status'            => $booking->status,
+                    'membership_product'=> $booking->membership_product_id,
+                    'color_stripe'      => 'bg-red-flamingo bg-font-red-flamingo'];
 
                 if ($show_more){
                     $player = User::where('id','=',$booking->for_user_id)->get()->first();
@@ -2048,6 +2047,7 @@ class BookingController extends Controller
                     $formatted_booking['button_show'] = 'is_disabled';
                     $formatted_booking['button_finance'] = 'is_disabled';
                     $formatted_booking['button_more'] = 'more_btn_active';
+                    $formatted_booking['button_move_booking'] = 'is_disabled';
                     switch ($booking->status) {
                         case 'pending' :
                             // all disabled
@@ -2055,6 +2055,10 @@ class BookingController extends Controller
                             break;
                         case 'active' :
                             $formatted_booking['button_show'] = 'show_btn_active';
+                            if (Carbon::today()->lte(Carbon::createFromFormat('Y-m-d H:i:s',$booking->date_of_booking.' '.$booking->booking_time_start))){
+                                $formatted_booking['button_move_booking'] = 'move_btn_active';
+                            }
+
                             if ($booking->payment_type=="cash"){
                                 $invoice = BookingInvoice::with('invoice_items')->with('financial_transaction')->find($booking->invoice_id);
                                 if ($invoice){
@@ -2336,6 +2340,173 @@ class BookingController extends Controller
         return ['success' => true, 'bookings' => $booking_return];
     }
 
+    private function save_pending_booking_with_member_details($book_key, $by_player, $for_player){
+        if (!Auth::check()) {
+            return [
+                'success' => false,
+                'errors'  => 'You need to be authenticated to use this function',
+                'title'   => 'Authentication error'];
+        }
+        else{
+            $user = Auth::user();
+        }
+
+        // check if booking exists
+        $booking = Booking::where('search_key','=',$book_key)->where('status','=','pending')->get()->first();
+        if (!$booking){
+            return [
+                'success' => false,
+                'errors'  => 'No Booking found - booking expired',
+                'title'   => 'Authentication error'];
+        }
+
+        // check if the member that makes the booking exists
+        if (!isset($by_player)){
+            $by_user = $user;
+        }
+        else{
+            $by_user = User::where('id','=',$by_player)->get()->first();
+            if (!$by_user){
+                return [
+                    'success' => false,
+                    'title'   => 'Booking members not found',
+                    'errors'  => 'Member not found in the members list'];
+            }
+        }
+
+        // check if the player that the booking is made for exists
+        $for_user = User::where('id','=',$for_player)->get()->first();
+        if (!$for_user){
+            return [
+                'success' => false,
+                'title'   => 'Playing member not found',
+                'errors'  => 'Player not found in the members list'];
+        }
+
+        // check if the player can book
+        $fillable = [
+            'for_user_id'       => $for_user->id,
+            'resource_id'       => $booking->resource_id,
+            'location_id'       => $booking->location_id,
+            'date_of_booking'   => $booking->date_of_booking,
+            'booking_time_start'=> $booking->booking_time_start,
+            'search_key'        => $booking->search_key
+        ];
+        $canBook = BookingController::validate_booking($fillable, $book_key);
+        if ($canBook['status']==false){
+            return ['booking_key' => ''];
+        }
+        else{
+            $booking->payment_type = $canBook['payment'];
+
+            $book_price = ShopResource::find($fillable['resource_id']);
+            if ($book_price){
+                $booking->payment_amount = $book_price->get_price($booking->date_of_booking, $booking->booking_time_start);
+            }
+            else{
+                return ['booking_key' => ''];
+            }
+        }
+
+        $booking->by_user_id = $by_user->id;
+        $booking->for_user_id = $for_user->id;
+        $booking->save();
+
+        return [
+
+        ];
+    }
+
+    private function confirm_pending_booking($key, $membership_product=-1){
+        if (!Auth::check()) {
+            //return redirect()->intended(route('admin/login'));
+            return ['error' => 'Authentication Error'];
+        }
+        else{
+            $user = Auth::user();
+        }
+
+        $is_staff = false;
+        if (!$user->hasRole(['front-member','front-user'])){
+            $is_staff = true;
+        }
+
+        if ($is_staff) {
+            $booking = Booking::where('status', '=', 'pending')->where('search_key', '=', $key)->get()->first();
+            if (!$booking){
+                return ['success' => false];
+            }
+        }
+        else{
+            $booking = Booking::where('status', '=', 'pending')->where('by_user_id', '=', $user->id)->where('search_key', '=', $key)->get()->first();
+            if (!$booking){
+                return ['success' => false];
+            }
+        }
+
+        if ($booking->payment_type=="membership" && $booking->membership_id==-1){
+            $userMembership = UserMembership::where('user_id','=',$booking->for_user_id)->where('status','=','active')->get()->first();
+            if ($userMembership){
+                $booking->membership_id = $userMembership->id;
+            }
+        }
+        elseif ($booking->payment_type=="cash" || $booking->payment_type=="recurring"){
+            // check if the membership assigned to the user is the same as the one in the booking
+
+            if (!isset($booking_invoices[$booking->by_user_id])){
+                // echo $booking->invoice_id;
+                if ($booking->invoice_id == -1) {
+                    // add invoice
+                    $book_invoice = $booking->add_invoice();
+                }
+                else {
+                    // get invoice
+                    $book_invoice = BookingInvoice::where('id', '=', $booking->invoice_id)->get()->first();
+                }
+                $booking_invoices[$booking->by_user_id] = $book_invoice;
+                //xdebug_var_dump($book_invoice);
+            }
+            else {
+                $book_invoice = $booking_invoices[$booking->by_user_id];
+            }
+
+            $book_invoice->add_invoice_item($booking->id);
+            $booking->invoice_id = $book_invoice->id;
+
+            $bookingItem        = BookingInvoiceItem::where('booking_id', '=', $booking->id)->get()->first();
+            $general_invoice    = Invoice::where('invoice_type', '=','booking_invoice')->where('invoice_reference_id','=',$book_invoice->id)->get()->first();
+            $is_item_added      = InvoiceItem::where('item_type','=','booking_invoice_item')->where('item_reference_id','=',$bookingItem->id)->get()->first();
+            if (!$is_item_added) {
+                $generalFillable = [
+                    'item_name'         => $bookingItem->location_name . ', room ' . $bookingItem->resource_name . '
+                                                    - ' . $bookingItem->booking_time_interval . ' on ' . $bookingItem->booking_date . ' ',
+                    'item_type'         => 'booking_invoice_item',  // type of the item : membership payment, coupon code, discounts, bookings, products
+                    'item_reference_id' => $bookingItem->id,        // the ID from the table
+                    'quantity'          => $bookingItem->quantity,  // number of items
+                    'price'             => $bookingItem->price,     // base price
+                    'vat'               => $bookingItem->vat,       // VAT for the product group
+                    'discount'          => $bookingItem->discount,  // applied discount
+                ];
+                $abcd = $general_invoice->add_invoice_item($generalFillable);
+            }
+        }
+
+        $membershipProductID = -1;
+        if (isset($membership_product)){
+            $selectedProduct = MembershipProduct::where('id','=',$membership_product)->get()->first();
+            if ($selectedProduct){
+                $membershipProductID = $selectedProduct->id;
+            }
+        }
+
+        if ($booking->payment_type == "cash" && $membershipProductID!=-1){
+            $booking->membership_product_id = $membershipProductID;
+        }
+
+        $booking->status = 'active';
+        $booking->save();
+    }
+
     /**
      * Save the pre-kept booking with the player and member details;
      * Booking was kept on the employee name until the player/member were selected
@@ -2418,12 +2589,80 @@ class BookingController extends Controller
             'details'       => 'User Email : '.$user->email,
             'updated'       => true,
         ]);
-        usleep(5000);
-
         return [
             'booking_key'   => $booking->search_key,
             'booking_type'  => $booking->payment_type,
             'booking_price' => $booking->payment_amount];
+    }
+
+    public function calendar_booking_move_selected(Request $request){
+        if (!Auth::check()) {
+            return [
+                'success' => false,
+                'title'   => 'You need to be logged in',
+                'errors'  => 'Login first before using this function'];
+        }
+        else{
+            $user = Auth::user();
+            if ($user->hasRole(['front-member','front-user'])) {
+                return [
+                    'success' => false,
+                    'title'   => 'You need to be logged in',
+                    'errors'  => 'You need to be logged in in the backend to use this function'];
+            }
+        }
+
+        $vars = $request->only('date','location','resources','time_interval','userID','book_key');
+        $booking = Booking::where('search_key','=',$vars['book_key'])->where('status','=','active')->get()->first();
+        if ($booking){
+            $selected_date = Carbon::createFromFormat('d-m-Y', trim($vars['date']))->format('Y-m-d');
+
+            // interval duration
+            $intervalDuration = 30;
+            $booking_start_time = Carbon::createFromFormat('G:i', trim($vars['time_interval']))->format('G:i');
+            $booking_end_time   = Carbon::createFromFormat('G:i', $booking_start_time)->addMinutes($intervalDuration)->format('G:i');
+
+            $fillable = [
+                'by_user_id'            => $booking->by_user_id,
+                'for_user_id'           => $booking->for_user_id,
+                'location_id'           => $vars['location'],
+                'resource_id'           => $vars['resources'],
+                'status'                => 'pending',
+                'date_of_booking'       => $selected_date,
+                'booking_time_start'    => $booking_start_time,
+                'booking_time_stop'     => $booking_end_time,
+                'payment_type'          => 'membership',
+                'payment_amount'        => 0,
+                'membership_id'         => -1,
+                'invoice_id'            => -1,
+                'search_key'            => '',
+            ];
+            $msg = $this->add_single_calendar_booking($fillable);
+
+            if ($msg['booking_key']!=''){
+                $newBooking = Booking::where('search_key','=',$msg['booking_key'])->get()->first();
+                if (!$newBooking){
+                    return ['success' => false];
+                }
+
+                BookingController::save_pending_booking_with_member_details($msg['booking_key'], $booking->by_user_id, $booking->for_user_id);
+                BookingController::confirm_pending_booking($msg['booking_key'], $booking->membership_product_id);
+                $booking->cancel_booking();
+
+                return [
+                    'success' => true,
+                    'message' => 'Booking moved to new time/court',
+                    'title'   => 'Booking Moved'
+                ];
+            }
+            else{
+                return ['success' => false];
+            }
+        }
+        else{
+
+            return ['success' => false];
+        }
     }
 
     /**

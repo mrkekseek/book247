@@ -74,7 +74,7 @@
                         <table class="table table-striped table-bordered table-hover table-header-fixed" id="bookings_calendar_view_admin">
                             <thead>
                             <tr>
-                                <th width="5%"> Time </th>
+                                <th width="5%"> Time {{ sizeof($time_intervals) }} </th>
                                 @foreach ($resources as $resource)
                                     <th style="width:{{ 95/sizeof($resources) }}%;">{{ $resource['name'] }}</th>
                                 @endforeach
@@ -123,6 +123,9 @@
                                                 @endif
                                                 @if ($location_bookings[$key][$resource['id']]['button_finance'] != 'is_disabled')
                                                 <a href="javascript:;" class="btn btn-icon-only btn-default border-white open_product_options membership-product-btn" data-id="{{ $location_bookings[$key][$resource['id']]['membership_product'] }}"><i class="icon-notebook"></i></a>
+                                                @endif
+                                                @if ($location_bookings[$key][$resource['id']]['button_move_booking'] == 'move_btn_active')
+                                                <a href="javascript:;" class="btn btn-icon-only btn-default border-white membership-product-btn move-booking-btn" data-id="{{ $location_bookings[$key][$resource['id']]['membership_product'] }}"><i class="icon-share-alt"></i></a>
                                                 @endif
                                             </div>
                                             @else
@@ -1031,7 +1034,7 @@
                         [5, 10, 15, 30, "All"] // change per page values here
                     ],
                     // set the initial value
-                    "pageLength": 40,
+                    "pageLength": 50,
                     "bSort": false,
                     "aaSorting":[[]],
                     "dom":'rt',
@@ -1586,7 +1589,7 @@
                     $('.prebook').each(function(key, val){
                         $(this).find('span').first().removeAttr('booking-key');
                         $(this).removeClass();
-                        $(this).addClass('is_free_time');
+                        $(this).addClass('isfreetime');
                     });
 
                     cancel_booking_keys(all_bookings);
@@ -1761,6 +1764,11 @@
                     isHighlighted;
             $("#bookings_calendar_view_admin td.isfreetime")
                     .mousedown(function () {
+                        if ($(this).hasClass('move-booking-available')==true){
+                            move_selected_booking($(this));
+                            return false;
+                        }
+
                         if ($(".add_custom_bookings_btn:visible").length==0){
                             $(this).parent().find('.add_custom_bookings_btn').css('display','block');
                         }
@@ -2256,5 +2264,74 @@
 
         setTimeout(refresh, 10000);
         /* Page auto refresh after 5 min of inactivity - Stop */
+
+        /* Move booking to new time/room - Start */
+        $('.move-booking-btn').on('click', function(){
+            if ($(this).hasClass('move-booking-btn')){
+                // check other active move btn
+                $('.membership-product-btn').each(function(){
+                    if ($(this).hasClass('move-booking-selected-btn')){
+                        $(this).removeClass('move-booking-selected-btn');
+                        $(this).addClass('move-booking-btn');
+                    }
+                });
+
+                $(this).removeClass('move-booking-btn');
+                $(this).addClass('move-booking-selected-btn');
+
+                $('.isfreetime').each(function(){
+                    $(this).removeClass();
+                    $(this).addClass('isfreetime');
+                    $(this).addClass('move-booking-available');
+                });
+            }
+            else{
+                $(this).removeClass('move-booking-selected-btn');
+                $(this).addClass('move-booking-btn');
+
+                $('.move-booking-available').each(function(){
+                    $(this).removeClass('move-booking-available');
+                });
+            }
+        });
+
+        function move_selected_booking(element){
+            element.removeClass('move-booking-available');
+            element.addClass('bg-purple-seance bg-font-purple-seance');
+
+            // add temporary bookings on the employee name until the other names are set up
+            var resources = element.find('span').attr('data-resource');
+            var time_intervals = element.find('span').attr('data-time');
+            var bookKey = $('.move-booking-selected-btn').parent().attr('search-key');
+
+            $.ajax({
+                url: '{{route('ajax/calendar_booking_move_selected')}}',
+                type: "post",
+                cache: false,
+                data: {
+                    'date': $('#header_date_selected').val(),
+                    'location': $('#header_location_selected').val(),
+                    'userID': -1,
+                    'resources': resources,
+                    'time_interval': time_intervals,
+                    'book_key': bookKey
+                },
+                success: function(data){
+                    $('.isfreetime').each(function(){
+                        $(this).removeClass();
+                        $(this).addClass('isfreetime');
+                    });
+
+                    if (data.success){
+                        show_notification(data.title, data.message, 'lime', 2500, 0);
+                        location.reload();
+                    }
+                    else{
+                        show_notification(data.title, data.errors, 'ruby', 3500, 0);
+                    }
+                }
+            });
+        }
+        /* Move booking to new time/room - Stop */
     </script>
 @endsection
