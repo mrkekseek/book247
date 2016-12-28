@@ -132,6 +132,7 @@ class FrontEndUserController extends Controller
 
         $role = Role::where('name','=','front-user')->get()->first();
         $memberships = MembershipPlan::where('status','=','active')->where('id','!=','1')->get();
+        $shop_locations = ShopLocations::where('visibility','=','public')->get();
 
         $breadcrumbs = [
             'Home'              => route('admin'),
@@ -153,7 +154,8 @@ class FrontEndUserController extends Controller
             'in_sidebar'    => $sidebar_link,
             'role'          => $role,
             'memberships'   => $memberships,
-            'countries'     => $countries
+            'countries'     => $countries,
+            'shop_locations'=> $shop_locations
         ]);
     }
 

@@ -104,6 +104,15 @@
                                             <div class="form-group">
                                                 <label class="control-label visible-ie8 visible-ie9">Re-type Your Password</label>
                                                 <input class="form-control placeholder-no-fix" type="password" autocomplete="off" placeholder="Re-type Your Password" name="rpassword" /> </div>
+                                            <div class="form-group">
+                                                <label class="control-label visible-ie8 visible-ie9">Signing Location</label>
+                                                <select class="form-control" name="member_sign_location">
+                                                    <option value="" selected="selected">Select Signing Location</option>
+                                                    @foreach($shop_locations as $location)
+                                                    <option value="{{ $location->id }}"> {{ $location->name }} </option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
                                         </div>
                                     </div>
 
@@ -279,6 +288,10 @@
                             equalTo:"#register_password"
                         },
                         member_gender: {
+                            required:true,
+                            minlength: 1,
+                        },
+                        member_sign_location: {
                             required:true,
                             minlength: 1,
                         },

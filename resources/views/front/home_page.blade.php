@@ -830,6 +830,8 @@
                         phone: {
                             number: true,
                             required: true,
+                            minlength:8,
+                            maxlength:13,
                             remote: {
                                 url: "{{ route('ajax/check_phone_for_member_registration') }}",
                                 type: "post",
@@ -856,12 +858,12 @@
                         },
                         rpassword: {
                             required:true,
-                            minlength: 5,
+                            minlength: 8,
                             maxlength: 150,
                         },
                         re_rpassword: {
                             required:true,
-                            minlength: 5,
+                            minlength: 8,
                             maxlength: 150,
                             equalTo:"#rpassword"
                         },
