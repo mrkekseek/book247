@@ -691,6 +691,8 @@ class FrontEndUserController extends Controller
         }
         $membership_plans = MembershipPlan::where('id','!=','1')->where('status','=','active')->get()->sortBy('name');
 
+        $locations = ShopLocations::whereIn('visibility',['public','pending','suspended'])->orderBy('name','ASC')->get();
+
         $breadcrumbs = [
             'Home'              => route('admin'),
             'Administration'    => route('admin'),
@@ -726,7 +728,8 @@ class FrontEndUserController extends Controller
             'invoiceCancellation'   => $invoiceCancellation,
             'invoiceFreeze'         => $invoiceFreeze,
             'canCancel'     => $canCancel,
-            'canFreeze'     => $canFreeze
+            'canFreeze'     => $canFreeze,
+            'locations'     => $locations
         ]);
     }
 
@@ -2137,7 +2140,7 @@ class FrontEndUserController extends Controller
 
         $vars = $request->only('first_name', 'middle_name', 'last_name', 'gender', 'email', 'phone_number', 'dob', 'password', 'rpassword', 'username', 'user_type',
             'address1', 'address2', 'city', 'adr_country_id', 'postal_code', 'region',
-            'membership_plan', 'start_date'); //exit;
+            'membership_plan', 'start_date', 'sign_location'); //exit;
 
         if (!isset($vars['middle_name'])){
             $vars['middle_name'] = '';
@@ -2178,6 +2181,13 @@ class FrontEndUserController extends Controller
                 'title'     => 'No User Types',
                 'errors'    => 'User type not found for front member'
             ];
+        }
+
+        if (isset($vars['sign_location'])){
+            $signLocation = ShopLocations::where('id','=',$vars['sign_location'])->whereIn('visibility',['public','pending'])->get()->first();
+        }
+        else{
+            $signLocation = ShopLocations::whereIn('visibility',['public','pending'])->orderBy('created_at','ASC')->get()->first();
         }
 
         $credentials = [
@@ -2281,6 +2291,12 @@ class FrontEndUserController extends Controller
             }
             else{
                 $user->attachRole($userType);
+            }
+
+            // preferred location + sign in location
+            if ($signLocation){
+                $user->set_general_setting('settings_preferred_location', $signLocation->id);
+                $user->set_general_setting('registration_signed_location', $signLocation->id);
             }
 
             return [
@@ -2403,14 +2419,15 @@ class FrontEndUserController extends Controller
         $vars = $request->only('general_settings');
         if (sizeof($vars['general_settings'])>0){
             foreach($vars['general_settings'] as $key=>$val){
-                $fillable = [
+                $user->set_general_setting($key, $val);
+                /*$fillable = [
                     'user_id'   => $user->id,
                     'var_name'  => $key
                 ];
 
                 $storeSetting = UserSettings::firstOrNew($fillable);
                 $storeSetting->var_value = $val;
-                $storeSetting->save();
+                $storeSetting->save();*/
             }
 
             return [

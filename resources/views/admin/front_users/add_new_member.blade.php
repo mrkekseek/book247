@@ -405,6 +405,7 @@
                     'email': $('input[name="reg_email"]').val(),
                     'password': $('input[name="password"]').val(),
                     'rpassword': $('input[name="rpassword"]').val(),
+                    'sign_location': $('select[name="member_sign_location"]').val(),
 
                     'membership_plan': $('select[name="membership_plan"]').val(),
                     'start_date': $('input[name="start_date"]').val(),
