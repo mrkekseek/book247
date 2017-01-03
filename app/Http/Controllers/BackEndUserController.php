@@ -654,22 +654,25 @@ class BackEndUserController extends Controller
         $items_array = array();
         $items = array();
 
+        $searchTerm = trim($vars['q']);
+        $searchTerm = preg_replace('!\s+!', ' ', $searchTerm);
+
         $query = DB::table('users')
             ->select('users.first_name','users.middle_name','users.last_name','users.id','users.email','personal_details.mobile_number','addresses.city','addresses.region')
             ->leftjoin('personal_details','personal_details.user_id','=','users.id')
             ->leftjoin('addresses','addresses.id','=','personal_details.address_id')
             ->leftjoin('role_user', 'users.id', '=', 'role_user.user_id')
             ->whereIn('role_user.role_id',['5','6'])
-            ->where(function($query) use ($vars){
-                $query->where('users.first_name','like','%'.$vars['q'].'%')
-                    ->orWhere('users.middle_name','like','%'.$vars['q'].'%')
-                    ->orWhere('users.last_name','like','%'.$vars['q'].'%')
-                    ->orWhere(DB::raw("CONCAT(users.first_name, ' ', users.last_name)"),'like','%'.$vars['q'].'%')
-                    ->orWhere(DB::raw("CONCAT(users.first_name, ' ', users.middle_name, ' ', users.last_name)"),'like','%'.$vars['q'].'%')
-                    ->orWhere('users.email','like','%'.$vars['q'].'%')
-                    ->orWhere('users.email','like','%'.$vars['q'].'%')
-                    ->orWhere('personal_details.mobile_number','like','%'.$vars['q'].'%')
-                    ->orWhere('personal_details.personal_email','like','%'.$vars['q'].'%');
+            ->where(function($query) use ($searchTerm){
+                $query->where('users.first_name','like','%'.$searchTerm.'%')
+                    ->orWhere('users.middle_name','like','%'.$searchTerm.'%')
+                    ->orWhere('users.last_name','like','%'.$searchTerm.'%')
+                    ->orWhere(DB::raw("CONCAT(users.first_name, ' ', users.last_name)"),'like','%'.$searchTerm.'%')
+                    ->orWhere(DB::raw("CONCAT(users.first_name, ' ', users.middle_name, ' ', users.last_name)"),'like','%'.$searchTerm.'%')
+                    ->orWhere('users.email','like','%'.$searchTerm.'%')
+                    ->orWhere('users.email','like','%'.$searchTerm.'%')
+                    ->orWhere('personal_details.mobile_number','like','%'.$searchTerm.'%')
+                    ->orWhere('personal_details.personal_email','like','%'.$searchTerm.'%');
             })
             ->groupBy('users.id');
 
