@@ -132,7 +132,7 @@ class FrontEndUserController extends Controller
 
         $role = Role::where('name','=','front-user')->get()->first();
         $memberships = MembershipPlan::where('status','=','active')->where('id','!=','1')->get();
-        $shop_locations = ShopLocations::where('visibility','=','public')->get();
+        $shop_locations = ShopLocations::whereIn('visibility',['public','pending'])->get();
 
         $breadcrumbs = [
             'Home'              => route('admin'),
