@@ -2219,6 +2219,7 @@ class FrontEndUserController extends Controller
 
         try {
             $user = User::create($credentials);
+            $user->attachRole($userType);
 
             $personalData = [
                 'personal_email'=> $vars['email'],
@@ -2285,12 +2286,7 @@ class FrontEndUserController extends Controller
 
                     @$user->detachAllRoles();
                     $user->attachRole($memberRole);
-                } else {
-                    $user->attachRole($userType);
                 }
-            }
-            else{
-                $user->attachRole($userType);
             }
 
             // preferred location + sign in location

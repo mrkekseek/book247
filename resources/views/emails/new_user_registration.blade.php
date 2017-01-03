@@ -13,6 +13,13 @@
     </tr>
     <tr>
         <td class="paragraph">
+            SQF/Book247 is the official booking system for Drammen & Økern. Within approximately 30 days time Book 247 will be used for all SquashFitness locations.
+            Please log in and "add your friends" (playing partners). By doing this you and your playing partners can book on behalf of each other and according to the booking rules.
+            This will make the booking procedure faster for you, your partners and our receptionists.
+        </td>
+    </tr>
+    <tr>
+        <td class="paragraph">
             You registered to the Booking System platform with the following credentials, credentials that you can use to <a href="{{route('homepage')}}" target="_blank">login here</a> :
         </td>
     </tr>
@@ -30,7 +37,7 @@
     </tr>
     <tr>
         <td class="paragraph">
-            Your phone : <strong>{{$personal_details->mobile_number}}</strong> that is registered in the system will be used to send you alerts when you create a booking or when a booking is created on your behalf.
+            Your phone : <strong>{{$personal_details->mobile_number}}</strong> that is registered in the system can be used to send you alerts when you create a booking or when a booking is created on your behalf.
         </td>
     </tr>
     <tr>
