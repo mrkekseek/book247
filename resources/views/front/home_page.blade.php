@@ -180,7 +180,7 @@
                                             <input class="form-control placeholder-no-fix" type="text" placeholder="Email" name="reg_email" /> </div>
                                         <div class="form-group">
                                             <label class="control-label visible-ie8 visible-ie9">Password</label>
-                                            <input class="form-control placeholder-no-fix" type="password" autocomplete="off" id="rpassword" placeholder="Password" name="rpassword" /> </div>
+                                            <input class="form-control placeholder-no-fix" type="password" autocomplete="off" id="rpassword" placeholder="Password - at least 8 characters" name="rpassword" /> </div>
                                         <div class="form-group">
                                             <label class="control-label visible-ie8 visible-ie9">Re-type Your Password</label>
                                             <input class="form-control placeholder-no-fix" type="password" autocomplete="off" placeholder="Re-type Your Password" name="re_rpassword" /> </div>
