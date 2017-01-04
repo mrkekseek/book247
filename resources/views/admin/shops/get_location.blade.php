@@ -204,6 +204,46 @@
                 <div class="portlet box red border-grey-silver">
                     <div class="portlet-title bg-grey-silver bg-font-grey-silver">
                         <div class="caption">
+                            <i class="fa fa-cogs"></i>Shop/Store System Options </div>
+                        <div class="tools">
+                            <a class="collapse" href="javascript:;" data-original-title="" title=""> </a>
+                        </div>
+                    </div>
+                    <div class="portlet-body flip-scroll">
+                        <table class="table table-bordered table-striped table-condensed flip-content">
+                            <tbody>
+                            <tr>
+                                <td> &nbsp; <b>Location financial profile</b> </td>
+                                <td> <select name="option_value" class="form-control input-inline input-medium input-sm" aria-invalid="false">
+                                        <option value="-1">Default</option>
+                                        <option value="1">SQF Norway</option>
+                                        <option value="2">Assaft bashed</option>
+                                    </select>
+                                    <input type="hidden" name="option_key" value="shop_finance_profile" />
+                                    <a class="btn blue btn-sm update_system_option" >Update</a> </td>
+                            </tr>
+                            <tr>
+                                <td> &nbsp; <b>Automatic Booking marked as Show</b> </td>
+                                <td> <select name="option_value" class="form-control input-inline input-medium input-sm" aria-invalid="false">
+                                        <option value="-1">Default</option>
+                                        <option value="1">Yes</option>
+                                        <option value="0">No</option>
+                                    </select>
+                                    <input type="hidden" name="option_key" value="automatic_bookings_mark_as_show" />
+                                    <a class="btn blue btn-sm update_system_option" >Update</a> </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="portlet box red border-grey-silver">
+                    <div class="portlet-title bg-grey-silver bg-font-grey-silver">
+                        <div class="caption">
                             <i class="fa fa-cogs"></i>Shop Resources </div>
                         <div class="tools">
                             <a class="collapse" href="javascript:;" data-original-title="" title=""> </a>
@@ -1630,6 +1670,17 @@
                     }
                 }
             });
+        }
+
+        $(".update_system_option").on('click', function(){
+            var key   = $(this).parent().find('input[name=option_key]').val();
+            var value = $(this).parent().find('select[name=option_value]').val();
+
+            update_shop_options(key, value);
+        });
+
+        function update_shop_options(key, value){
+
         }
 
         $(".delete_shop_resource").on("click", function(){

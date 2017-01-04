@@ -46,6 +46,10 @@ class ShopLocations extends Model
         return $this->hasMany('App\ShopResource', 'location_id', 'id');
     }
 
+    public function systemOptions(){
+        return $this->hasMany('App\ShopSystemOption','id','shop_location_id');
+    }
+
     public static function rules($method, $id=0){
         switch($method){
             case 'GET':
@@ -138,5 +142,32 @@ class ShopLocations extends Model
         }
 
         return $hours;
+    }
+
+    public function set_system_option($key, $value){
+        try {
+            $fillable = [
+                'shop_location_id'  => $this->id,
+                'var_name'          => $key,
+            ];
+            $systemSetting = ShopSystemOption::firstOrNew($fillable);
+            $systemSetting->var_value = $value;
+            $systemSetting->save();
+
+            return true;
+        }
+        catch (\Exception $ex){
+            return false;
+        }
+    }
+
+    public function get_system_option($key){
+        $setting = ShopSystemOption::where('shop_location_id','=',$this->id)->where('var_name','=',$key)->get()->first();
+        if ($setting){
+            return $setting->var_value;
+        }
+        else{
+            return false;
+        }
     }
 }

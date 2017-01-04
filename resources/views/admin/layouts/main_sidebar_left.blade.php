@@ -242,7 +242,7 @@
         @endif
 
         @if (Auth::user()->can('view-general-settings-menu'))
-        <li class="nav-item {{ in_array($in_sidebar, ['admin-settings-all_list'])?'active open':'' }} ">
+        <li class="nav-item {{ in_array($in_sidebar, ['admin-settings-all_list','admin-settings-financial_profiles'])?'active open':'' }} ">
             <a href="javascript:;" class="nav-link nav-toggle">
                 <i class="icon-shield"></i>
                 <span class="title"> General Settings </span>
@@ -252,6 +252,11 @@
                 <li class="nav-item {{ $in_sidebar=='admin-settings-all_list'?'active open':'' }}">
                     <a href="{{route('admin/settings/list_all')}}" class="nav-link ">
                         <span class="title">List all settings</span>
+                    </a>
+                </li>
+                <li class="nav-item {{ $in_sidebar=='admin-settings-financial_profiles'?'active open':'' }}">
+                    <a href="{{route('admin/settings/list_all')}}" class="nav-link ">
+                        <span class="title">Financial Profiles</span>
                     </a>
                 </li>
             </ul>

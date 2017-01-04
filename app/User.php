@@ -107,8 +107,8 @@ class User extends Authenticatable
         }
     }
 
-    public function is_front_user() {
-        if ( ($this->hasRole('front-user') || $this->hasRole('front-member')) && $this->status == "active") {
+    public function is_front_user($all = true) {
+        if ( ($this->hasRole('front-user') || $this->hasRole('front-member')) && ($this->status == "active" || $all )) {
             return true;
         }
         else {

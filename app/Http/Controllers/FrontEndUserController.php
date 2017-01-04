@@ -183,22 +183,32 @@ class FrontEndUserController extends Controller
         }
 
         $vars = $request->only('first_name', 'middle_name', 'last_name', 'email', 'user_type', 'username', 'password', 'user_type');
+        $fillable = [
+            'first_name'    => trim($vars['first_name']),
+            'middle_name'   => trim($vars['middle_name']),
+            'last_name' => trim($vars['last_name']),
+            'email'     => trim($vars['email']),
+            'user_type' => trim($vars['user_type']),
+            'username'  => trim($vars['username']),
+            'password'  => $vars['password'],
+        ];
+
         $messages = array(
             'email.unique' => 'Please use an email that is not in the database',
         );
         $attributeNames = array(
-            'email' => 'Email address',
-            'username' => 'Username',
-            'first_name' => 'First Name',
+            'email'     => 'Email address',
+            'username'  => 'Username',
+            'first_name'=> 'First Name',
             'last_name' => 'Last Name',
             'password'  => 'Password',
         );
-        $validator = Validator::make($vars, [
-            'first_name' => 'required|min:4|max:150',
+        $validator = Validator::make($fillable, [
+            'first_name'=> 'required|min:4|max:150',
             'last_name' => 'required|min:4|max:150',
-            'username' => 'required|min:6|max:30|unique:users,username',
-            'password' => 'required|min:8',
-            'email' => 'required|email|email|unique:users',
+            'username'  => 'required|min:6|max:30|unique:users,username',
+            'password'  => 'required|min:8',
+            'email'     => 'required|email|email|unique:users',
             'user_type' => 'required|exists:roles,id',
         ], $messages, $attributeNames);
 
@@ -210,18 +220,18 @@ class FrontEndUserController extends Controller
             );
         }
 
-        $credentials = $vars;
+        $credentials = $fillable;
         $credentials['password'] = bcrypt($credentials['password']);
         try {
             $user = User::create($credentials);
             // attach the roles to the new created user
-            $user->attachRole($vars['user_type']);
+            $user->attachRole($credentials['user_type']);
 
         } catch (Exception $e) {
             return Response::json(['error' => 'User already exists.'], Response::HTTP_CONFLICT);
         }
 
-        return $vars;
+        return $fillable;
     }
 
     /**
@@ -236,7 +246,7 @@ class FrontEndUserController extends Controller
         if (!$user || !$user->is_back_user()) {
             return redirect()->intended(route('admin/login'));
         }
-
+;
         $member = User::with('personalDetail')->where('id','=',$id)->get()->first();
         if (!$member || !$member->is_front_user()){
             return redirect(route('admin/error/not_found'));
@@ -1214,13 +1224,14 @@ class FrontEndUserController extends Controller
 
         $vars = $request->only('about_info', 'country_id', 'date_of_birth', 'first_name', 'last_name', 'middle_name', 'gender', 'mobile_number', 'personal_email');
 
-        $userVars = array(
-            'first_name'    => $vars["first_name"],
-            'last_name'     => $vars["last_name"],
-            'middle_name'   => $vars["middle_name"],
+        $userVars = [
+            'first_name'    => trim($vars["first_name"]),
+            'last_name'     => trim($vars["last_name"]),
+            'middle_name'   => trim($vars["middle_name"]),
             'gender'        => $vars['gender'],
             'country_id'    => $vars["country_id"],
-            'date_of_birth' => $vars["date_of_birth"]);
+            'date_of_birth' => $vars["date_of_birth"]
+        ];
 
         $validator = Validator::make($userVars, [
             'first_name'    => 'required|min:2|max:150',
@@ -1238,19 +1249,21 @@ class FrontEndUserController extends Controller
             ];
         }
         else{
-            $user->first_name  = $vars["first_name"];
-            $user->last_name   = $vars["last_name"];
-            $user->middle_name = $vars["middle_name"];
-            $user->country_id  = $vars["country_id"];
-            $user->gender      = $vars["gender"];
+            $user->first_name  = $userVars["first_name"];
+            $user->last_name   = $userVars["last_name"];
+            $user->middle_name = $userVars["middle_name"];
+            $user->country_id  = $userVars["country_id"];
+            $user->gender      = $userVars["gender"];
             $user->save();
         }
 
-        $personalData = array(  'personal_email'=> $vars['personal_email'],
-            'mobile_number' => $vars['mobile_number'],
+        $personalData = [
+            'personal_email'=> trim($vars['personal_email']),
+            'mobile_number' => trim($vars['mobile_number']),
             'date_of_birth' => $vars['date_of_birth'],
-            'about_info'    => $vars['about_info'],
-            'user_id'       => $user->id);
+            'about_info'    => trim($vars['about_info']),
+            'user_id'       => $user->id
+        ];
         $personalDetails = PersonalDetail::firstOrNew(array('user_id'=>$user->id));
         $personalData['date_of_birth'] = Carbon::createFromFormat('d-m-Y', $personalData['date_of_birth'])->toDateString();
         $personalDetails->fill($personalData);
@@ -2191,12 +2204,12 @@ class FrontEndUserController extends Controller
         }
 
         $credentials = [
-            'first_name'    => $vars['first_name'],
-            'middle_name'   => $vars['middle_name'],
-            'last_name'     => $vars['last_name'],
+            'first_name'    => trim($vars['first_name']),
+            'middle_name'   => trim($vars['middle_name']),
+            'last_name'     => trim($vars['last_name']),
             'gender'        => $vars['gender'],
-            'username'      => $vars['username'],
-            'email'         => $vars['email'],
+            'username'      => trim($vars['username']),
+            'email'         => trim($vars['email']),
             'password'      => $vars['password'],
             'country_id'    => $vars['country_id'],
             'status'        => 'active',
