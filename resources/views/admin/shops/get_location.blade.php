@@ -1689,9 +1689,6 @@
                 success: function(data){
                     if(data.success){
                         show_notification(data.title, data.message, 'lime', 3500, 0);
-                        setTimeout(function(){
-                            location.reload();
-                        },2500);
                     }
                     else{
                         show_notification(data.title, data.errors, 'ruby', 3500, 0);

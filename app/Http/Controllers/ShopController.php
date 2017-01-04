@@ -1258,7 +1258,9 @@ class ShopController extends Controller
         }
 
         $shop->set_system_option($vars['key'], $vars['value']);
-
-        return [];
+        return [
+            'success' => true,
+            'message' => 'Store/Location option successfully update',
+            'title'   => 'System Option Updated'];
     }
 }
