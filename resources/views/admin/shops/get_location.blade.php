@@ -215,9 +215,9 @@
                             <tr>
                                 <td> &nbsp; <b>Location financial profile</b> </td>
                                 <td> <select name="option_value" class="form-control input-inline input-medium input-sm" aria-invalid="false">
-                                        <option value="-1">Default</option>
-                                        <option value="1">SQF Norway</option>
-                                        <option value="2">Assaft bashed</option>
+                                        <option value="-1" {!! @$system_options['shop_finance_profile']==-1?'selected="selected"':'' !!}>Default</option>
+                                        <option value="1" {!! @$system_options['shop_finance_profile']==1?'selected="selected"':'' !!}>SQF Norway</option>
+                                        <option value="2" {!! @$system_options['shop_finance_profile']==2?'selected="selected"':'' !!}>Assaft bashed</option>
                                     </select>
                                     <input type="hidden" name="option_key" value="shop_finance_profile" />
                                     <a class="btn blue btn-sm update_system_option" >Update</a> </td>
@@ -225,9 +225,9 @@
                             <tr>
                                 <td> &nbsp; <b>Automatic Booking marked as Show</b> </td>
                                 <td> <select name="option_value" class="form-control input-inline input-medium input-sm" aria-invalid="false">
-                                        <option value="-1">Default</option>
-                                        <option value="1">Yes</option>
-                                        <option value="0">No</option>
+                                        <option value="-1" {!! @$system_options['automatic_bookings_mark_as_show']==-1?'selected="selected"':'' !!}>Default</option>
+                                        <option value="1" {!! @$system_options['automatic_bookings_mark_as_show']==1?'selected="selected"':'' !!}>Yes</option>
+                                        <option value="0" {!! @$system_options['automatic_bookings_mark_as_show']==0?'selected="selected"':'' !!}>No</option>
                                     </select>
                                     <input type="hidden" name="option_key" value="automatic_bookings_mark_as_show" />
                                     <a class="btn blue btn-sm update_system_option" >Update</a> </td>
@@ -1680,7 +1680,26 @@
         });
 
         function update_shop_options(key, value){
-
+            $.ajax({
+                url: '{{route('admin/shops/shop_system_option_update')}}',
+                type: "post",
+                data: {
+                    'shop_id':'{{$shopDetails->id}}',
+                    'key':key,
+                    'value': value
+                },
+                success: function(data){
+                    if(data.success){
+                        show_notification(data.title, data.message, 'lime', 3500, 0);
+                        setTimeout(function(){
+                            location.reload();
+                        },2500);
+                    }
+                    else{
+                        show_notification(data.title, data.errors, 'ruby', 3500, 0);
+                    }
+                }
+            });
         }
 
         $(".delete_shop_resource").on("click", function(){

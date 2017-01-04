@@ -140,9 +140,8 @@ class ShopController extends Controller
             return redirect()->intended(route('admin/login'));
         }
 
-        $shopDetails = ShopLocations::with('opening_hours')->find($id);
+        $shopDetails = ShopLocations::with('opening_hours')->with('systemOptions')->find($id);
         $shopAddress = Address::find($shopDetails->address_id);
-        $shopOpeningHours = [];
 
         $addressCountry = Countries::find($shopAddress->country_id);
         $shopAddress->countryName = $addressCountry->name;
@@ -191,6 +190,14 @@ class ShopController extends Controller
             }
         }
 
+        $shop_system_options = [];
+        if (sizeof($shopDetails->systemOptions)>0){
+            foreach ($shopDetails->systemOptions as $system_option){
+                //xdebug_var_dump($system_option);
+                $shop_system_options[$system_option->var_name] = $system_option->var_value;
+            }
+        }
+
         $breadcrumbs = [
             'Home'                => route('admin'),
             'All Shops/Locations' => route('admin/shops/locations/all'),
@@ -213,7 +220,8 @@ class ShopController extends Controller
             'opening_hours' => $shopHours,
             'resourceCategory' => $resourceCategories,
             'resourceList'  => $shopResources,
-            'vatRates'      => $vatRates
+            'vatRates'      => $vatRates,
+            'system_options'=> $shop_system_options
         ]);
     }
 
@@ -1227,5 +1235,30 @@ class ShopController extends Controller
             'products'      => $products,
             'categories'    => $categories
         ]);
+    }
+
+    public function system_option_update(Request $request){
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
+            return [
+                'success' => false,
+                'errors'  => 'You need to be logged in to access this function',
+                'title'   => 'Error authentication'
+            ];
+        }
+        $vars = $request->only('shop_id','key','value');
+
+        $shop = ShopLocations::where('id','=',$vars['shop_id'])->get()->first();
+        if (!$shop){
+            return [
+                'success' => false,
+                'errors'  => 'Shop Location could not be found',
+                'title'   => 'Shop Location Error'
+            ];
+        }
+
+        $shop->set_system_option($vars['key'], $vars['value']);
+
+        return [];
     }
 }

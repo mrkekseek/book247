@@ -50,5 +50,7 @@ class ShopSystemOption extends Model
         }
     }
 
-
+    public function shopLocation(){
+        return $this->belongsTo('App\ShopLocations','id','shop_location_id');
+    }
 }

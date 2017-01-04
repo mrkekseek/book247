@@ -3,9 +3,11 @@
 namespace App\Console\Commands;
 
 use App\BookingInvoice;
+use App\ShopLocations;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 use App\Booking;
+use Illuminate\Support\Facades\Config;
 
 class BookingsCheck extends Command
 {
@@ -40,47 +42,63 @@ class BookingsCheck extends Command
      */
     public function handle()
     {
-        $bookings = Booking::where('status','=','active')->get();
-        if ($bookings){
-            $updated_bookings = 0;
-            foreach($bookings as $booking){
-                // paid -   booking that has an invoice and is paid
-                // unpaid - booking that has an invoice and is not paid
-                // old -    booking that is membership free
+        $default_automatic_bookings_mark_as_show = Config::get('constants.globalWebsite.auto_show_status_change');
+        $shops = ShopLocations::get();
 
-                // we check all the starting dates and based on that we update the status
-                $currentTime = Carbon::now();
-                $bookingDate = Carbon::createFromFormat('Y-m-d H:i:s',$booking->date_of_booking.' '.$booking->booking_time_start);
-                if ($currentTime->lte($bookingDate)){
+        if ($shops){
+            foreach ($shops as $shop){
+                $shop_option = $shop->get_system_option('automatic_bookings_mark_as_show');
+
+                if ($shop_option===0 || (($shop_option===-1 || $shop_option===false ) && $default_automatic_bookings_mark_as_show===0)){
                     continue;
                 }
 
-                switch ($booking->payment_type) {
-                    case 'cash' :
-                        $invoiceID = $booking->invoice_id;
-                        $invoice = BookingInvoice::where('id','=',$invoiceID)->get()->first();
+                $bookings = Booking::where('status','=','active')->where('location_id','=',$shop->id)->get();
+                if ($bookings){
+                    $updated_bookings = 0;
+                    foreach($bookings as $booking){
+                        // paid -   booking that has an invoice and is paid
+                        // unpaid - booking that has an invoice and is not paid
+                        // old -    booking that is membership free
 
-                        if (!$invoice){
+                        // we check all the starting dates and based on that we update the status
+                        $currentTime = Carbon::now();
+                        $bookingDate = Carbon::createFromFormat('Y-m-d H:i:s',$booking->date_of_booking.' '.$booking->booking_time_start);
+                        if ($currentTime->lte($bookingDate)){
                             continue;
                         }
 
-                        if ($invoice->status == "completed"){
-                            $booking->status = 'paid';
-                        }
-                        else{
-                            $booking->status = 'unpaid';
+                        switch ($booking->payment_type) {
+                            case 'cash' :
+                                $invoiceID = $booking->invoice_id;
+                                $invoice = BookingInvoice::where('id','=',$invoiceID)->get()->first();
+
+                                if (!$invoice){
+                                    continue;
+                                }
+
+                                if ($invoice->status == "completed"){
+                                    $booking->status = 'paid';
+                                }
+                                else{
+                                    $booking->status = 'unpaid';
+                                }
+
+                                break;
+                            case 'membership' :
+                                $booking->status = 'old';
+                                break;
+                            case 'recurring':
+                                $booking->status = 'old';
+                                break;
                         }
 
-                        break;
-                    case 'membership' :
-                        $booking->status = 'old';
-                        break;
-                    case 'recurring':
-                        $booking->status = 'old';
-                        break;
+                        $booking->save();
+                        $updated_bookings++;
+                    }
+
+                    echo 'For shop : '.$shop->name.' we have '.$updated_bookings.' bookings! \r\n';
                 }
-
-                $booking->save();
             }
         }
     }

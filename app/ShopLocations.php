@@ -47,7 +47,7 @@ class ShopLocations extends Model
     }
 
     public function systemOptions(){
-        return $this->hasMany('App\ShopSystemOption','id','shop_location_id');
+        return $this->hasMany('App\ShopSystemOption','shop_location_id','id');
     }
 
     public static function rules($method, $id=0){

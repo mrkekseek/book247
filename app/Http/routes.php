@@ -337,6 +337,11 @@ Route::group(['middleware' => 'web'], function () {
         'as'    => 'admin/shops/inventory_and_transfer',
         'uses'  => 'ShopController@all_inventory_make_transfer'
     ]);
+
+    Route::post('admin/shops/shop_system_option_update', [
+        'as'    => 'admin/shops/shop_system_option_update',
+        'uses'  => 'ShopController@system_option_update'
+    ]);
     /** Stop Routes for Shops/Locations */
 
     /** Start Routes for Products Management */

@@ -6,7 +6,7 @@ return [
         'defaultCountryId' => 578,
         'baseUrl' => 'http://bookingsys/',
         'system_email' => 'booking_agent@book247.net',
-        'auto_show_status_change' => false
+        'auto_show_status_change' => 0
         // etc
     ],
     'finance' => [
