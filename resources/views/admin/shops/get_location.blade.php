@@ -216,8 +216,6 @@
                                 <td> &nbsp; <b>Location financial profile</b> </td>
                                 <td> <select name="option_value" class="form-control input-inline input-medium input-sm" aria-invalid="false">
                                         <option value="-1" {!! @$system_options['shop_finance_profile']==-1?'selected="selected"':'' !!}>Default</option>
-                                        <option value="1" {!! @$system_options['shop_finance_profile']==1?'selected="selected"':'' !!}>SQF Norway</option>
-                                        <option value="2" {!! @$system_options['shop_finance_profile']==2?'selected="selected"':'' !!}>Assaft bashed</option>
                                     </select>
                                     <input type="hidden" name="option_key" value="shop_finance_profile" />
                                     <a class="btn blue btn-sm update_system_option" >Update</a> </td>
