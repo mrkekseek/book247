@@ -61,11 +61,11 @@ class ShopLocations extends Model
             {
                 return [
                     'name'  => 'required|min:5|max:50|unique:shop_locations',
-                    'bank_acc_no'   => 'required|min:5',
+                    'bank_acc_no'   => '',
                     'phone' => 'required|min:5',
                     'fax'   => 'required|min:5',
                     'email' => 'required|email:true',
-                    'registered_no' => 'required|min:5|unique:shop_locations',
+                    'registered_no' => '',
                     'visibility'    => 'in:warehouse,public,pending,suspended',
                 ];
             }
@@ -74,11 +74,11 @@ class ShopLocations extends Model
             {
                 return [
                     'name'  => 'required|min:5|max:50|unique:shop_locations,name'.($id ? ','.$id.',id' : ''),
-                    'bank_acc_no'   => 'required|min:5',
+                    'bank_acc_no'   => '',
                     'phone' => 'required|min:5',
                     'fax'   => 'required|min:5',
                     'email' => 'required|email:true',
-                    'registered_no' => 'required|min:5|unique:shop_locations,registered_no'.($id ? ','.$id.',id' : ''),
+                    'registered_no' => '',
                     'visibility'    => 'in:warehouse,public,pending,suspended',
                 ];
             }

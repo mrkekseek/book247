@@ -99,20 +99,6 @@
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label class="col-md-3 control-label">Bank Account</label>
-                                    <div class="col-md-9">
-                                        <input type="text" name="shop_bank_acc_no" value="{{ $shopDetails->bank_acc_no }}" placeholder="Bank Account" class="form-control">
-                                        <span class="help-block"> Bank Account Number </span>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="col-md-3 control-label">Registered No.</label>
-                                    <div class="col-md-9">
-                                        <input type="text" name="shop_registration_no" value="{{ $shopDetails->registered_no }}" placeholder="Shop Registration Number" class="form-control">
-                                        <span class="help-block"> National Registration Number </span>
-                                    </div>
-                                </div>
-                                <div class="form-group">
                                     <label class="col-md-3 control-label">Visibility</label>
                                     <div class="col-md-9">
                                         <select name="visibility" class="form-control">

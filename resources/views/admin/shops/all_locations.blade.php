@@ -126,26 +126,6 @@
                                         </div>
                                     </div>
                                     <div class="form-group">
-                                        <label class="control-label col-md-4">Registered No.
-                                            <span class="required"> * </span>
-                                        </label>
-                                        <div class="col-md-7">
-                                            <div class="input-icon right">
-                                                <i class="fa"></i>
-                                                <input type="text" class="form-control input-sm" id="shop_reg_no" name="shop_reg_no" /> </div>
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="control-label col-md-4">Bank Acc. No.
-                                            <span class="required"> * </span>
-                                        </label>
-                                        <div class="col-md-7">
-                                            <div class="input-icon right">
-                                                <i class="fa"></i>
-                                                <input type="text" class="form-control input-sm" id="shop_bank_acc" name="shop_bank_acc" /> </div>
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
                                         <label class="control-label col-md-4">Phone
                                             <span class="required"> * </span>
                                         </label>
@@ -300,14 +280,6 @@
                         shop_email: {
                             email: true,
                             validate_email: true,
-                            required: true
-                        },
-                        shop_reg_no: {
-                            minlength: 5,
-                            required: true,
-                        },
-                        shop_bank_acc: {
-                            minlength: 5,
                             required: true
                         },
                         shop_phone: {
@@ -501,11 +473,11 @@
                 type: "post",
                 data: {
                     'name':         $('input[name=shop_name]').val(),
-                    'bank_acc_no':  $('input[name=shop_bank_acc]').val(),
+                    'bank_acc_no':  '',
                     'phone':        $('input[name=shop_phone]').val(),
                     'fax':          $('input[name=shop_fax]').val(),
                     'email':        $('input[name=shop_email]').val(),
-                    'registered_no':$('input[name=shop_reg_no]').val(),
+                    'registered_no':'',
 
                     'address1':     $('input[name=shop_address1]').val(),
                     'address2':     $('input[name=shop_address2]').val(),

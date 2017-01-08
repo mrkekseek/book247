@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateMembershipProductsTable extends Migration
+class AddFkCountryToFinancialProfilesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -12,13 +12,10 @@ class CreateMembershipProductsTable extends Migration
      */
     public function up()
     {
-        Schema::create('membership_products', function (Blueprint $table) {
+        Schema::table('financial_profiles', function (Blueprint $table) {
             $table->engine = 'InnoDB';
 
-            $table->increments('id');
-            $table->string('name', 150);
-            $table->string('color_code', 7);
-            $table->timestamps();
+            $table->foreign('country')->references('id')->on('countries');
         });
     }
 
@@ -29,6 +26,8 @@ class CreateMembershipProductsTable extends Migration
      */
     public function down()
     {
-        Schema::drop('membership_products');
+        Schema::table('financial_profiles', function (Blueprint $table) {
+            $table->dropForeign(['country']);
+        });
     }
 }
