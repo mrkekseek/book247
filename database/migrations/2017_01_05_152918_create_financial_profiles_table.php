@@ -25,7 +25,7 @@ class CreateFinancialProfilesTable extends Migration
             $table->string('city', 70);
             $table->string('postal_code', 25);
             $table->string('region', 75);
-            $table->integer('country')->unsigned()->nullable();
+            $table->integer('country')->length(11);
             $table->timestamps();
         });
     }

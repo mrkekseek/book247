@@ -14,7 +14,10 @@ class AddFkShopLocationToShopFinancialProfilesTable extends Migration
     {
         Schema::table('shop_financial_profiles', function (Blueprint $table) {
             $table->engine = 'InnoDB';
+
+            DB::statement('SET FOREIGN_KEY_CHECKS = 0');
             $table->foreign('shop_location_id')->references('id')->on('shop_locations');
+            DB::statement('SET FOREIGN_KEY_CHECKS = 1');
         });
     }
 

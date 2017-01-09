@@ -13,9 +13,9 @@ class AddFkCountryToFinancialProfilesTable extends Migration
     public function up()
     {
         Schema::table('financial_profiles', function (Blueprint $table) {
-            $table->engine = 'InnoDB';
-
+            DB::statement('SET FOREIGN_KEY_CHECKS = 0');
             $table->foreign('country')->references('id')->on('countries');
+            DB::statement('SET FOREIGN_KEY_CHECKS = 1');
         });
     }
 
