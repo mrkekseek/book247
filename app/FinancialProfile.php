@@ -6,10 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class FinancialProfile extends Model
 {
-    protected $table = 'financial_profile';
+    protected $table = 'financial_profiles';
     protected $primaryKey = 'id';
 
+    public static $message = array();
     public static $attributeNames = array(
+        'profile_name'  => 'Profile Name',
         'company_name'  => 'Company Name',
         'bank_name'     => 'Bank Name',
         'bank_account'  => 'Bank Account',
@@ -19,10 +21,11 @@ class FinancialProfile extends Model
         'city'          => 'City',
         'postal_code'   => 'Postal_code',
         'region'        => 'Region',
-        'country'       => 'Country'
+        'country_id'    => 'Country'
     );
 
     protected $fillable = array(
+        'profile_name',
         'company_name',
         'bank_name',
         'bank_account',
@@ -32,7 +35,7 @@ class FinancialProfile extends Model
         'city',
         'postal_code',
         'region',
-        'country',
+        'country_id',
     );
 
     public static function rules($method, $id=0){
@@ -45,35 +48,41 @@ class FinancialProfile extends Model
             case 'POST':
             {
                 return [
-                    'company_name'  => 'required',
+                    'profile_name'  => 'required|min:5|unique:financial_profiles',
+                    'company_name'  => 'required|min:3',
                     'bank_name'     => 'required|min:5',
                     'bank_account'  => 'required|min:5',
                     'organisation_number'  => 'required|min:3',
-                    'address1'      => 'required',
+                    'address1'      => 'required|min:5',
                     'address2'      => '',
-                    'city'          => 'required',
-                    'postal_code'   => 'required',
-                    'region'        => 'required',
-                    'country'       => 'required|exists:countries,id',
+                    'city'          => 'required|min:2',
+                    'postal_code'   => 'required|min:2',
+                    'region'        => 'required|min:2',
+                    'country_id'    => 'required|exists:countries,id',
                 ];
             }
             case 'PUT':
             case 'PATCH':
             {
                 return [
-                    'company_name'  => 'required',
+                    'profile_name'  => 'required|min:5|unique:financial_profiles,profile_name'.($id ? ','.$id.',id' : ''),
+                    'company_name'  => 'required|min:3',
                     'bank_name'     => 'required|min:5',
                     'bank_account'  => 'required|min:5',
                     'organisation_number'  => 'required|min:3',
-                    'address1'      => 'required',
+                    'address1'      => 'required|min:5',
                     'address2'      => '',
-                    'city'          => 'required',
-                    'postal_code'   => 'required',
-                    'region'        => 'required',
-                    'country'       => 'required|exists:countries,id',
+                    'city'          => 'required|min:2',
+                    'postal_code'   => 'required|min:2',
+                    'region'        => 'required|min:2',
+                    'country_id'    => 'required|exists:countries,id',
                 ];
             }
             default:break;
         }
+    }
+
+    public function country(){
+        return $this->belongsTo('Webpatser\Countries\Countries', 'country_id', 'id');
     }
 }

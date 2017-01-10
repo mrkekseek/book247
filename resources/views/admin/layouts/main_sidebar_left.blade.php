@@ -242,7 +242,7 @@
         @endif
 
         @if (Auth::user()->can('view-general-settings-menu'))
-        <li class="nav-item {{ in_array($in_sidebar, ['admin-settings-all_list','admin-settings-financial_profiles'])?'active open':'' }} ">
+        <li class="nav-item {{ in_array($in_sidebar, ['admin-settings-all_list','admin-settings-financial_profiles-add_new','admin-settings-financial_profiles-list_all','admin-settings-financial_profiles-view_edit'])?'active open':'' }} ">
             <a href="javascript:;" class="nav-link nav-toggle">
                 <i class="icon-shield"></i>
                 <span class="title"> General Settings </span>
@@ -254,11 +254,23 @@
                         <span class="title">List all settings</span>
                     </a>
                 </li>
-                <li class="nav-item {{ $in_sidebar=='admin-settings-financial_profiles'?'active open':'' }}">
-                    <a href="{{route('admin/settings/list_all')}}" class="nav-link ">
-                        <span class="title">Financial Profiles</span>
+                <li class="nav-item {{ $in_sidebar=='admin-settings-financial_profiles-add_new'?'active open':'' }}">
+                    <a href="{{route('admin/settings_financial_profiles/add')}}" class="nav-link ">
+                        <span class="title">Add Financial Profile</span>
                     </a>
                 </li>
+                <li class="nav-item {{ $in_sidebar=='admin-settings-financial_profiles-list_all'?'active open':'' }}">
+                    <a href="{{route('admin/settings_financial_profiles/list_all')}}" class="nav-link ">
+                        <span class="title">All Financial Profiles</span>
+                    </a>
+                </li>
+                @if ($in_sidebar=='admin-settings-financial_profiles-view_edit')
+                <li class="nav-item {{ $in_sidebar=='admin-settings-financial_profiles-view_edit'?'active open':'' }}">
+                    <a href="" class="nav-link ">
+                        <span class="title">Financial Profile Details</span>
+                    </a>
+                </li>
+                @endif
             </ul>
         </li>
         @endif

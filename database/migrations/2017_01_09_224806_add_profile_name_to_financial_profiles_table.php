@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AddFkCountryToFinancialProfilesTable extends Migration
+class AddProfileNameToFinancialProfilesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,8 @@ class AddFkCountryToFinancialProfilesTable extends Migration
     public function up()
     {
         Schema::table('financial_profiles', function (Blueprint $table) {
-            DB::statement('SET FOREIGN_KEY_CHECKS = 0');
-            $table->foreign('country_id')->references('id')->on('countries');
-            DB::statement('SET FOREIGN_KEY_CHECKS = 1');
+            $table->string('profile_name', 150);
+            $table->unique('profile_name');
         });
     }
 
@@ -27,7 +26,8 @@ class AddFkCountryToFinancialProfilesTable extends Migration
     public function down()
     {
         Schema::table('financial_profiles', function (Blueprint $table) {
-            $table->dropForeign(['country_id']);
+            $table->dropUnique(['profile_name']);
+            $table->dropColumn(['profile_name']);
         });
     }
 }
