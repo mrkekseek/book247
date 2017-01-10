@@ -155,7 +155,40 @@ class FinancialProfiles extends Controller
     }
 
     public function show_shop_financial_profile($id){
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
+            return redirect()->intended(route('admin/login'));
+        }
+        elseif (!$user->can('create-financial-profile')){
+            return redirect()->intended(route('admin/error/permission_denied'));
+        }
 
+        $profile = FinancialProfile::find($id);
+        if (!$profile){
+            return redirect(route('admin/error/not_found'));
+        }
+        $countries = Countries::orderBy('name')->get();
+
+        $breadcrumbs = [
+            'Home'              => route('admin'),
+            'Administration'    => route('admin'),
+            'Back End User'     => route('admin'),
+            'Permissions'        => '',
+        ];
+        $text_parts  = [
+            'title'     => 'Financial profile details',
+            'subtitle'  => '',
+            'table_head_text1' => 'Financial Profile - View/Edit'
+        ];
+        $sidebar_link = 'admin-settings-financial_profiles-view_edit';
+
+        return view('admin/settings/financial_profile_view', [
+            'breadcrumbs' => $breadcrumbs,
+            'text_parts'  => $text_parts,
+            'in_sidebar'  => $sidebar_link,
+            'profile'     => $profile,
+            'countries'   => $countries
+        ]);
     }
 
     public function edit_shop_financial_profile($id){

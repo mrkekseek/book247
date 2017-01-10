@@ -20,18 +20,7 @@
 @section('pageBodyClass','page-container-bg-solid page-header-fixed page-sidebar-closed-hide-logo')
 
 @section('pageContentBody')
-    <div class="page-content">
-        <!-- BEGIN PAGE HEAD-->
-        <div class="page-head">
-            <!-- BEGIN PAGE TITLE -->
-            <div class="page-title">
-                <h1>{!!$text_parts['title']!!}
-                    <small>{!!$text_parts['subtitle']!!}</small>
-                </h1>
-            </div>
-            <!-- END PAGE TITLE -->
-        </div>
-        <!-- END PAGE HEAD-->
+    <div class="page-content fix_padding_top_0">
         <!-- BEGIN PAGE BASE CONTENT -->
         <div class="row">
             <div class="col-md-12">
@@ -40,7 +29,7 @@
                         <div class="caption">
                             <i class="icon-equalizer font-red-sunglo"></i>
                             <span class="caption-subject font-red-sunglo bold uppercase">Financial profile</span>
-                            <span class="caption-helper">add details...</span>
+                            <span class="caption-helper">update details...</span>
                         </div>
                     </div>
                     <div class="portlet-body form">
@@ -131,7 +120,7 @@
                                     <div class="col-md-6">
                                         <div class="row">
                                             <div class="col-md-offset-3 col-md-9">
-                                                <button type="submit" class="btn green">Update Profile</button>
+                                                <button type="submit" class="btn green">Update Financial Profile</button>
                                                 <button type="button" class="btn default">Cancel</button>
                                             </div>
                                         </div>

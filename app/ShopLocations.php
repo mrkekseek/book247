@@ -170,4 +170,39 @@ class ShopLocations extends Model
             return false;
         }
     }
+
+    public function set_financial_profile($profile_id){
+        $financialProfile = FinancialProfile::where('id','=',$profile_id)->get()->first();
+        if (!$financialProfile){
+            if ($profile_id==-1){
+                $shopFinancialProfile = ShopFinancialProfile::where('shop_location_id','=',$this->id)->get()->first();
+                if ($shopFinancialProfile){
+                    $shopFinancialProfile->delete();
+                }
+
+                return true;
+            }
+            else{
+                return false;
+            }
+        }
+        else{
+            $shopFinanceProfile = ShopFinancialProfile::firstOrCreate(['shop_location_id'=>$this->id]);
+            $shopFinanceProfile->shop_location_id = $this->id;
+            $shopFinanceProfile->financial_profile_id = $financialProfile->id;
+            $shopFinanceProfile->save();
+
+            return true;
+        }
+    }
+
+    public function get_financial_profile(){
+        $shopFinancialProfile = ShopFinancialProfile::where('shop_location_id','=',$this->id)->get()->first();
+        if ($shopFinancialProfile){
+            return $shopFinancialProfile->financial_profile_id;
+        }
+        else{
+            return -1;
+        }
+    }
 }

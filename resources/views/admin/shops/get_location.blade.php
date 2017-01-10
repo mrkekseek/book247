@@ -201,7 +201,10 @@
                             <tr>
                                 <td> &nbsp; <b>Location financial profile</b> </td>
                                 <td> <select name="option_value" class="form-control input-inline input-medium input-sm" aria-invalid="false">
-                                        <option value="-1" {!! @$system_options['shop_finance_profile']==-1?'selected="selected"':'' !!}>Default</option>
+                                        <option value="-1" {!! $shopFinancialProfile==-1?'selected="selected"':'' !!}>Default</option>
+                                    @foreach ($financialProfiles as $singleProfile)
+                                        <option value="{{ $singleProfile->id }}" {!! $shopFinancialProfile==$singleProfile->id?'selected':'' !!}> {{ $singleProfile->profile_name }} </option>
+                                    @endforeach
                                     </select>
                                     <input type="hidden" name="option_key" value="shop_finance_profile" />
                                     <a class="btn blue btn-sm update_system_option" >Update</a> </td>

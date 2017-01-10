@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Address;
 use App\Booking;
 use App\CashTerminal;
+use App\FinancialProfile;
 use App\Product;
 use App\ProductCategories;
 use App\ShopLocations;
@@ -198,6 +199,9 @@ class ShopController extends Controller
             }
         }
 
+        $financialProfiles = FinancialProfile::orderBy('profile_name','asc')->get();
+        $shopFinancialProfile = $shopDetails->get_financial_profile();
+
         $breadcrumbs = [
             'Home'                => route('admin'),
             'All Shops/Locations' => route('admin/shops/locations/all'),
@@ -221,7 +225,9 @@ class ShopController extends Controller
             'resourceCategory' => $resourceCategories,
             'resourceList'  => $shopResources,
             'vatRates'      => $vatRates,
-            'system_options'=> $shop_system_options
+            'system_options'=> $shop_system_options,
+            'financialProfiles'     => $financialProfiles,
+            'shopFinancialProfile'  => $shopFinancialProfile
         ]);
     }
 
@@ -1257,10 +1263,25 @@ class ShopController extends Controller
             ];
         }
 
-        $shop->set_system_option($vars['key'], $vars['value']);
-        return [
-            'success' => true,
-            'message' => 'Store/Location option successfully update',
-            'title'   => 'System Option Updated'];
+        if ($vars['key']=='shop_finance_profile'){
+            $msg = $shop->set_financial_profile($vars['value']);
+        }
+        else{
+            $msg = $shop->set_system_option($vars['key'], $vars['value']);
+        }
+
+        if ($msg === true){
+            return [
+                'success' => true,
+                'message' => 'Store/Location option successfully update',
+                'title'   => 'System Option Updated'];
+        }
+        else{
+            return [
+                'success' => false,
+                'errors'  => 'Something went wrong with the update',
+                'title'   => 'Update Error'];
+        }
     }
+
 }
