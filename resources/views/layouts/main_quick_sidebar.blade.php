@@ -1,3 +1,4 @@
+@if (isset($show_quick_sidebar))
 <a href="javascript:;" class="page-quick-sidebar-toggler">
     <i class="icon-login"></i>
 </a>
@@ -557,3 +558,4 @@
         </div>
     </div>
 </div>
+@endif

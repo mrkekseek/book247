@@ -729,9 +729,9 @@
                 init: function () {
                     //sample #3
                     var options_sample3 = {
-                        endDate: '{{ \Carbon\Carbon::today()->addDays(7)->format('Y-m-d') }}',
+                        /*selectedDate: '{{ \Carbon\Carbon::today()->format('Y-m-d') }}',*/
                         startDate:'{{ \Carbon\Carbon::today()->format('Y-m-d') }}',
-                        selectedDate: '{{ \Carbon\Carbon::today()->format('Y-m-d') }}',
+                        endDate: '{{ \Carbon\Carbon::today()->addDays(7)->format('Y-m-d') }}',
                         showOffDays:false,
                         size:'large',
                         itemWidth:45,
