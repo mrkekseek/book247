@@ -58,9 +58,9 @@
                                     <td> {{$key}} </td>
                                     <td>
                                     @if (Auth::user()->can('manage-membership-plans'))
-                                        <a href="{{ route('admin.membership_plan.edit',['id' => $plan['id']]) }}"> Edit {{ $plan['name'] }} </a>
+                                        <a href="{{ route('admin.membership_plan.edit',['id' => $plan['id']]) }}"> {{ $plan['name'] }} </a>
                                     @else
-                                        <a href="{{ route('admin.membership_plan.show',['id' => $plan['id']]) }}"> View {{ $plan['name'] }} </a>
+                                        <a href="{{ route('admin.membership_plan.show',['id' => $plan['id']]) }}"> {{ $plan['name'] }} </a>
                                     @endif
                                     </td>
                                     <td> {{ $plan['price'] }} </td>

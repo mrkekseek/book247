@@ -54,9 +54,9 @@
                                     <td> {{$key}} </td>
                                     <td>
                                     @if (Auth::user()->can('manage-calendar-products'))
-                                        <a href="{{ route('admin/membership_products/edit',['id' => $product['id']]) }}"> Edit {{ $product['name'] }} </a>
+                                        <a href="{{ route('admin/membership_products/edit',['id' => $product['id']]) }}"> {{ $product['name'] }} </a>
                                     @else
-                                        <a href="{{ route('admin/membership_products/view',['id' => $product['id']]) }}"> View {{ $product['name'] }} </a>
+                                        <a href="{{ route('admin/membership_products/view',['id' => $product['id']]) }}"> {{ $product['name'] }} </a>
                                     @endif
                                     </td>
                                     <td class="center"> <div style="width:25%; height:25px; background-color:{{ $product['color_code'] }};"></div>  </td>
@@ -200,3 +200,5 @@
         });
     </script>
 @endsection
+
+ALTER USER 'root'@'localhost' IDENTIFIED BY 'new_password', 'root'@'localhost' PASSWORD EXPIRE NEVER

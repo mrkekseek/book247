@@ -2463,15 +2463,17 @@ class FrontEndUserController extends Controller
             return redirect()->intended(route('admin/error/permission_denied'));
         }
 
-        $vars = $request->only('_token','_method','start_date','membership_type');
+        $vars = $request->only('_token','_method','start_date','membership_type','sign_location');
 
         $allRows = [];
         $members = [];
         $nr = 1;
         $selectMembership = 1;
+        $selectLocation = -1;
         $date_start = '';
         $returnMessages = [];
         $memberships = MembershipPlan::orderBy('name','ASC')->get();
+        $shopLocations = ShopLocations::whereIn('visibility',['public','pending'])->orderBy('name','asc')->get();
 
         if ($request->hasFile('clients_import_list')){
             if ($request->file('clients_import_list')->isValid()){
@@ -2509,6 +2511,7 @@ class FrontEndUserController extends Controller
                 }
                 //xdebug_var_dump($allRows);
                 $selectMembership = $vars['membership_type'];
+                $selectLocation = $vars['sign_location'];
                 $date_start = $vars['start_date'];
             }
             else{
@@ -2517,11 +2520,16 @@ class FrontEndUserController extends Controller
         }
         elseif(isset($vars['_method']) && $vars['_method']=='PUT') {
             $vars = $request->toArray();
+
             try{
                 $the_date = Carbon::createFromFormat('d-m-Y', $vars['date_start'])->format('Y-m-d');
             }
             catch (\Exception $ex){
                 $the_date = Carbon::today()->format('Y-m-d');
+            }
+
+            if (isset($vars['sign_location'])){
+                $signLocation = ShopLocations::where('id','=',$vars['sign_location'])->whereIn('visibility',['public','pending','suspended'])->get()->first();
             }
 
             $fname      = 999;
@@ -2537,6 +2545,13 @@ class FrontEndUserController extends Controller
             $uaddress   = 999;
             $upostalcode= 999;
             $ucity      = 999;
+
+            $constart   = 999;
+            $connumber  = 999;
+            $cusnumber  = 999;
+            $cuscard    = 999;
+
+            $canceldate = 999;
 
             // get how lines are ordered
             foreach($vars['col_explain'] as $key=>$val){
@@ -2580,6 +2595,21 @@ class FrontEndUserController extends Controller
                     case 'city' :
                         $ucity = $key;
                         break;
+                    case 'contract_start' :
+                        $constart   = $key;
+                        break;
+                    case 'contract_number' :
+                        $connumber  = $key;
+                        break;
+                    case 'customer_number' :
+                        $cusnumber  = $key;
+                        break;
+                    case 'customer_card' :
+                        $cuscard    = $key;
+                        break;
+                    case 'cancellation_date' :
+                        $canceldate = $key;
+                        break;
                 }
             }
 
@@ -2596,22 +2626,44 @@ class FrontEndUserController extends Controller
                     $dob = Carbon::today()->format('Y-m-d');
                 }
 
+                try{
+                    $cancellation_date = Carbon::createFromFormat('Y-m-d H:i:s', @$vars['col_'.$i][$canceldate]);
+                }
+                catch(\Exception $ex){
+                    $cancellation_date = '';
+                }
+
+                $custom_start_date = '';
+                if (isset($vars['col_'.$i][$constart])) {
+                    try {
+                        $custom_start_date = Carbon::createFromFormat('Y-m-d H:i:s', $vars['col_' . $i][$constart])->format('Y-m-d');
+                    }
+                    catch (\Exception $ex) { }
+                }
+
                 $importUser = [
-                    'first_name'        => @$vars['col_'.$i][$fname],
-                    'middle_name'       => @$vars['col_'.$i][$mname],
-                    'last_name'         => @$vars['col_'.$i][$lname],
-                    'email'             => @$vars['col_'.$i][$email],
+                    'first_name'        => ucfirst(strtolower(trim(@$vars['col_'.$i][$fname]))),
+                    'middle_name'       => ucfirst(strtolower(trim(@$vars['col_'.$i][$mname]))),
+                    'last_name'         => ucfirst(strtolower(trim(@$vars['col_'.$i][$lname]))),
+                    'email'             => strtolower(trim(@$vars['col_'.$i][$email])),
                     'country_id'        => Config::get('constants.globalWebsite.defaultCountryId'),
-                    'phone_number'      => @$vars['col_'.$i][$phone],
-                    'password'          => strlen(@$vars['col_'.$i][$passwd])>7?@$vars['col_'.$i][$passwd]:@$vars['col_'.$i][$phone],
+                    'phone_number'      => trim(@$vars['col_'.$i][$phone]),
+                    'password'          => strlen(@$vars['col_'.$i][$passwd])>7?@$vars['col_'.$i][$passwd]:trim(@$vars['col_'.$i][$phone]),
                     'membership_plan'   => @$vars['membership_'.$i],
-                    'username'          => @$vars['col_'.$i][$uname],
+                    'username'          => trim(@$vars['col_'.$i][$uname]),
                     'user_type'         => @$vars['col_'.$i][$utype],
                     'date_of_birth'     => $dob,
-                    'about_info'        => isset($vars['col_'.$i][$uinfo])?$vars['col_'.$i][$uinfo]:'',
-                    'address1'          => @$vars['col_'.$i][$uaddress],
-                    'postal_code'       => @$vars['col_'.$i][$upostalcode],
-                    'city'              => @$vars['col_'.$i][$ucity],
+                    'about_info'        => isset($vars['col_'.$i][$uinfo])?strtolower(trim($vars['col_'.$i][$uinfo])):'',
+                    'address1'          => strtolower(trim(@$vars['col_'.$i][$uaddress])),
+                    'postal_code'       => trim(@$vars['col_'.$i][$upostalcode]),
+                    'city'              => ucfirst(strtolower(trim(@$vars['col_'.$i][$ucity]))),
+
+                    'contract_start'    => @$custom_start_date,
+                    'contract_number'   => trim(@$vars['col_'.$i][$connumber]),
+                    'customer_number'   => trim(@$vars['col_'.$i][$cusnumber]),
+                    'customer_card'     => trim(@$vars['col_'.$i][$cuscard]),
+
+                    'cancellation_date' => $cancellation_date
                 ];
                 $members[] = $importUser;
             }
@@ -2626,6 +2678,7 @@ class FrontEndUserController extends Controller
             }
 
             foreach ($members as $member){
+                //xdebug_var_dump($member); exit;
                 // add member
                 $newUser = FrontEndUserController::register_new_client($member);
 
@@ -2689,12 +2742,77 @@ class FrontEndUserController extends Controller
 
                     // assign membership
                     // Default free plan is the first plan
-                    if (strlen($member['membership_plan'])>1 && isset($arrayPlan[$member['membership_plan']])){
+                    if (strlen($member['membership_plan'])>0 && isset($arrayPlan[$member['membership_plan']])){
                         // we have a plan and we apply it
-                        //xdebug_var_dump($new_member);
-                        $new_member->attach_membership_plan($arrayPlan[$member['membership_plan']]['full_plan'], $user, $the_date);
+                        $new_member->attach_membership_plan($arrayPlan[$member['membership_plan']]['full_plan'], $user, $member['contract_start']!=''?$member['contract_start']:$the_date);
 
                         $msg.= 'Membership plan assigned : '.$arrayPlan[$member['membership_plan']]['full_plan']->name.' <br />';
+
+                        if($member['cancellation_date']!==''){
+                            // we get the active membership plan
+                            $new_plan = UserMembership::where('user_id','=',$new_member->id)->whereIn('status',['active','suspended'])->orderBy('created_at','desc')->get()->first();
+
+                            // get list of pending invoices
+                            $allPendingInvoices = UserMembershipInvoicePlanning::where('user_membership_id','=',$new_plan->id)->where('status','!=','old')->orderBy('issued_date','asc')->get();
+                            echo 'All invoices <br />';
+                            xdebug_var_dump($allPendingInvoices);
+                            foreach($allPendingInvoices as $singleInvoice){
+                                $cancellation_invoice = $singleInvoice;
+                                if (Carbon::createFromFormat('Y-m-d',$singleInvoice->issued_date)->lte($member['cancellation_date']) && Carbon::createFromFormat('Y-m-d',$singleInvoice->last_active_date)->gte($member['cancellation_date'])){
+                                    break;
+                                }
+                                else{
+                                    unset($cancellation_invoice);
+                                }
+                            }
+                            echo 'Last invoice <br />';
+                            xdebug_var_dump($cancellation_invoice);
+
+                            // we add the cancellation action to that
+                            if (isset($cancellation_invoice)){
+                                $new_member->cancel_membership_plan($new_plan, $cancellation_invoice->issued_date, $cancellation_invoice->last_active_date);
+                                $msg.= 'Membership plan cancellation added : last day - '.$cancellation_invoice->last_active_date.'; cancellation day - '.$cancellation_invoice->issued_date.' <br />';
+                            }
+                            else{
+                                $msg.= 'Membership plan cancellation error NOT ADDED <br />';
+                            }
+                            unset($cancellation_invoice);
+                        }
+                    }
+                    else{
+                        $msg.='No plan assigned : #'.$member['membership_plan'].'# - @'.isset($arrayPlan[$member['membership_plan']]).'@<br />';
+                    }
+
+                    if (strlen($member['customer_card'])>0){
+                        $access_card_fill = [
+                            'user_id'   => $new_member->id,
+                            'key_no'    => $member['customer_card'],
+                            'status'    => 'active',
+                        ];
+
+                        $validator = Validator::make($access_card_fill, UserAccessCard::rules('POST'), UserAccessCard::$message, UserAccessCard::$attributeNames);
+                        if ($validator->fails()){
+                            $msg.='Access card error : '.$member['customer_card'].'<br />';
+                        }
+                        else {
+                            // check if access card already assigned
+                            $check_card = UserAccessCard::where('key_no','=',$access_card_fill['key_no'])->where('status','=','active')->get()->first();
+                            if ($check_card){
+                                $msg.='Access card NOT ASSIGNED - already assigned to another member : '.$member['customer_card'].'<br />';
+                            }
+                            else{
+                                $access_card = UserAccessCard::firstOrNew(['user_id'=>$new_member->id]);
+                                $access_card->fill($access_card_fill);
+                                $access_card->save();
+
+                                $msg.='Access card assigned : '.$member['customer_card'].'<br />';
+                            }
+                        }
+                    }
+
+                    if ($signLocation){
+                        $new_member->set_general_setting('settings_preferred_location',  $signLocation->id);
+                        $new_member->set_general_setting('registration_signed_location', $signLocation->id);
                     }
                 }
 
@@ -2729,7 +2847,9 @@ class FrontEndUserController extends Controller
             'selectedMembership'=> $selectMembership,
             'date_start'        => $date_start,
             'importedMembers'   => $members,
-            'returnMessages'    => $returnMessages
+            'returnMessages'    => $returnMessages,
+            'shopLocations'     => $shopLocations,
+            'selectedLocation'  => $selectLocation
         ]);
     }
 
