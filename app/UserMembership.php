@@ -170,11 +170,19 @@ class UserMembership extends Model
 
         if ($day_start==false){
             $day_start = Carbon::today();
-            $day_stop  = Carbon::today()->addMonths($plan->binding_period);
+            $day_stop  = Carbon::today()->addMonthsNoOverflow($plan->binding_period);
         }
         else{
             $day_start = Carbon::createFromFormat('Y-m-d H:i:s', $day_start.' 00:00:00');
-            $day_stop  = Carbon::instance($day_start)->addMonths($plan->binding_period);
+            $day_stop  = Carbon::instance($day_start)->addMonthsNoOverflow($plan->binding_period);
+
+            $monthsToAdd = Carbon::today()->diffInMonths($day_stop->copy());
+            echo 'Months to add ['.$plan->sign_out_period.'] : '.$day_stop->format('Y-m-d').' / '.Carbon::today()->format('Y-m-d').'<br />';
+            xdebug_var_dump($monthsToAdd);
+            if ($monthsToAdd>=0){
+                $day_stop->addMonthsNoOverflow($monthsToAdd+($plan->sign_out_period - 1));
+                echo 'Day stop update ['.($monthsToAdd+($plan->sign_out_period - 1)).'] : '.$day_stop->format('Y-m-d').'<br />';
+            }
         }
 
         $fillable = [

@@ -46,6 +46,10 @@ class ShopLocations extends Model
         return $this->hasMany('App\ShopResource', 'location_id', 'id');
     }
 
+    public function systemOptions(){
+        return $this->hasMany('App\ShopSystemOption','shop_location_id','id');
+    }
+
     public static function rules($method, $id=0){
         switch($method){
             case 'GET':
@@ -57,11 +61,11 @@ class ShopLocations extends Model
             {
                 return [
                     'name'  => 'required|min:5|max:50|unique:shop_locations',
-                    'bank_acc_no'   => 'required|min:5',
+                    'bank_acc_no'   => '',
                     'phone' => 'required|min:5',
                     'fax'   => 'required|min:5',
                     'email' => 'required|email:true',
-                    'registered_no' => 'required|min:5|unique:shop_locations',
+                    'registered_no' => '',
                     'visibility'    => 'in:warehouse,public,pending,suspended',
                 ];
             }
@@ -70,11 +74,11 @@ class ShopLocations extends Model
             {
                 return [
                     'name'  => 'required|min:5|max:50|unique:shop_locations,name'.($id ? ','.$id.',id' : ''),
-                    'bank_acc_no'   => 'required|min:5',
+                    'bank_acc_no'   => '',
                     'phone' => 'required|min:5',
                     'fax'   => 'required|min:5',
                     'email' => 'required|email:true',
-                    'registered_no' => 'required|min:5|unique:shop_locations,registered_no'.($id ? ','.$id.',id' : ''),
+                    'registered_no' => '',
                     'visibility'    => 'in:warehouse,public,pending,suspended',
                 ];
             }
@@ -138,5 +142,67 @@ class ShopLocations extends Model
         }
 
         return $hours;
+    }
+
+    public function set_system_option($key, $value){
+        try {
+            $fillable = [
+                'shop_location_id'  => $this->id,
+                'var_name'          => $key,
+            ];
+            $systemSetting = ShopSystemOption::firstOrNew($fillable);
+            $systemSetting->var_value = $value;
+            $systemSetting->save();
+
+            return true;
+        }
+        catch (\Exception $ex){
+            return false;
+        }
+    }
+
+    public function get_system_option($key){
+        $setting = ShopSystemOption::where('shop_location_id','=',$this->id)->where('var_name','=',$key)->get()->first();
+        if ($setting){
+            return $setting->var_value;
+        }
+        else{
+            return false;
+        }
+    }
+
+    public function set_financial_profile($profile_id){
+        $financialProfile = FinancialProfile::where('id','=',$profile_id)->get()->first();
+        if (!$financialProfile){
+            if ($profile_id==-1){
+                $shopFinancialProfile = ShopFinancialProfile::where('shop_location_id','=',$this->id)->get()->first();
+                if ($shopFinancialProfile){
+                    $shopFinancialProfile->delete();
+                }
+
+                return true;
+            }
+            else{
+                return false;
+            }
+        }
+        else{
+            $shopFinanceProfile = ShopFinancialProfile::firstOrCreate(['shop_location_id'=>$this->id]);
+            $shopFinanceProfile->shop_location_id = $this->id;
+            $shopFinanceProfile->financial_profile_id = $financialProfile->id;
+            $shopFinanceProfile->save();
+
+            return true;
+        }
+    }
+
+    public function get_financial_profile(){
+        $shopFinancialProfile = ShopFinancialProfile::where('shop_location_id','=',$this->id)->get()->first();
+        if ($shopFinancialProfile){
+            return $shopFinancialProfile->financial_profile_id;
+        }
+        else{
+            return -1;
+        }
     }
 }

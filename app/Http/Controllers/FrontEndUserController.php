@@ -132,6 +132,7 @@ class FrontEndUserController extends Controller
 
         $role = Role::where('name','=','front-user')->get()->first();
         $memberships = MembershipPlan::where('status','=','active')->where('id','!=','1')->get();
+        $shop_locations = ShopLocations::whereIn('visibility',['public','pending'])->get();
 
         $breadcrumbs = [
             'Home'              => route('admin'),
@@ -153,7 +154,8 @@ class FrontEndUserController extends Controller
             'in_sidebar'    => $sidebar_link,
             'role'          => $role,
             'memberships'   => $memberships,
-            'countries'     => $countries
+            'countries'     => $countries,
+            'shop_locations'=> $shop_locations
         ]);
     }
 
@@ -181,22 +183,32 @@ class FrontEndUserController extends Controller
         }
 
         $vars = $request->only('first_name', 'middle_name', 'last_name', 'email', 'user_type', 'username', 'password', 'user_type');
+        $fillable = [
+            'first_name'    => trim($vars['first_name']),
+            'middle_name'   => trim($vars['middle_name']),
+            'last_name' => trim($vars['last_name']),
+            'email'     => trim($vars['email']),
+            'user_type' => trim($vars['user_type']),
+            'username'  => trim($vars['username']),
+            'password'  => $vars['password'],
+        ];
+
         $messages = array(
             'email.unique' => 'Please use an email that is not in the database',
         );
         $attributeNames = array(
-            'email' => 'Email address',
-            'username' => 'Username',
-            'first_name' => 'First Name',
+            'email'     => 'Email address',
+            'username'  => 'Username',
+            'first_name'=> 'First Name',
             'last_name' => 'Last Name',
             'password'  => 'Password',
         );
-        $validator = Validator::make($vars, [
-            'first_name' => 'required|min:4|max:150',
+        $validator = Validator::make($fillable, [
+            'first_name'=> 'required|min:4|max:150',
             'last_name' => 'required|min:4|max:150',
-            'username' => 'required|min:6|max:30|unique:users,username',
-            'password' => 'required|min:8',
-            'email' => 'required|email|email|unique:users',
+            'username'  => 'required|min:6|max:30|unique:users,username',
+            'password'  => 'required|min:8',
+            'email'     => 'required|email|email|unique:users',
             'user_type' => 'required|exists:roles,id',
         ], $messages, $attributeNames);
 
@@ -208,18 +220,18 @@ class FrontEndUserController extends Controller
             );
         }
 
-        $credentials = $vars;
+        $credentials = $fillable;
         $credentials['password'] = bcrypt($credentials['password']);
         try {
             $user = User::create($credentials);
             // attach the roles to the new created user
-            $user->attachRole($vars['user_type']);
+            $user->attachRole($credentials['user_type']);
 
         } catch (Exception $e) {
             return Response::json(['error' => 'User already exists.'], Response::HTTP_CONFLICT);
         }
 
-        return $vars;
+        return $fillable;
     }
 
     /**
@@ -234,7 +246,7 @@ class FrontEndUserController extends Controller
         if (!$user || !$user->is_back_user()) {
             return redirect()->intended(route('admin/login'));
         }
-
+;
         $member = User::with('personalDetail')->where('id','=',$id)->get()->first();
         if (!$member || !$member->is_front_user()){
             return redirect(route('admin/error/not_found'));
@@ -689,6 +701,8 @@ class FrontEndUserController extends Controller
         }
         $membership_plans = MembershipPlan::where('id','!=','1')->where('status','=','active')->get()->sortBy('name');
 
+        $locations = ShopLocations::whereIn('visibility',['public','pending','suspended'])->orderBy('name','ASC')->get();
+
         $breadcrumbs = [
             'Home'              => route('admin'),
             'Administration'    => route('admin'),
@@ -724,7 +738,8 @@ class FrontEndUserController extends Controller
             'invoiceCancellation'   => $invoiceCancellation,
             'invoiceFreeze'         => $invoiceFreeze,
             'canCancel'     => $canCancel,
-            'canFreeze'     => $canFreeze
+            'canFreeze'     => $canFreeze,
+            'locations'     => $locations
         ]);
     }
 
@@ -1209,13 +1224,14 @@ class FrontEndUserController extends Controller
 
         $vars = $request->only('about_info', 'country_id', 'date_of_birth', 'first_name', 'last_name', 'middle_name', 'gender', 'mobile_number', 'personal_email');
 
-        $userVars = array(
-            'first_name'    => $vars["first_name"],
-            'last_name'     => $vars["last_name"],
-            'middle_name'   => $vars["middle_name"],
+        $userVars = [
+            'first_name'    => trim($vars["first_name"]),
+            'last_name'     => trim($vars["last_name"]),
+            'middle_name'   => trim($vars["middle_name"]),
             'gender'        => $vars['gender'],
             'country_id'    => $vars["country_id"],
-            'date_of_birth' => $vars["date_of_birth"]);
+            'date_of_birth' => $vars["date_of_birth"]
+        ];
 
         $validator = Validator::make($userVars, [
             'first_name'    => 'required|min:2|max:150',
@@ -1233,19 +1249,21 @@ class FrontEndUserController extends Controller
             ];
         }
         else{
-            $user->first_name  = $vars["first_name"];
-            $user->last_name   = $vars["last_name"];
-            $user->middle_name = $vars["middle_name"];
-            $user->country_id  = $vars["country_id"];
-            $user->gender      = $vars["gender"];
+            $user->first_name  = $userVars["first_name"];
+            $user->last_name   = $userVars["last_name"];
+            $user->middle_name = $userVars["middle_name"];
+            $user->country_id  = $userVars["country_id"];
+            $user->gender      = $userVars["gender"];
             $user->save();
         }
 
-        $personalData = array(  'personal_email'=> $vars['personal_email'],
-            'mobile_number' => $vars['mobile_number'],
+        $personalData = [
+            'personal_email'=> trim($vars['personal_email']),
+            'mobile_number' => trim($vars['mobile_number']),
             'date_of_birth' => $vars['date_of_birth'],
-            'about_info'    => $vars['about_info'],
-            'user_id'       => $user->id);
+            'about_info'    => trim($vars['about_info']),
+            'user_id'       => $user->id
+        ];
         $personalDetails = PersonalDetail::firstOrNew(array('user_id'=>$user->id));
         $personalData['date_of_birth'] = Carbon::createFromFormat('d-m-Y', $personalData['date_of_birth'])->toDateString();
         $personalDetails->fill($personalData);
@@ -2135,7 +2153,7 @@ class FrontEndUserController extends Controller
 
         $vars = $request->only('first_name', 'middle_name', 'last_name', 'gender', 'email', 'phone_number', 'dob', 'password', 'rpassword', 'username', 'user_type',
             'address1', 'address2', 'city', 'adr_country_id', 'postal_code', 'region',
-            'membership_plan', 'start_date'); //exit;
+            'membership_plan', 'start_date', 'sign_location'); //exit;
 
         if (!isset($vars['middle_name'])){
             $vars['middle_name'] = '';
@@ -2178,13 +2196,20 @@ class FrontEndUserController extends Controller
             ];
         }
 
+        if (isset($vars['sign_location'])){
+            $signLocation = ShopLocations::where('id','=',$vars['sign_location'])->whereIn('visibility',['public','pending'])->get()->first();
+        }
+        else{
+            $signLocation = ShopLocations::whereIn('visibility',['public','pending'])->orderBy('created_at','ASC')->get()->first();
+        }
+
         $credentials = [
-            'first_name'    => $vars['first_name'],
-            'middle_name'   => $vars['middle_name'],
-            'last_name'     => $vars['last_name'],
+            'first_name'    => trim($vars['first_name']),
+            'middle_name'   => trim($vars['middle_name']),
+            'last_name'     => trim($vars['last_name']),
             'gender'        => $vars['gender'],
-            'username'      => $vars['username'],
-            'email'         => $vars['email'],
+            'username'      => trim($vars['username']),
+            'email'         => trim($vars['email']),
             'password'      => $vars['password'],
             'country_id'    => $vars['country_id'],
             'status'        => 'active',
@@ -2207,6 +2232,7 @@ class FrontEndUserController extends Controller
 
         try {
             $user = User::create($credentials);
+            $user->attachRole($userType);
 
             $personalData = [
                 'personal_email'=> $vars['email'],
@@ -2273,12 +2299,13 @@ class FrontEndUserController extends Controller
 
                     @$user->detachAllRoles();
                     $user->attachRole($memberRole);
-                } else {
-                    $user->attachRole($userType);
                 }
             }
-            else{
-                $user->attachRole($userType);
+
+            // preferred location + sign in location
+            if ($signLocation){
+                $user->set_general_setting('settings_preferred_location', $signLocation->id);
+                $user->set_general_setting('registration_signed_location', $signLocation->id);
             }
 
             return [
@@ -2401,14 +2428,15 @@ class FrontEndUserController extends Controller
         $vars = $request->only('general_settings');
         if (sizeof($vars['general_settings'])>0){
             foreach($vars['general_settings'] as $key=>$val){
-                $fillable = [
+                $user->set_general_setting($key, $val);
+                /*$fillable = [
                     'user_id'   => $user->id,
                     'var_name'  => $key
                 ];
 
                 $storeSetting = UserSettings::firstOrNew($fillable);
                 $storeSetting->var_value = $val;
-                $storeSetting->save();
+                $storeSetting->save();*/
             }
 
             return [
@@ -2435,15 +2463,17 @@ class FrontEndUserController extends Controller
             return redirect()->intended(route('admin/error/permission_denied'));
         }
 
-        $vars = $request->only('_token','_method','start_date','membership_type');
+        $vars = $request->only('_token','_method','start_date','membership_type','sign_location');
 
         $allRows = [];
         $members = [];
         $nr = 1;
         $selectMembership = 1;
+        $selectLocation = -1;
         $date_start = '';
         $returnMessages = [];
         $memberships = MembershipPlan::orderBy('name','ASC')->get();
+        $shopLocations = ShopLocations::whereIn('visibility',['public','pending'])->orderBy('name','asc')->get();
 
         if ($request->hasFile('clients_import_list')){
             if ($request->file('clients_import_list')->isValid()){
@@ -2481,6 +2511,7 @@ class FrontEndUserController extends Controller
                 }
                 //xdebug_var_dump($allRows);
                 $selectMembership = $vars['membership_type'];
+                $selectLocation = $vars['sign_location'];
                 $date_start = $vars['start_date'];
             }
             else{
@@ -2489,11 +2520,16 @@ class FrontEndUserController extends Controller
         }
         elseif(isset($vars['_method']) && $vars['_method']=='PUT') {
             $vars = $request->toArray();
+
             try{
                 $the_date = Carbon::createFromFormat('d-m-Y', $vars['date_start'])->format('Y-m-d');
             }
             catch (\Exception $ex){
                 $the_date = Carbon::today()->format('Y-m-d');
+            }
+
+            if (isset($vars['sign_location'])){
+                $signLocation = ShopLocations::where('id','=',$vars['sign_location'])->whereIn('visibility',['public','pending','suspended'])->get()->first();
             }
 
             $fname      = 999;
@@ -2509,6 +2545,13 @@ class FrontEndUserController extends Controller
             $uaddress   = 999;
             $upostalcode= 999;
             $ucity      = 999;
+
+            $constart   = 999;
+            $connumber  = 999;
+            $cusnumber  = 999;
+            $cuscard    = 999;
+
+            $canceldate = 999;
 
             // get how lines are ordered
             foreach($vars['col_explain'] as $key=>$val){
@@ -2552,6 +2595,21 @@ class FrontEndUserController extends Controller
                     case 'city' :
                         $ucity = $key;
                         break;
+                    case 'contract_start' :
+                        $constart   = $key;
+                        break;
+                    case 'contract_number' :
+                        $connumber  = $key;
+                        break;
+                    case 'customer_number' :
+                        $cusnumber  = $key;
+                        break;
+                    case 'customer_card' :
+                        $cuscard    = $key;
+                        break;
+                    case 'cancellation_date' :
+                        $canceldate = $key;
+                        break;
                 }
             }
 
@@ -2568,22 +2626,44 @@ class FrontEndUserController extends Controller
                     $dob = Carbon::today()->format('Y-m-d');
                 }
 
+                try{
+                    $cancellation_date = Carbon::createFromFormat('Y-m-d H:i:s', @$vars['col_'.$i][$canceldate]);
+                }
+                catch(\Exception $ex){
+                    $cancellation_date = '';
+                }
+
+                $custom_start_date = '';
+                if (isset($vars['col_'.$i][$constart])) {
+                    try {
+                        $custom_start_date = Carbon::createFromFormat('Y-m-d H:i:s', $vars['col_' . $i][$constart])->format('Y-m-d');
+                    }
+                    catch (\Exception $ex) { }
+                }
+
                 $importUser = [
-                    'first_name'        => @$vars['col_'.$i][$fname],
-                    'middle_name'       => @$vars['col_'.$i][$mname],
-                    'last_name'         => @$vars['col_'.$i][$lname],
-                    'email'             => @$vars['col_'.$i][$email],
+                    'first_name'        => ucfirst(strtolower(trim(@$vars['col_'.$i][$fname]))),
+                    'middle_name'       => ucfirst(strtolower(trim(@$vars['col_'.$i][$mname]))),
+                    'last_name'         => ucfirst(strtolower(trim(@$vars['col_'.$i][$lname]))),
+                    'email'             => strtolower(trim(@$vars['col_'.$i][$email])),
                     'country_id'        => Config::get('constants.globalWebsite.defaultCountryId'),
-                    'phone_number'      => @$vars['col_'.$i][$phone],
-                    'password'          => strlen(@$vars['col_'.$i][$passwd])>7?@$vars['col_'.$i][$passwd]:@$vars['col_'.$i][$phone],
+                    'phone_number'      => trim(@$vars['col_'.$i][$phone]),
+                    'password'          => strlen(@$vars['col_'.$i][$passwd])>7?@$vars['col_'.$i][$passwd]:trim(@$vars['col_'.$i][$phone]),
                     'membership_plan'   => @$vars['membership_'.$i],
-                    'username'          => @$vars['col_'.$i][$uname],
+                    'username'          => trim(@$vars['col_'.$i][$uname]),
                     'user_type'         => @$vars['col_'.$i][$utype],
                     'date_of_birth'     => $dob,
-                    'about_info'        => isset($vars['col_'.$i][$uinfo])?$vars['col_'.$i][$uinfo]:'',
-                    'address1'          => @$vars['col_'.$i][$uaddress],
-                    'postal_code'       => @$vars['col_'.$i][$upostalcode],
-                    'city'              => @$vars['col_'.$i][$ucity],
+                    'about_info'        => isset($vars['col_'.$i][$uinfo])?strtolower(trim($vars['col_'.$i][$uinfo])):'',
+                    'address1'          => strtolower(trim(@$vars['col_'.$i][$uaddress])),
+                    'postal_code'       => trim(@$vars['col_'.$i][$upostalcode]),
+                    'city'              => ucfirst(strtolower(trim(@$vars['col_'.$i][$ucity]))),
+
+                    'contract_start'    => @$custom_start_date,
+                    'contract_number'   => trim(@$vars['col_'.$i][$connumber]),
+                    'customer_number'   => trim(@$vars['col_'.$i][$cusnumber]),
+                    'customer_card'     => trim(@$vars['col_'.$i][$cuscard]),
+
+                    'cancellation_date' => $cancellation_date
                 ];
                 $members[] = $importUser;
             }
@@ -2598,6 +2678,7 @@ class FrontEndUserController extends Controller
             }
 
             foreach ($members as $member){
+                //xdebug_var_dump($member); exit;
                 // add member
                 $newUser = FrontEndUserController::register_new_client($member);
 
@@ -2661,12 +2742,77 @@ class FrontEndUserController extends Controller
 
                     // assign membership
                     // Default free plan is the first plan
-                    if (strlen($member['membership_plan'])>1 && isset($arrayPlan[$member['membership_plan']])){
+                    if (strlen($member['membership_plan'])>0 && isset($arrayPlan[$member['membership_plan']])){
                         // we have a plan and we apply it
-                        //xdebug_var_dump($new_member);
-                        $new_member->attach_membership_plan($arrayPlan[$member['membership_plan']]['full_plan'], $user, $the_date);
+                        $new_member->attach_membership_plan($arrayPlan[$member['membership_plan']]['full_plan'], $user, $member['contract_start']!=''?$member['contract_start']:$the_date);
 
                         $msg.= 'Membership plan assigned : '.$arrayPlan[$member['membership_plan']]['full_plan']->name.' <br />';
+
+                        if($member['cancellation_date']!==''){
+                            // we get the active membership plan
+                            $new_plan = UserMembership::where('user_id','=',$new_member->id)->whereIn('status',['active','suspended'])->orderBy('created_at','desc')->get()->first();
+
+                            // get list of pending invoices
+                            $allPendingInvoices = UserMembershipInvoicePlanning::where('user_membership_id','=',$new_plan->id)->where('status','!=','old')->orderBy('issued_date','asc')->get();
+                            echo 'All invoices <br />';
+                            xdebug_var_dump($allPendingInvoices);
+                            foreach($allPendingInvoices as $singleInvoice){
+                                $cancellation_invoice = $singleInvoice;
+                                if (Carbon::createFromFormat('Y-m-d',$singleInvoice->issued_date)->lte($member['cancellation_date']) && Carbon::createFromFormat('Y-m-d',$singleInvoice->last_active_date)->gte($member['cancellation_date'])){
+                                    break;
+                                }
+                                else{
+                                    unset($cancellation_invoice);
+                                }
+                            }
+                            echo 'Last invoice <br />';
+                            xdebug_var_dump($cancellation_invoice);
+
+                            // we add the cancellation action to that
+                            if (isset($cancellation_invoice)){
+                                $new_member->cancel_membership_plan($new_plan, $cancellation_invoice->issued_date, $cancellation_invoice->last_active_date);
+                                $msg.= 'Membership plan cancellation added : last day - '.$cancellation_invoice->last_active_date.'; cancellation day - '.$cancellation_invoice->issued_date.' <br />';
+                            }
+                            else{
+                                $msg.= 'Membership plan cancellation error NOT ADDED <br />';
+                            }
+                            unset($cancellation_invoice);
+                        }
+                    }
+                    else{
+                        $msg.='No plan assigned : #'.$member['membership_plan'].'# - @'.isset($arrayPlan[$member['membership_plan']]).'@<br />';
+                    }
+
+                    if (strlen($member['customer_card'])>0){
+                        $access_card_fill = [
+                            'user_id'   => $new_member->id,
+                            'key_no'    => $member['customer_card'],
+                            'status'    => 'active',
+                        ];
+
+                        $validator = Validator::make($access_card_fill, UserAccessCard::rules('POST'), UserAccessCard::$message, UserAccessCard::$attributeNames);
+                        if ($validator->fails()){
+                            $msg.='Access card error : '.$member['customer_card'].'<br />';
+                        }
+                        else {
+                            // check if access card already assigned
+                            $check_card = UserAccessCard::where('key_no','=',$access_card_fill['key_no'])->where('status','=','active')->get()->first();
+                            if ($check_card){
+                                $msg.='Access card NOT ASSIGNED - already assigned to another member : '.$member['customer_card'].'<br />';
+                            }
+                            else{
+                                $access_card = UserAccessCard::firstOrNew(['user_id'=>$new_member->id]);
+                                $access_card->fill($access_card_fill);
+                                $access_card->save();
+
+                                $msg.='Access card assigned : '.$member['customer_card'].'<br />';
+                            }
+                        }
+                    }
+
+                    if ($signLocation){
+                        $new_member->set_general_setting('settings_preferred_location',  $signLocation->id);
+                        $new_member->set_general_setting('registration_signed_location', $signLocation->id);
                     }
                 }
 
@@ -2701,7 +2847,9 @@ class FrontEndUserController extends Controller
             'selectedMembership'=> $selectMembership,
             'date_start'        => $date_start,
             'importedMembers'   => $members,
-            'returnMessages'    => $returnMessages
+            'returnMessages'    => $returnMessages,
+            'shopLocations'     => $shopLocations,
+            'selectedLocation'  => $selectLocation
         ]);
     }
 

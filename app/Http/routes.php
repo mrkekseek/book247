@@ -337,6 +337,11 @@ Route::group(['middleware' => 'web'], function () {
         'as'    => 'admin/shops/inventory_and_transfer',
         'uses'  => 'ShopController@all_inventory_make_transfer'
     ]);
+
+    Route::post('admin/shops/shop_system_option_update', [
+        'as'    => 'admin/shops/shop_system_option_update',
+        'uses'  => 'ShopController@system_option_update'
+    ]);
     /** Stop Routes for Shops/Locations */
 
     /** Start Routes for Products Management */
@@ -552,6 +557,38 @@ Route::group(['middleware' => 'web'], function () {
         'uses'  => 'AppSettings@index'
     ]);
     /* Stop General Settings Part */
+
+    /* Start Finance Profiles Part */
+    Route::get('admin/settings_financial_profiles/list_all', [
+        'as'    => 'admin/settings_financial_profiles/list_all',
+        'uses'  => 'FinancialProfiles@list_all'
+    ]);
+
+    Route::get('admin/settings_financial_profiles/add', [
+        'as'    => 'admin/settings_financial_profiles/add',
+        'uses'  => 'FinancialProfiles@add_shop_financial_profile'
+    ]);
+
+    Route::post('admin/settings_financial_profiles/create', [
+        'as'    => 'admin/settings_financial_profiles/create',
+        'uses'  => 'FinancialProfiles@store_shop_financial_profile'
+    ]);
+
+    Route::get('admin/settings_financial_profiles/{id}/show', [
+        'as'    => 'admin/settings_financial_profiles/show',
+        'uses'  => 'FinancialProfiles@show_shop_financial_profile'
+    ]);
+
+    Route::get('admin/settings_financial_profiles/{id}/edit', [
+        'as'    => 'admin/settings_financial_profiles/edit',
+        'uses'  => 'FinancialProfiles@edit_shop_financial_profile'
+    ]);
+
+    Route::post('admin/settings_financial_profiles/{id}/update', [
+        'as'    => 'admin/settings_financial_profiles/update',
+        'uses'  => 'FinancialProfiles@update_shop_financial_profile'
+    ]);
+    /* Stop Finance Profiles Part */
 });
 
 Route::group(['middleware'=>'web', 'prefix'=>'admin'], function(){

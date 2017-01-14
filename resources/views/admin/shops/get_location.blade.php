@@ -99,20 +99,6 @@
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label class="col-md-3 control-label">Bank Account</label>
-                                    <div class="col-md-9">
-                                        <input type="text" name="shop_bank_acc_no" value="{{ $shopDetails->bank_acc_no }}" placeholder="Bank Account" class="form-control">
-                                        <span class="help-block"> Bank Account Number </span>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="col-md-3 control-label">Registered No.</label>
-                                    <div class="col-md-9">
-                                        <input type="text" name="shop_registration_no" value="{{ $shopDetails->registered_no }}" placeholder="Shop Registration Number" class="form-control">
-                                        <span class="help-block"> National Registration Number </span>
-                                    </div>
-                                </div>
-                                <div class="form-group">
                                     <label class="col-md-3 control-label">Visibility</label>
                                     <div class="col-md-9">
                                         <select name="visibility" class="form-control">
@@ -196,6 +182,47 @@
                     </div>
                 </div>
                 <!-- END SAMPLE FORM PORTLET-->
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="portlet box red border-grey-silver">
+                    <div class="portlet-title bg-grey-silver bg-font-grey-silver">
+                        <div class="caption">
+                            <i class="fa fa-cogs"></i>Shop/Store System Options </div>
+                        <div class="tools">
+                            <a class="collapse" href="javascript:;" data-original-title="" title=""> </a>
+                        </div>
+                    </div>
+                    <div class="portlet-body flip-scroll">
+                        <table class="table table-bordered table-striped table-condensed flip-content">
+                            <tbody>
+                            <tr>
+                                <td> &nbsp; <b>Location financial profile</b> </td>
+                                <td> <select name="option_value" class="form-control input-inline input-medium input-sm" aria-invalid="false">
+                                        <option value="-1" {!! $shopFinancialProfile==-1?'selected="selected"':'' !!}>Default</option>
+                                    @foreach ($financialProfiles as $singleProfile)
+                                        <option value="{{ $singleProfile->id }}" {!! $shopFinancialProfile==$singleProfile->id?'selected':'' !!}> {{ $singleProfile->profile_name }} </option>
+                                    @endforeach
+                                    </select>
+                                    <input type="hidden" name="option_key" value="shop_finance_profile" />
+                                    <a class="btn blue btn-sm update_system_option" >Update</a> </td>
+                            </tr>
+                            <tr>
+                                <td> &nbsp; <b>Automatic Booking marked as Show</b> </td>
+                                <td> <select name="option_value" class="form-control input-inline input-medium input-sm" aria-invalid="false">
+                                        <option value="-1" {!! @$system_options['automatic_bookings_mark_as_show']==-1?'selected="selected"':'' !!}>Default</option>
+                                        <option value="1" {!! @$system_options['automatic_bookings_mark_as_show']==1?'selected="selected"':'' !!}>Yes</option>
+                                        <option value="0" {!! @$system_options['automatic_bookings_mark_as_show']==0?'selected="selected"':'' !!}>No</option>
+                                    </select>
+                                    <input type="hidden" name="option_key" value="automatic_bookings_mark_as_show" />
+                                    <a class="btn blue btn-sm update_system_option" >Update</a> </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -1624,6 +1651,33 @@
                         setTimeout(function(){
                             location.reload();
                         },2500);
+                    }
+                    else{
+                        show_notification(data.title, data.errors, 'ruby', 3500, 0);
+                    }
+                }
+            });
+        }
+
+        $(".update_system_option").on('click', function(){
+            var key   = $(this).parent().find('input[name=option_key]').val();
+            var value = $(this).parent().find('select[name=option_value]').val();
+
+            update_shop_options(key, value);
+        });
+
+        function update_shop_options(key, value){
+            $.ajax({
+                url: '{{route('admin/shops/shop_system_option_update')}}',
+                type: "post",
+                data: {
+                    'shop_id':'{{$shopDetails->id}}',
+                    'key':key,
+                    'value': value
+                },
+                success: function(data){
+                    if(data.success){
+                        show_notification(data.title, data.message, 'lime', 3500, 0);
                     }
                     else{
                         show_notification(data.title, data.errors, 'ruby', 3500, 0);

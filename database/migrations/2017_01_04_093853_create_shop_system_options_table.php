@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateMembershipProductsTable extends Migration
+class CreateShopSystemOptionsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -12,12 +12,13 @@ class CreateMembershipProductsTable extends Migration
      */
     public function up()
     {
-        Schema::create('membership_products', function (Blueprint $table) {
+        Schema::create('shop_system_options', function (Blueprint $table) {
             $table->engine = 'InnoDB';
 
             $table->increments('id');
-            $table->string('name', 150);
-            $table->string('color_code', 7);
+            $table->integer('shop_location_id')->unsigned()->nullable();
+            $table->string('var_name', 75);
+            $table->string('var_value', 250);
             $table->timestamps();
         });
     }
@@ -29,6 +30,6 @@ class CreateMembershipProductsTable extends Migration
      */
     public function down()
     {
-        Schema::drop('membership_products');
+        Schema::drop('shop_system_options');
     }
 }

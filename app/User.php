@@ -107,8 +107,8 @@ class User extends Authenticatable
         }
     }
 
-    public function is_front_user() {
-        if ( ($this->hasRole('front-user') || $this->hasRole('front-member')) && $this->status == "active") {
+    public function is_front_user($all = true) {
+        if ( ($this->hasRole('front-user') || $this->hasRole('front-member')) && ($this->status == "active" || $all )) {
             return true;
         }
         else {
@@ -598,6 +598,49 @@ class User extends Authenticatable
         }
         else{
             return 'no location set';
+        }
+    }
+
+    public function get_signed_location_name(){
+        $setting = UserSettings::where('user_id','=',$this->id)->where('var_name','=','registration_signed_location')->get()->first();
+        if ($setting){
+            $location = ShopLocations::where('id','=',$setting->var_value)->get()->first();
+            if ($location){
+                return $location->name;
+            }
+            else{
+                return 'no location found';
+            }
+        }
+        else{
+            return 'no registration location';
+        }
+    }
+
+    public function set_general_setting($key, $value){
+        try {
+            $fillable = [
+                'user_id'   => $this->id,
+                'var_name'  => $key,
+            ];
+            $generalSetting = UserSettings::firstOrNew($fillable);
+            $generalSetting->var_value = $value;
+            $generalSetting->save();
+
+            return true;
+        }
+        catch (\Exception $ex){
+            return false;
+        }
+    }
+
+    public function get_general_setting($key){
+        $setting = UserSettings::where('user_id','=',$this->id)->where('var_name','=',$key)->get()->first();
+        if ($setting){
+            return $setting->var_value;
+        }
+        else{
+            return false;
         }
     }
 

@@ -22,18 +22,7 @@
 @section('pageBodyClass','page-container-bg-solid page-header-fixed page-sidebar-closed-hide-logo')
 
 @section('pageContentBody')
-    <div class="page-content">
-        <!-- BEGIN PAGE HEAD-->
-        <div class="page-head">
-            <!-- BEGIN PAGE TITLE -->
-            <div class="page-title">
-                <h1>{!!$text_parts['title']!!}
-                    <small>{!!$text_parts['subtitle']!!}</small>
-                </h1>
-            </div>
-            <!-- END PAGE TITLE -->
-        </div>
-        <!-- END PAGE HEAD-->
+    <div class="page-content fix_padding_top_0">
         <!-- BEGIN PAGE BASE CONTENT -->
         <div class="row">
             <div class="col-md-12">
@@ -44,30 +33,26 @@
                             <thead>
                             <tr>
                                 <th> No. </th>
-                                <th> Membership Plan Name </th>
-                                <th> Price </th>
-                                <th> Initial Fee </th>
-                                <th> Invoice Period </th>
-                                <th> Calendar Color </th>
-                                <th> Status </th>
+                                <th> Profile Name </th>
+                                <th> Company </th>
+                                <th> Bank </th>
+                                <th> Account No. </th>
                             </tr>
                             </thead>
                             <tbody>
-                            @foreach($all_plans as $key=>$plan)
+                            @foreach($all_profiles as $key=>$profile)
                                 <tr class="odd gradeX">
                                     <td> {{$key}} </td>
                                     <td>
-                                    @if (Auth::user()->can('manage-membership-plans'))
-                                        <a href="{{ route('admin.membership_plan.edit',['id' => $plan['id']]) }}"> {{ $plan['name'] }} </a>
-                                    @else
-                                        <a href="{{ route('admin.membership_plan.show',['id' => $plan['id']]) }}"> {{ $plan['name'] }} </a>
-                                    @endif
+                                        @if (Auth::user()->can('manage-membership-plans'))
+                                            <a href="{{ route('admin/settings_financial_profiles/edit',['id' => $profile['id']]) }}"> {{ $profile['profile_name'] }} </a>
+                                        @else
+                                            <a href="{{ route('admin/settings_financial_profiles/show',['id' => $profile['id']]) }}"> {{ $profile['profile_name'] }} </a>
+                                        @endif
                                     </td>
-                                    <td> {{ $plan['price'] }} </td>
-                                    <td> {{ $plan['admin_fee'] }} </td>
-                                    <td class="center"> {{ $plan['plan_period'] }} </td>
-                                    <td class="center"> <div style="width:25%; height:25px; background-color:{{ $plan['color'] }};"></div>  </td>
-                                    <td class="center"> {{ $plan['status'] }} </td>
+                                    <td> {{ $profile['company_name'] }} </td>
+                                    <td> {{ $profile['bank_name'] }} </td>
+                                    <td class="center"> {{ $profile['bank_account'] }} </td>
                                 </tr>
                             @endforeach
                             </tbody>
@@ -245,7 +230,7 @@
 
                     highlight: function (element) { // hightlight error inputs
                         $(element)
-                                .closest('.form-group').removeClass("has-success").addClass('has-error'); // set error class to the control group
+                            .closest('.form-group').removeClass("has-success").addClass('has-error'); // set error class to the control group
                     },
 
                     unhighlight: function (element) { // revert the change done by hightlight

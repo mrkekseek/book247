@@ -180,7 +180,7 @@
                                             <input class="form-control placeholder-no-fix" type="text" placeholder="Email" name="reg_email" /> </div>
                                         <div class="form-group">
                                             <label class="control-label visible-ie8 visible-ie9">Password</label>
-                                            <input class="form-control placeholder-no-fix" type="password" autocomplete="off" id="rpassword" placeholder="Password" name="rpassword" /> </div>
+                                            <input class="form-control placeholder-no-fix" type="password" autocomplete="off" id="rpassword" placeholder="Password - at least 8 characters" name="rpassword" /> </div>
                                         <div class="form-group">
                                             <label class="control-label visible-ie8 visible-ie9">Re-type Your Password</label>
                                             <input class="form-control placeholder-no-fix" type="password" autocomplete="off" placeholder="Re-type Your Password" name="re_rpassword" /> </div>
@@ -729,9 +729,9 @@
                 init: function () {
                     //sample #3
                     var options_sample3 = {
-                        endDate: '{{ \Carbon\Carbon::today()->addDays(7)->format('Y-m-d') }}',
+                        /*selectedDate: '{{ \Carbon\Carbon::today()->format('Y-m-d') }}',*/
                         startDate:'{{ \Carbon\Carbon::today()->format('Y-m-d') }}',
-                        selectedDate: '{{ \Carbon\Carbon::today()->format('Y-m-d') }}',
+                        endDate: '{{ \Carbon\Carbon::today()->addDays(7)->format('Y-m-d') }}',
                         showOffDays:false,
                         size:'large',
                         itemWidth:45,
@@ -830,6 +830,8 @@
                         phone: {
                             number: true,
                             required: true,
+                            minlength:8,
+                            maxlength:13,
                             remote: {
                                 url: "{{ route('ajax/check_phone_for_member_registration') }}",
                                 type: "post",
@@ -856,12 +858,12 @@
                         },
                         rpassword: {
                             required:true,
-                            minlength: 5,
+                            minlength: 8,
                             maxlength: 150,
                         },
                         re_rpassword: {
                             required:true,
-                            minlength: 5,
+                            minlength: 8,
                             maxlength: 150,
                             equalTo:"#rpassword"
                         },

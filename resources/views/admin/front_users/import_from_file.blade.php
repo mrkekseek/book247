@@ -76,6 +76,14 @@
                                                                 </span>
                                                             </div>
 
+                                                            <span class="">Sign Location</span>
+                                                            <select class="form-control input-medium input-inline" name="sign_location" style="margin-top:-2px;">
+                                                                <option>Select Location</option>
+                                                                @foreach($shopLocations as $single)
+                                                                    <option value="{{ $single->id }}" {!! @$selectedLocation==$single->id?'selected':'' !!}>{{ $single->name }}</option>
+                                                                @endforeach
+                                                            </select>
+
                                                             <span class="">Membership Type</span>
                                                             <select class="form-control input-medium input-inline" name="membership_type" style="margin-top:-2px;">
                                                                 @foreach($memberships as $single)
@@ -115,6 +123,11 @@
                                                                             <option value="street">Address/Street</option>
                                                                             <option value="postal_code">Postal Code</option>
                                                                             <option value="city">City</option>
+                                                                            <option value="contract_start">Contract Start</option>
+                                                                            <option value="contract_number">Contract Number</option>
+                                                                            <option value="customer_number">Customer Number</option>
+                                                                            <option value="customer_card">Customer Card</option>
+                                                                            <option value="cancellation_date">Cancellation Date</option>
                                                                         </select> </th>
                                                                 @endfor
                                                                 <th style="width:150px;"> Membership Type </th>
@@ -144,6 +157,7 @@
                                                                     <input type="hidden" name="key_return" value="{{ @$key }}" />
                                                                     <input type="hidden" name="date_start" value="{{ $date_start }}" />
                                                                     <input type="hidden" name="per_line" value="{{ $per_line }}" />
+                                                                    <input type="hidden" name="sign_location" value="{{ $selectedLocation }}" />
                                                                     <input type="hidden" name="_token" value="{{ csrf_token() }}">
                                                                     <button type="submit" class="btn uppercase green-jungle" style="float:right;"> Import Loaded List </button>
                                                                 </td>

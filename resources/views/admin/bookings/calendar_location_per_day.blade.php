@@ -1048,7 +1048,12 @@
             return {
                 //main function to initiate the module
                 init: function () {
+                    var hours_intv = $('#bookings_calendar_view_admin').find('tbody>tr>td').html().length;
+
                     if (!jQuery().dataTable) {
+                        return;
+                    }
+                    else if(hours_intv==0){
                         return;
                     }
                     initTable2();

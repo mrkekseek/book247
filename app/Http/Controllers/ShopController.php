@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Address;
 use App\Booking;
 use App\CashTerminal;
+use App\FinancialProfile;
 use App\Product;
 use App\ProductCategories;
 use App\ShopLocations;
@@ -140,9 +141,8 @@ class ShopController extends Controller
             return redirect()->intended(route('admin/login'));
         }
 
-        $shopDetails = ShopLocations::with('opening_hours')->find($id);
+        $shopDetails = ShopLocations::with('opening_hours')->with('systemOptions')->find($id);
         $shopAddress = Address::find($shopDetails->address_id);
-        $shopOpeningHours = [];
 
         $addressCountry = Countries::find($shopAddress->country_id);
         $shopAddress->countryName = $addressCountry->name;
@@ -191,6 +191,17 @@ class ShopController extends Controller
             }
         }
 
+        $shop_system_options = [];
+        if (sizeof($shopDetails->systemOptions)>0){
+            foreach ($shopDetails->systemOptions as $system_option){
+                //xdebug_var_dump($system_option);
+                $shop_system_options[$system_option->var_name] = $system_option->var_value;
+            }
+        }
+
+        $financialProfiles = FinancialProfile::orderBy('profile_name','asc')->get();
+        $shopFinancialProfile = $shopDetails->get_financial_profile();
+
         $breadcrumbs = [
             'Home'                => route('admin'),
             'All Shops/Locations' => route('admin/shops/locations/all'),
@@ -213,7 +224,10 @@ class ShopController extends Controller
             'opening_hours' => $shopHours,
             'resourceCategory' => $resourceCategories,
             'resourceList'  => $shopResources,
-            'vatRates'      => $vatRates
+            'vatRates'      => $vatRates,
+            'system_options'=> $shop_system_options,
+            'financialProfiles'     => $financialProfiles,
+            'shopFinancialProfile'  => $shopFinancialProfile
         ]);
     }
 
@@ -1228,4 +1242,46 @@ class ShopController extends Controller
             'categories'    => $categories
         ]);
     }
+
+    public function system_option_update(Request $request){
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
+            return [
+                'success' => false,
+                'errors'  => 'You need to be logged in to access this function',
+                'title'   => 'Error authentication'
+            ];
+        }
+        $vars = $request->only('shop_id','key','value');
+
+        $shop = ShopLocations::where('id','=',$vars['shop_id'])->get()->first();
+        if (!$shop){
+            return [
+                'success' => false,
+                'errors'  => 'Shop Location could not be found',
+                'title'   => 'Shop Location Error'
+            ];
+        }
+
+        if ($vars['key']=='shop_finance_profile'){
+            $msg = $shop->set_financial_profile($vars['value']);
+        }
+        else{
+            $msg = $shop->set_system_option($vars['key'], $vars['value']);
+        }
+
+        if ($msg === true){
+            return [
+                'success' => true,
+                'message' => 'Store/Location option successfully update',
+                'title'   => 'System Option Updated'];
+        }
+        else{
+            return [
+                'success' => false,
+                'errors'  => 'Something went wrong with the update',
+                'title'   => 'Update Error'];
+        }
+    }
+
 }
