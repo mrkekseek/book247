@@ -61,7 +61,7 @@
                                                                 <b>First Name</b>, <i>Middle Name</i>, <b>Last Name</b>, <b>Email Address</b>, <b>Phone Number</b>
                                                             </div>
                                                             <div class="col-md-4">
-                                                                <input id="clients_import_list" name="clients_import_list" type="file">
+                                                                <input id="clients_import_list" name="clients_import_list" type="file" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel">
                                                                 <p class="help-block"> upload ONLY .xls or .xlsx files </p>
                                                             </div>
                                                         </div>

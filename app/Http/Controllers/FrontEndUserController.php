@@ -2642,28 +2642,30 @@ class FrontEndUserController extends Controller
                 }
 
                 $importUser = [
-                    'first_name'        => ucfirst(strtolower(trim(@$vars['col_'.$i][$fname]))),
-                    'middle_name'       => ucfirst(strtolower(trim(@$vars['col_'.$i][$mname]))),
-                    'last_name'         => ucfirst(strtolower(trim(@$vars['col_'.$i][$lname]))),
-                    'email'             => strtolower(trim(@$vars['col_'.$i][$email])),
+                    'first_name'        => mb_convert_case(trim(@$vars['col_'.$i][$fname]), MB_CASE_TITLE, mb_detect_encoding(@$vars['col_'.$i][$fname])),
+                    //'middle_name'       => ucfirst(strtolower(trim(@$vars['col_'.$i][$mname]))),
+                    'middle_name'       => mb_convert_case(trim(@$vars['col_'.$i][$mname]), MB_CASE_TITLE, mb_detect_encoding(@$vars['col_'.$i][$mname])),
+                    //'last_name'         => ucfirst(strtolower(trim(@$vars['col_'.$i][$lname]))),
+                    'last_name'         => mb_convert_case(trim(@$vars['col_'.$i][$lname]), MB_CASE_TITLE, mb_detect_encoding(@$vars['col_'.$i][$lname])),
+                    'email'             => mb_strtolower(trim(@$vars['col_'.$i][$email]), mb_detect_encoding(@$vars['col_'.$i][$email])),
                     'country_id'        => Config::get('constants.globalWebsite.defaultCountryId'),
                     'phone_number'      => trim(@$vars['col_'.$i][$phone]),
                     'password'          => strlen(@$vars['col_'.$i][$passwd])>7?@$vars['col_'.$i][$passwd]:trim(@$vars['col_'.$i][$phone]),
                     'membership_plan'   => @$vars['membership_'.$i],
                     'username'          => trim(@$vars['col_'.$i][$uname]),
                     'user_type'         => @$vars['col_'.$i][$utype],
-                    'date_of_birth'     => $dob,
+                    'date_of_birth'     => @$dob,
                     'about_info'        => isset($vars['col_'.$i][$uinfo])?strtolower(trim($vars['col_'.$i][$uinfo])):'',
-                    'address1'          => strtolower(trim(@$vars['col_'.$i][$uaddress])),
+                    'address1'          => mb_strtolower(trim(@$vars['col_'.$i][$uaddress]), mb_detect_encoding(@$vars['col_'.$i][$uaddress])),
                     'postal_code'       => trim(@$vars['col_'.$i][$upostalcode]),
-                    'city'              => ucfirst(strtolower(trim(@$vars['col_'.$i][$ucity]))),
+                    'city'              => mb_convert_case(trim(@$vars['col_'.$i][$ucity]),MB_CASE_TITLE,mb_detect_encoding(@$vars['col_'.$i][$ucity])),
 
                     'contract_start'    => @$custom_start_date,
                     'contract_number'   => trim(@$vars['col_'.$i][$connumber]),
                     'customer_number'   => trim(@$vars['col_'.$i][$cusnumber]),
                     'customer_card'     => trim(@$vars['col_'.$i][$cuscard]),
 
-                    'cancellation_date' => $cancellation_date
+                    'cancellation_date' => @$cancellation_date
                 ];
                 $members[] = $importUser;
             }
@@ -2678,7 +2680,7 @@ class FrontEndUserController extends Controller
             }
 
             foreach ($members as $member){
-                //xdebug_var_dump($member); exit;
+                xdebug_var_dump($member); //exit;
                 // add member
                 $newUser = FrontEndUserController::register_new_client($member);
 
