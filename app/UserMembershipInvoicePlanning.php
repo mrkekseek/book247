@@ -2,6 +2,7 @@
 
 namespace App;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use App\Invoice;
 use App\UserMembership;
@@ -119,5 +120,33 @@ class UserMembershipInvoicePlanning extends Model
             'title'     => 'Invoice Issued',
             'message'   => 'All went well. Invoice issued'
         ];
+    }
+
+    public static function generate_invoice_list_of_dates($day_start, $invoice_period, $limit = 90){
+        $list_of_days = [];
+
+        for ($i=0; $i<$limit; $i++){
+            $start_day = Carbon::createFromFormat('Y-m-d H:i:s', $day_start.' 00:00:00');
+
+            if ($invoice_period==7 || $invoice_period==14){
+                $start_day->addDays($invoice_period * i);
+                $end_day = Carbon::instance($start_day)->addDays($invoice_period)->addDays(-1);
+            }
+            elseif($invoice_period==30 || $invoice_period==90 || $invoice_period==180){
+                $start_day->addMonthsNoOverflow( ($invoice_period / 30)*$i );
+                $end_day = Carbon::instance($start_day)->addMonthsNoOverflow($invoice_period/30)->addDays(-1);
+            }
+            else{
+                $start_day->addYears($i);
+                $end_day = Carbon::instance($start_day)->addYear(1)->addDays(-1);
+            }
+
+            $list_of_days[$i] = [
+                'first_day' => $start_day,
+                'last_day'  => $end_day
+            ];
+        }
+
+        return $list_of_days;
     }
 }

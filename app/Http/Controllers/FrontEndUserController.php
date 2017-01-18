@@ -2680,7 +2680,7 @@ class FrontEndUserController extends Controller
             }
 
             foreach ($members as $member){
-                xdebug_var_dump($member); //exit;
+                //xdebug_var_dump($member); //exit;
                 // add member
                 $newUser = FrontEndUserController::register_new_client($member);
 
@@ -2756,8 +2756,8 @@ class FrontEndUserController extends Controller
 
                             // get list of pending invoices
                             $allPendingInvoices = UserMembershipInvoicePlanning::where('user_membership_id','=',$new_plan->id)->where('status','!=','old')->orderBy('issued_date','asc')->get();
-                            echo 'All invoices <br />';
-                            xdebug_var_dump($allPendingInvoices);
+                            //echo 'All invoices <br />';
+                            //xdebug_var_dump($allPendingInvoices);
                             foreach($allPendingInvoices as $singleInvoice){
                                 $cancellation_invoice = $singleInvoice;
                                 if (Carbon::createFromFormat('Y-m-d',$singleInvoice->issued_date)->lte($member['cancellation_date']) && Carbon::createFromFormat('Y-m-d',$singleInvoice->last_active_date)->gte($member['cancellation_date'])){
@@ -2767,8 +2767,8 @@ class FrontEndUserController extends Controller
                                     unset($cancellation_invoice);
                                 }
                             }
-                            echo 'Last invoice <br />';
-                            xdebug_var_dump($cancellation_invoice);
+                            //echo 'Last invoice <br />';
+                            //xdebug_var_dump($cancellation_invoice);
 
                             // we add the cancellation action to that
                             if (isset($cancellation_invoice)){

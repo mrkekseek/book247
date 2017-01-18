@@ -175,16 +175,22 @@ class UserMembership extends Model
         else{
             $day_start = Carbon::createFromFormat('Y-m-d H:i:s', $day_start.' 00:00:00');
             $day_stop  = Carbon::instance($day_start)->addMonthsNoOverflow($plan->binding_period);
-xdebug_var_dump($day_start);
-xdebug_var_dump($day_stop);
+        }
+
+        /*if ($day_start==false){
+            $day_start = Carbon::today();
+            $day_stop  = Carbon::today()->addMonthsNoOverflow($plan->binding_period);
+        }
+        else{
+            $day_start = Carbon::createFromFormat('Y-m-d H:i:s', $day_start.' 00:00:00');
+            $day_stop  = Carbon::instance($day_start)->addMonthsNoOverflow($plan->binding_period);
+
             $monthsToAdd = Carbon::today()->diffInMonths($day_stop);
-            echo 'Months to add ['.$plan->sign_out_period.'] : '.$day_stop->format('Y-m-d').' / '.Carbon::today()->format('Y-m-d').'<br />';
-            xdebug_var_dump($monthsToAdd);
             if ($monthsToAdd>=0){
                 $day_stop->addMonthsNoOverflow($monthsToAdd+($plan->sign_out_period + 1));
-                echo 'Day stop update ['.($monthsToAdd+($plan->sign_out_period - 1)).'] : '.$day_stop->format('Y-m-d').'<br />';
+                //echo 'Day stop update ['.($monthsToAdd+($plan->sign_out_period - 1)).'] : '.$day_stop->format('Y-m-d').'<br />';
             }
-        }
+        }*/
 
         $fillable = [
             'user_id'       => $user->id,
@@ -269,7 +275,7 @@ xdebug_var_dump($day_stop);
         }
     }
 
-    public function generate_invoices_plan(){
+    public function generate_invoices_plan_old(){
         // get first generated invoice
         $invoiceNo = 1;
         $firstPrice = 0;
@@ -329,6 +335,76 @@ xdebug_var_dump($day_stop);
                 'discount'          => $this->discount,
                 'issued_date'       => $invoice_date->format('Y-m-d'),
                 'last_active_date'  => $invoice_last_active->format('Y-m-d'),
+                'status'            => 'pending'
+            ];
+
+            $validator = Validator::make($fillable, UserMembershipInvoicePlanning::rules('POST'), UserMembershipInvoicePlanning::$message, UserMembershipInvoicePlanning::$attributeNames);
+            if ($validator->fails()){
+                //echo json_encode($validator->getMessageBag()->toArray());
+                return false;
+            }
+
+            UserMembershipInvoicePlanning::create($fillable); //exit;
+            $invoiceNo++;
+        }
+
+        $firstInvoice = Invoice::where('invoice_type','=','membership_plan_assignment_invoice')->where('invoice_reference_id','=',$this->id)->get()->first();
+        $firstInv = UserMembershipInvoicePlanning::where('user_membership_id','=',$this->id)->orderBy('issued_date','ASC')->get()->first();
+        $firstInv->status = 'old';
+        $firstInv->invoice_id = $firstInvoice->id;
+        $firstInv->save();
+
+        $lastInv = UserMembershipInvoicePlanning::where('user_membership_id','=',$this->id)->orderBy('issued_date','DESC')->get()->first();
+        $lastInv->status = 'last';
+        $lastInv->save();
+    }
+
+    public function generate_invoices_plan(){
+        // get first generated invoice
+        $invoiceNo = 1;
+        $firstPrice = 0;
+        $invoice = Invoice::with('items')->where('invoice_type','=','membership_plan_assignment_invoice')->where('invoice_reference_id','=',$this->id)->get()->first();
+        $invoice_date = Carbon::createFromFormat('Y-m-d',$this->day_start);
+        foreach($invoice->items as $item){
+            $firstPrice+=$item->total_price;
+        }
+
+        $invoice_date_intervals = UserMembershipInvoicePlanning::generate_invoice_list_of_dates($this->day_start, $this->invoice_period);
+        if (!$invoice_date_intervals){
+            return false;
+        }
+
+        $invoice_last_active = $invoice_date_intervals[0]['last_day'];
+        $fillable = [
+            'user_membership_id'=> $this->id,
+            'item_name'         => 'Invoice #' . $invoiceNo . ' for '.$this->membership_name,
+            'price'             => $firstPrice,
+            'discount'          => $this->discount,
+            'issued_date'       => $invoice_date->format('Y-m-d'),
+            'last_active_date'  => $invoice_last_active->format('Y-m-d'),
+            'status'            => 'pending'
+        ];
+        // we create first invoice
+        UserMembershipInvoicePlanning::create($fillable);
+        $invoiceNo++;
+
+        $today_date = Carbon::today();
+        foreach ($invoice_date_intervals as $key=>$val){
+            if ($key==0){
+                continue;
+            }
+            elseif( Carbon::instance($today_date)->addMonthsNoOverflow($this->signout_period)->lt(Carbon::instance($val['first_day']))
+                && Carbon::instance($invoice_date_intervals[0]['first_day'])->addMonthsNoOverflow($this->binding_period + $this->signout_period)->lt($val['first_day'])){
+                break;
+            }
+
+            $fillable = [
+                'user_membership_id'=> $this->id,
+                'item_name'         => 'Invoice #' . $invoiceNo . ' for '.$this->membership_name,
+                'price'             => $this->price,
+                'discount'          => $this->discount,
+                'issued_date'       => $val['first_day']->format('Y-m-d'),
+                'last_active_date'  => $val['last_day']->format('Y-m-d'),
                 'status'            => 'pending'
             ];
 
