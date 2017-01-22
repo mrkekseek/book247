@@ -13,7 +13,7 @@ class AddContractNumberToUserMembershipsTable extends Migration
     public function up()
     {
         Schema::table('user_memberships', function (Blueprint $table) {
-            //
+            $table->char('contract_number', 50)->nullable();
         });
     }
 
@@ -25,7 +25,7 @@ class AddContractNumberToUserMembershipsTable extends Migration
     public function down()
     {
         Schema::table('user_memberships', function (Blueprint $table) {
-            //
+            $table->dropColumn('contract_number');
         });
     }
 }
