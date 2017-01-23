@@ -674,7 +674,8 @@ class BackEndUserController extends Controller
                     ->orWhere('personal_details.mobile_number','like','%'.$searchTerm.'%')
                     ->orWhere('personal_details.personal_email','like','%'.$searchTerm.'%');
             })
-            ->groupBy('users.id');
+            ->groupBy('users.id')
+        ->take(10);
 
         $results = $query->get();
         if ($results){
@@ -690,7 +691,7 @@ class BackEndUserController extends Controller
                 else{
                     $activeMembership = 'No Active Membership';
                 }
-
+                
                 $items[] = array('id'=>$result->id,
                     'first_name'    => $result->first_name,
                     'middle_name'   => $result->middle_name,

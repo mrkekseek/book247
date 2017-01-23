@@ -1562,7 +1562,8 @@ class FrontEndUserController extends Controller
             ->orWhere(  'users.middle_name','like','%'.$vars['q'].'%')
             ->orWhere(  'users.last_name','like','%'.$vars['q'].'%')
             ->orWhere(  'users.email','like','%'.$vars['q'].'%')
-            ->orWhere(  'personal_details.personal_email','like','%'.$vars['q'].'%');
+            ->orWhere(  'personal_details.personal_email','like','%'.$vars['q'].'%')
+        ->take(10);
 
         $results = $query->get();
         if ($results){
@@ -1583,9 +1584,6 @@ class FrontEndUserController extends Controller
         $items_array['items'] = $items;
 
         return $items_array;
-
-
-        $user_info = [];
     }
 
     public function ajax_get_user_info(Request $request, $id=-1)
