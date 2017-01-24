@@ -691,7 +691,7 @@ class BackEndUserController extends Controller
                 else{
                     $activeMembership = 'No Active Membership';
                 }
-                
+
                 $items[] = array('id'=>$result->id,
                     'first_name'    => $result->first_name,
                     'middle_name'   => $result->middle_name,

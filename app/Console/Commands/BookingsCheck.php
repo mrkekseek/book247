@@ -49,8 +49,12 @@ class BookingsCheck extends Command
             foreach ($shops as $shop){
                 $shop_option = $shop->get_system_option('automatic_bookings_mark_as_show');
 
-                if ($shop_option===0 || (($shop_option===-1 || $shop_option===false ) && $default_automatic_bookings_mark_as_show===0)){
+                if ($shop_option==0 || (($shop_option==-1 || $shop_option==false ) && $default_automatic_bookings_mark_as_show===0)){
+                    echo ' Location ['. $shop->id .'] has the "Automatic option for mark bookings OFF "' . "\n";
                     continue;
+                }
+                else{
+                    echo ' Location ['. $shop->id .'] has the "Automatic option for mark bookings ON " - ' . "\n";
                 }
 
                 $bookings = Booking::where('status','=','active')->where('location_id','=',$shop->id)->get();
@@ -97,7 +101,7 @@ class BookingsCheck extends Command
                         $updated_bookings++;
                     }
 
-                    echo 'For shop : '.$shop->name.' we have '.$updated_bookings.' bookings! \r\n';
+                    echo 'For shop : '.$shop->name.' we have '.$updated_bookings.' bookings! ' . PHP_EOL;
                 }
             }
         }
