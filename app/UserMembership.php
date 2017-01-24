@@ -24,6 +24,7 @@ class UserMembership extends Model
         'discount'      => 'Discount',
         'membership_restrictions' => 'Membership Restrictions',
         'signed_by'     => 'Signed By',
+        'contract_number'   => 'Contract Number'
     );
 
     public static $message = array();
@@ -41,6 +42,7 @@ class UserMembership extends Model
         'discount',
         'membership_restrictions',
         'signed_by',
+        'contract_number'
     ];
 
     public static function rules($method, $id=0){
@@ -65,7 +67,8 @@ class UserMembership extends Model
                     'discount'  => 'numeric',
                     'membership_restrictions'   => 'required|min:3',
                     'signed_by' => 'required|exists:users,id',
-                    'status'    => 'required|in:active,suspended,canceled,expired'
+                    'status'    => 'required|in:active,suspended,canceled,expired',
+                    'contract_number'   => 'min:5'
                 ];
             }
             case 'PUT':
