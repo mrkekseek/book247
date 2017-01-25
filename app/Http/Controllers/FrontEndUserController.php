@@ -2324,7 +2324,7 @@ class FrontEndUserController extends Controller
     }
 
     public function register_new_client($client_vars){
-        //$client_vars = ['first_name', 'middle_name', 'last_name', 'email', 'phone_number', 'password', 'membership_plan', 'username', 'user_type', 'country_id'];
+        //$client_vars = ['first_name','middle_name','last_name','email','phone_number','password','membership_plan','username','user_type','country_id','customer_number'];
         if (!isset($client_vars['middle_name'])){
             $client_vars['middle_name'] = '';
         }
@@ -2360,6 +2360,14 @@ class FrontEndUserController extends Controller
             $user->attachRole($client_vars['user_type']);
 
             if (isset($client_vars['phone_number']) && strlen($client_vars['phone_number'])>4){
+                if (isset($client_vars['customer_number']) && strlen($client_vars['customer_number'])>0){
+
+                }
+                else{
+                    // get next customer number
+                    $customer_number = $user->get_next_customer_number();
+                }
+
                 $personalData = [
                     'personal_email'=> $client_vars['email'],
                     'date_of_birth' => $client_vars['date_of_birth'],
@@ -2367,7 +2375,8 @@ class FrontEndUserController extends Controller
                     'bank_acc_no'   => 0,
                     'social_sec_no' => 0,
                     'about_info'    => $client_vars['about_info'],
-                    'user_id'       => $user->id
+                    'user_id'       => $user->id,
+                    'customer_number'   => $client_vars['customer_number']
                 ];
                 $personalDetails = PersonalDetail::firstOrNew(['user_id'=>$user->id]);
                 $personalData['date_of_birth'] = $client_vars['date_of_birth']!=''?$client_vars['date_of_birth']:Carbon::today()->toDateString();

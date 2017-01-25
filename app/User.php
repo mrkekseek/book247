@@ -644,6 +644,18 @@ class User extends Authenticatable
         }
     }
 
+    public function get_next_customer_number(){
+        $current_last_customer_number = PersonalDetail::orderBy('customer_number', 'DESC')->first();
+        if ($current_last_customer_number){
+            $next_number = $current_last_customer_number->customer_number + 1;
+        }
+        else{
+            $next_number = 10001;
+        }
+
+        return $next_number;
+    }
+
     /**
      * Detach all roles from a user
      *

@@ -68,7 +68,7 @@ class UserMembership extends Model
                     'membership_restrictions'   => 'required|min:3',
                     'signed_by' => 'required|exists:users,id',
                     'status'    => 'required|in:active,suspended,canceled,expired',
-                    'contract_number'   => 'min:5'
+                    'contract_number'   => 'required|numeric|unique:user_memberships,contract_number|min:5'
                 ];
             }
             case 'PUT':
@@ -87,7 +87,8 @@ class UserMembership extends Model
                     'discount'  => 'numeric',
                     'membership_restrictions'   => 'required|min:3',
                     'signed_by' => 'required|exists:users,id',
-                    'status'    => 'required|in:active,suspended,canceled,expired'
+                    'status'    => 'required|in:active,suspended,canceled,expired',
+                    'contract_number'   => 'required|numeric|min:5|unique:user_memberships,contract_number'.($id ? ",$id,id" : '')
                 ];
             }
             default:break;
