@@ -51,7 +51,7 @@ var TableDatatablesManaged = function () {
                 [5, 15, 20, "All"] // change per page values here
             ],
             // set the initial value
-            "pageLength": 5,            
+            "pageLength": 15,
             "pagingType": "bootstrap_full_number",
             "columnDefs": [{  // set default column settings
                 'orderable': false,
@@ -127,7 +127,7 @@ var TableDatatablesManaged = function () {
                 [5, 15, 20, "All"] // change per page values here
             ],
             // set the initial value
-            "pageLength": 5,
+            "pageLength": 15,
             "columnDefs": [{  // set default column settings
                 'orderable': false,
                 'targets': [0]
@@ -196,7 +196,7 @@ var TableDatatablesManaged = function () {
                 [6, 15, 20, "All"] // change per page values here
             ],
             // set the initial value
-            "pageLength": 6,
+            "pageLength": 15,
             "columnDefs": [{  // set default column settings
                 'orderable': false,
                 'targets': [0]

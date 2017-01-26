@@ -176,14 +176,14 @@ class User extends Authenticatable
         return $membership;
     }
 
-    public function attach_membership_plan(MembershipPlan $the_plan, User $signed_by, $day_start = false){
+    public function attach_membership_plan(MembershipPlan $the_plan, User $signed_by, $day_start = false, $contract_number = 0){
         if ($this->is_back_user()){
             return false;
         }
 
         $user_plan = new UserMembership();
         //$user_plan->assign_plan($this, $the_plan, $signed_by);
-        if ( $user_plan->create_new($this, $the_plan, $signed_by, $day_start) ){
+        if ( $user_plan->create_new($this, $the_plan, $signed_by, $day_start, $contract_number) ){
             return true;
         }
         else{
@@ -644,7 +644,21 @@ class User extends Authenticatable
         }
     }
 
-    public function get_next_customer_number(){
+    public function get_next_customer_number($requested_number = 0){
+        if (is_numeric($requested_number)){
+            $requested_number = intval($requested_number);
+        }
+        else{
+            $requested_number = 0;
+        }
+
+        if ($requested_number!=0){
+            $get_number = PersonalDetail::where('customer_number','=',$requested_number)->get()->first();
+            if (!$get_number){
+                return $requested_number;
+            }
+        }
+
         $current_last_customer_number = PersonalDetail::orderBy('customer_number', 'DESC')->first();
         if ($current_last_customer_number){
             $next_number = $current_last_customer_number->customer_number + 1;

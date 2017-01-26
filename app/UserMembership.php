@@ -68,7 +68,7 @@ class UserMembership extends Model
                     'membership_restrictions'   => 'required|min:3',
                     'signed_by' => 'required|exists:users,id',
                     'status'    => 'required|in:active,suspended,canceled,expired',
-                    'contract_number'   => 'required|numeric|unique:user_memberships,contract_number|min:5'
+                    'contract_number'   => 'required|numeric|unique:user_memberships,contract_number|min:3'
                 ];
             }
             case 'PUT':
@@ -88,7 +88,7 @@ class UserMembership extends Model
                     'membership_restrictions'   => 'required|min:3',
                     'signed_by' => 'required|exists:users,id',
                     'status'    => 'required|in:active,suspended,canceled,expired',
-                    'contract_number'   => 'required|numeric|min:5|unique:user_memberships,contract_number'.($id ? ",$id,id" : '')
+                    'contract_number'   => 'required|numeric|min:3|unique:user_memberships,contract_number'.($id ? ",$id,id" : '')
                 ];
             }
             default:break;
@@ -169,7 +169,7 @@ class UserMembership extends Model
         return $plan_details;
     }
 
-    public function create_new(User $user, MembershipPlan $plan, User $signed_by, $day_start = false) {
+    public function create_new(User $user, MembershipPlan $plan, User $signed_by, $day_start = false, $contract_number = 0) {
         $to_be_paid = $plan->get_price();
 
         if ($day_start==false){
@@ -199,17 +199,18 @@ class UserMembership extends Model
         $fillable = [
             'user_id'       => $user->id,
             'membership_id' => $plan->id,
-            'day_start' => $day_start->toDateString(),
-            'day_stop'  => $day_stop->toDateString(),
+            'day_start'     => $day_start->toDateString(),
+            'day_stop'      => $day_stop->toDateString(),
             'membership_name'   => $plan->name,
             'invoice_period'    => $plan->plan_period,
             'binding_period'    => $plan->binding_period,
             'sign_out_period'   => $plan->sign_out_period,
-            'price'     => $to_be_paid->price,
-            'discount'  => 0,
+            'price'         => $to_be_paid->price,
+            'discount'      => 0,
             'membership_restrictions'   => '',
-            'signed_by' => $signed_by->id,
-            'status'    => 'active'
+            'signed_by'     => $signed_by->id,
+            'status'        => 'active',
+            'contract_number'   => $this->get_next_membership_number($contract_number)
         ];
 
         $membership_restriction = $plan->get_restrictions(true);
@@ -490,5 +491,31 @@ class UserMembership extends Model
         }
 
         return $plan_requests;
+    }
+
+    public function get_next_membership_number($requested_number = 0){
+        if (is_numeric($requested_number)){
+            $requested_number = intval($requested_number);
+        }
+        else{
+            $requested_number = 0;
+        }
+
+        if ($requested_number!=0){
+            $get_number = UserMembership::where('contract_number','=',$requested_number)->get()->first();
+            if (!$get_number){
+                return $requested_number;
+            }
+        }
+
+        $current_last_membership_number = UserMembership::orderBy('contract_number', 'DESC')->first();
+        if ($current_last_membership_number){
+            $next_number = $current_last_membership_number->membership_number + 1;
+        }
+        else{
+            $next_number = 10001;
+        }
+
+        return $next_number;
     }
 }

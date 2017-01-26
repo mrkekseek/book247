@@ -106,7 +106,6 @@
 @endsection
 
 @section('pageBelowLevelScripts')
-    <script src="../assets/pages/scripts/table-datatables-managed.min.js" type="text/javascript"></script>
 @endsection
 
 @section('themeBelowLayoutScripts')
@@ -117,129 +116,108 @@
 
 @section('pageCustomJScripts')
     <script type="text/javascript">
-        $.validator.addMethod("datePickerDate",function(value, element) {
-            // put your own logic here, this is just a (crappy) example
-            return value.match(/^\d\d?-\d\d?-\d\d\d\d$/);
-        },"Please enter a date in the format dd/mm/yyyy.");
-        $.validator.addMethod('filesize',function(value, element, param) {
-            // param = size (in bytes)
-            // element = element to validate (<input>)
-            // value = value of the element (file name)
-            return this.optional(element) || (element.files[0].size <= param);
-        },"File must be JPG, GIF or PNG, less than 1MB");
-        $.validator.addMethod("validate_email",function(value, element) {
-            if(/^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/.test( value )) {
-                return true;
-            }
-            else {
-                return false;
-            }
-        },"Please enter a valid Email.");
+        var TableDatatablesManaged = function () {
+            var initTable1 = function () {
 
-        var FormValidation = function () {
-            // validation using icons
-            var handleValidation2 = function() {
-                // for more info visit the official plugin documentation:
-                // http://docs.jquery.com/Plugins/Validation
+                var table = $('#sample_1');
 
-                var form2 = $('#form_sample_2');
-                var error2 = $('.alert-danger', form2);
-                var success2 = $('.alert-success', form2);
+                // begin first table
+                table.dataTable({
 
-                form2.validate({
-                    errorElement: 'span', //default input error message container
-                    errorClass: 'help-block help-block-error', // default input error message class
-                    focusInvalid: false, // do not focus the last invalid input
-                    ignore: "",  // validate all fields including form hidden input
-                    rules: {
-                        name: {
-                            minlength: 2,
-                            required: true
+                    // Internationalisation. For more info refer to http://datatables.net/manual/i18n
+                    "language": {
+                        "aria": {
+                            "sortAscending": ": activate to sort column ascending",
+                            "sortDescending": ": activate to sort column descending"
                         },
-                        username: {
-                            minlength: 3,
-                            required: true
-                        },
-                        first_name: {
-                            minlength: 2,
-                            required: true
-                        },
-                        last_name: {
-                            minlength: 2,
-                            required: true
-                        },
-                        password: {
-                            minlength: 8,
-                            required: true
-                        },
-                        email: {
-                            required: true,
-                            email: true,
-                            validate_email:true
-                        },
-                        url: {
-                            required: true,
-                            url: true
-                        },
-                        number: {
-                            required: true,
-                            number: true
-                        },
-                        digits: {
-                            required: true,
-                            digits: true
-                        },
+                        "emptyTable": "No data available in table",
+                        "info": "Showing _START_ to _END_ of _TOTAL_ records",
+                        "infoEmpty": "No records found",
+                        "infoFiltered": "(filtered1 from _MAX_ total records)",
+                        "lengthMenu": "Show _MENU_",
+                        "search": "Search:",
+                        "zeroRecords": "No matching records found",
+                        "paginate": {
+                            "previous":"Prev",
+                            "next": "Next",
+                            "last": "Last",
+                            "first": "First"
+                        }
                     },
 
-                    invalidHandler: function (event, validator) { //display error alert on form submit
-                        success2.hide();
-                        error2.show();
-                        App.scrollTo(error2, -200);
-                    },
+                    // Or you can use remote translation file
+                    //"language": {
+                    //   url: '//cdn.datatables.net/plug-ins/3cfcc339e89/i18n/Portuguese.json'
+                    //},
 
-                    errorPlacement: function (error, element) { // render error placement for each input type
-                        var icon = $(element).parent('.input-icon').children('i');
-                        icon.removeClass('fa-check').addClass("fa-warning");
-                        icon.attr("data-original-title", error.text()).tooltip({'container': 'body'});
-                    },
+                    // Uncomment below line("dom" parameter) to fix the dropdown overflow issue in the datatable cells. The default datatable layout
+                    // setup uses scrollable div(table-scrollable) with overflow:auto to enable vertical scroll(see: assets/global/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.js).
+                    // So when dropdowns used the scrollable div should be removed.
+                    //"dom": "<'row'<'col-md-6 col-sm-12'l><'col-md-6 col-sm-12'f>r>t<'row'<'col-md-5 col-sm-12'i><'col-md-7 col-sm-12'p>>",
 
-                    highlight: function (element) { // hightlight error inputs
-                        $(element)
-                                .closest('.form-group').removeClass("has-success").addClass('has-error'); // set error class to the control group
-                    },
+                    "bStateSave": true, // save datatable state(pagination, sort, etc) in cookie.
 
-                    unhighlight: function (element) { // revert the change done by hightlight
+                    "columnDefs": [ {
+                        "targets": 0,
+                        "orderable": false,
+                        "searchable": false
+                    }],
 
-                    },
-
-                    success: function (label, element) {
-                        var icon = $(element).parent('.input-icon').children('i');
-                        $(element).closest('.form-group').removeClass('has-error').addClass('has-success'); // set success class to the control group
-                        icon.removeClass("fa-warning").addClass("fa-check");
-                    },
-
-                    submitHandler: function (form) {
-                        success2.show();
-                        error2.hide();
-                        register_back_user(); // submit the form
-                    }
+                    "lengthMenu": [
+                        [10, 15, 20, -1],
+                        [10, 15, 20, "All"] // change per page values here
+                    ],
+                    // set the initial value
+                    "pageLength": 20,
+                    "pagingType": "bootstrap_full_number",
+                    "columnDefs": [{  // set default column settings
+                        'orderable': false,
+                        'targets': [0]
+                    }, {
+                        "searchable": false,
+                        "targets": [0]
+                    }],
+                    "order": [
+                        [1, "asc"]
+                    ] // set first column as a default sort by asc
                 });
 
+                var tableWrapper = jQuery('#sample_1_wrapper');
 
+                table.find('.group-checkable').change(function () {
+                    var set = jQuery(this).attr("data-set");
+                    var checked = jQuery(this).is(":checked");
+                    jQuery(set).each(function () {
+                        if (checked) {
+                            $(this).prop("checked", true);
+                            $(this).parents('tr').addClass("active");
+                        } else {
+                            $(this).prop("checked", false);
+                            $(this).parents('tr').removeClass("active");
+                        }
+                    });
+                    jQuery.uniform.update(set);
+                });
+
+                table.on('change', 'tbody tr .checkboxes', function () {
+                    $(this).parents('tr').toggleClass("active");
+                });
             }
 
             return {
                 //main function to initiate the module
                 init: function () {
+                    if (!jQuery().dataTable) {
+                        return;
+                    }
 
-                    handleValidation2();
-
+                    initTable1();
                 }
             };
         }();
 
-        $(document).ready(function(){
-            // FormValidation.init();
+        jQuery(document).ready(function() {
+            TableDatatablesManaged.init();
         });
     </script>
 @endsection

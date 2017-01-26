@@ -2361,7 +2361,7 @@ class FrontEndUserController extends Controller
 
             if (isset($client_vars['phone_number']) && strlen($client_vars['phone_number'])>4){
                 if (isset($client_vars['customer_number']) && strlen($client_vars['customer_number'])>0){
-
+                    $customer_number = $user->get_next_customer_number($client_vars['customer_number']);
                 }
                 else{
                     // get next customer number
@@ -2369,14 +2369,14 @@ class FrontEndUserController extends Controller
                 }
 
                 $personalData = [
-                    'personal_email'=> $client_vars['email'],
-                    'date_of_birth' => $client_vars['date_of_birth'],
-                    'mobile_number' => $client_vars['phone_number'],
-                    'bank_acc_no'   => 0,
-                    'social_sec_no' => 0,
-                    'about_info'    => $client_vars['about_info'],
-                    'user_id'       => $user->id,
-                    'customer_number'   => $client_vars['customer_number']
+                    'personal_email'    => $client_vars['email'],
+                    'date_of_birth'     => $client_vars['date_of_birth'],
+                    'mobile_number'     => $client_vars['phone_number'],
+                    'bank_acc_no'       => 0,
+                    'social_sec_no'     => 0,
+                    'about_info'        => $client_vars['about_info'],
+                    'user_id'           => $user->id,
+                    'customer_number'   => $customer_number
                 ];
                 $personalDetails = PersonalDetail::firstOrNew(['user_id'=>$user->id]);
                 $personalData['date_of_birth'] = $client_vars['date_of_birth']!=''?$client_vars['date_of_birth']:Carbon::today()->toDateString();
@@ -2462,6 +2462,8 @@ class FrontEndUserController extends Controller
     }
 
     public function import_from_file(Request $request){
+        ini_set('max_execution_time', 300);
+
         $user = Auth::user();
         if (!$user || !$user->is_back_user()) {
             return redirect()->intended(route('admin/login'));
@@ -2753,7 +2755,7 @@ class FrontEndUserController extends Controller
                     // Default free plan is the first plan
                     if (strlen($member['membership_plan'])>0 && isset($arrayPlan[$member['membership_plan']])){
                         // we have a plan and we apply it
-                        $new_member->attach_membership_plan($arrayPlan[$member['membership_plan']]['full_plan'], $user, $member['contract_start']!=''?$member['contract_start']:$the_date);
+                        $new_member->attach_membership_plan($arrayPlan[$member['membership_plan']]['full_plan'], $user, $member['contract_start']!=''?$member['contract_start']:$the_date, $member['contract_number']);
 
                         $msg.= 'Membership plan assigned : '.$arrayPlan[$member['membership_plan']]['full_plan']->name.' <br />';
 
@@ -2761,31 +2763,36 @@ class FrontEndUserController extends Controller
                             // we get the active membership plan
                             $new_plan = UserMembership::where('user_id','=',$new_member->id)->whereIn('status',['active','suspended'])->orderBy('created_at','desc')->get()->first();
 
-                            // get list of pending invoices
-                            $allPendingInvoices = UserMembershipInvoicePlanning::where('user_membership_id','=',$new_plan->id)->where('status','!=','old')->orderBy('issued_date','asc')->get();
-                            //echo 'All invoices <br />';
-                            //xdebug_var_dump($allPendingInvoices);
-                            foreach($allPendingInvoices as $singleInvoice){
-                                $cancellation_invoice = $singleInvoice;
-                                if (Carbon::createFromFormat('Y-m-d',$singleInvoice->issued_date)->lte($member['cancellation_date']) && Carbon::createFromFormat('Y-m-d',$singleInvoice->last_active_date)->gte($member['cancellation_date'])){
-                                    break;
+                            if ($new_plan){
+                                // get list of pending invoices
+                                $allPendingInvoices = UserMembershipInvoicePlanning::where('user_membership_id','=',$new_plan->id)->where('status','!=','old')->orderBy('issued_date','asc')->get();
+                                //echo 'All invoices <br />';
+                                //xdebug_var_dump($allPendingInvoices);
+                                foreach($allPendingInvoices as $singleInvoice){
+                                    $cancellation_invoice = $singleInvoice;
+                                    if (Carbon::createFromFormat('Y-m-d',$singleInvoice->issued_date)->lte($member['cancellation_date']) && Carbon::createFromFormat('Y-m-d',$singleInvoice->last_active_date)->gte($member['cancellation_date'])){
+                                        break;
+                                    }
+                                    else{
+                                        unset($cancellation_invoice);
+                                    }
+                                }
+                                //echo 'Last invoice <br />';
+                                //xdebug_var_dump($cancellation_invoice);
+
+                                // we add the cancellation action to that
+                                if (isset($cancellation_invoice)){
+                                    $new_member->cancel_membership_plan($new_plan, $cancellation_invoice->issued_date, $cancellation_invoice->last_active_date);
+                                    $msg.= 'Membership plan cancellation added : last day - '.$cancellation_invoice->last_active_date.'; cancellation day - '.$cancellation_invoice->issued_date.' <br />';
                                 }
                                 else{
-                                    unset($cancellation_invoice);
+                                    $msg.= 'Membership plan cancellation error NOT ADDED <br />';
                                 }
-                            }
-                            //echo 'Last invoice <br />';
-                            //xdebug_var_dump($cancellation_invoice);
-
-                            // we add the cancellation action to that
-                            if (isset($cancellation_invoice)){
-                                $new_member->cancel_membership_plan($new_plan, $cancellation_invoice->issued_date, $cancellation_invoice->last_active_date);
-                                $msg.= 'Membership plan cancellation added : last day - '.$cancellation_invoice->last_active_date.'; cancellation day - '.$cancellation_invoice->issued_date.' <br />';
+                                unset($cancellation_invoice);
                             }
                             else{
-                                $msg.= 'Membership plan cancellation error NOT ADDED <br />';
+                                // plan assignment was unsuccessful so we don't set the cancellation
                             }
-                            unset($cancellation_invoice);
                         }
                     }
                     else{
