@@ -56,11 +56,11 @@
                                                 <div class="portlet-body" {!!(sizeof($importedRows)>0 || sizeof($returnMessages)>0)?'style="display:none;"':''!!}>
                                                     <form action="{{ route('admin/front_users/import_members') }}" method="post" class="form" enctype="multipart/form-data">
                                                         <div class="m-heading-1 border-green m-bordered row">
-                                                            <div class="col-md-8">
+                                                            <div class="col-md-6">
                                                                 The document that can be uploaded must have on the first line these values :
                                                                 <b>First Name</b>, <i>Middle Name</i>, <b>Last Name</b>, <b>Email Address</b>, <b>Phone Number</b>
                                                             </div>
-                                                            <div class="col-md-4">
+                                                            <div class="col-md-6">
                                                                 <input id="clients_import_list" name="clients_import_list" type="file" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel">
                                                                 <p class="help-block"> upload ONLY .xls or .xlsx files </p>
                                                             </div>

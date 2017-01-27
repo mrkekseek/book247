@@ -2504,6 +2504,7 @@ class FrontEndUserController extends Controller
 
                     foreach($row as $vals){
                         $singleRow[$nr++] = $vals;
+                        $chars+=trim(strlen($vals));
                     }
 
                     $allRows[] = $singleRow;
@@ -2514,7 +2515,7 @@ class FrontEndUserController extends Controller
                         $empty_lines++;
                     }
 
-                    if ($empty_lines>5){
+                    if ($empty_lines>15){
                         break;
                     }
                 }
@@ -2676,7 +2677,9 @@ class FrontEndUserController extends Controller
 
                     'cancellation_date' => @$cancellation_date
                 ];
-                $members[] = $importUser;
+                if (strlen($importUser['first_name'])>2 && strlen($importUser['last_name'])>2 && strlen($importUser['email'])>5){
+                    $members[] = $importUser;
+                }
             }
             $membershipPlans = MembershipPlan::get();
             $arrayPlan = [];
@@ -2687,7 +2690,7 @@ class FrontEndUserController extends Controller
                     'full_plan' => $plan
                 ];
             }
-
+//xdebug_var_dump($members); //exit;
             foreach ($members as $member){
                 //xdebug_var_dump($member); //exit;
                 // add member
@@ -2786,7 +2789,7 @@ class FrontEndUserController extends Controller
                                     $msg.= 'Membership plan cancellation added : last day - '.$cancellation_invoice->last_active_date.'; cancellation day - '.$cancellation_invoice->issued_date.' <br />';
                                 }
                                 else{
-                                    $msg.= 'Membership plan cancellation error NOT ADDED <br />';
+                                    $msg.= '<span class="font-red-mint">Membership plan cancellation error NOT ADDED </span><br />';
                                 }
                                 unset($cancellation_invoice);
                             }
