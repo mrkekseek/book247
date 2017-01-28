@@ -658,24 +658,21 @@ class BackEndUserController extends Controller
         $searchTerm = preg_replace('!\s+!', ' ', $searchTerm);
 
         $query = DB::table('users')
-            ->select('users.first_name','users.middle_name','users.last_name','users.id','users.email','personal_details.mobile_number','addresses.city','addresses.region')
+            ->select('users.first_name','users.middle_name','users.last_name','users.id','users.email','personal_details.mobile_number')
             ->leftjoin('personal_details','personal_details.user_id','=','users.id')
-            ->leftjoin('addresses','addresses.id','=','personal_details.address_id')
             ->leftjoin('role_user', 'users.id', '=', 'role_user.user_id')
             ->whereIn('role_user.role_id',['5','6'])
             ->where(function($query) use ($searchTerm){
-                $query->where('users.first_name','like','%'.$searchTerm.'%')
-                    ->orWhere('users.middle_name','like','%'.$searchTerm.'%')
-                    ->orWhere('users.last_name','like','%'.$searchTerm.'%')
-                    ->orWhere(DB::raw("CONCAT(users.first_name, ' ', users.last_name)"),'like','%'.$searchTerm.'%')
-                    ->orWhere(DB::raw("CONCAT(users.first_name, ' ', users.middle_name, ' ', users.last_name)"),'like','%'.$searchTerm.'%')
-                    ->orWhere('users.email','like','%'.$searchTerm.'%')
-                    ->orWhere('users.email','like','%'.$searchTerm.'%')
-                    ->orWhere('personal_details.mobile_number','like','%'.$searchTerm.'%')
-                    ->orWhere('personal_details.personal_email','like','%'.$searchTerm.'%');
+                $query->where('users.first_name','like',$searchTerm.'%')
+                    ->orWhere('users.middle_name','like',$searchTerm.'%')
+                    ->orWhere('users.last_name','like',$searchTerm.'%')
+                    ->orWhere(DB::raw("CONCAT(users.first_name, ' ', users.last_name)"),'like',$searchTerm.'%')
+                    ->orWhere(DB::raw("CONCAT(users.first_name, ' ', users.middle_name, ' ', users.last_name)"),'like',$searchTerm.'%')
+                    ->orWhere('users.email','like',$searchTerm.'%')
+                    ->orWhere('personal_details.mobile_number','like',$searchTerm.'%');
             })
             ->groupBy('users.id')
-        ->take(10);
+        ->take(15);
 
         $results = $query->get();
         if ($results){
@@ -698,8 +695,8 @@ class BackEndUserController extends Controller
                     'last_name'     => $result->last_name,
                     'email'         => $result->email,
                     'phone'         => $result->mobile_number,
-                    'city'          => $result->city,
-                    'region'        => $result->region,
+                    'city'          => '',
+                    'region'        => '',
                     'membership'    => $activeMembership,
                     'user_profile_img'      => asset('assets/pages/img/avatars/team'.rand(1,10).'.jpg'),
                     'avatar_image'          => $avatar['avatar_base64'],

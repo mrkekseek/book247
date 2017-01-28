@@ -2789,7 +2789,9 @@ class FrontEndUserController extends Controller
                                     $msg.= 'Membership plan cancellation added : last day - '.$cancellation_invoice->last_active_date.'; cancellation day - '.$cancellation_invoice->issued_date.' <br />';
                                 }
                                 else{
-                                    $msg.= '<span class="font-red-mint">Membership plan cancellation error NOT ADDED </span><br />';
+                                    $new_member->cancel_membership_plan($new_plan, $member['cancellation_date']->format('Y-m-d'), $member['cancellation_date']->format('Y-m-d'));
+                                    //$msg.= 'Membership plan cancellation added : last day - '.$cancellation_invoice->last_active_date.'; cancellation day - '.$cancellation_invoice->issued_date.' <br />';
+                                    $msg.= '<span class="font-red-mint">Membership plan cancellation added to an ODD day </span><br />';
                                 }
                                 unset($cancellation_invoice);
                             }
