@@ -218,7 +218,7 @@ class UserMembership extends Model
 
         $validator = Validator::make($fillable, UserMembership::rules('POST'), UserMembership::$message, UserMembership::$attributeNames);
         if ($validator->fails()){
-            //echo json_encode($validator->getMessageBag()->toArray());
+            //xdebug_var_dump($validator->getMessageBag()->toArray()); exit;
             return false;
         }
 
@@ -508,9 +508,9 @@ class UserMembership extends Model
             }
         }
 
-        $current_last_membership_number = UserMembership::orderBy('contract_number', 'DESC')->first();
+        $current_last_membership_number = UserMembership::whereNotNull('contract_number')->orderBy('contract_number', 'DESC')->first();
         if ($current_last_membership_number){
-            $next_number = $current_last_membership_number->membership_number + 1;
+            $next_number = $current_last_membership_number->contract_number + 1;
         }
         else{
             $next_number = 10001;
