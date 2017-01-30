@@ -17,14 +17,14 @@ class CreateOptimizeSearchMembersTable extends Migration
 
             $table->integer('user_id');
             $table->char('first_name', 255);
-            $table->char('middle_name', 255);
+            $table->char('middle_name', 255)->nullable();
             $table->char('last_name', 255);
 
             $table->char('email', 255);
             $table->char('phone', 30);
 
-            $table->char('city', 30);
-            $table->char('region', 30);
+            $table->char('city', 30)->nullable();
+            $table->char('region', 30)->nullable();
 
             $table->char('membership_name', 75);
             $table->char('user_profile_image', 255);
