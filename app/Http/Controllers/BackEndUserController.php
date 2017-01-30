@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\OptimizeSearchMembers;
 use App\Permission;
 use App\PersonalDetail;
 use App\ProfessionalDetail;
@@ -701,6 +702,73 @@ class BackEndUserController extends Controller
                     'user_profile_img'      => asset('assets/pages/img/avatars/team'.rand(1,10).'.jpg'),
                     'avatar_image'          => $avatar['avatar_base64'],
                     'user_link_details'     => $user_link
+                );
+            }
+        }
+
+        $items_array['items'] = $items;
+        return $items_array;
+    }
+
+    public function ajax_get_users_optimized(Request $request){
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
+            return redirect()->intended(route('admin/login'));
+        }
+
+        $vars = $request->only('q');
+        $items_array = array();
+        $items = array();
+
+        $searchTerm = trim($vars['q']);
+        $searchTerm = preg_replace('!\s+!', ' ', $searchTerm);
+
+        $query = DB::table('users')
+            ->select('users.first_name','users.middle_name','users.last_name','users.id','users.email','personal_details.mobile_number')
+            ->leftjoin('personal_details','personal_details.user_id','=','users.id')
+            ->leftjoin('role_user', 'users.id', '=', 'role_user.user_id')
+            ->whereIn('role_user.role_id',['5','6'])
+            ->where(function($query) use ($searchTerm){
+                $query->where('users.first_name','like',$searchTerm.'%')
+                    ->orWhere('users.middle_name','like',$searchTerm.'%')
+                    ->orWhere('users.last_name','like',$searchTerm.'%')
+                    ->orWhere(DB::raw("CONCAT(users.first_name, ' ', users.last_name)"),'like',$searchTerm.'%')
+                    ->orWhere(DB::raw("CONCAT(users.first_name, ' ', users.middle_name, ' ', users.last_name)"),'like',$searchTerm.'%')
+                    ->orWhere('users.email','like',$searchTerm.'%')
+                    ->orWhere('personal_details.mobile_number','like',$searchTerm.'%');
+            })
+            ->groupBy('users.id')
+            ->take(15);
+
+        $query = OptimizeSearchMembers::
+                where('first_name','like',$searchTerm.'%')
+                ->orWhere('middle_name','like',$searchTerm.'%')
+                ->orWhere('last_name','like',$searchTerm.'%')
+                ->orWhere(DB::raw("CONCAT(first_name, ' ', last_name)"),'like',$searchTerm.'%')
+                ->orWhere(DB::raw("CONCAT(first_name, ' ', middle_name, ' ', last_name)"),'like',$searchTerm.'%')
+                ->orWhere('email','like',$searchTerm.'%')
+                ->orWhere('phone','like',$searchTerm.'%')
+            ->take(15);
+
+        $results = $query->get();
+        if ($results){
+            foreach($results as $result){
+                $user_temp = User::where('id','=',$result->user_id)->get()->first();
+                $avatar = $user_temp->get_avatar_image();
+
+                $items[] = array(
+                    'id'            => $result->user_id,
+                    'first_name'    => $result->first_name,
+                    'middle_name'   => $result->middle_name,
+                    'last_name'     => $result->last_name,
+                    'email'         => $result->email,
+                    'phone'         => $result->phone,
+                    'city'          => $result->city,
+                    'region'        => $result->region,
+                    'membership'    => $result->membership_name,
+                    'user_profile_img'      => $result->user_profile_image,
+                    'avatar_image'          => $avatar['avatar_base64'],
+                    'user_link_details'     => $result->user_link_details
                 );
             }
         }

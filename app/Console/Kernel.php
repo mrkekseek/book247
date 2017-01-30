@@ -19,6 +19,7 @@ class Kernel extends ConsoleKernel
         Commands\UserMembershipPlannedActionsCheck::class,
         Commands\UserMembershipPendingInvoices::class,
         Commands\BookingDailyPlannerEmail::class,
+        Commands\OptimizedMembersSearchRebuild::class,
     ];
 
     /**
@@ -50,5 +51,12 @@ class Kernel extends ConsoleKernel
             //->everyMinute()
             ->dailyAt('06:00')
             ->sendOutputTo('storage/logs/BookingDailyPlanner_output.log');
+
+        /* Optimizations tasks - Start */
+        $schedule->command('optimize:rebuild_members_search')
+            //->everyMinute()
+            ->dailyAt('03:00')
+            ->sendOutputTo('storage/logs/Optimize_rebuild_search_members_output.log');
+        /* Optimizations tasks - Stop */
     }
 }

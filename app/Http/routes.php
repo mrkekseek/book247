@@ -167,7 +167,8 @@ Route::group(['middleware' => 'web'], function () {
 
     Route::post('admin/users/ajax_get_users', [
         'as'     => 'admin/users/ajax_get_users',
-        'uses'  => 'BackEndUserController@ajax_get_users'
+        //'uses'  => 'BackEndUserController@ajax_get_users'
+        'uses'  => 'BackEndUserController@ajax_get_users_optimized'
     ]);
 
     Route::post('admin/users/ajax_get_bill_address', [
@@ -985,5 +986,17 @@ Route::group(['prefix'=>'ajax', 'middleware' => 'web'], function(){
     Route::post('register_new_setting',[
         'as'    => 'ajax/register_new_setting',
         'uses'  => 'AppSettings@register_new_setting'
+    ]);
+});
+
+Route::group(['prefix' => 'optimize'], function(){
+    Route::get('search_top_members', [
+        'as'    => 'optimize/search_top_members',
+        'uses'  => 'Optimizations@make_search_member_table_optimization'
+    ]);
+
+    Route::get('amend_search_top_members', [
+        'as'    => 'optimize/amend_search_top_members',
+        'uses'  => 'Optimizations@add_new_members_to_table'
     ]);
 });

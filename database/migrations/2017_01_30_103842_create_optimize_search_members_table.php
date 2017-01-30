@@ -28,7 +28,6 @@ class CreateOptimizeSearchMembersTable extends Migration
 
             $table->char('membership_name', 75);
             $table->char('user_profile_image', 255);
-            $table->mediumText('base64_avatar_image');
 
             $table->char('user_link_details', 255);
 
