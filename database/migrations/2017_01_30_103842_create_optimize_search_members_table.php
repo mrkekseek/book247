@@ -13,8 +13,9 @@ class CreateOptimizeSearchMembersTable extends Migration
     public function up()
     {
         Schema::create('optimize_search_members', function (Blueprint $table) {
-            $table->increments('id');
+            $table->engine = 'InnoDB';
 
+            $table->increments('id');
             $table->integer('user_id');
             $table->char('first_name', 255);
             $table->char('middle_name', 255)->nullable();
