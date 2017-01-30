@@ -989,7 +989,7 @@ Route::group(['prefix'=>'ajax', 'middleware' => 'web'], function(){
     ]);
 });
 
-Route::group(['prefix' => 'optimize'], function(){
+Route::group(['prefix' => 'optimize', 'middleware' => 'web'], function(){
     Route::get('search_top_members', [
         'as'    => 'optimize/search_top_members',
         'uses'  => 'Optimizations@make_search_member_table_optimization'
