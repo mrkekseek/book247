@@ -97,6 +97,19 @@ class FrontPageController extends Controller
         if (isset($user)) {
             $own_friends_bookings = $this::get_own_and_friends_bookings($user->id);
             $settings   = UserSettings::get_general_settings($user->id, ['settings_preferred_location','settings_preferred_activity']);
+
+            // check if preferred location is active
+            $preferredShopLocation = ShopLocations::where('id','=',@$settings['settings_preferred_location'])->where('visibility','=','public')->get()->first();
+            if (!$preferredShopLocation){
+                unset($settings['settings_preferred_location']);
+            }
+
+            // check if preferred activity is visible
+            $preferredActivity = ShopResourceCategory::where('id','=',@$settings['settings_preferred_activity'])->get()->first();
+            if (!$preferredActivity){
+                unset($settings['settings_preferred_activity']);
+            }
+
             $unreadNotes = $user->get_public_notes('DESC', 'unread', true);
         }
 
