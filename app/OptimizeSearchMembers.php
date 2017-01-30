@@ -10,6 +10,7 @@ use App\User;
 use App\Role;
 use App\Permission;
 use App\UserMembership;
+use Validator;
 
 class OptimizeSearchMembers extends Model
 {
@@ -60,14 +61,14 @@ class OptimizeSearchMembers extends Model
             case 'POST':
             {
                 return [
-                    'user_id'               => 'required',
-                    'first_name'            => 'required',
-                    'middle_name'           => 'required',
-                    'last_name'             => 'required',
-                    'email'                 => 'required',
-                    'phone'                 => 'required',
-                    'city'                  => 'required',
-                    'region'                => 'required',
+                    'user_id'               => 'required|numeric|min:1',
+                    'first_name'            => 'required|min:2|max:150',
+                    'middle_name'           => '',
+                    'last_name'             => 'required|min:2|max:150',
+                    'email'                 => 'required|email',
+                    'phone'                 => '',
+                    'city'                  => '',
+                    'region'                => '',
                     'membership_name'       => 'min:3',
                     'user_profile_image'    => 'min:3',
                     'user_link_details'     => 'required',
@@ -77,14 +78,14 @@ class OptimizeSearchMembers extends Model
             case 'PATCH':
             {
                 return [
-                    'user_id'               => 'required',
-                    'first_name'            => 'required',
-                    'middle_name'           => 'required',
-                    'last_name'             => 'required',
-                    'email'                 => 'required',
-                    'phone'                 => 'required',
-                    'city'                  => 'required',
-                    'region'                => 'required',
+                    'user_id'               => 'required|numeric|min:1',
+                    'first_name'            => 'required|min:2|max:150',
+                    'middle_name'           => '',
+                    'last_name'             => 'required|min:2|max:150',
+                    'email'                 => 'required|email',
+                    'phone'                 => '',
+                    'city'                  => '',
+                    'region'                => '',
                     'membership_name'       => 'min:3',
                     'user_profile_image'    => 'min:3',
                     'user_link_details'     => 'required',
@@ -135,9 +136,15 @@ class OptimizeSearchMembers extends Model
                     'user_link_details'     => $user_link
                 ];
 
-                $new_insert = new OptimizeSearchMembers();
-                $new_insert->fill($fillable);
-                $new_insert->save();
+                $validator = Validator::make($fillable, OptimizeSearchMembers::rules('POST'), OptimizeSearchMembers::$message, OptimizeSearchMembers::$attributeNames);
+                if ($validator->fails()){
+                    echo json_encode($validator->getMessageBag()->toArray());
+                }
+                else{
+                    $new_insert = new OptimizeSearchMembers();
+                    $new_insert->fill($fillable);
+                    $new_insert->save();
+                }
 
                 unset($fillable);
             }
@@ -190,9 +197,15 @@ class OptimizeSearchMembers extends Model
                     'user_link_details'     => $user_link
                 ];
 
-                $new_or_old_insert = OptimizeSearchMembers::firstOrNew(['user_id'=>$result->id]);
-                $new_or_old_insert->fill($fillable);
-                $new_or_old_insert->save();
+                $validator = Validator::make($fillable, OptimizeSearchMembers::rules('POST'), OptimizeSearchMembers::$message, OptimizeSearchMembers::$attributeNames);
+                if ($validator->fails()){
+                    echo json_encode($validator->getMessageBag()->toArray());
+                }
+                else {
+                    $new_or_old_insert = OptimizeSearchMembers::firstOrNew(['user_id' => $result->id]);
+                    $new_or_old_insert->fill($fillable);
+                    $new_or_old_insert->save();
+                }
 
                 unset($fillable);
             }
@@ -241,9 +254,15 @@ class OptimizeSearchMembers extends Model
                     'user_link_details'     => $user_link
                 ];
 
-                $new_or_old_insert = OptimizeSearchMembers::firstOrNew(['user_id'=>$result->id]);
-                $new_or_old_insert->fill($fillable);
-                $new_or_old_insert->save();
+                $validator = Validator::make($fillable, OptimizeSearchMembers::rules('POST'), OptimizeSearchMembers::$message, OptimizeSearchMembers::$attributeNames);
+                if ($validator->fails()){
+                    echo json_encode($validator->getMessageBag()->toArray());
+                }
+                else {
+                    $new_or_old_insert = OptimizeSearchMembers::firstOrNew(['user_id' => $result->id]);
+                    $new_or_old_insert->fill($fillable);
+                    $new_or_old_insert->save();
+                }
 
                 unset($fillable);
             }
