@@ -2391,9 +2391,6 @@ class FrontEndUserController extends Controller
                 $personalDetails->save();
             }
 
-            $searchMembers = new OptimizeSearchMembers();
-            $searchMembers->add_missing_members([$user->id]);
-
             return [
                 'success'   => true,
                 'password'  => $text_psw,
@@ -2472,7 +2469,7 @@ class FrontEndUserController extends Controller
     }
 
     public function import_from_file(Request $request){
-        ini_set('max_execution_time', 300);
+        ini_set('max_execution_time', 600);
 
         $user = Auth::user();
         if (!$user || !$user->is_back_user()) {
@@ -2700,7 +2697,9 @@ class FrontEndUserController extends Controller
                     'full_plan' => $plan
                 ];
             }
-//xdebug_var_dump($members); //exit;
+
+            $all_new_users = [];
+
             foreach ($members as $member){
                 //xdebug_var_dump($member); //exit;
                 // add member
@@ -2715,6 +2714,7 @@ class FrontEndUserController extends Controller
                 else{
                     $new_member = $newUser['user'];
                     $msg = 'User added successfully : <br />';
+                    $all_new_users[] = $new_member->id;
 
                     if (strlen($member['address1'])>1 && strlen($member['postal_code'])>1 && strlen($member['city'])>1 ){
                         // we add the address
@@ -2853,6 +2853,10 @@ class FrontEndUserController extends Controller
                     'userID'    => isset($new_member->id)?$new_member->id:-1
                 ];
             }
+
+            $searchMembers = new OptimizeSearchMembers();
+            $searchMembers->add_missing_members($all_new_users);
+
             //xdebug_var_dump($returnMessages); exit;
         }
 
