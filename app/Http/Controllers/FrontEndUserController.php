@@ -3908,7 +3908,7 @@ class FrontEndUserController extends Controller
         $current_month = Carbon::today();
         $months[$current_month->month] = ['bookings_paid'=>0,'total_paid'=>0];
         for ($i=-1; $i>-12; $i--){
-            $step_month = Carbon::today()->addMonths($i);
+            $step_month = Carbon::today()->firstOfMonth()->addMonths($i);
             $months[$step_month->month] = ['bookings_paid'=>0,'total_paid'=>0];
         }
 
@@ -3917,6 +3917,9 @@ class FrontEndUserController extends Controller
         if ($all_invoices){
             foreach ($all_invoices as $invoice){
                 $key = $invoice->created_at->month;
+                if (!isset($months[$key])){
+                    continue;
+                }
 
                 foreach ($invoice->items as $item){
                     if ($item->item_type=='booking_invoice_item'){
