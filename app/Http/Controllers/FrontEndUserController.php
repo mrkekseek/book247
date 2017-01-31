@@ -32,6 +32,7 @@ use App\ShopLocations;
 use App\ShopResource;
 use App\ShopResourceCategory;
 use App\MembershipPlan;
+use App\OptimizeSearchMembers;
 use App\MembershipRestriction;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
@@ -226,6 +227,9 @@ class FrontEndUserController extends Controller
             $user = User::create($credentials);
             // attach the roles to the new created user
             $user->attachRole($credentials['user_type']);
+
+            $searchMembers = new OptimizeSearchMembers();
+            $searchMembers->add_missing_members([$user->id]);
 
         } catch (Exception $e) {
             return Response::json(['error' => 'User already exists.'], Response::HTTP_CONFLICT);
@@ -2306,6 +2310,9 @@ class FrontEndUserController extends Controller
                 $user->set_general_setting('registration_signed_location', $signLocation->id);
             }
 
+            $searchMembers = new OptimizeSearchMembers();
+            $searchMembers->add_missing_members([$user->id]);
+
             return [
                 'success'       => true,
                 'title'         => 'New member registered',
@@ -2383,6 +2390,9 @@ class FrontEndUserController extends Controller
                 $personalDetails->fill($personalData);
                 $personalDetails->save();
             }
+
+            $searchMembers = new OptimizeSearchMembers();
+            $searchMembers->add_missing_members([$user->id]);
 
             return [
                 'success'   => true,

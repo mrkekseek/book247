@@ -17,9 +17,12 @@ class CreateOptimizeSearchMembersTable extends Migration
 
             $table->increments('id');
             $table->integer('user_id');
-            $table->char('first_name', 255);
-            $table->char('middle_name', 255)->nullable();
-            $table->char('last_name', 255);
+            $table->char('first_name', 100);
+            $table->char('middle_name', 100)->nullable();
+            $table->char('last_name', 100);
+
+            $table->char('first_last_name', 255);
+            $table->char('first_middle_last_name', 255);
 
             $table->char('email', 255);
             $table->char('phone', 30);
@@ -34,6 +37,16 @@ class CreateOptimizeSearchMembersTable extends Migration
 
             $table->timestamps();
         });
+
+        DB::statement("ALTER TABLE `optimize_search_members` ADD FULLTEXT (`first_name`);");
+        DB::statement("ALTER TABLE `optimize_search_members` ADD FULLTEXT (`middle_name`);");
+        DB::statement("ALTER TABLE `optimize_search_members` ADD FULLTEXT (`last_name`);");
+        DB::statement("ALTER TABLE `optimize_search_members` ADD FULLTEXT (`first_last_name`);");
+        DB::statement("ALTER TABLE `optimize_search_members` ADD FULLTEXT (`first_middle_last_name`);");
+
+        DB::statement("ALTER TABLE `optimize_search_members` ADD FULLTEXT (`email`);");
+
+        DB::statement("ALTER TABLE `optimize_search_members` ADD FULLTEXT (`phone`);");
     }
 
     /**

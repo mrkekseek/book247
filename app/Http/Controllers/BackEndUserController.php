@@ -723,34 +723,19 @@ class BackEndUserController extends Controller
         $searchTerm = trim($vars['q']);
         $searchTerm = preg_replace('!\s+!', ' ', $searchTerm);
 
-        $query = DB::table('users')
-            ->select('users.first_name','users.middle_name','users.last_name','users.id','users.email','personal_details.mobile_number')
-            ->leftjoin('personal_details','personal_details.user_id','=','users.id')
-            ->leftjoin('role_user', 'users.id', '=', 'role_user.user_id')
-            ->whereIn('role_user.role_id',['5','6'])
-            ->where(function($query) use ($searchTerm){
-                $query->where('users.first_name','like',$searchTerm.'%')
-                    ->orWhere('users.middle_name','like',$searchTerm.'%')
-                    ->orWhere('users.last_name','like',$searchTerm.'%')
-                    ->orWhere(DB::raw("CONCAT(users.first_name, ' ', users.last_name)"),'like',$searchTerm.'%')
-                    ->orWhere(DB::raw("CONCAT(users.first_name, ' ', users.middle_name, ' ', users.last_name)"),'like',$searchTerm.'%')
-                    ->orWhere('users.email','like',$searchTerm.'%')
-                    ->orWhere('personal_details.mobile_number','like',$searchTerm.'%');
-            })
-            ->groupBy('users.id')
-            ->take(15);
-
         $query = OptimizeSearchMembers::
                 where('first_name','like',$searchTerm.'%')
                 ->orWhere('middle_name','like',$searchTerm.'%')
                 ->orWhere('last_name','like',$searchTerm.'%')
-                ->orWhere(DB::raw("CONCAT(first_name, ' ', last_name)"),'like',$searchTerm.'%')
-                ->orWhere(DB::raw("CONCAT(first_name, ' ', middle_name, ' ', last_name)"),'like',$searchTerm.'%')
+                ->orWhere('first_last_name','like',$searchTerm.'%')
+                ->orWhere('first_middle_last_name','like',$searchTerm.'%')
                 ->orWhere('email','like',$searchTerm.'%')
                 ->orWhere('phone','like',$searchTerm.'%')
-            ->take(15);
+            ->take(10);
 
+        //$query = DB::select("SELECT * FROM optimize_search_members WHERE MATCH (first_name) AGAINST ('".$searchTerm."' IN NATURAL LANGUAGE MODE) LIMIT 10");
         $results = $query->get();
+        //xdebug_var_dump($query); exit;
         if ($results){
             foreach($results as $result){
                 $user_temp = User::where('id','=',$result->user_id)->get()->first();
