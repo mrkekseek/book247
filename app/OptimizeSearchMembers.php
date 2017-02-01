@@ -4,6 +4,7 @@ namespace App;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 
 use App\User;
@@ -11,6 +12,7 @@ use App\Role;
 use App\Permission;
 use App\UserMembership;
 use Validator;
+use Illuminate\Support\Facades\URL;
 
 class OptimizeSearchMembers extends Model
 {
@@ -106,6 +108,7 @@ class OptimizeSearchMembers extends Model
 
     private function rebuild_search_table(){
         ini_set('max_execution_time', 300);
+        URL::forceRootUrl( Config::get('constants.globalWebsite.baseUrl') );
 
         DB::disableQueryLog();
         $query = DB::table('users')
@@ -168,6 +171,7 @@ class OptimizeSearchMembers extends Model
 
     private function update_search_table($last_date){
         ini_set('max_execution_time', 300);
+        URL::forceRootUrl( Config::get('constants.globalWebsite.baseUrl') );
 
         DB::disableQueryLog();
         $query = DB::table('users')
@@ -227,6 +231,7 @@ class OptimizeSearchMembers extends Model
 
     private function update_search_table_with_user($ids){
         ini_set('max_execution_time', 300);
+        URL::forceRootUrl( Config::get('constants.globalWebsite.baseUrl') );
 
         DB::disableQueryLog();
         $query = DB::table('users')

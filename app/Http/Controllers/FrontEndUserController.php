@@ -2366,30 +2366,39 @@ class FrontEndUserController extends Controller
             $user = User::create($credentials);
             $user->attachRole($client_vars['user_type']);
 
-            if (isset($client_vars['phone_number']) && strlen($client_vars['phone_number'])>4){
-                if (isset($client_vars['customer_number']) && strlen($client_vars['customer_number'])>0){
-                    $customer_number = $user->get_next_customer_number($client_vars['customer_number']);
-                }
-                else{
-                    // get next customer number
-                    $customer_number = $user->get_next_customer_number();
-                }
-
-                $personalData = [
-                    'personal_email'    => $client_vars['email'],
-                    'date_of_birth'     => $client_vars['date_of_birth'],
-                    'mobile_number'     => $client_vars['phone_number'],
-                    'bank_acc_no'       => 0,
-                    'social_sec_no'     => 0,
-                    'about_info'        => $client_vars['about_info'],
-                    'user_id'           => $user->id,
-                    'customer_number'   => $customer_number
-                ];
-                $personalDetails = PersonalDetail::firstOrNew(['user_id'=>$user->id]);
-                $personalData['date_of_birth'] = $client_vars['date_of_birth']!=''?$client_vars['date_of_birth']:Carbon::today()->toDateString();
-                $personalDetails->fill($personalData);
-                $personalDetails->save();
+            if (isset($client_vars['customer_number']) && strlen($client_vars['customer_number'])>0){
+                $customer_number = $user->get_next_customer_number($client_vars['customer_number']);
             }
+            else{
+                // get next customer number
+                $customer_number = $user->get_next_customer_number();
+            }
+
+            $personalData = [
+                'personal_email'    => $client_vars['email'],
+                'date_of_birth'     => $client_vars['date_of_birth'],
+                'mobile_number'     => $client_vars['phone_number'],
+                'bank_acc_no'       => 0,
+                'social_sec_no'     => 0,
+                'about_info'        => $client_vars['about_info'],
+                'user_id'           => $user->id,
+                'customer_number'   => $customer_number
+            ];
+            $validator = Validator::make($personalData, PersonalDetail::rules('POST'), PersonalDetail::$messages, PersonalDetail::$attributeNames);
+            if ($validator->fails()){
+                $user->delete();
+
+                return [
+                    'success'   => false,
+                    'errors'    => $validator->getMessageBag()->toArray()
+                ];
+            }
+
+            $personalDetails = PersonalDetail::firstOrNew(['user_id'=>$user->id]);
+            $personalData['date_of_birth'] = $client_vars['date_of_birth']!=''?$client_vars['date_of_birth']:Carbon::today()->toDateString();
+            $personalDetails->fill($personalData);
+            $personalDetails->save();
+
 
             return [
                 'success'   => true,
@@ -2757,10 +2766,11 @@ class FrontEndUserController extends Controller
                             ]);
                             $personalAddress->save();
 
-                            $userPersonal->address_id = $personalAddress->id;
-                            $userPersonal->save();
-
-                            $msg.= 'User address added successfully : '.implode(',',$vars).' <br />';
+                            if ($personalAddress){
+                                $userPersonal->address_id = $personalAddress->id;
+                                $userPersonal->save();
+                                $msg.= 'User address added successfully : '.implode(',',$vars).' <br />';
+                            }
                         }
                     }
 

@@ -9,6 +9,17 @@ class PersonalDetail extends Model
     protected $table = 'personal_details';
     protected $primaryKey = 'id';
 
+    public static $attributeNames = [
+        'user_id'           => 'User ID',
+        'personal_email'    => 'Personal Email',
+        'mobile_number'     => 'Mobile Number',
+        'date_of_birth'     => 'Date of birth',
+        'about_info'        => 'About Info',
+        'bank_acc_no'       => 'Bank account number',
+        'social_sec_no'     => 'Social security number',
+        'customer_number'   => 'Customer Number'
+    ];
+
     protected $fillable = array(
         'user_id',
         'personal_email',
@@ -19,6 +30,8 @@ class PersonalDetail extends Model
         'social_sec_no',
         'customer_number'
     );
+
+    public static $messages = [];
 
     public static function rules($method, $id=0){
         switch($method){
@@ -32,11 +45,11 @@ class PersonalDetail extends Model
                 return [
                     'user_id'           => 'required|exists:users,id',
                     'personal_email'    => 'required|unique:personal_details,personal_email|exists:users,email',
-                    'mobile_number'     => 'required',
+                    'mobile_number'     => 'required|min:3|unique:personal_details,mobile_number',
                     'date_of_birth'     => 'required|date',
-                    'about_info'        => 'min:10',
-                    'bank_acc_no'       => 'min:10',
-                    'social_sec_no'     => 'min:10',
+                    'about_info'        => '',
+                    'bank_acc_no'       => '',
+                    'social_sec_no'     => '',
                     'customer_number'   => 'required|numeric|unique:personal_details,customer_number',
                 ];
             }
@@ -46,11 +59,11 @@ class PersonalDetail extends Model
                 return [
                     'user_id'           => 'required|exists:users,id',
                     'personal_email'    => 'required|unique:personal_details,personal_email|exists:users,email'.($id ? ",$id,id" : ''),
-                    'mobile_number'     => 'required',
+                    'mobile_number'     => 'required|min:3|unique:personal_details,mobile_number'.($id ? ",$id,id" : ''),
                     'date_of_birth'     => 'required|date',
-                    'about_info'        => 'min:10',
-                    'bank_acc_no'       => 'min:10',
-                    'social_sec_no'     => 'min:10',
+                    'about_info'        => '',
+                    'bank_acc_no'       => '',
+                    'social_sec_no'     => '',
                     'customer_number'   => 'required|numeric|unique:personal_details,customer_number'.($id ? ",$id,id" : '')
                 ];
             }
