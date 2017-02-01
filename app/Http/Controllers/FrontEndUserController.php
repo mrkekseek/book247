@@ -2386,6 +2386,7 @@ class FrontEndUserController extends Controller
             ];
             $validator = Validator::make($personalData, PersonalDetail::rules('POST'), PersonalDetail::$messages, PersonalDetail::$attributeNames);
             if ($validator->fails()){
+                $user->detachAllRoles();
                 $user->delete();
 
                 return [
