@@ -2647,10 +2647,10 @@ class FrontEndUserController extends Controller
                 }
 
                 try{
-                    $dob = Carbon::createFromFormat('Y-m-d H:i:s', @$vars['col_'.$i][$dob])->format('Y-m-d');
+                    $dateofbirth = Carbon::createFromFormat('Y-m-d H:i:s', @$vars['col_'.$i][$dob])->format('Y-m-d');
                 }
                 catch(\Exception $ex){
-                    $dob = Carbon::today()->format('Y-m-d');
+                    $dateofbirth = Carbon::today()->format('Y-m-d');
                 }
 
                 try{
@@ -2681,7 +2681,7 @@ class FrontEndUserController extends Controller
                     'membership_plan'   => @$vars['membership_'.$i],
                     'username'          => trim(@$vars['col_'.$i][$uname]),
                     'user_type'         => @$vars['col_'.$i][$utype],
-                    'date_of_birth'     => @$dob,
+                    'date_of_birth'     => @$dateofbirth,
                     'about_info'        => isset($vars['col_'.$i][$uinfo])?strtolower(trim($vars['col_'.$i][$uinfo])):'',
                     'address1'          => mb_strtolower(trim(@$vars['col_'.$i][$uaddress]), mb_detect_encoding(@$vars['col_'.$i][$uaddress])),
                     'postal_code'       => trim(@$vars['col_'.$i][$upostalcode]),
