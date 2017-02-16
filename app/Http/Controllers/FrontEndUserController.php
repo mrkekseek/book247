@@ -106,6 +106,202 @@ class FrontEndUserController extends Controller
         ]);
     }
 
+    public function all_front_members_list()
+    {
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
+            return redirect()->intended(route('admin/login'));
+        }
+        elseif (!$user->can('view-clients-list-all-clients')) {
+            return redirect()->intended(route('admin/error/permission_denied'));
+        }
+
+        $back_users = User::whereHas('roles', function($query){
+            $query->where('name', 'front-user');
+        })->orWhereHas('roles', function($query){
+            $query->where('name', 'front-member');
+        })->take(100)->get();
+
+        $allMemberships = MembershipPlan::orderBy('name','ASC')->get();
+
+        $breadcrumbs = [
+            'Home'              => route('admin'),
+            'Administration'    => route('admin'),
+            'Back End User'     => route('admin'),
+            'All Backend Users' => '',
+        ];
+        $text_parts  = [
+            'title'     => 'Front-End Users/Members',
+            'subtitle'  => 'list all',
+            'table_head_text1' => 'Backend User List'
+        ];
+        $sidebar_link= 'admin-frontend-all_members';
+
+        $role = Role::where('name','=','front-user')->get()->first();
+        //xdebug_var_dump($all_roles);
+
+        return view('admin/front_users/all_members_list_ajax', [
+            'users' => $back_users,
+            'breadcrumbs' => $breadcrumbs,
+            'text_parts'  => $text_parts,
+            'in_sidebar'  => $sidebar_link,
+            'allMemberships'    => $allMemberships
+        ]);
+    }
+
+    public function get_front_members_ajax_call(Request $request){
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
+            return [
+                'success' => false,
+                'errors'  => 'Error while trying to authenticate. Login first then use this function.',
+                'title'   => 'Not logged in'];
+        }
+        elseif (!$user->can('manage-clients')){
+            return [
+                'success'   => false,
+                'errors'    => 'You don\'t have permission to access this page',
+                'title'     => 'Permission Error'];
+            /*return redirect()->intended(route('admin/error/permission_denied'));*/
+        }
+
+        $vars           = $request->only('start','length','action');
+        $where_clause   = $request->only('user_email','user_phone','membership','user_date_from','user_date_to','user_status');
+        $filters        = $request->only('columns','order');
+
+        $members = OptimizeSearchMembers::where('first_name','!=','');
+
+        $amount_validator = Validator::make($where_clause, ["user_email" => "min:2"]);
+        if ( $amount_validator->fails() ){
+            // send error back
+        }
+        else{
+            $members->where('email','like','%'.$where_clause["user_email"].'%');
+        }
+
+        $from_validator = Validator::make($where_clause, ["user_date_from" => "required|date"]);
+        if ( $from_validator->fails() ){
+            // send error back
+        }
+        else{
+            $from_date = Carbon::createFromFormat('d/m/Y', $where_clause["user_date_from"])->format('Y-m-d');
+            $members->where('signing_date', '>=', $from_date);
+        }
+
+        $from_validator = Validator::make($where_clause, ["user_date_to" => "required|date"]);
+        if ( $from_validator->fails() ){
+            // send error back
+        }
+        else{
+            // since we have datetime in DB and we use date here, to get the current day as well we increment it to +1
+            $to_date = Carbon::createFromFormat('d/m/Y', $where_clause["user_date_to"])->addDay()->format('Y-m-d');
+            $members->where('signing_date', '<', $to_date);
+        }
+
+        $from_validator = Validator::make($where_clause, ["membership" => "required|numeric|exists:membership_plans,id"]);
+        if ( $from_validator->fails() ){
+            // send error back
+        }
+        else {
+            $members->where('membership_id','=',$where_clause["membership"]);
+        }
+
+        $from_validator = Validator::make($where_clause, ["user_phone" => "required|min:1"]);
+        if ( $from_validator->fails() ){
+            // send error back
+        }
+        else {
+            $members->where('phone','like', '%'.$where_clause["user_phone"].'%');
+        }
+
+        $from_validator = Validator::make($where_clause, ["user_status" => "required|in:pending,active,deleted,suspended|min:5"]);
+        if ( $from_validator->fails() ){
+            // send error back
+        }
+        else {
+            $members->where('user_status','=', $where_clause["user_status"]);
+        }
+
+        // order by rules
+        $orderColumn = $filters['order'][0]['column'];
+        $orderDirection = $filters['order'][0]['dir'];
+        switch($orderColumn){
+            case 1 : // order by full name
+                $orderByFirst = 'first_last_name';
+                break;
+            case 2 : // order by email
+                $orderByFirst = 'email';
+                break;
+            case 3 : // order by phone number
+                $orderByFirst = 'phone';
+                break;
+            case 4 : // order by membership_id
+                $orderByFirst = 'membership_id';
+                break;
+            case 5 : // order by signing_date
+                $orderByFirst = 'signing_date';
+                break;
+            default : // order by status
+                $orderByFirst = 'status';
+                break;
+        }
+
+        switch($orderDirection){
+            case 'desc':
+            case 'DESC':
+                $orderBySecond = 'desc';
+                break;
+            default:
+                $orderBySecond = 'asc';
+                break;
+        }
+
+        $members->orderBy($orderByFirst, $orderBySecond);
+        $query = $members->get();
+
+        $iTotalRecords = sizeof($query);
+        $iDisplayLength = intval($_REQUEST['length']);
+        $iDisplayLength = $iDisplayLength < 0 ? $iTotalRecords : $iDisplayLength;
+        $iDisplayStart = intval($_REQUEST['start']);
+        $sEcho = intval($_REQUEST['draw']);
+
+        $records = array();
+        $records["data"] = array();
+
+        $end = $iDisplayStart + $iDisplayLength;
+        $end = $end > $iTotalRecords ? $iTotalRecords : $end;
+
+        $status_list = [
+            "success" => "Pending",
+            "info"    => "Closed",
+            "danger"  => "On Hold",
+            "warning" => "Fraud"];
+
+        for($i = $iDisplayStart; $i < $end; $i++) {
+            $records["data"][] = array(
+                '',
+                $query[$i]->first_last_name,
+                $query[$i]->email,
+                $query[$i]->phone,
+                $query[$i]->membership_name,
+                $query[$i]->signing_date,
+                '<span class="label label-sm label-info"> Active </span>',
+                '<a href="'.$query[$i]->user_link_details.'" class="btn btn-sm btn-outline grey-salsa"><i class="fa fa-search"></i> View</a>',
+            );
+        }
+
+        if (isset($_REQUEST["customActionType"]) && $_REQUEST["customActionType"] == "group_action") {
+            $records["customActionStatus"] = "OK"; // pass custom message(useful for getting status of group actions)
+            $records["customActionMessage"] = "Group action successfully has been completed. Well done!"; // pass custom message(useful for getting status of group actions)
+        }
+
+        $records["draw"] = $sEcho;
+        $records["recordsTotal"] = $iTotalRecords;
+        $records["recordsFiltered"] = $iTotalRecords;
+
+        return $records;
+    }
+
     /**
      * Show the form for creating a new resource.
      *

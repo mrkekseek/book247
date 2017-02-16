@@ -472,7 +472,12 @@ Route::group(['middleware' => 'web'], function () {
     /** Start Routes for front users in backend */
     Route::get('admin/front_users/view_all_members', [
         'as'    => 'admin/front_users/view_all_members',
-        'uses'  => 'FrontEndUserController@index'
+        'uses'  => 'FrontEndUserController@all_front_members_list'
+    ]);
+
+    Route::get('admin/front_users/view_all_members_new', [
+        'as'    => 'admin/front_users/view_all_members_new',
+        'uses'  => 'FrontEndUserController@all_front_members_list'
     ]);
 
     Route::get('admin/front_users/register_new', [
@@ -986,6 +991,11 @@ Route::group(['prefix'=>'ajax', 'middleware' => 'web'], function(){
     Route::post('register_new_setting',[
         'as'    => 'ajax/register_new_setting',
         'uses'  => 'AppSettings@register_new_setting'
+    ]);
+
+    Route::post('get_all_list_members', [
+        'as'    => 'ajax/get_all_list_members',
+        'uses'  => 'FrontEndUserController@get_front_members_ajax_call'
     ]);
 });
 

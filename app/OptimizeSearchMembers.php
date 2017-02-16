@@ -27,13 +27,16 @@ class OptimizeSearchMembers extends Model
         'first_last_name'        => 'First and Last names',
         'first_middle_last_name' => 'First, Middle and Last names',
 
-        'email'     => 'Email',
-        'phone'     => 'Phone No.',
+        'email'         => 'Email',
+        'user_status'   => 'User status',
+        'phone'         => 'Phone No.',
 
         'city'      => 'City',
         'region'    => 'Region',
 
+        'membership_id'         => 'Membership ID',
         'membership_name'       => 'Membership Name',
+        'signing_date'          => 'Signing Date',
         'user_profile_image'    => 'User Profile Image',
         'base64_avatar_image'   => 'Avatar Base64 Image',
 
@@ -50,10 +53,13 @@ class OptimizeSearchMembers extends Model
         'first_last_name',
         'first_middle_last_name',
         'email',
+        'user_status',
         'phone',
         'city',
         'region',
+        'membership_id',
         'membership_name',
+        'signing_date',
         'user_profile_image',
         'user_link_details'
     ];
@@ -75,10 +81,13 @@ class OptimizeSearchMembers extends Model
                     'first_last_name'       => 'required|min:5|max:250',
                     'first_middle_last_name'=> 'required|min:5|max:250',
                     'email'                 => 'required|email',
+                    'user_status'           => '',
                     'phone'                 => 'required',
                     'city'                  => '',
                     'region'                => '',
+                    'membership_id'         => '',
                     'membership_name'       => 'min:3',
+                    'signing_date'          => 'date',
                     'user_profile_image'    => 'min:3',
                     'user_link_details'     => 'required',
                 ];
@@ -94,10 +103,13 @@ class OptimizeSearchMembers extends Model
                     'first_last_name'       => 'required|min:5|max:250',
                     'first_middle_last_name'=> 'required|min:5|max:250',
                     'email'                 => 'required|email',
+                    'user_status'           => '',
                     'phone'                 => 'required',
                     'city'                  => '',
                     'region'                => '',
+                    'membership_id'         => '',
                     'membership_name'       => 'min:3',
+                    'signing_date'          => 'date',
                     'user_profile_image'    => 'min:3',
                     'user_link_details'     => 'required',
                 ];
@@ -112,7 +124,7 @@ class OptimizeSearchMembers extends Model
 
         DB::disableQueryLog();
         $query = DB::table('users')
-            ->select('users.first_name','users.middle_name','users.last_name','users.id','users.email','personal_details.mobile_number')
+            ->select('users.first_name','users.middle_name','users.last_name','users.id','users.email','users.created_at','users.status','personal_details.mobile_number')
             ->leftjoin('personal_details','personal_details.user_id','=','users.id')
             ->leftjoin('role_user', 'users.id', '=', 'role_user.user_id')
             ->whereIn('role_user.role_id',['5','6'])
@@ -121,16 +133,18 @@ class OptimizeSearchMembers extends Model
         $results = $query->get();
         if ($results){
             foreach($results as $result){
-                $user_temp = User::where('id','=',$result->id)->get()->first();
-                $user_link = route('admin/front_users/view_user',['id'=>$user_temp->id]);
+                //$user_temp = User::where('id','=',$result->id)->get()->first();
+                $user_link = route('admin/front_users/view_user',['id'=>$result->id]);
                 //$avatar = $user_temp->get_avatar_image();
 
                 $userMembership = UserMembership::where('user_id','=',$result->id)->where('status','=','active')->get()->first();
                 if ($userMembership){
                     $activeMembership = $userMembership->membership_name;
+                    $membershipID = $userMembership->membership_id;
                 }
                 else{
                     $activeMembership = 'No Active Membership';
+                    $membershipID = 0;
                 }
 
                 $fillable = [
@@ -141,10 +155,13 @@ class OptimizeSearchMembers extends Model
                     'first_last_name'       => $result->first_name.' '.$result->last_name,
                     'first_middle_last_name'=> $result->first_name.' '.$result->middle_name.' '.$result->last_name,
                     'email'             => $result->email,
+                    'user_status'       => $result->status,
                     'phone'             => $result->mobile_number,
                     'city'              => '',
                     'region'            => '',
-                    'membership_name'       => $activeMembership,
+                    'membership_id'     => $membershipID,
+                    'membership_name'   => $activeMembership,
+                    'signing_date'      => $result->created_at,
                     'user_profile_image'    => asset('assets/pages/img/avatars/team'.rand(1,10).'.jpg'),
                     'base64_avatar_image'   => '',
                     'user_link_details'     => $user_link
@@ -175,7 +192,7 @@ class OptimizeSearchMembers extends Model
 
         DB::disableQueryLog();
         $query = DB::table('users')
-            ->select('users.first_name','users.middle_name','users.last_name','users.id','users.email','personal_details.mobile_number')
+            ->select('users.first_name','users.middle_name','users.last_name','users.id','users.email','users.status','users.created_at','personal_details.mobile_number')
             ->leftjoin('personal_details','personal_details.user_id','=','users.id')
             ->leftjoin('role_user', 'users.id', '=', 'role_user.user_id')
             ->whereIn('role_user.role_id',['5','6'])
@@ -185,16 +202,18 @@ class OptimizeSearchMembers extends Model
         $results = $query->get();
         if ($results){
             foreach($results as $result){
-                $user_temp = User::where('id','=',$result->id)->get()->first();
-                $user_link = route('admin/front_users/view_user',['id'=>$user_temp->id]);
+                //$user_temp = User::where('id','=',$result->id)->get()->first();
+                $user_link = route('admin/front_users/view_user',['id'=>$result->id]);
                 //$avatar = $user_temp->get_avatar_image();
 
                 $userMembership = UserMembership::where('user_id','=',$result->id)->where('status','=','active')->get()->first();
                 if ($userMembership){
                     $activeMembership = $userMembership->membership_name;
+                    $membershipID = $userMembership->membership_id;
                 }
                 else{
                     $activeMembership = 'No Active Membership';
+                    $membershipID = 0;
                 }
 
                 $fillable = [
@@ -205,10 +224,13 @@ class OptimizeSearchMembers extends Model
                     'first_last_name'       => $result->first_name.' '.$result->last_name,
                     'first_middle_last_name'=> $result->first_name.' '.$result->middle_name.' '.$result->last_name,
                     'email'             => $result->email,
+                    'user_status'       => $result->status,
                     'phone'             => $result->mobile_number,
                     'city'              => '',
                     'region'            => '',
-                    'membership_name'       => $activeMembership,
+                    'membership_id'     => $membershipID,
+                    'membership_name'   => $activeMembership,
+                    'signing_date'      => $result->created_at,
                     'user_profile_image'    => asset('assets/pages/img/avatars/team'.rand(1,10).'.jpg'),
                     'base64_avatar_image'   => '',
                     'user_link_details'     => $user_link
@@ -235,7 +257,7 @@ class OptimizeSearchMembers extends Model
 
         DB::disableQueryLog();
         $query = DB::table('users')
-            ->select('users.first_name','users.middle_name','users.last_name','users.id','users.email','personal_details.mobile_number')
+            ->select('users.first_name','users.middle_name','users.last_name','users.id','users.email','users.status','users.created_at','personal_details.mobile_number')
             ->leftjoin('personal_details','personal_details.user_id','=','users.id')
             ->leftjoin('role_user', 'users.id', '=', 'role_user.user_id')
             ->whereIn('role_user.role_id',['5','6'])
@@ -245,16 +267,18 @@ class OptimizeSearchMembers extends Model
         $results = $query->get();
         if ($results){
             foreach($results as $result){
-                $user_temp = User::where('id','=',$result->id)->get()->first();
-                $user_link = route('admin/front_users/view_user',['id'=>$user_temp->id]);
+                //$user_temp = User::where('id','=',$result->id)->get()->first();
+                $user_link = route('admin/front_users/view_user',['id'=>$result->id]);
                 //$avatar = $user_temp->get_avatar_image();
 
                 $userMembership = UserMembership::where('user_id','=',$result->id)->where('status','=','active')->get()->first();
                 if ($userMembership){
                     $activeMembership = $userMembership->membership_name;
+                    $membershipID = $userMembership->membership_id;
                 }
                 else{
                     $activeMembership = 'No Active Membership';
+                    $membershipID = 0;
                 }
 
                 $fillable = [
@@ -265,10 +289,13 @@ class OptimizeSearchMembers extends Model
                     'first_last_name'       => $result->first_name.' '.$result->last_name,
                     'first_middle_last_name'=> $result->first_name.' '.$result->middle_name.' '.$result->last_name,
                     'email'             => $result->email,
+                    'user_status'       => $result->status,
                     'phone'             => $result->mobile_number,
                     'city'              => '',
                     'region'            => '',
-                    'membership_name'       => $activeMembership,
+                    'membership_id'     => $membershipID,
+                    'membership_name'   => $activeMembership,
+                    'signing_date'      => $result->created_at,
                     'user_profile_image'    => asset('assets/pages/img/avatars/team'.rand(1,10).'.jpg'),
                     'base64_avatar_image'   => '',
                     'user_link_details'     => $user_link
