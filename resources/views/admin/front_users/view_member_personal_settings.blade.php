@@ -187,7 +187,7 @@
                                                         <div class="col-md-9">
                                                             <div class="fileinput fileinput-{{ (strlen($avatar)>10) ? 'exists':'new' }} " data-provides="fileinput">
                                                                 <div class="fileinput-new thumbnail" style="width: 200px; height: 244px;">
-                                                                    <img src="//www.placehold.it/200x246/EFEFEF/AAAAAA&amp;text=no+image" alt="" /> </div>
+                                                                    <img src="{{ asset('assets/global/img/default-notext-text.png') }}" alt="" /> </div>
                                                                 <div class="fileinput-preview fileinput-exists thumbnail" style="max-width: 200px; max-height: 240px;">
                                                                     @if ( strlen($avatar)>10 )
                                                                         <img src="{{ $avatar }}" />
