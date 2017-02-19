@@ -67,7 +67,9 @@ class FrontEndUserController extends Controller
 
     public function index()
     {
-        $user = Auth::user();
+        return $this->all_front_members_list();
+
+        /*$user = Auth::user();
         if (!$user || !$user->is_back_user()) {
             return redirect()->intended(route('admin/login'));
         }
@@ -103,7 +105,7 @@ class FrontEndUserController extends Controller
             'text_parts'  => $text_parts,
             'in_sidebar'  => $sidebar_link,
             'role'   => $role,
-        ]);
+        ]);*/
     }
 
     public function all_front_members_list()
@@ -272,10 +274,10 @@ class FrontEndUserController extends Controller
         $end = $end > $iTotalRecords ? $iTotalRecords : $end;
 
         $status_list = [
-            "success" => "Pending",
-            "info"    => "Closed",
-            "danger"  => "On Hold",
-            "warning" => "Fraud"];
+            'active'    => 'success',
+            'suspended' => 'warning',
+            'deleted'   => 'danger',
+            'pending'   => 'info'];
 
         for($i = $iDisplayStart; $i < $end; $i++) {
             $records["data"][] = array(
@@ -285,8 +287,8 @@ class FrontEndUserController extends Controller
                 $query[$i]->phone,
                 $query[$i]->membership_name,
                 $query[$i]->signing_date,
-                '<span class="label label-sm label-info"> Active </span>',
-                '<a href="'.$query[$i]->user_link_details.'" class="btn btn-sm btn-outline grey-salsa"><i class="fa fa-search"></i> View</a>',
+                '<span class="label label-sm label-'.$status_list[$query[$i]->user_status].'"> '.ucfirst($query[$i]->user_status).' </span>',
+                '<a href="'.$query[$i]->user_link_details.'" target="_blank" class="btn btn-sm btn-outline grey-salsa"><i class="fa fa-search"></i> View</a>',
             );
         }
 
@@ -680,6 +682,7 @@ class FrontEndUserController extends Controller
         else {
             $my_plan = MembershipPlan::where('id','=',1)->get()->first();
         }
+
         $membership_plans = MembershipPlan::with('price')->where('id','!=','1')->where('status','=','active')->get()->sortBy('name');
         $membership_plans_update = [];
         foreach ($membership_plans as $single){

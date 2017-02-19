@@ -158,6 +158,7 @@ class UserMembership extends Model
             'day_start'     => Carbon::createFromFormat('Y-m-d',$this->day_start)->format('j F, Y'),
             'day_stop'      => Carbon::createFromFormat('Y-m-d',$this->day_stop)->format('j F, Y'),
             'membership_name'   => $this->membership_name,
+            'contract_number'   => $this->contract_number,
             'invoice_period'    => $invoice_period[$this->invoice_period],
             'binding_period'    => $this->binding_period,
             'sign_out_period'   => $this->sign_out_period,

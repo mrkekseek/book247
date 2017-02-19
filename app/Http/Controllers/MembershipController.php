@@ -288,7 +288,7 @@ class MembershipController extends Controller
             $is_backend_employee = $user->can('members-management');
         }
 
-        $vars = $request->only('member_id', 'cancellation_date');
+        $vars = $request->only('member_id', 'cancellation_date', 'is_overwrite', 'custom_cancellation_date');
         if ($is_backend_employee==false && $user->id!=$vars['member_id']){
             return [
                 'success'   => false,
@@ -314,16 +314,29 @@ class MembershipController extends Controller
 
         $old_plan = UserMembership::where('user_id','=',$member->id)->whereIn('status',['active','suspended'])->orderBy('created_at','desc')->get()->first();
         if ($old_plan) {
-            $plannedInvoiceCancelled = UserMembershipInvoicePlanning::where('id','=',$vars['cancellation_date'])->where('user_membership_id','=',$old_plan->id)->get()->first();
-            if (!$plannedInvoiceCancelled){
-                return [
-                    'success'   => false,
-                    'errors'    => 'The selected date is not valid and is outside the valid range',
-                    'title'     => 'Error Validating Date'
-                ];
-            }
+            if (isset($vars['is_overwrite']) && $vars['is_overwrite']==1 && $user->can('general-permission-overwrite')){
+                try{
+                    $cancellation_date = Carbon::createFromFormat('d-m-Y H:i:s',$vars['custom_cancellation_date'].' 00:00:00')->format('Y-m-d');
+                }
+                catch (\Exception $err){
+                    // do nothing
+                }
 
-            $member->cancel_membership_plan($old_plan, $plannedInvoiceCancelled->issued_date, $plannedInvoiceCancelled->last_active_date);
+                if (isset($cancellation_date)){
+                    $member->cancel_membership_plan($old_plan, $cancellation_date, $cancellation_date);
+                }
+            }
+            else{
+                $plannedInvoiceCancelled = UserMembershipInvoicePlanning::where('id','=',$vars['cancellation_date'])->where('user_membership_id','=',$old_plan->id)->get()->first();
+                if (!$plannedInvoiceCancelled){
+                    return [
+                        'success'   => false,
+                        'errors'    => 'The selected date is not valid and is outside the valid range',
+                        'title'     => 'Error Validating Date'
+                    ];
+                }
+                $member->cancel_membership_plan($old_plan, $plannedInvoiceCancelled->issued_date, $plannedInvoiceCancelled->last_active_date);
+            }
 
             return [
                 'success'   => true,

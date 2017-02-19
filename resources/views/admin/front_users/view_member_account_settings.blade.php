@@ -272,14 +272,17 @@
                                                         <div class="row">
                                                             <div class="col-md-4">
                                                                 <div class="note note-info font-grey-mint membership_options" style="margin:0 0 10px; padding:5px 20px 10px 10px;">
-                                                                    <p> Price </p>
-                                                                    <h4 class="block" style="margin-bottom:0px; font-size:32px;"> <b>{{ $plan_details['price'].' '.Config::get('constants.finance.currency') }} </b> </h4>
+                                                                    <p> <b>Price</b> / Discount </p>
+                                                                    <h4 class="block" style="margin-bottom:0px; font-size:28px;">
+                                                                        <b>{{ $plan_details['price'].' '.Config::get('constants.finance.currency') }} </b> /
+                                                                        {{ $plan_details['discount'].' '.Config::get('constants.finance.currency') }}
+                                                                    </h4>
                                                                 </div>
                                                             </div>
                                                             <div class="col-md-4">
                                                                 <div class="note note-info font-grey-mint membership_options" style="margin:0 0 10px; padding:5px 20px 10px 10px;">
-                                                                    <p> Discount </p>
-                                                                    <h4 class="block" style="margin-bottom:0px; font-size:32px;"> <b>{{ $plan_details['discount'] }}</b> </h4>
+                                                                    <p> Contract Number </p>
+                                                                    <h4 class="block" style="margin-bottom:0px; font-size:28px;"> {{ $plan_details['contract_number'] }} </h4>
                                                                 </div>
                                                             </div>
                                                             <div class="col-md-4">
@@ -653,19 +656,43 @@
 
                 <div class="modal fade bs-modal-sm" id="cancel_plan_box" tabindex="-1" role="dialog" aria-hidden="true">
                     <div class="modal-dialog">
-                        <div class="modal-content">
+                        <div class="modal-content ">
                             <div class="modal-header">
                                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
                                 <h4 class="modal-title">Do you want to cancel the current membership plan?</h4>
                             </div>
                             <div class="modal-body margin-top-10" style="margin-bottom:0px; padding-bottom:5px;"> Please select the first day with no plan, from the drop-down list below</div>
-                            <div class="modal-body margin-bottom-20" style="padding-top:5px;">
+                            <div class="modal-body margin-bottom-0" style="padding-top:5px;">
                                 <select name="date_cancellation_time" id="date_cancellation_time" class="form-control input-inline input-large  inline-block list_all_plans">
                                     @foreach ($invoiceCancellation as $key=>$val)
                                         <option value="{{$key}}"> {{$val}} </option>
                                     @endforeach
                                 </select>
                             </div>
+
+                            @if (Auth::user()->can('general-permission-overwrite'))
+                            <div class="modal-body margin-top-0" style="padding-top:0px;">
+                                <div class="note note-danger" style="margin-bottom:0px;">
+                                    <div class="form-group margin-bottom-5">
+                                        <span class="help-inline">Membership Cancellation Date</span>
+                                        <div class="input-group input-small date date-picker" data-date="{{ \Carbon\Carbon::today()->format('d-m-Y') }}" data-date-format="dd-mm-yyyy" data-date-viewmode="month" style="display:inline-flex; margin-top:2px; margin-right:40px;">
+                                            <input type="text" class="form-control" name="custom_cancel_date" readonly style="background-color:#ffffff;">
+                                            <span class="input-group-btn">
+                                                <button class="btn default" type="button">
+                                                    <i class="fa fa-calendar"></i>
+                                                </button>
+                                            </span>
+                                        </div>
+
+                                        <div class="checkbox-list">
+                                            <label class="checkbox-inline help-inline">
+                                                <input type="checkbox" id="overwrite_admin_cancellation_rule" value="1" > Accept cancellation overwrite rule </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            @endif
+
                             <div class="modal-footer">
                                 <button type="button" class="btn dark btn-outline" data-dismiss="modal">No, Go Back</button>
                                 <button type="button" class="btn green" data-toggle="modal" href="#cancel_plan_confirm_box">Cancel Membership</button>
@@ -1288,7 +1315,11 @@
                 type: "post",
                 data: {
                     'member_id':userID,
-                    'cancellation_date':$('select[name="date_cancellation_time"]').val()
+                    'cancellation_date':$('select[name="date_cancellation_time"]').val(),
+                    @if (Auth::user()->can('general-permission-overwrite'))
+                    'is_overwrite':$('#overwrite_admin_cancellation_rule').val(),
+                    'custom_cancellation_date':$('input[name="custom_cancel_date"]').val()
+                    @endif
                 },
                 success: function(data){
                     if (data.success) {
@@ -1297,7 +1328,7 @@
 
                         setTimeout(function(){
                             location.reload();
-                        },2000);
+                        },200000);
                     }
                     else{
                         show_notification(data.title, data.errors, 'tangerine', 3500, 0);
