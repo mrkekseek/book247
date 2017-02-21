@@ -709,6 +709,56 @@ class FrontEndUserController extends Controller
             $accessCardNo = $cardNo->key_no;
         }
 
+        $plannedInvoicesAndActions = [];
+        if (isset($plannedInvoices)){
+            foreach ($plannedInvoices as $singleInvoice){
+                $startDate = Carbon::createFromFormat('Y-m-d H:i:s', $singleInvoice['issued_date'].' 00:00:00');
+                $endDate = Carbon::createFromFormat('Y-m-d H:i:s',   $singleInvoice['last_active_date'].' 00:00:00');
+
+                foreach($plan_request as $keyS=>$single_request){
+                    if ($startDate->lte($single_request['start_date']) && $endDate->gte($single_request['end_date']) && $single_request['action_type']=='update'){
+                        $plannedInvoicesAndActions[] = [
+                            'type'  => $single_request['action_type'],
+                            'object'=> $single_request
+                        ];
+
+                        unset($plan_request[$keyS]);
+                    }
+                    elseif ($startDate->lte($single_request['start_date']) && $endDate->gte($single_request['start_date']) && $single_request['action_type']=='freeze'){
+                        $plannedInvoicesAndActions[] = [
+                            'type'  => $single_request['action_type'],
+                            'object'=> $single_request
+                        ];
+                        unset($plan_request[$keyS]);
+                    }
+                }
+
+                $plannedInvoicesAndActions[] = [
+                    'type'  => 'invoice',
+                    'object'=> $singleInvoice
+                ];
+
+                foreach($plan_request as $keyS=>$single_request) {
+                    if ($startDate->lte($single_request['start_date']) && $endDate->gte($single_request['end_date']) && $single_request['action_type'] == 'cancel') {
+                        $plannedInvoicesAndActions[] = [
+                            'type' => $single_request['action_type'],
+                            'object' => $single_request
+                        ];
+                        unset($plan_request[$keyS]);
+                    }
+                }
+            }
+
+            if (sizeof($plan_request)>0){
+                foreach($plan_request as $keyS=>$single_request) {
+                    $plannedInvoicesAndActions[] = [
+                        'type'      => $single_request['action_type'],
+                        'object'    => $single_request
+                    ];
+                }
+            }
+        }
+
         $breadcrumbs = [
             'Home'              => route('admin'),
             'Administration'    => route('admin'),
@@ -737,7 +787,8 @@ class FrontEndUserController extends Controller
             'canCancel'         => $canCancel,
             'canFreeze'         => $canFreeze,
             'canUpdate'         => $canUpdate,
-            'accessCardNo'      => @$accessCardNo
+            'accessCardNo'      => @$accessCardNo,
+            'InvoicesActionsPlanned'=> $plannedInvoicesAndActions
         ]);
     }
 

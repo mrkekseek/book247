@@ -331,10 +331,10 @@
                                                             <span class="caption-helper">for the signed membership plan</span>
                                                         </div>
                                                         <div class="tools">
-                                                            <a class="collapse" href="" data-original-title="" title=""> </a>
+                                                            <a class="expand" href="" data-original-title="" title=""> </a>
                                                         </div>
                                                     </div>
-                                                    <div class="portlet-body">
+                                                    <div class="portlet-body" style="display:none;">
                                                         <!-- BEGIN restriction boxes-->
                                                         <div class="row">
                                                         @if($restrictions)
@@ -359,13 +359,13 @@
                                             </div>
                                             @endif
 
-                                            @if (sizeof($plannedInvoices))
+                                            @if (sizeof($InvoicesActionsPlanned))
                                             <div class="col-md-12">
                                                 <div class="portlet light bordered">
                                                     <div class="portlet-title">
                                                         <div class="caption">
                                                             <i class="icon-equalizer font-blue-steel"></i>
-                                                            <span class="caption-subject font-blue-steel bold uppercase"> Membership planned invoices </span>
+                                                            <span class="caption-subject font-blue-steel bold uppercase"> Membership planned invoices and Actions </span>
                                                             <span class="caption-helper">for the signed membership plan</span>
                                                         </div>
                                                         <div class="tools">
@@ -392,94 +392,79 @@
                                                                 </tr>
                                                                 </thead>
                                                                 <tbody>
-                                                                @foreach ($plannedInvoices as $singlePlanned)
-                                                                    @if (sizeof($plan_requests)>0)
-                                                                        @foreach($plan_requests as $keys=>$one_request)
-                                                                            @if ($one_request['action_type']=='freeze' && $one_request['after_date']->between(\Carbon\Carbon::createFromFormat('Y-m-d H:i:s',$singlePlanned['issued_date'].' 00:00:00'), \Carbon\Carbon::createFromFormat('Y-m-d H:i:s',$singlePlanned['last_active_date'].' 00:00:00')))
-                                                                                <tr>
-                                                                                    <td class="highlight" colspan="5">
-                                                                                        @if ($one_request['processed']=='1' && $one_request['status']=='old')
-                                                                                            <div class="warning"></div> <a class="font-green-seagreen"> Processed - </a>
-                                                                                        @elseif ($one_request['processed']=='1')
-                                                                                            <div class="warning"></div> <a class="font-green-seagreen"> Waiting Activation - </a>
-                                                                                        @else
-                                                                                            <div class="danger"></div> <a class="font-red-thunderbird"> Pending - </a>
-                                                                                        @endif
-                                                                                        Freeze membership between <b class="font-purple-studio">{{ $one_request['start_date']->format('d M Y') }}</b> and <b class="font-purple-studio">{{ $one_request['end_date']->format('d M Y') }}</b>.
-                                                                                        Action added by <a style="margin-left:0px;" href="{{ $one_request['added_by_link'] }}" target="_blank">{{ $one_request['added_by_name'] }}</a>
-                                                                                        on {{ $one_request['created_at'] }} (last update on {{ $one_request['updated_at'] }})
-                                                                                        @if ($one_request['processed']=='0')
-                                                                                            | <a class="label label-sm label-danger remove_pending_action" data-id="{{ $one_request['id'] }}"> delete </a>
-                                                                                        @endif
-                                                                                    </td>
-                                                                                </tr>
-                                                                                <?php unset($plan_requests[$keys]); ?>
-                                                                            @elseif ($one_request['action_type']=='update' && $one_request['start_date']->between(\Carbon\Carbon::createFromFormat('Y-m-d H:i:s',$singlePlanned['issued_date'].' 00:00:00'), \Carbon\Carbon::createFromFormat('Y-m-d H:i:s',$singlePlanned['last_active_date'].' 00:00:00')) )
-                                                                                <tr>
-                                                                                    <td class="highlight" colspan="5">
-                                                                                        @if ($one_request['processed']=='1')
-                                                                                            <div class="warning"></div> <a class="font-green-seagreen"> Processed - </a>
-                                                                                        @else
-                                                                                            <div class="danger"></div> <a class="font-red-thunderbird"> Pending - </a>
-                                                                                        @endif
-                                                                                        Membership {{ $one_request['additional_values']->is_update===true?'upgraded':'downgraded' }}
-                                                                                            from <b>{{ $one_request['additional_values']->old_membership_plan_name }}</b> to <b>{{ $one_request['additional_values']->new_membership_plan_name }}</b>
-                                                                                            starting with <b class="font-purple-studio">{{ \Carbon\Carbon::instance($one_request['start_date'])->format('d M Y') }}</b>.
-                                                                                            Action added by <a style="margin-left:0px;" href="{{ $one_request['added_by_link'] }}" target="_blank">{{ $one_request['added_by_name'] }}</a>
-                                                                                            on {{ $one_request['created_at'] }} (last update on {{ $one_request['updated_at'] }})
-                                                                                        @if ($one_request['processed']=='0')
-                                                                                            | <a class="label label-sm label-danger remove_pending_action" data-id="{{ $one_request['id'] }}"> delete </a>
-                                                                                        @endif
-                                                                                    </td>
-                                                                                </tr>
-                                                                                <?php unset($plan_requests[$keys]); ?>
-                                                                            @endif
-                                                                        @endforeach
-                                                                    @endif
-
+                                                                @foreach ($InvoicesActionsPlanned as $singlePlanned)
+                                                                    @if ($singlePlanned['type']=='invoice')
                                                                     <tr>
                                                                         <td class="highlight">
-                                                                        @if ($singlePlanned['invoiceLink']!='')
+                                                                        @if ($singlePlanned['object']['invoiceLink']!='')
                                                                             <div class="success"></div>
-                                                                            <a href="{{ $singlePlanned['invoiceLink'] }}" target="_blank"> {{ $singlePlanned['item_name'] }} </a>
+                                                                            <a href="{{ $singlePlanned['object']['invoiceLink'] }}" target="_blank"> {{ $singlePlanned['object']['item_name'] }} </a>
                                                                         @else
                                                                             <div class="success"></div>
-                                                                            <span> &nbsp; &nbsp; {{ $singlePlanned['item_name'] }} </span>
+                                                                            <span> &nbsp; &nbsp; {{ $singlePlanned['object']['item_name'] }} </span>
                                                                         @endif
                                                                         </td>
-                                                                        <td> {{ $singlePlanned['issued_date'] }} - {{ $singlePlanned['status'] }} </td>
-                                                                        <td> {{ $singlePlanned['last_active_date'] }} </td>
-                                                                        <td class="hidden-xs"> {{ $singlePlanned['price'].' '.Config::get('constants.finance.currency') }} </td>
+                                                                        <td> {{ $singlePlanned['object']['issued_date'] }} - {{ $singlePlanned['object']['status'] }} </td>
+                                                                        <td> {{ $singlePlanned['object']['last_active_date'] }} </td>
+                                                                        <td class="hidden-xs"> {{ $singlePlanned['object']['price'].' '.Config::get('constants.finance.currency') }} </td>
                                                                         <td>
-                                                                            @if ($singlePlanned['invoiceStatus']!='')
-                                                                                <span class="label label-sm label-success"> {{$singlePlanned['invoiceStatus']}} </span>
+                                                                            @if ($singlePlanned['object']['invoiceStatus']!='')
+                                                                                <span class="label label-sm label-success"> {{$singlePlanned['object']['invoiceStatus']}} </span>
                                                                             @endif
                                                                         </td>
-                                                                        <!--<td> <a href="javascript:;" class="btn btn-sm green"> Group Invoices <i class="fa fa-plus"></i></a>
-                                                                            <a href="javascript:;" class="btn btn-sm purple"> Defer <i class="fa fa-times"></i></a></td>-->
                                                                     </tr>
-
-                                                                    @if (sizeof($plan_requests)>0)
-                                                                        @foreach($plan_requests as $keys=>$one_request)
-                                                                            @if ($one_request['action_type']=='cancel' && $one_request['end_date']->eq(\Carbon\Carbon::createFromFormat('Y-m-d H:i:s',$singlePlanned['last_active_date'].' 00:00:00')))
-                                                                                <tr>
-                                                                                    <td class="highlight" colspan="5">
-                                                                                        @if ($one_request['processed']=='1')
-                                                                                            <div class="warning"></div> <a class="font-green-seagreen"> Processed - </a>
-                                                                                        @else
-                                                                                            <div class="danger"></div> <a class="font-red-thunderbird"> Pending - </a>
-                                                                                        @endif
-                                                                                        Membership cancellation starting with <b class="font-purple-studio">{{ \Carbon\Carbon::instance($one_request['end_date'])->addDay()->format('d M Y') }}</b>.
-                                                                                        Action added by <a style="margin-left:0px;" href="{{ $one_request['added_by_link'] }}" target="_blank">{{ $one_request['added_by_name'] }}</a>
-                                                                                        on {{ $one_request['created_at'] }} (last update on {{ $one_request['updated_at'] }})
-                                                                                        @if ($one_request['processed']=='0')
-                                                                                            | <a class="label label-sm label-danger remove_pending_action" data-id="{{ $one_request['id'] }}"> delete </a>
-                                                                                        @endif
-                                                                                    </td>
-                                                                                </tr>
-                                                                                <?php unset($plan_requests[$keys]); ?>
+                                                                    @elseif ($singlePlanned['type']=='cancel')
+                                                                    <tr>
+                                                                        <td class="highlight" colspan="5">
+                                                                            @if ($singlePlanned['object']['processed']=='1')
+                                                                                <div class="warning"></div> <a class="font-green-seagreen"> Processed - </a>
+                                                                            @else
+                                                                                <div class="danger"></div> <a class="font-red-thunderbird"> Pending - </a>
                                                                             @endif
-                                                                        @endforeach
+                                                                            Membership cancellation starting with <b class="font-purple-studio">{{ \Carbon\Carbon::instance($singlePlanned['object']['end_date'])->addDay()->format('d M Y') }}</b>.
+                                                                            Action added by <a style="margin-left:0px;" href="{{ $singlePlanned['object']['added_by_link'] }}" target="_blank">{{ $singlePlanned['object']['added_by_name'] }}</a>
+                                                                            on {{ $singlePlanned['object']['created_at'] }} (last update on {{ $singlePlanned['object']['updated_at'] }})
+                                                                            @if ($singlePlanned['object']['processed']=='0')
+                                                                                | <a class="label label-sm label-danger remove_pending_action" data-id="{{ $singlePlanned['object']['id'] }}"> delete </a>
+                                                                            @endif
+                                                                        </td>
+                                                                    </tr>
+                                                                    @elseif ($singlePlanned['type']=='freeze')
+                                                                    <tr>
+                                                                        <td class="highlight" colspan="5">
+                                                                            @if ($singlePlanned['object']['processed']=='1' && $singlePlanned['object']['status']=='old')
+                                                                                <div class="warning"></div> <a class="font-green-seagreen"> Processed - </a>
+                                                                            @elseif ($singlePlanned['object']['processed']=='1')
+                                                                                <div class="warning"></div> <a class="font-green-seagreen"> Waiting Activation - </a>
+                                                                            @else
+                                                                                <div class="danger"></div> <a class="font-red-thunderbird"> Pending - </a>
+                                                                            @endif
+                                                                            Freeze membership between <b class="font-purple-studio">{{ $singlePlanned['object']['start_date']->format('d M Y') }}</b> and <b class="font-purple-studio">{{ $singlePlanned['object']['end_date']->format('d M Y') }}</b>.
+                                                                            Action added by <a style="margin-left:0px;" href="{{ $singlePlanned['object']['added_by_link'] }}" target="_blank">{{ $singlePlanned['object']['added_by_name'] }}</a>
+                                                                            on {{ $singlePlanned['object']['created_at'] }} (last update on {{ $singlePlanned['object']['updated_at'] }})
+                                                                            @if ($singlePlanned['object']['processed']=='0')
+                                                                                | <a class="label label-sm label-danger remove_pending_action" data-id="{{ $singlePlanned['object']['id'] }}"> delete </a>
+                                                                            @endif
+                                                                        </td>
+                                                                    </tr>
+                                                                    @elseif ($singlePlanned['type']=='update')
+                                                                    <tr>
+                                                                        <td class="highlight" colspan="5">
+                                                                            @if ($singlePlanned['object']['processed']=='1')
+                                                                                <div class="warning"></div> <a class="font-green-seagreen"> Processed - </a>
+                                                                            @else
+                                                                                <div class="danger"></div> <a class="font-red-thunderbird"> Pending - </a>
+                                                                            @endif
+                                                                            Membership {{ $singlePlanned['object']['additional_values']->is_update===true?'upgraded':'downgraded' }}
+                                                                            from <b>{{ $singlePlanned['object']['additional_values']->old_membership_plan_name }}</b> to <b>{{ $singlePlanned['object']['additional_values']->new_membership_plan_name }}</b>
+                                                                            starting with <b class="font-purple-studio">{{ \Carbon\Carbon::instance($singlePlanned['object']['start_date'])->format('d M Y') }}</b>.
+                                                                            Action added by <a style="margin-left:0px;" href="{{ $singlePlanned['object']['added_by_link'] }}" target="_blank">{{ $singlePlanned['object']['added_by_name'] }}</a>
+                                                                            on {{ $singlePlanned['object']['created_at'] }} (last update on {{ $singlePlanned['object']['updated_at'] }})
+                                                                            @if ($singlePlanned['object']['processed']=='0')
+                                                                                | <a class="label label-sm label-danger remove_pending_action" data-id="{{ $singlePlanned['object']['id'] }}"> delete </a>
+                                                                            @endif
+                                                                        </td>
+                                                                    </tr>
                                                                     @endif
                                                                 @endforeach
                                                                 </tbody>
