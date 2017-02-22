@@ -79,7 +79,7 @@ class Invoice extends Model
     public static function next_invoice_number(){
         $invoice = Invoice::select('invoice_number')->orderBy('invoice_number', 'desc')->get()->first();
         if ($invoice){
-            return ($invoice->invoice_number+1);
+            return ( numeric($invoice->invoice_number)+1);
         }
         else{
             return 1100;

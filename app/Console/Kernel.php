@@ -46,16 +46,16 @@ class Kernel extends ConsoleKernel
             ->timezone('Europe/Oslo')
             ->appendOutputTo('storage/logs/PlannedActions.log');
 
-        $schedule->command('userFinance:issue_pending_invoices')
+        /*$schedule->command('userFinance:issue_pending_invoices')
             //->everyMinute()
             ->withoutOverlapping()
             ->daily()
             ->everyFiveMinutes()
             ->timezone('Europe/Oslo')
             ->when(function(){
-                return date('H') >= 0 && date('i') > 4 && date('H') < 5;
+                return date('H') >= 22 && date('i') > 4 && date('H') < 6;
             })
-            ->appendOutputTo('storage/logs/PendingInvoice_output.log');
+            ->appendOutputTo('storage/logs/PendingInvoice_output.log');*/
 
         $schedule->command('booking:daily_morning_bookings_plan')
             //->everyMinute()
