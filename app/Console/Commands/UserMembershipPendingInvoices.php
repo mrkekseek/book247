@@ -67,6 +67,9 @@ class UserMembershipPendingInvoices extends Command
                     $firstMembershipPlannedInvoice = UserMembershipInvoicePlanning::where('user_membership_id','=',$invoice->user_membership_id)->orderBy('issued_date','ASC')->get()->first();
                     $firstMembershipIssuedInvoice = Invoice::where('id','=',$firstMembershipPlannedInvoice->invoice_id)->get()->first();
 
+                    if (!$firstMembershipIssuedInvoice){
+                        continue;
+                    }
                     $member_invoice = new Invoice();
                     $member_invoice->user_id = $firstMembershipIssuedInvoice->user_id;
                     $member_invoice->employee_id = $firstMembershipIssuedInvoice->employee_id;
