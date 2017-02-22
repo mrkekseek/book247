@@ -423,7 +423,7 @@
                                                                             @endif
                                                                             Membership cancellation starting with <b class="font-purple-studio">{{ \Carbon\Carbon::instance($singlePlanned['object']['end_date'])->addDay()->format('d M Y') }}</b>.
                                                                             Action added by <a style="margin-left:0px;" href="{{ $singlePlanned['object']['added_by_link'] }}" target="_blank">{{ $singlePlanned['object']['added_by_name'] }}</a>
-                                                                            on {{ $singlePlanned['object']['created_at'] }} (last update on {{ $singlePlanned['object']['updated_at'] }})
+                                                                            on {{ $singlePlanned['object']['created_at'] }}
                                                                             @if ($singlePlanned['object']['processed']=='0')
                                                                                 | <a class="label label-sm label-danger remove_pending_action" data-id="{{ $singlePlanned['object']['id'] }}"> delete </a>
                                                                             @endif
@@ -441,7 +441,7 @@
                                                                             @endif
                                                                             Freeze membership between <b class="font-purple-studio">{{ $singlePlanned['object']['start_date']->format('d M Y') }}</b> and <b class="font-purple-studio">{{ $singlePlanned['object']['end_date']->format('d M Y') }}</b>.
                                                                             Action added by <a style="margin-left:0px;" href="{{ $singlePlanned['object']['added_by_link'] }}" target="_blank">{{ $singlePlanned['object']['added_by_name'] }}</a>
-                                                                            on {{ $singlePlanned['object']['created_at'] }} (last update on {{ $singlePlanned['object']['updated_at'] }})
+                                                                            on {{ $singlePlanned['object']['created_at'] }}
                                                                             @if ($singlePlanned['object']['processed']=='0')
                                                                                 | <a class="label label-sm label-danger remove_pending_action" data-id="{{ $singlePlanned['object']['id'] }}"> delete </a>
                                                                             @endif
@@ -459,7 +459,7 @@
                                                                             from <b>{{ $singlePlanned['object']['additional_values']->old_membership_plan_name }}</b> to <b>{{ $singlePlanned['object']['additional_values']->new_membership_plan_name }}</b>
                                                                             starting with <b class="font-purple-studio">{{ \Carbon\Carbon::instance($singlePlanned['object']['start_date'])->format('d M Y') }}</b>.
                                                                             Action added by <a style="margin-left:0px;" href="{{ $singlePlanned['object']['added_by_link'] }}" target="_blank">{{ $singlePlanned['object']['added_by_name'] }}</a>
-                                                                            on {{ $singlePlanned['object']['created_at'] }} (last update on {{ $singlePlanned['object']['updated_at'] }})
+                                                                            on {{ $singlePlanned['object']['created_at'] }}
                                                                             @if ($singlePlanned['object']['processed']=='0')
                                                                                 | <a class="label label-sm label-danger remove_pending_action" data-id="{{ $singlePlanned['object']['id'] }}"> delete </a>
                                                                             @endif

@@ -44,12 +44,24 @@ class UserMembershipPendingInvoices extends Command
      */
     public function handle()
     {
+        ini_set('max_execution_time', 500);
+        $maxProcessedInvoices = 500;
+        $startNr = 1;
+
+        echo Carbon::now()->format('d-m-Y H:i:s') . ' ######################################################################################## ' . PHP_EOL;
+
         $todayIs = Carbon::today();
-        $allPendingInvoices = UserMembershipInvoicePlanning::whereIn('status',['pending','last'])->get();
+        $allPendingInvoices =
+            UserMembershipInvoicePlanning::whereIn('status',['pending','last'])
+            ->where('issued_date','<=',$todayIs->format('Y-m-d'))
+            ->take(500)
+            ->get();
         if ($allPendingInvoices){
+            echo Carbon::now()->format('d-m-Y H:i:s') . ' - There are '. sizeof($allPendingInvoices) .' Invoices to process.' . PHP_EOL;
+
             foreach($allPendingInvoices as $invoice){
                 $invoiceIssueDate = Carbon::createFromFormat('Y-m-d H:i:s',$invoice->issued_date.' 00:00:00');
-                if ($invoiceIssueDate->eq($todayIs)){
+                if ($invoiceIssueDate->lte($todayIs)){
                     // invoice needs to be issued today, so we get all the necessary elements;
                     $userMembershipPlan = UserMembership::where('id','=',$invoice->user_membership_id)->get()->first();
                     $firstMembershipPlannedInvoice = UserMembershipInvoicePlanning::where('user_membership_id','=',$invoice->user_membership_id)->orderBy('issued_date','ASC')->get()->first();
@@ -65,13 +77,13 @@ class UserMembershipPendingInvoices extends Command
                     $member_invoice->save();
 
                     $invoice_item = [
-                        'item_name'     => $userMembershipPlan->membership_name,
-                        'item_type'     => 'user_memberships',
-                        'item_reference_id'    => $invoice->user_membership_id,
-                        'quantity'      => 1,
-                        'price'         => $invoice->price,
-                        'vat'           => 0,
-                        'discount'      => $invoice->discount
+                        'item_name'         => $userMembershipPlan->membership_name,
+                        'item_type'         => 'user_memberships',
+                        'item_reference_id' => $invoice->user_membership_id,
+                        'quantity'          => 1,
+                        'price'             => $invoice->price,
+                        'vat'               => 0,
+                        'discount'          => $invoice->discount
                     ];
                     $member_invoice->add_invoice_item($invoice_item);
 
@@ -79,8 +91,21 @@ class UserMembershipPendingInvoices extends Command
                     $invoice->status = 'old';
                     $invoice->invoice_id = $member_invoice->id;
                     $invoice->save();
+
+                    echo 'New invoice updated ' . $startNr.' of '.$maxProcessedInvoices.'#' . $invoice->invoice_id . PHP_EOL;
+                    if ($startNr>=$maxProcessedInvoices){
+                        break;
+                    }
+                    else{
+                        $startNr++;
+                    }
                 }
             }
+
+            echo Carbon::now()->format('d-m-Y H:i:s') . ' - We issued '. ($startNr-1) .' new invoices.' . PHP_EOL;
+        }
+        else{
+            echo Carbon::now()->format('d-m-Y H:i:s') . 'There are no Invoices to process.' . PHP_EOL;
         }
     }
 }

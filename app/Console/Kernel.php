@@ -34,29 +34,42 @@ class Kernel extends ConsoleKernel
                  ->hourly();
 
         $schedule->command('booking:check_past_bookings')
+            ->withoutOverlapping()
             ->everyFiveMinutes()
-            ->sendOutputTo('storage/logs/CheckPastBookings.log');
+            ->timezone('Europe/Oslo')
+            ->appendOutputTo('storage/logs/CheckPastBookings.log');
 
         $schedule->command('userMembership:planned_actions_check')
             //->everyMinute()
+            ->withoutOverlapping()
             ->dailyAt('00:01')
-            ->sendOutputTo('storage/logs/PlannedActions.log');
+            ->timezone('Europe/Oslo')
+            ->appendOutputTo('storage/logs/PlannedActions.log');
 
         $schedule->command('userFinance:issue_pending_invoices')
             //->everyMinute()
-            ->dailyAt('02:00')
-            ->sendOutputTo('storage/logs/PendingInvoice_output.log');
+            ->withoutOverlapping()
+            ->daily()
+            ->everyFiveMinutes()
+            ->timezone('Europe/Oslo')
+            ->when(function(){
+                return date('H') >= 0 && date('i') > 4 && date('H') < 5;
+            })
+            ->appendOutputTo('storage/logs/PendingInvoice_output.log');
 
         $schedule->command('booking:daily_morning_bookings_plan')
             //->everyMinute()
+            ->withoutOverlapping()
             ->dailyAt('06:00')
-            ->sendOutputTo('storage/logs/BookingDailyPlanner_output.log');
+            ->timezone('Europe/Oslo')
+            ->appendOutputTo('storage/logs/BookingDailyPlanner_output.log');
 
         /* Optimizations tasks - Start */
         $schedule->command('optimize:rebuild_members_search')
             //->everyMinute()
             ->dailyAt('03:00')
-            ->sendOutputTo('storage/logs/Optimize_rebuild_search_members_output.log');
+            ->timezone('Europe/Oslo')
+            ->appendOutputTo('storage/logs/Optimize_rebuild_search_members_output.log');
         /* Optimizations tasks - Stop */
     }
 }

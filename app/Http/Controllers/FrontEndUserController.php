@@ -656,16 +656,9 @@ class FrontEndUserController extends Controller
                 }
 
                 $plannedInvoices[$onlyOne->id] = $varInv;
-
-                foreach ($plan_request as $key=>$a_request){
-                    if (!isset($a_request['after_date']) && $a_request['start_date']->lte(Carbon::createFromFormat('Y-m-d H:i:s', $onlyOne->issued_date.' 00:00:00'))){
-                        $plan_request[$key]['after_date'] = Carbon::createFromFormat('Y-m-d H:i:s', $onlyOne->issued_date.' 00:00:00');
-                    }
-                }
             }
 
             $signOutDate = Carbon::today()->addMonths($my_plan->sign_out_period);
-            //xdebug_var_dump($allPlannedInvoices[0]); exit;
             foreach($allPlannedInvoices as $onlyOne){
                 if ($onlyOne->status == 'pending'){
                     $invoiceFreeze[$onlyOne->id] = Carbon::createFromFormat('Y-m-d',$onlyOne->issued_date)->format('jS \o\f F, Y');
@@ -676,8 +669,6 @@ class FrontEndUserController extends Controller
                     $invoiceCancellation[$onlyOne->id] = Carbon::createFromFormat('Y-m-d',$onlyOne->last_active_date)->addDay()->format('jS \o\f F, Y');
                 }
             }
-            //xdebug_var_dump($invoiceCancellation);
-            //exit;
         }
         else {
             $my_plan = MembershipPlan::where('id','=',1)->get()->first();

@@ -43,6 +43,8 @@ class UserMembershipPlannedActionsCheck extends Command
      */
     public function handle()
     {
+        ini_set('max_execution_time', 600);
+
         $plannedActions = UserMembershipAction::where('status','=','active')->get();
         if ($plannedActions){
             foreach($plannedActions as $singleAction){
@@ -139,6 +141,7 @@ class UserMembershipPlannedActionsCheck extends Command
                             break;
                     }
 
+                    //exit;
                 }
                 else{
                     // no active or suspended membership plan found; we mark as old the planned action
