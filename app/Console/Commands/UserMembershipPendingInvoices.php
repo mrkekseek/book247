@@ -2,14 +2,11 @@
 
 namespace App\Console\Commands;
 
-use App\BookingInvoice;
 use App\Invoice;
 use App\UserMembership;
-use App\UserMembershipAction;
 use App\UserMembershipInvoicePlanning;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
-use App\Booking;
 
 class UserMembershipPendingInvoices extends Command
 {
@@ -50,6 +47,7 @@ class UserMembershipPendingInvoices extends Command
 
         echo Carbon::now()->format('d-m-Y H:i:s') . ' ######################################################################################## ' . PHP_EOL;
 
+        $startTime = Carbon::now();
         $todayIs = Carbon::today();
         $allPendingInvoices =
             UserMembershipInvoicePlanning::whereIn('status',['pending','last'])
@@ -110,5 +108,8 @@ class UserMembershipPendingInvoices extends Command
         else{
             echo Carbon::now()->format('d-m-Y H:i:s') . 'There are no Invoices to process.' . PHP_EOL;
         }
+
+        $endTime = Carbon::now();
+        echo 'Everything took : '.$endTime->diffForHumans($startTime) . PHP_EOL . '########################################################################################' . PHP_EOL;
     }
 }
