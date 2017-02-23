@@ -20,7 +20,7 @@ class Patch_1_1 extends Command
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Invoice number fix - double 10000 invoice numbers ; Zip code in address fix for less than 3 chars long';
 
     /**
      * Create a new command instance.
