@@ -20,6 +20,7 @@ class Kernel extends ConsoleKernel
         Commands\UserMembershipPendingInvoices::class,
         Commands\BookingDailyPlannerEmail::class,
         Commands\OptimizedMembersSearchRebuild::class,
+        Commands\Patch_1_1::class,
     ];
 
     /**
