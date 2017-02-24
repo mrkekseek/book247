@@ -408,24 +408,30 @@ class BackEndUserController extends Controller
 
         $personalData = array(  'personal_email'=> $vars['personal_email'],
                                 'mobile_number' => $vars['mobile_number'],
-                                'date_of_birth' => $vars['date_of_birth'],
+                                'date_of_birth' => Carbon::createFromFormat('d-m-Y', $vars['date_of_birth'])->toDateString(),
                                 'bank_acc_no'   => $vars['bank_acc_no'],
                                 'social_sec_no' => $vars['social_sec_no'],
                                 'about_info'    => $vars['about_info'],
                                 'user_id'       => $id);
-        $personalDetails = PersonalDetail::firstOrNew(array('user_id'=>$id));
-        //$personalDetails->personal_email = $personalData['personal_email'];
-        //$personalDetails->mobile_number  = $personalData['mobile_number'];
-        //$personalDetails->date_of_birth  = Carbon::createFromFormat('d-m-Y', $personalData['date_of_birth'])->toDateString();
-        //$personalDetails->bank_acc_no    = $personalData['bank_acc_no'];
-        //$personalDetails->social_sec_no  = $personalData['social_sec_no'];
-        //$personalDetails->about_info     = $personalData['about_info'];
-        //$personalDetails->user_id        = $personalData['user_id'];
-        $personalData['date_of_birth'] = Carbon::createFromFormat('d-m-Y', $personalData['date_of_birth'])->toDateString();
-        $personalDetails->fill($personalData);
-        $personalDetails->save();
+        $validator = Validator::make($personalData, PersonalDetail::rules('PUT',$id), PersonalDetail::$messages, PersonalDetail::$attributeNames);
+        if ($validator->fails()){
+            return array(
+                'success'   => false,
+                'title'     => 'You have some errors',
+                'errors'    => $validator->getMessageBag()->toArray()
+            );
+        }
+        else{
+            $personalDetails = PersonalDetail::firstOrNew(array('user_id'=>$id));
+            $personalDetails->fill($personalData);
+            $personalDetails->save();
+        }
 
-        return "bine";
+        return array(
+            'success'   => true,
+            'title'     => 'Personal details updated',
+            'message'   => 'All information were updated and saved'
+        );
     }
 
     public function update_personal_address(Request $request, $id)

@@ -1420,10 +1420,16 @@
                 success: function(data){
                     if (data.success) {
                         $('#change_member_status').modal('hide');
-                        show_notification(data.title, data.message, 'lemon', 3500, 0);
+                        show_notification(data.title, data.message, 'lime', 3500, 0);
                     }
                     else{
-                        show_notification(data.title, data.errors, 'ruby', 3500, 0);
+                        var msg_error = '';
+                        $.each(data.errors, function(index, value){
+                            $.each(value, function(index1, value1){
+                                msg_error = msg_error + value1 + '<br />';
+                            });
+                        });
+                        show_notification(data.title, msg_error, 'ruby', 3500, 0);
                     }
                 }
             });

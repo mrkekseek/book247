@@ -723,7 +723,13 @@
                         }, 1500);
                     }
                     else{
-                        show_notification(data.title, data.errors, 'tangerine', 3500, 0);
+                        var msg_error = '';
+                        $.each(data.errors, function(index, value){
+                            $.each(value, function(index1, value1){
+                                msg_error = msg_error + value1 + '<br />';
+                            });
+                        });
+                        show_notification(data.title, msg_error, 'ruby', 3500, 0);
                     }
                 }
             });

@@ -1505,14 +1505,23 @@ class FrontEndUserController extends Controller
         $personalData = [
             'personal_email'=> trim($vars['personal_email']),
             'mobile_number' => trim($vars['mobile_number']),
-            'date_of_birth' => $vars['date_of_birth'],
+            'date_of_birth' => Carbon::createFromFormat('d-m-Y', $vars['date_of_birth'])->toDateString(),
             'about_info'    => trim($vars['about_info']),
             'user_id'       => $user->id
         ];
-        $personalDetails = PersonalDetail::firstOrNew(array('user_id'=>$user->id));
-        $personalData['date_of_birth'] = Carbon::createFromFormat('d-m-Y', $personalData['date_of_birth'])->toDateString();
-        $personalDetails->fill($personalData);
-        $personalDetails->save();
+        $validator = Validator::make($personalData, PersonalDetail::rules('PUT',$user->id), PersonalDetail::$messages, PersonalDetail::$attributeNames);
+        if ($validator->fails()){
+            return array(
+                'success'   => false,
+                'title'     => 'You have some errors',
+                'errors'    => $validator->getMessageBag()->toArray()
+            );
+        }
+        else{
+            $personalDetails = PersonalDetail::firstOrNew(array('user_id'=>$user->id));
+            $personalDetails->fill($personalData);
+            $personalDetails->save();
+        }
 
         return [
             'success' => true,
@@ -2486,9 +2495,13 @@ class FrontEndUserController extends Controller
                 'about_info'    => '',
                 'user_id'       => $user->id
             ];
-            $personalDetails = PersonalDetail::firstOrNew(['user_id'=>$user->id]);
-            $personalDetails->fill($personalData);
-            $personalDetails->save();
+            $validator = Validator::make($personalData, PersonalDetail::rules('POST'), PersonalDetail::$messages, PersonalDetail::$attributeNames);
+            if ($validator->fails()){ }
+            else{
+                $personalDetails = PersonalDetail::firstOrNew(['user_id'=>$user->id]);
+                $personalDetails->fill($personalData);
+                $personalDetails->save();
+            }
 
             $beautymail = app()->make(Beautymail::class);
             $beautymail->send('emails.new_user_registration',
