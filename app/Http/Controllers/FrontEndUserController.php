@@ -2493,10 +2493,21 @@ class FrontEndUserController extends Controller
                 'bank_acc_no'   => 0,
                 'social_sec_no' => 0,
                 'about_info'    => '',
-                'user_id'       => $user->id
+                'user_id'       => $user->id,
+                'customer_number'   => $user->get_next_customer_number()
             ];
+
             $validator = Validator::make($personalData, PersonalDetail::rules('POST'), PersonalDetail::$messages, PersonalDetail::$attributeNames);
-            if ($validator->fails()){ }
+            if ($validator->fails()){
+                $user->detachAllRoles();
+                $user->delete();
+
+                return array(
+                    'success'   => false,
+                    'title'     => 'Error validating',
+                    'errors'    => $validator->getMessageBag()->toArray()
+                );
+            }
             else{
                 $personalDetails = PersonalDetail::firstOrNew(['user_id'=>$user->id]);
                 $personalDetails->fill($personalData);
