@@ -49,10 +49,10 @@ class Kernel extends ConsoleKernel
             ->appendOutputTo('storage/logs/PlannedActions.log');
 
         $schedule->command('userFinance:issue_pending_invoices')
-            //->everyMinute()
+            ->everyMinute()
             ->withoutOverlapping()
             ->daily()
-            ->everyFiveMinutes()
+            //->everyFiveMinutes()
             ->timezone('Europe/Oslo')
             ->when(function(){
                 return date('H') >= 22 && date('i') > 4 && date('H') < 6;
