@@ -2,6 +2,7 @@
 
 namespace App\Console;
 
+use Carbon\Carbon;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 use Illuminate\Support\Facades\Config;
@@ -54,8 +55,9 @@ class Kernel extends ConsoleKernel
             //->everyFiveMinutes()
             ->timezone('Europe/Oslo')
             ->when(function(){
-                  date_default_timezone_set('Europe/Oslo');
-                  return date('H') >= 22 && date('i') > 4 && date('H') < 6;
+                  $current_hour     = Carbon::now()->format('H');
+                  $current_minute   = Carbon::now()->format('i');
+                  return $current_hour >= 22 && $current_minute > 4 && $current_hour < 6;
             })
             ->appendOutputTo('storage/logs/PendingInvoice_output.log');
 
