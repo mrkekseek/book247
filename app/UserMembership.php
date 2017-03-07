@@ -519,4 +519,18 @@ class UserMembership extends Model
 
         return $next_number;
     }
+
+    public function add_minimum_planned_invoices(){
+        if ($this->status != 'active' && $this->status != 'suspended'){
+            return false;
+        }
+
+        $lastInvoice = UserMembershipInvoicePlanning::where('user_membership_id','=',$this->id)->orderBy('issued_date','DESC')->get()->first();
+        if ($lastInvoice){
+
+        }
+        else{
+            return false;
+        }
+    }
 }

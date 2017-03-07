@@ -21,6 +21,7 @@ class Kernel extends ConsoleKernel
         Commands\BookingDailyPlannerEmail::class,
         Commands\OptimizedMembersSearchRebuild::class,
         Commands\Patch_1_1::class,
+        Commands\Patch_1_2::class,
     ];
 
     /**

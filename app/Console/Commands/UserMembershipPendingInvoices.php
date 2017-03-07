@@ -43,7 +43,7 @@ class UserMembershipPendingInvoices extends Command
     {
         ini_set('max_execution_time', 500);
         $maxProcessedInvoices = 500;
-        $startNr = 1;
+        $startNr = 0;
 
         echo Carbon::now()->format('d-m-Y H:i:s') . ' ######################################################################################## ' . PHP_EOL;
 
@@ -52,7 +52,7 @@ class UserMembershipPendingInvoices extends Command
         $allPendingInvoices =
             UserMembershipInvoicePlanning::whereIn('status',['pending','last'])
             ->where('issued_date','<=',$todayIs->format('Y-m-d'))
-            ->take(500)
+            ->take($maxProcessedInvoices)
             ->get();
         if ($allPendingInvoices){
             echo Carbon::now()->format('d-m-Y H:i:s') . ' - There are '. sizeof($allPendingInvoices) .' Invoices to process.' . PHP_EOL;
@@ -60,6 +60,8 @@ class UserMembershipPendingInvoices extends Command
             foreach($allPendingInvoices as $invoice){
                 $invoiceIssueDate = Carbon::createFromFormat('Y-m-d H:i:s',$invoice->issued_date.' 00:00:00');
                 if ($invoiceIssueDate->lte($todayIs)){
+                    $startNr++;
+
                     // invoice needs to be issued today, so we get all the necessary elements;
                     $userMembershipPlan = UserMembership::where('id','=',$invoice->user_membership_id)->get()->first();
                     $firstMembershipPlannedInvoice = UserMembershipInvoicePlanning::where('user_membership_id','=',$invoice->user_membership_id)->orderBy('issued_date','ASC')->get()->first();
@@ -93,17 +95,17 @@ class UserMembershipPendingInvoices extends Command
                     $invoice->invoice_id = $member_invoice->id;
                     $invoice->save();
 
-                    echo 'New invoice updated ' . $startNr.' of '.$maxProcessedInvoices.'#' . $invoice->invoice_id . PHP_EOL;
+                    if ($startNr % 50 == 0){
+                        echo 'New invoice updated ' . $startNr.' of '.$maxProcessedInvoices.'#' . $invoice->invoice_id . PHP_EOL;
+                    }
+
                     if ($startNr>=$maxProcessedInvoices){
                         break;
-                    }
-                    else{
-                        $startNr++;
                     }
                 }
             }
 
-            echo Carbon::now()->format('d-m-Y H:i:s') . ' - We issued '. ($startNr-1) .' new invoices.' . PHP_EOL;
+            echo Carbon::now()->format('d-m-Y H:i:s') . ' - We issued '. ($startNr) .' new invoices.' . PHP_EOL;
         }
         else{
             echo Carbon::now()->format('d-m-Y H:i:s') . 'There are no Invoices to process.' . PHP_EOL;
