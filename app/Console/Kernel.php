@@ -51,7 +51,6 @@ class Kernel extends ConsoleKernel
         $schedule->command('userFinance:issue_pending_invoices')
             ->everyMinute()
             ->withoutOverlapping()
-            ->daily()
             //->everyFiveMinutes()
             ->timezone('Europe/Oslo')
             ->when(function(){
