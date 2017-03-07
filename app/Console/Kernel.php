@@ -55,8 +55,9 @@ class Kernel extends ConsoleKernel
             //->everyFiveMinutes()
             ->timezone('Europe/Oslo')
             ->when(function(){
-                  $current_hour     = Carbon::now('Europe/Oslo')->format('H');
-                  $current_minute   = Carbon::now('Europe/Oslo')->format('i');
+                  $current_hour     = intval(Carbon::now('Europe/Oslo')->format('H'));
+                  $current_minute   = intval(Carbon::now('Europe/Oslo')->format('i'));
+                  
                   return $current_hour >= 22 && $current_minute > 4 && $current_hour < 6;
             })
             ->appendOutputTo('storage/logs/PendingInvoice_output.log');
