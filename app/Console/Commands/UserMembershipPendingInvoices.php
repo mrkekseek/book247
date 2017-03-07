@@ -42,7 +42,7 @@ class UserMembershipPendingInvoices extends Command
     public function handle()
     {
         ini_set('max_execution_time', 500);
-        $maxProcessedInvoices = 500;
+        $maxProcessedInvoices = 400;
         $startNr = 0;
 
         echo Carbon::now()->format('d-m-Y H:i:s') . ' ######################################################################################## ' . PHP_EOL;
