@@ -53,9 +53,9 @@ class Kernel extends ConsoleKernel
             ->withoutOverlapping()
             //->everyFiveMinutes()
             ->timezone('Europe/Oslo')
-            ->when(function(){
-                return date('H') >= 22 && date('i') > 4 && date('H') < 6;
-            })
+            //->when(function(){
+            //    return date('H') >= 22 && date('i') > 4 && date('H') < 6;
+            //})
             ->appendOutputTo('storage/logs/PendingInvoice_output.log');
 
         $schedule->command('booking:daily_morning_bookings_plan')
