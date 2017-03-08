@@ -49,22 +49,22 @@ class Kernel extends ConsoleKernel
             ->timezone('Europe/Oslo')
             ->appendOutputTo('storage/logs/PlannedActions.log');
 
-        /*$schedule->command('userFinance:issue_pending_invoices')
+        $schedule->command('userFinance:issue_pending_invoices')
             ->withoutOverlapping()
-            //->everyFiveMinutes()
+            ->everyFiveMinutes()
             ->timezone('Europe/Oslo')
             ->when(function(){
                   $current_hour     = intval(Carbon::now('Europe/Oslo')->format('H'));
                   $current_minute   = intval(Carbon::now('Europe/Oslo')->format('i'));
 
-                  if (($current_hour>=22 && $current_minute>4) || ($current_minute>4 && $current_hour<6)){
+                  if (($current_hour>=2 && $current_minute>4) || ($current_minute>4 && $current_hour<4)){
                       return true;
                   }
                   else{
                       return false;
                   }
             })
-            ->appendOutputTo('storage/logs/PendingInvoice_output.log');*/
+            ->appendOutputTo('storage/logs/PendingInvoice_output.log');
 
         $schedule->command('booking:daily_morning_bookings_plan')
             //->everyMinute()

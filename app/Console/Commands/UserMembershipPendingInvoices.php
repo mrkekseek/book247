@@ -42,7 +42,7 @@ class UserMembershipPendingInvoices extends Command
     public function handle()
     {
         ini_set('max_execution_time', 500);
-        $maxProcessedInvoices = 400;
+        $maxProcessedInvoices = 20000;
         $startNr = 0;
 
         echo Carbon::now()->format('d-m-Y H:i:s') . ' ######################################################################################## ' . PHP_EOL;
@@ -63,9 +63,9 @@ class UserMembershipPendingInvoices extends Command
                     $startNr++;
 
                     // invoice needs to be issued today, so we get all the necessary elements;
-                    $userMembershipPlan = UserMembership::where('id','=',$invoice->user_membership_id)->get()->first();
-                    $firstMembershipPlannedInvoice = UserMembershipInvoicePlanning::where('user_membership_id','=',$invoice->user_membership_id)->orderBy('issued_date','ASC')->get()->first();
-                    $firstMembershipIssuedInvoice = Invoice::where('id','=',$firstMembershipPlannedInvoice->invoice_id)->get()->first();
+                    $userMembershipPlan = UserMembership::where('id','=',$invoice->user_membership_id)->take('1')->get()->first();
+                    $firstMembershipPlannedInvoice = UserMembershipInvoicePlanning::where('user_membership_id','=',$invoice->user_membership_id)->orderBy('issued_date','ASC')->take('1')->get()->first();
+                    $firstMembershipIssuedInvoice = Invoice::where('id','=',$firstMembershipPlannedInvoice->invoice_id)->take('1')->get()->first();
 
                     if (!$firstMembershipIssuedInvoice){
                         continue;
@@ -95,7 +95,7 @@ class UserMembershipPendingInvoices extends Command
                     $invoice->invoice_id = $member_invoice->id;
                     $invoice->save();
 
-                    if ($startNr % 50 == 0){
+                    if ($startNr % 100 == 0){
                         echo 'New invoice updated ' . $startNr.' of '.$maxProcessedInvoices.'#' . $invoice->invoice_id . PHP_EOL;
                     }
 
@@ -112,6 +112,6 @@ class UserMembershipPendingInvoices extends Command
         }
 
         $endTime = Carbon::now();
-        echo 'Everything took : '.$endTime->diffForHumans($startTime) . PHP_EOL . '########################################################################################' . PHP_EOL;
+        echo 'Everything took : '.$endTime->diffInSeconds($startTime) . PHP_EOL . '########################################################################################' . PHP_EOL;
     }
 }

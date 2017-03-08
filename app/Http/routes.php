@@ -485,6 +485,11 @@ Route::group(['middleware' => 'web'], function () {
         'uses'  => 'FrontEndUserController@create'
     ]);
 
+    Route::get('admin/front_users/test_new', [
+        'as'    => 'admin/front_users/test_new',
+        'uses'  => 'FrontEndUserController@test_code_for_invoices'
+    ]);
+
     Route::get('admin/front_users/import_members', [
         'as'    => 'admin/front_users/import_members',
         'uses'  => 'FrontEndUserController@import_from_file'

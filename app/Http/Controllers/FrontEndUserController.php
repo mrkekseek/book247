@@ -4215,4 +4215,104 @@ class FrontEndUserController extends Controller
 
         return $months;
     }
+
+    public function test_code_for_invoices(){
+        return false;
+
+        /*
+        //ini_set('max_execution_time', 500);
+        $maxProcessedInvoices = 10;
+        $startNr = 0;
+        $show_messages = '';
+
+        $show_messages.= Carbon::now()->format('d-m-Y H:i:s') . ' ######################################################################################## <br />';
+
+        $startTime = Carbon::now();
+        $todayIs = Carbon::today();
+        $allPendingInvoices =
+            UserMembershipInvoicePlanning::whereIn('status',['pending','last'])
+                ->where('issued_date','<=',$todayIs->format('Y-m-d'))
+                ->take($maxProcessedInvoices)
+                ->get();
+        if ($allPendingInvoices){
+            $show_messages.= Carbon::now()->format('d-m-Y H:i:s') . ' - There are '. sizeof($allPendingInvoices) .' Invoices to process. <br />' . PHP_EOL;
+
+            foreach($allPendingInvoices as $invoice){
+                $invoiceIssueDate = Carbon::createFromFormat('Y-m-d H:i:s',$invoice->issued_date.' 00:00:00');
+                if ($invoiceIssueDate->lte($todayIs)){
+                    $startNr++;
+
+                    // invoice needs to be issued today, so we get all the necessary elements;
+                    $userMembershipPlan = UserMembership::where('id','=',$invoice->user_membership_id)->get()->first();
+                    $firstMembershipPlannedInvoice = UserMembershipInvoicePlanning::where('user_membership_id','=',$invoice->user_membership_id)->orderBy('issued_date','ASC')->get()->first();
+                    $firstMembershipIssuedInvoice = Invoice::where('id','=',$firstMembershipPlannedInvoice->invoice_id)->get()->first();
+
+                    if (!$firstMembershipIssuedInvoice){
+                        continue;
+                    }
+                    $member_invoice = new Invoice();
+                    $member_invoice->user_id = $firstMembershipIssuedInvoice->user_id;
+                    $member_invoice->employee_id = $firstMembershipIssuedInvoice->employee_id;
+                    $member_invoice->invoice_type = 'membership_plan_invoice';
+                    $member_invoice->invoice_reference_id = $invoice->user_membership_id;
+                    $member_invoice->invoice_number = Invoice::next_invoice_number();
+                    $member_invoice->status = 'pending';
+                    $member_invoice->save();
+
+                    $invoice_item = [
+                        'item_name'         => $userMembershipPlan->membership_name,
+                        'item_type'         => 'user_memberships',
+                        'item_reference_id' => $invoice->user_membership_id,
+                        'quantity'          => 1,
+                        'price'             => $invoice->price,
+                        'vat'               => 0,
+                        'discount'          => $invoice->discount
+                    ];
+                    $member_invoice->add_invoice_item($invoice_item);
+
+                    // we update the planned invoice status to old + we add the id to the issued invoice to it
+                    $invoice->status = 'old';
+                    $invoice->invoice_id = $member_invoice->id;
+                    $invoice->save();
+
+                    if ($startNr % 50 == 0){
+                        $show_messages.=  'New invoice updated ' . $startNr.' of '.$maxProcessedInvoices.'#' . $invoice->invoice_id . '<br />' . PHP_EOL;
+                    }
+
+                    if ($startNr>=$maxProcessedInvoices){
+                        break;
+                    }
+                }
+            }
+
+            $show_messages.=  Carbon::now()->format('d-m-Y H:i:s') . ' - We issued '. ($startNr) .' new invoices.<br />' . PHP_EOL;
+        }
+        else{
+            $show_messages.=  Carbon::now()->format('d-m-Y H:i:s') . 'There are no Invoices to process.<br />' . PHP_EOL;
+        }
+
+        $endTime = Carbon::now();
+        $show_messages.=  'Everything took : '.$endTime->diffInSeconds($startTime) . PHP_EOL . '######################################################################################## <br />' . PHP_EOL;
+
+        $breadcrumbs = [
+            'Home'              => route('admin'),
+            'Administration'    => route('admin'),
+            'Back End User'     => route('admin'),
+            'All Backend Users' => '',
+        ];
+        $text_parts  = [
+            'title'     => 'Front-End Users/Members',
+            'subtitle'  => 'list all',
+            'table_head_text1' => 'Backend User List'
+        ];
+        $sidebar_link= 'admin-frontend-all_members';
+        //xdebug_var_dump($all_roles);
+
+        return view('admin/front_users/empty_test_view', [
+            'message'       => $show_messages,
+            'breadcrumbs'   => $breadcrumbs,
+            'text_parts'    => $text_parts,
+            'in_sidebar'    => $sidebar_link,
+        ]);*/
+    }
 }
