@@ -57,7 +57,7 @@ class Kernel extends ConsoleKernel
                   $current_hour     = intval(Carbon::now('Europe/Oslo')->format('H'));
                   $current_minute   = intval(Carbon::now('Europe/Oslo')->format('i'));
 
-                  if (($current_hour>=2 && $current_minute>4) || ($current_minute>4 && $current_hour<4)){
+                  if ($current_hour>=2 && $current_hour<4 && $current_minute>4){
                       return true;
                   }
                   else{
