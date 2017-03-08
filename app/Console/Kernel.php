@@ -50,6 +50,7 @@ class Kernel extends ConsoleKernel
             ->appendOutputTo('storage/logs/PlannedActions.log');
 
         $schedule->command('userFinance:issue_pending_invoices')
+            ->daily()
             ->everyMinute()
             ->withoutOverlapping()
             //->everyFiveMinutes()
