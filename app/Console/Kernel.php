@@ -50,11 +50,9 @@ class Kernel extends ConsoleKernel
             ->appendOutputTo('storage/logs/PlannedActions.log');
 
         $schedule->command('userFinance:issue_pending_invoices')
-            ->daily()
-            ->everyMinute()
             ->withoutOverlapping()
             //->everyFiveMinutes()
-            //->timezone('Europe/Oslo')
+            ->timezone('Europe/Oslo')
             ->when(function(){
                   $current_hour     = intval(Carbon::now('Europe/Oslo')->format('H'));
                   $current_minute   = intval(Carbon::now('Europe/Oslo')->format('i'));
