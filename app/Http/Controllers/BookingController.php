@@ -1498,7 +1498,7 @@ class BookingController extends Controller
 
         $membership_plans = MembershipPlan::where('id','!=','1')->where('status','=','active')->get()->sortBy('name');
 
-        $memberships = MembershipPlan::where('id','!=',-1)->get();
+        $memberships = MembershipPlan::where('id','!=',-1)->where('status','=','active')->get();
         $membership_legend = [];
         if ($memberships){
             foreach($memberships as $membership){
