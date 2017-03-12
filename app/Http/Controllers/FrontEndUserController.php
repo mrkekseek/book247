@@ -2514,15 +2514,20 @@ class FrontEndUserController extends Controller
                 $personalDetails->save();
             }
 
+            $top_title_message = 'Dear <span>'.$user->first_name.' '.$user->middle_name.' '.$user->last_name .'</span>';
+            $main_message = 'SQF/Book247 is the official booking system for Drammen & Økern. Within approximately 30 days time Book 247 will be used for all SquashFitness locations. Please log in and "add your friends" (playing partners). By doing this you and your playing partners can book on behalf of each other and according to the booking rules. This will make the booking procedure faster for you, your partners and our receptionists.'. PHP_EOL . ' <br /><br /> '.
+                            'You registered to the Booking System platform with the following credentials, credentials that you can use to <a href="'.route('homepage').'" target="_blank">login here</a> :'. PHP_EOL . ' <br /><br /> '.
+                            ' Username : '.$user->username.' <br /> Password : '.$text_psw. ' '. PHP_EOL . ' <br /><br /> '.
+                            'Your phone : <strong>'.$personalDetails->mobile_number.'</strong> that is registered in the system can be used to send you alerts when you create a booking or when a booking is created on your behalf. <br /><br />';
+
             $beautymail = app()->make(Beautymail::class);
-            $beautymail->send('emails.new_user_registration',
-                ['user'=>$user, 'personal_details'=>$personalDetails, 'raw_password' => $text_psw, 'logo' => ['path' => 'http://sqf.se/wp-content/uploads/2012/12/sqf-logo.png']],
+            $beautymail->send('emails.email_default',
+                ['user'=>$user, 'body_header_title'=>$top_title_message, 'body_message' => $main_message],
                 function($message) use ($user){
                     $message
                         ->from(Config::get('constants.globalWebsite.system_email'))
                         ->to($user->email, $user->first_name.' '.$user->middle_name.' '.$user->last_name)
-                        //->to('stefan.bogdan@ymail.com', $user->first_name.' '.$user->middle_name.' '.$user->last_name)
-                        ->subject('Booking System - You are registered!');
+                        ->subject('Drammen & Økern - Online Booking System - You are registered!');
                 });
 
             $addressFill = [
@@ -3792,14 +3797,17 @@ class FrontEndUserController extends Controller
         $user->save();
         DB::delete('delete from password_resets where email=:email and token=:token limit 1', ['email' => $vars['email'], 'token' => $vars['token']]);
 
+        $top_title_message = 'Dear <span>'.$user->first_name.' '.$user->middle_name.' '.$user->last_name .'</span>';
+        $main_message = 'You have successfully updated your password using the reset password link we sent. Now you can login using your new password. <br /><br />'.
+                        'If this was not you, please contact the Booking System administrator and report this issue.';
+
         $beauty_mail = app()->make(Beautymail::class);
-        $beauty_mail->send('emails.user.password_changed',
-            ['user'=>$user, 'logo' => ['path' => 'http://sqf.se/wp-content/uploads/2012/12/sqf-logo.png']],
+        $beauty_mail->send('emails.email_default',
+            ['body_header_title'=>$top_title_message, 'body_message' => $main_message],
             function($message) use ($user) {
                 $message
                     ->from(Config::get('constants.globalWebsite.system_email'))
                     ->to($user->email, $user->first_name.' '.$user->middle_name.' '.$user->last_name)
-                    //->to('stefan.bogdan@ymail.com', $player->first_name.' '.$player->middle_name.' '.$player->last_name)
                     ->subject('Booking System - Password successfully changed');
             });
 
@@ -3835,14 +3843,20 @@ class FrontEndUserController extends Controller
 
             DB::insert('insert into password_resets (email, token, created_at) values (:email, :key, :now_time)', ['email'=>$user->email, 'key'=>$generateKey, 'now_time'=>Carbon::now()]);
 
+            $top_title_message = 'Dear <span>'.$user->first_name.' '.$user->middle_name.' '.$user->last_name .'</span>';
+            $main_message = 'This is a password reset request email sent by Booking System Agent. If you did not request a password reset, ignore this email.<br /><br />'.
+                            'If this request was initiated by you, click the following link to <a href="'.route('reset_password', ['token'=>$generateKey]).'" target="_blank">reset your password</a>.'.
+                            'The link will be available for the next 60 minutes, after that you will need to request another password reset request.<br /><br />';
+            $main_message.= 'Once the password is reset you will get a new email with the outcome of your action, then you can login to the system with your newly created password.<br />'.
+                            '<b>Remember this link is active for the next 60 minutes.</b>';
+
             $beauty_mail = app()->make(Beautymail::class);
-            $beauty_mail->send('emails.user.password_reset_link',
-                ['user'=>$user, 'token'=>$generateKey, 'logo' => ['path' => 'http://sqf.se/wp-content/uploads/2012/12/sqf-logo.png']],
+            $beauty_mail->send('emails.email_default',
+                ['body_header_title'=>$top_title_message, 'body_message' => $main_message],
                 function($message) use ($user) {
                     $message
                         ->from(Config::get('constants.globalWebsite.system_email'))
                         ->to($user->email, $user->first_name.' '.$user->middle_name.' '.$user->last_name)
-                        //->to('stefan.bogdan@ymail.com', $player->first_name.' '.$player->middle_name.' '.$player->last_name)
                         ->subject('Booking System - Password reset request');
                 });
         }

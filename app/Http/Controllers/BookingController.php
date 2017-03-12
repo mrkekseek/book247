@@ -301,13 +301,30 @@ class BookingController extends Controller
                         $player = User::where('id','=',$booking->for_user_id)->get()->first();
                         $booking_details = $booking->get_summary_details(false);
 
+                        $top_title_message = 'Dear <span>'.$player->first_name.' '.$player->middle_name.' '.$player->last_name .'</span>';
+                        if (!isset($booking_details['bookingDate'])) {
+                            $main_message = 'The following bookings were canceled :<br />';
+                            foreach($booking_details as $var) {
+                                $main_message .= ' - ' . $var['bookingDate'] . ', from ' . $var['timeStart'] . ' to ' . $var['timeStop'] . ', location ' . $var['location'] . ' - ' . $var['room'] . '; <br />';
+                            }
+                        }
+                        else {
+                            $main_message = 'Your booking for '.$booking_details['bookingDate'].' - '.$booking_details['timeStart'].' to '.$booking_details['timeStop'].' was canceled. Below you can check the full booking summary :<br />';
+                            $main_message.= 'Booking Date : '.$booking_details['bookingDate'].' <br />';
+                            $main_message.= 'Time of booking : '.$booking_details['timeStart'].' - '.$booking_details['timeStop'].' <br />';
+                            $main_message.= 'Booking Location : '.$booking_details['location'].' - '.$booking_details['room'].' <br />';
+                            $main_message.= 'Activity : '.$booking_details['category'].' <br />';
+                            $main_message.= 'Player : '.$booking_details['forUserName'].' <br />';
+                        }
+                        $main_message.= '<br />You can view this information in your account by accessing your <strong>Bookings > Booking Archive</strong> menu.';
+
                         $beautymail = app()->make(Beautymail::class);
-                        $beautymail->send('emails.booking.cancel_booking', ['player'=>$player, 'booking'=>$booking_details, 'logo' => ['path' => 'http://sqf.se/wp-content/uploads/2012/12/sqf-logo.png']], function($message) use ($player, $booking_details)
-                        {
+                        $beautymail->send('emails.email_default',
+                            ['body_header_title'=>$top_title_message, 'body_message' => $main_message],
+                            function($message) use ($player, $booking_details) {
                             $message
                                 ->from(Config::get('constants.globalWebsite.system_email'))
                                 ->to($player->email, $player->first_name.' '.$player->middle_name.' '.$player->last_name)
-                                //->to('stefan.bogdan@ymail.com', $player->first_name.' '.$player->middle_name.' '.$player->last_name)
                                 ->subject('Booking System - Your booking for '.$booking_details["bookingDate"].' was canceled');
                         });
                     }
@@ -1059,12 +1076,31 @@ class BookingController extends Controller
                     $email_title = 'Booking System - Your booking for ' . $booking_details["bookingDate"] . ' was created';
                 }
 
+                $top_title_message = 'Dear <span>' . $player->first_name . ' ' . $player->middle_name . ' ' . $player->last_name . '</span>';
+                if (!isset($booking_details['bookingDate'])) {
+                    $main_message = 'The following bookings were created on your name :';
+                    foreach ($booking_details as $var) {
+                        $main_message .= '- ' . $var['bookingDate'] . ', from ' . $var['timeStart'] . ' to ' . $var['timeStop'] . ', location ' . $var['location'] . ' - ' . $var['room'] . '; <br />';
+                    }
+                }
+                else {
+                    $main_message = 'Your booking for ' . $booking_details['bookingDate'] . ' - ' . $booking_details['timeStart'] . ' to ' . $booking_details['timeStop'] . ' was created. ' .
+                                    'Below you can check the full booking summary :<br />';
+                    $main_message.= 'Booking Date : '.$booking_details['bookingDate'].' <br />';
+                    $main_message.= 'Time of booking : '.$booking_details['timeStart'].' - '.$booking_details['timeStop'].' <br />';
+                    $main_message.= 'Booking Location : '.$booking_details['location'].' - '.$booking_details['room'].' <br />';
+                    $main_message.= 'Activity : '.$booking_details['category'].' <br />';
+                    $main_message.= 'Player : '.$booking_details['forUserName'].' <br />';
+                }
+                $main_message.= '<br />You can view this information in your account by accessing your <strong>Bookings > Booking Archive</strong> menu.';
+
                 $beautymail = app()->make(Beautymail::class);
-                $beautymail->send('emails.booking.new_booking', ['player' => $player, 'booking' => $booking_details, 'logo' => ['path' => 'http://sqf.se/wp-content/uploads/2012/12/sqf-logo.png']], function ($message) use ($player, $email_title) {
+                $beautymail->send('emails.email_default',
+                    ['body_header_title'=>$top_title_message, 'body_message' => $main_message],
+                    function ($message) use ($player, $email_title) {
                     $message
                         ->from(Config::get('constants.globalWebsite.system_email'))
                         ->to($player->email, $player->first_name.' '.$player->middle_name.' '.$player->last_name)
-                        //->to('stefan.bogdan@ymail.com', $player->first_name . ' ' . $player->middle_name . ' ' . $player->last_name)
                         ->subject($email_title);
                 });
             }

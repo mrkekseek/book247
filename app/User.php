@@ -659,7 +659,7 @@ class User extends Authenticatable
             }
         }
 
-        $current_last_customer_number = PersonalDetail::whereNotNull('customer_number')->orderBy('customer_number', 'DESC')->first();
+        $current_last_customer_number = PersonalDetail::whereNotNull('customer_number')->orderBy('customer_number', 'DESC')->take('1')->first();
         if ($current_last_customer_number){
             $next_number = $current_last_customer_number->customer_number + 1;
         }
