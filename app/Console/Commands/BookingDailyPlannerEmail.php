@@ -135,9 +135,9 @@ class BookingDailyPlannerEmail extends Command
                 WhereHas('roles', function($query){
                     $query->where('name', '=', 'owner');
                 })
-                ->orWhereHas('roles', function($query){
+                /*->orWhereHas('roles', function($query){
                     $query->where('name', '=', 'manager');
-                })
+                })*/
                 //->take('1')
                 ->get();
 
