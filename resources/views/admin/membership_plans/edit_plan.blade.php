@@ -530,6 +530,29 @@
                 </div>
             </div>
 
+            <div class="col-md-12">
+                <div class="portlet light bordered">
+                    <div class="portlet-title">
+                        <div class="caption">
+                            <i class="icon-equalizer font-green-sharp"></i>
+                            <span class="caption-subject font-green-sharp bold uppercase"> All active memberships actions </span>
+                            <span class="caption-helper">update/sync membership attributes</span>
+                        </div>
+                        <div class="tools">
+                            <a class="expand" href="" data-original-title="" title=""> </a>
+                        </div>
+                    </div>
+                    <div class="portlet-body row" style="display:none;">
+                        <!-- BEGIN FORM-->
+                        <div class="note note-danger" style="margin-left:15px; margin-right:15px;">
+                            <h4 class="block">Clicking this button will update all active membership plans with the current attributes and restrictions</h4>
+                            <p> <button class="btn red-soft re_sync_restriction" data-id="{{$restriction['id']}}" type="button">Update/Sync Memberships</button> </p>
+                        </div>
+                    <!-- END FORM-->
+                    </div>
+                </div>
+            </div>
+
             <div class="modal fade bs-modal-sm" id="cancel_confirm_box" tabindex="-1" role="dialog" aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
@@ -542,6 +565,25 @@
                             <button type="button" class="btn green" onclick="javascript:remove_attribute_restriction();">Yes - Remove</button>
                             <button type="button" class="btn dark btn-outline" data-dismiss="modal">No - Go Back</button>
                             <input type="hidden" name="attribute-id" value="-1" />
+                            <input type="hidden" name="plan-id" value="{{ $membership_plan->id }}" />
+                        </div>
+                    </div>
+                    <!-- /.modal-content -->
+                </div>
+                <!-- /.modal-dialog -->
+            </div>
+
+            <div class="modal fade bs-modal-sm" id="resync_confirm_box" tabindex="-1" role="dialog" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                            <h4 class="modal-title"> Update/Sync Active Memberships </h4>
+                        </div>
+                        <div class="modal-body margin-top-10 margin-bottom-10"> This is an action that can't be undone. By clicking "Yes : Re-sync", all active memberships will receive the restriction/attribute from the membership default. </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn green" onclick="javascript:resync_attribute_restriction();">Yes : Re-sync</button>
+                            <button type="button" class="btn dark btn-outline" data-dismiss="modal">No : Go Back</button>
                             <input type="hidden" name="plan-id" value="{{ $membership_plan->id }}" />
                         </div>
                     </div>
@@ -886,6 +928,10 @@
             $("#cancel_confirm_box").modal('show');
         });
 
+        $('.re_sync_restriction').on('click', function(){
+            $("#resync_confirm_box").modal('show');
+        });
+
         $('input[name="useSpecialPermissions"]').on('change', function(){
             if ($(this).val() == 1){
                 $('.special_permission_option').show();
@@ -912,6 +958,27 @@
                     }
                     else{
                         show_notification('Error adding cancellation restriction', data.errors, 'ruby', 3500, 0);
+                    }
+                }
+            });
+        };
+
+        function resync_attribute_restriction(){
+            $.ajax({
+                url: '{{route('membership_plan-resync_restriction')}}',
+                type: "post",
+                data: {
+                    'membership_id': '{{@$membership_plan->id}}'
+                },
+                success: function(data){
+                    if(data.success){
+                        show_notification('Active Memberships plans re-synced!', data.message, 'lime', 3500, 0);
+                        setTimeout(function(){
+                            location.reload();
+                        },1000);
+                    }
+                    else{
+                        show_notification('Error re-syncing active membership plans!', data.errors, 'ruby', 3500, 0);
                     }
                 }
             });

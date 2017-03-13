@@ -7,6 +7,7 @@ use App\MembershipPlanPrice;
 use App\MembershipRestriction;
 use App\MembershipRestrictionType;
 use App\ShopResourceCategory;
+use App\UserMembership;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Auth;
@@ -607,6 +608,51 @@ class MembershipPlansController extends Controller
                 'errors' => 'The restriction was not found for the selected membership plan'
             ];
         }
+    }
+
+    public function resync_restriction(Request $request){
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
+            return [
+                'success'   => false,
+                'errors'    => 'Error while trying to authenticate. Login first then use this function.',
+                'title'     => 'Not logged in'];
+        }
+        elseif (!$user->can('manage-membership-plans')){
+            return [
+                'success'   => false,
+                'errors'    => 'You don\'t have permission to access this page',
+                'title'     => 'Permission Error'];
+            //return redirect()->intended(route('admin/error/permission_denied'));
+        }
+
+        $vars = $request->only('membership_id');
+
+        $the_plan = MembershipPlan::where('id','=',$vars['membership_id'])->get()->first();
+        if (!$the_plan){
+            return [
+                'success' => false,
+                'title'  => 'Membership plan error',
+                'errors' => 'Membership plan not found in the system!'
+            ];
+        }
+
+        $membership_restriction = $the_plan->get_restrictions(true);
+        $plan_restriction = json_encode($membership_restriction);
+
+        $allActivePlans = UserMembership::where('membership_id','=',$the_plan->id)->whereIn('status',['active','suspended'])->get();
+        if ($allActivePlans){
+            foreach($allActivePlans as $oneActivePlan){
+                $oneActivePlan->membership_restrictions = $plan_restriction;
+                $oneActivePlan->save();
+            }
+        }
+
+        return [
+            'success' => true,
+            'title'   => 'Restriction removed',
+            'message' => 'Restriction removed from the selected plan.',
+        ];
     }
 
     public function ajax_get_plan_details(Request $request, $status='active'){
