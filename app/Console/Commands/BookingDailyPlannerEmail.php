@@ -49,8 +49,8 @@ class BookingDailyPlannerEmail extends Command
     {
         URL::forceRootUrl( Config::get('constants.globalWebsite.baseUrl') );
 
-        $today = Carbon::yesterday()->format('Y-m-d');
-        $email_body = '<strong>Bookings summary for '.Carbon::today()->format('d-m-Y').' generated at '.Carbon::now()->format('H:i').'</strong> <br /><br />';
+        $today = Carbon::today()->format('Y-m-d');
+        $email_body = '<strong>Booking summary for '.Carbon::today()->format('d-m-Y').' generated at '.Carbon::now()->format('H:i').'</strong> <br /><br />';
 
         $allCategories = ShopResourceCategory::orderBy('name','asc')->get();
         $categories = [];
