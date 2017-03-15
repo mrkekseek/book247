@@ -1467,7 +1467,7 @@ class FrontEndUserController extends Controller
             ];
         }
 
-        $vars = $request->only('about_info', 'country_id', 'date_of_birth', 'first_name', 'last_name', 'middle_name', 'gender', 'mobile_number', 'personal_email');
+        $vars = $request->only('about_info', 'country_id', 'date_of_birth', 'first_name', 'last_name', 'middle_name', 'gender', 'mobile_number', 'personal_email', 'preferred_location');
 
         $userVars = [
             'first_name'    => trim($vars["first_name"]),
@@ -1475,15 +1475,18 @@ class FrontEndUserController extends Controller
             'middle_name'   => trim($vars["middle_name"]),
             'gender'        => $vars['gender'],
             'country_id'    => $vars["country_id"],
-            'date_of_birth' => $vars["date_of_birth"]
+            'date_of_birth' => $vars["date_of_birth"],
+            'email'         => trim($vars['personal_email']),
+            'username'      => trim($vars['personal_email'])
         ];
-
         $validator = Validator::make($userVars, [
             'first_name'    => 'required|min:2|max:150',
             'last_name'     => 'required|min:2|max:150',
             'date_of_birth' => 'required|date',
             'country_id'    => 'required|exists:countries,id',
-            'gender'        => 'required|in:M,F'
+            'gender'        => 'required|in:M,F',
+            'email'         => 'required|email|unique:users,email,'.$id.',id',
+            'username'      => 'required|email|unique:users,username,'.$id.',id'
         ]);
 
         if ($validator->fails()){
@@ -1499,6 +1502,8 @@ class FrontEndUserController extends Controller
             $user->middle_name = $userVars["middle_name"];
             $user->country_id  = $userVars["country_id"];
             $user->gender      = $userVars["gender"];
+            $user->email       = $userVars["email"];
+            $user->username    = $userVars["email"];
             $user->save();
         }
 
@@ -1521,6 +1526,13 @@ class FrontEndUserController extends Controller
             $personalDetails = PersonalDetail::firstOrNew(array('user_id'=>$user->id));
             $personalDetails->fill($personalData);
             $personalDetails->save();
+        }
+
+        // validate the preferred location and set it in the DB
+        $preferredLocation = ShopLocations::where('id','=',$vars['preferred_location'])->whereIn('visibility',['public','pending','suspended'])->get()->first();
+        if ($preferredLocation){
+            // we update it
+            $user->set_general_setting('settings_preferred_location',$preferredLocation->id);
         }
 
         return [
@@ -3585,7 +3597,7 @@ class FrontEndUserController extends Controller
         }*/
 
         $countries = Countries::orderBy('name')->get();
-        $userCountry = Countries::find($user->country_id);
+        //$userCountry = Countries::find($user->country_id);
 
         $avatar = $user->get_avatar_image();
 
@@ -3601,7 +3613,8 @@ class FrontEndUserController extends Controller
         $new_bookings = Booking::select('id')->where('for_user_id','=',$user->id)->whereIn('status',['active'])->count();
         $cancelled_bookings = Booking::select('id')->where('for_user_id','=',$user->id)->whereIn('status',['canceled'])->count();
         $own_friends  = UserFriends::select('id')->where('user_id','=',$user->id)->orWhere('friend_id','=',$user->id)->count();
-        //$own_logins   = ;
+
+        $locations = ShopLocations::whereIn('visibility',['public'])->orderBy('name','ASC')->get();
 
         $breadcrumbs = [
             'Home'      => route('admin'),
@@ -3623,10 +3636,11 @@ class FrontEndUserController extends Controller
             'personal'      => $userPersonal,
             'avatar'        => $avatar['avatar_base64'],
             'membershipName'=> $membershipName,
-            'countOldBookings'    => $old_bookings,
+            'countOldBookings'      => $old_bookings,
             'countCancelledBookings'    => $cancelled_bookings,
-            'countActiveBookings' => $new_bookings,
-            'countFriends'        => $own_friends
+            'countActiveBookings'   => $new_bookings,
+            'countFriends'          => $own_friends,
+            'locations'             => $locations
         ]);
     }
 

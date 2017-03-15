@@ -139,11 +139,20 @@
                                                                 </div>
                                                             </div>
                                                             <div class="form-group">
-                                                                <label class="control-label">Personal Email</label>
+                                                                <label class="control-label">Registration Email</label>
                                                                 <input type="text" name="personalEmail" id="personalEmail" placeholder="Personal Email Address" class="form-control" value="{{@$personal->personal_email}}" /> </div>
                                                             <div class="form-group">
                                                                 <label class="control-label">Mobile Phone Number</label>
                                                                 <input type="text" name="personalPhone" id="personalPhone" placeholder="+1 234 567 8910 (6284)" class="form-control" value="{{@$personal->mobile_number}}" /> </div>
+                                                            <div class="form-group">
+                                                                <label class="control-label">Preferred Location</label>
+                                                                <select name="preferredLocation" id="preferredLocation" class="form-control">
+                                                                    <option> No Location </option>
+                                                                    @foreach ($locations as $location)
+                                                                        <option value="{{ $location->id }}" {!! ($location->id==@$user->get_general_setting('settings_preferred_location') ? ' selected="selected" ' : '') !!}>{{ $location->name }}</option>
+                                                                    @endforeach
+                                                                </select>
+                                                            </div>
                                                             <div class="margiv-top-10">
                                                                 <a href="javascript:;" onclick="javascript: $('#form_acc_personal').submit();" class="btn green"> Update Details </a>
                                                                 <a href="javascript:;" class="btn default"> Cancel </a>
@@ -713,7 +722,8 @@
                     'personal_email':   $('input[name=personalEmail]').val(),
                     'mobile_number':    $('input[name=personalPhone]').val(),
                     'country_id':       $('select[name=personalCountry]').val(),
-                    'gender':           $('select[name=gender]').val()
+                    'gender':           $('select[name=gender]').val(),
+                    'preferred_location':$('select[name=preferredLocation]').val(),
                 },
                 success: function(data){
                     if (data.success) {

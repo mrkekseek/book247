@@ -94,7 +94,9 @@
                                             @foreach ($resources as $resource)
                                                 <td class="{{ isset($location_bookings[$key][$resource['id']]['color_stripe'])?$location_bookings[$key][$resource['id']]['color_stripe']:$hour['color_stripe'] }}
                                                 {{ ( $hour['color_stripe']=='' && !isset($location_bookings[$key][$resource['id']]['color_stripe']) )?' isfreetime':'' }}" style="padding:4px 8px;">
-                                                    @if ( isset($location_bookings[$key][$resource['id']]) )
+                                                    @if ( isset($location_bookings[$key][$resource['id']]) && $user->id==$location_bookings[$key][$resource['id']]['booking_player'])
+                                                        <span class="font-white">Own Booking</span>
+                                                    @elseif ( isset($location_bookings[$key][$resource['id']]) )
                                                         <span class="font-white">Booked</span>
                                                     @else
                                                         <span data-resource="{{ $resource['id'] }}" data-time="{{ $key }}">&nbsp;</span>

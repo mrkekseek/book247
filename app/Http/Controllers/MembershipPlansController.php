@@ -650,8 +650,56 @@ class MembershipPlansController extends Controller
 
         return [
             'success' => true,
-            'title'   => 'Restriction removed',
-            'message' => 'Restriction removed from the selected plan.',
+            'title'   => 'Restrictions re-synced',
+            'message' => 'Membership plan restriction re-synced with active signed contracts.',
+        ];
+    }
+
+    public function resync_member_restriction(Request $request){
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
+            return [
+                'success'   => false,
+                'errors'    => 'Error while trying to authenticate. Login first then use this function.',
+                'title'     => 'Not logged in'];
+        }
+        elseif (!$user->can('manage-membership-plans')){
+            return [
+                'success'   => false,
+                'errors'    => 'You don\'t have permission to access this page',
+                'title'     => 'Permission Error'];
+            //return redirect()->intended(route('admin/error/permission_denied'));
+        }
+
+        $vars = $request->only('member_membership_id','member_id');
+        $user_membership_plan = UserMembership::where('user_id','=',$vars['member_id'])->where('id','=',$vars['member_membership_id'])->get()->first();
+        if (!$user_membership_plan){
+            return [
+                'success' => false,
+                'title'  => 'User membership plan error',
+                'errors' => 'User membership plan not found in the system!'
+            ];
+        }
+
+        $the_plan = MembershipPlan::where('id','=',$user_membership_plan->membership_id)->get()->first();
+        if (!$the_plan){
+            return [
+                'success' => false,
+                'title'  => 'Membership plan error',
+                'errors' => 'Membership plan not found in the system!'
+            ];
+        }
+
+        $membership_restriction = $the_plan->get_restrictions(true);
+        $plan_restriction = json_encode($membership_restriction);
+
+        $user_membership_plan->membership_restrictions = $plan_restriction;
+        $user_membership_plan->save();
+
+        return [
+            'success' => true,
+            'title'   => 'Restrictions re-synced',
+            'message' => 'User membership plan restriction re-synced with active signed contracts.',
         ];
     }
 

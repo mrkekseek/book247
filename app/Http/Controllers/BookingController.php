@@ -309,7 +309,7 @@ class BookingController extends Controller
                             }
                         }
                         else {
-                            $main_message = 'Your booking for '.$booking_details['bookingDate'].' - '.$booking_details['timeStart'].' to '.$booking_details['timeStop'].' was canceled. Below you can check the full booking summary :<br />';
+                            $main_message = 'Your booking for '.$booking_details['bookingDate'].' - '.$booking_details['timeStart'].' to '.$booking_details['timeStop'].' was canceled. <br /><br />Below you can check the full booking summary :<br />';
                             $main_message.= 'Booking Date : '.$booking_details['bookingDate'].' <br />';
                             $main_message.= 'Time of booking : '.$booking_details['timeStart'].' - '.$booking_details['timeStop'].' <br />';
                             $main_message.= 'Booking Location : '.$booking_details['location'].' - '.$booking_details['room'].' <br />';
@@ -1084,7 +1084,7 @@ class BookingController extends Controller
                     }
                 }
                 else {
-                    $main_message = 'Your booking for ' . $booking_details['bookingDate'] . ' - ' . $booking_details['timeStart'] . ' to ' . $booking_details['timeStop'] . ' was created. ' .
+                    $main_message = 'Your booking for ' . $booking_details['bookingDate'] . ' - ' . $booking_details['timeStart'] . ' to ' . $booking_details['timeStop'] . ' was created. <br /><br />' .
                                     'Below you can check the full booking summary :<br />';
                     $main_message.= 'Booking Date : '.$booking_details['bookingDate'].' <br />';
                     $main_message.= 'Time of booking : '.$booking_details['timeStart'].' - '.$booking_details['timeStop'].' <br />';
@@ -3824,6 +3824,17 @@ class BookingController extends Controller
         $location_bookings = $this->player_get_location_bookings($date_selected, $location->id, $resources_ids, $hours_interval);
         $hours_interval = BookingController::check_bookings_intervals_restrictions( $hours_interval, $date_selected, $activity->id, $user->id);
 
+        // check for own bookings
+        foreach($location_bookings['hours'] as $key11=>$single_hour){
+            if (is_array($single_hour)){
+                foreach($single_hour as $key12=>$single){
+                    if ($user->id == $single['booking_player']){
+                        $location_bookings['hours'][$key11][$key12]['color_stripe'] = 'bg-green-meadow bg-font-green-meadow';
+                    }
+                }
+            }
+        }
+
         if (sizeof($hours_interval)>0) {
             $firstKey = "";
             $hrNr = 1;
@@ -3888,6 +3899,7 @@ class BookingController extends Controller
             'header_vals'   => $header_vals,
             'all_locations' => $all_locations,
             'all_activities'=> $locationActivities,
+            'user'          => $user
             //'all_activities'=> $all_activities,
         ]);
     }
@@ -3974,7 +3986,9 @@ class BookingController extends Controller
                     'location' => $booking->location_id,
                     'resource' => $booking->resource_id,
                     'status'   => $booking->status,
-                    'color_stripe' => 'bg-red-flamingo bg-font-red-flamingo'];
+                    'color_stripe'  => 'bg-red-flamingo bg-font-red-flamingo',
+                    'booking_player'=> $booking->for_user_id
+                ];
 
                 if ($show_more){
                     $player = User::find($booking->for_user_id);

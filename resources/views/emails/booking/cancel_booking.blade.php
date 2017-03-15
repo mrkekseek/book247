@@ -16,7 +16,7 @@
             @if (!isset($booking['bookingDate']))
                 The following bookings were canceled :
             @else
-                Your booking for {{$booking['bookingDate']}} - {{$booking['timeStart']}} to {{$booking['timeStop']}} was canceled.
+                Your booking for {{$booking['bookingDate']}} - {{$booking['timeStart']}} to {{$booking['timeStop']}} was canceled.<br /><br />
                 Below you can check the full booking summary :
             @endif
         </td>

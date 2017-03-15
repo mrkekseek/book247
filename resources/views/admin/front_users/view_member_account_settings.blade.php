@@ -286,7 +286,7 @@
                                                                 </div>
                                                             </div>
                                                             <div class="col-md-4">
-                                                                <div class="note note-warning font-grey-mint membership_options" style="margin:0 0 10px; padding:5px 20px 10px 10px;">
+                                                                <div class="note note-info font-grey-mint membership_options" style="margin:0 0 10px; padding:5px 20px 10px 10px;">
                                                                     <p> Invoice Period </p>
                                                                     <h4 class="block" style="margin-bottom:0px; font-size:22px;"> <b>{{ $plan_details['invoice_period'] }}</b> </h4>
                                                                 </div>
@@ -354,6 +354,10 @@
                                                         @endif
                                                         </div>
                                                         <!-- END restriction boxes-->
+                                                        <div class="alert alert-danger">
+                                                            <strong>Warning!</strong> This action will change this member membership restrictions to the current membership restriction status.
+                                                            This is an action that can't be undone.<br /> <a class="alert-link re_sync_restriction">Do you want to reset the membership restrictions to default?</a>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -883,6 +887,28 @@
                     <!-- /.modal-dialog -->
                 </div>
                 <!-- END Status Change modal window -->
+                <!-- BEGIN Reset Restrictions modal window -->
+                <div class="modal fade bs-modal-sm" id="resync_confirm_box" tabindex="-1" role="dialog" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                                <h4 class="modal-title"> Update/Sync User Memberships </h4>
+                            </div>
+                            <div class="modal-body margin-top-10 margin-bottom-10">
+                                This is an action that can't be undone. By clicking "Yes : Re-sync", this member will receive the restriction/attribute from the membership default.
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn green" onclick="javascript:resync_attribute_restriction();">Yes : Re-sync</button>
+                                <button type="button" class="btn dark btn-outline" data-dismiss="modal">No : Go Back</button>
+                                <input type="hidden" name="plan-id" value="{{ $membership_plan->id }}" />
+                            </div>
+                        </div>
+                        <!-- /.modal-content -->
+                    </div>
+                    <!-- /.modal-dialog -->
+                </div>
+                <!-- END Reset Restrictions modal window -->
             </div>
             <!-- END PROFILE CONTENT -->
         </div>
@@ -1167,6 +1193,10 @@
             $('#cancel_planned_action_confirm_box').modal('show');
         });
 
+        $('.re_sync_restriction').on('click', function(){
+            $("#resync_confirm_box").modal('show');
+        });
+
         function remove_pending_action(){
             var userID = '{{$user->id}}';
 
@@ -1343,6 +1373,28 @@
                 }
             });
         }
+
+        function resync_attribute_restriction(){
+            $.ajax({
+                url: '{{route('membership_plan-resync_member_restriction')}}',
+                type: "post",
+                data: {
+                    'member_membership_id': '{{@$membership_plan->id}}',
+                    'member_id':'{{$user->id}}'
+                },
+                success: function(data){
+                    if(data.success){
+                        show_notification('Active Memberships plans re-synced!', data.message, 'lime', 3500, 0);
+                        setTimeout(function(){
+                            location.reload();
+                        },1000);
+                    }
+                    else{
+                        show_notification('Error re-syncing active membership plans!', data.errors, 'ruby', 3500, 0);
+                    }
+                }
+            });
+        };
 
         var options = { byRow: true, property: 'height', target: null, remove: false};
         $(function() {

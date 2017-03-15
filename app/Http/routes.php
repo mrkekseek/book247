@@ -629,6 +629,11 @@ Route::group(['middleware'=>'web', 'prefix'=>'admin'], function(){
         'uses'  => 'MembershipPlansController@resync_restriction'
     ]);
 
+    Route::post('membership_plan/resync_member_restriction', [
+        'as'    => 'membership_plan-resync_member_restriction',
+        'uses'  => 'MembershipPlansController@resync_member_restriction'
+    ]);
+
     Route::post('membership_plan/ajax_get_details', [
         'as'    => 'admin/membership_plans/ajax_get_details',
         'uses'  => 'MembershipPlansController@ajax_get_plan_details'
