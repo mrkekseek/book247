@@ -354,10 +354,12 @@
                                                         @endif
                                                         </div>
                                                         <!-- END restriction boxes-->
+                                                        @if(Auth::user()->can('manage-membership-plans'))
                                                         <div class="alert alert-danger">
                                                             <strong>Warning!</strong> This action will change this member membership restrictions to the current membership restriction status.
                                                             This is an action that can't be undone.<br /> <a class="alert-link re_sync_restriction">Do you want to reset the membership restrictions to default?</a>
                                                         </div>
+                                                        @endif
                                                     </div>
                                                 </div>
                                             </div>
@@ -1374,6 +1376,7 @@
             });
         }
 
+        @if(Auth::user()->can('manage-membership-plans'))
         function resync_attribute_restriction(){
             $.ajax({
                 url: '{{route('membership_plan-resync_member_restriction')}}',
@@ -1395,6 +1398,7 @@
                 }
             });
         };
+        @endif
 
         var options = { byRow: true, property: 'height', target: null, remove: false};
         $(function() {
