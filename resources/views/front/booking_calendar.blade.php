@@ -96,6 +96,8 @@
                                                 {{ ( $hour['color_stripe']=='' && !isset($location_bookings[$key][$resource['id']]['color_stripe']) )?' isfreetime':'' }}" style="padding:4px 8px;">
                                                     @if ( isset($location_bookings[$key][$resource['id']]) && $user->id==$location_bookings[$key][$resource['id']]['booking_player'])
                                                         <span class="font-white">Own Booking</span>
+                                                    @elseif ( isset($location_bookings[$key][$resource['id']]) && $location_bookings[$key][$resource['id']]['booking_player']==-10)
+                                                        <span class="font-white">Friend Booking</span>
                                                     @elseif ( isset($location_bookings[$key][$resource['id']]) )
                                                         <span class="font-white">Booked</span>
                                                     @else

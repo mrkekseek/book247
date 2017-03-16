@@ -40,11 +40,19 @@
                             <div class="note note-info" style="margin-bottom:5px;">
                                 <div class="row">
                                     <div class="col-sm-9">
-                                    <h4 class="block">Add more friends</h4>
-                                    <p>
-                                        Use the "Add more friends" button to add a new friend. You will need to know his registration phone number for this action to be successful.
-                                        Adding friends makes it more easy for you and your friends to book activities together.
-                                    </p>
+                                        <h4 class="block">Add more friends</h4>
+                                        <p>
+                                            Use the "Add more friends" button to add a new friend. You will need to know his registration phone number for this action to be successful.
+                                            Adding friends makes it more easy for you and your friends to book activities together.
+                                        </p>
+                                        <div class="form-group" style="margin-top:7px; margin-bottom:0px; font-size:13px;">
+                                            <div class="mt-checkbox-inline">
+                                                <label class="mt-checkbox">
+                                                    <input id="inlineCheckbox1" value="option1" type="checkbox"> Check the checkbox if you want all your friend requests to be automatically approved.
+                                                    <span></span>
+                                                </label>
+                                            </div>
+                                        </div>
                                     </div>
                                     <div class="form col-sm-3">
                                         <div class="form-actions right" style="border-top:none; padding:10px 0 0;">

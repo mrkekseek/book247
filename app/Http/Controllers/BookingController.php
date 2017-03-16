@@ -14,6 +14,7 @@ use App\PersonalDetail;
 use App\ShopLocations;
 use App\ShopResource;
 use App\ShopResourceCategory;
+use App\UserFriends;
 use App\UserMembership;
 use App\UserSettings;
 use Illuminate\Http\Request;
@@ -3824,12 +3825,23 @@ class BookingController extends Controller
         $location_bookings = $this->player_get_location_bookings($date_selected, $location->id, $resources_ids, $hours_interval);
         $hours_interval = BookingController::check_bookings_intervals_restrictions( $hours_interval, $date_selected, $activity->id, $user->id);
 
+        $friends_list = [];
+        $friends = UserFriends::where('user_id','=',$user->id)->orWhere('friend_id','=',$user->id)->get();
+        foreach($friends as $friend){
+            $friend_id = $friend->user_id==$user->id?$friend->friend_id:$friend->user_id;
+            $friends_list[] = $friend_id;
+        }
+
         // check for own bookings
         foreach($location_bookings['hours'] as $key11=>$single_hour){
             if (is_array($single_hour)){
                 foreach($single_hour as $key12=>$single){
                     if ($user->id == $single['booking_player']){
                         $location_bookings['hours'][$key11][$key12]['color_stripe'] = 'bg-green-meadow bg-font-green-meadow';
+                    }
+                    elseif(in_array($single['booking_player'], $friends_list)){
+                        $location_bookings['hours'][$key11][$key12]['color_stripe'] = 'bg-green bg-font-green';
+                        $location_bookings['hours'][$key11][$key12]['booking_player'] = -10;
                     }
                 }
             }
@@ -3877,8 +3889,6 @@ class BookingController extends Controller
             }
         }
 
-        //  xdebug_var_dump($hours_interval); exit;
-        //  xdebug_var_dump($restrictions); exit;
         $resources_ids = [];
         foreach($resources as $resource){
             $resources_ids[] = ['name'=>$resource->name, 'id'=>$resource->id];
