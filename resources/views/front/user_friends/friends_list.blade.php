@@ -48,7 +48,7 @@
                                         <div class="form-group" style="margin-top:7px; margin-bottom:0px; font-size:13px;">
                                             <div class="mt-checkbox-inline">
                                                 <label class="mt-checkbox">
-                                                    <input id="inlineCheckbox1" value="option1" type="checkbox"> Check the checkbox if you want all your friend requests to be automatically approved.
+                                                    <input id="auto_approve_friends" name="auto_approve_friends" value="yes" type="checkbox" {{$user->get_general_setting('auto_approve_friends')=='0'?'':'checked="checked"'}}> Check the checkbox if you want all your friend requests to be automatically approved.
                                                     <span></span>
                                                 </label>
                                             </div>
@@ -74,8 +74,6 @@
                                             <i class="fa fa-user"></i> Phone Number </th>
                                         <th class="hidden-xs">
                                             <i class="fa fa-shopping-cart"></i> Preferred Gym </th>
-                                        <th class="hidden-xs">
-                                            <i class="fa fa-shopping-cart"></i> Friend Since </th>
                                         <th> </th>
                                     </tr>
                                     </thead>
@@ -89,10 +87,16 @@
                                         <td> <a target="_blank" href="mailto:{{$friend['email_address']}}">{{$friend['email_address']}}</a> </td>
                                         <td class="hidden-xs"> {{$friend['phone_number']}} </td>
                                         <td> {{ isset($locations[$friend['preferred_gym']])?$locations[$friend['preferred_gym']]:'-' }} </td>
-                                        <td> {{$friend['since']}} </td>
                                         <td>
-                                            <a href="javascript:;" data-id="{{$friend['ref_nr']}}" class="btn btn-sm btn-outline red-haze remove_friend">
-                                                <i class="fa fa-edit"></i> Remove </a>
+                                            @if ($friend['status']=='pending')
+                                                <a href="javascript:;" data-id="{{$friend['ref_nr']}}" class="btn btn-sm green-jungle accept_friend">
+                                                    <i class="fa fa-edit"></i> Accept </a>
+                                                <a href="javascript:;" data-id="{{$friend['ref_nr']}}" class="btn btn-sm red-soft block_friend">
+                                                    <i class="fa fa-edit"></i> Block </a>
+                                            @else
+                                                <a href="javascript:;" data-id="{{$friend['ref_nr']}}" class="btn btn-sm btn-outline red-haze remove_friend">
+                                                    <i class="fa fa-edit"></i> Remove </a>
+                                            @endif
                                         </td>
                                     </tr>
                                 @endforeach
@@ -323,6 +327,26 @@
             $('#new_friend_modal').modal('show');
         }
 
+        $(document).on('click', '.accept_friend', function(){
+            var friend_name  = $(this).parent().parent().find('td:eq(0)').find('a').html();
+            var friend_email = $(this).parent().parent().find('td:eq(1)').find('a').html();
+            $('.friend_name_cancel_place').html(friend_name + ' - ' + friend_email);
+
+            $('input[name="to_remove_friend"]').val($(this).attr('data-id'));
+
+            $('#small_remove_friend').modal('show');
+        });
+
+        $(document).on('click', '.reject_friend', function(){
+            var friend_name  = $(this).parent().parent().find('td:eq(0)').find('a').html();
+            var friend_email = $(this).parent().parent().find('td:eq(1)').find('a').html();
+            $('.friend_name_cancel_place').html(friend_name + ' - ' + friend_email);
+
+            $('input[name="to_remove_friend"]').val($(this).attr('data-id'));
+
+            $('#small_remove_friend').modal('show');
+        });
+
         $(document).on('click', '.remove_friend', function(){
             var friend_name  = $(this).parent().parent().find('td:eq(0)').find('a').html();
             var friend_email = $(this).parent().parent().find('td:eq(1)').find('a').html();
@@ -355,6 +379,38 @@
                     $('#small_remove_friend').find('.friend_name_cancel_place').html('');
                     $('input[name="to_remove_friend"]').val(-1);
                     $('#small_remove_friend').modal('hide');
+                }
+            });
+        }
+
+        $('#auto_approve_friends').on('click', function() {
+            // change automatic friend approval option
+            if ($('#auto_approve_friends').is(":checked")){
+                var option_value = 1;
+            }
+            else{
+                var option_value = 0;
+            }
+
+            var data = { auto_approve_friends:option_value};
+            send_settings(data);
+        });
+
+        function send_settings(information){
+            $.ajax({
+                url: '{{route('ajax/update_general_settings')}}',
+                type: "post",
+                cache: false,
+                data: {
+                    'general_settings': information
+                },
+                success: function (data) {
+                    if (data.success) {
+                        show_notification(data.title, data.message, 'lime', 3500, 0);
+                    }
+                    else{
+                        show_notification(data.title, data.errors, 'tangerine', 3500, 0);
+                    }
                 }
             });
         }

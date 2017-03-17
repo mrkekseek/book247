@@ -3828,6 +3828,9 @@ class BookingController extends Controller
         $friends_list = [];
         $friends = UserFriends::where('user_id','=',$user->id)->orWhere('friend_id','=',$user->id)->get();
         foreach($friends as $friend){
+            if ($friend->status!='active'){
+                continue;
+            }
             $friend_id = $friend->user_id==$user->id?$friend->friend_id:$friend->user_id;
             $friends_list[] = $friend_id;
         }

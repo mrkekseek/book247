@@ -449,7 +449,7 @@ class FrontEndUserController extends Controller
             return redirect()->intended(route('admin/login'));
         }
 ;
-        $member = User::with('personalDetail')->where('id','=',$id)->get()->first();
+        $member = User::with('personalDetail')->where('id','=',$id)->take('1')->get()->first();
         if (!$member || !$member->is_front_user()){
             return redirect(route('admin/error/not_found'));
         }
@@ -474,10 +474,10 @@ class FrontEndUserController extends Controller
 
         $avatar = $member->get_avatar_image();
 
-        $old_bookings = Booking::select('id')->where('for_user_id','=',$member->id)->whereIn('status',['paid','unpaid','old','no_show'])->count();
-        $new_bookings = Booking::select('id')->where('for_user_id','=',$member->id)->whereIn('status',['active'])->count();
-        $cancelled_bookings = Booking::select('id')->where('for_user_id','=',$member->id)->whereIn('status',['canceled'])->count();
-        $own_friends  = UserFriends::select('id')->where('user_id','=',$member->id)->orWhere('friend_id','=',$member->id)->count();
+        $old_bookings       = $member->count_own_old_bookings();
+        $new_bookings       = $member->count_own_active_bookings();
+        $cancelled_bookings = $member->count_own_cancelled_bookings();
+        $own_friends        = $member->count_own_friends();
 
         $front_statistics = $this->get_member_bookings_statistics($member);
         $finance_statistics = $this->get_member_financial_statistics($member);
@@ -1975,6 +1975,10 @@ class FrontEndUserController extends Controller
         $all_friends = [];
         $friends = UserFriends::where('user_id','=',$user_id)->orWhere('friend_id','=',$user_id)->get();
         foreach($friends as $friend){
+            if ($friend->status!='active'){
+                continue;
+            }
+
             $friend_id = $friend->user_id==$user_id?$friend->friend_id:$friend->user_id;
             $user_details = User::find($friend_id);
 
@@ -2252,6 +2256,10 @@ class FrontEndUserController extends Controller
         $all_friends[] = ['name' => $user->first_name.' '.$user->middle_name.' '.$user->last_name, 'id' => $user->id];
         $friends = UserFriends::where('user_id','=',$user_id)->orWhere('friend_id','=',$user_id)->get();
         foreach($friends as $friend){
+            if ($friend->status!='active'){
+                continue;
+            }
+
             $friend_id = $friend->user_id==$user_id?$friend->friend_id:$friend->user_id;
             $user_details = User::find($friend_id);
             $fillable['for_user_id'] = $friend_id;
@@ -2318,7 +2326,8 @@ class FrontEndUserController extends Controller
                 ];
             }
             else{
-                $friend_fill = ['user_id'=>$user_id, 'friend_id'=>$friends->user_id];
+                $friend_approval_status = $newFriend->get_general_setting('auto_approve_friends')=='0'?'pending':'active';
+                $friend_fill = ['user_id'=>$user_id, 'friend_id'=>$friends->user_id, 'status'=>$friend_approval_status];
                 $validator = Validator::make($friend_fill, UserFriends::rules('POST'), UserFriends::$message, UserFriends::$attributeNames);
 
                 if ($validator->fails()){
@@ -3228,7 +3237,8 @@ class FrontEndUserController extends Controller
                     'phone_number'  => isset($userFriend['PersonalDetail']->mobile_number)?$userFriend['PersonalDetail']->mobile_number:'-',
                     'preferred_gym' => isset($generalSettings['settings_preferred_location'])?$generalSettings['settings_preferred_location']:'-',
                     'ref_nr'        => $friend->id,
-                    'since'         => $since
+                    'since'         => $since,
+                    'status'        => $friend->status
                 ];
             }
         }
@@ -3609,10 +3619,10 @@ class FrontEndUserController extends Controller
             $membershipName = 'No Membership Plan';
         }
 
-        $old_bookings = Booking::select('id')->where('for_user_id','=',$user->id)->whereIn('status',['paid','unpaid','old','no_show'])->count();
-        $new_bookings = Booking::select('id')->where('for_user_id','=',$user->id)->whereIn('status',['active'])->count();
-        $cancelled_bookings = Booking::select('id')->where('for_user_id','=',$user->id)->whereIn('status',['canceled'])->count();
-        $own_friends  = UserFriends::select('id')->where('user_id','=',$user->id)->orWhere('friend_id','=',$user->id)->count();
+        $old_bookings       = $user->count_own_old_bookings();
+        $new_bookings       = $user->count_own_active_bookings();
+        $cancelled_bookings = $user->count_own_cancelled_bookings();
+        $own_friends        = $user->count_own_friends();
 
         $locations = ShopLocations::whereIn('visibility',['public'])->orderBy('name','ASC')->get();
 

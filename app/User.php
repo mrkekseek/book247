@@ -670,6 +670,47 @@ class User extends Authenticatable
         return $next_number;
     }
 
+    public function count_own_friends(){
+        $member = $this;
+        $own_friends  = UserFriends::
+                        select('id')->where(function($query) use ($member) {
+                            $query->where('user_id','=',$member->id);
+                            $query->orWhere('friend_id','=',$member->id);
+                        })->count();
+
+        return $own_friends;
+    }
+
+    public function count_own_active_bookings(){
+        $new_bookings = Booking::
+            select('id')
+            ->where('for_user_id','=',$this->id)
+            ->whereIn('status',['active'])
+            ->count();
+
+        return $new_bookings;
+    }
+
+    public function count_own_old_bookings(){
+        $old_bookings = Booking::
+            select('id')
+            ->where('for_user_id','=',$this->id)
+            ->whereIn('status',['paid','unpaid','old','no_show'])
+            ->count();
+
+        return $old_bookings;
+    }
+
+    public function count_own_cancelled_bookings(){
+        $cancelled_bookings = Booking::
+            select('id')
+            ->where('for_user_id','=',$this->id)
+            ->whereIn('status',['canceled'])
+            ->count();
+
+        return $cancelled_bookings;
+    }
+
     /**
      * Detach all roles from a user
      *
