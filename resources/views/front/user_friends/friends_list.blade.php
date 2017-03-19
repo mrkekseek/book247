@@ -85,7 +85,7 @@
                                         <td class="hidden-xs"> {{$friend['phone_number']}} </td>
                                         <td class="hidden-xs"> {{ isset($locations[$friend['preferred_gym']])?$locations[$friend['preferred_gym']]:'-' }} </td>
                                         <td>
-                                            @if ($friend['status']=='pending' && $friend['user_id']==$user->id)
+                                            @if ($friend['status']=='pending' && $friend['friend_id']==$user->id)
                                                 <a href="javascript:;" data-id="{{$friend['ref_nr']}}" style="min-width:85px; margin-bottom:5px;" class="btn btn-sm green-jungle accept_friend">
                                                     <i class="fa fa-edit hidden-xs"></i> Accept </a>
                                                 <a href="javascript:;" data-id="{{$friend['ref_nr']}}" style="min-width:85px;" class="btn btn-sm red-soft reject_friend">

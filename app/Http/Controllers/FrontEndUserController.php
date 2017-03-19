@@ -3322,7 +3322,7 @@ class FrontEndUserController extends Controller
                 $generalSettings = UserSettings::get_general_settings($userFriend->id, ['settings_preferred_location']);
 
                 $friends_list[] = [
-                    'user_id'       => $friend->user_id,
+                    'friend_id'     => $friend->friend_id,
                     'full_name'     => $userFriend->first_name.' '.$userFriend->middle_name.' '.$userFriend->last_name,
                     'email_address' => isset($userFriend['PersonalDetail']->personal_email)?$userFriend['PersonalDetail']->personal_email:'-',
                     'phone_number'  => isset($userFriend['PersonalDetail']->mobile_number)?$userFriend['PersonalDetail']->mobile_number:'-',
