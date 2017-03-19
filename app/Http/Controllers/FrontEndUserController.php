@@ -3311,10 +3311,10 @@ class FrontEndUserController extends Controller
 
             foreach($friends as $friend){
                 if ($userID == $friend->user_id){
-                    $friendID = $friend->friend_id;
+                    $friendID   = $friend->friend_id;
                 }
                 else{
-                    $friendID = $friend->user_id;
+                    $friendID   = $friend->user_id;
                 }
 
                 $since = Carbon::createFromFormat('Y-m-d H:i:s', $friend->created_at)->format('M j Y');
@@ -3322,6 +3322,7 @@ class FrontEndUserController extends Controller
                 $generalSettings = UserSettings::get_general_settings($userFriend->id, ['settings_preferred_location']);
 
                 $friends_list[] = [
+                    'user_id'       => $friend->user_id,
                     'full_name'     => $userFriend->first_name.' '.$userFriend->middle_name.' '.$userFriend->last_name,
                     'email_address' => isset($userFriend['PersonalDetail']->personal_email)?$userFriend['PersonalDetail']->personal_email:'-',
                     'phone_number'  => isset($userFriend['PersonalDetail']->mobile_number)?$userFriend['PersonalDetail']->mobile_number:'-',
