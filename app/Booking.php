@@ -175,7 +175,7 @@ class Booking extends Model
 
                 $a_note['note_title'] = $note->note_title;
                 $a_note['note_body']  = $note->note_body;
-                $a_note['created_at'] = Carbon::createFromFormat('Y-m-d H:i:s', $note->created_at)->format('H:s - M jS, Y');
+                $a_note['created_at'] = Carbon::createFromFormat('Y-m-d H:i:s', $note->created_at)->format('H:s - M jS Y');
 
                 $notePerson = User::select('first_name','middle_name','last_name')->where('id','=',$note->by_user_id)->get()->first();
                 $a_note['added_by'] = $notePerson->first_name.' '.$notePerson->middle_name.' '.$notePerson->last_name;
@@ -185,8 +185,8 @@ class Booking extends Model
         }
 
         $bookingDetails = [
-            'addedOn'       => Carbon::createFromFormat('Y-m-d H:i:s', $this->created_at)->format('l, M jS, Y \a\t H:i'),
-            'bookingDate'   => Carbon::createFromFormat('Y-m-d', $this->date_of_booking)->format('l, M jS, Y'),
+            'addedOn'       => Carbon::createFromFormat('Y-m-d H:i:s', $this->created_at)->format('l M jS Y \a\t H:i'),
+            'bookingDate'   => Carbon::createFromFormat('Y-m-d', $this->date_of_booking)->format('l M jS Y'),
             'timeStart'     => Carbon::createFromFormat('H:i:s', $this->booking_time_start)->format('H:i'),
             'timeStop'      => Carbon::createFromFormat('H:i:s', $this->booking_time_stop)->format('H:i'),
             'paymentType'   => $this->payment_type,

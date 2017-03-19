@@ -150,7 +150,7 @@ class BookingDailyPlannerEmail extends Command
                         $message
                             ->from(Config::get('constants.globalWebsite.system_email'))
                             ->to($single->email, $single->first_name.' '.$single->middle_name.' '.$single->last_name)
-                            ->subject('Booking System - morning bookings summary for all locations - '.Carbon::today()->format('d-m-Y'));
+                            ->subject(Config::get('constants.globalWebsite.email_company_name_in_title').' -  morning bookings summary for all locations - '.Carbon::today()->format('d-m-Y'));
                         foreach($listOfBookings as $val){
                             $message->attach($val['location'].'.xls', ['as'=>$val['name'].'.xls', 'mime' => 'application/vnd.ms-excel']);
                         }

@@ -898,6 +898,11 @@ Route::group(['prefix'=>'ajax', 'middleware' => 'web'], function(){
         'uses'  => 'FrontEndUserController@remove_friend_from_list'
     ]);
 
+    Route::post('approve_pending_friend', [
+        'as'    => 'ajax/approve_pending_friend',
+        'uses'  => 'FrontEndUserController@approve_pending_friend'
+    ]);
+
     Route::post('get_friends_list', [
         'as'    => 'ajax/get_friends_list',
         'uses'  => 'FrontEndUserController@ajax_get_friends_list'

@@ -326,7 +326,7 @@ class BookingController extends Controller
                             $message
                                 ->from(Config::get('constants.globalWebsite.system_email'))
                                 ->to($player->email, $player->first_name.' '.$player->middle_name.' '.$player->last_name)
-                                ->subject('Booking System - Your booking for '.$booking_details["bookingDate"].' was canceled');
+                                ->subject(Config::get('constants.globalWebsite.email_company_name_in_title').' -  Your booking for '.$booking_details["bookingDate"].' was canceled');
                         });
                     }
 
@@ -1070,11 +1070,11 @@ class BookingController extends Controller
                 // send_email_to_user
                 $player = User::where('id', '=', $player_id)->get()->first();
                 if (sizeof($booking_details)>1){
-                    $email_title = 'Booking System - Several bookings were created';
+                    $email_title = Config::get('constants.globalWebsite.email_company_name_in_title').' - Several bookings were created';
                 }
                 else{
                     $booking_details = $booking_details[0];
-                    $email_title = 'Booking System - Your booking for ' . $booking_details["bookingDate"] . ' was created';
+                    $email_title = Config::get('constants.globalWebsite.email_company_name_in_title').' - Your booking for ' . $booking_details["bookingDate"] . ' was created';
                 }
 
                 $top_title_message = 'Dear <span>' . $player->first_name . ' ' . $player->middle_name . ' ' . $player->last_name . '</span>';

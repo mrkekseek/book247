@@ -2345,6 +2345,39 @@ class FrontEndUserController extends Controller
                     $new_friend->save();
 
                     $friend = User::where('id','=',$friends->user_id)->get()->first();
+                    if ($friend_approval_status=='pending'){
+                        $top_title_message = 'Dear <span>'.$friend->first_name.' '.$friend->middle_name.' '.$friend->last_name .'</span>';
+                        $main_message = 'You got a friend request from '.$user->first_name.' '.$user->middle_name.' '.$user->last_name.'<br /><br />';
+                        $main_message.= 'Please go to your backend account->Friends List and answer to this friend request, by <strong>approving</strong> or <strong>rejecting</strong> it. <br /><br />'.
+                                        'Sincerely,<br />Book247 Team.';
+
+                        $beautymail = app()->make(Beautymail::class);
+                        $beautymail->send('emails.email_default',
+                            ['body_header_title'=>$top_title_message, 'body_message' => $main_message],
+                            function($message) use ($friend) {
+                                $message
+                                    ->from(Config::get('constants.globalWebsite.system_email'))
+                                    ->to($friend->email, $friend->first_name.' '.$friend->middle_name.' '.$friend->last_name)
+                                    ->subject(Config::get('constants.globalWebsite.email_company_name_in_title').' - You got a new friend request that needs approval');
+                            });
+                    }
+                    else{
+                        $top_title_message = 'Dear <span>'.$friend->first_name.' '.$friend->middle_name.' '.$friend->last_name .'</span>';
+                        $main_message = 'You have a new friend - '.$user->first_name.' '.$user->middle_name.' '.$user->last_name.'<br /><br />';
+                        $main_message.= 'To manage your friends, go to your Backend Account -> Friends List and see the entire list. You can remove the ones you don\'t want by clicking <strong>Remove</strong> button. <br /><br />'.
+                            'Sincerely,<br />Book247 Team.';
+
+                        $beautymail = app()->make(Beautymail::class);
+                        $beautymail->send('emails.email_default',
+                            ['body_header_title'=>$top_title_message, 'body_message' => $main_message],
+                            function($message) use ($friend) {
+                                $message
+                                    ->from(Config::get('constants.globalWebsite.system_email'))
+                                    ->to($friend->email, $friend->first_name.' '.$friend->middle_name.' '.$friend->last_name)
+                                    ->subject(Config::get('constants.globalWebsite.email_company_name_in_title').' - You have a new friend');
+                            });
+                    }
+
                     $msg = ['success'=>'true', 'message' => 'You have a new friend', 'full_name' => $friend->first_name.' '.$friend->middle_name.' '.$friend->last_name ];
                 }
             }
@@ -2397,6 +2430,63 @@ class FrontEndUserController extends Controller
                 'success'=> true,
                 'title'  => 'Friend removed from Friends list',
                 'message' => 'You have now a friend less than before'
+            ];
+        }
+        else{
+            return [
+                'success'=> false,
+                'title'  => 'An error occurred',
+                'errors' => 'Could not find the friend you selected.'
+            ];
+        }
+    }
+
+    public function approve_pending_friend(Request $request, $id=-1){
+        if (!Auth::check()) {
+            return [
+                'success'   => false,
+                'title'     => 'An error occurred',
+                'errors'    => 'You need to be logged in to have access to this function'
+            ];
+        }
+        else{
+            $user = Auth::user();
+        }
+
+        $vars = $request->only('search_key');
+        $is_staff = !$user->hasRole(['front-member','front-user']);
+
+        if ($id==-1){
+            $user_id = $user->id;
+        }
+        elseif ($is_staff==true){
+            $user_id = $id;
+        }
+        else{
+            return [
+                'success'=> false,
+                'title'  =>'An error occurred',
+                'errors' => 'Error in page configuration'
+            ];
+        }
+
+        $friend = UserFriends::where('id','=',$vars['search_key'])->get()->first();
+        if($friend){
+            if ($friend->user_id!=$user_id && $friend->friend_id!=$user_id){
+                return [
+                    'success'=> false,
+                    'title'  => 'An error occurred',
+                    'errors' => 'The selected friend could not be found on your friends list. Try logout/login first'
+                ];
+            }
+
+            $friend->status = 'active';
+            $friend->save();
+
+            return [
+                'success'   => true,
+                'title'     => 'Friend approved',
+                'message'   => 'You have a new friend in your list.'
             ];
         }
         else{
@@ -2548,7 +2638,7 @@ class FrontEndUserController extends Controller
                     $message
                         ->from(Config::get('constants.globalWebsite.system_email'))
                         ->to($user->email, $user->first_name.' '.$user->middle_name.' '.$user->last_name)
-                        ->subject('Drammen & Økern - Online Booking System - You are registered!');
+                        ->subject(Config::get('constants.globalWebsite.email_company_name_in_title').' - Online Booking System - You are registered!');
                 });
 
             $addressFill = [
@@ -3832,7 +3922,7 @@ class FrontEndUserController extends Controller
                 $message
                     ->from(Config::get('constants.globalWebsite.system_email'))
                     ->to($user->email, $user->first_name.' '.$user->middle_name.' '.$user->last_name)
-                    ->subject('Booking System - Password successfully changed');
+                    ->subject(Config::get('constants.globalWebsite.email_company_name_in_title').' - Password successfully changed');
             });
 
         return [
@@ -3881,7 +3971,7 @@ class FrontEndUserController extends Controller
                     $message
                         ->from(Config::get('constants.globalWebsite.system_email'))
                         ->to($user->email, $user->first_name.' '.$user->middle_name.' '.$user->last_name)
-                        ->subject('Booking System - Password reset request');
+                        ->subject(Config::get('constants.globalWebsite.email_company_name_in_title').' - Password reset request');
                 });
         }
 

@@ -68,34 +68,31 @@
                                     <tr>
                                         <th>
                                             <i class="fa fa-briefcase"></i> Friend Name </th>
-                                        <th>
+                                        <th class="hidden-xs">
                                             <i class="fa fa-user"></i> Email Address </th>
-                                        <th>
+                                        <th class="hidden-xs">
                                             <i class="fa fa-user"></i> Phone Number </th>
                                         <th class="hidden-xs">
                                             <i class="fa fa-shopping-cart"></i> Preferred Gym </th>
-                                        <th> </th>
+                                        <th style="min-width:70px; width:5%;"> </th>
                                     </tr>
                                     </thead>
                                     <tbody>
                                 @foreach($list_of_friends as $friend)
                                     <tr>
-                                        <td class="highlight">
-                                            <div class="success"></div>
-                                            <a href="javascript:;"> {{$friend['full_name']}} </a>
-                                        </td>
-                                        <td> <a target="_blank" href="mailto:{{$friend['email_address']}}">{{$friend['email_address']}}</a> </td>
+                                        <td class="highlight"> {{$friend['full_name']}} </td>
+                                        <td class="hidden-xs"> <a target="_blank" href="mailto:{{$friend['email_address']}}">{{$friend['email_address']}}</a> </td>
                                         <td class="hidden-xs"> {{$friend['phone_number']}} </td>
-                                        <td> {{ isset($locations[$friend['preferred_gym']])?$locations[$friend['preferred_gym']]:'-' }} </td>
+                                        <td class="hidden-xs"> {{ isset($locations[$friend['preferred_gym']])?$locations[$friend['preferred_gym']]:'-' }} </td>
                                         <td>
                                             @if ($friend['status']=='pending')
-                                                <a href="javascript:;" data-id="{{$friend['ref_nr']}}" class="btn btn-sm green-jungle accept_friend">
-                                                    <i class="fa fa-edit"></i> Accept </a>
-                                                <a href="javascript:;" data-id="{{$friend['ref_nr']}}" class="btn btn-sm red-soft block_friend">
-                                                    <i class="fa fa-edit"></i> Block </a>
+                                                <a href="javascript:;" data-id="{{$friend['ref_nr']}}" style="min-width:85px; margin-bottom:5px;" class="btn btn-sm green-jungle accept_friend">
+                                                    <i class="fa fa-edit hidden-xs"></i> Accept </a>
+                                                <a href="javascript:;" data-id="{{$friend['ref_nr']}}" style="min-width:85px;" class="btn btn-sm red-soft reject_friend">
+                                                    <i class="fa fa-edit hidden-xs"></i> Reject </a>
                                             @else
-                                                <a href="javascript:;" data-id="{{$friend['ref_nr']}}" class="btn btn-sm btn-outline red-haze remove_friend">
-                                                    <i class="fa fa-edit"></i> Remove </a>
+                                                <a href="javascript:;" data-id="{{$friend['ref_nr']}}" style="min-width:85px;" class="btn btn-sm btn-outline red-haze remove_friend">
+                                                    <i class="fa fa-edit hidden-xs"></i> Remove </a>
                                             @endif
                                         </td>
                                     </tr>
@@ -137,7 +134,29 @@
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn dark btn-outline" data-dismiss="modal">No - return</button>
-                                    <button type="button" class="btn green" onclick="javascript:remove_friend();">Yes - remove</button>
+                                    <button type="button" class="btn green" onclick="javascript:remove_friend('remove');">Yes - remove</button>
+                                </div>
+                            </div>
+                            <!-- /.modal-content -->
+                        </div>
+                        <!-- /.modal-dialog -->
+                    </div>
+
+                    <div class="modal fade" id="small_reject_friend" tabindex="-1" role="dialog" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                                    <h4 class="modal-title"> New friend - reject request</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <h5>You are about to reject this friend request : </h5>
+                                    <div class="friend_name_reject_place" style="padding:0px 15px;"></div>
+                                    <input type="hidden" name="to_reject_friend" value="-1" />
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn dark btn-outline" data-dismiss="modal">No - return</button>
+                                    <button type="button" class="btn green" onclick="javascript:remove_friend('reject');">Yes - reject</button>
                                 </div>
                             </div>
                             <!-- /.modal-content -->
@@ -328,27 +347,21 @@
         }
 
         $(document).on('click', '.accept_friend', function(){
-            var friend_name  = $(this).parent().parent().find('td:eq(0)').find('a').html();
-            var friend_email = $(this).parent().parent().find('td:eq(1)').find('a').html();
-            $('.friend_name_cancel_place').html(friend_name + ' - ' + friend_email);
-
-            $('input[name="to_remove_friend"]').val($(this).attr('data-id'));
-
-            $('#small_remove_friend').modal('show');
+            approve_friend($(this).attr('data-id'));
         });
 
         $(document).on('click', '.reject_friend', function(){
-            var friend_name  = $(this).parent().parent().find('td:eq(0)').find('a').html();
+            var friend_name  = $(this).parent().parent().find('td:eq(0)').html();
             var friend_email = $(this).parent().parent().find('td:eq(1)').find('a').html();
-            $('.friend_name_cancel_place').html(friend_name + ' - ' + friend_email);
+            $('.friend_name_reject_place').html(friend_name + ' - ' + friend_email);
 
-            $('input[name="to_remove_friend"]').val($(this).attr('data-id'));
+            $('input[name="to_reject_friend"]').val($(this).attr('data-id'));
 
-            $('#small_remove_friend').modal('show');
+            $('#small_reject_friend').modal('show');
         });
 
         $(document).on('click', '.remove_friend', function(){
-            var friend_name  = $(this).parent().parent().find('td:eq(0)').find('a').html();
+            var friend_name  = $(this).parent().parent().find('td:eq(0)').html();
             var friend_email = $(this).parent().parent().find('td:eq(1)').find('a').html();
             $('.friend_name_cancel_place').html(friend_name + ' - ' + friend_email);
 
@@ -357,8 +370,16 @@
             $('#small_remove_friend').modal('show');
         });
 
-        function remove_friend(){
-            var search_key = $('input[name="to_remove_friend"]').val();
+        function remove_friend(reject_or_remove){
+            if (reject_or_remove == 'reject'){
+                var search_key = $('input[name="to_reject_friend"]').val();
+            }
+            else if (reject_or_remove == 'remove'){
+                var search_key = $('input[name="to_remove_friend"]').val();
+            }
+            else{
+                return false;
+            }
 
             $.ajax({
                 url: '{{route('ajax/remove_friend_from_list')}}',
@@ -378,7 +399,33 @@
 
                     $('#small_remove_friend').find('.friend_name_cancel_place').html('');
                     $('input[name="to_remove_friend"]').val(-1);
+
+                    $('#small_remove_friend').find('.friend_name_reject_place').html('');
+                    $('input[name="to_reject_friend"]').val(-1);
+
                     $('#small_remove_friend').modal('hide');
+                    $('#small_reject_friend').modal('hide');
+                }
+            });
+        }
+
+        function approve_friend(search_key){
+            $.ajax({
+                url: '{{route('ajax/approve_pending_friend')}}',
+                type: "post",
+                cache: false,
+                data: {
+                    'search_key' : search_key
+                },
+                success: function (data) {
+                    if(data.success){
+                        show_notification(data.title, data.message, 'lime', 3500, 0);
+                    }
+                    else{
+                        show_notification(data.title, data.errors, 'ruby', 3500, 0);
+                    }
+
+                    $('a[data-id="'+search_key+'"]').parent().html('');
                 }
             });
         }
