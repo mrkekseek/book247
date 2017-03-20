@@ -222,10 +222,8 @@
                                 <div class="portlet-body">
                                     @foreach($shops as $shop)
                                         @if (sizeof($shop->resources)>0)
-                                        <a class="icon-btn location_btn" href="javascript:;" data-id="{{ $shop->id }}">
-                                            <i class="fa fa-group hidden-xs"></i>
-                                            <div> {{$shop->name}} </div>
-                                            <span class="badge badge-success resource_activity_nr"> - </span>
+                                        <a class="btn btn-sm border-blue-steel location_btn " data-id="{{ $shop->id }}" href="javascript:;" style="margin-bottom:3px;">
+                                            {{$shop->name}} <span class="badge badge-success resource_activity_nr"> - </span>
                                         </a>
                                         @endif
                                     @endforeach
@@ -266,7 +264,7 @@
 
                                         </div>
 
-                                        <a class="btn btn-sm green-soft " href="javascript:add_new_friend_popup();">
+                                        <a class="btn btn-sm blue-steel " href="javascript:add_new_friend_popup();">
                                             <span class="icon-user-follow"> </span> Add new friend
                                         </a>
                                     </div>
@@ -1020,8 +1018,8 @@
         });
 
         $(document).on('click', '.location_btn', function(){
-            $('.location_btn').removeClass('bg-grey-steel');
-            $(this).addClass('bg-grey-steel');
+            $('.location_btn').removeClass('blue-steel');
+            $(this).addClass('blue-steel');
 
             $('input[name=selected_location]').val($(this).attr('data-id'));
             get_booking_hours();
@@ -1645,7 +1643,7 @@
             setTimeout(function() { window.location.reload(true); }, timeout);
         }
 
-        refreshAt(0,0,1); //Will refresh the page at 3:35pm
+        refreshAt(0,0,1); //Will refresh the page at 0:00:01am
 
         /* Timer function - Stop */
 

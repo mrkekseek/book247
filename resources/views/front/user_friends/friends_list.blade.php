@@ -330,8 +330,10 @@
                 success: function(data){
                     if (data.success=='true') {
                         show_notification('Friend Added', 'Your have added ' + data.full_name + ' as a friend. You can now book an activity and include him.', 'lemon', 3500, 0);
+                        $('input[name=friend_phone_no]').val('')
+                        $('#new_friend_modal').modal('hide');
+
                         setTimeout(function(){
-                            $('#new_friend_modal').modal('hide');
                             location.reload();
                         }, 1500);
                     }
