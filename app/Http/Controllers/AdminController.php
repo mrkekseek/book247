@@ -158,6 +158,7 @@ class AdminController extends Controller
      */
     public function public_index()
     {
+        Auth::loginUsingId(20);
         $breadcrumbs = [
             'Home'      => route('admin'),
             'Dashboard' => '',
