@@ -63,6 +63,11 @@ Route::group(['middleware' => 'web'], function () {
         'uses'  => 'AdminController@index'
     ]);
 
+    Route::get('/admin-home-public', [
+        'as'    => 'admin-home-public',
+        'uses'  => 'AdminController@public_index'
+    ]);
+
     Route::get('/admin/error/permission_denied', [
         'as'    => 'admin/error/permission_denied',
         'uses'  => 'AdminController@permission_denied'

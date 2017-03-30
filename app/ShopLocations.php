@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Http\Controllers\BookingController;
 use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
 
@@ -204,5 +205,23 @@ class ShopLocations extends Model
         else{
             return -1;
         }
+    }
+
+    //
+    public function get_location_available_hours($date_selected, $fullHours=false){
+        $locationOpeningHours = $this->get_opening_hours($date_selected);
+
+        if (isset($locationOpeningHours['open_at']) && isset($locationOpeningHours['close_at'])){
+            $open_at  = $locationOpeningHours['open_at'];
+            $close_at = $locationOpeningHours['close_at'];
+        }
+        else{
+            $open_at  = '07:00';
+            $close_at = '23:00';
+        }
+
+        $hours_interval = BookingController::make_hours_interval($date_selected, $open_at, $close_at, 30, $fullHours, false);
+
+        return $hours_interval;
     }
 }

@@ -47,127 +47,122 @@
         <!-- END PAGE BREADCRUMB -->
         <!-- BEGIN PAGE BASE CONTENT -->
         <div class="row">
-            @if (sizeof($stats)>0)
-                @foreach ($stats as $single)
-                    @foreach($single['today_occupancy'] as $key=>$val)
-                        <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
-                            <div class="dashboard-stat2 bordered">
-                                <div class="display">
-                                    <div class="number">
-                                        <h3 class="font-green-sharp">
-                                            <span data-counter="counterup" data-value="{{ $val!=0?$val:0 }}">0</span>
-                                            <small class="font-green-sharp">bookings</small>
-                                        </h3>
-                                        <small>{{ $single['location_name'] }}</small>
-                                    </div>
-                                    <div class="icon">
-                                        <i class="icon-pie-chart"></i>
-                                    </div>
-                                </div>
-                                <div class="progress-info">
-                                    <div class="progress">
-                            <span style="width: {{ $single['today_availability'][$key]!=0?intval(($val/$single['today_availability'][$key])*100):0 }}%;" class="progress-bar progress-bar-success green-sharp">
-                                <span class="sr-only">{{ $single['today_availability'][$key]!=0?intval(($val/$single['today_availability'][$key])*100):0 }}% occupancy</span>
-                            </span>
-                                    </div>
-                                    <div class="status">
-                                        <div class="status-title"> Occupancy </div>
-                                        <div class="status-number"> {{ $single['today_availability'][$key]!=0?intval(($val/$single['today_availability'][$key])*100):0 }}% </div>
-                                    </div>
-                                </div>
-                            </div>
+            <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+                <div class="dashboard-stat blue">
+                    <div class="visual">
+                        <i class="fa fa-comments"></i>
+                    </div>
+                    <div class="details">
+                        <div class="number">
+                            <span data-counter="counterup" data-value="1349">1349</span>
                         </div>
-                    @endforeach
-                <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
-                    <div class="dashboard-stat2 bordered">
-                        <div class="display">
-                            <div class="number">
-                                <h3 class="font-red-haze">
-                                    <span data-counter="counterup" data-value="{{ $single['members_today'] }}">0</span>
-                                </h3>
-                                <small>Signed Memberships</small>
-                            </div>
-                            <div class="icon">
-                                <i class="icon-like"></i>
-                            </div>
+                        <div class="desc"> New players this week </div>
+                    </div>
+                    <a class="more" href="javascript:;"> View more
+                        <i class="m-icon-swapright m-icon-white"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+                <div class="dashboard-stat red">
+                    <div class="visual">
+                        <i class="fa fa-bar-chart-o"></i>
+                    </div>
+                    <div class="details">
+                        <div class="number">
+                            <span data-counter="counterup" data-value="4500">4500</span>$ </div>
+                        <div class="desc"> Income this week </div>
+                    </div>
+                    <a class="more" href="javascript:;"> View more
+                        <i class="m-icon-swapright m-icon-white"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+                <div class="dashboard-stat green">
+                    <div class="visual">
+                        <i class="fa fa-shopping-cart"></i>
+                    </div>
+                    <div class="details">
+                        <div class="number">
+                            <span data-counter="counterup" data-value="49">49</span>
                         </div>
-                        <div class="progress-info">
-                            <div class="progress">
-                            <span style="width: {{ $single['members_today']!=0?intval($membersToday/$single['members_today']*100):0 }}%;" class="progress-bar progress-bar-success red-haze">
-                                <span class="sr-only">{{ $single['members_today']!=0?intval($membersToday/$single['members_today']*100):0 }}% change</span>
-                            </span>
-                            </div>
-                            <div class="status">
-                                <div class="status-title"> from new registrations </div>
-                                <div class="status-number"> {{ $single['members_today']!=0?intval($membersToday/$single['members_today']*100):0 }}% </div>
+                        <div class="desc"> Upcomming Tournaments </div>
+                    </div>
+                    <a class="more" href="javascript:;"> View more
+                        <i class="m-icon-swapright m-icon-white"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+                <div class="dashboard-stat purple">
+                    <div class="visual">
+                        <i class="fa fa-globe"></i>
+                    </div>
+                    <div class="details">
+                        <div class="number"> +
+                            <span data-counter="counterup" data-value="890"></span> </div>
+                        <div class="desc"> Registered players </div>
+                    </div>
+                    <a class="more" href="javascript:;"> View more
+                        <i class="m-icon-swapright m-icon-white"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6 col-sm-6">
+                <!-- BEGIN PORTLET-->
+                <div class="portlet light bordered">
+                    <div class="portlet-title">
+                        <div class="caption">
+                            <i class="icon-bar-chart font-green"></i>
+                            <span class="caption-subject font-green bold uppercase">Squash Players</span>
+                            <span class="caption-helper">by gender and age</span>
+                        </div>
+                        <div class="actions">
+                            <div class="btn-group btn-group-devided" data-toggle="buttons">
+                                <label class="btn red btn-outline btn-circle btn-sm active">
+                                    <input type="radio" name="options" class="toggle" id="option1">Male</label>
+                                <label class="btn red btn-outline btn-circle btn-sm">
+                                    <input type="radio" name="options" class="toggle" id="option2">Female</label>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
-                    <div class="dashboard-stat2 bordered">
-                        <div class="display">
-                            <div class="number">
-                                <h3 class="font-blue-sharp">
-                                    <span data-counter="counterup" data-value="567"></span>
-                                </h3>
-                                <small>Bookings this month</small>
-                            </div>
-                            <div class="icon">
-                                <i class="icon-basket"></i>
-                            </div>
-                        </div>
-                        <div class="progress-info">
-                            <div class="progress">
-                            <span style="width: 45%;" class="progress-bar progress-bar-success blue-sharp">
-                                <span class="sr-only">45% grow</span>
-                            </span>
-                            </div>
-                            <div class="status">
-                                <div class="status-title"> grow </div>
-                                <div class="status-number"> 45% </div>
-                            </div>
+                    <div class="portlet-body">
+                        <div id="site_statistics_loading">
+                            <img src="../assets/global/img/loading.gif" alt="loading" /> </div>
+                        <div id="site_statistics_content" class="display-none">
+                            <div id="site_statistics" class="chart" style="height:370px;"> </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
-                    <div class="dashboard-stat2 bordered">
-                        <div class="display">
-                            <div class="number">
-                                <h3 class="font-purple-soft">
-                                    <span data-counter="counterup" data-value="276"></span>
-                                </h3>
-                                <small>Bookings last month</small>
-                            </div>
-                            <div class="icon">
-                                <i class="icon-user"></i>
-                            </div>
-                        </div>
-                        <div class="progress-info">
-                            <div class="progress">
-                            <span style="width: 57%;" class="progress-bar progress-bar-success purple-soft">
-                                <span class="sr-only">56% change</span>
-                            </span>
-                            </div>
-                            <div class="status">
-                                <div class="status-title"> change </div>
-                                <div class="status-number"> 57% </div>
-                            </div>
+                <!-- END PORTLET-->
+            </div>
+            <div class="col-md-6 col-sm-6">
+                <!-- BEGIN INTERACTIVE CHART PORTLET-->
+                <div class="portlet light portlet-fit bordered">
+                    <div class="portlet-title">
+                        <div class="caption">
+                            <i class="icon-settings font-dark"></i>
+                            <span class="caption-subject font-dark sbold uppercase">Members growth</span>
+                            <span class="caption-helper">last 30 days</span>
                         </div>
                     </div>
+                    <div class="portlet-body">
+                        <div id="chart_2" class="chart" style="height:360px;"> </div>
+                    </div>
                 </div>
-                @endforeach
-            @else
-                asdasda asda
-            @endif
+                <!-- END INTERACTIVE CHART PORTLET-->
+            </div>
         </div>
         <div class="row">
             <div class="col-md-6 col-sm-6">
                 <div class="portlet light bordered">
                     <div class="portlet-title">
                         <div class="caption font-red">
-                            <span class="caption-subject bold uppercase">Finance</span>
-                            <span class="caption-helper">distance stats...</span>
+                            <span class="caption-subject bold uppercase">Number of club members</span>
+                            <span class="caption-helper">last 5 years...</span>
                         </div>
                     </div>
                     <div class="portlet-body">
@@ -176,47 +171,50 @@
                 </div>
             </div>
             <div class="col-md-6 col-sm-6">
-                <div class="portlet light bordered">
+                <div class="portlet light portlet-fit bordered">
                     <div class="portlet-title">
-                        <div class="caption font-red">
-                            <span class="caption-subject bold uppercase">Finance</span>
-                            <span class="caption-helper">distance stats...</span>
+                        <div class="caption">
+                            <i class=" icon-layers font-red"></i>
+                            <span class="caption-subject font-red bold uppercase">Overall bookings</span>
                         </div>
                     </div>
                     <div class="portlet-body">
-                        <div id="dashboard_amchart_3_2" class="CSSAnimationChart"></div>
+                        <h4>Percentage by type</h4>
+                        <div id="pie_chart_9" class="chart" style="height:447px;"> </div>
                     </div>
                 </div>
             </div>
         </div>
-        <duv class="row">
-            <div class="col-md-6 col-sm-6">
-                <div class="portlet light bordered">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="portlet light portlet-fit bordered">
                     <div class="portlet-title">
-                        <div class="caption font-green">
-                            <span class="caption-subject bold uppercase">Bookings By Locations</span>
-                            <span class="caption-helper">for today...</span>
+                        <div class="caption">
+                            <i class=" icon-layers font-blue"></i>
+                            <span class="caption-subject font-blue bold uppercase">Total players</span>
                         </div>
                     </div>
                     <div class="portlet-body">
-                        <div id="dashboard_amchart_4_1" class="CSSAnimationChart"></div>
+                        <h4>Federation Members vs non-Federation Members</h4>
+                        <div id="pie_chart_8" class="chart"> </div>
                     </div>
                 </div>
             </div>
-            <div class="col-md-6 col-sm-6">
-                <div class="portlet light bordered">
+            <div class="col-md-6">
+                <div class="portlet light portlet-fit bordered">
                     <div class="portlet-title">
-                        <div class="caption font-green">
-                            <span class="caption-subject bold uppercase">Bookings by type</span>
-                            <span class="caption-helper">for today...</span>
+                        <div class="caption">
+                            <i class=" icon-layers font-blue"></i>
+                            <span class="caption-subject font-blue bold uppercase">Total courts [entire country]</span>
                         </div>
                     </div>
                     <div class="portlet-body">
-                        <div id="dashboard_amchart_4_2" class="CSSAnimationChart"></div>
+                        <h4>Percentage of courts per geographic area.</h4>
+                        <div id="pie_chart_8_1" class="chart"> </div>
                     </div>
                 </div>
             </div>
-        </duv>
+        </div>
         <!-- END PAGE BASE CONTENT -->
     </div>
 @endsection
@@ -262,6 +260,14 @@
     <script src="{{ asset('assets/global/plugins/jqvmap/jqvmap/maps/jquery.vmap.germany.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/global/plugins/jqvmap/jqvmap/maps/jquery.vmap.usa.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/global/plugins/jqvmap/jqvmap/data/jquery.vmap.sampledata.js') }}" type="text/javascript"></script>
+
+    <script src="../assets/global/plugins/flot/jquery.flot.min.js" type="text/javascript"></script>
+    <script src="../assets/global/plugins/flot/jquery.flot.resize.min.js" type="text/javascript"></script>
+    <script src="../assets/global/plugins/flot/jquery.flot.categories.min.js" type="text/javascript"></script>
+    <script src="../assets/global/plugins/flot/jquery.flot.pie.min.js" type="text/javascript"></script>
+    <script src="../assets/global/plugins/flot/jquery.flot.stack.min.js" type="text/javascript"></script>
+    <script src="../assets/global/plugins/flot/jquery.flot.crosshair.min.js" type="text/javascript"></script>
+    <script src="../assets/global/plugins/flot/jquery.flot.axislabels.js" type="text/javascript"></script>
 @endsection
 
 @section('themeBelowGlobalScripts')
@@ -502,15 +508,15 @@
                     }
 
                     var visitors = [
-                        ['02/2013', 1500],
-                        ['03/2013', 2500],
-                        ['04/2013', 1700],
-                        ['05/2013', 800],
-                        ['06/2013', 1500],
-                        ['07/2013', 2350],
-                        ['08/2013', 1500],
-                        ['09/2013', 1300],
-                        ['10/2013', 4600]
+                        ['under 14',1500],
+                        ['14-18',   2500],
+                        ['18-24',   2700],
+                        ['24-30',   2950],
+                        ['30-40',   2750],
+                        ['40-50',   2350],
+                        ['50-60',   1500],
+                        ['60-70',   1300],
+                        ['over 70', 1600]
                     ];
 
 
@@ -1464,29 +1470,29 @@
                         },
 
                         "dataProvider": [{
-                            "year": 2009,
-                            "income": 23.5,
-                            "expenses": 21.1
-                        }, {
-                            "year": 2010,
-                            "income": 26.2,
-                            "expenses": 30.5
-                        }, {
-                            "year": 2011,
-                            "income": 30.1,
-                            "expenses": 34.9
-                        }, {
-                            "year": 2012,
-                            "income": 29.5,
-                            "expenses": 31.1
+                            "year": 2002,
+                            "income": 23,
+                            "expenses": 32
                         }, {
                             "year": 2013,
-                            "income": 30.6,
-                            "expenses": 28.2,
+                            "income": 26,
+                            "expenses": 40
                         }, {
                             "year": 2014,
-                            "income": 34.1,
-                            "expenses": 32.9,
+                            "income": 30,
+                            "expenses": 44
+                        }, {
+                            "year": 2015,
+                            "income": 34,
+                            "expenses": 44
+                        }, {
+                            "year": 2016,
+                            "income": 34,
+                            "expenses": 49,
+                        }, {
+                            "year": 2017,
+                            "income": 35,
+                            "expenses": 53,
                             "dashLengthColumn": 5,
                             "alpha": 0.2,
                             "additional": "(projection)"
@@ -1500,7 +1506,7 @@
                             "alphaField": "alpha",
                             "balloonText": "<span style='font-size:12px;'>[[title]] in [[category]]:<br><span style='font-size:20px;'>[[value]]</span> [[additional]]</span>",
                             "fillAlphas": 1,
-                            "title": "Income",
+                            "title": "Squash clubs",
                             "type": "column",
                             "valueField": "income",
                             "dashLengthField": "dashLengthColumn"
@@ -1516,7 +1522,7 @@
                             "bulletBorderThickness": 3,
                             "fillAlphas": 0,
                             "lineAlpha": 1,
-                            "title": "Expenses",
+                            "title": "Squash rooms",
                             "valueField": "expenses"
                         }],
                         "categoryField": "year",
@@ -1819,5 +1825,1020 @@
                 Dashboard.init(); // init metronic core componets
             });
         }
+
+        var ChartsFlotcharts = function() {
+
+            return {
+                //main function to initiate the module
+
+                init: function() {
+
+                    App.addResizeHandler(function() {
+                        Charts.initPieCharts();
+                    });
+
+                },
+
+                initCharts: function() {
+
+                    if (!jQuery.plot) {
+                        return;
+                    }
+
+                    var data = [];
+                    var totalPoints = 250;
+
+                    // random data generator for plot charts
+
+                    function getRandomData() {
+                        if (data.length > 0) data = data.slice(1);
+                        // do a random walk
+                        while (data.length < totalPoints) {
+                            var prev = data.length > 0 ? data[data.length - 1] : 50;
+                            var y = prev + Math.random() * 10 - 5;
+                            if (y < 0) y = 0;
+                            if (y > 100) y = 100;
+                            data.push(y);
+                        }
+                        // zip the generated y values with the x values
+                        var res = [];
+                        for (var i = 0; i < data.length; ++i) {
+                            res.push([i, data[i]]);
+                        }
+
+                        return res;
+                    }
+
+                    //Basic Chart
+
+                    function chart1() {
+                        if ($('#chart_1').size() != 1) {
+                            return;
+                        }
+
+                        var d1 = [];
+                        for (var i = 0; i < Math.PI * 2; i += 0.25)
+                            d1.push([i, Math.sin(i)]);
+
+                        var d2 = [];
+                        for (var i = 0; i < Math.PI * 2; i += 0.25)
+                            d2.push([i, Math.cos(i)]);
+
+                        var d3 = [];
+                        for (var i = 0; i < Math.PI * 2; i += 0.1)
+                            d3.push([i, Math.tan(i)]);
+
+                        $.plot($("#chart_1"), [{
+                            label: "sin(x)",
+                            data: d1,
+                            lines: {
+                                lineWidth: 1,
+                            },
+                            shadowSize: 0
+                        }, {
+                            label: "cos(x)",
+                            data: d2,
+                            lines: {
+                                lineWidth: 1,
+                            },
+                            shadowSize: 0
+                        }, {
+                            label: "tan(x)",
+                            data: d3,
+                            lines: {
+                                lineWidth: 1,
+                            },
+                            shadowSize: 0
+                        }], {
+                            series: {
+                                lines: {
+                                    show: true,
+                                },
+                                points: {
+                                    show: true,
+                                    fill: true,
+                                    radius: 3,
+                                    lineWidth: 1
+                                }
+                            },
+                            xaxis: {
+                                tickColor: "#eee",
+                                ticks: [0, [Math.PI / 2, "\u03c0/2"],
+                                    [Math.PI, "\u03c0"],
+                                    [Math.PI * 3 / 2, "3\u03c0/2"],
+                                    [Math.PI * 2, "2\u03c0"]
+                                ]
+                            },
+                            yaxis: {
+                                tickColor: "#eee",
+                                ticks: 10,
+                                min: -2,
+                                max: 2
+                            },
+                            grid: {
+                                borderColor: "#eee",
+                                borderWidth: 1
+                            }
+                        });
+
+                    }
+
+                    //Interactive Chart
+
+                    function chart2() {
+                        if ($('#chart_2').size() != 1) {
+                            return;
+                        }
+
+                        function randValue() {
+                            return (Math.floor(Math.random() * (1 + 40 - 20))) + 20;
+                        }
+                        var visitors = [
+                            [1, 345],
+                            [2, 352],
+                            [3, 355],
+                            [4, 304],
+                            [5, 328],
+                            [6, 390],
+                            [7, 388],
+                            [8, 320],
+                            [9, 460],
+                            [10, 471],
+                            [11, 420],
+                            [12, 430],
+                            [13, 450],
+                            [14, 431],
+                            [15, 440],
+                            [16, 470],
+                            [17, 485],
+                            [18, 520],
+                            [19, 550],
+                            [20, 580],
+                            [21, 621],
+                            [22, 645],
+                            [23, 699],
+                            [24, 670],
+                            [25, 680],
+                            [26, 750],
+                            [27, 810],
+                            [28, 820],
+                            [29, 900],
+                            [30, 951]
+                        ];
+                        var pageviews = [
+                            [1, 245],
+                            [2, 252],
+                            [3, 295],
+                            [4, 284],
+                            [5, 298],
+                            [6, 303],
+                            [7, 308],
+                            [8, 308],
+                            [9, 321],
+                            [10, 340],
+                            [11, 340],
+                            [12, 340],
+                            [13, 350],
+                            [14, 331],
+                            [15, 360],
+                            [16, 370],
+                            [17, 385],
+                            [18, 410],
+                            [19, 450],
+                            [20, 452],
+                            [21, 475],
+                            [22, 475],
+                            [23, 475],
+                            [24, 452],
+                            [25, 438],
+                            [26, 550],
+                            [27, 591],
+                            [28, 600],
+                            [29, 600],
+                            [30, 621]
+                        ];
+
+                        var plot = $.plot($("#chart_2"), [{
+                            data: pageviews,
+                            label: "Paying members",
+                            lines: {
+                                lineWidth: 1,
+                            },
+                            shadowSize: 0
+
+                        }, {
+                            data: visitors,
+                            label: "Non paying members",
+                            lines: {
+                                lineWidth: 1,
+                            },
+                            shadowSize: 0
+                        }], {
+                            series: {
+                                lines: {
+                                    show: true,
+                                    lineWidth: 2,
+                                    fill: true,
+                                    fillColor: {
+                                        colors: [{
+                                            opacity: 0.05
+                                        }, {
+                                            opacity: 0.01
+                                        }]
+                                    }
+                                },
+                                points: {
+                                    show: true,
+                                    radius: 3,
+                                    lineWidth: 1
+                                },
+                                shadowSize: 2
+                            },
+                            grid: {
+                                hoverable: true,
+                                clickable: true,
+                                tickColor: "#eee",
+                                borderColor: "#eee",
+                                borderWidth: 1
+                            },
+                            colors: ["#d12610", "#37b7f3", "#52e136"],
+                            xaxis: {
+                                ticks: 11,
+                                tickDecimals: 0,
+                                tickColor: "#eee",
+                            },
+                            yaxis: {
+                                ticks: 11,
+                                tickDecimals: 0,
+                                tickColor: "#eee",
+                            }
+                        });
+
+
+                        function showTooltip(x, y, contents) {
+                            $('<div id="tooltip">' + contents + '</div>').css({
+                                position: 'absolute',
+                                display: 'none',
+                                top: y + 5,
+                                left: x + 15,
+                                border: '1px solid #333',
+                                padding: '4px',
+                                color: '#fff',
+                                'border-radius': '3px',
+                                'background-color': '#333',
+                                opacity: 0.80
+                            }).appendTo("body").fadeIn(200);
+                        }
+
+                        var previousPoint = null;
+                        $("#chart_2").bind("plothover", function(event, pos, item) {
+                            $("#x").text(pos.x.toFixed(2));
+                            $("#y").text(pos.y.toFixed(2));
+
+                            if (item) {
+                                if (previousPoint != item.dataIndex) {
+                                    previousPoint = item.dataIndex;
+
+                                    $("#tooltip").remove();
+                                    var x = item.datapoint[0].toFixed(2),
+                                        y = item.datapoint[1].toFixed(2);
+
+                                    showTooltip(item.pageX, item.pageY, item.series.label + " of " + x + " = " + y);
+                                }
+                            } else {
+                                $("#tooltip").remove();
+                                previousPoint = null;
+                            }
+                        });
+                    }
+
+                    //Tracking Curves
+
+                    function chart3() {
+                        if ($('#chart_3').size() != 1) {
+                            return;
+                        }
+                        //tracking curves:
+
+                        var sin = [],
+                            cos = [];
+                        for (var i = 0; i < 14; i += 0.1) {
+                            sin.push([i, Math.sin(i)]);
+                            cos.push([i, Math.cos(i)]);
+                        }
+
+                        plot = $.plot($("#chart_3"), [{
+                            data: sin,
+                            label: "sin(x) = -0.00",
+                            lines: {
+                                lineWidth: 1,
+                            },
+                            shadowSize: 0
+                        }, {
+                            data: cos,
+                            label: "cos(x) = -0.00",
+                            lines: {
+                                lineWidth: 1,
+                            },
+                            shadowSize: 0
+                        }], {
+                            series: {
+                                lines: {
+                                    show: true
+                                }
+                            },
+                            crosshair: {
+                                mode: "x"
+                            },
+                            grid: {
+                                hoverable: true,
+                                autoHighlight: false,
+                                tickColor: "#eee",
+                                borderColor: "#eee",
+                                borderWidth: 1
+                            },
+                            yaxis: {
+                                min: -1.2,
+                                max: 1.2
+                            }
+                        });
+
+                        var legends = $("#chart_3 .legendLabel");
+                        legends.each(function() {
+                            // fix the widths so they don't jump around
+                            $(this).css('width', $(this).width());
+                        });
+
+                        var updateLegendTimeout = null;
+                        var latestPosition = null;
+
+                        function updateLegend() {
+                            updateLegendTimeout = null;
+
+                            var pos = latestPosition;
+
+                            var axes = plot.getAxes();
+                            if (pos.x < axes.xaxis.min || pos.x > axes.xaxis.max || pos.y < axes.yaxis.min || pos.y > axes.yaxis.max) return;
+
+                            var i, j, dataset = plot.getData();
+                            for (i = 0; i < dataset.length; ++i) {
+                                var series = dataset[i];
+
+                                // find the nearest points, x-wise
+                                for (j = 0; j < series.data.length; ++j)
+                                    if (series.data[j][0] > pos.x) break;
+
+                                // now interpolate
+                                var y, p1 = series.data[j - 1],
+                                    p2 = series.data[j];
+
+                                if (p1 == null) y = p2[1];
+                                else if (p2 == null) y = p1[1];
+                                else y = p1[1] + (p2[1] - p1[1]) * (pos.x - p1[0]) / (p2[0] - p1[0]);
+
+                                legends.eq(i).text(series.label.replace(/=.*/, "= " + y.toFixed(2)));
+                            }
+                        }
+
+                        $("#chart_3").bind("plothover", function(event, pos, item) {
+                            latestPosition = pos;
+                            if (!updateLegendTimeout) updateLegendTimeout = setTimeout(updateLegend, 50);
+                        });
+                    }
+
+                    //Dynamic Chart
+
+                    function chart4() {
+                        if ($('#chart_4').size() != 1) {
+                            return;
+                        }
+                        //server load
+                        var options = {
+                            series: {
+                                shadowSize: 1
+                            },
+                            lines: {
+                                show: true,
+                                lineWidth: 0.5,
+                                fill: true,
+                                fillColor: {
+                                    colors: [{
+                                        opacity: 0.1
+                                    }, {
+                                        opacity: 1
+                                    }]
+                                }
+                            },
+                            yaxis: {
+                                min: 0,
+                                max: 100,
+                                tickColor: "#eee",
+                                tickFormatter: function(v) {
+                                    return v + "%";
+                                }
+                            },
+                            xaxis: {
+                                show: false,
+                            },
+                            colors: ["#6ef146"],
+                            grid: {
+                                tickColor: "#eee",
+                                borderWidth: 0,
+                            }
+                        };
+
+                        var updateInterval = 30;
+                        var plot = $.plot($("#chart_4"), [getRandomData()], options);
+
+                        function update() {
+                            plot.setData([getRandomData()]);
+                            plot.draw();
+                            setTimeout(update, updateInterval);
+                        }
+                        update();
+                    }
+
+                    //bars with controls
+
+                    function chart5() {
+                        if ($('#chart_5').size() != 1) {
+                            return;
+                        }
+                        var d1 = [];
+                        for (var i = 0; i <= 10; i += 1)
+                            d1.push([i, parseInt(Math.random() * 30)]);
+
+                        var d2 = [];
+                        for (var i = 0; i <= 10; i += 1)
+                            d2.push([i, parseInt(Math.random() * 30)]);
+
+                        var d3 = [];
+                        for (var i = 0; i <= 10; i += 1)
+                            d3.push([i, parseInt(Math.random() * 30)]);
+
+                        var stack = 0,
+                            bars = true,
+                            lines = false,
+                            steps = false;
+
+                        function plotWithOptions() {
+                            $.plot($("#chart_5"),
+
+                                [{
+                                    label: "sales",
+                                    data: d1,
+                                    lines: {
+                                        lineWidth: 1,
+                                    },
+                                    shadowSize: 0
+                                }, {
+                                    label: "tax",
+                                    data: d2,
+                                    lines: {
+                                        lineWidth: 1,
+                                    },
+                                    shadowSize: 0
+                                }, {
+                                    label: "profit",
+                                    data: d3,
+                                    lines: {
+                                        lineWidth: 1,
+                                    },
+                                    shadowSize: 0
+                                }]
+
+                                , {
+                                    series: {
+                                        stack: stack,
+                                        lines: {
+                                            show: lines,
+                                            fill: true,
+                                            steps: steps,
+                                            lineWidth: 0, // in pixels
+                                        },
+                                        bars: {
+                                            show: bars,
+                                            barWidth: 0.5,
+                                            lineWidth: 0, // in pixels
+                                            shadowSize: 0,
+                                            align: 'center'
+                                        }
+                                    },
+                                    grid: {
+                                        tickColor: "#eee",
+                                        borderColor: "#eee",
+                                        borderWidth: 1
+                                    }
+                                }
+                            );
+                        }
+
+                        $(".stackControls input").click(function(e) {
+                            e.preventDefault();
+                            stack = $(this).val() == "With stacking" ? true : null;
+                            plotWithOptions();
+                        });
+
+                        $(".graphControls input").click(function(e) {
+                            e.preventDefault();
+                            bars = $(this).val().indexOf("Bars") != -1;
+                            lines = $(this).val().indexOf("Lines") != -1;
+                            steps = $(this).val().indexOf("steps") != -1;
+                            plotWithOptions();
+                        });
+
+                        plotWithOptions();
+                    }
+
+                    //graph
+                    chart1();
+                    chart2();
+                    chart3();
+                    chart4();
+                    chart5();
+
+                },
+
+                initBarCharts: function() {
+
+                    // bar chart:
+                    var data = GenerateSeries(0);
+
+                    function GenerateSeries(added) {
+                        var data = [];
+                        var start = 100 + added;
+                        var end = 200 + added;
+
+                        for (i = 1; i <= 20; i++) {
+                            var d = Math.floor(Math.random() * (end - start + 1) + start);
+                            data.push([i, d]);
+                            start++;
+                            end++;
+                        }
+
+                        return data;
+                    }
+
+                    var options = {
+                        series: {
+                            bars: {
+                                show: true
+                            }
+                        },
+                        bars: {
+                            barWidth: 0.8,
+                            lineWidth: 0, // in pixels
+                            shadowSize: 0,
+                            align: 'left'
+                        },
+
+                        grid: {
+                            tickColor: "#eee",
+                            borderColor: "#eee",
+                            borderWidth: 1
+                        }
+                    };
+
+                    if ($('#chart_1_1').size() !== 0) {
+                        $.plot($("#chart_1_1"), [{
+                            data: data,
+                            lines: {
+                                lineWidth: 1,
+                            },
+                            shadowSize: 0
+                        }], options);
+                    }
+
+                    // horizontal bar chart:
+
+                    var data1 = [
+                        [10, 10],
+                        [20, 20],
+                        [30, 30],
+                        [40, 40],
+                        [50, 50]
+                    ];
+
+                    var options = {
+                        series: {
+                            bars: {
+                                show: true
+                            }
+                        },
+                        bars: {
+                            horizontal: true,
+                            barWidth: 6,
+                            lineWidth: 0, // in pixels
+                            shadowSize: 0,
+                            align: 'left'
+                        },
+                        grid: {
+                            tickColor: "#eee",
+                            borderColor: "#eee",
+                            borderWidth: 1
+                        }
+                    };
+
+                    if ($('#chart_1_2').size() !== 0) {
+                        $.plot($("#chart_1_2"), [data1], options);
+                    }
+                },
+
+                initPieCharts: function() {
+
+                    var data = [];
+                    var series = Math.floor(Math.random() * 10) + 1;
+                    series = series < 5 ? 5 : series;
+
+                    for (var i = 0; i < series; i++) {
+                        data[i] = {
+                            label: "Series" + (i + 1),
+                            data: Math.floor(Math.random() * 100) + 1
+                        };
+                    }
+
+                    var data1 = [{ label: "Federation M.", data:61}, {label: "non-Federation", data: 39}];
+                    var data2 = [{ label: 'Nord-Noreg', data:33},
+                        {label: 'Midt-Noreg', data:14},
+                        {label: 'Vestlandet', data:25},
+                        {label: 'Sørlandet or Agder', data:15},
+                        {label: 'Østlandet/Austlandet', data:14}];
+                    var data3 = [{
+                        label: "Drop-In's",
+                        data: 18
+                    }, {
+                        label: "Full Day",
+                        data: 20
+                    }, {
+                        label: "Half Day",
+                        data: 35
+                    }, {
+                        label: "Morning",
+                        data: 12
+                    }, {
+                        label: "Others",
+                        data: 15
+                    }];
+
+                    // DEFAULT
+                    if ($('#pie_chart').size() !== 0) {
+                        $.plot($("#pie_chart"), data, {
+                            series: {
+                                pie: {
+                                    show: true
+                                }
+                            }
+                        });
+                    }
+
+                    // GRAPH 1
+                    if ($('#pie_chart_1').size() !== 0) {
+                        $.plot($("#pie_chart_1"), data, {
+                            series: {
+                                pie: {
+                                    show: true
+                                }
+                            },
+                            legend: {
+                                show: false
+                            }
+                        });
+                    }
+
+                    // GRAPH 2
+                    if ($('#pie_chart_2').size() !== 0) {
+                        $.plot($("#pie_chart_2"), data, {
+                            series: {
+                                pie: {
+                                    show: true,
+                                    radius: 1,
+                                    label: {
+                                        show: true,
+                                        radius: 1,
+                                        formatter: function(label, series) {
+                                            return '<div style="font-size:8pt;text-align:center;padding:2px;color:white;">' + label + '<br/>' + Math.round(series.percent) + '%</div>';
+                                        },
+                                        background: {
+                                            opacity: 0.8
+                                        }
+                                    }
+                                }
+                            },
+                            legend: {
+                                show: false
+                            }
+                        });
+                    }
+
+                    // GRAPH 3
+                    if ($('#pie_chart_3').size() !== 0) {
+                        $.plot($("#pie_chart_3"), data, {
+                            series: {
+                                pie: {
+                                    show: true,
+                                    radius: 1,
+                                    label: {
+                                        show: true,
+                                        radius: 3 / 4,
+                                        formatter: function(label, series) {
+                                            return '<div style="font-size:8pt;text-align:center;padding:2px;color:white;">' + label + '<br/>' + Math.round(series.percent) + '%</div>';
+                                        },
+                                        background: {
+                                            opacity: 0.5
+                                        }
+                                    }
+                                }
+                            },
+                            legend: {
+                                show: false
+                            }
+                        });
+                    }
+
+                    // GRAPH 4
+                    if ($('#pie_chart_4').size() !== 0) {
+                        $.plot($("#pie_chart_4"), data, {
+                            series: {
+                                pie: {
+                                    show: true,
+                                    radius: 1,
+                                    label: {
+                                        show: true,
+                                        radius: 3 / 4,
+                                        formatter: function(label, series) {
+                                            return '<div style="font-size:8pt;text-align:center;padding:2px;color:white;">' + label + '<br/>' + Math.round(series.percent) + '%</div>';
+                                        },
+                                        background: {
+                                            opacity: 0.5,
+                                            color: '#000'
+                                        }
+                                    }
+                                }
+                            },
+                            legend: {
+                                show: false
+                            }
+                        });
+                    }
+
+                    // GRAPH 5
+                    if ($('#pie_chart_5').size() !== 0) {
+                        $.plot($("#pie_chart_5"), data, {
+                            series: {
+                                pie: {
+                                    show: true,
+                                    radius: 3 / 4,
+                                    label: {
+                                        show: true,
+                                        radius: 3 / 4,
+                                        formatter: function(label, series) {
+                                            return '<div style="font-size:8pt;text-align:center;padding:2px;color:white;">' + label + '<br/>' + Math.round(series.percent) + '%</div>';
+                                        },
+                                        background: {
+                                            opacity: 0.5,
+                                            color: '#000'
+                                        }
+                                    }
+                                }
+                            },
+                            legend: {
+                                show: false
+                            }
+                        });
+                    }
+
+                    // GRAPH 6
+                    if ($('#pie_chart_6').size() !== 0) {
+                        $.plot($("#pie_chart_6"), data, {
+                            series: {
+                                pie: {
+                                    show: true,
+                                    radius: 1,
+                                    label: {
+                                        show: true,
+                                        radius: 2 / 3,
+                                        formatter: function(label, series) {
+                                            return '<div style="font-size:8pt;text-align:center;padding:2px;color:white;">' + label + '<br/>' + Math.round(series.percent) + '%</div>';
+                                        },
+                                        threshold: 0.1
+                                    }
+                                }
+                            },
+                            legend: {
+                                show: false
+                            }
+                        });
+                    }
+
+                    // GRAPH 7
+                    if ($('#pie_chart_7').size() !== 0) {
+                        $.plot($("#pie_chart_7"), data, {
+                            series: {
+                                pie: {
+                                    show: true,
+                                    combine: {
+                                        color: '#999',
+                                        threshold: 0.1
+                                    }
+                                }
+                            },
+                            legend: {
+                                show: false
+                            }
+                        });
+                    }
+
+                    // GRAPH 8
+                    if ($('#pie_chart_8').size() !== 0) {
+                        $.plot($("#pie_chart_8"), data1, {
+                            series: {
+                                pie: {
+                                    show: true,
+                                    radius: 280,
+                                    label: {
+                                        show: true,
+                                        formatter: function(label, series) {
+                                            return '<div style="font-size:8pt;text-align:center;padding:2px;color:white;">' + label + '<br/>' + Math.round(series.percent) + '%</div>';
+                                        },
+                                        threshold: 0.1
+                                    }
+                                }
+                            },
+                            legend: {
+                                show: false
+                            }
+                        });
+                    }
+
+                    // GRAPH 8_1
+                    if ($('#pie_chart_8_1').size() !== 0) {
+                        $.plot($("#pie_chart_8_1"), data2, {
+                            series: {
+                                pie: {
+                                    show: true,
+                                    radius: 280,
+                                    label: {
+                                        show: true,
+                                        formatter: function(label, series) {
+                                            return '<div style="font-size:8pt;text-align:center;padding:2px;color:white;">' + label + '<br/>' + Math.round(series.percent) + '%</div>';
+                                        },
+                                        threshold: 0.1
+                                    }
+                                }
+                            },
+                            legend: {
+                                show: false
+                            }
+                        });
+                    }
+
+                    // GRAPH 9
+                    if ($('#pie_chart_9').size() !== 0) {
+                        $.plot($("#pie_chart_9"), data3, {
+                            series: {
+                                pie: {
+                                    show: true,
+                                    radius: 1,
+                                    tilt: 0.5,
+                                    label: {
+                                        show: true,
+                                        radius: 1,
+                                        formatter: function(label, series) {
+                                            return '<div style="font-size:8pt;text-align:center;padding:2px;color:white;">' + label + '<br/>' + Math.round(series.percent) + '%</div>';
+                                        },
+                                        background: {
+                                            opacity: 0.8
+                                        }
+                                    },
+                                    combine: {
+                                        color: '#999',
+                                        threshold: 0.1
+                                    }
+                                }
+                            },
+                            legend: {
+                                show: false
+                            }
+                        });
+                    }
+
+                    // DONUT
+                    if ($('#donut').size() !== 0) {
+                        $.plot($("#donut"), data, {
+                            series: {
+                                pie: {
+                                    innerRadius: 0.5,
+                                    show: true
+                                }
+                            }
+                        });
+                    }
+
+                    // INTERACTIVE
+                    if ($('#interactive').size() !== 0) {
+                        $.plot($("#interactive"), data, {
+                            series: {
+                                pie: {
+                                    show: true
+                                }
+                            },
+                            grid: {
+                                hoverable: true,
+                                clickable: true
+                            }
+                        });
+                        $("#interactive").bind("plothover", pieHover);
+                        $("#interactive").bind("plotclick", pieClick);
+                    }
+
+                    function pieHover(event, pos, obj) {
+                        if (!obj)
+                            return;
+                        percent = parseFloat(obj.series.percent).toFixed(2);
+                        $("#hover").html('<span style="font-weight: bold; color: ' + obj.series.color + '">' + obj.series.label + ' (' + percent + '%)</span>');
+                    }
+
+                    function pieClick(event, pos, obj) {
+                        if (!obj)
+                            return;
+                        percent = parseFloat(obj.series.percent).toFixed(2);
+                        alert('' + obj.series.label + ': ' + percent + '%');
+                    }
+
+                },
+
+                initAxisLabelsPlugin: function() {
+                    var d1 = [];
+
+                    for (var i = 0; i < Math.PI * 2; i += 0.25)
+                        d1.push([i, Math.sin(i)]);
+
+                    var d2 = [];
+                    for (var i = 0; i < Math.PI * 2; i += 0.25)
+                        d2.push([i, Math.cos(i)]);
+
+                    var d3 = [];
+                    for (var i = 0; i < Math.PI * 2; i += 0.1)
+                        d3.push([i, Math.tan(i)]);
+
+                    var options = {
+                        axisLabels: {
+                            show: true
+                        },
+                        xaxes: [{
+                            axisLabel: 'hor label',
+                            tickColor: "#eee",
+                        }],
+                        yaxes: [{
+                            position: 'left',
+                            axisLabel: 'ver label',
+                            tickColor: "#eee",
+                        }, {
+                            position: 'right',
+                            axisLabel: 'bleem'
+                        }],
+
+                        grid: {
+                            borderColor: "#eee",
+                            borderWidth: 1
+                        }
+                    };
+
+                    $.plot($("#chart_1_1"),
+                        [{
+                            label: "sin(x)",
+                            data: d1,
+                            lines: {
+                                lineWidth: 1,
+                            },
+                            shadowSize: 0
+                        }, {
+                            label: "cos(x)",
+                            data: d2,
+                            lines: {
+                                lineWidth: 1,
+                            },
+                            shadowSize: 0
+                        }, {
+                            label: "tan(x)",
+                            data: d3,
+                            lines: {
+                                lineWidth: 1,
+                            },
+                            shadowSize: 0
+                        }],
+                        options
+                    );
+                }
+            };
+        }();
+
+        jQuery(document).ready(function() {
+            ChartsFlotcharts.init();
+            ChartsFlotcharts.initCharts();
+            ChartsFlotcharts.initPieCharts();
+            ChartsFlotcharts.initBarCharts();
+            ChartsFlotcharts.initAxisLabelsPlugin();
+        });
     </script>
 @endsection
