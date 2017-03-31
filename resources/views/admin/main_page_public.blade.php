@@ -87,7 +87,7 @@
                         <div class="number">
                             <span data-counter="counterup" data-value="49">49</span>
                         </div>
-                        <div class="desc"> Upcomming Tournaments </div>
+                        <div class="desc"> Upcoming Tournaments </div>
                     </div>
                     <a class="more" href="javascript:;"> View more
                         <i class="m-icon-swapright m-icon-white"></i>

@@ -158,7 +158,11 @@ class AdminController extends Controller
      */
     public function public_index()
     {
-        Auth::loginUsingId(20);
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
+            return redirect()->intended(route('admin/login'));
+        }
+        
         $breadcrumbs = [
             'Home'      => route('admin'),
             'Dashboard' => '',
