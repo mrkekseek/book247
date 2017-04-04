@@ -43,7 +43,7 @@ class AdminController extends Controller
         $requestedDate = Carbon::now();
         $lastSevenDays = [];
         $total_memberships_today = 0;
-        for ($i=1; $i<8; $i++){
+        for ($i=7; $i>0; $i--){
             $lastSevenDays[] = Carbon::today()->addDays(-$i)->format('Y-m-d');
         }
         //xdebug_var_dump($lastSevenDays);
@@ -88,12 +88,18 @@ class AdminController extends Controller
 
                     // get last 7 days of bookings
                     foreach($lastSevenDays as $singleDay){
-                        $countB = Booking::where('date_of_booking','=',$singleDay)
+                        $countA = Booking::where('date_of_booking','=',$singleDay)
                             ->whereNotIn('status',['expired', 'canceled'])
                             ->where('location_id','=',$location->id)
                             ->whereIn('resource_id',$locationResources)
                             ->count();
-                        $lastSeven[] = $countB;
+                        $countB = Booking::where('date_of_booking','=',$singleDay)
+                            ->whereNotIn('status',['expired', 'canceled'])
+                            ->where('location_id','=',$location->id)
+                            ->where('payment_type','=','membership')
+                            ->whereIn('resource_id',$locationResources)
+                            ->count();
+                        $lastSeven[] = ['all'=>$countA, 'membership'=>$countB];
                     }
 
                     // get bookings this month

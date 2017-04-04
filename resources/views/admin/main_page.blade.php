@@ -113,7 +113,7 @@
                     <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
                         <!-- BEGIN WIDGET THUMB -->
                         <div class="widget-thumb widget-bg-color-white text-uppercase margin-bottom-20 bordered">
-                            <h4 class="widget-thumb-heading" style="margin-bottom:8px;">Bookings this month</h4>
+                            <h4 class="widget-thumb-heading" style="margin-bottom:10px;">Bookings this month</h4>
                             <div class="widget-thumb-wrap">
                                 <i class="widget-thumb-icon bg-blue icon-bar-chart"></i>
                                 <div class="widget-thumb-body">
@@ -1448,11 +1448,11 @@
                         },
 
                         "dataProvider": [
-                            @foreach ($single['last_seven_days'] as $val1)
+                            @foreach ($single['last_seven_days'] as $key1=>$val1)
                             {
-                                "year": 0101,
-                                "income": {{ $val1 }},
-                                "expenses": {{ $val1 + 20 }}
+                                "year": '{{ \Carbon\Carbon::today()->addDays($key1-7)->format('d.m') }}',
+                                "income": {{ $val1['membership'] }},
+                                "expenses": {{ $val1['all'] }}
                             },
                             @endforeach
                             ],
@@ -1464,16 +1464,16 @@
                         "graphs": [
                             {
                             "alphaField": "alpha",
-                            "balloonText": "<span style='font-size:12px;'>[[title]] in [[category]]:<br><span style='font-size:20px;'>[[value]]</span> [[additional]]</span>",
+                            "balloonText": "<span style='font-size:12px;'>[[title]] for [[category]]:<br><span style='font-size:20px;'>[[value]]</span> [[additional]]</span>",
                             "fillAlphas": 1,
-                            "title": "Income",
+                            "title": "Membership",
                             "type": "column",
                             "valueField": "income",
                             "dashLengthField": "dashLengthColumn"
                             },
                             {
                             "id": "graph2",
-                            "balloonText": "<span style='font-size:12px;'>[[title]] in [[category]]:<br><span style='font-size:20px;'>[[value]]</span> [[additional]]</span>",
+                            "balloonText": "<span style='font-size:12px;'>[[title]] for [[category]]:<br><span style='font-size:20px;'>[[value]]</span> [[additional]]</span>",
                             "bullet": "round",
                             "lineThickness": 3,
                             "bulletSize": 7,
@@ -1483,7 +1483,7 @@
                             "bulletBorderThickness": 3,
                             "fillAlphas": 0,
                             "lineAlpha": 1,
-                            "title": "Expenses",
+                            "title": "All",
                             "valueField": "expenses"
                         }],
                         "categoryField": "year",
