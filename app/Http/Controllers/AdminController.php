@@ -40,7 +40,7 @@ class AdminController extends Controller
         }
 
         $homeStats = [];
-        $requestedDate = Carbon::yesterday();
+        $requestedDate = Carbon::now();
         $lastSevenDays = [];
         $total_memberships_today = 0;
         for ($i=1; $i<8; $i++){
@@ -58,18 +58,20 @@ class AdminController extends Controller
                 $lastSeven = [];
                 $bookings_this_month = [];
                 $bookings_last_month = [];
+                $locationCategories = [];
 
                 // get maximum of possible bookings
                 $availableSessions = $location->get_location_available_hours($requestedDate->format("Y-m-d"), true);
                 foreach($shopResourceCategories as $resourceCategory){
                     $locationResources = [];
-                    //$categoryName = $shopResourceCategories->name;
+                    $categoryName = $resourceCategory->name;
 
                     // get available resources for category
                     $availableResources= ShopResource::where('location_id','=',$location->id)->where('category_id','=',$resourceCategory->id)->get();
                     if (sizeof($availableResources)==0){
                         continue;
                     }
+                    $locationCategories[] = $categoryName;
 
                     foreach($availableResources as $resource){
                         $locationResources[] = $resource->id;
@@ -100,7 +102,7 @@ class AdminController extends Controller
                         ->where('location_id','=',$location->id)
                         ->whereIn('resource_id',$locationResources)
                         ->count();
-                    $bookings_this_month[$resourceCategory->id] = $this_month_bookings;
+                    $bookings_this_month[] = $this_month_bookings;
 
                     // get bookings last month
                     $start = new Carbon('first day of last month');
@@ -110,7 +112,7 @@ class AdminController extends Controller
                         ->where('location_id','=',$location->id)
                         ->whereIn('resource_id',$locationResources)
                         ->count();
-                    $bookings_last_month[$resourceCategory->id] = $last_month_bookings;
+                    $bookings_last_month[] = $last_month_bookings;
                 }
 
                 // get new memberships signed in today
@@ -126,10 +128,11 @@ class AdminController extends Controller
                     'members_today'     => isset($todayMemberships[0]->nr)?$todayMemberships[0]->nr:0,
                     'bookings_this_month'=> $bookings_this_month,
                     'bookings_last_month'=> $bookings_last_month,
+                    'location_categories'=> $locationCategories
                 ];
             }
         }
-        //xdebug_var_dump($homeStats); //exit;
+        xdebug_var_dump($homeStats); //exit;
 
         $breadcrumbs = [
             'Home'      => route('admin'),
@@ -162,7 +165,7 @@ class AdminController extends Controller
         if (!$user || !$user->is_back_user()) {
             return redirect()->intended(route('admin/login'));
         }
-        
+
         $breadcrumbs = [
             'Home'      => route('admin'),
             'Dashboard' => '',

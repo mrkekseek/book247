@@ -46,176 +46,157 @@
         </ul>
         <!-- END PAGE BREADCRUMB -->
         <!-- BEGIN PAGE BASE CONTENT -->
+        @if (sizeof($stats)>0)
+            @foreach ($stats as $single)
+                <div class="m-heading-1 border-green m-bordered">
+                    <h3 style="margin-bottom:0px;">{{ $single['location_name'] }}</h3>
+                </div>
+                <div class="row">
+                    @foreach($single['today_occupancy'] as $key=>$val)
+                    <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
+                        <div class="dashboard-stat2 bordered">
+                            <div class="display">
+                                <div class="number">
+                                    <h3 class="font-green-sharp">
+                                        <span data-counter="counterup" data-value="{{ $val!=0?$val:0 }}">0</span>
+                                        <small class="font-green-sharp">bookings</small>
+                                    </h3>
+                                    <small>{{ $single['location_categories'][$key] }}</small>
+                                </div>
+                                <div class="icon">
+                                    <i class="icon-pie-chart"></i>
+                                </div>
+                            </div>
+                            <div class="progress-info">
+                                <div class="progress">
+                                    <span style="width: {{ $single['today_availability'][$key]!=0?intval(($val/$single['today_availability'][$key])*100):0 }}%;" class="progress-bar progress-bar-success green-sharp">
+                                        <span class="sr-only">{{ $single['today_availability'][$key]!=0?intval(($val/$single['today_availability'][$key])*100):0 }}% occupancy</span>
+                                    </span>
+                                </div>
+                                <div class="status">
+                                    <div class="status-title"> Occupancy </div>
+                                    <div class="status-number"> {{ $single['today_availability'][$key]!=0?intval(($val/$single['today_availability'][$key])*100):0 }}% </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endforeach
+
+                    <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
+                        <div class="dashboard-stat2 bordered">
+                            <div class="display">
+                                <div class="number">
+                                    <h3 class="font-red-haze">
+                                        <span data-counter="counterup" data-value="{{ $single['members_today'] }}">0</span>
+                                    </h3>
+                                    <small>Signed Memberships</small>
+                                </div>
+                                <div class="icon">
+                                    <i class="icon-like"></i>
+                                </div>
+                            </div>
+                            <div class="progress-info">
+                                <div class="progress">
+                                <span style="width: {{ $single['members_today']!=0?intval($membersToday/$single['members_today']*100):0 }}%;" class="progress-bar progress-bar-success red-haze">
+                                    <span class="sr-only">{{ $single['members_today']!=0?intval($membersToday/$single['members_today']*100):0 }}% change</span>
+                                </span>
+                                </div>
+                                <div class="status">
+                                    <div class="status-title"> from new registrations </div>
+                                    <div class="status-number"> {{ $single['members_today']!=0?intval($membersToday/$single['members_today']*100):0 }}% </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    @foreach ($single['bookings_this_month'] as $key=>$val)
+                    <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
+                        <!-- BEGIN WIDGET THUMB -->
+                        <div class="widget-thumb widget-bg-color-white text-uppercase margin-bottom-20 bordered">
+                            <h4 class="widget-thumb-heading" style="margin-bottom:8px;">Bookings this month</h4>
+                            <div class="widget-thumb-wrap">
+                                <i class="widget-thumb-icon bg-blue icon-bar-chart"></i>
+                                <div class="widget-thumb-body">
+                                    <span class="widget-thumb-subtitle">{{ @$single['location_categories'][$key] }}</span>
+                                    <span class="widget-thumb-body-stat" data-counter="counterup" data-value="{{$val}}">0</span>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- END WIDGET THUMB -->
+                    </div>
+                    <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
+                        <!-- BEGIN WIDGET THUMB -->
+                        <div class="widget-thumb widget-bg-color-white text-uppercase margin-bottom-20 bordered">
+                            <h4 class="widget-thumb-heading" style="margin-bottom:8px;">Bookings last month</h4>
+                            <div class="widget-thumb-wrap">
+                                <i class="widget-thumb-icon bg-blue icon-bar-chart"></i>
+                                <div class="widget-thumb-body">
+                                    <span class="widget-thumb-subtitle">{{ @$single['location_categories'][$key] }}</span>
+                                    <span class="widget-thumb-body-stat" data-counter="counterup" data-value="{{ $single['bookings_last_month'][$key] }}">0</span>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- END WIDGET THUMB -->
+                    </div>
+                    @endforeach
+                </div>
+            @endforeach
+        @else
+            <div class="row">
+            asdasda asda
+            </div>
+        @endif
+
+        <div class="m-heading-1 border-green m-bordered">
+            <h3 style="margin-bottom:0px;">Last 7 days statistics</h3>
+        </div>
         <div class="row">
             @if (sizeof($stats)>0)
-                @foreach ($stats as $single)
-                    @foreach($single['today_occupancy'] as $key=>$val)
-                        <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
-                            <div class="dashboard-stat2 bordered">
-                                <div class="display">
-                                    <div class="number">
-                                        <h3 class="font-green-sharp">
-                                            <span data-counter="counterup" data-value="{{ $val!=0?$val:0 }}">0</span>
-                                            <small class="font-green-sharp">bookings</small>
-                                        </h3>
-                                        <small>{{ $single['location_name'] }}</small>
-                                    </div>
-                                    <div class="icon">
-                                        <i class="icon-pie-chart"></i>
-                                    </div>
-                                </div>
-                                <div class="progress-info">
-                                    <div class="progress">
-                            <span style="width: {{ $single['today_availability'][$key]!=0?intval(($val/$single['today_availability'][$key])*100):0 }}%;" class="progress-bar progress-bar-success green-sharp">
-                                <span class="sr-only">{{ $single['today_availability'][$key]!=0?intval(($val/$single['today_availability'][$key])*100):0 }}% occupancy</span>
-                            </span>
-                                    </div>
-                                    <div class="status">
-                                        <div class="status-title"> Occupancy </div>
-                                        <div class="status-number"> {{ $single['today_availability'][$key]!=0?intval(($val/$single['today_availability'][$key])*100):0 }}% </div>
-                                    </div>
+                @foreach ($stats as $key=>$single)
+                    <div class="col-md-6 col-sm-6">
+                        <div class="portlet light bordered">
+                            <div class="portlet-title">
+                                <div class="caption font-red">
+                                    <span class="caption-subject bold uppercase">{{ $single['location_name'] }}</span>
+                                    <span class="caption-helper">bookings</span>
                                 </div>
                             </div>
-                        </div>
-                    @endforeach
-                <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
-                    <div class="dashboard-stat2 bordered">
-                        <div class="display">
-                            <div class="number">
-                                <h3 class="font-red-haze">
-                                    <span data-counter="counterup" data-value="{{ $single['members_today'] }}">0</span>
-                                </h3>
-                                <small>Signed Memberships</small>
-                            </div>
-                            <div class="icon">
-                                <i class="icon-like"></i>
-                            </div>
-                        </div>
-                        <div class="progress-info">
-                            <div class="progress">
-                            <span style="width: {{ $single['members_today']!=0?intval($membersToday/$single['members_today']*100):0 }}%;" class="progress-bar progress-bar-success red-haze">
-                                <span class="sr-only">{{ $single['members_today']!=0?intval($membersToday/$single['members_today']*100):0 }}% change</span>
-                            </span>
-                            </div>
-                            <div class="status">
-                                <div class="status-title"> from new registrations </div>
-                                <div class="status-number"> {{ $single['members_today']!=0?intval($membersToday/$single['members_today']*100):0 }}% </div>
+                            <div class="portlet-body">
+                                <div id="dashboard_amchart_3_{{$key+1}}" class="CSSAnimationChart"></div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
-                    <div class="dashboard-stat2 bordered">
-                        <div class="display">
-                            <div class="number">
-                                <h3 class="font-blue-sharp">
-                                    <span data-counter="counterup" data-value="567"></span>
-                                </h3>
-                                <small>Bookings this month</small>
-                            </div>
-                            <div class="icon">
-                                <i class="icon-basket"></i>
-                            </div>
-                        </div>
-                        <div class="progress-info">
-                            <div class="progress">
-                            <span style="width: 45%;" class="progress-bar progress-bar-success blue-sharp">
-                                <span class="sr-only">45% grow</span>
-                            </span>
-                            </div>
-                            <div class="status">
-                                <div class="status-title"> grow </div>
-                                <div class="status-number"> 45% </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
-                    <div class="dashboard-stat2 bordered">
-                        <div class="display">
-                            <div class="number">
-                                <h3 class="font-purple-soft">
-                                    <span data-counter="counterup" data-value="276"></span>
-                                </h3>
-                                <small>Bookings last month</small>
-                            </div>
-                            <div class="icon">
-                                <i class="icon-user"></i>
-                            </div>
-                        </div>
-                        <div class="progress-info">
-                            <div class="progress">
-                            <span style="width: 57%;" class="progress-bar progress-bar-success purple-soft">
-                                <span class="sr-only">56% change</span>
-                            </span>
-                            </div>
-                            <div class="status">
-                                <div class="status-title"> change </div>
-                                <div class="status-number"> 57% </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
                 @endforeach
+
+                <div class="col-md-6 col-sm-12">
+                    <div class="portlet light bordered">
+                        <div class="portlet-title">
+                            <div class="caption font-green">
+                                <span class="caption-subject bold uppercase">Bookings By Locations</span>
+                                <span class="caption-helper">for today...</span>
+                            </div>
+                        </div>
+                        <div class="portlet-body">
+                            <div id="dashboard_amchart_4_1" class="CSSAnimationChart"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-sm-12">
+                    <div class="portlet light bordered">
+                        <div class="portlet-title">
+                            <div class="caption font-green">
+                                <span class="caption-subject bold uppercase">Bookings by type</span>
+                                <span class="caption-helper">for today...</span>
+                            </div>
+                        </div>
+                        <div class="portlet-body">
+                            <div id="dashboard_amchart_4_2" class="CSSAnimationChart"></div>
+                        </div>
+                    </div>
+                </div>
             @else
-                asdasda asda
+                as
             @endif
-        </div>
-        <div class="row">
-            <div class="col-md-6 col-sm-6">
-                <div class="portlet light bordered">
-                    <div class="portlet-title">
-                        <div class="caption font-red">
-                            <span class="caption-subject bold uppercase">Finance</span>
-                            <span class="caption-helper">distance stats...</span>
-                        </div>
-                    </div>
-                    <div class="portlet-body">
-                        <div id="dashboard_amchart_3_1" class="CSSAnimationChart"></div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6 col-sm-6">
-                <div class="portlet light bordered">
-                    <div class="portlet-title">
-                        <div class="caption font-red">
-                            <span class="caption-subject bold uppercase">Finance</span>
-                            <span class="caption-helper">distance stats...</span>
-                        </div>
-                    </div>
-                    <div class="portlet-body">
-                        <div id="dashboard_amchart_3_2" class="CSSAnimationChart"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <duv class="row">
-            <div class="col-md-6 col-sm-6">
-                <div class="portlet light bordered">
-                    <div class="portlet-title">
-                        <div class="caption font-green">
-                            <span class="caption-subject bold uppercase">Bookings By Locations</span>
-                            <span class="caption-helper">for today...</span>
-                        </div>
-                    </div>
-                    <div class="portlet-body">
-                        <div id="dashboard_amchart_4_1" class="CSSAnimationChart"></div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6 col-sm-6">
-                <div class="portlet light bordered">
-                    <div class="portlet-title">
-                        <div class="caption font-green">
-                            <span class="caption-subject bold uppercase">Bookings by type</span>
-                            <span class="caption-helper">for today...</span>
-                        </div>
-                    </div>
-                    <div class="portlet-body">
-                        <div id="dashboard_amchart_4_2" class="CSSAnimationChart"></div>
-                    </div>
-                </div>
-            </div>
         </duv>
         <!-- END PAGE BASE CONTENT -->
     </div>
@@ -240,6 +221,7 @@
     <script src="{{ asset('assets/global/plugins/counterup/jquery.waypoints.min.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/global/plugins/counterup/jquery.counterup.min.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/global/plugins/amcharts/amcharts/amcharts.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('assets/global/plugins/amcharts/amcharts/plugins/responsive/responsive.min.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/global/plugins/amcharts/amcharts/serial.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/global/plugins/amcharts/amcharts/pie.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/global/plugins/amcharts/amcharts/radar.js') }}" type="text/javascript"></script>
@@ -1441,12 +1423,14 @@
                     });
                 },
 
-                initAmChart3_1: function() {
-                    if (typeof(AmCharts) === 'undefined' || $('#dashboard_amchart_3_1').size() === 0) {
+        @if (sizeof($stats)>0)
+            @foreach ($stats as $key=>$single)
+                initAmChart3_{{$key+1}}: function() {
+                    if (typeof(AmCharts) === 'undefined' || $('#dashboard_amchart_3_{{$key+1}}').size() === 0) {
                         return;
                     }
 
-                    var chart = AmCharts.makeChart("dashboard_amchart_3_1", {
+                    var chart = AmCharts.makeChart("dashboard_amchart_3_{{$key+1}}", {
                         "type": "serial",
                         "addClassNames": true,
                         "theme": "light",
@@ -1463,40 +1447,22 @@
                             "color": "#ffffff"
                         },
 
-                        "dataProvider": [{
-                            "year": 2009,
-                            "income": 23.5,
-                            "expenses": 21.1
-                        }, {
-                            "year": 2010,
-                            "income": 26.2,
-                            "expenses": 30.5
-                        }, {
-                            "year": 2011,
-                            "income": 30.1,
-                            "expenses": 34.9
-                        }, {
-                            "year": 2012,
-                            "income": 29.5,
-                            "expenses": 31.1
-                        }, {
-                            "year": 2013,
-                            "income": 30.6,
-                            "expenses": 28.2,
-                        }, {
-                            "year": 2014,
-                            "income": 34.1,
-                            "expenses": 32.9,
-                            "dashLengthColumn": 5,
-                            "alpha": 0.2,
-                            "additional": "(projection)"
-                        }],
+                        "dataProvider": [
+                            @foreach ($single['last_seven_days'] as $val1)
+                            {
+                                "year": 0101,
+                                "income": {{ $val1 }},
+                                "expenses": {{ $val1 + 20 }}
+                            },
+                            @endforeach
+                            ],
                         "valueAxes": [{
-                            "axisAlpha": 0,
-                            "position": "left"
-                        }],
+                                "axisAlpha": 0,
+                                "position": "left"
+                            }],
                         "startDuration": 1,
-                        "graphs": [{
+                        "graphs": [
+                            {
                             "alphaField": "alpha",
                             "balloonText": "<span style='font-size:12px;'>[[title]] in [[category]]:<br><span style='font-size:20px;'>[[value]]</span> [[additional]]</span>",
                             "fillAlphas": 1,
@@ -1504,7 +1470,8 @@
                             "type": "column",
                             "valueField": "income",
                             "dashLengthField": "dashLengthColumn"
-                        }, {
+                            },
+                            {
                             "id": "graph2",
                             "balloonText": "<span style='font-size:12px;'>[[title]] in [[category]]:<br><span style='font-size:20px;'>[[value]]</span> [[additional]]</span>",
                             "bullet": "round",
@@ -1530,96 +1497,8 @@
                         }
                     });
                 },
-
-                initAmChart3_2: function() {
-                    if (typeof(AmCharts) === 'undefined' || $('#dashboard_amchart_3_2').size() === 0) {
-                        return;
-                    }
-
-                    var chart = AmCharts.makeChart("dashboard_amchart_3_2", {
-                        "type": "serial",
-                        "addClassNames": true,
-                        "theme": "light",
-                        "path": "../assets/global/plugins/amcharts/ammap/images/",
-                        "autoMargins": false,
-                        "marginLeft": 30,
-                        "marginRight": 8,
-                        "marginTop": 10,
-                        "marginBottom": 26,
-                        "balloon": {
-                            "adjustBorderColor": false,
-                            "horizontalPadding": 10,
-                            "verticalPadding": 8,
-                            "color": "#ffffff"
-                        },
-
-                        "dataProvider": [{
-                            "year": 2009,
-                            "income": 23.5,
-                            "expenses": 21.1
-                        }, {
-                            "year": 2010,
-                            "income": 26.2,
-                            "expenses": 30.5
-                        }, {
-                            "year": 2011,
-                            "income": 30.1,
-                            "expenses": 34.9
-                        }, {
-                            "year": 2012,
-                            "income": 29.5,
-                            "expenses": 31.1
-                        }, {
-                            "year": 2013,
-                            "income": 30.6,
-                            "expenses": 28.2,
-                        }, {
-                            "year": 2014,
-                            "income": 34.1,
-                            "expenses": 32.9,
-                            "dashLengthColumn": 5,
-                            "alpha": 0.2,
-                            "additional": "(projection)"
-                        }],
-                        "valueAxes": [{
-                            "axisAlpha": 0,
-                            "position": "left"
-                        }],
-                        "startDuration": 1,
-                        "graphs": [{
-                            "alphaField": "alpha",
-                            "balloonText": "<span style='font-size:12px;'>[[title]] in [[category]]:<br><span style='font-size:20px;'>[[value]]</span> [[additional]]</span>",
-                            "fillAlphas": 1,
-                            "title": "Income",
-                            "type": "column",
-                            "valueField": "income",
-                            "dashLengthField": "dashLengthColumn"
-                        }, {
-                            "id": "graph2",
-                            "balloonText": "<span style='font-size:12px;'>[[title]] in [[category]]:<br><span style='font-size:20px;'>[[value]]</span> [[additional]]</span>",
-                            "bullet": "round",
-                            "lineThickness": 3,
-                            "bulletSize": 7,
-                            "bulletBorderAlpha": 1,
-                            "bulletColor": "#FFFFFF",
-                            "useLineColorForBulletBorder": true,
-                            "bulletBorderThickness": 3,
-                            "fillAlphas": 0,
-                            "lineAlpha": 1,
-                            "title": "Expenses",
-                            "valueField": "expenses"
-                        }],
-                        "categoryField": "year",
-                        "categoryAxis": {
-                            "gridPosition": "start",
-                            "axisAlpha": 0,
-                            "tickLength": 0
-                        },
-                        "export": {
-                            "enabled": true
-                        }
-                    });
-                },
+            @endforeach
+        @endif
 
                 initAmChart4_1: function() {
                     if (typeof(AmCharts) === 'undefined' || $('#dashboard_amchart_4_1').size() === 0) {
@@ -1658,11 +1537,52 @@
                         "valueField": "value",
                         "titleField": "country",
                         "outlineAlpha": 0.4,
-                        "depth3D": 15,
+                        "depth3D": 0,
                         "balloonText": "[[title]]<br><span style='font-size:14px'><b>[[value]]</b> ([[percents]]%)</span>",
-                        "angle": 30,
+                        "angle": 0,
                         "export": {
                             "enabled": true
+                        },
+                        labelsEnabled: true,
+                        autoMargins: false,
+                        marginTop: 0,
+                        marginBottom: 0,
+                        marginLeft: 0,
+                        marginRight: 0,
+                        pullOutRadius: 0,
+                        "responsive": {
+                            "enabled": true,
+                            "rules": [
+                                // at 400px wide, we hide legend
+                                {
+                                    "maxWidth": 400,
+                                    "overrides": {
+                                        labelsEnabled: false
+                                    }
+                                },
+
+                                // at 300px or less, we move value axis labels inside plot area
+                                // the legend is still hidden because the above rule is still applicable
+                                {
+                                    "maxWidth": 300,
+                                    "overrides": {
+                                        "valueAxes": {
+                                            "inside": true
+                                        },
+                                    }
+                                },
+
+                                // at 200 px we hide value axis labels altogether
+                                {
+                                    "maxWidth": 200,
+                                    "overrides": {
+                                        "valueAxes": {
+                                            "labelsEnabled": false
+                                        }
+                                    }
+                                }
+
+                            ]
                         }
                     });
                     jQuery('.chart-input').off().on('input change', function() {
@@ -1708,11 +1628,52 @@
                         "valueField": "value",
                         "titleField": "country",
                         "outlineAlpha": 0.4,
-                        "depth3D": 15,
+                        "depth3D": 0,
                         "balloonText": "[[title]]<br><span style='font-size:14px'><b>[[value]]</b> ([[percents]]%)</span>",
-                        "angle": 30,
+                        "angle": 0,
                         "export": {
                             "enabled": true
+                        },
+                        labelsEnabled: true,
+                        autoMargins: false,
+                        marginTop: 0,
+                        marginBottom: 0,
+                        marginLeft: 0,
+                        marginRight: 0,
+                        pullOutRadius: 0,
+                        "responsive": {
+                            "enabled": true,
+                            "rules": [
+                                // at 400px wide, we hide legend
+                                {
+                                    "maxWidth": 400,
+                                    "overrides": {
+                                        labelsEnabled: false
+                                    }
+                                },
+
+                                // at 300px or less, we move value axis labels inside plot area
+                                // the legend is still hidden because the above rule is still applicable
+                                {
+                                    "maxWidth": 300,
+                                    "overrides": {
+                                        "valueAxes": {
+                                            "inside": true
+                                        },
+                                    }
+                                },
+
+                                // at 200 px we hide value axis labels altogether
+                                {
+                                    "maxWidth": 200,
+                                    "overrides": {
+                                        "valueAxes": {
+                                            "labelsEnabled": false
+                                        }
+                                    }
+                                }
+
+                            ]
                         }
                     });
                     jQuery('.chart-input').off().on('input change', function() {
@@ -1803,8 +1764,11 @@
 
                     this.initAmChart1();
                     this.initAmChart2();
-                    this.initAmChart3_1();
-                    this.initAmChart3_2();
+            @if (sizeof($stats)>0)
+                @foreach ($stats as $key=>$single)
+                    this.initAmChart3_{{ $key + 1 }}();
+                @endforeach
+            @endif
                     this.initAmChart4_1();
                     this.initAmChart4_2();
 
