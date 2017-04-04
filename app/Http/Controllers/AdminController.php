@@ -132,7 +132,7 @@ class AdminController extends Controller
                 ];
             }
         }
-        xdebug_var_dump($homeStats); //exit;
+        //xdebug_var_dump($homeStats); //exit;
 
         $breadcrumbs = [
             'Home'      => route('admin'),
