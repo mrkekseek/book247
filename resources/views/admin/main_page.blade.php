@@ -1509,31 +1509,11 @@
                         "type": "pie",
                         "theme": "light",
                         "path": "../assets/global/plugins/amcharts/ammap/images/",
-                        "dataProvider": [{
-                            "country": "Bærum Squash",
-                            "value": 60
-                        }, {
-                            "country": "Drammen Squash",
-                            "value": 51
-                        }, {
-                            "country": "Lysaker Squash",
-                            "value": 65
-                        }, {
-                            "country": "Sagene Squash",
-                            "value": 39
-                        }, {
-                            "country": "Sentrum Squash",
-                            "value": 29
-                        },{
-                            "country": " Vulkan Squash",
-                            "value": 39
-                        },{
-                            "country": "Økern Squash",
-                            "value": 29
-                        }, {
-                            "country": "Skippern Squash",
-                            "value": 10
-                        }],
+                        "dataProvider": [
+                        @foreach($totalToday as $single)
+                            {"country": "{!! $single['name'] !!}", "value":{{ $single['amount'] }} },
+                        @endforeach
+                        ],
                         "valueField": "value",
                         "titleField": "country",
                         "outlineAlpha": 0.4,
@@ -1609,22 +1589,11 @@
                         "type": "pie",
                         "theme": "light",
                         "path": "../assets/global/plugins/amcharts/ammap/images/",
-                        "dataProvider": [{
-                            "country": "Dag Helg Fitness",
-                            "value": 19
-                        },{
-                            "country": "FItness",
-                            "value": 19
-                        },{
-                            "country": "Recurring",
-                            "value": 19
-                        },{
-                            "country": "Fultid Squash",
-                            "value": 19
-                        }, {
-                            "country": "Drop-In",
-                            "value": 32
-                        }],
+                        "dataProvider": [
+                        @foreach ($totalPerType as $key=>$val)
+                            { "country": "{!! $key !!}", "value": {{$val}} },
+                        @endforeach
+                        ],
                         "valueField": "value",
                         "titleField": "country",
                         "outlineAlpha": 0.4,

@@ -47,6 +47,8 @@ class AdminController extends Controller
             $lastSevenDays[] = Carbon::today()->addDays(-$i)->format('Y-m-d');
         }
         //xdebug_var_dump($lastSevenDays);
+        $totalBookingsLocationsToday = [];
+        $totalBookingTypeToday = [];
 
         $locations = ShopLocations::whereIn('visibility',['public'])->orderBy('name','ASC')->get();
         if ($locations){
@@ -59,6 +61,7 @@ class AdminController extends Controller
                 $bookings_this_month = [];
                 $bookings_last_month = [];
                 $locationCategories = [];
+                $toadyBookings = 0;
 
                 // get maximum of possible bookings
                 $availableSessions = $location->get_location_available_hours($requestedDate->format("Y-m-d"), true);
@@ -79,12 +82,40 @@ class AdminController extends Controller
                     $today_availability[] = sizeof($locationResources) * sizeof($availableSessions);
 
                     // get today bookings
-                    $bookings = Booking::where('date_of_booking','=',$requestedDate->format('Y-m-d'))
+                    $bookings = Booking::
+                        where('date_of_booking','=',$requestedDate->format('Y-m-d'))
                         ->whereNotIn('status',['expired', 'canceled'])
                         ->where('location_id','=',$location->id)
                         ->whereIn('resource_id',$locationResources)
                         ->get();
+
+                    $bookings = DB::select('SELECT a.id, a.payment_type, a.location_id, b.membership_id, b.membership_name FROM `bookings` as a left join `user_memberships` as b on a.membership_id=b.id WHERE date(a.date_of_booking)=date(now())');
+
                     $today_occupancy[] = sizeof($bookings);
+                    $toadyBookings+=sizeof($bookings);
+                    foreach ($bookings as $single_booking){
+                        switch ($single_booking->payment_type){
+                            case 'cash' : $pay_key = 'drop-in';
+                                break;
+                            case 'recurring' : $pay_key = 'recurring';
+                                break;
+                            default:
+                                if (isset($single_booking->membership_id)){
+                                    $pay_key = $single_booking->membership_name;
+                                }
+                                else{
+                                    $pay_key = 'unknown';
+                                }
+                                break;
+                        }
+
+                        if (isset($totalBookingTypeToday[$pay_key])){
+                            $totalBookingTypeToday[$pay_key]++;
+                        }
+                        else{
+                            $totalBookingTypeToday[$pay_key] = 1;
+                        }
+                    }
 
                     // get last 7 days of bookings
                     foreach($lastSevenDays as $singleDay){
@@ -134,11 +165,18 @@ class AdminController extends Controller
                     'members_today'     => isset($todayMemberships[0]->nr)?$todayMemberships[0]->nr:0,
                     'bookings_this_month'=> $bookings_this_month,
                     'bookings_last_month'=> $bookings_last_month,
-                    'location_categories'=> $locationCategories
+                    'location_categories'=> $locationCategories,
+                ];
+
+                $totalBookingsLocationsToday[] = [
+                    'name'      => $location->name,
+                    'amount'    => $toadyBookings
                 ];
             }
         }
         //xdebug_var_dump($homeStats); //exit;
+        //xdebug_var_dump($totalBookingsLocationsToday); //exit;
+        //xdebug_var_dump($totalBookingTypeToday); //exit;
 
         $breadcrumbs = [
             'Home'      => route('admin'),
@@ -156,7 +194,9 @@ class AdminController extends Controller
             'text_parts'    => $text_parts,
             'in_sidebar'    => $sidebar_link,
             'stats'         => $homeStats,
-            'membersToday'  => $total_memberships_today
+            'membersToday'  => $total_memberships_today,
+            'totalToday'    => $totalBookingsLocationsToday,
+            'totalPerType'  => $totalBookingTypeToday
         ]);
     }
 

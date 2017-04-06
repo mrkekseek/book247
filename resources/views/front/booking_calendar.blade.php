@@ -41,7 +41,7 @@
                     <div class="row">
                         <div class="col-md-12">
                             <!-- BEGIN SAMPLE TABLE PORTLET-->
-                            <div class="portlet box green hidden-xs">
+                            <div class="portlet box white hidden-xs">
                                 <div class="portlet-title">
                                     <div class="caption">
                                         <div class="form-inline" style="margin-bottom:0px;">
