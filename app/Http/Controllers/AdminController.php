@@ -89,7 +89,7 @@ class AdminController extends Controller
                         ->whereIn('resource_id',$locationResources)
                         ->get();
 
-                    $bookings = DB::select('SELECT a.id, a.payment_type, a.location_id, b.membership_id, b.membership_name FROM `bookings` as a left join `user_memberships` as b on a.membership_id=b.id WHERE date(a.date_of_booking)=date(now())');
+                    $bookings = DB::select('SELECT a.id, a.payment_type, a.location_id, b.membership_id, b.membership_name FROM `bookings` as a left join `user_memberships` as b on a.membership_id=b.id WHERE date(a.date_of_booking)=date(now()) and a.location_id=?',[$location->id]);
 
                     $today_occupancy[] = sizeof($bookings);
                     $toadyBookings+=sizeof($bookings);
@@ -174,7 +174,7 @@ class AdminController extends Controller
                 ];
             }
         }
-        //xdebug_var_dump($homeStats); //exit;
+        xdebug_var_dump($homeStats); //exit;
         //xdebug_var_dump($totalBookingsLocationsToday); //exit;
         //xdebug_var_dump($totalBookingTypeToday); //exit;
 
