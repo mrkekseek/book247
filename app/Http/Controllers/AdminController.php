@@ -174,7 +174,7 @@ class AdminController extends Controller
                 ];
             }
         }
-        xdebug_var_dump($homeStats); //exit;
+        //xdebug_var_dump($homeStats); //exit;
         //xdebug_var_dump($totalBookingsLocationsToday); //exit;
         //xdebug_var_dump($totalBookingTypeToday); //exit;
 
