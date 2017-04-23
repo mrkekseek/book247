@@ -22,7 +22,7 @@ class UserMembershipPendingInvoices extends Command
      *
      * @var string
      */
-    protected $description = 'This will check each active/suspended membership for pending issues and will mark them as active + will create them';
+    protected $description = 'This will check each active/suspended membership for pending invoices and will mark them as old + will create the invoice';
 
     /**
      * Create a new command instance.

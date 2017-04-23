@@ -50,7 +50,7 @@
                                     <div class="caption caption-md">
                                         <i class="icon-bar-chart theme-font hide"></i>
                                         <span class="caption-subject font-blue-madison bold uppercase">Friends & Own Activity</span>
-                                        <span class="caption-helper">3 new</span>
+                                        <!--<span class="caption-helper">3 new</span>-->
                                     </div>
                                 </div>
                                 <div class="portlet-body">

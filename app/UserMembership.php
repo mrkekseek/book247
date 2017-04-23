@@ -525,12 +525,54 @@ class UserMembership extends Model
             return false;
         }
 
-        $lastInvoice = UserMembershipInvoicePlanning::where('user_membership_id','=',$this->id)->orderBy('issued_date','DESC')->get()->first();
-        if ($lastInvoice){
-
+        $lastInvoices = UserMembershipInvoicePlanning::where('user_membership_id','=',$this->id)->where('last_active_date','>=',Carbon::now()->format('Y-m-d'))->orderBy('issued_date','DESC')->get();
+        //xdebug_var_dump($lastInvoices);
+        if (sizeof($lastInvoices)>0){
+            $count = sizeof($lastInvoices);
+            $lastInvoice = $lastInvoices[0];
         }
         else{
-            return false;
+            // we don't have invoices for current date and further in time so we get the last one
+            $count = 0;
+            $lastInvoice = UserMembershipInvoicePlanning::where('user_membership_id','=',$this->id)->orderBy('issued_date','DESC')->first();
+            if (!$lastInvoice){
+                return false;
+            }
+        }
+
+        if ($count < $this->sign_out_period){
+            // we need to generate additional invoices to reach the binding period
+            $overMinimum = 0;
+            $firstActiveDate = Carbon::createFromFormat('Y-m-d',$lastInvoice->last_active_date)->AddDay();
+
+            $invoiceNo = UserMembershipInvoicePlanning::where('user_membership_id','=',$this->id)->count();
+            while($overMinimum<$this->sign_out_period){
+                $invoiceNo++;
+                $nextInvoicePeriod = $this::invoice_membership_period($firstActiveDate, $this->invoice_period);
+                $issuedDate     = $nextInvoicePeriod['first_day'];
+                $lastActiveDate = $nextInvoicePeriod['last_day'];
+
+                $fillable = [
+                    'user_membership_id'=> $this->id,
+                    'item_name'         => 'Invoice #' . $invoiceNo . ' for '.$this->membership_name,
+                    'price'             => $this->price,
+                    'discount'          => $this->discount,
+                    'issued_date'       => $issuedDate->format('Y-m-d'),
+                    'last_active_date'  => $lastActiveDate->format('Y-m-d'),
+                    'status'            => 'pending'
+                ];
+                // we create the invoice
+                //xdebug_var_dump($fillable);
+                //return true;
+                UserMembershipInvoicePlanning::create($fillable);
+                $firstActiveDate = $lastActiveDate->addDay();
+
+                // issue invoice for the period
+                $overMinimum++;
+                if ($firstActiveDate<=Carbon::today()){
+                    $overMinimum = 0;
+                }
+            }
         }
     }
 }

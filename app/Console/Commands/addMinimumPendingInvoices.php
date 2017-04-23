@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\UserMembership;
 use Illuminate\Console\Command;
 
 class addMinimumPendingInvoices extends Command
@@ -37,6 +38,16 @@ class addMinimumPendingInvoices extends Command
      */
     public function handle()
     {
-
+        // get all active memberships
+        $activeUsersMembership = UserMembership::whereIn('status',['active'])->get();
+        if ($activeUsersMembership){
+            foreach ($activeUsersMembership as $single){
+                // get membership expiration date
+                $single->add_minimum_planned_invoices();
+            }
+        }
+        else{
+            echo 'No active user memberships';
+        }
     }
 }
