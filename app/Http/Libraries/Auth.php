@@ -3,8 +3,8 @@
 namespace App\Http\Libraries;
 
 use App\Http\Libraries\ApiAuth;
-//use Illuminate\Foundation\Auth\User as Authenticatable;
 use App\User;
+use Validator;
 use Illuminate\Support\Facades\Session;
 use \Illuminate\Support\Facades\Cookie;
 
@@ -61,12 +61,26 @@ class Auth
         //dd(ApiAuth::autorize($data));
         //dd(ApiAuth::accounts_get(33));
         //dd(ApiAuth::checkExist('tk3@div-art.com'));
-        if (ApiAuth::autorize($data)['success'])
+        if (!ApiAuth::autorize($data)['success'])
         {            
-            $sso_user_id =12;
-            Session::put('sso_user_id',$sso_user_id);            
-            Cookie::queue(Cookie::forever('sso_user_id', $sso_user_id, '/', '.book247.da'));
-            return true;
+            //temp variable
+            $sso_user_id =15;
+            $local_user = User::where('sso_user_id', $sso_user_id)->first();
+            if (!empty($local_user))
+            {
+                Session::put('sso_user_id',$sso_user_id);            
+                Cookie::queue(Cookie::forever('sso_user_id', $sso_user_id, '/', '.book247.da'));
+                return true;
+            }
+            else
+            {
+                if (self::create_local_user($sso_user_id))
+                {
+                    Session::put('sso_user_id',$sso_user_id);            
+                    Cookie::queue(Cookie::forever('sso_user_id', $sso_user_id, '/', '.book247.da'));
+                    return true;
+                }
+            }
         }
         else
         {            
@@ -79,6 +93,40 @@ class Auth
     {
         Session::put('sso_user_id','');
         Cookie::queue(Cookie::forget('sso_user_id', '/', '.book247.da')); 
+    }
+    
+    private static function create_local_user($api_user_id)
+    {
+        $api_user = ApiAuth::accounts_get($api_user_id)['data'];                
+        $new_local_user = [
+            'sso_user_id'=>$api_user->id,
+            'username'=>$api_user->username,
+            //'password'=>'12345678',                    
+            'user_type' =>6,
+            'email'=>$api_user->email.'test',
+            'first_name'=>$api_user->firstName,
+            'last_name'=>$api_user->lastName,
+            'middle_name'=>$api_user->middleName,
+            'country_id'=>804,
+            ];
+            /*
+            $validator = Validator::make($new_local_user, User::rules('POST'), User::$messages, User::$attributeNames);    
+            dd($validator->getMessageBag()->toArray());
+            if ($validator->fails()){
+                //return $validator->errors()->all();
+                return array(
+                    'success'   => false,
+                    'title'     => 'Error validating',
+                    'errors'    => $validator->getMessageBag()->toArray()
+                );
+                }*/
+        if (User::create($new_local_user))
+        {
+            Session::put('sso_user_id',$sso_user_id);            
+            Cookie::queue(Cookie::forever('sso_user_id', $sso_user_id, '/', '.book247.da'));
+            return true;
+        }
+        return false;
     }
 
 }

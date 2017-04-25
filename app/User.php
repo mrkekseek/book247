@@ -106,12 +106,22 @@ class User extends Authenticatable
         static::creating(function($model)
         {            
             $attributes = $model->attributes;
-            if (\App\Http\Libraries\ApiAuth::account_create($attributes)['success']){
-                unset($model->password_api);
-                $model->sso_user_id = \App\Http\Libraries\ApiAuth::account_create($attributes)['data'];
+            //dd($attributes);
+            if (!empty($attributes['sso_user_id']))
+            {
                 return true;
             }
-            return false;
+            else
+            {
+                if (\App\Http\Libraries\ApiAuth::account_create($attributes)['success'])
+                {
+                    unset($model->password_api);
+                    $model->sso_user_id = \App\Http\Libraries\ApiAuth::account_create($attributes)['data'];
+                    return true;
+                }
+                return false;
+            }
+            
         });
     }
 
