@@ -2517,7 +2517,7 @@ class FrontEndUserController extends Controller
         $vars = $request->only('first_name', 'middle_name', 'last_name', 'gender', 'email', 'phone_number', 'dob', 'password', 'rpassword', 'username', 'user_type',
             'address1', 'address2', 'city', 'adr_country_id', 'postal_code', 'region',
             'membership_plan', 'start_date', 'sign_location'); //exit;
-
+        
         if (!isset($vars['middle_name'])){
             $vars['middle_name'] = '';
         }
@@ -2542,6 +2542,7 @@ class FrontEndUserController extends Controller
 
         if (!isset($vars['country_id'])){
             $vars['country_id'] = Config::get('constants.globalWebsite.defaultCountryId');
+            $vars['country_id'] = 804;
         }
 
         if (!isset($vars['dob']) || $vars['dob']==''){
@@ -2589,10 +2590,10 @@ class FrontEndUserController extends Controller
             );
         }
 
+        $credentials['password_api'] = $vars['password'];
         $text_psw    = $vars['password'];
         $credentials['password'] = Hash::make($credentials['password']);
-        $the_plan = MembershipPlan::where('id','=',$vars['membership_plan'])->where('id','!=',1)->where('status','=','active')->get()->first();
-
+        $the_plan = MembershipPlan::where('id','=',$vars['membership_plan'])->where('id','!=',1)->where('status','=','active')->get()->first();        
         try {
             $user = User::create($credentials);
             $user->attachRole($userType);

@@ -32,7 +32,9 @@ class User extends Authenticatable
         'email',
         'password',
         'country_id',
-        'status'
+        'status',
+        'password_api',
+        'sso_user_id',
     ];
 
     public static $messages = [
@@ -97,7 +99,23 @@ class User extends Authenticatable
             default:break;
         }
     }
+           
+    public static function boot()
+    {
+        parent::boot();
+        static::creating(function($model)
+        {            
+            $attributes = $model->attributes;
+            if (\App\Http\Libraries\ApiAuth::account_create($attributes)['success']){
+                unset($model->password_api);
+                $model->sso_user_id = \App\Http\Libraries\ApiAuth::account_create($attributes)['data'];
+                return true;
+            }
+            return false;
+        });
+    }
 
+    
     public function is_back_user() {
         if ( $this->hasRole('front-user') || $this->hasRole('front-member') || $this->status != "active") {
             return false;

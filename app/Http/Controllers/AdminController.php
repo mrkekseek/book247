@@ -202,8 +202,15 @@ class AdminController extends Controller
                 'username' => ['Username and/or password invalid.'],
                 'header' => ['Invalid Login Attempt'],
                 'message_body' => ['Username and/or password invalid.'],
-            ]);
-
+            ]);            
+            if (!empty(Auth::$error)){
+                $errors = new MessageBag([                
+                    'password' => ['Username and/or password invalid.'],
+                    'username' => ['Username and/or password invalid.'],
+                    'header' => ['Invalid Login Attempt'],
+                    'message_body' => [Auth::$error],
+                ]);
+            }
             return  redirect()->intended(route('admin/login'))
                     ->withInput()
                     ->withErrors($errors)
