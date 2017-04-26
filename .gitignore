@@ -7,3 +7,4 @@ storage/app/members/
 .idea/
 sh.exe.stackdump
 config/constants.php
+composer.lock

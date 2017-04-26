@@ -23,7 +23,7 @@ class Kernel extends ConsoleKernel
         Commands\OptimizedMembersSearchRebuild::class,
         Commands\Patch_1_1::class,
         Commands\Patch_1_2::class,
-        Commands\AddMinimumPendingInvoices::class,
+        Commands\addMinimumPendingInvoices::class
     ];
 
     /**
