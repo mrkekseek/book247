@@ -385,7 +385,7 @@ class MembershipController extends Controller
             }
 
             $lastInvoice = UserMembershipInvoicePlanning::where('user_membership_id','=',$membershipPlan->id)->where('status','=','pending')->orderBy('created_at','DESC')
-                ->get()->first()->update(['status'=>'last']);
+                ->first()->update(['status'=>'last']);
 
             return ['success' => true, 'message' => 'Invoices updated'];
         }

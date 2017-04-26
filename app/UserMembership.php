@@ -536,13 +536,14 @@ class UserMembership extends Model
             $count = 0;
             $lastInvoice = UserMembershipInvoicePlanning::where('user_membership_id','=',$this->id)->orderBy('issued_date','DESC')->first();
             if (!$lastInvoice){
-                return false;
+                return 0;
             }
         }
 
         if ($count < $this->sign_out_period){
             // we need to generate additional invoices to reach the binding period
             $overMinimum = 0;
+            $count = 0;
             $firstActiveDate = Carbon::createFromFormat('Y-m-d',$lastInvoice->last_active_date)->AddDay();
 
             $invoiceNo = UserMembershipInvoicePlanning::where('user_membership_id','=',$this->id)->count();
@@ -569,10 +570,16 @@ class UserMembership extends Model
 
                 // issue invoice for the period
                 $overMinimum++;
-                if ($firstActiveDate<=Carbon::today()){
+                $count++;
+                if ($firstActiveDate->format('Y-m-d') <= Carbon::today()->format('Y-m-d')){
                     $overMinimum = 0;
                 }
             }
+
+            return $count;
+        }
+        else{
+            return 0;
         }
     }
 }

@@ -275,17 +275,11 @@ class User extends Authenticatable
                 );
             }
 
-            UserMembershipAction::create($fillable);
+            $theAction = UserMembershipAction::create($fillable);
 
             // if the freeze starts today, then we freeze the membership plan
             if (Carbon::today()->toDateString() == $cancel_date->toDateString()) {
-                // check the planned invoices that needs to be pushed out of the freeze period
-                MembershipController::cancel_membership_rebuild_invoices($old_plan);
-
-                $old_plan->status = 'canceled';
-                $old_plan->save();
-                $memberRole = Role::where('name','=','front-member')->get()->first();
-                $this->detachRole($memberRole);
+                $theAction->process_action();
             }
 
             return true;

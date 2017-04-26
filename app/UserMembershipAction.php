@@ -2,7 +2,10 @@
 
 namespace App;
 
-use App\Console\Commands\UserMembershipPendingInvoices;
+use \App\Role;
+use App\User;
+use App\UserMembershipInvoicePlanning;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
 class UserMembershipAction extends Model
@@ -85,7 +88,7 @@ class UserMembershipAction extends Model
         $to_date    = Carbon::createFromFormat('Y-m-d H:i:s',$this->end_date.' 00:00:00')->addDay(); // we need next day
 
         // get user active/suspended membership
-        $userMembership = UserMembership::where('id','=',$this>user_membership_id)->whereIn('status',['active','suspended'])->first();
+        $userMembership = UserMembership::where('id','=',$this->user_membership_id)->whereIn('status',['active','suspended'])->first();
 
         switch ($this->action_type) {
             case 'freeze' : {
@@ -133,14 +136,22 @@ class UserMembershipAction extends Model
             }
             case 'cancel' : {
                 // we check if end_date + 1Day, for the planned action, is equal to today date, so we cancel the membership plan
-                if (Carbon::today()->eq($to_date)) {
+                if ($from_date->isToday()) {
                     // check for pending invoices in the future and delete them
-                    $futureInvoices = UserMembershipPendingInvoices::where('user_membership_id','=',$userMembership->id)->where('issued_date','>=',$to_date->format('Y-m-d'))->get();
+                    if ($userMembership->created_at->isToday()){
+                        // we get all pending invoices
+                        $futureInvoices = UserMembershipInvoicePlanning::where('user_membership_id','=',$userMembership->id)->get();
+                    }
+                    else{
+                        // we get all future pending invoices
+                        $futureInvoices = UserMembershipInvoicePlanning::where('user_membership_id','=',$userMembership->id)->where('issued_date','>=',$to_date->format('Y-m-d'))->get();
+                    }
+
                     if ($futureInvoices){
                         foreach($futureInvoices as $invoice){
                             if ($invoice->status!='old'){
                                 // invoice is not issued yet so we can delete this planned invoice
-                                //$invoice->delete();
+                                $invoice->delete();
                             }
                             else{
                                 // invoice is issues so we need to cancel the issued invoice
@@ -159,6 +170,10 @@ class UserMembershipAction extends Model
                     $this->status = 'old';
                     $this->add_note('Membership canceled today : ' . time() . ' : by System User');
                     $this->save();
+
+                    $memberRole = Role::where('name','=','front-member')->get()->first();
+                    $userID = User::find($userMembership->user_id);
+                    $userID->detachRole($memberRole);
                 }
                 break;
             }
