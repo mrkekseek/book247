@@ -1339,7 +1339,8 @@ class FrontEndUserController extends Controller
                     case 'old' :
                         $colorStatus = 'label-info';
                         break;
-                    case 'canceled' :
+                    case 'cancelled' :
+                    default:
                         $colorStatus = 'label-default';
                         break;
                 }
