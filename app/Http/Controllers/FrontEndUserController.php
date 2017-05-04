@@ -2327,7 +2327,8 @@ class FrontEndUserController extends Controller
                 ];
             }
             else{
-                $friend_approval_status = $newFriend->get_general_setting('auto_approve_friends')=='0'?'pending':'active';
+                $friend_approval_status = $newFriend->get_general_setting('auto_approve_friends')==='0'?'pending':'active';
+
                 $friend_fill = ['user_id'=>$user_id, 'friend_id'=>$friends->user_id, 'status'=>$friend_approval_status];
                 $validator = Validator::make($friend_fill, UserFriends::rules('POST'), UserFriends::$message, UserFriends::$attributeNames);
 

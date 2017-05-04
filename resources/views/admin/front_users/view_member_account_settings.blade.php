@@ -94,10 +94,13 @@
                                     </div>
                                     <ul class="nav nav-tabs">
                                         <li>
-                                            <a href="#tab_1_3" data-toggle="tab">Access Card</a>
+                                            <a href="#tab_1_3" data-toggle="tab">Store Credit</a>
                                         </li>
                                         <li class="active">
                                             <a href="#tab_1_5" data-toggle="tab">Membership Plan</a>
+                                        </li>
+                                        <li>
+                                            <a href="#tab_1_3" data-toggle="tab">Access Card</a>
                                         </li>
                                         <li>
                                             <a href="#tab_1_4" data-toggle="tab">Documents</a>
@@ -106,8 +109,8 @@
                                 </div>
                                 <div class="portlet-body">
                                     <div class="tab-content">
-                                        <!-- Membership Plan TAB -->
-                                        <div class="tab-pane row" id="tab_1_3">
+                                        <!-- Access Card TAB -->
+                                        <div class="tab-pane row" id="tab_1_2">
                                             <div class="col-md-12">
                                                 <div class="portlet light bordered">
                                                     <div class="portlet-body form">
@@ -169,7 +172,71 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <!-- END Membership Plan TAB -->
+                                        <!-- END Access Card TAB -->
+                                        <!-- Access Card TAB -->
+                                        <div class="tab-pane row" id="tab_1_3">
+                                            <div class="col-md-12">
+                                                <div class="portlet light bordered">
+                                                    <div class="portlet-body form">
+                                                        <!-- BEGIN FORM-->
+                                                        <form action="#" id="update_access_card" class="form-horizontal">
+                                                            <div class="form-body">
+                                                                <div class="form-group" style="margin-bottom:0px;">
+                                                                    <label class="control-label col-md-4"> Store Credit </label>
+                                                                    <div class="col-md-8">
+                                                                        <input class="form-control input-inline inline-block input-xlarge" name="access_card_number" placeholder="insert/paste number here" value="{{ $accessCardNo }}" />
+                                                                        <button class="btn uppercase green-meadow inline-block">Add to account</button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </form>
+                                                        <!-- END FORM-->
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-12">
+                                                <div class="portlet light bordered">
+                                                    <div class="portlet-title">
+                                                        <div class="caption">
+                                                            <i class="icon-equalizer font-blue-steel"></i>
+                                                            <span class="caption-subject font-blue-steel bold uppercase"> Store Credit Activity </span>
+                                                            <span class="caption-helper">for the selected member</span>
+                                                        </div>
+                                                        <div class="tools">
+                                                            <a class="expand" href="" data-original-title="" title=""> </a>
+                                                        </div>
+                                                    </div>
+                                                    <div class="portlet-body row" style="display:none;">
+                                                        <!-- BEGIN FORM-->
+                                                        <div class="table-scrollable">
+                                                            <table class="table table-striped table-bordered table-advance table-hover">
+                                                                <thead>
+                                                                <tr>
+                                                                    <th>
+                                                                        <i class="fa fa-calendar-minus-o"></i> Invoice Name </th>
+                                                                    <th class="hidden-xs">
+                                                                        <i class="fa fa-calendar"></i> To be issued on </th>
+                                                                    <th class="hidden-xs">
+                                                                        <i class="fa fa-calendar"></i> Last active day </th>
+                                                                    <th>
+                                                                        <i class="fa fa-dollar"></i> Price </th>
+                                                                    <th class="hidden-xs">
+                                                                        <i class="fa fa-asterisk"></i> Payment Status </th>
+                                                                    <!--<th> Options </th>-->
+                                                                </tr>
+                                                                </thead>
+                                                                <tbody>
+
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                        <!-- END FORM-->
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- END Access Card TAB -->
                                         <!-- Membership Plan TAB -->
                                         <div class="tab-pane active row" id="tab_1_5">
                                             <div class="col-md-12">

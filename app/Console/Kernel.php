@@ -15,7 +15,6 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-        Commands\Inspire::class,
         Commands\BookingsCheck::class,
         Commands\UserMembershipPlannedActionsCheck::class,
         Commands\UserMembershipPendingInvoices::class,
@@ -34,39 +33,27 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command('inspire')
-                 ->hourly();
-
+        // check each 5 min for past bookings that were active and must be switched to checked-in or not
         $schedule->command('booking:check_past_bookings')
             ->withoutOverlapping()
             ->everyFiveMinutes()
             ->timezone('Europe/Oslo')
             ->appendOutputTo('storage/logs/CheckPastBookings.log');
 
+        // check planned actions for existing and active memberships - twice at 00:10 and 00:15
         $schedule->command('userMembership:planned_actions_check')
-            //->everyMinute()
             ->withoutOverlapping()
-            ->dailyAt('00:01')
-            ->timezone('Europe/Oslo')
+            ->cron('10,15 0 * * *')
             ->appendOutputTo('storage/logs/PlannedActions.log');
 
+        // check planned invoices and issue the ones that are to be issued for today, and issue them - three times at 1:01, 1:06, 1:11
         $schedule->command('userFinance:issue_pending_invoices')
             ->withoutOverlapping()
-            ->everyFiveMinutes()
+            ->cron('1,6,11 1 * * *')
             ->timezone('Europe/Oslo')
-            ->when(function(){
-                  $current_hour     = intval(Carbon::now('Europe/Oslo')->format('H'));
-                  $current_minute   = intval(Carbon::now('Europe/Oslo')->format('i'));
-
-                  if ($current_hour>=2 && $current_hour<4 && $current_minute>4){
-                      return true;
-                  }
-                  else{
-                      return false;
-                  }
-            })
             ->appendOutputTo('storage/logs/PendingInvoice_output.log');
 
+        // send the location bookings for the day to each employee/manager/admin/owner - once per day at 06:00
         $schedule->command('booking:daily_morning_bookings_plan')
             //->everyMinute()
             ->withoutOverlapping()
@@ -74,12 +61,23 @@ class Kernel extends ConsoleKernel
             ->timezone('Europe/Oslo')
             ->appendOutputTo('storage/logs/BookingDailyPlanner_output.log');
 
+        // send the location bookings for the day to each employee/manager/admin/owner - once per day at 02:00
+        $schedule->command('userFinance:add_minimum_planned_pending_invoices')
+            //->everyMinute()
+            ->withoutOverlapping()
+            ->dailyAt('00:01')
+            ->timezone('Europe/Oslo')
+            ->appendOutputTo('storage/logs/AddMinimumPlannedInvoices_output.log');
+
         /* Optimizations tasks - Start */
+
+        // creates a table optimized for quick searches - once per day at 03:00
         $schedule->command('optimize:rebuild_members_search')
             //->everyMinute()
             ->dailyAt('03:00')
             ->timezone('Europe/Oslo')
             ->appendOutputTo('storage/logs/Optimize_rebuild_search_members_output.log');
+
         /* Optimizations tasks - Stop */
     }
 }

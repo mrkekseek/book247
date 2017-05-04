@@ -19,7 +19,7 @@ class addMinimumPendingInvoices extends Command
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Each membership plan has a minimum retention period; so, if you want to cancel you need to pay the minimum invoices before the membership gets cancelled';
 
     /**
      * Create a new command instance.

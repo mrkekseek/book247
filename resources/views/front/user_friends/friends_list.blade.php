@@ -69,11 +69,11 @@
                                         <th>
                                             <i class="fa fa-briefcase"></i> Friend Name </th>
                                         <th class="hidden-xs">
-                                            <i class="fa fa-user"></i> Email Address </th>
-                                        <th class="hidden-xs">
                                             <i class="fa fa-user"></i> Phone Number </th>
                                         <th class="hidden-xs">
                                             <i class="fa fa-shopping-cart"></i> Preferred Gym </th>
+                                        <th class="">
+                                            <i class="fa fa-shopping-cart"></i> Status </th>
                                         <th style="min-width:70px; width:5%;"> </th>
                                     </tr>
                                     </thead>
@@ -81,9 +81,9 @@
                                 @foreach($list_of_friends as $friend)
                                     <tr>
                                         <td class="highlight"> {{$friend['full_name']}} </td>
-                                        <td class="hidden-xs"> <a target="_blank" href="mailto:{{$friend['email_address']}}">{{$friend['email_address']}}</a> </td>
                                         <td class="hidden-xs"> {{$friend['phone_number']}} </td>
                                         <td class="hidden-xs"> {{ isset($locations[$friend['preferred_gym']])?$locations[$friend['preferred_gym']]:'-' }} </td>
+                                        <td class="hidden-xs"> {{ $friend['status'] }} </td>
                                         <td>
                                             @if ($friend['status']=='pending' && $friend['friend_id']==$user->id)
                                                 <a href="javascript:;" data-id="{{$friend['ref_nr']}}" style="min-width:85px; margin-bottom:5px;" class="btn btn-sm green-jungle accept_friend">
@@ -180,7 +180,7 @@
                                                 <div class="form-body" style="padding-top:0px; padding-bottom:0px;">
                                                     <div class="form-group note note-info margin-bottom-10">
                                                         <div class="input-group">
-                                                            <input type="text" placeholder="Phone number..." name="friend_phone_no" class="form-control">
+                                                            <input type="text" placeholder="Phone number: ex. 123456789" name="friend_phone_no" class="form-control">
                                                     <span class="input-group-btn">
                                                         <button type="submit" class="btn red">Get Friend!</button>
                                                     </span>
