@@ -10,44 +10,44 @@ use \Illuminate\Support\Facades\Cookie;
 
 class Auth
 {
-    public static $error = '';
+    public static $error = '';    
     
     public function __construct() 
     {
-        $cookie_sso = Cookie::get('sso_user_id');        
-        $session_sso = Session::get('sso_user_id');
-        if (!empty($cookie_sso) && empty($session_sso))
-        {
-            $user_id = decrypt($user_id);
-            $user = ApiAuth::accounts_get($user_id);
-            if ($user['success'])
-            {
-                Session::put('sso_user_id',$user['data']->id);
-            }
-        }
+        
     }
     public static function user()
     {   
-        $session_sso = Session::get('sso_user_id');                
+        //dd($_SERVER);        
+        //$domain = parse_url($_SERVER['HTTP_HOST']);
+        //dd(parse_url($domain));
+        //dd($domain);
+        
+        
+        self::set_session();
+        $session_sso = Session::get('sso_user_id');        
         if (!empty($session_sso))
         {   
+            self::check_exist_local_user($session_sso);
             $user_locale = User::where('sso_user_id',$session_sso)->first();            
             if ($user_locale)
             {
                 return $user_locale;
             }
-        }
+        }        
         return new User();
     }
 
     public static function check()
     {
+        //self::set_session();
         $user_session = Session::get('sso_user_id');
         return (!empty($user_session));
     }
     
     public static function guest()
     {
+        //self::set_session();
         $user_session = Session::get('sso_user_id');
         return (!empty($user_session));
     }
@@ -76,12 +76,35 @@ class Auth
     
     private static function set_cookie_session($sso_user_id)
     {
+        
         Session::put('sso_user_id',$sso_user_id);            
         Cookie::queue(Cookie::forever('sso_user_id', $sso_user_id, '/', '.'.$_SERVER['HTTP_HOST']));            
     }
+
+    private static function set_session()
+    {
+        $cookie_sso = Cookie::get('sso_user_id');                
+        $session_sso = Session::get('sso_user_id');
+        
+        //dd($cookie_sso);
+        //dd($session_sso);
+        if (!empty($cookie_sso) && empty($session_sso))
+        {
+            $sso_user_id = $cookie_sso;
+            $user = ApiAuth::accounts_get($sso_user_id);
+            if ($user['success'])
+            {
+                Session::put('sso_user_id',$user['data']->id);
+            }
+        }
+        elseif (empty($cookie_sso) && empty($session_sso))
+        {
+            Session::put('sso_user_id','');
+        }
+    }
     
     private static function check_exist_local_user($sso_user_id)
-    {
+    {        
         $local_user = User::where('sso_user_id', $sso_user_id)->first();
         if (!empty($local_user))
         {
