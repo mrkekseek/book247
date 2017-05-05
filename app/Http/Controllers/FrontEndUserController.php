@@ -1694,34 +1694,34 @@ class FrontEndUserController extends Controller
                     'message' => 'Old password changed ... user updated'
                 ];
             }
-            else{
-                //dd(Auth::user());
-                //$auth = auth();
-                //dd($userVars);                
+            else{                
                 if (Auth::attempt(['email' => Auth::user()->email, 'password' => $userVars['old_password']])) {
-                    //$token = \App\Http\Libraries\ApiAuth::resetPassword(Auth::user()->email)['data'];
-                    //dd($token);
+                    $token = \App\Http\Libraries\ApiAuth::resetPassword(Auth::user()->email)['data'];
                     $apiData = [
                         "Credentials" => [
                           "Username" => Auth::user()->email,
-                          "Password" => $userVars['old_password']
+                          "Password" => ''
                         ],
-                        "Token"=> '1k1PWWWCO0QggJ/2oAVBqA==',
-                        "NewPassword"=> "333333333",
+                        "Token"=> $token,
+                        "NewPassword"=> $request->password1,                        
                     ];                    
                     $updatePassword = \App\Http\Libraries\ApiAuth::updatePassword($apiData);
-                    //dd($updatePassword);
-                    /*
-                    $user->fill([
-                        'password' => Hash::make($request->password1)
-                    ])->save();
-                    */
-                    dd('auth');
-                    return [
-                        'success' => true,
-                        'title' => 'Password updated',
-                        'message' => 'Old password changed ... user updated'
-                    ];
+                    if ($updatePassword['success'])
+                    {
+                        return [
+                            'success' => true,
+                            'title' => 'Password updated',
+                            'message' => 'Old password changed ... user updated'
+                        ];
+                    }
+                    else
+                    {
+                        return [
+                            'success' => false,
+                            'title'  => 'Error updating password',
+                            'errors' => $updatePassword['message']
+                        ];
+                    }                    
                 }
                 else{
                     return [

@@ -166,11 +166,8 @@ class ApiAuth
             {
                 $sortingArray[$key] = $apiData[$key];
             }
-        }
-        //dd($sortingArray);
-        //dd(self::accounts_get(36));
-        self::send_curl($sortingArray,'api/Accounts', 'PUT');        
-        //dd(self::$error);
+        }        
+        self::send_curl($sortingArray,'api/Accounts', 'PUT');                
         if (empty(self::$error))
         {
             $result['success'] = true;
@@ -323,44 +320,27 @@ class ApiAuth
     }
     
     public static function updatePassword($data = [])
-    {
-        /*
-        $data = [
-            "Credentials" => [
-              "Username" => "test5",
-              "Password" => ""
-            ],
-            "Token"=> 'ra2FR+MkNPCxpJL9m86drw==',
-            "NewPassword"=> "string",
-        ];
-        */
-        //dd(csrf_token());
-        //dd($data);
-        $response = self::send_curl($data, 'api/Accounts/PasswordUpdate', 'POST');                
-        //dd(self::$error);
-        dd($response);
-        if ($response)
+    {   
+        self::send_curl($data, 'api/Accounts/PasswordUpdate', 'POST');
+        if (empty(self::$error))
         {
-            $result['success'] = true;            
+            $result['success'] = true;
         }
         else
         {
-             $result['success'] = false;
-             $result['message'] = self::$error;
+            $result['success'] = false;
+            $result['message'] = self::$error;
         }
-        //dd($result);
         return $result;
     }
 
     private static function generateApiKey($data)
-    {
+    {        
         if (is_array($data))
         {
-          $data = json_encode($data);          
+          $data = json_encode($data,JSON_UNESCAPED_SLASHES);          
         }        
-        $hash = base64_encode(hash_hmac('sha256', $data, self::APIKEY, TRUE));
-        //dd($hash);
-        //dd(base64_encode(hash_hmac('sha256', '?username=test5', self::APIKEY, TRUE)));
+        $hash = base64_encode(hash_hmac('sha256', $data, self::APIKEY, TRUE));                        
         return $hash;
     }
     
@@ -371,7 +351,7 @@ class ApiAuth
         if ($method == 'GET')
         {
           $api_url.= (string)$data;
-        }        
+        }
         $ApiKey = self::generateApiKey($data);      
         $curl = curl_init(self::APIURL.$api_url);
         curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $method);      
@@ -391,7 +371,7 @@ class ApiAuth
         curl_setopt($curl, CURLOPT_HTTPHEADER,$headers); 
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1); 
         $curl_results = curl_exec($curl);                
-        //dd($curl_results);
+        //print_r($curl_results); echo '---------'.$api_url.'<br>';
         $result = json_decode($curl_results);                  
         if (!empty(json_last_error()))
         {

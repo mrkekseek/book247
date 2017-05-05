@@ -29,12 +29,12 @@ class Auth
     }
     public static function user()
     {        
-        //dd(Session::all());                
+        
         //dd(Cookie::get('sso_user_id'));
         //ApiAuth::accounts_get_username('tk@div-art.com');
         //dd(ApiAuth::accounts_get(36));
         //dd(self::user());
-        //ApiAuth::accounts_get_username('test5');
+        //dd(ApiAuth::accounts_get_username('tk4@div-art.com'));
         //dd($session_sso);
         $session_sso = Session::get('sso_user_id');                
         if (!empty($session_sso))
