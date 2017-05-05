@@ -30,8 +30,13 @@ class Auth
     public static function user()
     {        
         //dd(Session::all());                
-        //dd(Cookie::get('sso_user_id'));          
-        $session_sso = Session::get('sso_user_id');        
+        //dd(Cookie::get('sso_user_id'));
+        //ApiAuth::accounts_get_username('tk@div-art.com');
+        //dd(ApiAuth::accounts_get(36));
+        //dd(self::user());
+        //ApiAuth::accounts_get_username('test5');
+        //dd($session_sso);
+        $session_sso = Session::get('sso_user_id');                
         if (!empty($session_sso))
         {   
             $user_locale = User::where('sso_user_id',$session_sso)->first();
@@ -60,11 +65,13 @@ class Auth
     {
         //dd(ApiAuth::autorize($data));
         //dd(ApiAuth::accounts_get(33));
-        //dd(ApiAuth::checkExist('tk3@div-art.com'));
-        if (!ApiAuth::autorize($data)['success'])
+        //dd(ApiAuth::checkExist('tk3@div-art.com'));        
+        //ApiAuth::autorize($data);    
+        //dd($data);        
+        if (ApiAuth::autorize($data)['success'])
         {            
             //temp variable
-            $sso_user_id =15;
+            $sso_user_id = 36;
             $local_user = User::where('sso_user_id', $sso_user_id)->first();
             if (!empty($local_user))
             {
@@ -90,7 +97,7 @@ class Auth
     }
     
     public static function logout()
-    {
+    {        
         Session::put('sso_user_id','');
         Cookie::queue(Cookie::forget('sso_user_id', '/', '.book247.da')); 
     }

@@ -1488,12 +1488,12 @@ class FrontEndUserController extends Controller
             'email'         => 'required|email|unique:users,email,'.$id.',id',
             'username'      => 'required|email|unique:users,username,'.$id.',id'
         ]);
-
+        
         if ($validator->fails()){
             return [
                 'success' => false,
                 'title'   => 'Validation Error',
-                'errors'  => $validator->getMessageBag()->toArray()
+                'errors'  => $validator->getMessageBag()->toArray()                
             ];
         }
         else{
@@ -1503,8 +1503,16 @@ class FrontEndUserController extends Controller
             $user->country_id  = $userVars["country_id"];
             $user->gender      = $userVars["gender"];
             $user->email       = $userVars["email"];
-            $user->username    = $userVars["email"];
-            $user->save();
+            $user->birthday    = $vars['date_of_birth'];
+            $user->username    = $userVars["email"];            
+            if (!$user->save() && !empty(Auth::$error))            
+            {                
+                return array(
+                    'success'   => false,
+                    'title'     => 'Api error',                    
+                    'errors'  => [''=>[Auth::$error]]
+                );
+            }            
         }
 
         $personalData = [
@@ -1515,7 +1523,7 @@ class FrontEndUserController extends Controller
             'user_id'       => $user->id
         ];
         $validator = Validator::make($personalData, PersonalDetail::rules('PUT',$user->id), PersonalDetail::$messages, PersonalDetail::$attributeNames);
-        if ($validator->fails()){
+        if ($validator->fails()){            
             return array(
                 'success'   => false,
                 'title'     => 'You have some errors',
@@ -1674,7 +1682,7 @@ class FrontEndUserController extends Controller
                 'errors'  => $validator->getMessageBag()->toArray()
             ];
         }
-        else {
+        else {            
             if ($is_staff){
                 $user->fill([
                     'password' => Hash::make($request->password1)
@@ -1687,12 +1695,28 @@ class FrontEndUserController extends Controller
                 ];
             }
             else{
-                $auth = auth();
-                if ($auth->attempt([ 'id' => $id, 'password' => $userVars['old_password'] ])) {
+                //dd(Auth::user());
+                //$auth = auth();
+                //dd($userVars);                
+                if (Auth::attempt(['email' => Auth::user()->email, 'password' => $userVars['old_password']])) {
+                    //$token = \App\Http\Libraries\ApiAuth::resetPassword(Auth::user()->email)['data'];
+                    //dd($token);
+                    $apiData = [
+                        "Credentials" => [
+                          "Username" => Auth::user()->email,
+                          "Password" => $userVars['old_password']
+                        ],
+                        "Token"=> '1k1PWWWCO0QggJ/2oAVBqA==',
+                        "NewPassword"=> "333333333",
+                    ];                    
+                    $updatePassword = \App\Http\Libraries\ApiAuth::updatePassword($apiData);
+                    //dd($updatePassword);
+                    /*
                     $user->fill([
                         'password' => Hash::make($request->password1)
                     ])->save();
-
+                    */
+                    dd('auth');
                     return [
                         'success' => true,
                         'title' => 'Password updated',

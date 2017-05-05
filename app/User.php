@@ -113,20 +113,29 @@ class User extends Authenticatable
             }
             else
             {
-                if (\App\Http\Libraries\ApiAuth::account_create($attributes)['success'])
+                $api_user = \App\Http\Libraries\ApiAuth::account_create($attributes);
+                if ($api_user['success'])
                 {
                     unset($model->password_api);
-                    $model->sso_user_id = \App\Http\Libraries\ApiAuth::account_create($attributes)['data'];
+                    $model->sso_user_id = $api_user['data'];
                     return true;
                 }
                 return false;
             }
             
         });
+        static::updating(function($model)
+        {
+            $attributes = $model->attributes;            
+            $api_user = \App\Http\Libraries\ApiAuth::accounts_update($attributes);                        
+            \App\Http\Libraries\Auth::$error = !empty($api_user['message']) ? $api_user['message'] : '';
+            unset($model->birthday);
+            return $api_user['success'];
+        });
     }
 
     
-    public function is_back_user() {
+    public function is_back_user() {        
         if ( $this->hasRole('front-user') || $this->hasRole('front-member') || $this->status != "active") {
             return false;
         }
@@ -135,7 +144,7 @@ class User extends Authenticatable
         }
     }
 
-    public function is_front_user($all = true) {
+    public function is_front_user($all = true) {        
         if ( ($this->hasRole('front-user') || $this->hasRole('front-member')) && ($this->status == "active" || $all )) {
             return true;
         }

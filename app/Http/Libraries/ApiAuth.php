@@ -81,24 +81,13 @@ class ApiAuth
         }
         return $result;
     }
-
-    public static function accounts_update()
+    
+    public static function accounts_get_username($username)
     {
-        $array = [
-            'Id'=> 12,
-            'Username'=> 'test5',
-            'Password'=> 'test',
-            'Email'=> 'tk@div-art.com',
-            'Birthday'=> '2017-04-12T12:55:20.337',
-            'Gender'=> 1,
-            'CountryCode'=> '33',
-            'FirstName'=> 'testfirstname',
-            'MiddleName'=> null,
-            'LastName'=> 'testlastname',
-            'ResetToken'=> null,
-            'ResetTokenDate'=> null,
-            ];
-        $response = self::send_curl($array,'api/Accounts', 'POST');
+        //$get= '?username='.$username;
+        $get= $username;
+        $response = self::send_curl($get, 'api/Accounts/', 'GET');        
+        //dd($response);
         if ($response)
         {
             $result['success'] = true;
@@ -107,6 +96,89 @@ class ApiAuth
         {
              $result['success'] = false;
              $result['message'] = self::$error;
+        }
+        return $result;
+    }
+
+    public static function accounts_update($data = [])
+    {
+        //dd($data);
+        $sortingArray = [
+            'Id'=> 0,
+            'Username'=> '',
+            'Password'=> '',
+            'Email'=> '',
+            'Birthday'=> '',
+            'Gender'=> 0,
+            'CountryCode'=> '00',
+            'FirstName'=> '',
+            'MiddleName'=> '',
+            'LastName'=> '',
+            'ResetToken'=> '',
+            'ResetTokenDate'=> null
+        ];
+        $apiData = [            
+            //'Birthday'=> '1986-09-03T01:01:01.337',            
+            'ResetToken'=> '',
+            'ResetTokenDate'=> '',            
+            "CountryCode" => '00',            
+        ];
+        foreach ($data as $key=>$value)
+        {
+            switch ($key)
+            {
+                case 'sso_user_id':
+                    $apiData['Id'] = $value;
+                    break;
+                case 'username':
+                    $apiData['Username'] = $value;
+                    break;
+                case 'password_api':
+                    $apiData['Password'] = $value;
+                    break;
+                case 'email':
+                    $apiData['Email'] = $value;
+                    break;
+                case 'first_name':
+                    $apiData['FirstName'] = $value;
+                    break;
+                case 'middle_name':
+                    $apiData['MiddleName'] = $value;
+                    break;
+                case 'last_name':
+                    $apiData['LastName'] = $value;
+                    break;                
+                case  ($key == 'gender' && $value == 'F'):
+                    $apiData['Gender'] = 2;
+                    break;
+                case  ($key == 'gender' && $value == 'M'):                    
+                    $apiData['Gender'] = 1;
+                    break;
+                case 'birthday':
+                    //dd();
+                    $apiData['Birthday'] = date('Y-m-d',strtotime($value)).'T00:00:00';
+                    break;
+            }
+        }        
+        foreach ($sortingArray as $key=>$value)
+        {
+            if (!empty($apiData[$key]))
+            {
+                $sortingArray[$key] = $apiData[$key];
+            }
+        }
+        //dd($sortingArray);
+        //dd(self::accounts_get(36));
+        self::send_curl($sortingArray,'api/Accounts', 'PUT');        
+        //dd(self::$error);
+        if (empty(self::$error))
+        {
+            $result['success'] = true;
+        }
+        else
+        {
+            $result['success'] = false;
+            $result['message'] = self::$error;
         }
         return $result;        
     }
@@ -235,8 +307,8 @@ class ApiAuth
     
     public static function resetPassword($username)
     {
-        $get= '?username='.$username;
-        $response = self::send_curl($get, 'api/Accounts/ResetPassword', 'GET');
+        $get= '?username='.$username;        
+        $response = self::send_curl($get, 'api/Accounts/ResetPassword', 'GET');        
         if ($response)
         {
             $result['success'] = true;
@@ -252,6 +324,7 @@ class ApiAuth
     
     public static function updatePassword($data = [])
     {
+        /*
         $data = [
             "Credentials" => [
               "Username" => "test5",
@@ -260,8 +333,12 @@ class ApiAuth
             "Token"=> 'ra2FR+MkNPCxpJL9m86drw==',
             "NewPassword"=> "string",
         ];
+        */
         //dd(csrf_token());
-        $response = self::send_curl($data, 'api/Accounts/PasswordUpdate', 'POST');
+        //dd($data);
+        $response = self::send_curl($data, 'api/Accounts/PasswordUpdate', 'POST');                
+        //dd(self::$error);
+        dd($response);
         if ($response)
         {
             $result['success'] = true;            
@@ -271,6 +348,7 @@ class ApiAuth
              $result['success'] = false;
              $result['message'] = self::$error;
         }
+        //dd($result);
         return $result;
     }
 
@@ -282,6 +360,7 @@ class ApiAuth
         }        
         $hash = base64_encode(hash_hmac('sha256', $data, self::APIKEY, TRUE));
         //dd($hash);
+        //dd(base64_encode(hash_hmac('sha256', '?username=test5', self::APIKEY, TRUE)));
         return $hash;
     }
     
@@ -311,23 +390,22 @@ class ApiAuth
         }
         curl_setopt($curl, CURLOPT_HTTPHEADER,$headers); 
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1); 
-        $curl_results = curl_exec($curl);        
+        $curl_results = curl_exec($curl);                
         //dd($curl_results);
         $result = json_decode($curl_results);                  
         if (!empty(json_last_error()))
         {
             $result = $curl_results;
-        }
-        //dd($result);
-        curl_close($curl);
+        }        
+        curl_close($curl);        
         if ($result && !isset($result->Code))
-        {        
-          return $result;
+        {   
+            return $result;            
         }
         else
-        {
-          self::$error = isset($result->Message)?$result->Message:'';
-          return false;            
+        {            
+            self::$error = isset($result->Message)?$result->Message:'';          
+            return false;
         }
     }
 }
