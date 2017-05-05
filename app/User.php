@@ -104,14 +104,14 @@ class User extends Authenticatable
     {
         parent::boot();
         static::creating(function($model)
-        {            
-            $attributes = $model->attributes;
-            //dd($attributes);
-            if (!empty($attributes['sso_user_id']))
+        {   
+            $attributes = $model->attributes;            
+            if (isset($attributes['sso_user_id']))
             {
                 return true;
             }
-            else
+            $exist = \App\Http\Libraries\ApiAuth::checkExist($attributes['email']);            
+            if (!$exist['success'])
             {
                 $api_user = \App\Http\Libraries\ApiAuth::account_create($attributes);
                 if ($api_user['success'])
@@ -120,9 +120,16 @@ class User extends Authenticatable
                     $model->sso_user_id = $api_user['data'];
                     return true;
                 }
-                return false;
+                else
+                {
+                    \App\Http\Libraries\Auth::$error = $api_user['message'];
+                }
             }
-            
+            else
+            {
+                \App\Http\Libraries\Auth::$error = 'User with current email allready register';
+            }            
+            return false;
         });
         static::updating(function($model)
         {

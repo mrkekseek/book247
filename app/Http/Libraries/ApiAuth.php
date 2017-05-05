@@ -8,63 +8,6 @@ class ApiAuth
     const APIURL = 'http://rankedinbookingsso.azurewebsites.net/';
     
     static $error  = '';
-    
-    
-    public function info()
-    {
-      //$password = bcrypt('test'.'Salt@1fj38jGTlkmjkx9845GF9J4'.'test');
-      $array = [
-        'Id'=> 7,
-        'Username'=> 'test2',
-        'Password'=> 'test',
-        'Email'=> 'tk@div-art.com',
-        'Birthday'=> '2017-05-12T12:55:20.337',
-        'Gender'=> 1,
-        'CountryCode'=> '33',
-        'FirstName'=> null,
-        'MiddleName'=> null,
-        'LastName'=> null,
-        'ResetToken'=> null,
-        'ResetTokenDate'=> null
-        ];
-        $array2 = [
-            'Id'=> 0,
-            'Username'=> 'test2',
-            'Password'=> 'test',
-            'Email'=> 'tk@div-art.com',
-            'Birthday'=> '2017-04-12T12:55:20.337',
-            'Gender'=> 1,
-            'CountryCode'=> '33',
-            'FirstName'=> 'testfirstname',
-            'MiddleName'=> 'testmidlename',
-            'LastName'=> 'testlastname',
-            'ResetToken'=> 'string',
-            'ResetTokenDate'=> null
-            ];
-        $array3 = [
-            'username'=>'test2',
-            'password'=>'test',
-        ];
-        $str = '{"Id":8,"Username":"test2","Password":"test","Email":"tk@div-art.com","Birthday":"2017-04-12T12:55:20.337","Gender":1,"CountryCode":"33","FirstName":"testfirstname","MiddleName":"testmidlename","LastName":"testlastname","ResetToken":"string","ResetTokenDate":null}';
-        $array4 = [
-            'Id'=> 8,
-            'Username'=> 'test2',
-            'Password'=> 'test',
-            'Email'=> 'tk@div-art.com',
-            'Birthday'=> '2017-04-12T12:55:20.337',
-            'Gender'=> 1,
-            'CountryCode'=> '33',
-            'FirstName'=> 'testfirstname',
-            'MiddleName'=> 'testmidlename',
-            'LastName'=> 'testlastname',
-            'ResetToken'=> 'string',
-            'ResetTokenDate'=> null,
-            ];
-        echo '<br>';
-        //echo base64_encode(hash_hmac('sha256', json_encode($array3), 'apiKey-@f4g8-FH2-8809x-dj22aSwrL=cP24Zd234-TuJh87EqChVBGfs=SG564SD-fgAG47-747AhAP=U456=O97=Y=O6A=OC7b5645MNB-V4OO7Z-qw-OARSOc-SD456OFoCE-=64RW67=QOVq=', TRUE));
-        echo base64_encode(hash_hmac('sha256', $str, 'apiKey-@f4g8-FH2-8809x-dj22aSwrL=cP24Zd234-TuJh87EqChVBGfs=SG564SD-fgAG47-747AhAP=U456=O97=Y=O6A=OC7b5645MNB-V4OO7Z-qw-OARSOc-SD456OFoCE-=64RW67=QOVq=', TRUE));
-        echo '<br>';
-    }
 
     public static function accounts_get($id = 7)
     { 
@@ -82,15 +25,14 @@ class ApiAuth
         return $result;
     }
     
-    public static function accounts_get_username($username)
+    public static function accounts_get_by_username($username)
     {
-        //$get= '?username='.$username;
-        $get= $username;
-        $response = self::send_curl($get, 'api/Accounts/', 'GET');        
-        //dd($response);
+        $get= '?username='.$username;                
+        $response = self::send_curl($get, 'api/Accounts/GetByUsername', 'GET');                
         if ($response)
         {
             $result['success'] = true;
+            $result['data'] = $response;
         }
         else
         {
@@ -101,8 +43,7 @@ class ApiAuth
     }
 
     public static function accounts_update($data = [])
-    {
-        //dd($data);
+    {        
         $sortingArray = [
             'Id'=> 0,
             'Username'=> '',
@@ -117,8 +58,7 @@ class ApiAuth
             'ResetToken'=> '',
             'ResetTokenDate'=> null
         ];
-        $apiData = [            
-            //'Birthday'=> '1986-09-03T01:01:01.337',            
+        $apiData = [                                    
             'ResetToken'=> '',
             'ResetTokenDate'=> '',            
             "CountryCode" => '00',            
@@ -269,11 +209,6 @@ class ApiAuth
     
     public static function autorize($data = [])
     {
-        /*
-        $data = [
-            'Username'=>'test2',
-            'Password'=>'test',
-        ];*/
         $apiData = [];        
         foreach ($data as $key=>$value)
         {
@@ -286,8 +221,7 @@ class ApiAuth
                     $apiData['Password'] = $value;
                     break;
             }
-        }
-        //dd($apiData);
+        }        
         $response = self::send_curl($apiData, 'api/Accounts/Authorize', 'POST');
         if ($response)
         {
@@ -338,7 +272,7 @@ class ApiAuth
     {        
         if (is_array($data))
         {
-          $data = json_encode($data,JSON_UNESCAPED_SLASHES);          
+            $data = json_encode($data,JSON_UNESCAPED_SLASHES);          
         }        
         $hash = base64_encode(hash_hmac('sha256', $data, self::APIKEY, TRUE));                        
         return $hash;
@@ -350,7 +284,7 @@ class ApiAuth
     {
         if ($method == 'GET')
         {
-          $api_url.= (string)$data;
+            $api_url.= (string)$data;
         }
         $ApiKey = self::generateApiKey($data);      
         $curl = curl_init(self::APIURL.$api_url);
@@ -370,8 +304,7 @@ class ApiAuth
         }
         curl_setopt($curl, CURLOPT_HTTPHEADER,$headers); 
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1); 
-        $curl_results = curl_exec($curl);                
-        //print_r($curl_results); echo '---------'.$api_url.'<br>';
+        $curl_results = curl_exec($curl);
         $result = json_decode($curl_results);                  
         if (!empty(json_last_error()))
         {

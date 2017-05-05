@@ -2619,7 +2619,15 @@ class FrontEndUserController extends Controller
         $credentials['password'] = Hash::make($credentials['password']);
         $the_plan = MembershipPlan::where('id','=',$vars['membership_plan'])->where('id','!=',1)->where('status','=','active')->get()->first();        
         try {
-            $user = User::create($credentials);
+            $user = User::create($credentials);                        
+            if (!empty (Auth::$error))
+            {
+                return [
+                    'success'   => false,
+                    'title'     => 'Api error',
+                    'errors'    => Auth::$error
+                ];
+            }
             $user->attachRole($userType);
 
             $personalData = [
