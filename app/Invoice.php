@@ -77,7 +77,7 @@ class Invoice extends Model
     }
 
     public static function next_invoice_number(){
-        $invoice = Invoice::select('invoice_number')->orderBy('invoice_number', 'desc')->take('1')->get()->first();
+        $invoice = Invoice::select('invoice_number')->orderBy('invoice_number', 'desc')->take(1)->get()->first();
         if ($invoice){
             return ( numeric($invoice->invoice_number)+1);
         }

@@ -47,9 +47,13 @@ class UserMembershipPlannedActionsCheck extends Command
 
         $plannedActions = UserMembershipAction::where('status','=','active')->get();
         if ($plannedActions){
+            echo 'Planned actions found - '.sizeof($plannedActions). PHP_EOL;
             foreach($plannedActions as $singleAction){
-                $singleAction->proces_action();
+                $singleAction->process_action();
             }
+        }
+        else{
+            echo 'No planned actions';
         }
     }
 }

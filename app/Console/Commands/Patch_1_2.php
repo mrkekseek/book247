@@ -45,7 +45,7 @@ class Patch_1_2 extends Command
         // We check past cancellations and we mark the membership as cancelled + remove any other invoices that are issued after cancellation date
         // We scan and re-check all actions from the past that are still active
 
-        $plannedActions = UserMembershipAction::where('status','=','active')->where('action_type','=','cancel')->where('end_date','<',Carbon::today())->take(1)->get();
+        $plannedActions = UserMembershipAction::where('status','=','active')->where('action_type','=','cancel')->where('end_date','<',Carbon::today())->get();
         if ($plannedActions){
             foreach ($plannedActions as $singleAction){
                 echo 'Planned action : '.$singleAction->id.' . '.PHP_EOL; //exit;
@@ -54,7 +54,7 @@ class Patch_1_2 extends Command
                 // get user active/suspended membership
                 $userMembership = UserMembership::where('id','=',$singleAction->user_membership_id)->whereIn('status',['active','suspended'])->get()->first();
                 if ($userMembership) {
-                    echo 'Membership found : '.$userMembership->id.' for user '.$userMembership->user_id.'. '.PHP_EOL;
+                    echo 'Membership found : '.$userMembership->id.' for user '.$userMembership->user_id.'. '.PHP_EOL; //exit;
                     // we check if end_date + 1Day, for the planned action, is equal to today date, so we cancel the membership plan
                     if (Carbon::today()->gte($to_date)) {
                         $userMembership->status = 'cancelled';

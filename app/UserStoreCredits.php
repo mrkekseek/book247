@@ -43,13 +43,13 @@ class UserStoreCredits extends Model
             {
                 return [
                     'member_id'         => 'required|exists:users,id',
-                    'back_user_id'      => 'required|min:3',
+                    'back_user_id'      => 'required|exists:users,id',
                     'title'             => 'required|min:3',
                     'value'             => 'required|integer',
                     'total_amount'      => 'integer',
-                    'invoice_id'        => 'required|exists:invoices,id',
+                    'invoice_id'        => 'exists:invoices,id',
                     'expiration_date'   => 'date',
-                    'status'            => 'enum:active,expired,deleted,spent',
+                    'status'            => 'in:active,expired,deleted,spent',
                 ];
             }
             case 'PUT':
@@ -63,7 +63,7 @@ class UserStoreCredits extends Model
                     'total_amount'      => 'integer',
                     'invoice_id'        => 'required|exists:invoices,id',
                     'expiration_date'   => 'date',
-                    'status'            => 'enum:active,expired,deleted,spent',
+                    'status'            => 'in:active,expired,deleted,spent',
                 ];
             }
             default:break;
