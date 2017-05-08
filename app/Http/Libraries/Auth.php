@@ -21,7 +21,7 @@ class Auth
         $session_sso = Session::get('sso_user_id');        
         if (!empty($session_sso))
         {   
-            self::check_exist_local_user($session_sso);
+            self::set_local_user($session_sso);
             $user_locale = User::where('sso_user_id',$session_sso)->first();            
             if ($user_locale)
             {
@@ -49,7 +49,7 @@ class Auth
         {  
             $sso_user = ApiAuth::accounts_get_by_username($data['email']);            
             $sso_user_id = $sso_user['data']->id;
-            self::check_exist_local_user($sso_user_id);
+            self::set_local_user($sso_user_id);
             return true;
         }
         else
@@ -93,8 +93,8 @@ class Auth
     }
     
     private static function check_exist_local_user($sso_user_id)
-    {        
-        $local_user = User::where('sso_user_id', $sso_user_id)->first();
+    {      
+        
         if (self::set_local_user($sso_user_id))
         {
             self::set_cookie_session($sso_user_id);
@@ -121,11 +121,14 @@ class Auth
         {
             $user->save();
             $user->attachRole(6);            
+            self::set_cookie_session($sso_user_id);
             return true;
         }
         else
         {
+            dd($user);
             $user->save();
+            self::set_cookie_session($sso_user_id);
             return true;
         }
         return false;
