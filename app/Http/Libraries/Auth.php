@@ -95,42 +95,40 @@ class Auth
     private static function check_exist_local_user($sso_user_id)
     {        
         $local_user = User::where('sso_user_id', $sso_user_id)->first();
-        if (!empty($local_user))
+        if (self::set_local_user($sso_user_id))
         {
             self::set_cookie_session($sso_user_id);
+            return true;
         }
-        else
-        {
-            if (self::create_local_user($sso_user_id))
-            {
-                self::set_cookie_session($sso_user_id);
-                return true;
-            }
-        }
+        return false;
     }    
     
-    private static function create_local_user($sso_user_id)
+    private static function set_local_user($sso_user_id)
     {
         $api_user = ApiAuth::accounts_get($sso_user_id)['data'];                
-        $new_local_user = [
+        $local_user = [
             'sso_user_id'=>$api_user->id,
-            'username'=>$api_user->username,            
-            'user_type' =>6,
+            'username'=>$api_user->username,
             'email'=>$api_user->email,
             'first_name'=>$api_user->firstName,
             'last_name'=>$api_user->lastName,
             'middle_name'=>$api_user->middleName,
             'country_id'=>804,
-            ];                    
-        try{
-            $user = User::create($new_local_user);
+            ];        
+        $user = User::firstOrNew(['sso_user_id'=>$sso_user_id]);
+        $user->fill($local_user);
+        if (!$user->exists)
+        {
+            $user->save();
             $user->attachRole(6);            
-            self::set_cookie_session($sso_user_id);
-            return true;            
+            return true;
         }
-            catch (\Exception $ex){
-            return false;                    
+        else
+        {
+            $user->save();
+            return true;
         }
+        return false;
     }
     
     private static function get_domain()

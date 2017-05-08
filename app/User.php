@@ -117,7 +117,7 @@ class User extends Authenticatable
                 if ($api_user['success'])
                 {
                     unset($model->password_api);
-                    $model->sso_user_id = $api_user['data'];
+                    $model->sso_user_id = $api_user['data'];                    
                     return true;
                 }
                 else
