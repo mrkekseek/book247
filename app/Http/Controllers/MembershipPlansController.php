@@ -20,6 +20,9 @@ use App\ShopLocations;
 use App\CashTerminal;
 use Illuminate\Support\Facades\Config;
 
+/*
+ * This controller is linked to the Membership Plans and the management of the membership plans
+ */
 class MembershipPlansController extends Controller
 {
     /**

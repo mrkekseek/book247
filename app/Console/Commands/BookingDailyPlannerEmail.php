@@ -28,7 +28,7 @@ class BookingDailyPlannerEmail extends Command
      *
      * @var string
      */
-    protected $description = 'This will check each active/suspended membership for pending issues and will mark them as active + will create them';
+    protected $description = 'This task creates the booking list for courts and send it to admins and employees';
 
     /**
      * Create a new command instance.

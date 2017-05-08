@@ -17,6 +17,9 @@ use App\Http\Requests;
 use Validator;
 use Regulus\ActivityLog\Models\Activity;
 
+/*
+ * This controller is linked to the User Membership Plan assigned to him. The actions here are linked to an active membership plan assigned to a user or a plan that will be assigned
+ */
 class MembershipController extends Controller
 {
     public function assign_membership_to_member(Request $request){
@@ -382,7 +385,7 @@ class MembershipController extends Controller
             }
 
             $lastInvoice = UserMembershipInvoicePlanning::where('user_membership_id','=',$membershipPlan->id)->where('status','=','pending')->orderBy('created_at','DESC')
-                ->get()->first()->update(['status'=>'last']);
+                ->first()->update(['status'=>'last']);
 
             return ['success' => true, 'message' => 'Invoices updated'];
         }

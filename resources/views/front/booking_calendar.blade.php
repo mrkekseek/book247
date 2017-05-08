@@ -41,7 +41,7 @@
                     <div class="row">
                         <div class="col-md-12">
                             <!-- BEGIN SAMPLE TABLE PORTLET-->
-                            <div class="portlet box green hidden-xs">
+                            <div class="portlet box white hidden-xs">
                                 <div class="portlet-title">
                                     <div class="caption">
                                         <div class="form-inline" style="margin-bottom:0px;">
@@ -69,10 +69,10 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="tools ">
-                                        <a href="{{ route('front_calendar_booking_all', ['day'=>$header_vals['prev_date'],'location'=>$header_vals['selected_location'],'activity'=>$header_vals['selected_activity']]) }}" class="bs-glyphicons font-white" style="margin-bottom:0px;"> <span class="glyphicon glyphicon-chevron-left"> </span> Prev </a>
-                                        <a href="javascript:;" class="bs-glyphicons font-white" style="margin-bottom:0px;"> <span class="glyphicon glyphicon-repeat"> </span> Reload </a>
-                                        <a href="{{ route('front_calendar_booking_all', ['day'=>$header_vals['next_date'],'location'=>$header_vals['selected_location'],'activity'=>$header_vals['selected_activity']]) }}" class="bs-glyphicons font-white" style="margin-bottom:0px;"> Next <span class="glyphicon glyphicon-chevron-right"> </span> </a>
+                                    <div class="tools " style="padding-top:23px;">
+                                        <a href="{{ route('front_calendar_booking_all', ['day'=>$header_vals['prev_date'],'location'=>$header_vals['selected_location'],'activity'=>$header_vals['selected_activity']]) }}" class="bs-glyphicons font-blue-dark" style="margin-bottom:0px;"> <span class="glyphicon glyphicon-chevron-left"> </span> Prev </a>
+                                        <a href="javascript:;" class="bs-glyphicons font-blue-dark" style="margin-bottom:0px;"> <span class="glyphicon glyphicon-repeat"> </span> Reload </a>
+                                        <a href="{{ route('front_calendar_booking_all', ['day'=>$header_vals['next_date'],'location'=>$header_vals['selected_location'],'activity'=>$header_vals['selected_activity']]) }}" class="bs-glyphicons font-blue-dark" style="margin-bottom:0px;"> Next <span class="glyphicon glyphicon-chevron-right"> </span> </a>
                                     </div>
                                 </div>
                                 <div class="portlet-body flip-scroll">

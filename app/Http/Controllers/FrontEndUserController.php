@@ -14,6 +14,7 @@ use App\UserFriends;
 use App\UserMembership;
 use App\UserMembershipInvoicePlanning;
 use App\UserSettings;
+use App\UserStoreCredits;
 use Illuminate\Auth\Passwords\PasswordBroker;
 use Illuminate\Http\Request;
 
@@ -750,6 +751,14 @@ class FrontEndUserController extends Controller
             }
         }
 
+        $storeCredit = UserStoreCredits::where('','=','')->orderBy('','DESC')->get();
+        if($storeCredit){
+
+            foreach($storeCredit as $single){
+
+            }
+        }
+
         $breadcrumbs = [
             'Home'              => route('admin'),
             'Administration'    => route('admin'),
@@ -1339,7 +1348,8 @@ class FrontEndUserController extends Controller
                     case 'old' :
                         $colorStatus = 'label-info';
                         break;
-                    case 'canceled' :
+                    case 'cancelled' :
+                    default:
                         $colorStatus = 'label-default';
                         break;
                 }
@@ -2350,7 +2360,8 @@ class FrontEndUserController extends Controller
                 ];
             }
             else{
-                $friend_approval_status = $newFriend->get_general_setting('auto_approve_friends')=='0'?'pending':'active';
+                $friend_approval_status = $newFriend->get_general_setting('auto_approve_friends')==='0'?'pending':'active';
+
                 $friend_fill = ['user_id'=>$user_id, 'friend_id'=>$friends->user_id, 'status'=>$friend_approval_status];
                 $validator = Validator::make($friend_fill, UserFriends::rules('POST'), UserFriends::$message, UserFriends::$attributeNames);
 
@@ -4476,4 +4487,45 @@ class FrontEndUserController extends Controller
             'in_sidebar'    => $sidebar_link,
         ]);*/
     }
+
+    // Start - Store credit add - backend add store credit to member
+    public function add_store_credit(Request $request){
+        // added from the backed
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
+            return [
+                'success' => false,
+                'title'   => 'You need to be logged in',
+                'errors'  => 'You need to be logged in as an employee in order to use this function'];
+        }
+
+        $vars = $request->only('member_id', 'amount', 'is_bonus', 'issue_invoice');
+        $member = User::where('id','=',$vars['member_id'])->first();
+        if (!$member){
+            // member not found for store credit assignment
+            return [
+                'success' => false,
+                'title'   => 'Could not add credit',
+                'errors'  => 'The member you are trying to add the store credit does not exist or something went wrong'];
+        }
+
+        $store_credit_fillable = [
+            'member_id'     => $member->id,
+            'back_user_id'  => $user->id,
+            'title'         => 'Store Credit',
+            'value'         => intval($vars['amount']),
+            'total_amount'  => intval($vars['amount'])+$member->get_available_store_credit(),
+            //'invoice_id'    => -1,
+            'expiration_date'   => 0,
+            'status'        => 'active',
+        ];
+
+        if(isset($vars['issue_invoice'])){
+            return $member->buy_store_credit($store_credit_fillable);
+        }
+        else{
+            return $member->add_store_credit($store_credit_fillable);
+        }
+    }
+    // Stop - Store credit add - backend add store credit to member
 }
