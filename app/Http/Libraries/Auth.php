@@ -6,6 +6,7 @@ use App\Http\Libraries\ApiAuth;
 use App\User;
 use Illuminate\Support\Facades\Session;
 use \Illuminate\Support\Facades\Cookie;
+use Illuminate\Support\Facades\Auth as AuthLocal; 
 
 class Auth
 {
@@ -44,6 +45,21 @@ class Auth
 
     public static function attempt($data = [])
     {   
+        if (AuthLocal::once(['email' => $data['email'], 'password' => $data['password'], 'sso_user_id' => 0]))
+        {            
+            $local_id = AuthLocal::user()->id;            
+            $user = User::find($local_id)->toArray();            
+            $new_sso_id = self::create_api_user($user, $data['password']);                                    
+            if ($new_sso_id)
+            {
+                $update_user = User::find($local_id);
+                $update_user->update_from_api = true;
+                $update_user->sso_user_id = $new_sso_id;
+                $update_user->save();
+                self::set_cookie_session($new_sso_id);
+                return true;
+            }            
+        }
         if (ApiAuth::autorize($data)['success'])
         {  
             $sso_user = ApiAuth::accounts_get_by_username($data['email']);            
@@ -135,6 +151,31 @@ class Auth
             return true;
         }
         return false;
+    }
+    
+    private static function create_api_user($user, $password)
+    {   
+        $user['password_api'] = $password;                
+        if (!self::check_exist_api_user($user['username']))
+        {            
+            $api_user = ApiAuth::account_create($user);                    
+            if ($api_user['success'])
+            {
+                return $api_user['data'];                
+            }
+            else
+            {
+                self::$error = $api_user['message'];
+                return false;
+            }         
+        }        
+        return false;
+    }
+    
+    private static function check_exist_api_user($username)
+    {        
+        $exist = ApiAuth::checkExist($username);
+        return $exist['success'];
     }
     
     private static function get_domain()

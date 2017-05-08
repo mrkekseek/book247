@@ -5,11 +5,11 @@ namespace App\Http\Libraries;
 class ApiAuth
 {
     const APIKEY = 'apiKey-@f4g8-FH2-8809x-dj22aSwrL=cP24Zd234-TuJh87EqChVBGfs=SG564SD-fgAG47-747AhAP=U456=O97=Y=O6A=OC7b5645MNB-V4OO7Z-qw-OARSOc-SD456OFoCE-=64RW67=QOVq=';
-    const APIURL = 'http://rankedinbookingsso.azurewebsites.net/';
+    const APIURL = 'http://rankedinbookingsso-test.azurewebsites.net/';
     
     static $error  = '';
 
-    public static function accounts_get($id = 7)
+    public static function accounts_get($id = 0)
     { 
         $response = self::send_curl($id, 'api/Accounts/', 'GET');
         if ($response)
@@ -175,7 +175,7 @@ class ApiAuth
             {
                 $sortingArray[$key] = $apiData[$key];
             }
-        }                
+        }        
         $response = self::send_curl($sortingArray,'api/Accounts', 'POST');
         if ($response)
         {
