@@ -6,5 +6,5 @@ Homestead.json
 storage/app/members/
 .idea/
 sh.exe.stackdump
-#config/constants.php
+config/constants.php
 /nbproject/private/
