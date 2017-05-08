@@ -118,7 +118,7 @@ class User extends Authenticatable
                 if ($api_user['success'])
                 {
                     unset($model->password_api);
-                    $model->sso_user_id = $api_user['data'];
+                    $model->sso_user_id = $api_user['data'];                    
                     return true;
                 }
                 else
@@ -134,7 +134,12 @@ class User extends Authenticatable
         });
         static::updating(function($model)
         {
-            $attributes = $model->attributes;            
+            $attributes = $model->attributes;                 
+            if (isset($attributes['update_from_api']))
+            {
+                unset($model->update_from_api);
+                return true;
+            }
             $api_user = \App\Http\Libraries\ApiAuth::accounts_update($attributes);                        
             \App\Http\Libraries\Auth::$error = !empty($api_user['message']) ? $api_user['message'] : '';
             unset($model->birthday);
