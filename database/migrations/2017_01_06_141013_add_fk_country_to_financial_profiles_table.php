@@ -14,7 +14,7 @@ class AddFkCountryToFinancialProfilesTable extends Migration
     {
         Schema::table('financial_profiles', function (Blueprint $table) {
             DB::statement('SET FOREIGN_KEY_CHECKS = 0');
-            $table->foreign('country_id')->references('id')->on('countries');
+            //$table->foreign('country_id')->references('id')->on('countries');
             DB::statement('SET FOREIGN_KEY_CHECKS = 1');
         });
     }
