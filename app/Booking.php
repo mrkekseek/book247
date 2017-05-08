@@ -425,7 +425,7 @@ class Booking extends Model
                 }
 
                 $creditInvoice = new Invoice();
-                $creditInvoice->add_credit_invoice($invoiceItem);
+                $creditInvoice->add_credit_from_invoice_item($invoiceItem);
 
                 // delete bookingInvoiceItem then check the bookingInvoice if it has more items; if no items found, leave the bookingInvoice empty
                 $bookingInvoiceItem->delete();

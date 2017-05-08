@@ -50,7 +50,7 @@
                                     <div class="caption caption-md">
                                         <i class="icon-bar-chart theme-font hide"></i>
                                         <span class="caption-subject font-blue-madison bold uppercase">Friends & Own Activity</span>
-                                        <span class="caption-helper">3 new</span>
+                                        <!--<span class="caption-helper">3 new</span>-->
                                     </div>
                                 </div>
                                 <div class="portlet-body">
@@ -61,7 +61,7 @@
                                                     <div class="item">
                                                         <div class="item-head">
                                                             <div class="item-details">
-                                                                <img class="item-pic" src="../assets/pages/media/users/avatar4.jpg">
+                                                                <img class="item-pic" src="{!! $knownBooking['avatar'] !!}">
                                                                 <a href="" class="item-name primary-link">{{ $knownBooking['breated_by'] }}</a>
                                                                 <span class="item-label">{{ $knownBooking['passed_time_since_creation'] }}</span>
                                                             </div>
@@ -417,7 +417,7 @@
                                         <div class="form-body" style="padding-top:0px; padding-bottom:0px;">
                                             <div class="form-group note note-info margin-bottom-10">
                                                 <div class="input-group">
-                                                    <input type="text" placeholder="Phone number..." name="friend_phone_no" class="form-control">
+                                                    <input type="text" placeholder="Phone number: ex. 123456789" name="friend_phone_no" class="form-control">
                                                     <span class="input-group-btn">
                                                         <button type="submit" class="btn red">Get Friend!</button>
                                                     </span>

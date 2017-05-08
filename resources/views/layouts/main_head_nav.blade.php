@@ -377,13 +377,13 @@
                         <li class=" {{$in_sidebar=="front-homepage"?"active":""}}">
                             <a href="{{ route('homepage') }}" class="nav-link  ">
                                 <i class="icon-bar-chart"></i> Booking Homepage
-                                <span class="badge badge-success">1</span>
+                                <!--<span class="badge badge-success">1</span>-->
                             </a>
                         </li>
                         <li class=" {{$in_sidebar=="front-calendar_view"?"active":""}}">
                             <a href="{{ route('front_calendar_booking',['day'=>\Carbon\Carbon::now()->format('d-m-Y')]) }}" class="nav-link  ">
                                 <i class="icon-bar-chart"></i> Booking Calendar
-                                <span class="badge badge-success">1</span>
+                                <!--<span class="badge badge-success">1</span>-->
                             </a>
                         </li>
                     </ul>
@@ -475,7 +475,7 @@
                 <li class="menu-dropdown mega-menu-dropdown {{$in_sidebar=="front-contact_or_locations"?"active":""}}">
                     <a href="{{ route('front/contact_locations') }}">
                         <i class="icon-bar-chart"></i> Contact/Locations
-                        <span class="badge badge-success">1 New</span>
+                        <!--<span class="badge badge-success">1 New</span>-->
                     </a>
                 </li>
                 @endif

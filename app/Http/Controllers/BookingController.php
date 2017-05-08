@@ -6,6 +6,7 @@ use App\Booking;
 use App\BookingFinancialTransaction;
 use App\BookingInvoice;
 use App\BookingInvoiceItem;
+use App\GeneralNote;
 use App\Invoice;
 use App\InvoiceItem;
 use App\MembershipPlan;
@@ -1405,6 +1406,7 @@ class BookingController extends Controller
         else{
             $default_location = $selected_location;
         }
+
         $location_found = false;
         $all_locations = ShopLocations::select('id','name')->where('visibility','=','public')->orderBy('name','ASC')->get();
         foreach ($all_locations as $location){
@@ -1413,6 +1415,7 @@ class BookingController extends Controller
                 break;
             }
         }
+
         if ($location_found==false){
             // redirect not found
             $default_location = 4;
@@ -1504,7 +1507,7 @@ class BookingController extends Controller
         }
 
         $locationOpeningHours = $location->get_opening_hours($date_selected);
-        //xdebug_var_dump($locationOpeningHours); exit;
+
         if (isset($locationOpeningHours['open_at']) && isset($locationOpeningHours['close_at'])){
             $open_at  = $locationOpeningHours['open_at'];
             $close_at = $locationOpeningHours['close_at'];
@@ -1570,7 +1573,20 @@ class BookingController extends Controller
                 $i++;
             }
         }
-//xdebug_var_dump($hours_interval); exit;
+
+        foreach($location_bookings['hours'] as $key1=>$singleHour){
+            if (sizeof($singleHour)==0){
+                continue;
+            }
+
+            foreach($singleHour as $key2=>$singleBook){
+                $hasNote = GeneralNote::where('note_type','=','general note')->where('for_user_id','=',$singleBook['player_id'])->first();
+                if($hasNote){
+                    $location_bookings['hours'][$key1][$key2]['alertOn'] = 'red';
+                }
+            }
+        }
+//xdebug_var_dump($location_bookings['hours']);
         $buttons_color = [
             'is_show'           => 'bg-green-jungle bg-font-green-jungle',
             'is_no_show'        => 'bg-red-thunderbird bg-font-red-thunderbird',
@@ -1720,7 +1736,7 @@ class BookingController extends Controller
             $begin->addHours($startTime->format('H'));
             $begin->addMinutes($startTime->format('i'));
         }
-//xdebug_var_dump($begin);
+
         $end = Carbon::instance($dateSelected);
         $end->addHours($endTime->format('H'));
         $end->addMinutes($endTime->format('i'));
@@ -1730,7 +1746,7 @@ class BookingController extends Controller
         else{
             // we leave it like this
         }
-//xdebug_var_dump($end);
+
         $interval   = DateInterval::createFromDateString($time_period.' minutes');
         $period     = new DatePeriod($begin, $interval, $end);
         $hours      = [];
@@ -1747,7 +1763,7 @@ class BookingController extends Controller
                 $hours[$key] = ['color_stripe' => ""];
             }
         }
-//xdebug_var_dump($hours); exit;
+
         return $hours;
     }
 
@@ -2045,12 +2061,13 @@ class BookingController extends Controller
                         $player_link = route('admin/back_users/view_user/',['id'=>$player->id]);
                     }
 
-                    $formatted_booking['payment_type'] = $booking->payment_type;
+                    $formatted_booking['payment_type']  = $booking->payment_type;
                     $formatted_booking['payment_amount'] = $booking->payment_amount;
-                    $formatted_booking['invoice'] = $booking->invoice_id;
-                    $formatted_booking['player_name'] = $player->first_name.' '.$player->middle_name.' '.$player->last_name;
-                    $formatted_booking['player_link'] = $player_link;
-                    $formatted_booking['id'] = $booking->id;
+                    $formatted_booking['invoice']       = $booking->invoice_id;
+                    $formatted_booking['player_name']   = $player->first_name.' '.$player->middle_name.' '.$player->last_name;
+                    $formatted_booking['player_link']   = $player_link;
+                    $formatted_booking['player_id']     = $player->id;
+                    $formatted_booking['id']            = $booking->id;
 
                     if ($formatted_booking['payment_type'] == 'membership' && $booking->status!='pending'){
                         $formatted_booking['color_stripe'] = 'bg-green-haze bg-font-green-haze';

@@ -1022,6 +1022,11 @@ Route::group(['prefix'=>'ajax', 'middleware' => 'web'], function(){
         'as'    => 'ajax/get_all_list_members',
         'uses'  => 'FrontEndUserController@get_front_members_ajax_call'
     ]);
+
+    Route::post('buy_store_credit', [
+        'as'    => 'ajax/buy_store_credit',
+        'uses'  => 'FrontEndUserController@add_store_credit'
+    ]);
 });
 
 Route::group(['prefix' => 'optimize', 'middleware' => 'web'], function(){
