@@ -18,10 +18,9 @@ class Auth
     public static function user()
     {   
         self::set_session();
-        $session_sso = Session::get('sso_user_id');        
+        $session_sso = Session::get('sso_user_id');               
         if (!empty($session_sso))
         {   
-            self::set_local_user($session_sso);
             $user_locale = User::where('sso_user_id',$session_sso)->first();            
             if ($user_locale)
             {
@@ -84,6 +83,7 @@ class Auth
             if ($user['success'])
             {
                 Session::put('sso_user_id',$user['data']->id);
+                self::set_local_user($user['data']->id);
             }
         }
         elseif (empty($cookie_sso) && !empty($session_sso))
@@ -113,21 +113,24 @@ class Auth
             'first_name'=>$api_user->firstName,
             'last_name'=>$api_user->lastName,
             'middle_name'=>$api_user->middleName,
-            'country_id'=>804,
+            'country_id'=>804,            
             ];        
-        $user = User::firstOrNew(['sso_user_id'=>$sso_user_id]);
-        $user->fill($local_user);
+        $user = User::firstOrNew(['sso_user_id'=>$sso_user_id]);        
+        $user->fill($local_user);        
         if (!$user->exists)
         {
-            $user->save();
+            $user->save();            
             $user->attachRole(6);            
             self::set_cookie_session($sso_user_id);
             return true;
         }
         else
-        {
-            dd($user);
-            $user->save();
+        {   
+            if ($user->isDirty())
+            {
+                $user->update_from_api = true;
+                $user->save();                                            
+            } 
             self::set_cookie_session($sso_user_id);
             return true;
         }
