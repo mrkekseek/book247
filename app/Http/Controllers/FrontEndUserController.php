@@ -2565,8 +2565,7 @@ class FrontEndUserController extends Controller
         }
 
         if (!isset($vars['country_id'])){
-            $vars['country_id'] = Config::get('constants.globalWebsite.defaultCountryId');
-            $vars['country_id'] = 804;
+            $vars['country_id'] = Config::get('constants.globalWebsite.defaultCountryId');            
         }
 
         if (!isset($vars['dob']) || $vars['dob']==''){

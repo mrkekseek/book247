@@ -4,7 +4,6 @@ namespace App\Http\Libraries;
 
 use App\Http\Libraries\ApiAuth;
 use App\User;
-use Validator;
 use Illuminate\Support\Facades\Session;
 use \Illuminate\Support\Facades\Cookie;
 
@@ -18,12 +17,6 @@ class Auth
     }
     public static function user()
     {   
-        //dd($_SERVER);        
-        //$domain = parse_url($_SERVER['HTTP_HOST']);
-        //dd(parse_url($domain));
-        //dd($domain);
-        
-        
         self::set_session();
         $session_sso = Session::get('sso_user_id');        
         if (!empty($session_sso))
@@ -39,15 +32,13 @@ class Auth
     }
 
     public static function check()
-    {
-        //self::set_session();
+    {        
         $user_session = Session::get('sso_user_id');
         return (!empty($user_session));
     }
     
     public static function guest()
-    {
-        //self::set_session();
+    {        
         $user_session = Session::get('sso_user_id');
         return (!empty($user_session));
     }
@@ -70,24 +61,22 @@ class Auth
     
     public static function logout()
     {        
+        $domain = self::get_domain();        
         Session::put('sso_user_id','');
-        Cookie::queue(Cookie::forget('sso_user_id', '/', '.'.$_SERVER['HTTP_HOST'])); 
+        Cookie::queue(Cookie::forget('sso_user_id', '/', $domain)); 
     }
     
     private static function set_cookie_session($sso_user_id)
-    {
-        
+    {   
+        $domain = self::get_domain();        
         Session::put('sso_user_id',$sso_user_id);            
-        Cookie::queue(Cookie::forever('sso_user_id', $sso_user_id, '/', '.'.$_SERVER['HTTP_HOST']));            
+        Cookie::queue(Cookie::forever('sso_user_id', $sso_user_id, '/', $domain));            
     }
 
     private static function set_session()
     {
         $cookie_sso = Cookie::get('sso_user_id');                
-        $session_sso = Session::get('sso_user_id');
-        
-        //dd($cookie_sso);
-        //dd($session_sso);
+        $session_sso = Session::get('sso_user_id');        
         if (!empty($cookie_sso) && empty($session_sso))
         {
             $sso_user_id = $cookie_sso;
@@ -97,7 +86,7 @@ class Auth
                 Session::put('sso_user_id',$user['data']->id);
             }
         }
-        elseif (empty($cookie_sso) && empty($session_sso))
+        elseif (empty($cookie_sso) && !empty($session_sso))
         {
             Session::put('sso_user_id','');
         }
@@ -142,6 +131,17 @@ class Auth
             catch (\Exception $ex){
             return false;                    
         }
+    }
+    
+    private static function get_domain()
+    {   
+        $url = $_SERVER['HTTP_REFERER'];        
+        $pieces = parse_url($url);
+        $domain = isset($pieces['host']) ? $pieces['host'] : '';
+        if (preg_match('/(?P<domain>[a-z0-9][a-z0-9\-]{1,63}\.[a-z\.]{2,6})$/i', $domain, $regs)) {
+          return '.'.$regs['domain'];
+        }
+        return false;
     }
 
 }
