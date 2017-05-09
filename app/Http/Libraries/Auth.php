@@ -4,6 +4,7 @@ namespace App\Http\Libraries;
 
 use App\Http\Libraries\ApiAuth;
 use App\User;
+use App\PersonalDetail;
 use Illuminate\Support\Facades\Session;
 use \Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Auth as AuthLocal; 
@@ -128,15 +129,21 @@ class Auth
             'email'=>$api_user->email,
             'first_name'=>$api_user->firstName,
             'last_name'=>$api_user->lastName,
-            'middle_name'=>$api_user->middleName,
-            'country_id'=>804,            
-            ];        
+            'middle_name'=>$api_user->middleName,            
+            'country_id'=> config('constants.globalWebsite.defaultCountryId'),
+            ];
+        switch ($api_user->gender)
+        {
+            case (1): $local_user['gender'] = 'M'; break;
+            case (2): $local_user['gender'] = 'F'; break;
+        }
         $user = User::firstOrNew(['sso_user_id'=>$sso_user_id]);        
         $user->fill($local_user);        
         if (!$user->exists)
         {
-            $user->save();            
-            $user->attachRole(6);            
+            $user->save();
+            $user->attachRole(6);
+            self::set_personal_details($user->id, $api_user);
             self::set_cookie_session($sso_user_id);
             return true;
         }
@@ -146,6 +153,7 @@ class Auth
             {
                 $user->update_from_api = true;
                 $user->save();                                            
+                self::set_personal_details($user->id, $api_user);
             } 
             self::set_cookie_session($sso_user_id);
             return true;
@@ -153,9 +161,20 @@ class Auth
         return false;
     }
     
-    private static function create_api_user($user, $password)
+    private static function set_personal_details($local_user_id, $api_user)
+    {
+        $personalDetail = PersonalDetail::firstOrNew(['user_id'=>$local_user_id]);
+        $personalDetail->personal_email = $api_user->email;
+        $personalDetail->date_of_birth = date('Y-m-d', strtotime($api_user->birthday));
+        $personalDetail->save();
+    }
+
+    public static function create_api_user($user, $password = FALSE)
     {   
-        $user['password_api'] = $password;                
+        if ($password)
+        {
+            $user['password_api'] = $password;
+        }
         if (!self::check_exist_api_user($user['username']))
         {            
             $api_user = ApiAuth::account_create($user);                    
@@ -168,8 +187,35 @@ class Auth
                 self::$error = $api_user['message'];
                 return false;
             }         
+        }
+        else
+        {
+            self::$error = 'Current user already registered';
+            return false;
+        }
+    }
+    
+    public static function update_api_user($user)
+    {
+        $apiData = $user;
+        $apiData['id'] = $apiData['sso_user_id'];
+        unset($apiData['sso_user_id']);
+        switch ($apiData['gender'])
+        {
+            case ('M'): $apiData['gender'] = 1; break;
+            case ('F'): $apiData['gender'] = 2; break;
+        }
+        $apiData['birthday'] = date('Y-m-d',strtotime($apiData['birthday'])).'T00:00:00';
+        $api_user = ApiAuth::accounts_update($apiData);
+        if ($api_user['success'])
+        {
+            return true;
+        }
+        else
+        {
+            self::$error = $api_user['message'];
+            return false;            
         }        
-        return false;
     }
     
     private static function check_exist_api_user($username)
