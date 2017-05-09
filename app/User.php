@@ -111,26 +111,14 @@ class User extends Authenticatable
             {
                 return true;
             }
-            $exist = \App\Http\Libraries\ApiAuth::checkExist($attributes['email']);            
-            if (!$exist['success'])
-            {
-                $api_user = \App\Http\Libraries\ApiAuth::account_create($attributes);
-                if ($api_user['success'])
-                {
-                    unset($model->password_api);
-                    $model->sso_user_id = $api_user['data'];                    
-                    return true;
-                }
-                else
-                {
-                    \App\Http\Libraries\Auth::$error = $api_user['message'];
-                }
+            $api_user = \App\Http\Libraries\Auth::create_api_user($attributes);
+            if ($api_user)
+            {                
+                unset($model->password_api);
+                $model->sso_user_id = $api_user;                    
+                return true;
             }
-            else
-            {
-                \App\Http\Libraries\Auth::$error = 'User with current email allready register';
-            }            
-            return false;
+            return false;            
         });
         static::updating(function($model)
         {
@@ -139,11 +127,14 @@ class User extends Authenticatable
             {
                 unset($model->update_from_api);
                 return true;
+            }            
+            $api_user = \App\Http\Libraries\Auth::update_api_user($attributes);
+            if ($api_user)
+            {
+                unset($model->birthday);
+                return $api_user;
             }
-            $api_user = \App\Http\Libraries\ApiAuth::accounts_update($attributes);                        
-            \App\Http\Libraries\Auth::$error = !empty($api_user['message']) ? $api_user['message'] : '';
-            unset($model->birthday);
-            return $api_user['success'];
+            return false;            
         });
     }
 

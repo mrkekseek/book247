@@ -67,15 +67,12 @@ class ApiAuth
         {
             switch ($key)
             {
-                case 'sso_user_id':
+                case 'id':
                     $apiData['Id'] = $value;
                     break;
                 case 'username':
                     $apiData['Username'] = $value;
-                    break;
-                case 'password_api':
-                    $apiData['Password'] = $value;
-                    break;
+                    break;                
                 case 'email':
                     $apiData['Email'] = $value;
                     break;
@@ -88,15 +85,11 @@ class ApiAuth
                 case 'last_name':
                     $apiData['LastName'] = $value;
                     break;                
-                case  ($key == 'gender' && $value == 'F'):
-                    $apiData['Gender'] = 2;
-                    break;
-                case  ($key == 'gender' && $value == 'M'):                    
-                    $apiData['Gender'] = 1;
-                    break;
-                case 'birthday':
-                    //dd();
-                    $apiData['Birthday'] = date('Y-m-d',strtotime($value)).'T00:00:00';
+                case  ('gender'):
+                    $apiData['Gender'] = $value;
+                    break;                
+                case 'birthday':                    
+                    $apiData['Birthday'] = $value;
                     break;
             }
         }        
@@ -137,8 +130,8 @@ class ApiAuth
             'ResetTokenDate'=> null
         ];
         $apiData = [
-            'Id'=> 0,
-            'Birthday'=> '1986-09-03T01:01:01.337',
+            'Id'=> 0,            
+            'Birthday'=> date('Y-m-d').'T00:00:00',
             'Gender'=> 1,            
             'ResetToken'=> '',
             'ResetTokenDate'=> '',
