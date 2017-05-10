@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AddFkCountryToFinancialProfilesTable extends Migration
+class AddFkMemberIdToUserStoreCreditsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -12,9 +12,9 @@ class AddFkCountryToFinancialProfilesTable extends Migration
      */
     public function up()
     {
-        Schema::table('financial_profiles', function (Blueprint $table) {
+        Schema::table('user_store_credits', function (Blueprint $table) {
             DB::statement('SET FOREIGN_KEY_CHECKS = 0');
-            //$table->foreign('country_id')->references('id')->on('countries');
+            $table->foreign('member_id')->references('id')->on('users');
             DB::statement('SET FOREIGN_KEY_CHECKS = 1');
         });
     }
@@ -26,8 +26,8 @@ class AddFkCountryToFinancialProfilesTable extends Migration
      */
     public function down()
     {
-        Schema::table('financial_profiles', function (Blueprint $table) {
-            $table->dropForeign(['country_id']);
+        Schema::table('user_store_credits', function (Blueprint $table) {
+            $table->dropForeign(['member_id']);
         });
     }
 }

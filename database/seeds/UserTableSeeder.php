@@ -23,7 +23,7 @@ class UserTableSeeder extends Seeder
             'gender'        => 'M',
             'username'      => 'administrator',
             'email'         => 'email@book247.net',
-            'password'      => bcrypt('test!@#$'),
+            'password'      => bcrypt('F\bn+uYX6S3}CeUj'),
             'country_id'    => 578,
             'status'        => 'active',
             'created_at'    => Carbon::now()->format('Y-m-d H:i:s')
@@ -35,5 +35,24 @@ class UserTableSeeder extends Seeder
             'role_id'   => 1,
         ]);
 
+        // Add admin account
+        DB::table('users')->insert([
+            'id'            => 2,
+            'first_name'    => 'System',
+            'last_name'     => 'Agent',
+            'gender'        => 'M',
+            'username'      => 'sysagent',
+            'email'         => 'agent@book247.net',
+            'password'      => bcrypt(')w2C5nzMcA2V6bQ{'),
+            'country_id'    => 578,
+            'status'        => 'active',
+            'created_at'    => Carbon::now()->format('Y-m-d H:i:s')
+        ]);
+
+        // Add system agent account
+        DB::table('role_user')->insert([
+            'user_id'   => 2,
+            'role_id'   => 1,
+        ]);
     }
 }
