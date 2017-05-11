@@ -92,7 +92,11 @@ class Auth
     private static function set_session()
     {
         $cookie_sso = Cookie::get('sso_user_id');                
-        $session_sso = Session::get('sso_user_id');        
+        $session_sso = Session::get('sso_user_id');                
+        if (!empty($cookie_sso) && !empty($session_sso) && $session_sso !== $cookie_sso)
+        {            
+            $session_sso = false;
+        }
         if (!empty($cookie_sso) && empty($session_sso))
         {
             $sso_user_id = $cookie_sso;
