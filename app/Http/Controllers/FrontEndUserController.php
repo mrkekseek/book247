@@ -1514,7 +1514,7 @@ class FrontEndUserController extends Controller
             $user->gender      = $userVars["gender"];
             $user->email       = $userVars["email"];
             $user->birthday    = $vars['date_of_birth'];
-            $user->username    = $userVars["email"];            
+            //$user->username    = $userVars["email"];            
             if (!$user->save() && !empty(Auth::$error))            
             {                
                 return array(
