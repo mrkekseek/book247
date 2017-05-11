@@ -198,7 +198,7 @@ class Auth
     public static function update_api_user($user)
     {
         $apiData = $user;
-        $apiData['id'] = $apiData['sso_user_id'];
+        $apiData['id'] = (int) $apiData['sso_user_id'];
         unset($apiData['sso_user_id']);
         switch ($apiData['gender'])
         {
