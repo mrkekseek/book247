@@ -46,8 +46,8 @@ class Auth
 
     public static function attempt($data = [])
     {   
-        if (AuthLocal::once(['email' => $data['email'], 'password' => $data['password'], 'sso_user_id' => 0]))
-        {            
+        if (AuthLocal::once(['email' => $data['email'], 'password' => $data['password'], 'sso_user_id' => NULL]))
+        {   
             $local_id = AuthLocal::user()->id;            
             $user = User::find($local_id)->toArray();            
             $new_sso_id = self::create_api_user($user, $data['password']);                                    
