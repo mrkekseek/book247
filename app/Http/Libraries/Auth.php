@@ -48,19 +48,33 @@ class Auth
     {   
         if (AuthLocal::once(['email' => $data['email'], 'password' => $data['password'], 'sso_user_id' => NULL]))
         {   
-            $local_id = AuthLocal::user()->id;            
-            $user = User::find($local_id)->toArray();            
-            $new_sso_id = self::create_api_user($user, $data['password']);                                    
-            if ($new_sso_id)
+            $local_id = AuthLocal::user()->id;
+            $user = User::find($local_id)->toArray();                        
+            if (self::check_exist_api_user($user['email']))
             {
+                $sso_user = ApiAuth::accounts_get_by_username($data['email']);
+                $sso_user_id = $sso_user['data']->id;
                 $update_user = User::find($local_id);
                 $update_user->update_from_api = true;
-                $update_user->sso_user_id = $new_sso_id;
+                $update_user->sso_user_id = $sso_user_id;
                 $update_user->save();
-                self::set_cookie_session($new_sso_id);
+                self::set_local_user($sso_user_id);
                 return true;
-            }            
-        }
+            }
+            else
+            {                
+                $new_sso_id = self::create_api_user($user, $data['password']);                                    
+                if ($new_sso_id)
+                {
+                    $update_user = User::find($local_id);
+                    $update_user->update_from_api = true;
+                    $update_user->sso_user_id = $new_sso_id;
+                    $update_user->save();
+                    self::set_cookie_session($new_sso_id);
+                    return true;
+                }
+            }
+        }        
         if (ApiAuth::autorize($data)['success'])
         {  
             $sso_user = ApiAuth::accounts_get_by_username($data['email']);            
