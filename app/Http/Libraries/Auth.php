@@ -46,10 +46,10 @@ class Auth
 
     public static function attempt($data = [])
     {   
-        if (AuthLocal::once(['email' => $data['email'], 'password' => $data['password'], 'sso_user_id' => NULL]))
+        if (AuthLocal::once(['username' => $data['email'], 'password' => $data['password'], 'sso_user_id' => NULL]))
         {   
             $local_id = AuthLocal::user()->id;
-            $user = User::find($local_id)->toArray();                      
+            $user = User::find($local_id)->toArray();                                  
             if (self::check_exist_api_user($user['username']))
             {   
                 $sso_user = ApiAuth::accounts_get_by_username($user['username']);
