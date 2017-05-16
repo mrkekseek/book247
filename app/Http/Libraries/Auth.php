@@ -20,7 +20,7 @@ class Auth
     public static function user()
     {   
         self::set_session();
-        $session_sso = Session::get('sso_user_id');               
+        $session_sso = Session::get('sso_user_id');                       
         if (!empty($session_sso))
         {   
             $user_locale = User::where('sso_user_id',$session_sso)->first();            
@@ -114,11 +114,21 @@ class Auth
         if (!empty($cookie_sso) && empty($session_sso))
         {
             $sso_user_id = $cookie_sso;
-            $user = ApiAuth::accounts_get($sso_user_id);
-            if ($user['success'])
+            $api_user = ApiAuth::accounts_get($sso_user_id);
+            if ($api_user['success'])
             {
-                Session::put('sso_user_id',$user['data']->id);
-                self::set_local_user($user['data']->id);
+                $exist = User::where([
+                    'username'=>$api_user['data']->username,
+                    'sso_user_id'=>NULL
+                ])->first();
+                if (!empty($exist))
+                {                    
+                    $exist->sso_user_id = $api_user['data']->id;
+                    $exist->update_from_api = TRUE;
+                    $exist->save();
+                }
+                Session::put('sso_user_id',$api_user['data']->id);
+                self::set_local_user($api_user['data']->id);
             }
         }
         elseif (empty($cookie_sso) && !empty($session_sso))
@@ -126,17 +136,6 @@ class Auth
             Session::put('sso_user_id','');
         }
     }
-    
-    private static function check_exist_local_user($sso_user_id)
-    {      
-        
-        if (self::set_local_user($sso_user_id))
-        {
-            self::set_cookie_session($sso_user_id);
-            return true;
-        }
-        return false;
-    }    
     
     private static function set_local_user($sso_user_id)
     {
@@ -244,7 +243,7 @@ class Auth
     
     private static function get_domain()
     {   
-        $url = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '';
+        $url = request()->server('HTTP_REFERER');
         $pieces = parse_url($url);
         $domain = isset($pieces['host']) ? $pieces['host'] : '';
         if (preg_match('/(?P<domain>[a-z0-9][a-z0-9\-]{1,63}\.[a-z\.]{2,6})$/i', $domain, $regs)) {
