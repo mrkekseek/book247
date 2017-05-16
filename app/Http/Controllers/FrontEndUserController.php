@@ -751,11 +751,15 @@ class FrontEndUserController extends Controller
             }
         }
 
-        $storeCredit = UserStoreCredits::where('','=','')->orderBy('','DESC')->get();
+        $storeCredit = UserStoreCredits::where('member_id','=',$member->id)->orderBy('created_at','DESC')->get();
         if($storeCredit){
-
+            $userNames = [];
             foreach($storeCredit as $single){
-
+                if (!isset($userNames[$single->back_user_id])){
+                    $theName = User::where('id','=',$single->back_user_id)->first();
+                    $userNames[$single->back_user_id] = $theName->first_name.' '.$theName->middle_name.' '.$theName->last_name;
+                }
+                $single->full_name = $userNames[$single->back_user_id];
             }
         }
 
@@ -788,7 +792,8 @@ class FrontEndUserController extends Controller
             'canFreeze'         => $canFreeze,
             'canUpdate'         => $canUpdate,
             'accessCardNo'      => @$accessCardNo,
-            'InvoicesActionsPlanned'=> $plannedInvoicesAndActions
+            'InvoicesActionsPlanned'=> $plannedInvoicesAndActions,
+            'storeCreditNotes'  => $storeCredit
         ]);
     }
 

@@ -805,7 +805,15 @@ class User extends Authenticatable
     }
 
     public function get_available_store_credit(){
-        return 0;
+        $this->calculate_available_store_credit();
+
+        $storeCredit = UserStoreCredits::where('member_id','=',$this->id)->orderBy('created_at','DESC')->first();
+        if ($storeCredit){
+            return $storeCredit->total_amount;
+        }
+        else{
+            return 0;
+        }
     }
 
     public function calculate_available_store_credit(){

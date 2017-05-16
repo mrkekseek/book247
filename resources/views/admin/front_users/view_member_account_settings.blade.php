@@ -181,10 +181,14 @@
                                                         <!-- BEGIN FORM-->
                                                         <form action="#" id="add_store_credit" class="form-horizontal">
                                                             <div class="form-body">
+                                                                <label class="control-label col-md-4 margin-bottom-10"> Available Store Credit </label>
+                                                                <div class="col-md-8 margin-bottom-10">
+                                                                    <a href="#" disabled role="button" class="btn yellow"> {!! sizeof($storeCreditNotes)>0?$storeCreditNotes[0]->total_amount:0 !!} credits</a>
+                                                                </div>
                                                                 <div class="form-group" style="margin-bottom:0px;">
-                                                                    <label class="control-label col-md-4"> Store Credit </label>
+                                                                    <label class="control-label col-md-4"> Add Store Credit </label>
                                                                     <div class="col-md-8">
-                                                                        <input class="form-control input-inline inline-block input-xlarge" name="store_credit_value" placeholder="insert credit amount here" value="" />
+                                                                        <input class="form-control input-inline inline-block input-xlarge" name="store_credit_value" placeholder="store credit amount" value="" />
                                                                         <button class="btn uppercase green-meadow inline-block">Add to account</button>
                                                                     </div>
                                                                 </div>
@@ -228,10 +232,15 @@
                                                                 @if (sizeof($storeCreditNotes)>0)
                                                                     @foreach($storeCreditNotes as $single)
                                                                     <tr>
-                                                                        <td></td>
-                                                                        <td></td>
-                                                                        <td></td>
-                                                                        <td></td>
+                                                                        <td>
+                                                                            <span class="item {!! $single->value<0?'font-red-flamingo':'font-green-jungle' !!}">
+                                                                                <span aria-hidden="true" class="icon-{!! $single->value<0?'logout':'login' !!}"></span>
+                                                                                {{ $single->created_at->format('d-m-Y') }} by {{ $single->full_name }}
+                                                                            </span>
+                                                                        </td>
+                                                                        <td class="{!! $single->value<0?'font-red-flamingo':'font-green-jungle' !!}">{{ $single->value }}</td>
+                                                                        <td class="font-blue-steel"> <strong>{{ $single->total_amount }}</strong> </td>
+                                                                        <td> <span class="label label-sm label-success"> {{ $single->status }} </span> &nbsp; <span class="label label-sm label-warning"> Expired </span></td>
                                                                     </tr>
                                                                     @endforeach
                                                                 @endif
@@ -1156,7 +1165,8 @@
                         store_credit_value: {
                             minlength: 1,
                             required: true,
-                            number:true
+                            number:true,
+                            min:1
                         },
                     },
 
@@ -1518,7 +1528,7 @@
                 success: function (data) {
                     if (data.success) {
                         $('#change_member_status').modal('hide');
-                        show_notification(data.title, data.message, 'lemon', 3500, 0);
+                        show_notification(data.title, data.message, 'lime', 3500, 0);
                         location.reload();
                     }
                     else{
