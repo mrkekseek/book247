@@ -240,7 +240,11 @@
                                                                         </td>
                                                                         <td class="{!! $single->value<0?'font-red-flamingo':'font-green-jungle' !!}">{{ $single->value }}</td>
                                                                         <td class="font-blue-steel"> <strong>{{ $single->total_amount }}</strong> </td>
-                                                                        <td> <span class="label label-sm label-success"> {{ $single->status }} </span> &nbsp; <span class="label label-sm label-warning"> Expired </span></td>
+                                                                        <td>
+                                                                            @if ($single->value>0)
+                                                                            <span class="label label-sm label-{{ $single->status=='active'?'success':'warning' }}"> {{ $single->status }} </span>
+                                                                            @endif
+                                                                        </td>
                                                                     </tr>
                                                                     @endforeach
                                                                 @endif
