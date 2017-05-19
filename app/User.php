@@ -844,25 +844,25 @@ class User extends Authenticatable
             // we also check for expiration dates to see if we have packages that are expired
             foreach($creditIn as $key=>$single){
                 if ($single['available']==0){
-                    echo 'This ID is 0 : '.$single['id'].'<br />';
+                    //echo 'This ID is 0 : '.$single['id'].'<br />';
                     continue;
                 }
                 elseif ($single['expires']->lt(Carbon::createFromFormat('Y-m-d',$activity->expiration_date))){
                     // make it expired and mark it as 0
-                    echo 'This ID is expired : '.$single['id'].' : with value in : '.$single['available'].'<br />';
+                    //echo 'This ID is expired : '.$single['id'].' : with value in : '.$single['available'].'<br />';
                     $realValue-=$single['available'];
                     $creditIn[$key]['available'] = 0;
                     continue;
                 }
 
                 if ($single['available']<=$spent){
-                    echo 'This ID : '.$single['id'].' : available : '.$single['available'].' - spent : '.$spent.' - all <br />';
+                    //echo 'This ID : '.$single['id'].' : available : '.$single['available'].' - spent : '.$spent.' - all <br />';
                     $spent-=$single['available'];
                     $creditIn[$key]['available']=0;
                     $realValue-=$single['available'];
                 }
                 else{
-                    echo 'This ID : '.$single['id'].' : available : '.$single['available'].' - spent : '.$spent.' - a part <br />';
+                    //echo 'This ID : '.$single['id'].' : available : '.$single['available'].' - spent : '.$spent.' - a part <br />';
                     $creditIn[$key]['available']-=$spent;
                     $realValue-=$spent;
                     break;

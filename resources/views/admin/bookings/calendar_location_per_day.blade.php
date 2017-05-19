@@ -94,46 +94,46 @@
                                 <tr>
                                     <td {!! isset($jump_to[$key])?'id="jump_right_here"':'' !!} style="padding-right:0px;{!! isset($jump_to[$key])?'border-bottom:3px solid #26c281;':'' !!}" >{{ $key }} <a class="btn btn-circle btn-icon-only border-white bg-green-meadow bg-font-green-meadow add_custom_bookings_btn" href="javascript:;"> + </a></td>
                                     @foreach ($resources as $resource)
-                                        <td class="{{ isset($location_bookings[$key][$resource['id']]['color_stripe'])?$location_bookings[$key][$resource['id']]['color_stripe']:$hour['color_stripe'] }}
-                                            {{ ( $hour['color_stripe']=='' && !isset($location_bookings[$key][$resource['id']]['color_stripe']) )?' isfreetime':'' }}"
-                                            style="padding:4px 8px; overflow:hidden; {{ isset($location_bookings[$key][$resource['id']]['custom_color'])?'background-color:'.$location_bookings[$key][$resource['id']]['custom_color'].';':'' }} {!! isset($jump_to[$key])?'border-bottom:3px solid #26c281;':'' !!}">
-                                            @if ( isset($location_bookings[$key][$resource['id']]) )
-                                            <a class="{!! isset($location_bookings[$key][$resource['id']]['alertOn'])?'font-red-thunderbird':'font-white' !!} pull-xs-left" href="{{ @$location_bookings[$key][$resource['id']]['player_link'] }}" target="_blank" style="white-space: nowrap;">
-                                                {!! isset($location_bookings[$key][$resource['id']]['alertOn'])?'<i class="fa fa-bell"></i>':'' !!} {{ @$location_bookings[$key][$resource['id']]['player_name'] }}
-                                            </a>
-                                            <div class="actions pull-xs-left" search-key="{{ $location_bookings[$key][$resource['id']]['search_key'] }}">
-                                                @if ($location_bookings[$key][$resource['id']]['button_show'] == 'is_disabled')
-                                                    <a class="btn btn-icon-only {{ $button_color['is_disabled'] }} border-white show-no-show" href="javascript:;" data-status="{{ $location_bookings[$key][$resource['id']]['status'] }}" ><i class="icon-login"></i></a>
-                                                @elseif ($location_bookings[$key][$resource['id']]['button_show'] == 'is_no_show')
-                                                    <a class="btn btn-icon-only {{ $button_color[$location_bookings[$key][$resource['id']]['button_show']] }} border-white show-no-show" href="javascript:;" data-status="{{ $location_bookings[$key][$resource['id']]['status'] }}" ><i class="icon-login"></i></a>
-                                                @else
-                                                    <a class="btn btn-icon-only {{ $button_color[$location_bookings[$key][$resource['id']]['button_show']] }} border-white check_as_in show-no-show" href="javascript:;" data-status="{{ $location_bookings[$key][$resource['id']]['status'] }}" > <i class="icon-login"></i> </a>
-                                                @endif
-                                                @if ($location_bookings[$key][$resource['id']]['button_finance'] == 'is_disabled')
-                                                    @if(isset($location_bookings[$key][$resource['id']]['membership_starts_today']))
-                                                        <a href="javascript:;" class="btn btn-icon-only bg-blue-sharp bg-font-blue-sharp border-white finance-btn"> <i class="icon-star"></i> </a>
-                                                    @endif
-                                                @elseif ($location_bookings[$key][$resource['id']]['button_finance'] == 'is_paid_cash' || $location_bookings[$key][$resource['id']]['button_finance'] == 'is_paid_card' || $location_bookings[$key][$resource['id']]['button_finance'] == 'is_paid_online')
-                                                    <a href="javascript:;" class="btn btn-icon-only {{ $button_color[$location_bookings[$key][$resource['id']]['button_finance']] }} border-white finance-btn"> $ </a>
-                                                @else
-                                                    <a href="javascript:;" class="btn btn-icon-only {{ $button_color[$location_bookings[$key][$resource['id']]['button_finance']] }} border-white invoice_cash_card finance-btn" data-key="{{ $location_bookings[$key][$resource['id']]['search_key'] }}" data-toggle="confirmation" data-original-title="How would you pay?" data-btn-ok-label="CASH" data-btn-ok-icon="" data-btn-cancel-label="CARD" data-btn-cancel-icon=""> $ </a>
-                                                @endif
-                                                @if ($location_bookings[$key][$resource['id']]['button_more'] == 'is_disabled')
-                                                    <a href="javascript:;" class="btn btn-icon-only {{ $button_color['is_disabled'] }} border-white more-info-btn"><i class="icon-speech"></i></a>
-                                                @else
-                                                    <a href="javascript:;" class="btn btn-icon-only btn-default border-white open_more_options more-info-btn"><i class="icon-speech"></i></a>
-                                                @endif
-                                                @if ($location_bookings[$key][$resource['id']]['button_finance'] != 'is_disabled')
-                                                <a href="javascript:;" class="btn btn-icon-only btn-default border-white open_product_options membership-product-btn" data-id="{{ $location_bookings[$key][$resource['id']]['membership_product'] }}"><i class="icon-notebook"></i></a>
-                                                @endif
-                                                @if ($location_bookings[$key][$resource['id']]['button_move_booking'] == 'move_btn_active')
-                                                <a href="javascript:;" class="btn btn-icon-only btn-default border-white membership-product-btn move-booking-btn" data-id="{{ $location_bookings[$key][$resource['id']]['membership_product'] }}"><i class="icon-share-alt"></i></a>
-                                                @endif
-                                            </div>
+                                    <td class="{{ isset($location_bookings[$key][$resource['id']]['color_stripe'])?$location_bookings[$key][$resource['id']]['color_stripe']:$hour['color_stripe'] }}
+                                        {{ ( $hour['color_stripe']=='' && !isset($location_bookings[$key][$resource['id']]['color_stripe']) )?' isfreetime':'' }}"
+                                        style="padding:4px 8px; overflow:hidden; max-width:150px; {{ isset($location_bookings[$key][$resource['id']]['custom_color'])?'background-color:'.$location_bookings[$key][$resource['id']]['custom_color'].';':'' }} {!! isset($jump_to[$key])?'border-bottom:3px solid #26c281;':'' !!}">
+                                        @if ( isset($location_bookings[$key][$resource['id']]) )
+                                        <a class="{!! isset($location_bookings[$key][$resource['id']]['alertOn'])?'font-red-thunderbird':'font-white' !!} pull-xs-left" href="{{ @$location_bookings[$key][$resource['id']]['player_link'] }}" target="_blank" style="white-space: nowrap;">
+                                            {!! isset($location_bookings[$key][$resource['id']]['alertOn'])?'<i class="fa fa-bell"></i>':'' !!} {{ @$location_bookings[$key][$resource['id']]['player_name'] }}
+                                        </a>
+                                        <div class="actions pull-xs-left" search-key="{{ $location_bookings[$key][$resource['id']]['search_key'] }}">
+                                            @if ($location_bookings[$key][$resource['id']]['button_show'] == 'is_disabled')
+                                                <a class="btn btn-icon-only {{ $button_color['is_disabled'] }} border-white show-no-show" href="javascript:;" data-status="{{ $location_bookings[$key][$resource['id']]['status'] }}" ><i class="icon-login"></i></a>
+                                            @elseif ($location_bookings[$key][$resource['id']]['button_show'] == 'is_no_show')
+                                                <a class="btn btn-icon-only {{ $button_color[$location_bookings[$key][$resource['id']]['button_show']] }} border-white show-no-show" href="javascript:;" data-status="{{ $location_bookings[$key][$resource['id']]['status'] }}" ><i class="icon-login"></i></a>
                                             @else
-                                            <span data-resource="{{ $resource['id'] }}" data-time="{{ $key }}">&nbsp;</span>
+                                                <a class="btn btn-icon-only {{ $button_color[$location_bookings[$key][$resource['id']]['button_show']] }} border-white check_as_in show-no-show" href="javascript:;" data-status="{{ $location_bookings[$key][$resource['id']]['status'] }}" > <i class="icon-login"></i> </a>
                                             @endif
-                                        </td>
+                                            @if ($location_bookings[$key][$resource['id']]['button_finance'] == 'is_disabled')
+                                                @if(isset($location_bookings[$key][$resource['id']]['membership_starts_today']))
+                                                    <a href="javascript:;" class="btn btn-icon-only bg-blue-sharp bg-font-blue-sharp border-white finance-btn"> <i class="icon-star"></i> </a>
+                                                @endif
+                                            @elseif ($location_bookings[$key][$resource['id']]['button_finance'] == 'is_paid_cash' || $location_bookings[$key][$resource['id']]['button_finance'] == 'is_paid_card' || $location_bookings[$key][$resource['id']]['button_finance'] == 'is_paid_online')
+                                                <a href="javascript:;" class="btn btn-icon-only {{ $button_color[$location_bookings[$key][$resource['id']]['button_finance']] }} border-white finance-btn"> $ </a>
+                                            @else
+                                                <a href="javascript:;" class="btn btn-icon-only {{ $button_color[$location_bookings[$key][$resource['id']]['button_finance']] }} border-white invoice_cash_card finance-btn" data-key="{{ $location_bookings[$key][$resource['id']]['search_key'] }}" data-toggle="confirmation" data-original-title="How would you pay?" data-btn-ok-label="CASH" data-btn-ok-icon="" data-btn-cancel-label="CARD" data-btn-cancel-icon="" data-singleton="true"> $ </a>
+                                            @endif
+                                            @if ($location_bookings[$key][$resource['id']]['button_more'] == 'is_disabled')
+                                                <a href="javascript:;" class="btn btn-icon-only {{ $button_color['is_disabled'] }} border-white more-info-btn"><i class="icon-speech"></i></a>
+                                            @else
+                                                <a href="javascript:;" class="btn btn-icon-only btn-default border-white open_more_options more-info-btn"><i class="icon-speech"></i></a>
+                                            @endif
+                                            @if ($location_bookings[$key][$resource['id']]['button_finance'] != 'is_disabled')
+                                            <a href="javascript:;" class="btn btn-icon-only btn-default border-white open_product_options membership-product-btn" data-id="{{ $location_bookings[$key][$resource['id']]['membership_product'] }}"><i class="icon-notebook"></i></a>
+                                            @endif
+                                            @if ($location_bookings[$key][$resource['id']]['button_move_booking'] == 'move_btn_active')
+                                            <a href="javascript:;" class="btn btn-icon-only btn-default border-white membership-product-btn move-booking-btn" data-id="{{ $location_bookings[$key][$resource['id']]['membership_product'] }}"><i class="icon-share-alt"></i></a>
+                                            @endif
+                                        </div>
+                                        @else
+                                        <span data-resource="{{ $resource['id'] }}" data-time="{{ $key }}">&nbsp;</span>
+                                        @endif
+                                    </td>
                                     @endforeach
                                 </tr>
                                 @endforeach

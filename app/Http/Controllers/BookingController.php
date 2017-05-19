@@ -1580,13 +1580,13 @@ class BookingController extends Controller
             }
 
             foreach($singleHour as $key2=>$singleBook){
-                $hasNote = GeneralNote::where('note_type','=','general note')->where('for_user_id','=',$singleBook['player_id'])->first();
+                $hasNote = GeneralNote::where('note_type','=','general note')->where('for_user_id','=',$singleBook['player_id'])->where('privacy','=','employees')->whereIn('status',['pending'])->first();
                 if($hasNote){
                     $location_bookings['hours'][$key1][$key2]['alertOn'] = 'red';
                 }
             }
         }
-//xdebug_var_dump($location_bookings['hours']);
+
         $buttons_color = [
             'is_show'           => 'bg-green-jungle bg-font-green-jungle',
             'is_no_show'        => 'bg-red-thunderbird bg-font-red-thunderbird',

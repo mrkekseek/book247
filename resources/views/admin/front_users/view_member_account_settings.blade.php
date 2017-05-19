@@ -1230,6 +1230,7 @@
                         autoclose: true,
                         daysOfWeekHighlighted: "0",
                         weekStart:1,
+                        startDate:'today'
                     });
                     //$('body').removeClass("modal-open"); // fix bug when inline picker is used in modal
                 }
@@ -1482,14 +1483,16 @@
                 },
                 success: function(data){
                     if (data.success) {
-                        $('#cancel_confirm_box').modal('hide');
-                        show_notification(data.title, data.message, 'lime', 3500, 0);
+                        $('#cancel_plan_confirm_box').modal('hide');
+                        $('#cancel_plan_box').modal('hide');
+                        show_notification(data.title, data.message, 'lime', 3100, 0);
 
                         setTimeout(function(){
                             location.reload();
-                        },200000);
+                        },3500);
                     }
                     else{
+                        $('#cancel_plan_confirm_box').modal('hide');
                         show_notification(data.title, data.errors, 'tangerine', 3500, 0);
                     }
                 }
