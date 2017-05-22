@@ -612,21 +612,31 @@ Route::group(['middleware' => 'web'], function () {
         'uses'  => 'EmailsController@list_all'
     ]);
 
+    Route::get('/admin/templates_email/add', [
+        'as'    => 'admin/templates_email/add',
+        'uses'  => 'EmailsController@add'
+    ]);
+
+    Route::get('admin/templates_email/edit/{id}', [
+        'as'    => 'admin/templates_email/edit/{id}',
+        'uses'  => 'EmailsController@edit'
+    ]);
+
     Route::post('admin/templates_email/create', [
         'as'    => 'admin/templates_email/create',
         'uses'  => 'EmailsController@store_email_template'
     ]);
 
-    Route::post('admin/templates_email/edit', [
-        'as'    => 'admin/templates_email/edit',
-        'uses'  => 'EmailsController@edit_email_template'
+    Route::post('admin/templates_email/update/{id}', [
+        'as'    => 'admin/templates_email/update/{id}',
+        'uses'  => 'EmailsController@update_email_template'
     ]);
+
 
     Route::post('admin/templates_email/delete', [
         'as'    => 'admin/templates_email/delete',
         'uses'  => 'EmailsController@delete_email_template'
     ]);
-
     /* Stop Email Templates Part */
 });
 

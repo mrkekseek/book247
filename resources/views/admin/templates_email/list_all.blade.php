@@ -34,9 +34,7 @@
                         <div class="row form-group">
                             <div class="col-md-12">
                                 <div class="btn-group">
-                                    <button data-toggle="modal" href='#add_new_template' class="btn sbold green" data-toggle="modal" href="#draggable">Add new template
-                                        <i class="fa fa-plus"></i>
-                                    </button>
+                                    <a href="/admin/templates_email/add" class="btn sbold green">Add new template <i class="fa fa-plus"></i></a>
                                 </div>
                             </div>
                         </div>
@@ -48,7 +46,6 @@
                                 <th> Title </th>
                                 <th> Content </th>
                                 <th> Veriables </th>
-                                <th> Country </th>
                                 <th></td>
                                 <th></th>
                             </tr>
@@ -60,13 +57,12 @@
                                         <td> {{ $template["title"] }} </td>
                                         <td> {{ $template["content"] }} </td>
                                         <td> {{ $template["veriables"] }} </td>
-                                        <td> {{ $template["country"] }} </td>
-                                        <td>
-                                            <a href="javascript:void(0);" data-id="{{ $template['id'] }}" class="edit">
+                                        <td class="text-center">
+                                            <a href="/admin/templates_email/edit/{{ $template['id'] }}" class="edit">
                                                 <i class="fa fa-edit"></i>
                                             </a>
                                         </td>
-                                        <td>
+                                        <td class="text-center">
                                             <a href="javascript:void(0);" data-id="{{ $template['id'] }}" class="delete">
                                                 <i class="fa fa-trash-o"></i>
                                             </a>
@@ -81,60 +77,6 @@
         </div>
     </div>
 
-
-
-    <div class="modal fade" id="add_new_template">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h4 class="modal-title">Add new Template</h4>
-                </div>
-                <form class="form-horizontal" id="add_new_template_form">
-                    <div class="modal-body">
-                        <div class="row">
-                            <div class="col-sm-12">
-                               
-                                    <div class="form-group">
-                                        <label for="title" class="col-sm-2 control-label">Title</label>
-                                        <div class="col-sm-10">
-                                            <input type="text" class="form-control" name="title" placeholder="Title">
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="content" class="col-sm-2 control-label">Content</label>
-                                        <div class="col-sm-10">
-                                            <input type="text" class="form-control" name="content" placeholder="Content">
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="variables" class="col-sm-2 control-label">Variables</label>
-                                        <div class="col-sm-10">
-                                            <input type="text" class="form-control" name="variables" placeholder="Variables">
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="hook" class="col-sm-2 control-label">Hook</label>
-                                        <div class="col-sm-10">
-                                            <input type="text" class="form-control" name="hook" placeholder="Hook">
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <div class="col-sm-12">
-                                            <textarea class="form-control" name="description"></textarea>
-                                        </div>
-                                    </div>
-                                
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary">Add</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
 @endsection
 
 @section('pageBelowLevelPlugins')
@@ -158,98 +100,8 @@
 
 @section('pageCustomJScripts')
     <script type="text/javascript">
-        var FormValidation = function () {
-            var handleValidation = function() 
-            {
-                var form = $('#add_new_template_form');
-                var error = $('.alert-danger', form);
-                var success = $('.alert-success', form);
-
-                form.validate({
-                    errorElement: 'span',
-                    errorClass: 'help-block help-block-error',
-                    focusInvalid: false,
-                    ignore: "",
-                    rules: {
-                        title: {
-                            minlength: 5,
-                            required: true
-                        },
-                        content: {
-                            minlength: 5,
-                            required: true
-                        },
-                        hook: {
-                            required: true
-                        },
-                        description: {
-                            minlength: 20,
-                            required: true
-                        }
-                    },
-
-                    invalidHandler: function (event, validator) {
-                        success.hide();
-                        error.show();
-                    },
-
-                    errorPlacement: function (error, element) {
-                        var icon = $(element).parent('.input-icon').children('i');
-                        icon.removeClass('fa-check').addClass("fa-warning");
-                        icon.attr("data-original-title", error.text()).tooltip({'container': 'body'});
-                    },
-
-                    highlight: function (element) {
-                        $(element)
-                            .closest('.form-group').removeClass("has-success").addClass('has-error');
-                    },
-
-                    success: function (label, element) {
-                        var icon = $(element).parent('.input-icon').children('i');
-                        $(element).closest('.form-group').removeClass('has-error').addClass('has-success');
-                        icon.removeClass("fa-warning").addClass("fa-check");
-                    },
-
-                    submitHandler: function (form) {
-                        success.show();
-                        error.hide();
-                        add_new_template();
-                    }
-                });
-            }
-
-            return {
-                init: function () {
-                    handleValidation();
-                }
-            };
-        }();
-
+        
         $(document).ready(function(){
-            FormValidation.init();
-            
-            $("textarea[name=description]").summernote({height:300});
-
-            $(".edit").click(function(){
-                $.ajax({
-                    url: '{{ route('admin/templates_email/edit') }}',
-                    type: "post",
-                    data: {
-                        'id' : $(this).data("id")
-                    },
-                    success: function(data){
-                        clear_modal();
-                        $("#add_new_template").modal("show");
-                        $("[name=title]").val(data.title);
-                        $("[name=content]").val(data.content);
-                        $("[name=variables]").val(data.variables);
-                        $("[name=hook]").val(data.hook);
-                        $("[textarea=description]").val(data.description);
-                    }
-                });
-
-            });
-
             $(".delete").click(function(){
                 $.ajax({
                     url: '{{ route('admin/templates_email/delete') }}',
@@ -274,42 +126,5 @@
             });
         });
 
-        function clear_modal()
-        {
-            $("#add_new_template").modal("show");
-            $("[name=title]").val('');
-            $("[name=content]").val('');
-            $("[name=variables]").val('');
-            $("[name=hook]").val('');
-            $("[textarea=description]").val('');
-        }
-
-        function add_new_template()
-        {
-            $.ajax({
-                url: '{{ route('admin/templates_email/create') }}',
-                type: "post",
-                data: {
-                    'title':         $('input[name=title]').val(),
-                    'content':         $('input[name=content]').val(),
-                    'variables':            $('input[name=variables]').val(),
-                    'hook':         $('input[name=hook]').val(),
-                    'description':  $('textarea[name=description]').val()
-                },
-                success: function(data){
-                    if(data.success)
-                    {
-                        show_notification(data.title, data.message, 'lime', 3500, 0);
-                        setTimeout(function(){
-                            location.reload();
-                        },2000);
-                    }
-                    else
-                    {
-                        show_notification(data.title, data.errors, 'ruby', 3500, 0);
-                    }
-                }
-            });
-        }
     </script>
 @endsection
