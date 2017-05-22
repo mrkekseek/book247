@@ -22,7 +22,7 @@ class EmailsController extends Controller
                 "id" => $template["id"],
                 "title" => $template["title"],
                 "content" => $template["content"],
-                "veriables" => $template["veriables"],
+                "variables" => $template["variables"],
                 "country" => $template["country_id"]
             );
         }
@@ -129,7 +129,6 @@ class EmailsController extends Controller
             return Response::json(['error' => 'Booking Error'], Response::HTTP_CONFLICT);
         }
     }
-
 
     public function update_email_template(Request $request)
     {

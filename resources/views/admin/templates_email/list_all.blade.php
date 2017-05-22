@@ -56,7 +56,7 @@
                                         <td> {{ $template["id"] }} </td>
                                         <td> {{ $template["title"] }} </td>
                                         <td> {{ $template["content"] }} </td>
-                                        <td> {{ $template["veriables"] }} </td>
+                                        <td> {{ $template["variables"] }} </td>
                                         <td class="text-center">
                                             <a href="/admin/templates_email/edit/{{ $template['id'] }}" class="edit">
                                                 <i class="fa fa-edit"></i>
