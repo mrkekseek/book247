@@ -117,6 +117,7 @@
                                                 <a href="javascript:;" class="btn btn-icon-only {{ $button_color[$location_bookings[$key][$resource['id']]['button_finance']] }} border-white finance-btn"> $ </a>
                                             @else
                                                 <a href="javascript:;" class="btn btn-icon-only {{ $button_color[$location_bookings[$key][$resource['id']]['button_finance']] }} border-white invoice_cash_card finance-btn" data-key="{{ $location_bookings[$key][$resource['id']]['search_key'] }}" data-toggle="confirmation" data-original-title="How would you pay?" data-btn-ok-label="CASH" data-btn-ok-icon="" data-btn-cancel-label="CARD" data-btn-cancel-icon="" data-singleton="true"> $ </a>
+                                                <a href="javascript:;" class="btn btn-icon-only {{ $button_color[$location_bookings[$key][$resource['id']]['button_finance']] }} border-white invoice_cash_card finance-btn" data-key="{{ $location_bookings[$key][$resource['id']]['search_key'] }}" data-toggle="confirmation-custom" data-original-title="How would you pay?" data-singleton="true"> $ </a>
                                             @endif
                                             @if ($location_bookings[$key][$resource['id']]['button_more'] == 'is_disabled')
                                                 <a href="javascript:;" class="btn btn-icon-only {{ $button_color['is_disabled'] }} border-white more-info-btn"><i class="icon-speech"></i></a>
@@ -565,7 +566,7 @@
 @section('pageBelowLevelPlugins')
     <script src="{{ asset('assets/global/plugins/jquery-validation/js/jquery.validate.min.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/global/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}" type="text/javascript"></script>
-    <script src="{{ asset('assets/global/plugins/bootstrap-confirmation-2-2/bootstrap-confirmation.min.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('assets/global/plugins/bootstrap-confirmation-2-4/bootstrap-confirmation.min.js') }}" type="text/javascript"></script>
 
     <script src="{{ asset('assets/global/scripts/datatable.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/global/plugins/datatables/datatables.min.js') }}" type="text/javascript"></script>
@@ -1850,6 +1851,36 @@
                     $('a[data-id="play_with_friends_booking"]').hide();
                 }
             }
+        });
+
+        $('[data-toggle=confirmation-custom]').confirmation({
+            copyAttributes: ['data-key'],
+            buttons: [
+                {
+                    label: 'Cash',
+                    class: 'btn btn-sm purple-seance',
+
+                    onClick: function() {
+                        alert($(this).attr('data-key'));
+                    }
+                },
+                {
+                    label: 'Card',
+                    class: 'btn btn-sm blue',
+
+                    onClick: function() {
+                        alert($(this).attr('data-key'));
+                    }
+                },
+                {
+                    label: 'Credit',
+                    class: 'btn btn-sm green-seagreen',
+
+                    onClick: function() {
+                        alert($(this).attr('data-key'));
+                    }
+                }
+            ]
         });
 
         /* Start Play with friends part */
