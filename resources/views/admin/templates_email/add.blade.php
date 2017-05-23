@@ -41,14 +41,19 @@
                                 <div class="col-sm-12 form-group">
                                     <label for="title" class="col-sm-2 control-label">Title</label>
                                     <div class="col-sm-10">
-                                        <input type="text" class="form-control" value="{{ isset($template->title) ? $template->title : '' }}" name="title" placeholder="Title">
+                                        <input type="text" class="form-control"  name="title" placeholder="Title" />
                                     </div>
                                 </div>
 
-                                <div class="col-sm-12 form-group">
-                                    <label for="content" class="col-sm-2 control-label">Content</label>
+                                 <div class="col-sm-12 form-group">
+                                    <label for="content" class="col-sm-2 control-label">Country list</label>
                                     <div class="col-sm-10">
-                                        <input type="text" class="form-control" value="{{ isset($template->content) ? $template->content : '' }}" name="content" placeholder="Content">
+                                        <select class="form-control" name="country">
+                                            <option value="">Select country</option>
+                                            @foreach($country_list as $country)
+                                                <option value="{{ $country->id }}">{{ $country->name }}</option>
+                                            @endforeach
+                                        </select>
                                     </div> 
                                 </div>
 
@@ -57,7 +62,7 @@
                                         Variables
                                     </div>
                                     <div class="col-sm-10">
-                                        <select name="variables" placeholder='s' class="form-control select2-multiple" multiple>
+                                        <select data-placeholder="Select variables" name="variables" class="form-control select2-multiple" multiple>
                                             @foreach ($variables as $index => $var)
                                                 <option value="{{ $index }}">{{ $var }}</option>
                                             @endforeach
@@ -68,8 +73,15 @@
                                 <div class="col-sm-12 form-group">        
                                     <label for="hook" class="col-sm-2 control-label">Hook</label>
                                     <div class="col-sm-10">
-                                        <input type="text" class="form-control" value="{{ isset($template->hook) ? $template->hook : '' }}" name="hook" placeholder="Hook">
+                                        <input type="text" class="form-control" name="hook" placeholder="Hook" />
                                     </div>
+                                </div>
+
+                                <div class="col-sm-12 form-group">
+                                    <label for="content" class="col-sm-2 control-label">Description</label>
+                                    <div class="col-sm-10">
+                                        <textarea class="form-control" rows="3" name="content" placeholder="Description"></textarea>
+                                    </div> 
                                 </div>
 
                                 <div class="col-sm-12 form-group">
@@ -138,15 +150,17 @@
                     ignore: [],
                     rules: {
                         title: {
-                            minlength: 5,
+                            required: true
+                        },
+                        content : {
+                            required: false
+                        },
+                        country: {
                             required: true
                         },
                         variables : {
                             variables : false,
                             required : true
-                        },
-                        content: {
-                            required: true
                         },
                         hook: {
                             required: true
@@ -209,28 +223,16 @@
 
         function add_new_template()
         {
-           /* $("[name=variables]").change(function(){
-                var count = $(this).val();
-                if ( ! count)
-                {
-                    $(".select2").removeClass("has-success").addClass("has-error");
-                    return false;
-                }
-                else
-                {
-                    $(".select2").removeClass("has-error").addClass("has-success");
-                }
-            });*/
-
             $.ajax({
                 url: '{{ route('admin/templates_email/create') }}',
                 type: "post",
                 data: {
-                    'title':         $('input[name=title]').val(),
-                    'content':         $('input[name=content]').val(),
-                    'variables':            $('select[name=variables]').val(),
-                    'hook':         $('input[name=hook]').val(),
-                    'description':  $('textarea[name=description]').val()
+                    'title'       :  $('input[name=title]').val(),
+                    'country_id'  :  $('select[name=country]').val(),
+                    'content'     :  $('textarea[name=content]').val(),
+                    'variables'   :  $('select[name=variables]').val(),
+                    'hook'        :  $('input[name=hook]').val(),
+                    'description' :  $('textarea[name=description]').val()
                 },
                 success: function(data){
                     if(data.success)
@@ -250,7 +252,28 @@
 
         $(document).ready(function(){
             FormValidation.init();
-            $("textarea[name=description]").summernote({ height : 300 });
+            $("textarea[name=description]").summernote({ height : 300 , onChange : function(e){
+                
+                var element = $("textarea[name=description]");
+                var parent = $(element).closest(".form-group");
+
+  
+                if( ! $(element).summernote('isEmpty'))
+                {
+                    parent.removeClass("has-error").addClass("has-success");
+                }
+                else
+                {
+                   parent.removeClass("has-success").addClass("has-error");
+                }
+
+            }});
+
+            $("select[name=variables]").change(function() {
+                var value = $(this).val();
+                //console.log(value);
+            });
+
         });
     </script>
 @endsection

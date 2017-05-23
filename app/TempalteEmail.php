@@ -27,7 +27,8 @@ class TempalteEmail extends Model
         'variables',
         'description',
         'hook',
-        'is_default'
+        'is_default',
+        'country_id'
     );
 
     public static function rules($method)
@@ -41,7 +42,8 @@ class TempalteEmail extends Model
                     'content'  => 'required',
                     'variables'  => 'required',
                     'description'  => 'required',
-                    'hook'  => 'required'
+                    'hook'  => 'required',
+                    'country_id' => 'required'
                 ];
             }
 
