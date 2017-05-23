@@ -27,6 +27,7 @@ class TempalteEmail extends Model
         'variables',
         'description',
         'hook',
+        'is_default'
     );
 
     public static function rules($method)

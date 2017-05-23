@@ -81,12 +81,30 @@
                                         <button type="submit" class="btn btn-block btn-success">Update</button>
                                     </div>
                                     <div class="col-sm-2 pull-right">
-                                        <button type="submit" class="btn btn-block btn-default">Reset to default</button>
+                                        <button type="button" class="btn btn-block btn-default" data-toggle="modal" data-target='#confirm-reset-default'>Reset to default</button>
                                     </div>
                                 </div>
                             </div>
                         </form>
                     </div>  
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="confirm-reset-default">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Reset to default</h4>
+                </div>
+                <div class="modal-body">
+                    <p>This action will reset the editted template to default and all the content will be replaced</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary btn-reset-default">Ok</button>
                 </div>
             </div>
         </div>
@@ -187,8 +205,29 @@
         $(document).ready(function(){
             FormValidation.init();
             $("textarea[name=description]").summernote({ height : 300 });
+            
             $(".btn-vars").click(function(){
                 $("textarea[name=description]").code($("textarea[name=description]").val() + '[[' + $(this).data("value") + ']]');
+            });
+
+            $(".btn-reset-default").click(function(){
+                $.ajax({
+                    url: '/admin/templates_email/reset_default/{{ $template_id }}',
+                    type: "get",
+                    success: function(data){
+                        if(data.success)
+                        {
+                            show_notification(data.title, data.message, 'lime', 3500, 0);
+                            setTimeout(function(){
+                                location.reload();
+                            },2000);
+                        }
+                        else
+                        {
+                            show_notification(data.title, data.errors, 'ruby', 3500, 0);
+                        }
+                    }
+                });
             });
         });
 
