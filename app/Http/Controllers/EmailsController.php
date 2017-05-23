@@ -9,6 +9,7 @@ use Auth;
 use Validator;
 use Activity;
 use Response;
+use DB;
 
 class EmailsController extends Controller
 {
@@ -75,10 +76,11 @@ class EmailsController extends Controller
         $sidebar_link = 'admin-templates_email-add';
 
         return view('admin/templates_email/add', array(
-            'breadcrumbs' => $breadcrumbs,
-            'text_parts'  => $text_parts,
-            'in_sidebar'  => $sidebar_link,
-            'variables'   => $this->variables
+            'breadcrumbs'  => $breadcrumbs,
+            'text_parts'   => $text_parts,
+            'in_sidebar'   => $sidebar_link,
+            'variables'    => $this->variables,
+            'country_list' => DB::table("countries")->get()
         ));
     }
 
@@ -93,7 +95,7 @@ class EmailsController extends Controller
                 'title'   => 'Not logged in'];
         }
 
-        $vars = $request->only('title', 'content', 'variables', 'hook', 'description');
+        $vars = $request->only('title', 'content', 'variables', 'hook', 'country_id', 'description');
 
         $fillable = [
             'title'         => $vars['title'],
@@ -101,6 +103,7 @@ class EmailsController extends Controller
             'variables'     => json_encode($vars['variables']),
             'hook'          => $vars['hook'],
             'description'   => $vars['description'],
+            'country_id'    => $vars['country_id'],
             'is_default'    => 0
         ];
 
