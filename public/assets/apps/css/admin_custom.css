@@ -10,3 +10,7 @@
 .has-error .note-editor {
 	border: 1px solid #e73d4a !important;
 }
+
+textarea[name=content] {
+    resize: none;
+}

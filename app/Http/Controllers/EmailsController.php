@@ -121,9 +121,6 @@ class EmailsController extends Controller
         {
             $template = TempalteEmail::create($fillable);
 
-            $fillable['is_default'] = 1;
-            $template = TempalteEmail::create($fillable); // is_default
-
             Activity::log([
                 'contentId'     => $user->id,
                 'contentType'   => 'template_email',
