@@ -45,7 +45,7 @@
                                 <th> Id </th>
                                 <th> Title </th>
                                 <th> Content </th>
-                                <th> Veriables </th>
+                                <th> Variables </th>
                                 <th></td>
                                 <th></th>
                             </tr>
@@ -56,8 +56,12 @@
                                         <td> {{ $template["id"] }} </td>
                                         <td> {{ $template["title"] }} </td>
                                         <td> {{ $template["content"] }} </td>
-                                        <td> {{ $template["variables"] }} </td>
-                                        <td class="text-center">
+                                        <td> 
+                                              @foreach($template["variables"] as $var)
+                                                <span class="label label-default">{{ $var }}</span>
+                                              @endforeach
+                                       </td>
+                                       <td class="text-center">
                                             <a href="/admin/templates_email/edit/{{ $template['id'] }}" class="edit">
                                                 <i class="fa fa-edit"></i>
                                             </a>

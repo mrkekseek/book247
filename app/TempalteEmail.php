@@ -27,6 +27,7 @@ class TempalteEmail extends Model
         'variables',
         'description',
         'hook',
+        'is_default'
     );
 
     public static function rules($method)
@@ -36,11 +37,21 @@ class TempalteEmail extends Model
             case 'post':
             {
                 return [
-                    'title'  => 'required|min:5',
-                    'content'  => 'required|min:3',
-                    'variables'  => 'required|min:3',
-                    'description'  => 'required|min:20',
-                    'hook'  => 'required|min:3'
+                    'title'  => 'required',
+                    'content'  => 'required',
+                    'variables'  => 'required',
+                    'description'  => 'required',
+                    'hook'  => 'required'
+                ];
+            }
+
+            case 'update':
+            {
+                return [
+                    'title'  => 'required',
+                    'content'  => 'required',
+                    'description'  => 'required',
+                    'hook'  => 'required'
                 ];
             }
 

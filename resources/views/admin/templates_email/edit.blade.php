@@ -52,13 +52,6 @@
                                     </div> 
                                 </div>
 
-                                <div class="col-sm-12 form-group">
-                                    <label for="variables" class="col-sm-2 control-label">Variables</label>
-                                    <div class="col-sm-10">
-                                        <input type="text" class="form-control" value="{{ isset($template->variables) ? $template->variables : '' }}" name="variables" placeholder="Variables">
-                                    </div>
-                                </div>
-
                                 <div class="col-sm-12 form-group">        
                                     <label for="hook" class="col-sm-2 control-label">Hook</label>
                                     <div class="col-sm-10">
@@ -71,18 +64,47 @@
                                         <textarea class="form-control"  name="description">{{ isset($template->description) ? $template->description : '' }}</textarea>
                                     </div>
                                 </div>
+
+                                @if(count($variables = json_decode($template->variables)))
+                                    <div class="col-sm-12 form-group">
+                                        <label class="col-sm-2 control-label">Variables:</label>
+                                        <div class="col-sm-10">
+                                            @foreach($variables as $var)
+                                                <button type="button" class="btn btn-sm btn-default btn-vars" data-value="{{ $var }}">{{ $var }}</button>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                @endif
                             
                                 <div class="col-sm-12 form-group">
                                     <div class="col-sm-2 pull-right">
                                         <button type="submit" class="btn btn-block btn-success">Update</button>
                                     </div>
                                     <div class="col-sm-2 pull-right">
-                                        <button type="submit" class="btn btn-block btn-default">Reset to default</button>
+                                        <button type="button" class="btn btn-block btn-default" data-toggle="modal" data-target='#confirm-reset-default'>Reset to default</button>
                                     </div>
                                 </div>
                             </div>
                         </form>
                     </div>  
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="confirm-reset-default">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Reset to default</h4>
+                </div>
+                <div class="modal-body">
+                    <p>This action will reset the editted template to default and all the content will be replaced</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary btn-reset-default">Ok</button>
                 </div>
             </div>
         </div>
@@ -118,6 +140,10 @@
                 var error = $('.alert-danger', form);
                 var success = $('.alert-success', form);
 
+                $.validator.addMethod("description", function(value, element) {
+                    return value && value.length ? true : false;
+                }, "Please enter description");
+
                 form.validate({
                     errorElement: 'span',
                     errorClass: 'help-block help-block-error',
@@ -125,19 +151,17 @@
                     ignore: "",
                     rules: {
                         title: {
-                            minlength: 5,
                             required: true
                         },
                         content: {
-                            minlength: 5,
                             required: true
                         },
                         hook: {
                             required: true
                         },
                         description: {
-                            minlength: 20,
-                            required: true
+                            required: true,
+                            description : true
                         }
                     },
 
@@ -181,6 +205,30 @@
         $(document).ready(function(){
             FormValidation.init();
             $("textarea[name=description]").summernote({ height : 300 });
+            
+            $(".btn-vars").click(function(){
+                $("textarea[name=description]").code($("textarea[name=description]").val() + '[[' + $(this).data("value") + ']]');
+            });
+
+            $(".btn-reset-default").click(function(){
+                $.ajax({
+                    url: '/admin/templates_email/reset_default/{{ $template_id }}',
+                    type: "get",
+                    success: function(data){
+                        if(data.success)
+                        {
+                            show_notification(data.title, data.message, 'lime', 3500, 0);
+                            setTimeout(function(){
+                                location.reload();
+                            },2000);
+                        }
+                        else
+                        {
+                            show_notification(data.title, data.errors, 'ruby', 3500, 0);
+                        }
+                    }
+                });
+            });
         });
 
         function update_template()
@@ -191,7 +239,6 @@
                 data: {
                     'title':         $('input[name=title]').val(),
                     'content':         $('input[name=content]').val(),
-                    'variables':            $('input[name=variables]').val(),
                     'hook':         $('input[name=hook]').val(),
                     'description':  $('textarea[name=description]').val()
                 },

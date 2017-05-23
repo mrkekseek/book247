@@ -631,6 +631,12 @@ Route::group(['middleware' => 'web'], function () {
         'as'    => 'admin/templates_email/update/{id}',
         'uses'  => 'EmailsController@update_email_template'
     ]);
+    
+    Route::get('admin/templates_email/reset_default/{id}', [
+        'as'    => 'admin/templates_email/reset_default/{id}',
+        'uses'  => 'EmailsController@reset_default'
+    ]);
+
 
 
     Route::post('admin/templates_email/delete', [

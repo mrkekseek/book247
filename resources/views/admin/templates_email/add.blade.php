@@ -53,9 +53,15 @@
                                 </div>
 
                                 <div class="col-sm-12 form-group">
-                                    <label for="variables" class="col-sm-2 control-label">Variables</label>
+                                    <div class="col-sm-2 control-label">
+                                        Variables
+                                    </div>
                                     <div class="col-sm-10">
-                                        <input type="text" class="form-control" value="{{ isset($template->variables) ? $template->variables : '' }}" name="variables" placeholder="Variables">
+                                        <select name="variables" placeholder='s' class="form-control select2-multiple" multiple>
+                                            @foreach ($variables as $index => $var)
+                                                <option value="{{ $index }}">{{ $var }}</option>
+                                            @endforeach
+                                        </select>
                                     </div>
                                 </div>
 
@@ -91,6 +97,7 @@
     <script src="{{ asset('assets/global/plugins/datatables/datatables.min.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/global/plugins/datatables/plugins/bootstrap/datatables.bootstrap.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/global/plugins/jquery-validation/js/jquery.validate.min.js') }}" type="text/javascript"></script>
+    
 @endsection
 
 @section('pageBelowLevelScripts')
@@ -109,6 +116,15 @@
 @section('pageCustomJScripts')
     <script type="text/javascript">
         var FormValidation = function () {
+
+            $.validator.addMethod("variables", function(value, element) {
+                return value && value.length ? true : false;
+            }, "Please select variables");
+
+            $.validator.addMethod("description", function(value, element) {
+                return value && value.length ? true : false;
+            }, "Please enter description");
+
             var handleValidation = function() 
             {
                 var form = $('#add_new_template_form');
@@ -119,22 +135,38 @@
                     errorElement: 'span',
                     errorClass: 'help-block help-block-error',
                     focusInvalid: false,
-                    ignore: "",
+                    ignore: [],
                     rules: {
                         title: {
                             minlength: 5,
                             required: true
                         },
+                        variables : {
+                            variables : false,
+                            required : true
+                        },
                         content: {
-                            minlength: 5,
                             required: true
                         },
                         hook: {
                             required: true
                         },
-                        description: {
-                            minlength: 20,
-                            required: true
+                        description : {
+                            required : true,
+                            description : true
+                        }
+                    },
+                    messages : {
+                        title: {
+                            minlength: "Your title must consist of at least 5 characters",
+                            required: "Please enter title"
+                        },
+                        content: {
+                            minlength: "Your title must consist of at least 5 characters",
+                            required: "Please enter title"
+                        },
+                        hook: {
+                            required: "Please enter title"
                         }
                     },
 
@@ -175,20 +207,28 @@
             };
         }();
 
-        $(document).ready(function(){
-            FormValidation.init();
-            $("textarea[name=description]").summernote({ height : 300 });
-        });
-
         function add_new_template()
         {
+           /* $("[name=variables]").change(function(){
+                var count = $(this).val();
+                if ( ! count)
+                {
+                    $(".select2").removeClass("has-success").addClass("has-error");
+                    return false;
+                }
+                else
+                {
+                    $(".select2").removeClass("has-error").addClass("has-success");
+                }
+            });*/
+
             $.ajax({
                 url: '{{ route('admin/templates_email/create') }}',
                 type: "post",
                 data: {
                     'title':         $('input[name=title]').val(),
                     'content':         $('input[name=content]').val(),
-                    'variables':            $('input[name=variables]').val(),
+                    'variables':            $('select[name=variables]').val(),
                     'hook':         $('input[name=hook]').val(),
                     'description':  $('textarea[name=description]').val()
                 },
@@ -207,5 +247,10 @@
                 }
             });
         }
+
+        $(document).ready(function(){
+            FormValidation.init();
+            $("textarea[name=description]").summernote({ height : 300 });
+        });
     </script>
 @endsection
