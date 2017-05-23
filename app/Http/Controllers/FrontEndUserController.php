@@ -2768,8 +2768,8 @@ class FrontEndUserController extends Controller
             $client_vars['user_type'] = Role::where('name','=','front-user')->get()->first()->id;
         }
 
-        if ($client_vars['password']==""){
-            $client_vars['password'] = substr(bcrypt(str_random(12)),0,8);
+        if ($client_vars['password']==""){            
+            $client_vars['password'] = substr(bcrypt(str_random(12)),0,8);            
         }
 
         $validator = Validator::make($client_vars, User::rules('POST'), User::$messages, User::$attributeNames);
@@ -2784,10 +2784,18 @@ class FrontEndUserController extends Controller
 
         $credentials = $client_vars;
         $text_psw    = $client_vars['password'];
+        $credentials['password_api'] = $credentials['password'];
         $credentials['password'] = Hash::make($credentials['password']);
 
         try {
             $user = User::create($credentials);
+            if (!empty (Auth::$error))
+            {
+                return [
+                    'success'   => false,                    
+                    'errors'    => ['Api erorr' => [0 => Auth::$error]]
+                ];
+            }
             $user->attachRole($client_vars['user_type']);
 
             if (isset($client_vars['customer_number']) && strlen($client_vars['customer_number'])>0){
@@ -3136,12 +3144,12 @@ class FrontEndUserController extends Controller
 
             foreach ($members as $member){
                 //xdebug_var_dump($member); //exit;
-                // add member
+                // add member                
                 $newUser = FrontEndUserController::register_new_client($member);
 
                 if ($newUser['success']==false){
                     $msg = 'Following errors occurred : <br />';
-                    foreach ($newUser['errors'] as $key=>$error){
+                    foreach ($newUser['errors'] as $key=>$error){                        
                         $msg.= $key.' : '.implode(', ',$error).'; <br />';
                     }
                 }
