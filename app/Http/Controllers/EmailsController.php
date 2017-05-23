@@ -12,6 +12,13 @@ use Response;
 
 class EmailsController extends Controller
 {
+    var $variables = array(
+        "id"        => "User id",
+        "email"     => "Email",
+        "firstname" => "First name",
+        "lastname"  => "Last name"
+    );
+
 	public function list_all()
 	{
 		$templates = array();
@@ -22,7 +29,7 @@ class EmailsController extends Controller
                 "id" => $template["id"],
                 "title" => $template["title"],
                 "content" => $template["content"],
-                "variables" => $template["variables"],
+                "variables" => json_decode($template["variables"]),
                 "country" => $template["country_id"]
             );
         }
@@ -70,7 +77,8 @@ class EmailsController extends Controller
         return view('admin/templates_email/add', array(
             'breadcrumbs' => $breadcrumbs,
             'text_parts'  => $text_parts,
-            'in_sidebar'  => $sidebar_link
+            'in_sidebar'  => $sidebar_link,
+            'variables'   => $this->variables
         ));
     }
 
@@ -90,7 +98,7 @@ class EmailsController extends Controller
         $fillable = [
             'title'  => $vars['title'],
             'content'  => $vars['content'],
-            'variables'     => $vars['variables'],
+            'variables'     => json_encode($vars['variables']),
             'hook'  => $vars['hook'],
             'description'   => $vars['description']
         ];
@@ -141,19 +149,18 @@ class EmailsController extends Controller
                 'title'   => 'Not logged in'];
         }
 
-        $vars = $request->only('title', 'content', 'variables', 'hook', 'description');
+        $vars = $request->only('title', 'content', 'hook', 'description');
 
         $email_template = TempalteEmail::where('id', $request->id)->get()->first();
 
         $fillable = [
             'title'  => $vars['title'],
             'content'  => $vars['content'],
-            'variables'     => $vars['variables'],
             'hook'  => $vars['hook'],
             'description'  => $vars['description']
         ];
 
-        $validator = Validator::make($fillable, TempalteEmail::rules('post', $email_template->id), TempalteEmail::$message, TempalteEmail::$attributeNames);
+        $validator = Validator::make($fillable, TempalteEmail::rules('update', $email_template->id), TempalteEmail::$message, TempalteEmail::$attributeNames);
 
         if ($validator->fails())
         {

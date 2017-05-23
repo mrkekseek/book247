@@ -52,13 +52,6 @@
                                     </div> 
                                 </div>
 
-                                <div class="col-sm-12 form-group">
-                                    <label for="variables" class="col-sm-2 control-label">Variables</label>
-                                    <div class="col-sm-10">
-                                        <input type="text" class="form-control" value="{{ isset($template->variables) ? $template->variables : '' }}" name="variables" placeholder="Variables">
-                                    </div>
-                                </div>
-
                                 <div class="col-sm-12 form-group">        
                                     <label for="hook" class="col-sm-2 control-label">Hook</label>
                                     <div class="col-sm-10">
@@ -71,6 +64,17 @@
                                         <textarea class="form-control"  name="description">{{ isset($template->description) ? $template->description : '' }}</textarea>
                                     </div>
                                 </div>
+
+                                @if(count($variables = json_decode($template->variables)))
+                                    <div class="col-sm-12 form-group">
+                                        <label class="col-sm-2 control-label">Variables:</label>
+                                        <div class="col-sm-10">
+                                            @foreach($variables as $var)
+                                                <button type="button" class="btn btn-sm btn-default btn-vars" data-value="{{ $var }}">{{ $var }}</button>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                @endif
                             
                                 <div class="col-sm-12 form-group">
                                     <div class="col-sm-2 pull-right">
@@ -118,6 +122,10 @@
                 var error = $('.alert-danger', form);
                 var success = $('.alert-success', form);
 
+                $.validator.addMethod("description", function(value, element) {
+                    return value && value.length ? true : false;
+                }, "Please enter description");
+
                 form.validate({
                     errorElement: 'span',
                     errorClass: 'help-block help-block-error',
@@ -125,19 +133,17 @@
                     ignore: "",
                     rules: {
                         title: {
-                            minlength: 5,
                             required: true
                         },
                         content: {
-                            minlength: 5,
                             required: true
                         },
                         hook: {
                             required: true
                         },
                         description: {
-                            minlength: 20,
-                            required: true
+                            required: true,
+                            description : true
                         }
                     },
 
@@ -181,6 +187,9 @@
         $(document).ready(function(){
             FormValidation.init();
             $("textarea[name=description]").summernote({ height : 300 });
+            $(".btn-vars").click(function(){
+                $("textarea[name=description]").code($("textarea[name=description]").val() + '[[' + $(this).data("value") + ']]');
+            });
         });
 
         function update_template()
@@ -191,7 +200,6 @@
                 data: {
                     'title':         $('input[name=title]').val(),
                     'content':         $('input[name=content]').val(),
-                    'variables':            $('input[name=variables]').val(),
                     'hook':         $('input[name=hook]').val(),
                     'description':  $('textarea[name=description]').val()
                 },
