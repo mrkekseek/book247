@@ -50,8 +50,7 @@ class TempalteEmail extends Model
                 return [
                     'title'  => 'required',
                     'content'  => 'required',
-                    'description'  => 'required',
-                    'hook'  => 'required'
+                    'description'  => 'required'
                 ];
             }
 

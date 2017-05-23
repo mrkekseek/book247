@@ -105,6 +105,7 @@ class EmailsController extends Controller
         ];
 
         $validator = Validator::make($fillable, TempalteEmail::rules('post'), TempalteEmail::$message, TempalteEmail::$attributeNames);
+
         if ($validator->fails())
         {
             return array(
@@ -206,14 +207,13 @@ class EmailsController extends Controller
                 'title'   => 'Not logged in'];
         }
 
-        $vars = $request->only('title', 'content', 'hook', 'description');
+        $vars = $request->only('title', 'content', 'description');
 
         $email_template = TempalteEmail::where('id', $request->id)->get()->first();
 
         $fillable = [
             'title'  => $vars['title'],
             'content'  => $vars['content'],
-            'hook'  => $vars['hook'],
             'description'  => $vars['description']
         ];
 

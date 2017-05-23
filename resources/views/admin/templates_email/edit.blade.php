@@ -52,13 +52,6 @@
                                     </div> 
                                 </div>
 
-                                <div class="col-sm-12 form-group">        
-                                    <label for="hook" class="col-sm-2 control-label">Hook</label>
-                                    <div class="col-sm-10">
-                                        <input type="text" class="form-control" value="{{ isset($template->hook) ? $template->hook : '' }}" name="hook" placeholder="Hook">
-                                    </div>
-                                </div>
-
                                 <div class="col-sm-12 form-group">
                                     <div class="col-sm-12">
                                         <textarea class="form-control"  name="description">{{ isset($template->description) ? $template->description : '' }}</textarea>
@@ -156,9 +149,6 @@
                         content: {
                             required: true
                         },
-                        hook: {
-                            required: true
-                        },
                         description: {
                             required: true,
                             description : true
@@ -239,7 +229,6 @@
                 data: {
                     'title':         $('input[name=title]').val(),
                     'content':         $('input[name=content]').val(),
-                    'hook':         $('input[name=hook]').val(),
                     'description':  $('textarea[name=description]').val()
                 },
                 success: function(data){
