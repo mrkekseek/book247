@@ -6,3 +6,11 @@
     background-color: #ff9f85;
     border: 1px solid #d91e18;
 }
+
+.has-error .note-editor {
+	border: 1px solid #e73d4a !important;
+}
+
+textarea[name=content] {
+    resize: none;
+}
