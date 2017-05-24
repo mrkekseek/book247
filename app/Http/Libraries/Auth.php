@@ -20,7 +20,7 @@ class Auth
     public static function user()
     {   
         self::set_session();
-        $session_sso = Session::get('sso_user_id');               
+        $session_sso = Session::get('sso_user_id');                       
         if (!empty($session_sso))
         {   
             $user_locale = User::where('sso_user_id',$session_sso)->first();            
@@ -46,21 +46,35 @@ class Auth
 
     public static function attempt($data = [])
     {   
-        if (AuthLocal::once(['email' => $data['email'], 'password' => $data['password'], 'sso_user_id' => 0]))
-        {            
-            $local_id = AuthLocal::user()->id;            
-            $user = User::find($local_id)->toArray();            
-            $new_sso_id = self::create_api_user($user, $data['password']);                                    
-            if ($new_sso_id)
-            {
+        if (AuthLocal::once(['username' => $data['email'], 'password' => $data['password'], 'sso_user_id' => NULL]))
+        {   
+            $local_id = AuthLocal::user()->id;
+            $user = User::find($local_id)->toArray();                                  
+            if (self::check_exist_api_user($user['username']))
+            {   
+                $sso_user = ApiAuth::accounts_get_by_username($user['username']);
+                $sso_user_id = $sso_user['data']->id;
                 $update_user = User::find($local_id);
                 $update_user->update_from_api = true;
-                $update_user->sso_user_id = $new_sso_id;
+                $update_user->sso_user_id = $sso_user_id;
                 $update_user->save();
-                self::set_cookie_session($new_sso_id);
+                self::set_cookie_session($sso_user_id);
                 return true;
-            }            
-        }
+            }
+            else
+            {                
+                $new_sso_id = self::create_api_user($user, $data['password']);                                    
+                if ($new_sso_id)
+                {
+                    $update_user = User::find($local_id);
+                    $update_user->update_from_api = true;
+                    $update_user->sso_user_id = $new_sso_id;
+                    $update_user->save();
+                    self::set_cookie_session($new_sso_id);
+                    return true;
+                }
+            }
+        }        
         if (ApiAuth::autorize($data)['success'])
         {  
             $sso_user = ApiAuth::accounts_get_by_username($data['email']);            
@@ -92,15 +106,29 @@ class Auth
     private static function set_session()
     {
         $cookie_sso = Cookie::get('sso_user_id');                
-        $session_sso = Session::get('sso_user_id');        
+        $session_sso = Session::get('sso_user_id');                
+        if (!empty($cookie_sso) && !empty($session_sso) && $session_sso !== $cookie_sso)
+        {            
+            $session_sso = false;
+        }
         if (!empty($cookie_sso) && empty($session_sso))
         {
             $sso_user_id = $cookie_sso;
-            $user = ApiAuth::accounts_get($sso_user_id);
-            if ($user['success'])
+            $api_user = ApiAuth::accounts_get($sso_user_id);
+            if ($api_user['success'])
             {
-                Session::put('sso_user_id',$user['data']->id);
-                self::set_local_user($user['data']->id);
+                $exist = User::where([
+                    'username'=>$api_user['data']->username,
+                    'sso_user_id'=>NULL
+                ])->first();
+                if (!empty($exist))
+                {                    
+                    $exist->sso_user_id = $api_user['data']->id;
+                    $exist->update_from_api = TRUE;
+                    $exist->save();
+                }
+                Session::put('sso_user_id',$api_user['data']->id);
+                self::set_local_user($api_user['data']->id);
             }
         }
         elseif (empty($cookie_sso) && !empty($session_sso))
@@ -108,17 +136,6 @@ class Auth
             Session::put('sso_user_id','');
         }
     }
-    
-    private static function check_exist_local_user($sso_user_id)
-    {      
-        
-        if (self::set_local_user($sso_user_id))
-        {
-            self::set_cookie_session($sso_user_id);
-            return true;
-        }
-        return false;
-    }    
     
     private static function set_local_user($sso_user_id)
     {
@@ -198,7 +215,7 @@ class Auth
     public static function update_api_user($user)
     {
         $apiData = $user;
-        $apiData['id'] = $apiData['sso_user_id'];
+        $apiData['id'] = (int) $apiData['sso_user_id'];
         unset($apiData['sso_user_id']);
         switch ($apiData['gender'])
         {
@@ -226,13 +243,11 @@ class Auth
     
     private static function get_domain()
     {   
-        $url = $_SERVER['HTTP_REFERER'];        
-        $pieces = parse_url($url);
-        $domain = isset($pieces['host']) ? $pieces['host'] : '';
-        if (preg_match('/(?P<domain>[a-z0-9][a-z0-9\-]{1,63}\.[a-z\.]{2,6})$/i', $domain, $regs)) {
+        $host = $_SERVER['HTTP_HOST'];
+        if (preg_match('/(?P<domain>[a-z0-9][a-z0-9\-]{1,63}\.[a-z\.]{2,6})$/i', $host, $regs)) {          
           return '.'.$regs['domain'];
         }
-        return false;
+        return FALSE;
     }
 
 }

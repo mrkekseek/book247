@@ -1514,7 +1514,7 @@ class FrontEndUserController extends Controller
             $user->gender      = $userVars["gender"];
             $user->email       = $userVars["email"];
             $user->birthday    = $vars['date_of_birth'];
-            $user->username    = $userVars["email"];            
+            //$user->username    = $userVars["email"];            
             if (!$user->save() && !empty(Auth::$error))            
             {                
                 return array(
@@ -2628,34 +2628,18 @@ class FrontEndUserController extends Controller
         $text_psw    = $vars['password'];
         $credentials['password'] = Hash::make($credentials['password']);
         $the_plan = MembershipPlan::where('id','=',$vars['membership_plan'])->where('id','!=',1)->where('status','=','active')->get()->first();        
-        try {
-            $user = User::create($credentials);                        
-            if (!empty (Auth::$error))
-            {
-                return [
-                    'success'   => false,
-                    'title'     => 'Api error',
-                    'errors'    => Auth::$error
-                ];
-            }
-            $user->attachRole($userType);
-
+        try {            
             $personalData = [
                 'personal_email'=> $vars['email'],
                 'mobile_number' => $vars['phone_number'],
                 'date_of_birth' => $vars['date_of_birth'],
                 'bank_acc_no'   => 0,
                 'social_sec_no' => 0,
-                'about_info'    => '',
-                'user_id'       => $user->id,
+                'about_info'    => '',                
                 'customer_number'   => $user->get_next_customer_number()
-            ];
-
-            $validator = Validator::make($personalData, PersonalDetail::rules('POST'), PersonalDetail::$messages, PersonalDetail::$attributeNames);
-            if ($validator->fails()){
-                $user->detachAllRoles();
-                $user->delete();
-
+            ];            
+            $validator = Validator::make($personalData, PersonalDetail::rules('POST'), PersonalDetail::$messages, PersonalDetail::$attributeNames);            
+            if ($validator->fails()){                
                 return array(
                     'success'   => false,
                     'title'     => 'Error validating',
@@ -2663,10 +2647,21 @@ class FrontEndUserController extends Controller
                 );
             }
             else{
+                $user = User::create($credentials);                        
+                if (!empty (Auth::$error))
+                {
+                    return [
+                        'success'   => false,
+                        'title'     => 'Api error',
+                        'errors'    => Auth::$error
+                    ];
+                }
+                $personalDetails['user_id'] = $user->id;
+                $user->attachRole($userType);    
                 $personalDetails = PersonalDetail::firstOrNew(['user_id'=>$user->id]);
                 $personalDetails->fill($personalData);
                 $personalDetails->save();
-            }
+            }          
 
             $top_title_message = 'Dear <span>'.$user->first_name.' '.$user->middle_name.' '.$user->last_name .'</span>';
             $main_message = 'SQF/Book247 is the official booking system for Drammen & Økern. Within approximately 30 days time Book 247 will be used for all SquashFitness locations. Please log in and "add your friends" (playing partners). By doing this you and your playing partners can book on behalf of each other and according to the booking rules. This will make the booking procedure faster for you, your partners and our receptionists.'. PHP_EOL . ' <br /><br /> '.
@@ -2768,8 +2763,8 @@ class FrontEndUserController extends Controller
             $client_vars['user_type'] = Role::where('name','=','front-user')->get()->first()->id;
         }
 
-        if ($client_vars['password']==""){
-            $client_vars['password'] = substr(bcrypt(str_random(12)),0,8);
+        if ($client_vars['password']==""){            
+            $client_vars['password'] = substr(bcrypt(str_random(12)),0,8);            
         }
 
         $validator = Validator::make($client_vars, User::rules('POST'), User::$messages, User::$attributeNames);
@@ -2784,12 +2779,11 @@ class FrontEndUserController extends Controller
 
         $credentials = $client_vars;
         $text_psw    = $client_vars['password'];
+        $credentials['password_api'] = $credentials['password'];
         $credentials['password'] = Hash::make($credentials['password']);
 
-        try {
-            $user = User::create($credentials);
-            $user->attachRole($client_vars['user_type']);
-
+        try {            
+            $user = new User;
             if (isset($client_vars['customer_number']) && strlen($client_vars['customer_number'])>0){
                 $customer_number = $user->get_next_customer_number($client_vars['customer_number']);
             }
@@ -2804,32 +2798,37 @@ class FrontEndUserController extends Controller
                 'mobile_number'     => $client_vars['phone_number'],
                 'bank_acc_no'       => 0,
                 'social_sec_no'     => 0,
-                'about_info'        => $client_vars['about_info'],
-                'user_id'           => $user->id,
+                'about_info'        => $client_vars['about_info'],                
                 'customer_number'   => $customer_number
             ];
             $validator = Validator::make($personalData, PersonalDetail::rules('POST'), PersonalDetail::$messages, PersonalDetail::$attributeNames);
             if ($validator->fails()){
-                $user->detachAllRoles();
-                $user->delete();
-
                 return [
                     'success'   => false,
                     'errors'    => $validator->getMessageBag()->toArray()
                 ];
             }
-
-            $personalDetails = PersonalDetail::firstOrNew(['user_id'=>$user->id]);
-            $personalData['date_of_birth'] = $client_vars['date_of_birth']!=''?$client_vars['date_of_birth']:Carbon::today()->toDateString();
-            $personalDetails->fill($personalData);
-            $personalDetails->save();
-
-
-            return [
-                'success'   => true,
-                'password'  => $text_psw,
-                'user'      => $user
-            ];
+            else{
+                $user = User::create($credentials);
+                if (!empty (Auth::$error))
+                {
+                    return [
+                        'success'   => false,                    
+                        'errors'    => ['Api erorr' => [0 => Auth::$error]]
+                    ];
+                }
+                $user->attachRole($client_vars['user_type']);
+                $personalData['user_id'] = $user->id;
+                $personalDetails = PersonalDetail::firstOrNew(['user_id'=>$user->id]);
+                $personalData['date_of_birth'] = $client_vars['date_of_birth']!=''?$client_vars['date_of_birth']:Carbon::today()->toDateString();
+                $personalDetails->fill($personalData);
+                $personalDetails->save();
+                return [
+                    'success'   => true,
+                    'password'  => $text_psw,
+                    'user'      => $user
+                ];
+            }
         }
         catch (Exception $e) {
             return [
@@ -3136,12 +3135,12 @@ class FrontEndUserController extends Controller
 
             foreach ($members as $member){
                 //xdebug_var_dump($member); //exit;
-                // add member
+                // add member                
                 $newUser = FrontEndUserController::register_new_client($member);
 
                 if ($newUser['success']==false){
                     $msg = 'Following errors occurred : <br />';
-                    foreach ($newUser['errors'] as $key=>$error){
+                    foreach ($newUser['errors'] as $key=>$error){                        
                         $msg.= $key.' : '.implode(', ',$error).'; <br />';
                     }
                 }

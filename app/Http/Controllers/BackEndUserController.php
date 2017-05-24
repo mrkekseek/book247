@@ -134,7 +134,7 @@ class BackEndUserController extends Controller
         if (!isset($vars['country_id'])){
             $vars['country_id'] = Config::get('constants.globalWebsite.defaultCountryId');
         }
-
+        
         $credentials = [
             'first_name'    => $vars['first_name'],
             'middle_name'   => $vars['middle_name'],
@@ -142,6 +142,7 @@ class BackEndUserController extends Controller
             'username'      => $vars['username'],
             'email'         => $vars['email'],
             'password'      => $vars['password'],
+            'password_api'      => $vars['password'],
             'country_id'    => $vars['country_id'],
             'status'        => 'active',
             'user_type'     => $vars['user_type']

@@ -5,9 +5,8 @@ namespace App\Http\Controllers;
 use App\FinancialProfile;
 use Validator;
 use Illuminate\Http\Request;
-
+use Auth;
 use App\Http\Requests;
-use Illuminate\Support\Facades\Auth;
 use Regulus\ActivityLog\Models\Activity;
 use Webpatser\Countries\Countries;
 
@@ -15,7 +14,8 @@ class FinancialProfiles extends Controller
 {
     public function list_all(){
         $user = Auth::user();
-        if (!$user || !$user->is_back_user()) {
+        if ( ! $user || !$user->is_back_user())
+        {
             return redirect()->intended(route('admin/login'));
         }
 
