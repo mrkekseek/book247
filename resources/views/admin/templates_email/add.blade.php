@@ -32,6 +32,10 @@
                 <div class="portlet light portlet-fit portlet-datatable bordered">
                     <div class="portlet-title">
                         <div class="caption">
+                            <a href="/admin/templates_email/list_all" class="back">
+                                <i class="fa fa-chevron-left"></i>
+                            </a>
+                           
                             Add new template
                         </div>
                     </div>
@@ -45,8 +49,8 @@
                                     </div>
                                 </div>
 
-                                 <div class="col-sm-12 form-group">
-                                    <label for="content" class="col-sm-2 control-label">Country list</label>
+                                <div class="col-sm-12 form-group">
+                                    <label for="content" class="col-sm-2 control-label">Country</label>
                                     <div class="col-sm-10">
                                         <select class="form-control" name="country">
                                             <option value="">Select country</option>
@@ -244,7 +248,11 @@
                     }
                     else
                     {
-                        show_notification(data.title, data.errors, 'ruby', 3500, 0);
+                        for(var i in data.errors)
+                        {
+                            show_notification(data.title, data.errors[i], 'ruby', 3500, 0);
+                        }
+                        
                     }
                 }
             });
@@ -257,7 +265,6 @@
                 var element = $("textarea[name=description]");
                 var parent = $(element).closest(".form-group");
 
-  
                 if( ! $(element).summernote('isEmpty'))
                 {
                     parent.removeClass("has-error").addClass("has-success");
@@ -270,8 +277,17 @@
             }});
 
             $("select[name=variables]").change(function() {
-                var value = $(this).val();
-                //console.log(value);
+                var element = $(this);
+                var parent = $(element).closest(".form-group");
+                
+                if($(element).val())
+                {
+                    parent.removeClass("has-error").addClass("has-success");
+                }
+                else
+                {
+                   parent.removeClass("has-success").addClass("has-error");
+                }
             });
 
         });

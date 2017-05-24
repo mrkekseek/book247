@@ -637,7 +637,10 @@ Route::group(['middleware' => 'web'], function () {
         'uses'  => 'EmailsController@reset_default'
     ]);
 
-
+    Route::get('admin/templates_email/make_default/{id}', [
+        'as'    => 'admin/templates_email/make_default/{id}',
+        'uses'  => 'EmailsController@make_default'
+    ]);
 
     Route::post('admin/templates_email/delete', [
         'as'    => 'admin/templates_email/delete',
