@@ -1858,18 +1858,32 @@
             buttons: [
                 {
                     label: 'Cash',
-                    class: 'btn btn-sm purple-seance',
-
-                    onClick: function() {
-                        alert($(this).attr('data-key'));
-                    }
-                },
-                {
-                    label: 'Card',
                     class: 'btn btn-sm blue',
 
                     onClick: function() {
                         alert($(this).attr('data-key'));
+                        var alink = $('div[search-key="' + $(this).attr('data-key') + '"]');
+                        var abutton = alink.find('a[data-key="' + $(this).attr('data-key') + '"]');
+                        abutton.addClass('{{ $button_color['is_paid_cash'] }}');
+
+                        abutton.confirmation('destroy');
+                        abutton.css('cursor','default');
+                        mark_invoice_as_paid($(this).attr('data-key'), 'cash');
+                    }
+                },
+                {
+                    label: 'Card',
+                    class: 'btn btn-sm purple-seance',
+
+                    onClick: function() {
+                        alert($(this).attr('data-key'));
+                        var alink = $('div[search-key="' + $(this).attr('data-key') + '"]');
+                        var abutton = alink.find('a[data-key="' + $(this).attr('data-key') + '"]');
+                        abutton.addClass('{{ $button_color['is_paid_cash'] }}');
+
+                        abutton.confirmation('destroy');
+                        abutton.css('cursor','default');
+                        mark_invoice_as_paid($(this).attr('data-key'), 'card');
                     }
                 },
                 {
@@ -1877,7 +1891,18 @@
                     class: 'btn btn-sm green-seagreen',
 
                     onClick: function() {
-                        alert($(this).attr('data-key'));
+                        var alink = $('div[search-key="' + $(this).attr('data-key') + '"]');
+                        var abutton = alink.find('a[data-key="' + $(this).attr('data-key') + '"]');
+
+                        var pay_answer = mark_invoice_as_paid($(this).attr('data-key'), 'credit');
+                        if ( pay_answer.success == true ){
+                            abutton.addClass('{{ $button_color['is_paid_credit'] }}');
+                            abutton.confirmation('destroy');
+                            abutton.css('cursor','default');
+                        }
+                        else{
+
+                        }
                     }
                 }
             ]

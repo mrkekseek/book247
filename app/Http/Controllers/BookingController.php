@@ -1594,6 +1594,7 @@ class BookingController extends Controller
 
             'is_paid_cash'      => 'bg-blue bg-font-blue',
             'is_paid_card'      => 'bg-purple bg-font-purple',
+            'is_paid_credit'      => 'bg-green-seagreen bg-font-green-seagreen',
             'is_paid_online'    => 'bg-yellow-haze bg-font-yellow-haze',
             'payment_issues'    => 'bg-red-thunderbird bg-font-red-thunderbird',
             'payment_btn_active'=> 'btn-default',
