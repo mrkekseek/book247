@@ -6,6 +6,7 @@ use App\Booking;
 use App\GeneralNote;
 use App\ShopLocations;
 use App\ShopResourceCategory;
+use App\User;
 use App\UserSettings;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -60,6 +61,14 @@ class FrontPageController extends Controller
                 'header' => ['Invalid Login Attempt'],
                 'message_body' => ['Username and/or password invalid.'],
             ]);
+            if (!empty(Auth::$error)){
+                $errors = new MessageBag([                
+                    'password' => ['Username and/or password invalid.'],
+                    'username' => ['Username and/or password invalid.'],
+                    'header' => ['Invalid Login Attempt'],
+                    'message_body' => [Auth::$error],
+                ]);
+            }
 
             return  redirect()->intended()
                 ->withInput()
@@ -412,10 +421,10 @@ class FrontPageController extends Controller
             ->with('for_user')
             ->with('location')
             ->with('resource')
-            ->whereIn('by_user_id', $me_an_friends,'or')
+            //->whereIn('by_user_id', $me_an_friends,'or')
             ->whereIn('for_user_id',$me_an_friends,'or')
             ->orderBy('created_at','desc')
-            ->take(50)
+            ->take(20)
             ->get();
         foreach($bookings as $booking){
             if ( in_array($booking->status,['expired','canceled']) ){ continue; }
@@ -424,18 +433,23 @@ class FrontPageController extends Controller
             $createdAt = Carbon::createFromTimeStamp(strtotime($booking->created_at))->diffForHumans();
             $singleBook = [];
             $singleBook['passed_time_since_creation'] = $createdAt;
-            $singleBook['breated_by'] = $booking->by_user['first_name'].' '.$booking->by_user['middle_name'].' '.$booking->by_user['last_name'];
-            $singleBook['breated_for'] = $booking->for_user['first_name'].' '.$booking->for_user['middle_name'].' '.$booking->for_user['last_name'];
-            $singleBook['on_location'] = $booking->location['name'];
-            $singleBook['on_resource'] = $booking->resource['name'];
-            $singleBook['status'] = $booking->status;
+            $singleBook['breated_by']   = $booking->by_user['first_name'].' '.$booking->by_user['middle_name'].' '.$booking->by_user['last_name'];
+            $singleBook['breated_for']  = $booking->for_user['first_name'].' '.$booking->for_user['middle_name'].' '.$booking->for_user['last_name'];
+            $singleBook['on_location']  = $booking->location['name'];
+            $singleBook['on_resource']  = $booking->resource['name'];
+            $singleBook['status']       = $booking->status;
 
             // get category name
             $category = ShopResourceCategory::where('id','=',$booking->resource['category_id'])->get()->first();
-            $singleBook['categoryName'] = $category['name'];
-            $singleBook['book_date_format'] =  Carbon::createFromFormat('Y-m-d',$booking['date_of_booking'])->format('l jS, F Y');  //'Sunday 24th, April 2016';
-            $singleBook['book_time_start'] = $booking->booking_time_start;
-            $singleBook['book_time_end'] = $booking->booking_time_end;
+            $singleBook['categoryName']     = $category['name'];
+            $singleBook['book_date_format'] = Carbon::createFromFormat('Y-m-d',$booking['date_of_booking'])->format('l jS, F Y');  //'Sunday 24th, April 2016';
+            $singleBook['book_time_start']  = $booking->booking_time_start;
+            $singleBook['book_time_end']    = $booking->booking_time_end;
+
+            $for_user = User::where('id','=',$booking->for_user_id)->first();
+            if ($for_user){
+                $singleBook['avatar'] = $for_user->get_avatar_image(true);
+            }
 
             $formatedBookings[] = $singleBook;
             if (sizeof($formatedBookings)>15){ break; }

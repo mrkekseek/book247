@@ -94,10 +94,13 @@
                                     </div>
                                     <ul class="nav nav-tabs">
                                         <li>
-                                            <a href="#tab_1_3" data-toggle="tab">Access Card</a>
+                                            <a href="#tab_1_3" data-toggle="tab">Store Credit</a>
                                         </li>
                                         <li class="active">
                                             <a href="#tab_1_5" data-toggle="tab">Membership Plan</a>
+                                        </li>
+                                        <li>
+                                            <a href="#tab_1_2" data-toggle="tab">Access Card</a>
                                         </li>
                                         <li>
                                             <a href="#tab_1_4" data-toggle="tab">Documents</a>
@@ -106,8 +109,8 @@
                                 </div>
                                 <div class="portlet-body">
                                     <div class="tab-content">
-                                        <!-- Membership Plan TAB -->
-                                        <div class="tab-pane row" id="tab_1_3">
+                                        <!-- Access Card TAB -->
+                                        <div class="tab-pane row" id="tab_1_2">
                                             <div class="col-md-12">
                                                 <div class="portlet light bordered">
                                                     <div class="portlet-body form">
@@ -169,7 +172,78 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <!-- END Membership Plan TAB -->
+                                        <!-- END Access Card TAB -->
+                                        <!-- Access Card TAB -->
+                                        <div class="tab-pane row" id="tab_1_3">
+                                            <div class="col-md-12">
+                                                <div class="portlet light bordered">
+                                                    <div class="portlet-body form">
+                                                        <!-- BEGIN FORM-->
+                                                        <form action="#" id="add_store_credit" class="form-horizontal">
+                                                            <div class="form-body">
+                                                                <div class="form-group" style="margin-bottom:0px;">
+                                                                    <label class="control-label col-md-4"> Store Credit </label>
+                                                                    <div class="col-md-8">
+                                                                        <input class="form-control input-inline inline-block input-xlarge" name="store_credit_value" placeholder="insert credit amount here" value="" />
+                                                                        <button class="btn uppercase green-meadow inline-block">Add to account</button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </form>
+                                                        <!-- END FORM-->
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-12">
+                                                <div class="portlet light bordered">
+                                                    <div class="portlet-title">
+                                                        <div class="caption">
+                                                            <i class="icon-equalizer font-blue-steel"></i>
+                                                            <span class="caption-subject font-blue-steel bold uppercase"> Store Credit Activity </span>
+                                                            <span class="caption-helper">for the selected member</span>
+                                                        </div>
+                                                        <div class="tools">
+                                                            <a class="collapse" href="" data-original-title="" title=""> </a>
+                                                        </div>
+                                                    </div>
+                                                    <div class="portlet-body row">
+                                                        <!-- BEGIN FORM-->
+                                                        <div class="table-scrollable">
+                                                            <table class="table table-striped table-bordered table-advance table-hover">
+                                                                <thead>
+                                                                <tr>
+                                                                    <th>
+                                                                        <i class="fa fa-calendar-minus-o"></i> Issued Date & By whom </th>
+                                                                    <th class="hidden-xs">
+                                                                        <i class="fa fa-calendar"></i> Amount </th>
+                                                                    <th>
+                                                                        <i class="fa fa-dollar"></i> Overall credit </th>
+                                                                    <th class="hidden-xs">
+                                                                        <i class="fa fa-asterisk"></i> Status </th>
+                                                                    <!--<th> Options </th>-->
+                                                                </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                @if (sizeof($storeCreditNotes)>0)
+                                                                    @foreach($storeCreditNotes as $single)
+                                                                    <tr>
+                                                                        <td></td>
+                                                                        <td></td>
+                                                                        <td></td>
+                                                                        <td></td>
+                                                                    </tr>
+                                                                    @endforeach
+                                                                @endif
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                        <!-- END FORM-->
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- END Access Card TAB -->
                                         <!-- Membership Plan TAB -->
                                         <div class="tab-pane active row" id="tab_1_5">
                                             <div class="col-md-12">
@@ -1068,11 +1142,65 @@
                 });
             }
 
+            var handleValidationStoreCredit = function() {
+                var form1 = $('#add_store_credit');
+                var error1 = $('.alert-danger', form1);
+                var success1 = $('.alert-success', form1);
+
+                form1.validate({
+                    errorElement: 'span', //default input error message container
+                    errorClass: 'help-block help-block-error', // default input error message class
+                    focusInvalid: false, // do not focus the last invalid input
+                    ignore: "",  // validate all fields including form hidden input
+                    rules: {
+                        store_credit_value: {
+                            minlength: 1,
+                            required: true,
+                            number:true
+                        },
+                    },
+
+                    invalidHandler: function (event, validator) { //display error alert on form submit
+                        success1.hide();
+                        error1.show();
+                        App.scrollTo(error1, -200);
+                    },
+
+                    errorPlacement: function (error, element) { // render error placement for each input type
+                        var icon = $(element).parent('.input-icon').children('i');
+                        icon.removeClass('fa-check').addClass("fa-warning");
+                        icon.attr("data-original-title", error.text()).tooltip({'container': 'body'});
+                    },
+
+                    highlight: function (element) { // hightlight error inputs
+                        $(element)
+                            .closest('.form-group').removeClass("has-success").addClass('has-error'); // set error class to the control group
+                    },
+
+                    unhighlight: function (element) { // revert the change done by hightlight
+
+                    },
+
+                    success: function (label, element) {
+                        var icon = $(element).parent('.input-icon').children('i');
+                        $(element).closest('.form-group').removeClass('has-error').addClass('has-success'); // set success class to the control group
+                        icon.removeClass("fa-warning").addClass("fa-check");
+                    },
+
+                    submitHandler: function (form) {
+                        success1.show();
+                        error1.hide();
+                        add_store_credit(); // submit the form
+                    }
+                });
+            }
+
             return {
                 //main function to initiate the module
                 init: function () {
                     handleValidationAccChange();
                     handleValidationAccessCardChange();
+                    handleValidationStoreCredit();
                 }
             };
         }();
@@ -1362,6 +1490,30 @@
                 data: {
                     'memberID':     '{{ $user->id }}',
                     'card_value':   $('input[name="access_card_number"]').val(),
+                },
+                success: function (data) {
+                    if (data.success) {
+                        $('#change_member_status').modal('hide');
+                        show_notification(data.title, data.message, 'lemon', 3500, 0);
+                        location.reload();
+                    }
+                    else{
+                        show_notification(data.title, data.errors, 'ruby', 3500, 0);
+                    }
+                }
+            });
+        }
+
+        function add_store_credit(){
+            $.ajax({
+                url: '{{route('ajax/buy_store_credit')}}',
+                type: "post",
+                cache: false,
+                data: {
+                    'member_id':     '{{ $user->id }}',
+                    'amount':   $('input[name="store_credit_value"]').val(),
+                    'is_bonus':0,
+                    'issue_invoice':1
                 },
                 success: function (data) {
                     if (data.success) {

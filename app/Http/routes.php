@@ -605,7 +605,48 @@ Route::group(['middleware' => 'web'], function () {
         'uses'  => 'FinancialProfiles@update_shop_financial_profile'
     ]);
     /* Stop Finance Profiles Part */
+
+    /* Start Email Templates Part */
+    Route::get('admin/templates_email/list_all', [
+        'as'    => 'admin/templates_email/list_all',
+        'uses'  => 'EmailsController@list_all'
+    ]);
+
+    Route::get('/admin/templates_email/add', [
+        'as'    => 'admin/templates_email/add',
+        'uses'  => 'EmailsController@add'
+    ]);
+
+    Route::get('admin/templates_email/edit/{id}', [
+        'as'    => 'admin/templates_email/edit/{id}',
+        'uses'  => 'EmailsController@edit'
+    ]);
+
+    Route::post('admin/templates_email/create', [
+        'as'    => 'admin/templates_email/create',
+        'uses'  => 'EmailsController@store_email_template'
+    ]);
+
+    Route::post('admin/templates_email/update/{id}', [
+        'as'    => 'admin/templates_email/update/{id}',
+        'uses'  => 'EmailsController@update_email_template'
+    ]);
+    
+    Route::get('admin/templates_email/reset_default/{id}', [
+        'as'    => 'admin/templates_email/reset_default/{id}',
+        'uses'  => 'EmailsController@reset_default'
+    ]);
+
+
+
+    Route::post('admin/templates_email/delete', [
+        'as'    => 'admin/templates_email/delete',
+        'uses'  => 'EmailsController@delete_email_template'
+    ]);
+    /* Stop Email Templates Part */
 });
+
+
 
 Route::group(['middleware'=>'web', 'prefix'=>'admin'], function(){
     /** Start - Membership Management */
@@ -1021,6 +1062,11 @@ Route::group(['prefix'=>'ajax', 'middleware' => 'web'], function(){
     Route::post('get_all_list_members', [
         'as'    => 'ajax/get_all_list_members',
         'uses'  => 'FrontEndUserController@get_front_members_ajax_call'
+    ]);
+
+    Route::post('buy_store_credit', [
+        'as'    => 'ajax/buy_store_credit',
+        'uses'  => 'FrontEndUserController@add_store_credit'
     ]);
 });
 

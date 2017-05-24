@@ -77,7 +77,7 @@ class Invoice extends Model
     }
 
     public static function next_invoice_number(){
-        $invoice = Invoice::select('invoice_number')->orderBy('invoice_number', 'desc')->take('1')->get()->first();
+        $invoice = Invoice::select('invoice_number')->orderBy('invoice_number', 'desc')->take(1)->get()->first();
         if ($invoice){
             return ( numeric($invoice->invoice_number)+1);
         }
@@ -257,7 +257,56 @@ class Invoice extends Model
         $this->save();
     }
 
-    public function add_credit_invoice($invoiceItem, $employeeId=0){
+    public function cancel_invoice($addStoreCredit = false){
+        switch ($this->status){
+            case 'pending' : {
+                $this->status = 'cancelled';
+                break;
+            }
+            case 'ordered' : {
+                $this->status = 'cancelled';
+                break;
+            }
+            case 'processing' : {
+                $this->status = 'cancelled';
+                break;
+            }
+            case 'completed' : {
+                $this->status = 'cancelled';
+
+                if ($addStoreCredit==true){
+                    // get the amount that got paid
+                    $invoiceTotal = $this->get_invoice_total();
+                    $this->add_store_credit($this->id, $invoiceTotal, $invoiceTotal, 0,'Invoice #'.$this->invoice_number.' got cancelled and the amount paid returned to the member as store credit',0,$this->user_id);
+                }
+                break;
+            }
+            case 'cancelled' : {
+                // already cancelled
+                break;
+            }
+            case 'declined' : {
+                $this->status = 'cancelled';
+                break;
+            }
+            case 'incomplete' : {
+                $this->status = 'cancelled';
+                break;
+            }
+            case 'preordered' : {
+                $this->status = 'cancelled';
+                break;
+            }
+            default : {
+                $this->status = 'cancelled';
+            }
+        }
+
+        $this->save();
+        return true;
+    }
+
+    public function add_credit_from_invoice_item($invoiceItem, $employeeId=0){
         if ($employeeId==0){
             $employee = User::where('username','=','sysagent')->get()->first();
             if ($employee){
@@ -268,7 +317,7 @@ class Invoice extends Model
             }
         }
 
-        $invoice = Invoice::where('id','=',$invoiceItem->invoice_id)->get()->first();
+        $invoice = Invoice::where('id','=',$invoiceItem->invoice_id)->first();
         if (sizeof($invoice)==0){
             return ['success' => false, 'errors' => 'Could not find invoice'];
         }
@@ -303,6 +352,51 @@ class Invoice extends Model
             'vat'       => $invoiceItem->vat
         ];
         $invoice->add_invoice_item($storeCreditItem);
+        return true;
+    }
 
+    public function add_store_credit($invoiceId, $amount, $price, $discount, $details, $employeeId, $userId){
+        if ($employeeId==0){
+            $employee = User::where('username','=','sysagent')->first();
+            if ($employee){
+                $employeeId = $employee->id;
+            }
+            else{
+                $employeeId = 38;
+            }
+        }
+
+        $vat = VatRate::where('value','=', 0)->first();
+
+        $fillable = [
+            'user_id'       => $userId,
+            'employee_id'   => $employeeId,
+            'invoice_type'  => 'store_credit',
+            'invoice_reference_id'  => $invoiceId,
+            'invoice_number'=> $this->next_invoice_number(),
+            'other_details' => $details,
+            'status'        => 'pending'
+        ];
+
+        $validator = Validator::make($fillable, Invoice::rules('POST'), Invoice::$message, Invoice::$attributeNames);
+        if ($validator->fails()){
+            return array(
+                'success' => false,
+                'errors' => $validator->getMessageBag()->toArray()
+            );
+        }
+        $invoice = Invoice::create($fillable);
+
+        $storeCreditItem = [
+            'item_name' => $amount.' Paid Store Credit ',
+            'item_type' => 'store_credit_item',
+            'item_reference_id' => -1,
+            'quantity'  => 1,
+            'price'     => $price,
+            'discount'  => $discount,
+            'vat'       => $vat->id
+        ];
+        $invoice->add_invoice_item($storeCreditItem);
+        return true;
     }
 }

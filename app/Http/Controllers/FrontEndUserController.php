@@ -14,6 +14,7 @@ use App\UserFriends;
 use App\UserMembership;
 use App\UserMembershipInvoicePlanning;
 use App\UserSettings;
+use App\UserStoreCredits;
 use Illuminate\Auth\Passwords\PasswordBroker;
 use Illuminate\Http\Request;
 
@@ -750,6 +751,14 @@ class FrontEndUserController extends Controller
             }
         }
 
+        $storeCredit = UserStoreCredits::where('','=','')->orderBy('','DESC')->get();
+        if($storeCredit){
+
+            foreach($storeCredit as $single){
+
+            }
+        }
+
         $breadcrumbs = [
             'Home'              => route('admin'),
             'Administration'    => route('admin'),
@@ -1339,7 +1348,8 @@ class FrontEndUserController extends Controller
                     case 'old' :
                         $colorStatus = 'label-info';
                         break;
-                    case 'canceled' :
+                    case 'cancelled' :
+                    default:
                         $colorStatus = 'label-default';
                         break;
                 }
@@ -1488,12 +1498,12 @@ class FrontEndUserController extends Controller
             'email'         => 'required|email|unique:users,email,'.$id.',id',
             'username'      => 'required|email|unique:users,username,'.$id.',id'
         ]);
-
+        
         if ($validator->fails()){
             return [
                 'success' => false,
                 'title'   => 'Validation Error',
-                'errors'  => $validator->getMessageBag()->toArray()
+                'errors'  => $validator->getMessageBag()->toArray()                
             ];
         }
         else{
@@ -1503,8 +1513,16 @@ class FrontEndUserController extends Controller
             $user->country_id  = $userVars["country_id"];
             $user->gender      = $userVars["gender"];
             $user->email       = $userVars["email"];
-            $user->username    = $userVars["email"];
-            $user->save();
+            $user->birthday    = $vars['date_of_birth'];
+            //$user->username    = $userVars["email"];            
+            if (!$user->save() && !empty(Auth::$error))            
+            {                
+                return array(
+                    'success'   => false,
+                    'title'     => 'Api error',                    
+                    'errors'  => [''=>[Auth::$error]]
+                );
+            }            
         }
 
         $personalData = [
@@ -1515,7 +1533,7 @@ class FrontEndUserController extends Controller
             'user_id'       => $user->id
         ];
         $validator = Validator::make($personalData, PersonalDetail::rules('PUT',$user->id), PersonalDetail::$messages, PersonalDetail::$attributeNames);
-        if ($validator->fails()){
+        if ($validator->fails()){            
             return array(
                 'success'   => false,
                 'title'     => 'You have some errors',
@@ -1674,7 +1692,7 @@ class FrontEndUserController extends Controller
                 'errors'  => $validator->getMessageBag()->toArray()
             ];
         }
-        else {
+        else {            
             if ($is_staff){
                 $user->fill([
                     'password' => Hash::make($request->password1)
@@ -1686,18 +1704,34 @@ class FrontEndUserController extends Controller
                     'message' => 'Old password changed ... user updated'
                 ];
             }
-            else{
-                $auth = auth();
-                if ($auth->attempt([ 'id' => $id, 'password' => $userVars['old_password'] ])) {
-                    $user->fill([
-                        'password' => Hash::make($request->password1)
-                    ])->save();
-
-                    return [
-                        'success' => true,
-                        'title' => 'Password updated',
-                        'message' => 'Old password changed ... user updated'
-                    ];
+            else{                
+                if (Auth::attempt(['email' => Auth::user()->email, 'password' => $userVars['old_password']])) {
+                    $token = \App\Http\Libraries\ApiAuth::resetPassword(Auth::user()->email)['data'];
+                    $apiData = [
+                        "Credentials" => [
+                          "Username" => Auth::user()->email,
+                          "Password" => ''
+                        ],
+                        "Token"=> $token,
+                        "NewPassword"=> $request->password1,                        
+                    ];                    
+                    $updatePassword = \App\Http\Libraries\ApiAuth::updatePassword($apiData);
+                    if ($updatePassword['success'])
+                    {
+                        return [
+                            'success' => true,
+                            'title' => 'Password updated',
+                            'message' => 'Old password changed ... user updated'
+                        ];
+                    }
+                    else
+                    {
+                        return [
+                            'success' => false,
+                            'title'  => 'Error updating password',
+                            'errors' => $updatePassword['message']
+                        ];
+                    }                    
                 }
                 else{
                     return [
@@ -2326,7 +2360,8 @@ class FrontEndUserController extends Controller
                 ];
             }
             else{
-                $friend_approval_status = $newFriend->get_general_setting('auto_approve_friends')=='0'?'pending':'active';
+                $friend_approval_status = $newFriend->get_general_setting('auto_approve_friends')==='0'?'pending':'active';
+
                 $friend_fill = ['user_id'=>$user_id, 'friend_id'=>$friends->user_id, 'status'=>$friend_approval_status];
                 $validator = Validator::make($friend_fill, UserFriends::rules('POST'), UserFriends::$message, UserFriends::$attributeNames);
 
@@ -2517,7 +2552,7 @@ class FrontEndUserController extends Controller
         $vars = $request->only('first_name', 'middle_name', 'last_name', 'gender', 'email', 'phone_number', 'dob', 'password', 'rpassword', 'username', 'user_type',
             'address1', 'address2', 'city', 'adr_country_id', 'postal_code', 'region',
             'membership_plan', 'start_date', 'sign_location'); //exit;
-
+        
         if (!isset($vars['middle_name'])){
             $vars['middle_name'] = '';
         }
@@ -2541,7 +2576,7 @@ class FrontEndUserController extends Controller
         }
 
         if (!isset($vars['country_id'])){
-            $vars['country_id'] = Config::get('constants.globalWebsite.defaultCountryId');
+            $vars['country_id'] = Config::get('constants.globalWebsite.defaultCountryId');            
         }
 
         if (!isset($vars['dob']) || $vars['dob']==''){
@@ -2589,30 +2624,22 @@ class FrontEndUserController extends Controller
             );
         }
 
+        $credentials['password_api'] = $vars['password'];
         $text_psw    = $vars['password'];
         $credentials['password'] = Hash::make($credentials['password']);
-        $the_plan = MembershipPlan::where('id','=',$vars['membership_plan'])->where('id','!=',1)->where('status','=','active')->get()->first();
-
-        try {
-            $user = User::create($credentials);
-            $user->attachRole($userType);
-
+        $the_plan = MembershipPlan::where('id','=',$vars['membership_plan'])->where('id','!=',1)->where('status','=','active')->get()->first();        
+        try {            
             $personalData = [
                 'personal_email'=> $vars['email'],
                 'mobile_number' => $vars['phone_number'],
                 'date_of_birth' => $vars['date_of_birth'],
                 'bank_acc_no'   => 0,
                 'social_sec_no' => 0,
-                'about_info'    => '',
-                'user_id'       => $user->id,
+                'about_info'    => '',                
                 'customer_number'   => $user->get_next_customer_number()
-            ];
-
-            $validator = Validator::make($personalData, PersonalDetail::rules('POST'), PersonalDetail::$messages, PersonalDetail::$attributeNames);
-            if ($validator->fails()){
-                $user->detachAllRoles();
-                $user->delete();
-
+            ];            
+            $validator = Validator::make($personalData, PersonalDetail::rules('POST'), PersonalDetail::$messages, PersonalDetail::$attributeNames);            
+            if ($validator->fails()){                
                 return array(
                     'success'   => false,
                     'title'     => 'Error validating',
@@ -2620,10 +2647,21 @@ class FrontEndUserController extends Controller
                 );
             }
             else{
+                $user = User::create($credentials);                        
+                if (!empty (Auth::$error))
+                {
+                    return [
+                        'success'   => false,
+                        'title'     => 'Api error',
+                        'errors'    => Auth::$error
+                    ];
+                }
+                $personalDetails['user_id'] = $user->id;
+                $user->attachRole($userType);    
                 $personalDetails = PersonalDetail::firstOrNew(['user_id'=>$user->id]);
                 $personalDetails->fill($personalData);
                 $personalDetails->save();
-            }
+            }          
 
             $top_title_message = 'Dear <span>'.$user->first_name.' '.$user->middle_name.' '.$user->last_name .'</span>';
             $main_message = 'SQF/Book247 is the official booking system for Drammen & Økern. Within approximately 30 days time Book 247 will be used for all SquashFitness locations. Please log in and "add your friends" (playing partners). By doing this you and your playing partners can book on behalf of each other and according to the booking rules. This will make the booking procedure faster for you, your partners and our receptionists.'. PHP_EOL . ' <br /><br /> '.
@@ -2725,8 +2763,8 @@ class FrontEndUserController extends Controller
             $client_vars['user_type'] = Role::where('name','=','front-user')->get()->first()->id;
         }
 
-        if ($client_vars['password']==""){
-            $client_vars['password'] = substr(bcrypt(str_random(12)),0,8);
+        if ($client_vars['password']==""){            
+            $client_vars['password'] = substr(bcrypt(str_random(12)),0,8);            
         }
 
         $validator = Validator::make($client_vars, User::rules('POST'), User::$messages, User::$attributeNames);
@@ -2741,12 +2779,11 @@ class FrontEndUserController extends Controller
 
         $credentials = $client_vars;
         $text_psw    = $client_vars['password'];
+        $credentials['password_api'] = $credentials['password'];
         $credentials['password'] = Hash::make($credentials['password']);
 
-        try {
-            $user = User::create($credentials);
-            $user->attachRole($client_vars['user_type']);
-
+        try {            
+            $user = new User;
             if (isset($client_vars['customer_number']) && strlen($client_vars['customer_number'])>0){
                 $customer_number = $user->get_next_customer_number($client_vars['customer_number']);
             }
@@ -2761,32 +2798,37 @@ class FrontEndUserController extends Controller
                 'mobile_number'     => $client_vars['phone_number'],
                 'bank_acc_no'       => 0,
                 'social_sec_no'     => 0,
-                'about_info'        => $client_vars['about_info'],
-                'user_id'           => $user->id,
+                'about_info'        => $client_vars['about_info'],                
                 'customer_number'   => $customer_number
             ];
             $validator = Validator::make($personalData, PersonalDetail::rules('POST'), PersonalDetail::$messages, PersonalDetail::$attributeNames);
             if ($validator->fails()){
-                $user->detachAllRoles();
-                $user->delete();
-
                 return [
                     'success'   => false,
                     'errors'    => $validator->getMessageBag()->toArray()
                 ];
             }
-
-            $personalDetails = PersonalDetail::firstOrNew(['user_id'=>$user->id]);
-            $personalData['date_of_birth'] = $client_vars['date_of_birth']!=''?$client_vars['date_of_birth']:Carbon::today()->toDateString();
-            $personalDetails->fill($personalData);
-            $personalDetails->save();
-
-
-            return [
-                'success'   => true,
-                'password'  => $text_psw,
-                'user'      => $user
-            ];
+            else{
+                $user = User::create($credentials);
+                if (!empty (Auth::$error))
+                {
+                    return [
+                        'success'   => false,                    
+                        'errors'    => ['Api erorr' => [0 => Auth::$error]]
+                    ];
+                }
+                $user->attachRole($client_vars['user_type']);
+                $personalData['user_id'] = $user->id;
+                $personalDetails = PersonalDetail::firstOrNew(['user_id'=>$user->id]);
+                $personalData['date_of_birth'] = $client_vars['date_of_birth']!=''?$client_vars['date_of_birth']:Carbon::today()->toDateString();
+                $personalDetails->fill($personalData);
+                $personalDetails->save();
+                return [
+                    'success'   => true,
+                    'password'  => $text_psw,
+                    'user'      => $user
+                ];
+            }
         }
         catch (Exception $e) {
             return [
@@ -3093,12 +3135,12 @@ class FrontEndUserController extends Controller
 
             foreach ($members as $member){
                 //xdebug_var_dump($member); //exit;
-                // add member
+                // add member                
                 $newUser = FrontEndUserController::register_new_client($member);
 
                 if ($newUser['success']==false){
                     $msg = 'Following errors occurred : <br />';
-                    foreach ($newUser['errors'] as $key=>$error){
+                    foreach ($newUser['errors'] as $key=>$error){                        
                         $msg.= $key.' : '.implode(', ',$error).'; <br />';
                     }
                 }
@@ -4444,4 +4486,45 @@ class FrontEndUserController extends Controller
             'in_sidebar'    => $sidebar_link,
         ]);*/
     }
+
+    // Start - Store credit add - backend add store credit to member
+    public function add_store_credit(Request $request){
+        // added from the backed
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
+            return [
+                'success' => false,
+                'title'   => 'You need to be logged in',
+                'errors'  => 'You need to be logged in as an employee in order to use this function'];
+        }
+
+        $vars = $request->only('member_id', 'amount', 'is_bonus', 'issue_invoice');
+        $member = User::where('id','=',$vars['member_id'])->first();
+        if (!$member){
+            // member not found for store credit assignment
+            return [
+                'success' => false,
+                'title'   => 'Could not add credit',
+                'errors'  => 'The member you are trying to add the store credit does not exist or something went wrong'];
+        }
+
+        $store_credit_fillable = [
+            'member_id'     => $member->id,
+            'back_user_id'  => $user->id,
+            'title'         => 'Store Credit',
+            'value'         => intval($vars['amount']),
+            'total_amount'  => intval($vars['amount'])+$member->get_available_store_credit(),
+            //'invoice_id'    => -1,
+            'expiration_date'   => 0,
+            'status'        => 'active',
+        ];
+
+        if(isset($vars['issue_invoice'])){
+            return $member->buy_store_credit($store_credit_fillable);
+        }
+        else{
+            return $member->add_store_credit($store_credit_fillable);
+        }
+    }
+    // Stop - Store credit add - backend add store credit to member
 }
