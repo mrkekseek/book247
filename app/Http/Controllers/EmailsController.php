@@ -60,6 +60,12 @@ class EmailsController extends Controller
 
     public function add()
     {
+        $user = Auth::user();
+        if ( ! $user || ! $user->is_back_user()) 
+        {
+            return redirect('/');
+        }
+
         $breadcrumbs = [
             'Home'              => route('admin'),
             'Administration'    => route('admin'),
@@ -258,6 +264,12 @@ class EmailsController extends Controller
 
     public function edit(Request $request)
     {
+        $user = Auth::user();
+        if ( ! $user || ! $user->is_back_user()) 
+        {
+            return redirect('/');
+        }
+
         $breadcrumbs = [
             'Home'              => route('admin'),
             'Administration'    => route('admin'),
