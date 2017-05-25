@@ -66,11 +66,7 @@
                                         Variables
                                     </div>
                                     <div class="col-sm-10">
-                                        <select data-placeholder="Select variables" name="variables" class="form-control select2-multiple" multiple>
-                                            @foreach ($variables as $index => $var)
-                                                <option value="{{ $index }}">{{ $var }}</option>
-                                            @endforeach
-                                        </select>
+                                        <input type="text" class="form-control" placeholder="var1, var2, var3 ..." name="variables" />
                                     </div>
                                 </div>
 
@@ -163,7 +159,7 @@
                             required: true
                         },
                         variables : {
-                            variables : false,
+                            //variables : false,
                             required : true
                         },
                         hook: {
@@ -234,7 +230,7 @@
                     'title'       :  $('input[name=title]').val(),
                     'country_id'  :  $('select[name=country]').val(),
                     'content'     :  $('textarea[name=content]').val(),
-                    'variables'   :  $('select[name=variables]').val(),
+                    'variables'   :  $('input[name=variables]').val(),
                     'hook'        :  $('input[name=hook]').val(),
                     'description' :  $('textarea[name=description]').val()
                 },

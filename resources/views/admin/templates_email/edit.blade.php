@@ -83,11 +83,7 @@
                                         Variables
                                     </div>
                                     <div class="col-sm-10">
-                                        <select data-placeholder="Select variables" name="variables" class="form-control select2-multiple" multiple>
-                                            @foreach ($variables as $index => $var)
-                                                <option value="{{ $index }}" @if(in_array($index, json_decode($template->variables))) selected="selected" @endif>{{ $var }}</option>
-                                            @endforeach
-                                        </select>
+                                        <input type="text" class="form-control" placeholder="var1, var2, var3 ..." name="variables" value="{{ isset($template->variables) ? implode(json_decode($template->variables), ', ')  : '' }}" />
                                     </div>
                                 </div>
                                 
@@ -342,7 +338,7 @@
                     'content'       :  $('textarea[name=content]').val(),
                     'country_id'    :  $('select[name=country]').val(),
                     //'hook'          :  $('input[name=hook]').val(),
-                    'variables'     :  $('select[name=variables]').val(),
+                    'variables'     :  $('input[name=variables]').val(),
                     'description'   :  $('textarea[name=description]').val(),
                     'isset_default' :  $('input[name=isset_default]').val()
                 },

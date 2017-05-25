@@ -22,6 +22,12 @@ class EmailsController extends Controller
 
 	public function list_all()
 	{
+        $user = Auth::user();
+        if ( ! $user || ! $user->is_back_user()) 
+        {
+            return redirect('/');
+        }
+
 		$templates = array();
 
         foreach(TempalteEmail::where('is_default', 0)->get() as $template)
@@ -106,7 +112,7 @@ class EmailsController extends Controller
         $fillable = [
             'title'         => $vars['title'],
             'content'       => $vars['content'],
-            'variables'     => json_encode($vars['variables']),
+            'variables'     => json_encode(explode(",", $vars['variables'])),
             'hook'          => $vars['hook'],
             'description'   => $vars['description'],
             'country_id'    => $vars['country_id'],
@@ -225,7 +231,7 @@ class EmailsController extends Controller
 
         if ( ! $request->isset_default)
         {
-             $fillable["variables"] = json_encode($request->variables);
+             $fillable["variables"] = json_encode(explode(",", $request->variables));
         }
 
         $validator = Validator::make($fillable, TempalteEmail::rules('update', $email_template->id), TempalteEmail::$message, TempalteEmail::$attributeNames);
