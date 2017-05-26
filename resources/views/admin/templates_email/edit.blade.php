@@ -32,7 +32,7 @@
                 <div class="portlet light portlet-fit portlet-datatable bordered">
                     <div class="portlet-title">
                         <div class="caption">
-                             <a href="/admin/templates_email/list_all" class="back">
+                            <a href="javascript:void(0);" data-href="/admin/templates_email/list_all" class="back">
                                 <i class="fa fa-chevron-left"></i>
                             </a>
                             Edit template
@@ -163,6 +163,24 @@
             </div>
         </div>
     </div>
+
+    <div class="modal fade" id="confirm-exit-without-save">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Exit without save?</h4>
+                </div>
+                <div class="modal-body">
+                    <p>This action will not save cahnges email tempalte</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <a href="/admin/templates_email/list_all" class="btn btn-primary">Exit</a>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @section('pageBelowLevelPlugins')
@@ -260,6 +278,12 @@
             };
         }();
 
+        var change = false;
+        function action()
+        {
+            change = true;
+        }
+
         $(document).ready(function(){
             FormValidation.init();
             
@@ -326,6 +350,25 @@
                     }
                 });
             });
+
+            $('input[name=title]').change(action);
+            $('select[name=country]').change(action);
+            $('textarea[name=content]').change(action);
+            $('input[name=variables]').change(action);
+            $('input[name=hook]').change(action);
+            $('textarea[name=description]').change(action);
+            
+            $(".back").click(function(event){
+                event.preventDefault();
+                if (change)
+                {
+                    $("#confirm-exit-without-save").modal("show");
+                }
+                else
+                {
+                    window.location.href = $(this).data("href");                
+                }
+            });
         });
 
         function update_template()
@@ -347,7 +390,7 @@
                     {
                         show_notification(data.title, data.message, 'lime', 3500, 0);
                         setTimeout(function(){
-                            location.reload();
+                            location.href = "/admin/templates_email/list_all";
                         },2000);
                     }
                     else
