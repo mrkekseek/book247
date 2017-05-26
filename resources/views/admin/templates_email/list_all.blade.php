@@ -44,8 +44,10 @@
                             <tr>
                                 <th> Id </th>
                                 <th> Title </th>
-                                <th> Content </th>
+                                <th> Hooks </th>
                                 <th> Variables </th>
+                                <th> Description </th>
+                                <th> Country </th>
                                 <th></td>
                                 <th></th>
                             </tr>
@@ -55,11 +57,19 @@
                                     <tr class="odd gradeX">
                                         <td> {{ $template["id"] }} </td>
                                         <td> {{ $template["title"] }} </td>
-                                        <td> {{ $template["content"] }} </td>
+                                        <td> 
+                                            @foreach($template["hooks"] as $hook)
+                                                <span class="label label-default">{{ $hook->name }}</span>
+                                              @endforeach
+                                        </td>
                                         <td> 
                                               @foreach($template["variables"] as $var)
                                                 <span class="label label-default">{{ $var }}</span>
                                               @endforeach
+                                       </td>
+                                       <td> {{ $template["content"] }} </td>
+                                       <td>
+                                            {{ $template["country"]->name }}
                                        </td>
                                        <td class="text-center">
                                             <a href="/admin/templates_email/edit/{{ $template['id'] }}" class="edit">
@@ -67,15 +77,40 @@
                                             </a>
                                         </td>
                                         <td class="text-center">
-                                            <a href="javascript:void(0);" data-id="{{ $template['id'] }}" class="delete">
+                                            <a href="javascript:void(0);"  data-id="{{ $template['id'] }}" class="delete">
                                                 <i class="fa fa-trash-o"></i>
                                             </a>
                                         </td>
                                     </tr>
                                 @endforeach
+                                @if ( ! $templates)
+                                    <tr>
+                                        <td colspan="8">
+                                            No records found
+                                        </td>
+                                    </tr>
+                                @endif
                             </tbody>
                         </table>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="confirm-delete-template">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Delete Template</h4>
+                </div>
+                <div class="modal-body">
+                    <p>Really want to delete the template email?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="confirm-delete">Yes</button>
                 </div>
             </div>
         </div>
@@ -107,28 +142,34 @@
         
         $(document).ready(function(){
             $(".delete").click(function(){
-                $.ajax({
-                    url: '{{ route('admin/templates_email/delete') }}',
-                    type: "post",
-                    data: {
-                        'id' : $(this).data("id")
-                    },
-                    success: function(data){
-                        if(data.success)
-                        {
-                            show_notification(data.title, data.message, 'lime', 3500, 0);
-                            setTimeout(function(){
-                                location.reload();
-                            },2000);
-                        }
-                        else
-                        {
-                            show_notification(data.title, data.errors, 'ruby', 3500, 0);
-                        }
-                    }
+                var template_id = $(this).data("id");
+                $("#confirm-delete-template").modal("show");
+                $("#confirm-delete").click(function(){
+                    $.ajax({
+                            url: '{{ route('admin/templates_email/delete') }}',
+                            type: "post",
+                            data: {
+                                'id' : template_id
+                            },
+                            success: function(data){
+                                if(data.success)
+                                {
+                                    show_notification(data.title, data.message, 'lime', 3500, 0);
+                                    setTimeout(function(){
+                                        location.reload();
+                                    },2000);
+                                }
+                                else
+                                {
+                                    show_notification(data.title, data.errors, 'ruby', 3500, 0);
+                                }
+                            }
+                        });
                 });
             });
         });
+
+        
 
     </script>
 @endsection

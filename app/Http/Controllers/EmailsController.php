@@ -22,6 +22,12 @@ class EmailsController extends Controller
 
 	public function list_all()
 	{
+        $user = Auth::user();
+        if ( ! $user || ! $user->is_back_user()) 
+        {
+            return redirect('/');
+        }
+
 		$templates = array();
 
         foreach(TempalteEmail::where('is_default', 0)->get() as $template)
@@ -29,9 +35,10 @@ class EmailsController extends Controller
             $templates[] = array(
                 "id" => $template["id"],
                 "title" => $template["title"],
+                "hooks" => DB::table("templates_hook")->where("template_id", $template["id"])->get(),
                 "content" => $template["content"],
                 "variables" => json_decode($template["variables"]),
-                "country" => $template["country_id"]
+                "country" => DB::table("countries")->where("id", $template["country_id"])->first()
             );
         }
 
@@ -39,7 +46,7 @@ class EmailsController extends Controller
             'Home'              => route('admin'),
             'Administration'    => route('admin'),
             'Back End User'     => route('admin'),
-            'Permissions'        => '',
+            'Permissions'       => '',
         ];
 
         $text_parts  = [
@@ -60,6 +67,12 @@ class EmailsController extends Controller
 
     public function add()
     {
+        $user = Auth::user();
+        if ( ! $user || ! $user->is_back_user()) 
+        {
+            return redirect('/');
+        }
+
         $breadcrumbs = [
             'Home'              => route('admin'),
             'Administration'    => route('admin'),
@@ -95,20 +108,18 @@ class EmailsController extends Controller
                 'title'   => 'Not logged in'];
         }
 
-        $vars = $request->only('title', 'content', 'variables', 'hook', 'country_id', 'description');
+        $vars = $request->only('title', 'content', 'variables', 'hooks', 'country_id', 'description');
 
         $fillable = [
             'title'         => $vars['title'],
             'content'       => $vars['content'],
-            'variables'     => json_encode($vars['variables']),
-            'hook'          => $vars['hook'],
+            'variables'     => json_encode(explode(",", $vars['variables'])),
             'description'   => $vars['description'],
             'country_id'    => $vars['country_id'],
             'is_default'    => 0
         ];
 
-        $validator = Validator::make($fillable, TempalteEmail::rules('post'), TempalteEmail::$message, TempalteEmail::$attributeNames);
-
+        $validator = Validator::make($fillable, TempalteEmail::rules('create'), TempalteEmail::$message, TempalteEmail::$attributeNames);
         if ($validator->fails())
         {
             return array(
@@ -121,6 +132,10 @@ class EmailsController extends Controller
         try
         {
             $template = TempalteEmail::create($fillable);
+            foreach ($vars["hooks"] as $name)
+            {
+                DB::table("templates_hook")->insert(array("template_id" => $template->id, "name" => $name));
+            }
 
             Activity::log([
                 'contentId'     => $user->id,
@@ -167,7 +182,7 @@ class EmailsController extends Controller
         $fillable = array(
             "title"       => $default_template->title,
             "content"     => $default_template->content,
-            "hook"        => $default_template->hook,
+            "country_id"  => $default_template->country_id,
             "description" => $default_template->description
         );
 
@@ -207,15 +222,18 @@ class EmailsController extends Controller
                 'title'   => 'Not logged in'];
         }
 
-        $vars = $request->only('title', 'content', 'description');
+        $vars = $request->only('title', 'content', 'country_id', 'description');
 
         $email_template = TempalteEmail::where('id', $request->id)->get()->first();
 
         $fillable = [
             'title'  => $vars['title'],
             'content'  => $vars['content'],
-            'description'  => $vars['description']
+            'country_id' => $vars['country_id'], 
+            'description'  => $vars['description'],
+            'variables'    => json_encode(explode(",", $request->variables))
         ];
+
 
         $validator = Validator::make($fillable, TempalteEmail::rules('update', $email_template->id), TempalteEmail::$message, TempalteEmail::$attributeNames);
 
@@ -253,6 +271,12 @@ class EmailsController extends Controller
 
     public function edit(Request $request)
     {
+        $user = Auth::user();
+        if ( ! $user || ! $user->is_back_user()) 
+        {
+            return redirect('/');
+        }
+
         $breadcrumbs = [
             'Home'              => route('admin'),
             'Administration'    => route('admin'),
@@ -269,16 +293,106 @@ class EmailsController extends Controller
         $sidebar_link = 'admin-templates_email-edit';
 
         return view('admin/templates_email/edit', array(
-            'breadcrumbs' => $breadcrumbs,
-            'text_parts'  => $text_parts,
-            'in_sidebar'  => $sidebar_link,
-            'template'    => $template = TempalteEmail::where('id', $request->id)->get()->first(),
-            'template_id' => $template->id
+            'breadcrumbs'   => $breadcrumbs,
+            'text_parts'    => $text_parts,
+            'in_sidebar'    => $sidebar_link,
+            'template'      => $template = TempalteEmail::where('id', $request->id)->get()->first(),
+            'template_id'   => $template->id,
+            'country_list'  => DB::table("countries")->get(),
+            'variables'    => $this->variables,
+            'isset_default' => TempalteEmail::where("hook", TempalteEmail::where("id", $request->id)->first()->hook)->where("is_default", 1)->first() ? TRUE : FALSE
         ));
+    }
+
+    public function make_default(Request $request)
+    {
+        $user = Auth::user();
+        if ( ! $user || !$user->is_back_user())
+        {
+            return [
+                'success' => false,
+                'errors'  => 'Error while trying to authenticate. Login first then use this function.',
+                'title'   => 'Not logged in'];
+        }
+
+        $vars = TempalteEmail::where("id", $request->id)->get()->first();
+
+        $fillable = [
+            'title'         => $vars['title'],
+            'content'       => $vars['content'],
+            'variables'     => $vars['variables'],
+            'hook'          => $vars['hook'],
+            'description'   => $vars['description'],
+            'country_id'    => $vars['country_id'],
+            'is_default'    => 1
+        ];
+
+        $validator = Validator::make($fillable, TempalteEmail::rules('make_default'), TempalteEmail::$message, TempalteEmail::$attributeNames);
+        if ($validator->fails())
+        {
+            return array(
+                'success' => false,
+                'title'  => 'Error validating input information',
+                'errors' => $validator->getMessageBag()->toArray()
+            );
+        }
+
+        try
+        {
+            $template = TempalteEmail::create($fillable);
+
+            Activity::log([
+                'contentId'     => $user->id,
+                'contentType'   => 'template_email',
+                'action'        => 'Template Email',
+                'description'   => 'Template Email make default : ' . $template->id,
+                'details'       => 'Created by user : ' . $user->id,
+                'updated'       => false,
+            ]);
+
+            return [
+                'success' => true,
+                'message' => 'Template Email make Default. You can assign it to one of your locations',
+                'title'   => 'Template Email make Default'
+            ];
+        }
+        catch (Exception $e)
+        {
+            return Response::json(['error' => 'Booking Error'], Response::HTTP_CONFLICT);
+        }
     }
 
     public function delete_email_template(Request $request)
     {
+        $user = Auth::user();
+        if ( ! $user || !$user->is_back_user())
+        {
+            return [
+                'success' => false,
+                'errors'  => 'Error while trying to authenticate. Login first then use this function.',
+                'title'   => 'Not logged in'];
+        }
 
+        $email_template = TempalteEmail::where(array("id" => $request->id, "is_default" => 0))->first();
+        $default_template = TempalteEmail::where(array("hook" => $email_template->hook, "is_default" => 1))->first();
+
+        try
+        {
+            $email_template->delete();
+            if ($default_template)
+            {
+                $default_template->delete();
+            }
+
+            return [
+                'success' => true,
+                'message' => 'Template Email delete You can assign it to one of your locations',
+                'title'   => 'Template Email delete'
+            ];
+        }
+        catch (Exception $e)
+        {
+            return Response::json(['error' => 'Booking Error'], Response::HTTP_CONFLICT);
+        }
     }
 }
