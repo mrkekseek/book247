@@ -31,10 +31,14 @@
             <div class="col-md-12">
                 <div class="portlet light portlet-fit portlet-datatable bordered">
                     <div class="portlet-title">
-                        <div class="caption">
+                        <div class="pull-left back-link">
                             <a href="javascript:void(0);" data-href="/admin/templates_email/list_all" class="back">
                                 <i class="fa fa-chevron-left"></i>
                             </a>
+                            
+                        </div>
+                        <div class="caption">
+                            
                            
                             Add new template
                         </div>

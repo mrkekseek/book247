@@ -32,3 +32,6 @@ textarea[name=content] {
 	display: none;
 }
 
+.back-link {
+	padding-top: 7px;
+}
