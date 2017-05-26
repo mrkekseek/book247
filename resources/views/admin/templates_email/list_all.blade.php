@@ -44,8 +44,9 @@
                             <tr>
                                 <th> Id </th>
                                 <th> Title </th>
-                                <th> Description </th>
+                                <th> Hooks </th>
                                 <th> Variables </th>
+                                <th> Description </th>
                                 <th> Country </th>
                                 <th></td>
                                 <th></th>
@@ -56,12 +57,17 @@
                                     <tr class="odd gradeX">
                                         <td> {{ $template["id"] }} </td>
                                         <td> {{ $template["title"] }} </td>
-                                        <td> {{ $template["content"] }} </td>
+                                        <td> 
+                                            @foreach($template["hooks"] as $hook)
+                                                <span class="label label-default">{{ $hook->name }}</span>
+                                              @endforeach
+                                        </td>
                                         <td> 
                                               @foreach($template["variables"] as $var)
                                                 <span class="label label-default">{{ $var }}</span>
                                               @endforeach
                                        </td>
+                                       <td> {{ $template["content"] }} </td>
                                        <td>
                                             {{ $template["country"]->name }}
                                        </td>
@@ -79,7 +85,7 @@
                                 @endforeach
                                 @if ( ! $templates)
                                     <tr>
-                                        <td colspan="7">
+                                        <td colspan="8">
                                             No records found
                                         </td>
                                     </tr>

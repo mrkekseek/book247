@@ -41,7 +41,7 @@ class TempalteEmail extends Model
                     'title'  => 'required',
                     'variables'  => 'required',
                     'description'  => 'required',
-                    'hook'  => 'required|unique:email_templates',
+                    //'hook'  => 'required|unique:email_templates',
                     'country_id' => 'required'
                 ];
             }

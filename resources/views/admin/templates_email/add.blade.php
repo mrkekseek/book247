@@ -70,10 +70,23 @@
                                     </div>
                                 </div>
 
+                                <div class="col-sm-12 form-group hooks-box">
+                                    <div class="col-sm-2"></div>
+                                    <div class="col-sm-10">
+                                        <select multiple class="form-control" name="hooks" id="list-hooks">
+                                        </select>
+                                    </div>
+                                </div>
+
                                 <div class="col-sm-12 form-group">        
                                     <label for="hook" class="col-sm-2 control-label">Hook</label>
-                                    <div class="col-sm-10">
+                                    <div class="col-sm-9">
                                         <input type="text" class="form-control" name="hook" placeholder="Hook" />
+                                    </div>
+                                    <div class="col-sm-1">
+                                        <button type="button" class="btn btn-default btn-block" id="btn-add-hook">
+                                            <i class="fa fa-plus"></i>
+                                        </button>
                                     </div>
                                 </div>
 
@@ -156,6 +169,10 @@
                 return value && value.length ? true : false;
             }, "Please enter description");
 
+             $.validator.addMethod("hooks", function(value, element) {
+                return $.trim($(element).text()) ? true : false;
+            }, "Please enter hooks");
+
             var handleValidation = function() 
             {
                 var form = $('#add_new_template_form');
@@ -181,8 +198,8 @@
                             //variables : false,
                             required : true
                         },
-                        hook: {
-                            required: true
+                        hooks : {
+                            hooks : true
                         },
                         description : {
                             required : true,
@@ -212,6 +229,7 @@
                         var icon = $(element).parent('.input-icon').children('i');
                         icon.removeClass('fa-check').addClass("fa-warning");
                         icon.attr("data-original-title", error.text()).tooltip({'container': 'body'});
+                        $(".hooks-box").show();
                     },
 
                     highlight: function (element) {
@@ -240,8 +258,26 @@
             };
         }();
 
+
+        function check_hook(hook)
+        {
+            var check = true;
+            $("#list-hooks option").each(function(k, v){
+                if (hook == $(v).data("value"))
+                {
+                    check = false;
+                }
+            });
+            return check;
+        }
+
         function add_new_template()
         {
+            var hooks = [];
+            $("#list-hooks option").each(function(k, v){
+                hooks.push($(v).text());
+            });
+
             $.ajax({
                 url: '{{ route('admin/templates_email/create') }}',
                 type: "post",
@@ -250,7 +286,7 @@
                     'country_id'  :  $('select[name=country]').val(),
                     'content'     :  $('textarea[name=content]').val(),
                     'variables'   :  $('input[name=variables]').val(),
-                    'hook'        :  $('input[name=hook]').val(),
+                    'hooks'        :  hooks,
                     'description' :  $('textarea[name=description]').val()
                 },
                 success: function(data){
@@ -263,6 +299,7 @@
                     }
                     else
                     {
+                        change = false;
                         for(var i in data.errors)
                         {
                             show_notification(data.title, data.errors[i], 'ruby', 3500, 0);
@@ -327,6 +364,32 @@
                 else
                 {
                     window.location.href = $(this).data("href");                
+                }
+            });
+
+            $("#btn-add-hook").click(function(){
+                $(".hooks-box").show();
+                
+                var value = $("input[name=hook]").val();
+                var element = $("select[name=hooks]");
+                var parent = $(element).closest(".form-group");
+
+                if(value && check_hook(value))
+                {
+                   $("#list-hooks").append("<option data-value='" + value + "'>" + value + "</option>");
+                }
+
+                $("#list-hooks option").click(function(){
+                    $("input[name=hook]").val($(this).data("value"));
+                });
+
+                if($.trim($(element).text()))
+                {
+                    parent.removeClass("has-error").addClass("has-success");
+                }
+                else
+                {
+                   parent.removeClass("has-success").addClass("has-error");
                 }
             });
 

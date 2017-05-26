@@ -35,6 +35,7 @@ class EmailsController extends Controller
             $templates[] = array(
                 "id" => $template["id"],
                 "title" => $template["title"],
+                "hooks" => DB::table("templates_hook")->where("template_id", $template["id"])->get(),
                 "content" => $template["content"],
                 "variables" => json_decode($template["variables"]),
                 "country" => DB::table("countries")->where("id", $template["country_id"])->first()
@@ -107,13 +108,12 @@ class EmailsController extends Controller
                 'title'   => 'Not logged in'];
         }
 
-        $vars = $request->only('title', 'content', 'variables', 'hook', 'country_id', 'description');
+        $vars = $request->only('title', 'content', 'variables', 'hooks', 'country_id', 'description');
 
         $fillable = [
             'title'         => $vars['title'],
             'content'       => $vars['content'],
             'variables'     => json_encode(explode(",", $vars['variables'])),
-            'hook'          => $vars['hook'],
             'description'   => $vars['description'],
             'country_id'    => $vars['country_id'],
             'is_default'    => 0
@@ -132,6 +132,10 @@ class EmailsController extends Controller
         try
         {
             $template = TempalteEmail::create($fillable);
+            foreach ($vars["hooks"] as $name)
+            {
+                DB::table("templates_hook")->insert(array("template_id" => $template->id, "name" => $name));
+            }
 
             Activity::log([
                 'contentId'     => $user->id,
