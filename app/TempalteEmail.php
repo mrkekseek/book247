@@ -13,12 +13,12 @@ class TempalteEmail extends Model
     public static $message = array();
 
     public static $attributeNames = array(
-		'title'  => 'Title',
-		'content'  => 'Content',
-		'variables'     => 'Cariables',
-		'description'  => 'Description',
-		'hook' => 'Hook',
-		'country_id'    => 'Country'
+        'title'  => 'Title',
+        'content'  => 'Content',
+        'variables'     => 'Cariables',
+        'description'  => 'Description',
+        'hook' => 'Hook',
+        'country_id'    => 'Country'
     );
 
     protected $fillable = array(

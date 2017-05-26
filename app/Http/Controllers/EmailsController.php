@@ -20,15 +20,15 @@ class EmailsController extends Controller
         "lastname"  => "Last name"
     );
 
-	public function list_all()
-	{
+    public function list_all()
+    {
         $user = Auth::user();
         if ( ! $user || ! $user->is_back_user()) 
         {
             return redirect('/');
         }
 
-		$templates = array();
+        $templates = array();
 
         foreach(TempalteEmail::where('is_default', 0)->get() as $template)
         {
@@ -42,7 +42,7 @@ class EmailsController extends Controller
             );
         }
 
-		$breadcrumbs = [
+        $breadcrumbs = [
             'Home'              => route('admin'),
             'Administration'    => route('admin'),
             'Back End User'     => route('admin'),
@@ -63,7 +63,7 @@ class EmailsController extends Controller
             'in_sidebar'  => $sidebar_link,
             'templates'=> $templates
         ));
-	}
+    }
 
     public function add()
     {
