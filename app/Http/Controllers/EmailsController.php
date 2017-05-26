@@ -230,13 +230,10 @@ class EmailsController extends Controller
             'title'  => $vars['title'],
             'content'  => $vars['content'],
             'country_id' => $vars['country_id'], 
-            'description'  => $vars['description']
+            'description'  => $vars['description'],
+            'variables'    => json_encode(explode(",", $request->variables))
         ];
 
-        if ( ! $request->isset_default)
-        {
-             $fillable["variables"] = json_encode(explode(",", $request->variables));
-        }
 
         $validator = Validator::make($fillable, TempalteEmail::rules('update', $email_template->id), TempalteEmail::$message, TempalteEmail::$attributeNames);
 

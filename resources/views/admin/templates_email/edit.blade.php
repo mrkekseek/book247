@@ -61,6 +61,7 @@
                                     </div> 
                                 </div>
 
+
                                <!-- <div class="col-sm-12 form-group">        
                                     <label for="hook" class="col-sm-2 control-label">Hook</label>
                                     <div class="col-sm-10">
@@ -76,8 +77,6 @@
                                     </div> 
                                 </div>
 
-                                @if( ! $isset_default)
-
                                 <div class="col-sm-12 form-group">
                                     <div class="col-sm-2 control-label">
                                         Variables
@@ -86,8 +85,6 @@
                                         <input type="text" class="form-control" placeholder="var1, var2, var3 ..." name="variables" value="{{ isset($template->variables) ? implode(json_decode($template->variables), ', ')  : '' }}" />
                                     </div>
                                 </div>
-                                
-                                @endif
 
                                 <div class="col-sm-12 form-group">
                                     <div class="col-sm-12">
@@ -95,7 +92,7 @@
                                     </div>
                                 </div>
 
-                                @if($isset_default and count($variables = json_decode($template->variables)))
+                                @if(count($variables = json_decode($template->variables)))
                                     <div class="col-sm-12 form-group">
                                         <label class="col-sm-2 control-label">Variables:</label>
                                         <div class="col-sm-10">

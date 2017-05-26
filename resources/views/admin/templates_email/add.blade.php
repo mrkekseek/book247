@@ -35,11 +35,8 @@
                             <a href="javascript:void(0);" data-href="/admin/templates_email/list_all" class="back">
                                 <i class="fa fa-chevron-left"></i>
                             </a>
-                            
                         </div>
                         <div class="caption">
-                            
-                           
                             Add new template
                         </div>
                     </div>
