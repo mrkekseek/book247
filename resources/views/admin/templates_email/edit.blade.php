@@ -69,6 +69,39 @@
                                     </div>
                                 </div>-->
 
+                                <div class="col-sm-12 form-group">
+                                    <div class="col-sm-2 control-label">
+                                        Variables
+                                    </div>
+                                    <div class="col-sm-10">
+                                        <select data-placeholder="Select or add variables" name="variables" class="form-control select2-multiple" multiple>
+                                            @foreach ($variables as $index => $var)
+                                                <option @if (in_array($var, json_decode($template->variables, TRUE))) selected="selected" @endif value="{{ $index }}">{{ $var }}</option>
+                                            @endforeach
+
+                                            @foreach (array_diff_key(json_decode($template->variables, TRUE), (array)$variables) as $index => $var)
+                                                <option selected="selected" value="{{ $index }}">{{ $var }}</option>
+                                            @endforeach
+
+                                        </select>
+                                    </div>
+                                </div>
+                                
+
+                                <div class="col-sm-12 form-group">
+                                    <div class="col-sm-2"></div>
+                                    <div class="col-sm-4">
+                                        <input type="text" id="name-var" class="form-control" placeholder="Name" />
+                                    </div>
+                                    <div class="col-sm-5">
+                                        <input type="text" id="value-var" class="form-control" placeholder="Value" />
+                                    </div>
+                                    <div class="col-sm-1 text-right">
+                                        <button type="button" id="add-var" class="btn btn-default btn-block">
+                                            <i class="fa fa-plus"></i>
+                                        </button>
+                                    </div>
+                                </div>
 
                                 <div class="col-sm-12 form-group">
                                     <label for="content" class="col-sm-2 control-label">Description</label>
@@ -77,14 +110,6 @@
                                     </div> 
                                 </div>
 
-                                <div class="col-sm-12 form-group">
-                                    <div class="col-sm-2 control-label">
-                                        Variables
-                                    </div>
-                                    <div class="col-sm-10">
-                                        <input type="text" class="form-control" placeholder="var1, var2, var3 ..." name="variables" value="{{ isset($template->variables) ? implode(json_decode($template->variables), ', ')  : '' }}" />
-                                    </div>
-                                </div>
 
                                 <div class="col-sm-12 form-group">
                                     <div class="col-sm-12">
@@ -213,6 +238,11 @@
                     return value && value.length ? true : false;
                 }, "Please enter description");
 
+                $.validator.addMethod("variables", function(value, element) {
+                    return $.trim($(element).text()) ? true : false;
+                }, "Please enter variables");
+
+
                 form.validate({
                     errorElement: 'span',
                     errorClass: 'help-block help-block-error',
@@ -229,10 +259,14 @@
                         content: {
                             required: false
                         },
-                        hook: {
-                            required: true
+                        variables : {
+                            variables : true,
+                            required : true
                         },
-                        description: {
+                        hook : {
+                            required : true
+                        },
+                          description: {
                             required: true,
                             description : true
                         }
@@ -300,6 +334,8 @@
 
             }});
 
+
+
             $(".btn-vars").click(function(){
                $("textarea[name=description]").summernote('editor.saveRange');
                $("textarea[name=description]").summernote('editor.restoreRange');
@@ -366,10 +402,23 @@
                     window.location.href = $(this).data("href");                
                 }
             });
+
+            $("#add-var").click(function(){
+                var name = $("#name-var").val(),
+                    value = $("#value-var").val();
+                $("select[name=variables]").append(new Option(name, value, true, true)).trigger('change');
+                $("#name-var").val("");
+                $("#value-var").val("");
+            });
         });
 
         function update_template()
         {
+            var variables = {};
+            $("select[name=variables] option:selected").each(function(k, v){
+                variables[$(v).attr('value')] = $(v).text();
+            });
+
             $.ajax({
                 url: '/admin/templates_email/update/{{ $template_id }}',
                 type: "post",
@@ -378,7 +427,7 @@
                     'content'       :  $('textarea[name=content]').val(),
                     'country_id'    :  $('select[name=country]').val(),
                     //'hook'          :  $('input[name=hook]').val(),
-                    'variables'     :  $('input[name=variables]').val(),
+                    'variables'     :  variables,
                     'description'   :  $('textarea[name=description]').val(),
                     'isset_default' :  $('input[name=isset_default]').val()
                 },

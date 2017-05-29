@@ -64,28 +64,36 @@
 
                                 <div class="col-sm-12 form-group">
                                     <div class="col-sm-2 control-label">
-                                        Variables
+                                        Hook
                                     </div>
                                     <div class="col-sm-10">
-                                        <input type="text" class="form-control" placeholder="var1, var2, var3 ..." name="variables" />
+                                        <input type="text" class="form-control" placeholder="Hook" name="hook" />
                                     </div>
                                 </div>
 
-                                <div class="col-sm-12 form-group hooks-box">
-                                    <div class="col-sm-2"></div>
+                                <div class="col-sm-12 form-group">
+                                    <div class="col-sm-2 control-label">
+                                        Variables
+                                    </div>
                                     <div class="col-sm-10">
-                                        <select multiple class="form-control" name="hooks" id="list-hooks">
+                                        <select data-placeholder="Select or add variables" name="variables" class="form-control select2-multiple" multiple>
+                                            @foreach ($variables as $index => $var)
+                                                <option value="{{ $index }}">{{ $var }}</option>
+                                            @endforeach
                                         </select>
                                     </div>
                                 </div>
 
-                                <div class="col-sm-12 form-group">        
-                                    <label for="hook" class="col-sm-2 control-label">Hook</label>
-                                    <div class="col-sm-9">
-                                        <input type="text" class="form-control" name="hook" placeholder="Hook" />
+                                <div class="col-sm-12 form-group">
+                                    <div class="col-sm-2"></div>
+                                    <div class="col-sm-4">
+                                        <input type="text" id="name-var" class="form-control" placeholder="Name" />
                                     </div>
-                                    <div class="col-sm-1">
-                                        <button type="button" class="btn btn-default btn-block" id="btn-add-hook">
+                                    <div class="col-sm-5">
+                                        <input type="text" id="value-var" class="form-control" placeholder="Value" />
+                                    </div>
+                                    <div class="col-sm-1 text-right">
+                                        <button type="button" id="add-var" class="btn btn-default btn-block">
                                             <i class="fa fa-plus"></i>
                                         </button>
                                     </div>
@@ -162,17 +170,13 @@
     <script type="text/javascript">
         var FormValidation = function () {
 
-            $.validator.addMethod("variables", function(value, element) {
-                return value && value.length ? true : false;
-            }, "Please select variables");
-
             $.validator.addMethod("description", function(value, element) {
                 return value && value.length ? true : false;
             }, "Please enter description");
 
-             $.validator.addMethod("hooks", function(value, element) {
+             $.validator.addMethod("variables", function(value, element) {
                 return $.trim($(element).text()) ? true : false;
-            }, "Please enter hooks");
+            }, "Please enter variables");
 
             var handleValidation = function() 
             {
@@ -196,11 +200,11 @@
                             required: true
                         },
                         variables : {
-                            //variables : false,
+                            variables : true,
                             required : true
                         },
-                        hooks : {
-                            hooks : true
+                        hook : {
+                            required : true
                         },
                         description : {
                             required : true,
@@ -216,8 +220,8 @@
                             minlength: "Your title must consist of at least 5 characters",
                             required: "Please enter title"
                         },
-                        hook: {
-                            required: "Please enter title"
+                        variables: {
+                            required: "Please add variables"
                         }
                     },
 
@@ -230,7 +234,6 @@
                         var icon = $(element).parent('.input-icon').children('i');
                         icon.removeClass('fa-check').addClass("fa-warning");
                         icon.attr("data-original-title", error.text()).tooltip({'container': 'body'});
-                        $(".hooks-box").show();
                     },
 
                     highlight: function (element) {
@@ -260,23 +263,11 @@
         }();
 
 
-        function check_hook(hook)
-        {
-            var check = true;
-            $("#list-hooks option").each(function(k, v){
-                if (hook == $(v).data("value"))
-                {
-                    check = false;
-                }
-            });
-            return check;
-        }
-
         function add_new_template()
         {
-            var hooks = [];
-            $("#list-hooks option").each(function(k, v){
-                hooks.push($(v).text());
+            var variables = {};
+            $("select[name=variables] option:selected").each(function(k, v){
+                variables[$(v).attr('value')] = $(v).text();
             });
 
             $.ajax({
@@ -286,8 +277,8 @@
                     'title'       :  $('input[name=title]').val(),
                     'country_id'  :  $('select[name=country]').val(),
                     'content'     :  $('textarea[name=content]').val(),
-                    'variables'   :  $('input[name=variables]').val(),
-                    'hooks'        :  hooks,
+                    'hook'        :  $('input[name=hook]').val(),
+                    'variables'   :  variables,
                     'description' :  $('textarea[name=description]').val()
                 },
                 success: function(data){
@@ -335,6 +326,8 @@
 
             }});
 
+            $('select[name=variables]').select2();
+
             $("select[name=variables]").change(function() {
                 var element = $(this);
                 var parent = $(element).closest(".form-group");
@@ -352,10 +345,17 @@
             $('input[name=title]').change(action);
             $('select[name=country]').change(action);
             $('textarea[name=content]').change(action);
-            $('input[name=variables]').change(action);
             $('input[name=hook]').change(action);
             $('textarea[name=description]').change(action);
             
+            $("#add-var").click(function(){
+                var name = $("#name-var").val(),
+                    value = $("#value-var").val();
+                $("select[name=variables]").append(new Option(name, value, true, true)).trigger('change');
+                $("#name-var").val("");
+                $("#value-var").val("");
+            });
+
             $(".back").click(function(event){
                 event.preventDefault();
                 if (change)
@@ -365,32 +365,6 @@
                 else
                 {
                     window.location.href = $(this).data("href");                
-                }
-            });
-
-            $("#btn-add-hook").click(function(){
-                $(".hooks-box").show();
-                
-                var value = $("input[name=hook]").val();
-                var element = $("select[name=hooks]");
-                var parent = $(element).closest(".form-group");
-
-                if(value && check_hook(value))
-                {
-                   $("#list-hooks").append("<option data-value='" + value + "'>" + value + "</option>");
-                }
-
-                $("#list-hooks option").click(function(){
-                    $("input[name=hook]").val($(this).data("value"));
-                });
-
-                if($.trim($(element).text()))
-                {
-                    parent.removeClass("has-error").addClass("has-success");
-                }
-                else
-                {
-                   parent.removeClass("has-success").addClass("has-error");
                 }
             });
 

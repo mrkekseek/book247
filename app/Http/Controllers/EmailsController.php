@@ -35,7 +35,7 @@ class EmailsController extends Controller
             $templates[] = array(
                 "id" => $template["id"],
                 "title" => $template["title"],
-                "hooks" => DB::table("templates_hook")->where("template_id", $template["id"])->get(),
+                "hook" => $template["hook"],
                 "content" => $template["content"],
                 "variables" => json_decode($template["variables"]),
                 "country" => DB::table("countries")->where("id", $template["country_id"])->first()
@@ -108,12 +108,13 @@ class EmailsController extends Controller
                 'title'   => 'Not logged in'];
         }
 
-        $vars = $request->only('title', 'content', 'variables', 'hooks', 'country_id', 'description');
+        $vars = $request->only('title', 'content', 'variables', 'hook', 'country_id', 'description');
 
         $fillable = [
             'title'         => $vars['title'],
             'content'       => $vars['content'],
-            'variables'     => json_encode(explode(",", $vars['variables'])),
+            'hook'          => $vars['hook'],
+            'variables'     => json_encode($vars['variables']),
             'description'   => $vars['description'],
             'country_id'    => $vars['country_id'],
             'is_default'    => 0
@@ -132,10 +133,6 @@ class EmailsController extends Controller
         try
         {
             $template = TempalteEmail::create($fillable);
-            foreach ($vars["hooks"] as $name)
-            {
-                DB::table("templates_hook")->insert(array("template_id" => $template->id, "name" => $name));
-            }
 
             Activity::log([
                 'contentId'     => $user->id,
@@ -222,7 +219,7 @@ class EmailsController extends Controller
                 'title'   => 'Not logged in'];
         }
 
-        $vars = $request->only('title', 'content', 'country_id', 'description');
+        $vars = $request->only('title', 'content', 'country_id', 'description', 'variables');
 
         $email_template = TempalteEmail::where('id', $request->id)->get()->first();
 
@@ -231,7 +228,7 @@ class EmailsController extends Controller
             'content'  => $vars['content'],
             'country_id' => $vars['country_id'], 
             'description'  => $vars['description'],
-            'variables'    => json_encode(explode(",", $request->variables))
+            'variables'    => json_encode($vars['variables'])
         ];
 
 
@@ -299,7 +296,7 @@ class EmailsController extends Controller
             'template'      => $template = TempalteEmail::where('id', $request->id)->get()->first(),
             'template_id'   => $template->id,
             'country_list'  => DB::table("countries")->get(),
-            'variables'    => $this->variables,
+            'variables'     => $this->variables,
             'isset_default' => TempalteEmail::where("hook", TempalteEmail::where("id", $request->id)->first()->hook)->where("is_default", 1)->first() ? TRUE : FALSE
         ));
     }

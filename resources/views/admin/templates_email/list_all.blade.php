@@ -44,7 +44,7 @@
                             <tr>
                                 <th> Id </th>
                                 <th> Title </th>
-                                <th> Hooks </th>
+                                <th> Hook </th>
                                 <th> Variables </th>
                                 <th> Description </th>
                                 <th> Country </th>
@@ -58,9 +58,7 @@
                                         <td> {{ $template["id"] }} </td>
                                         <td> {{ $template["title"] }} </td>
                                         <td> 
-                                            @foreach($template["hooks"] as $hook)
-                                                <span class="label label-default">{{ $hook->name }}</span>
-                                              @endforeach
+                                            {{ $template["hook"]}}
                                         </td>
                                         <td> 
                                               @foreach($template["variables"] as $var)
