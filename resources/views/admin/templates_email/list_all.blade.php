@@ -43,10 +43,8 @@
                             <thead>
                             <tr>
                                 <th> Id </th>
-                                <th> Title </th>
                                 <th> Hook </th>
                                 <th> Variables </th>
-                                <th> Description </th>
                                 <th> Country </th>
                                 <th></td>
                                 <th></th>
@@ -56,7 +54,6 @@
                                 @foreach($templates as $template)
                                     <tr class="odd gradeX">
                                         <td> {{ $template["id"] }} </td>
-                                        <td> {{ $template["title"] }} </td>
                                         <td> 
                                             {{ $template["hook"]}}
                                         </td>
@@ -65,7 +62,6 @@
                                                 <span class="label label-default">{{ $var }}</span>
                                               @endforeach
                                        </td>
-                                       <td> {{ $template["content"] }} </td>
                                        <td>
                                             {{ $template["country"]->name }}
                                        </td>
@@ -83,7 +79,7 @@
                                 @endforeach
                                 @if ( ! $templates)
                                     <tr>
-                                        <td colspan="8">
+                                        <td colspan="6">
                                             No records found
                                         </td>
                                     </tr>
