@@ -52,7 +52,7 @@ class EmailsController extends Controller
         $text_parts  = [
             'title'     => 'Email templates',
             'subtitle'  => 'add/edit/view tempalte',
-            'table_head_text1' => 'Email'
+            'table_head_text1' => 'Email Templates'
         ];
 
         $sidebar_link = 'admin-templates_email-list_all';
