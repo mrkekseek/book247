@@ -87,7 +87,7 @@
                                 <div class="col-sm-12 form-group">
                                     <div class="col-sm-2"></div>
                                     <div class="col-sm-8">
-                                        <input type="text" id="name-var" class="form-control" placeholder="Name" />
+                                        <input type="text" id="name-var" class="form-control" placeholder="Name variable" />
                                     </div>
                                     <!--<div class="col-sm-5">
                                         <input type="text" id="value-var" class="form-control" placeholder="Value" />

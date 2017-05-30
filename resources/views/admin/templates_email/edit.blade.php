@@ -89,13 +89,13 @@
 
                                 <div class="col-sm-12 form-group">
                                     <div class="col-sm-2"></div>
-                                    <div class="col-sm-4">
-                                        <input type="text" id="name-var" class="form-control" placeholder="Name" />
+                                    <div class="col-sm-8">
+                                        <input type="text" id="name-var" class="form-control" placeholder="Name variable" />
                                     </div>
-                                    <div class="col-sm-5">
+                                    <!--<div class="col-sm-5">
                                         <input type="text" id="value-var" class="form-control" placeholder="Value" />
-                                    </div>
-                                    <div class="col-sm-1 text-right">
+                                    </div>-->
+                                    <div class="col-sm-2 text-right">
                                         <button type="button" id="add-var" class="btn btn-default btn-block">
                                             <i class="fa fa-plus"></i>
                                         </button>
