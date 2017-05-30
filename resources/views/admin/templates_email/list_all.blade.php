@@ -46,8 +46,8 @@
                                 <th> Hook </th>
                                 <th> Variables </th>
                                 <th> Country </th>
-                                <th></td>
-                                <th></th>
+                                <th> Edit </td>
+                                <th> Delete </th>
                             </tr>
                             </thead>
                             <tbody>
