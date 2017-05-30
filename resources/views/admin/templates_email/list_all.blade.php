@@ -55,10 +55,10 @@
                                     <tr class="odd gradeX">
                                         <td> {{ $template["id"] }} </td>
                                         <td> 
-                                            {{ $template["hook"]}}
+                                            {{ $template["hook"] }}
                                         </td>
                                         <td> 
-                                              @foreach($template["variables"] as $var)
+                                              @foreach($template["variables"] as $index => $var)
                                                 <span class="label label-default">{{ $var }}</span>
                                               @endforeach
                                        </td>

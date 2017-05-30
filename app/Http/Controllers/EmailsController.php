@@ -120,6 +120,7 @@ class EmailsController extends Controller
             'is_default'    => 0
         ];
 
+        
         $validator = Validator::make($fillable, TempalteEmail::rules('create'), TempalteEmail::$message, TempalteEmail::$attributeNames);
         if ($validator->fails())
         {

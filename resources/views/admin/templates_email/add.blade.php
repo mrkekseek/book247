@@ -76,23 +76,23 @@
                                         Variables
                                     </div>
                                     <div class="col-sm-10">
-                                        <select data-placeholder="Select or add variables" name="variables" class="form-control select2-multiple" multiple>
-                                            @foreach ($variables as $index => $var)
+                                        <select data-placeholder="Add variables" name="variables" class="form-control select2-multiple" multiple>
+                                            <!--@foreach ($variables as $index => $var)
                                                 <option value="{{ $index }}">{{ $var }}</option>
-                                            @endforeach
+                                            @endforeach-->
                                         </select>
                                     </div>
                                 </div>
 
                                 <div class="col-sm-12 form-group">
                                     <div class="col-sm-2"></div>
-                                    <div class="col-sm-4">
+                                    <div class="col-sm-8">
                                         <input type="text" id="name-var" class="form-control" placeholder="Name" />
                                     </div>
-                                    <div class="col-sm-5">
+                                    <!--<div class="col-sm-5">
                                         <input type="text" id="value-var" class="form-control" placeholder="Value" />
-                                    </div>
-                                    <div class="col-sm-1 text-right">
+                                    </div>-->
+                                    <div class="col-sm-2 text-right">
                                         <button type="button" id="add-var" class="btn btn-default btn-block">
                                             <i class="fa fa-plus"></i>
                                         </button>
@@ -265,9 +265,9 @@
 
         function add_new_template()
         {
-            var variables = {};
+            var variables = [];
             $("select[name=variables] option:selected").each(function(k, v){
-                variables[$(v).attr('value')] = $(v).text();
+                variables.push($(v).text());
             });
 
             $.ajax({
@@ -349,9 +349,8 @@
             $('textarea[name=description]').change(action);
             
             $("#add-var").click(function(){
-                var name = $("#name-var").val(),
-                    value = $("#value-var").val();
-                $("select[name=variables]").append(new Option(name, value, true, true)).trigger('change');
+                var name = $("#name-var").val();
+                $("select[name=variables]").append(new Option(name, name, true, true)).trigger('change');
                 $("#name-var").val("");
                 $("#value-var").val("");
             });
