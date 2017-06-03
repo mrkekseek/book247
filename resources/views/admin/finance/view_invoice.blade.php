@@ -127,23 +127,23 @@
                                             <strong>Total:</strong> {{$grand_total}} </li>
                                     </ul>
                                     <br/>
-                                    <a class="btn btn-lg blue hidden-print margin-bottom-5" onclick="javascript:window.print();"> Print
+                                    <a class="btn blue hidden-print margin-bottom-5" onclick="javascript:window.print();"> Print
                                         <i class="fa fa-print"></i>
                                     </a>
                                     @if ($invoice->status=='pending')
-                                    <a class="btn btn-lg green hidden-print margin-bottom-5"> Make Payment
+                                    <a class="btn green hidden-print margin-bottom-5" data-toggle="confirmation-custom" data-original-title="How would you pay?" data-singleton="true"> Make Payment
                                         <i class="fa fa-check"></i>
                                     </a>
                                     @elseif ($invoice->status=='processing')
-                                        <a class="btn btn-lg green hidden-print margin-bottom-5"> Payment is processing
+                                        <a class="btn green hidden-print margin-bottom-5" data-toggle="confirmation-custom" data-original-title="How would you pay?" data-singleton="true"> Payment is processing
                                             <i class="fa fa-check"></i>
                                         </a>
                                     @elseif ($invoice->status=='cancelled')
-                                        <a class="btn btn-lg green hidden-print margin-bottom-5"> Invoice Cancelled
+                                        <a class="btn green hidden-print margin-bottom-5"> Invoice Cancelled
                                             <i class="fa fa-check"></i>
                                         </a>
                                     @elseif ($invoice->status=='declined')
-                                        <a class="btn btn-lg green hidden-print margin-bottom-5"> Payment is declined
+                                        <a class="btn green hidden-print margin-bottom-5"> Payment is declined
                                             <i class="fa fa-check"></i>
                                         </a>
                                     @endif
@@ -163,6 +163,8 @@
     <script src="{{ asset('assets/global/plugins/bootstrap-maxlength/bootstrap-maxlength.min.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/global/plugins/jquery-validation/js/jquery.validate.min.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/global/plugins/select2/js/select2.full.min.js') }}" type="text/javascript"></script>
+
+    <script src="{{ asset('assets/global/plugins/bootstrap-confirmation-2-4/bootstrap-confirmation.min.js') }}" type="text/javascript"></script>
 @endsection
 
 @section('pageBelowLevelScripts')
@@ -265,6 +267,61 @@
 
         $(document).ready(function(){
             FormValidation.init();
+        });
+
+        $('[data-toggle=confirmation-custom]').confirmation({
+            copyAttributes: ['data-key'],
+            buttons: [
+                {
+                    label: 'Cash',
+                    class: 'btn btn-sm blue',
+
+                    onClick: function() {
+                        var alink = $('div[search-key="' + $(this).attr('data-key') + '"]');
+                        var abutton = alink.find('a[data-key="' + $(this).attr('data-key') + '"]');
+
+                        abutton.confirmation('destroy');
+                        abutton.unbind('click');
+                        abutton.css('cursor','default');
+                        mark_invoice_as_paid($(this).attr('data-key'), 'cash');
+                    }
+                },
+                {
+                    label: 'Card',
+                    class: 'btn btn-sm purple-seance',
+
+                    onClick: function() {
+                        var alink = $('div[search-key="' + $(this).attr('data-key') + '"]');
+                        var abutton = alink.find('a[data-key="' + $(this).attr('data-key') + '"]');
+
+                        abutton.confirmation('destroy');
+                        abutton.unbind('click');
+                        abutton.css('cursor','default');
+                        mark_invoice_as_paid($(this).attr('data-key'), 'card');
+                    }
+                },
+                {
+                    label: 'Credit',
+                    class: 'btn btn-sm green-seagreen',
+
+                    onClick: function() {
+                        var alink = $('div[search-key="' + $(this).attr('data-key') + '"]');
+                        //console.log(alink);
+                        var abutton = alink.find('a[data-key="' + $(this).attr('data-key') + '"]').first();
+                        //console.log(abutton);
+                        var pay_answer = mark_invoice_as_paid($(this).attr('data-key'), 'credit');
+
+                        if ( pay_answer == true ){
+                            abutton.confirmation('destroy');
+                            abutton.unbind('click');
+                            abutton.css('cursor','default');
+                        }
+                        else{
+                            abutton.confirmation('toggle');
+                        }
+                    }
+                }
+            ]
         });
     </script>
 @endsection

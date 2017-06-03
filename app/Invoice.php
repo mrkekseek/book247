@@ -195,15 +195,15 @@ class Invoice extends Model
         }
 
         $fillable = [
-            'user_id'       => $user_id,
-            'invoice_id'    => $this->id,
-            'invoice_items' => $invoiceItems,
+            'user_id'               => $user_id,
+            'invoice_id'            => $this->id,
+            'invoice_items'         => $invoiceItems,
             'transaction_amount'    => $transactionAmount,
             'transaction_currency'  => Config::get('constants.finance.currency'),
-            'transaction_type'  => $transaction_type,
-            'transaction_date'  => Carbon::now()->format('Y-m-d'),
-            'status'        => $status,
-            'other_details' => is_array($otherDetails)?json_encode($otherDetails):$otherDetails,
+            'transaction_type'      => $transaction_type,
+            'transaction_date'      => Carbon::now()->format('Y-m-d'),
+            'status'                => $status,
+            'other_details'         => is_array($otherDetails)?json_encode($otherDetails):$otherDetails,
         ];
 
         $validator = Validator::make($fillable, InvoiceFinancialTransaction::rules('POST'), InvoiceFinancialTransaction::$message, InvoiceFinancialTransaction::$attributeNames);

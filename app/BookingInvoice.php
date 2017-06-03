@@ -144,13 +144,13 @@ class BookingInvoice extends Model
         $fillable = [
             'booking_invoice_id'        => $this->id,
             'booking_invoice_item_id'   => $bookingItemID,
-            'user_id'               => $userId,
-            'transaction_amount'    => $totalAmount,
-            'transaction_currency'  => Config::get('constants.finance.currency'),
-            'transaction_type'  => $method,
-            'transaction_date'  => Carbon::now(),
-            'other_details'     => $details,
-            'status'            => $status
+            'user_id'                   => $userId,
+            'transaction_amount'        => $totalAmount,
+            'transaction_currency'      => Config::get('constants.finance.currency'),
+            'transaction_type'          => $method,
+            'transaction_date'          => Carbon::now(),
+            'other_details'             => $details,
+            'status'                    => $status
         ];
 
         $validator = Validator::make($fillable, BookingFinancialTransaction::rules('POST'), BookingFinancialTransaction::$message, BookingFinancialTransaction::$attributeNames);
