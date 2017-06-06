@@ -13,12 +13,12 @@ class TempalteEmail extends Model
     public static $message = array();
 
     public static $attributeNames = array(
-		'title'  => 'Title',
-		'content'  => 'Content',
-		'variables'     => 'Cariables',
-		'description'  => 'Description',
-		'hook' => 'Hook',
-		'country_id'    => 'Country'
+        'title'  => 'Title',
+        'content'  => 'Content',
+        'variables'     => 'Cariables',
+        'description'  => 'Description',
+        'hook' => 'Hook',
+        'country_id'    => 'Country'
     );
 
     protected $fillable = array(
@@ -35,14 +35,13 @@ class TempalteEmail extends Model
     {
         switch ($method)
         {   
-            case 'post':
+            case 'create':
             {
                 return [
                     'title'  => 'required',
-                    'content'  => 'required',
                     'variables'  => 'required',
                     'description'  => 'required',
-                    'hook'  => 'required',
+                    'hook'  => 'required|unique:email_templates',
                     'country_id' => 'required'
                 ];
             }
@@ -51,8 +50,17 @@ class TempalteEmail extends Model
             {
                 return [
                     'title'  => 'required',
-                    'content'  => 'required',
+                    'country_id'  => 'required',
                     'description'  => 'required'
+                ];
+            }
+
+            case 'make_default' : {
+                return [
+                    'title'  => 'required',
+                    'variables'  => 'required',
+                    'description'  => 'required',
+                    'country_id' => 'required'
                 ];
             }
 
