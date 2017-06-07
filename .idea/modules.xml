@@ -2,7 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/bookingsys.iml" filepath="$PROJECT_DIR$/.idea/bookingsys.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/book247.net.iml" filepath="$PROJECT_DIR$/.idea/book247.net.iml" />
+      <module fileurl="file://C:\Project\book247.net\.idea\bookingsys.iml" filepath="C:\Project\book247.net\.idea\bookingsys.iml" />
     </modules>
   </component>
 </project>
