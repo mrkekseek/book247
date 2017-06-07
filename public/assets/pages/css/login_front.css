@@ -184,6 +184,11 @@ Login page
 .icon-btn {padding-left:7px;
     padding-right:7px;}
 
+.login .content .pre-register-form,
+.login .content .pre-register-password-api{
+    display: none; 
+}
+
 @media (max-width: 440px) {
     /***
     Login page

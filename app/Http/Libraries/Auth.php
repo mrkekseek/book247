@@ -96,7 +96,7 @@ class Auth
         Cookie::queue(Cookie::forget('sso_user_id', '/', $domain)); 
     }
     
-    private static function set_cookie_session($sso_user_id)
+    public static function set_cookie_session($sso_user_id)
     {   
         $domain = self::get_domain();        
         Session::put('sso_user_id',$sso_user_id);            
@@ -137,7 +137,7 @@ class Auth
         }
     }
     
-    private static function set_local_user($sso_user_id)
+    public static function set_local_user($sso_user_id)
     {
         $api_user = ApiAuth::accounts_get($sso_user_id)['data'];                
         $local_user = [
@@ -235,7 +235,7 @@ class Auth
         }        
     }
     
-    private static function check_exist_api_user($username)
+    public static function check_exist_api_user($username)
     {        
         $exist = ApiAuth::checkExist($username);
         return $exist['success'];
