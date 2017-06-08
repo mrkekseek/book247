@@ -1193,7 +1193,7 @@
                    }
                    else{
                        $('.alert-danger').show();
-                       $('.alert-danger span').append(data.errors);
+                       $('.alert-danger span').html(data.errors);
                     }
                 }
             });
