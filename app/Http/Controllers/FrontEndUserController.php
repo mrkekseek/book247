@@ -4721,4 +4721,36 @@ class FrontEndUserController extends Controller
                     break;
         }
     }
+    
+    public function auth_autorize(Request $request){
+        $data = $request->input('data');
+        if (Auth::attempt(['email' => $data['username'], 'password' => $request->data['password']])) {
+            $user = Auth::user();
+            Activity::log([
+                'contentId'     => $user->id,
+                'contentType'   => 'login',
+                'action'        => 'Front end login',
+                'description'   => 'Successful login for '.$user->first_name.' '.$user->middle_name.' '.$user->last_name,
+                'details'       => 'User Email : '.$user->email,
+                'updated'       => false,
+            ]);
+            return [
+                        'success' => true,
+                    ];
+        }
+        else {
+            if (!empty(Auth::$error)){
+                return [
+                            'success' => false,
+                            'title'   => 'Api error',
+                            'errors'  => Auth::$error
+                        ];
+            }
+            return [
+                        'success' => false,
+                        'title'   => 'Error',
+                        'errors'  => 'Inorect password'
+                    ];
+        }
+    }
 }

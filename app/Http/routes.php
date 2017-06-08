@@ -1082,6 +1082,11 @@ Route::group(['prefix'=>'ajax', 'middleware' => 'web'], function(){
         'uses'  => 'FrontEndUserController@auth_check_password'
     ]);
     
+    Route::post('auth_autorize', [
+        'as'    => 'ajax/auth_autorize',
+        'uses'  => 'FrontEndUserController@auth_autorize'
+    ]);
+    
 });
 
 Route::group(['prefix' => 'optimize', 'middleware' => 'web'], function(){

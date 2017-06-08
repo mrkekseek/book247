@@ -98,13 +98,10 @@
                                         </div>
                                         <div class="alert alert-danger display-hide">
                                             <button class="close" data-close="alert"></button>
-                                            <span> Incorrect username/password combination ... </span>
+                                            <span>  </span>
                                         </div>
                                         <div class="form-group">
                                             <!--ie8, ie9 does not support html5 placeholder, so we just show field title for that-->
-                                            <label class="control-label visible-ie8 visible-ie9">Username
-                                                <span class="required"> * </span>
-                                            </label>
                                             <input class="form-control form-control-solid placeholder-no-fix {{ $errors->has('username') ? ' has-error' : '' }}" type="text" autocomplete="off" placeholder="Email" name="username" id="username_focus" value="{{ old('username') }}" /> </div>
                                         <div class="form-group">
                                             <label class="control-label visible-ie8 visible-ie9">Password
@@ -617,50 +614,58 @@
             var handleLogin = function() {
 
                 $('.login-form').validate({
-                    errorElement: 'span', //default input error message container
-                    errorClass: 'help-block', // default input error message class
+                    //errorElement: 'span', //default input error message container
+                    //errorClass: 'help-block', // default input error message class
+                    //  focusCleanup: true,
                     focusInvalid: false, // do not focus the last invalid input
                     rules: {
                         username: {
-                            required: true
+                            required: true,
+                            email: true,
                         },
                         password: {
-                            required: true
+                            required: true,
+                            minlength: 8
                         },
-                        remember: {
-                            required: false
-                        }
                     },
-
                     messages: {
                         username: {
-                            required: "Username is required."
+                            required: "Email is required.",
+                            email: "Email not valid.",
                         },
                         password: {
-                            required: "Password is required."
+                            required: "Password is required.",
+                            minlength : "Min 8 symbol"
                         }
                     },
-
-                    invalidHandler: function(event, validator) { //display error alert on form submit
-                        $('.alert-danger', $('.login-form')).show();
+                    showErrors: function(errorMap, errorList) {
+                        var errors = this.numberOfInvalids();
+                        if (errors) {
+                            $('.alert-danger').show();
+                        } 
+                        else {
+                            $('.alert-danger').hide();
+                        }
+                        this.defaultShowErrors();
                     },
-
-                    highlight: function(element) { // hightlight error inputs
-                        $(element)
-                                .closest('.form-group').addClass('has-error'); // set error class to the control group
+                   highlight: function(element) { // hightlight error inputs
+                        $(element).closest('.form-group').addClass('has-error'); // set error class to the control group
                     },
-
+                    unhighlight  : function(element) { // hightlight error inputs
+                        $(element).closest('.form-group').removeClass('has-error'); // set error class to the control group
+                    },
                     success: function(label) {
-                        label.closest('.form-group').removeClass('has-error');
-                        label.remove();
+                       
                     },
-
                     errorPlacement: function(error, element) {
-                        error.insertAfter(element.closest('.input-icon'));
+                        $('.alert-danger span').append(error);
                     },
-
                     submitHandler: function(form) {
-                        form.submit(); // form validation success, call ajax form submit
+                        var data = {
+                            username : $(form).find('input[name="username"]').val(),
+                            password : $(form).find('input[name="password"]').val(),
+                        };
+                        auth_autorize(data);
                     }
                 });
 
@@ -1169,6 +1174,26 @@
                    }
                    else{
                         show_notification(data.title, data.errors, 'lemon', 5000, 0);
+                    }
+                }
+            });
+        }
+        
+        function auth_autorize(data){
+            $.ajax({
+                url: '{{ route('ajax/auth_autorize') }}',
+                type: "post",
+                cache: false,
+                data: {
+                    'data': data,
+                },
+                success: function (data) {
+                    if (data.success == true){
+                        window.location.reload(true);
+                   }
+                   else{
+                       $('.alert-danger').show();
+                       $('.alert-danger span').append(data.errors);
                     }
                 }
             });

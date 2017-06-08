@@ -154,7 +154,8 @@ class Auth
             case (1): $local_user['gender'] = 'M'; break;
             case (2): $local_user['gender'] = 'F'; break;
         }
-        $user = User::firstOrNew(['sso_user_id'=>$sso_user_id]);        
+        //$user = User::firstOrNew(['sso_user_id'=>$sso_user_id]);        
+        $user = User::firstOrNew(['username'=>$api_user->username]);        
         $user->fill($local_user);        
         if (!$user->exists)
         {
