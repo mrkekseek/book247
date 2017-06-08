@@ -42,7 +42,7 @@
                         <table class="table table-striped table-bordered table-hover table-checkable order-column" id="all_permissions">
                             <thead>
                             <tr>
-                                <th> Id </th>
+                                <th> № </th>
                                 <th> Hook </th>
                                 <th> Variables </th>
                                 <th> Country </th>
@@ -51,32 +51,32 @@
                             </tr>
                             </thead>
                             <tbody>
-                                @foreach($templates as $template)
+                                @for($i = 0; $i < count($templates); $i++)
                                     <tr class="odd gradeX">
-                                        <td> {{ $template["id"] }} </td>
+                                        <td> {{ $i + 1 }} </td>
                                         <td> 
-                                            {{ $template["hook"] }}
+                                            {{ $templates[$i]["hook"] }}
                                         </td>
                                         <td> 
-                                              @foreach($template["variables"] as $index => $var)
+                                              @foreach($templates[$i]["variables"] as $index => $var)
                                                 <span class="label label-default">{{ $var }}</span>
                                               @endforeach
                                        </td>
                                        <td>
-                                            {{ $template["country"]->name }}
+                                            {{ $templates[$i]["country"]->name }}
                                        </td>
                                        <td class="text-center">
-                                            <a href="/admin/templates_email/edit/{{ $template['id'] }}" class="edit">
+                                            <a href="/admin/templates_email/edit/{{ $templates[$i]['id'] }}" class="edit">
                                                 <i class="fa fa-edit"></i>
                                             </a>
                                         </td>
                                         <td class="text-center">
-                                            <a href="javascript:void(0);"  data-id="{{ $template['id'] }}" class="delete">
+                                            <a href="javascript:void(0);"  data-id="{{ $templates[$i]['id'] }}" class="delete">
                                                 <i class="fa fa-trash-o"></i>
                                             </a>
                                         </td>
                                     </tr>
-                                @endforeach
+                                @endfor
                                 @if ( ! $templates)
                                     <tr>
                                         <td colspan="6">
