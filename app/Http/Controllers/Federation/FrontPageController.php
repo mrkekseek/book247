@@ -25,7 +25,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\MessageBag;
 use App\Http\Controllers\BookingController;
 
-class FederationFrontPageController extends Controller
+class FrontPageController extends Controller
 {
     public function __construct()
     {

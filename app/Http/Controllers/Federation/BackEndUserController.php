@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Federation;
 
 use App\OptimizeSearchMembers;
 use App\Permission;
@@ -16,6 +16,7 @@ use App\UserDocuments;
 use Illuminate\Http\Response;
 use Illuminate\Http\Request;
 use App\Http\Requests;
+use App\Http\Controllers\Controller;
 use App\User;
 use Validator;
 use Auth;
@@ -28,7 +29,8 @@ use Webpatser\Countries\Countries;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Config;
 
-class BackEndUserController extends Controller
+class
+BackEndUserController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -82,7 +84,7 @@ class BackEndUserController extends Controller
         $all_roles = Role::orderBy('name')->get();
         //xdebug_var_dump($all_roles);
 
-        return view('admin/back_users/all_list', [
+        return view('admin/back_users/federation/all_list', [
             'users' => $back_users,
             'breadcrumbs' => $breadcrumbs,
             'text_parts'  => $text_parts,
@@ -265,7 +267,7 @@ class BackEndUserController extends Controller
             $back_user->first_name.' '.$back_user->middle_name.' '.$back_user->last_name => '',
         ];
 
-        return view('admin/back_users/user_details', [
+        return view('admin/back_users/federation/user_details', [
             'user'      => $back_user,
             'userRole'  => $userRole,
             'professional' => $userProfessional,

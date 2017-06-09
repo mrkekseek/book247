@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Federation;
 
 use App\Booking;
 use App\BookingInvoice;
@@ -143,7 +143,7 @@ class FrontEndUserController extends Controller
         $role = Role::where('name','=','front-user')->get()->first();
         //xdebug_var_dump($all_roles);
 
-        return view('admin/front_users/all_members_list_ajax', [
+        return view('admin/front_users/federation/all_members_list_ajax', [
             'users' => $back_users,
             'breadcrumbs' => $breadcrumbs,
             'text_parts'  => $text_parts,
@@ -332,7 +332,6 @@ class FrontEndUserController extends Controller
 
         $role = Role::where('name','=','front-user')->get()->first();
         $memberships = MembershipPlan::where('status','=','active')->where('id','!=','1')->get();
-        $shop_locations = ShopLocations::whereIn('visibility',['public','pending'])->get();
 
         $breadcrumbs = [
             'Home'              => route('admin'),
@@ -347,15 +346,14 @@ class FrontEndUserController extends Controller
         ];
         $sidebar_link= 'admin-frontend-add_member';
 
-        return view('admin/front_users/add_new_member', [
+        return view('admin/front_users/federation/add_new_member', [
             'users'         => $back_users,
             'breadcrumbs'   => $breadcrumbs,
             'text_parts'    => $text_parts,
             'in_sidebar'    => $sidebar_link,
             'role'          => $role,
             'memberships'   => $memberships,
-            'countries'     => $countries,
-            'shop_locations'=> $shop_locations
+            'countries'     => $countries
         ]);
     }
 
@@ -506,7 +504,7 @@ class FrontEndUserController extends Controller
         ];
         $sidebar_link= 'admin-frontend-user_details_view';
 
-        return view('admin/front_users/view_member_details', [
+        return view('admin/front_users/federation/view_member_details', [
             'user'          => $member,
             'breadcrumbs'   => $breadcrumbs,
             'text_parts'    => $text_parts,
@@ -771,7 +769,7 @@ class FrontEndUserController extends Controller
         ];
         $sidebar_link= 'admin-frontend-user_details_view';
 
-        return view('admin/front_users/view_member_account_settings', [
+        return view('admin/front_users/federation/view_member_account_settings', [
             'user'              => $member,
             'personalAddress'   => $personalAddress,
             'breadcrumbs'       => $breadcrumbs,
@@ -970,7 +968,7 @@ class FrontEndUserController extends Controller
         ];
         $sidebar_link= 'admin-frontend-user_details_view';
 
-        return view('admin/front_users/view_member_personal_settings', [
+        return view('admin/front_users/federation/view_member_personal_settings', [
             'user'      => $member,
             'userRole'  => $userRole,
             'professional' => $userProfessional,
@@ -1172,7 +1170,7 @@ class FrontEndUserController extends Controller
         ];
         $sidebar_link= 'admin-frontend-user_details_view';
 
-        return view('admin/front_users/view_member_bookings', [
+        return view('admin/front_users/federation/view_member_bookings', [
             'user'          => $member,
             'breadcrumbs'   => $breadcrumbs,
             'text_parts'    => $text_parts,
@@ -1394,7 +1392,7 @@ class FrontEndUserController extends Controller
         //xdebug_var_dump($generalInvoiceList);
         //xdebug_var_dump($lastTenGeneralInvoice);
 
-        return view('admin/front_users/view_member_finance', [
+        return view('admin/front_users/federation/view_member_finance', [
             'user'      => $member,
             'breadcrumbs' => $breadcrumbs,
             'text_parts'  => $text_parts,
@@ -2529,10 +2527,10 @@ class FrontEndUserController extends Controller
         if ($user && $user->is_back_user()) {
             $by_user = $user;
         }
-
-        $vars = $request->only('first_name', 'middle_name', 'last_name', 'gender', 'email', 'phone_number', 'dob', 'password', 'rpassword', 'username', 'user_type',
-            'address1', 'address2', 'city', 'adr_country_id', 'postal_code', 'region',
-            'membership_plan', 'start_date', 'sign_location'); //exit;
+        // WE MUST DO SOMETHING WITH THE MEMBERSHIP NUMBER.
+        $vars = $request->only('first_name', 'middle_name', 'last_name', 'gender',
+            'email', 'phone_number', 'dob', 'username', 'user_type',
+            'address1', 'address2', 'city', 'adr_country_id', 'postal_code', 'region', 'membership_plan', 'start_date', 'home_club','membership_number'); //exit;
 
         if (!isset($vars['middle_name'])){
             $vars['middle_name'] = '';
@@ -2552,9 +2550,8 @@ class FrontEndUserController extends Controller
             }
         }
 
-        if ($vars['password']==""){
-            $vars['password'] = substr(bcrypt(str_random(12)),0,8);
-        }
+        $vars['password'] = substr(bcrypt(str_random(12)),0,8);
+
 
         if (!isset($vars['country_id'])){
             $vars['country_id'] = Config::get('constants.globalWebsite.defaultCountryId');
@@ -2575,12 +2572,12 @@ class FrontEndUserController extends Controller
             ];
         }
 
-        if (isset($vars['sign_location'])){
-            $signLocation = ShopLocations::where('id','=',$vars['sign_location'])->whereIn('visibility',['public','pending'])->get()->first();
-        }
-        else{
-            $signLocation = ShopLocations::whereIn('visibility',['public','pending'])->orderBy('created_at','ASC')->get()->first();
-        }
+//        if (isset($vars['home_club'])){
+//            $signLocation = ShopLocations::where('id','=',$vars['sign_location'])->whereIn('visibility',['public','pending'])->get()->first();
+//        }
+//        else{
+//            $signLocation = ShopLocations::whereIn('visibility',['public','pending'])->orderBy('created_at','ASC')->get()->first();
+//        }
 
         $credentials = [
             'first_name'    => trim($vars['first_name']),
@@ -2702,9 +2699,8 @@ class FrontEndUserController extends Controller
             }
 
             // preferred location + sign in location
-            if ($signLocation){
-                $user->set_general_setting('settings_preferred_location', $signLocation->id);
-                $user->set_general_setting('registration_signed_location', $signLocation->id);
+            if (isset($vars['home_club'])){
+                $user->set_general_setting('federation_member_home_club', $vars['home_club']);
             }
 
             $searchMembers = new OptimizeSearchMembers();
@@ -3280,7 +3276,7 @@ class FrontEndUserController extends Controller
         ];
         $sidebar_link= 'admin-frontend-import_members';
 
-        return view('admin/front_users/import_from_file', [
+        return view('admin/front_users/federation/import_from_file', [
             'breadcrumbs' => $breadcrumbs,
             'text_parts'  => $text_parts,
             'in_sidebar'  => $sidebar_link,

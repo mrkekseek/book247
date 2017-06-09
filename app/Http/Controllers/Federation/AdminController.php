@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\MessageBag;
 use Carbon\Carbon;
 
-class FederationAdminController extends Controller
+class AdminController extends Controller
 {
     /**
      * Create a new controller instance.

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Federation;
 
 use App\MembershipPlan;
 use App\MembershipPlanPrice;
@@ -8,6 +8,7 @@ use App\MembershipRestriction;
 use App\MembershipRestrictionType;
 use App\ShopResourceCategory;
 use App\UserMembership;
+use App\Http\Controllers\Controller;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Auth;
@@ -71,7 +72,7 @@ class MembershipPlansController extends Controller
         ];
         $sidebar_link= 'admin-backend-memberships-all_plans';
 
-        return view('admin/membership_plans/all_plans', [
+        return view('admin/membership_plans/federation/all_plans', [
             'breadcrumbs' => $breadcrumbs,
             'text_parts'  => $text_parts,
             'in_sidebar'  => $sidebar_link,
@@ -110,7 +111,7 @@ class MembershipPlansController extends Controller
         ];
         $sidebar_link = 'admin-backend-memberships-new_plans';
 
-        return view('admin/membership_plans/add_plan', [
+        return view('admin/membership_plans/federation/add_plan', [
             'breadcrumbs' => $breadcrumbs,
             'text_parts'  => $text_parts,
             'in_sidebar'  => $sidebar_link,
@@ -260,7 +261,7 @@ class MembershipPlansController extends Controller
         ];
         $sidebar_link= 'admin-backend-memberships-all_plans';
 
-        return view('admin/membership_plans/view_plan', [
+        return view('admin/membership_plans/federation/view_plan', [
             'breadcrumbs'   => $breadcrumbs,
             'text_parts'    => $text_parts,
             'in_sidebar'    => $sidebar_link,
@@ -322,7 +323,7 @@ class MembershipPlansController extends Controller
         ];
         $sidebar_link= 'admin-backend-memberships-all_plans';
 
-        return view('admin/membership_plans/edit_plan', [
+        return view('admin/membership_plans/federation/edit_plan', [
             'breadcrumbs'   => $breadcrumbs,
             'text_parts'    => $text_parts,
             'in_sidebar'    => $sidebar_link,

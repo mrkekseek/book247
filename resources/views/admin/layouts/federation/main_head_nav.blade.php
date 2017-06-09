@@ -235,26 +235,26 @@
                 </li>
                 @endif
                 <!-- END INBOX DROPDOWN -->
-                <li class="separator hide"> </li>
-                <!-- BEGIN TODO DROPDOWN -->
-                <!-- DOC: Apply "dropdown-dark" class after below "dropdown-extended" to change the dropdown styte -->
-                <li class="dropdown dropdown-extended dropdown-tasks dropdown-dark" id="header_task_bar">
-                    <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true">
-                        <i class="icon-calendar"></i>
-                        <span class="badge badge-primary"> bookings calendar </span>
-                    </a>
-                    <ul class="dropdown-menu extended tasks" style="width:240px;">
-                        <li>
-                            <ul class="dropdown-menu-list scroller" style="height: 270px; background-color:#ffffff;" data-handle-color="#637283">
-                                <li>
-                                    <div id="calendar_booking_top_menu" data-date="{{ \Carbon\Carbon::today()->format('d-m-Y') }}" data-date-format="mm/dd/yyyy" style="margin-left:10px;"> </div>
-                                </li>
-                                <li class="text-center bg-blue-madison bg-font-blue-madison"> <b>{{ Auth::user()->get_preferred_location_name() }}</b> </li>
-                            </ul>
-                        </li>
-                    </ul>
-                </li>
-                <!-- END TODO DROPDOWN -->
+                {{--<li class="separator hide"> </li>--}}
+                {{--<!-- BEGIN TODO DROPDOWN -->--}}
+                {{--<!-- DOC: Apply "dropdown-dark" class after below "dropdown-extended" to change the dropdown styte -->--}}
+                {{--<li class="dropdown dropdown-extended dropdown-tasks dropdown-dark" id="header_task_bar">--}}
+                    {{--<a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true">--}}
+                        {{--<i class="icon-calendar"></i>--}}
+                        {{--<span class="badge badge-primary"> bookings calendar </span>--}}
+                    {{--</a>--}}
+                    {{--<ul class="dropdown-menu extended tasks" style="width:240px;">--}}
+                        {{--<li>--}}
+                            {{--<ul class="dropdown-menu-list scroller" style="height: 270px; background-color:#ffffff;" data-handle-color="#637283">--}}
+                                {{--<li>--}}
+                                    {{--<div id="calendar_booking_top_menu" data-date="{{ \Carbon\Carbon::today()->format('d-m-Y') }}" data-date-format="mm/dd/yyyy" style="margin-left:10px;"> </div>--}}
+                                {{--</li>--}}
+                                {{--<li class="text-center bg-blue-madison bg-font-blue-madison"> <b>{{ Auth::user()->get_preferred_location_name() }}</b> </li>--}}
+                            {{--</ul>--}}
+                        {{--</li>--}}
+                    {{--</ul>--}}
+                {{--</li>--}}
+                {{--<!-- END TODO DROPDOWN -->--}}
                 <!-- BEGIN USER LOGIN DROPDOWN -->
                 <!-- DOC: Apply "dropdown-dark" class after below "dropdown-extended" to change the dropdown styte -->
                 <li class="dropdown dropdown-user dropdown-dark">
@@ -267,10 +267,10 @@
                             <a href="{{ route('admin/back_users/view_user/', ['id' => Auth::user()->id ]) }}">
                                 <i class="icon-user"></i> My Profile </a>
                         </li>
-                        <li>
-                            <a href="{{ route('bookings/location_calendar_day_view',['day'=>\Carbon\Carbon::now()->format('d-m-Y')]) }}">
-                                <i class="icon-calendar"></i> Calendar View </a>
-                        </li>
+                        {{--<li>--}}
+                            {{--<a href="{{ route('bookings/location_calendar_day_view',['day'=>\Carbon\Carbon::now()->format('d-m-Y')]) }}">--}}
+                                {{--<i class="icon-calendar"></i> Calendar View </a>--}}
+                        {{--</li>--}}
                         <li class="divider"> </li>
                         <li>
                             <a href="{{ route('admin/logout') }}">

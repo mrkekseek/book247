@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Federation;
 
 use App\MembershipPlan;
 use App\MembershipPlanPrice;
+use App\Http\Controllers\Controller;
 use App\Role;
 use App\UserMembership;
 use App\ShopResourceCategory;
