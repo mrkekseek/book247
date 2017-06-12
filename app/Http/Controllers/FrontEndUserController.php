@@ -4660,6 +4660,7 @@ class FrontEndUserController extends Controller
                     $user->fill($local_user);
                     if ($user->save()){
                         $user->attachRole(6);
+                        Auth::set_personal_details($user->id, $api_user);
                         Auth::set_cookie_session($user->sso_user_id);
                         return [
                             'success' => true,

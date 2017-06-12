@@ -179,7 +179,7 @@ class Auth
         return false;
     }
     
-    private static function set_personal_details($local_user_id, $api_user)
+    public static function set_personal_details($local_user_id, $api_user)
     {
         $personalDetail = PersonalDetail::firstOrNew(['user_id'=>$local_user_id]);
         $personalDetail->personal_email = $api_user->email;
