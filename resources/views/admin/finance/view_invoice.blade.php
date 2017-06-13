@@ -131,19 +131,23 @@
                                         <i class="fa fa-print"></i>
                                     </a>
                                     @if ($invoice->status=='pending')
-                                    <a class="btn green hidden-print margin-bottom-5" data-toggle="confirmation-custom" data-original-title="How would you pay?" data-singleton="true"> Make Payment
-                                        <i class="fa fa-check"></i>
+                                    <a class="btn green hidden-print margin-bottom-5" data-toggle="confirmation-custom" data-key="{{$invoice->invoice_number}}" data-original-title="How would you pay?" data-singleton="true">
+                                        Make Manual Payment <i class="fa fa-check"></i>
                                     </a>
                                     @elseif ($invoice->status=='processing')
-                                        <a class="btn green hidden-print margin-bottom-5" data-toggle="confirmation-custom" data-original-title="How would you pay?" data-singleton="true"> Payment is processing
-                                            <i class="fa fa-check"></i>
+                                        <a class="btn green hidden-print margin-bottom-5" style="cursor:default;">
+                                            Payment is processing <i class="fa fa-check"></i>
                                         </a>
                                     @elseif ($invoice->status=='cancelled')
-                                        <a class="btn green hidden-print margin-bottom-5"> Invoice Cancelled
+                                        <a class="btn green hidden-print margin-bottom-5" style="cursor:default;"> Invoice Cancelled
                                             <i class="fa fa-check"></i>
                                         </a>
                                     @elseif ($invoice->status=='declined')
-                                        <a class="btn green hidden-print margin-bottom-5"> Payment is declined
+                                        <a class="btn green hidden-print margin-bottom-5" data-toggle="confirmation-custom" data-key="{{$invoice->invoice_number}}" data-original-title="How would you pay?" data-singleton="true"> Payment is declined
+                                            <i class="fa fa-check"></i>
+                                        </a>
+                                    @elseif ($invoice->status=='incomplete')
+                                        <a class="btn green hidden-print margin-bottom-5" data-toggle="confirmation-custom" data-key="{{$invoice->invoice_number}}" data-original-title="How would you pay?" data-singleton="true"> Partially paid - pay remaining
                                             <i class="fa fa-check"></i>
                                         </a>
                                     @endif
@@ -153,6 +157,67 @@
                     </div>
                 </div>
                 <!-- End: life time stats -->
+            </div>
+            <div class="col-md-12">
+                <div class="portlet light portlet-fit bordered">
+                    <div class="portlet-title">
+                        <div class="caption">
+                            <i class="icon-bubble font-dark"></i>
+                            <span class="caption-subject font-dark bold uppercase">Financial Transactions</span>
+                        </div>
+                    </div>
+                    <div class="portlet-body">
+                        <div class="table-scrollable">
+                            <table class="table table-bordered table-hover">
+                                <thead>
+                                <tr>
+                                    <th> # </th>
+                                    <th> Invoice Item </th>
+                                    <th> Amount </th>
+                                    <th> Transaction Type </th>
+                                    <th> Transaction Date </th>
+                                    <th> other details </th>
+                                    <th> Status </th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                @if (sizeof($financialTransactions)>0)
+                                    @foreach($financialTransactions as $single)
+                                        <tr>
+                                            <td> 2 </td>
+                                            <td> Larry </td>
+                                            <td> {{$single->transaction_amount}} {{$single->transaction_currency}} </td>
+                                            <td> {{$single->transaction_type}} </td>
+                                            <td> {{$single->transaction_date}} </td>
+                                            <td> {{$single->other_details}} </td>
+                                            <td>
+                                                @if ($single->status=='pending')
+                                                    <span class="label label-sm label-info"> Pending </span>
+                                                @elseif ($single->status=='processing')
+                                                    <span class="label label-sm label-info"> Processing </span>
+                                                @elseif($single->status=='completed')
+                                                    <span class="label label-sm label-success"> Completed </span>
+                                                @elseif($single->status=='cancelled')
+                                                    <span class="label label-sm label-warning"> Cancelled </span>
+                                                @elseif($single->status=='declined')
+                                                    <span class="label label-sm label-danger"> Declined </span>
+                                                @elseif($single->status=='incomplete')
+                                                    <span class="label label-sm label-warning"> Incomplete </span>
+                                                @endif
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                @else
+                                    <tr>
+                                        <td></td>
+                                        <td colspan="5">There are no financial transactions associated with this invoice</td>
+                                    </tr>
+                                @endif
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
         <!-- END PAGE BASE CONTENT -->
@@ -268,6 +333,31 @@
         $(document).ready(function(){
             FormValidation.init();
         });
+
+        function mark_invoice_as_paid(invoice_number, payment_type){
+            var returnStatus = $.ajax({
+                url: '{{route('ajax/finance_action_invoice_paid')}}',
+                type: "post",
+                async: false,
+                cache: false,
+                data: {
+                    'invoice_number': invoice_number,
+                    'method': payment_type
+                },
+                success: function (data) {
+                    if(data.success){
+                        show_notification('Booking Paid', data.message, 'lime', 3500, 0);
+                        return '1';
+                    }
+                    else{
+                        show_notification('Error marking Paiment', data.errors, 'ruby', 3500, 0);
+                        return '2';
+                    }
+                }
+            }).responseJSON.success;
+
+            return returnStatus;
+        }
 
         $('[data-toggle=confirmation-custom]').confirmation({
             copyAttributes: ['data-key'],

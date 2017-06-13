@@ -564,11 +564,16 @@ if (env('FEDERATION',false)) {
             'uses'  => 'InvoiceController@list_all_invoices'
         ]);
 
-        Route::get('admin/invoices/{id}/view', [
-            'as'    => 'admin/invoices/view',
-            'uses'  => 'InvoiceController@view_invoice'
-        ]);
-        /** Stop Finance Part */
+    Route::get('admin/invoices/{id}/view', [
+        'as'    => 'admin/invoices/view',
+        'uses'  => 'InvoiceController@view_invoice'
+    ]);
+
+    Route::post('ajax/finance_action_invoice_paid',[
+        'as'    => 'ajax/finance_action_invoice_paid',
+        'uses'  => 'InvoiceController@mark_as_paid'
+    ]);
+    /** Stop Finance Part */
 
         /* Start General Settings Part */
         Route::get('admin/settings/list_all', [

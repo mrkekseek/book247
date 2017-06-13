@@ -3308,7 +3308,7 @@ class BookingController extends Controller
             $message = $invoice->add_transaction($user->id, $invoiceItem->id, $totalAmount, $vars['method'], $vars['other_details'], $vars['status'] );
             if ($message['success']==true){
                 // check if invoice is all paid
-                $invoice->check_if_paid();
+                $invoice->check_if_paid($user->id);
 
                 Activity::log([
                     'contentId'     => $user->id,
