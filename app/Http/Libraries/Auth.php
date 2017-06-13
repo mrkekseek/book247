@@ -96,7 +96,7 @@ class Auth
         Cookie::queue(Cookie::forget('sso_user_id', '/', $domain)); 
     }
     
-    private static function set_cookie_session($sso_user_id)
+    public static function set_cookie_session($sso_user_id)
     {   
         $domain = self::get_domain();        
         Session::put('sso_user_id',$sso_user_id);            
@@ -137,7 +137,7 @@ class Auth
         }
     }
     
-    private static function set_local_user($sso_user_id)
+    public static function set_local_user($sso_user_id)
     {
         $api_user = ApiAuth::accounts_get($sso_user_id)['data'];                
         $local_user = [
@@ -154,7 +154,8 @@ class Auth
             case (1): $local_user['gender'] = 'M'; break;
             case (2): $local_user['gender'] = 'F'; break;
         }
-        $user = User::firstOrNew(['sso_user_id'=>$sso_user_id]);        
+        //$user = User::firstOrNew(['sso_user_id'=>$sso_user_id]);        
+        $user = User::firstOrNew(['username'=>$api_user->username]);        
         $user->fill($local_user);        
         if (!$user->exists)
         {
@@ -178,7 +179,7 @@ class Auth
         return false;
     }
     
-    private static function set_personal_details($local_user_id, $api_user)
+    public static function set_personal_details($local_user_id, $api_user)
     {
         $personalDetail = PersonalDetail::firstOrNew(['user_id'=>$local_user_id]);
         $personalDetail->personal_email = $api_user->email;
@@ -235,7 +236,7 @@ class Auth
         }        
     }
     
-    private static function check_exist_api_user($username)
+    public static function check_exist_api_user($username)
     {        
         $exist = ApiAuth::checkExist($username);
         return $exist['success'];

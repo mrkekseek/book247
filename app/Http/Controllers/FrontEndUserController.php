@@ -44,6 +44,8 @@ use PhpParser\Node\Expr\Cast\Bool_;
 use Regulus\ActivityLog\Models\Activity;
 use Webpatser\Countries\Countries;
 use Auth;
+use App\Http\Libraries\ApiAuth;
+use Illuminate\Support\Facades\Auth as AuthLocal;
 use Hash;
 use Storage;
 use Carbon\Carbon;
@@ -2606,7 +2608,7 @@ class FrontEndUserController extends Controller
             'middle_name'   => trim($vars['middle_name']),
             'last_name'     => trim($vars['last_name']),
             'gender'        => $vars['gender'],
-            'username'      => trim($vars['username']),
+            'username'      => trim($vars['email']),
             'email'         => trim($vars['email']),
             'password'      => $vars['password'],
             'country_id'    => $vars['country_id'],
@@ -4527,4 +4529,229 @@ class FrontEndUserController extends Controller
         }
     }
     // Stop - Store credit add - backend add store credit to member
+    
+    public function auth_chek_email(Request $request){
+        $email = $request->input('email');
+        $existLocal = User::where('email', $email)->first();
+        $existApi = Auth::check_exist_api_user($email);
+        switch (TRUE){
+            case (empty($existLocal) && empty($existApi)) :
+                return [
+                    'success' => true,
+                    'show' =>'.register-form',
+                    'hide' =>'.pre-register-form',
+                    'fieldValue' =>[
+                        [
+                            'selector'=>'.register-form input[name="reg_email"]',
+                            'value' => $email,                        
+                        ]
+                    ],
+                    'title'   => 'Registration',
+                    'errors'  => 'Please fill in the following fields'
+            ];
+            break;
+            case (empty($existLocal) && ! empty($existApi)):
+                return [
+                    'success' => true,
+                    'show' =>'#user_preregistration_password_form',
+                    'hide' =>'#user_preregistration_form',
+                    'fieldValue' =>[
+                        [
+                            'selector'=>'#user_preregistration_password_form input[name="email"]',
+                            'value' => $email,
+                        ],
+                        [
+                            'selector'=>'#user_preregistration_password_form input[name="type"]',
+                            'value' => 'only_api',
+                        ]
+                    ],
+                    'fieldHtml' =>[
+                        [
+                            'selector'=>'#user_preregistration_password_form p.hint',
+                            'value' => 'Your are registered on the Book247/Rankedln environement because of the Single Sign On feature. Enter your password to link this club: ',
+                        ]
+                    ],
+                    'title'   => 'Autorization',
+                    'errors'  => 'Please enter your password'
+                    ];
+                break;
+            case ( ! empty($existLocal) && ! empty($existApi)):
+                return [
+                    'success' => true,
+                    'show' =>'#user_preregistration_password_form',
+                    'hide' =>'#user_preregistration_form',
+                    'fieldValue' =>[
+                        [
+                            'selector'=>'#user_preregistration_password_form input[name="email"]',
+                            'value' => $email,
+                        ],
+                        [
+                            'selector'=>'#user_preregistration_password_form input[name="type"]',
+                            'value' => 'local_and_api',
+                        ]
+                    ],
+                    'fieldHtml' =>[
+                        [
+                            'selector'=>'#user_preregistration_password_form p.hint',
+                            'value' => 'Your are already have account with us. Enter your password to login: ',
+                        ]
+                    ],
+                    'title'   => 'Autorization',
+                    'errors'  => 'Please enter your password'
+                    ];
+                break;
+            case ( ! empty($existLocal) && empty($existApi)):
+                return [
+                    'success' => true,
+                    'show' =>'#user_preregistration_password_form',
+                    'hide' =>'#user_preregistration_form',
+                    'fieldValue' =>[
+                        [
+                            'selector'=>'#user_preregistration_password_form input[name="email"]',
+                            'value' => $email,
+                        ],
+                        [
+                            'selector'=>'#user_preregistration_password_form input[name="type"]',
+                            'value' => 'only_local',
+                        ]
+                    ],
+                    'fieldHtml' =>[
+                        [
+                            'selector'=>'#user_preregistration_password_form p.hint',
+                            'value' => 'Your are already have account with us. Enter your password to login: ',
+                        ]
+                    ],
+                    'title'   => 'Autorization',
+                    'errors'  => 'Please enter your password'
+                    ];
+                break;
+        }        
+        return [
+            'success' => false,
+            'title'   => 'Error',
+            'errors'  => 'Something went wrong'
+            ];
+        
+    }
+    
+    public function auth_check_password(Request $request){
+        $data = $request->input('data');
+        switch ($data['type']){
+            case ('only_api'):
+                if (ApiAuth::autorize($data)['success'])
+                {  
+                    $api_user = ApiAuth::accounts_get_by_username($data['email'])['data'];
+                    $local_user = [
+                        'sso_user_id'=>$api_user->id,
+                        'username'=>$api_user->username,
+                        'email'=>$api_user->username,
+                        'first_name'=>$api_user->firstName,
+                        'last_name'=>$api_user->lastName,
+                        'middle_name'=>$api_user->middleName,            
+                        'country_id'=> config('constants.globalWebsite.defaultCountryId'),
+                        'password'=> bcrypt($data['password']),
+                    ];
+                    switch ($api_user->gender)
+                    {
+                        case (1): $local_user['gender'] = 'M'; break;
+                        case (2): $local_user['gender'] = 'F'; break;
+                    }
+                    $user = new User;
+                    $user->fill($local_user);
+                    if ($user->save()){
+                        $user->attachRole(6);
+                        Auth::set_personal_details($user->id, $api_user);
+                        Auth::set_cookie_session($user->sso_user_id);
+                        return [
+                            'success' => true,
+                            'title'   => 'Autorization',
+                            'errors'  => 'You log in successfully'
+                        ];
+                    }
+                }
+                return [
+                    'success' => false,
+                    'title'   => 'Error',
+                    'errors'  => 'Inorect password'
+                ];
+                break;
+                case('local_and_api'):
+                     if (ApiAuth::autorize($data)['success'])
+                    {  
+                            $api_user = ApiAuth::accounts_get_by_username($data['email'])['data'];
+                            Auth::set_local_user($api_user->id);
+                            Auth::set_cookie_session($api_user->id);
+                            return [
+                                'success' => true,
+                                'title'   => 'Autorization',
+                                'errors'  => 'You log in successfully'
+                            ];
+                    }
+                    return [
+                        'success' => false,
+                        'title'   => 'Error',
+                        'errors'  => 'Inorect password'
+                    ];
+                    break;
+                case ('only_local'):
+                    if (AuthLocal::once(['username' => $data['email'], 'password' => $data['password']])){
+                        $local_id = AuthLocal::user()->id;
+                        $user = User::find($local_id)->toArray();
+                        $user['password_api'] = $data['password'];
+                        $api_user = ApiAuth::account_create($user); 
+                        if ($api_user['success'])
+                        {
+                            $update_user = User::find($local_id);
+                            $update_user->update_from_api = true;
+                            $update_user->sso_user_id = $api_user['data'];
+                            if ($update_user->save()){
+                                Auth::set_cookie_session($update_user->sso_user_id);
+                                    return [
+                                        'success' => true,
+                                        'title'   => 'Autorization',
+                                        'errors'  => 'You log in successfully'
+                                ];
+                            }
+                        }
+                    }
+                    return [
+                        'success' => false,
+                        'title'   => 'Error',
+                        'errors'  => 'Inorect password'
+                    ];
+                    break;
+        }
+    }
+    
+    public function auth_autorize(Request $request){
+        $data = $request->input('data');
+        if (Auth::attempt(['email' => $data['username'], 'password' => $request->data['password']])) {
+            $user = Auth::user();
+            Activity::log([
+                'contentId'     => $user->id,
+                'contentType'   => 'login',
+                'action'        => 'Front end login',
+                'description'   => 'Successful login for '.$user->first_name.' '.$user->middle_name.' '.$user->last_name,
+                'details'       => 'User Email : '.$user->email,
+                'updated'       => false,
+            ]);
+            return [
+                        'success' => true,
+                    ];
+        }
+        else {
+            if (!empty(Auth::$error)){
+                return [
+                            'success' => false,
+                            'title'   => 'Api error',
+                            'errors'  => Auth::$error
+                        ];
+            }
+            return [
+                        'success' => false,
+                        'title'   => 'Error',
+                        'errors'  => 'Inorect password'
+                    ];
+        }
+    }
 }

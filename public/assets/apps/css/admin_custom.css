@@ -11,6 +11,27 @@
 	border: 1px solid #e73d4a !important;
 }
 
+.has-success .note-editor {
+	border: 1px solid #27a4b0 !important;
+}
+
 textarea[name=content] {
     resize: none;
+}
+
+.back,
+.back:hover,
+.back:active,
+.back:visited {
+	font-size: 18px;
+	margin-right: 10px;
+	text-decoration: none;
+}
+
+.hooks-box {
+	display: none;
+}
+
+.back-link {
+	padding-top: 7px;
 }
