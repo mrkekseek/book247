@@ -529,7 +529,7 @@
                     </div>
                 </div>
             </div>
-
+            @if (isset($restriction['id']))
             <div class="col-md-12">
                 <div class="portlet light bordered">
                     <div class="portlet-title">
@@ -552,6 +552,7 @@
                     </div>
                 </div>
             </div>
+            @endif
 
             <div class="modal fade bs-modal-sm" id="cancel_confirm_box" tabindex="-1" role="dialog" aria-hidden="true">
                 <div class="modal-dialog">
