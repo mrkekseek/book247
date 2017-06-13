@@ -51,7 +51,28 @@ class AdminController extends Controller
         ];
         $sidebar_link= 'admin-home_dashboard';
 
+        $new_players_this_week = json_decode($this->get_from_api('new_players_this_week'));
+        $income_this_week = json_decode($this->get_from_api('income_this_week'));
+        $upcoming_tournaments = json_decode($this->get_from_api('upcoming_tournaments'));
+        $registered_players = json_decode($this->get_from_api('registered_players'));
+        $squash_players = $this->get_from_api('squash_players');
+        $members_growth = $this->get_from_api('members_growth');
+        $number_of_club_members = $this->get_from_api('number_of_club_members');
+        $overall_bookings = $this->get_from_api('overall_bookings');
+        $total_players = $this->get_from_api('total_players');
+        $total_courts = $this->get_from_api('total_courts');
+
         return view('admin/main_page_public_federation',[
+            'new_players_this_week' => $new_players_this_week,
+            'income_this_week' => $income_this_week,
+            'upcoming_tournaments' => $upcoming_tournaments,
+            'registered_players' => $registered_players,
+            'squash_players' => $squash_players,
+            'members_growth' => $members_growth,
+            'number_of_club_members' => $number_of_club_members,
+            'overall_bookings' => $overall_bookings,
+            'total_players' => $total_players,
+            'total_courts' => $total_courts,
             'breadcrumbs'   => $breadcrumbs,
             'text_parts'    => $text_parts,
             'in_sidebar'    => $sidebar_link
@@ -168,5 +189,62 @@ class AdminController extends Controller
             'text_parts'  => $text_parts,
             'in_sidebar'  => $sidebar_link,
         ]);
+    }
+    private function prelevate_data(){
+
+    }
+
+    public function get_from_api($get = null){
+        $url = env('APIURL',"");
+        $key = env('APIKEY',"");
+        $site_id = env('MY_API_ID',"");
+        if ($url && $key && $get && $site_id) {
+            $url = $url.'/'.$get;
+            $token = str_random(32);
+            $data = array('token' => $token, 'encrypted_token' => base64_encode(hash_hmac('sha256', $token, $key, TRUE)), 'site_id' => $site_id);
+
+            $ch = curl_init();
+
+            curl_setopt($ch,CURLOPT_URL, $url);
+            curl_setopt($ch,CURLOPT_POST, count($data));
+            curl_setopt($ch,CURLOPT_POSTFIELDS, $data);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            $result = curl_exec($ch);
+            curl_close($ch);
+            if ($result) {
+                return $result;
+            } else {
+                return "";
+            }
+        } else {
+            return "";
+        }
+    }
+
+    public function get_from_api_test(){
+        $url = env('APIURL',"");
+        $key = env('APIKEY',"");
+        $get = 'squash_players';
+        if ($url && $key && $get) {
+            $url = $url.'/'.$get;
+            $token = str_random(32);
+            $data = array('token' => $token, 'encrypted_token' => base64_encode(hash_hmac('sha256', $token, $key, TRUE)));
+
+            $ch = curl_init();
+
+            curl_setopt($ch,CURLOPT_URL, $url);
+            curl_setopt($ch,CURLOPT_POST, count($data));
+            curl_setopt($ch,CURLOPT_POSTFIELDS, $data);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            $result = curl_exec($ch);
+            curl_close($ch);
+            if ($result) {
+                return $result;
+            } else {
+                return "";
+            }
+        } else {
+            return "";
+        }
     }
 }

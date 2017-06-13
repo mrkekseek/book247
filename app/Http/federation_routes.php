@@ -9,6 +9,7 @@
 |
 */
 
+Route::get('/get','Federation\AdminController@get_from_api_test' );
 
 Route::group(['middleware' => 'web'], function () {
     // default login/register/forgot password routes

@@ -54,7 +54,7 @@
                     </div>
                     <div class="details">
                         <div class="number">
-                            <span data-counter="counterup" data-value="1349">1349</span>
+                            <span data-counter="counterup" data-value="{{ $new_players_this_week }}"></span>
                         </div>
                         <div class="desc"> New players this week </div>
                     </div>
@@ -70,7 +70,7 @@
                     </div>
                     <div class="details">
                         <div class="number">
-                            <span data-counter="counterup" data-value="4500">4500</span>$ </div>
+                            <span data-counter="counterup" data-value="{{ $income_this_week }}"></span>$ </div>
                         <div class="desc"> Income this week </div>
                     </div>
                     <a class="more" href="javascript:;"> View more
@@ -85,7 +85,7 @@
                     </div>
                     <div class="details">
                         <div class="number">
-                            <span data-counter="counterup" data-value="49">49</span>
+                            <span data-counter="counterup" data-value="{{ $upcoming_tournaments }}"></span>
                         </div>
                         <div class="desc"> Upcoming Tournaments </div>
                     </div>
@@ -101,7 +101,7 @@
                     </div>
                     <div class="details">
                         <div class="number"> +
-                            <span data-counter="counterup" data-value="890"></span> </div>
+                            <span data-counter="counterup" data-value="{{ $registered_players }}"></span> </div>
                         <div class="desc"> Registered players </div>
                     </div>
                     <a class="more" href="javascript:;"> View more
@@ -122,10 +122,8 @@
                         </div>
                         <div class="actions">
                             <div class="btn-group btn-group-devided" data-toggle="buttons">
-                                <label class="btn red btn-outline btn-circle btn-sm active">
-                                    <input type="radio" name="options" class="toggle" id="option1">Male</label>
-                                <label class="btn red btn-outline btn-circle btn-sm">
-                                    <input type="radio" name="options" class="toggle" id="option2">Female</label>
+                                <button class="btn red btn-outline btn-circle btn-sm active" id="male">Male</button>
+                                <button class="btn red btn-outline btn-circle btn-sm" id="female">Female</button>
                             </div>
                         </div>
                     </div>
@@ -507,33 +505,142 @@
                         return (Math.floor(Math.random() * (1 + 50 - 20))) + 10;
                     }
 
-                    var visitors = [
-                        ['under 14',1500],
-                        ['14-18',   2500],
-                        ['18-24',   2700],
-                        ['24-30',   2950],
-                        ['30-40',   2750],
-                        ['40-50',   2350],
-                        ['50-60',   1500],
-                        ['60-70',   1300],
-                        ['over 70', 1600]
-                    ];
-
+                    var squash_players = JSON.parse('<?= $squash_players ?>');
+                    var male_visitors = $.map(squash_players.male, function(el) { return [$.map(el,function(e){ return e })]});
+                    var female_visitors = $.map(squash_players.female, function(el) { return [$.map(el,function(e){ return e })]});
 
                     if ($('#site_statistics').size() != 0) {
 
                         $('#site_statistics_loading').hide();
                         $('#site_statistics_content').show();
 
-                        var plot_statistics = $.plot($("#site_statistics"), [{
-                                data: visitors,
+
+                        var male = $('#male');
+                        var female = $('#female');
+
+                        $(document).on('click','#male',function(){
+                            $('#female').removeClass('active');
+                            $(this).addClass('active');
+                            plot_statistics = $.plot($("#site_statistics"), [{
+                                    data: male_visitors,
+                                    lines: {
+                                        fill: 0.6,
+                                        lineWidth: 0
+                                    },
+                                    color: ['#f89f9f']
+                                }, {
+                                    data: male_visitors,
+                                    points: {
+                                        show: true,
+                                        fill: true,
+                                        radius: 5,
+                                        fillColor: "#f89f9f",
+                                        lineWidth: 3
+                                    },
+                                    color: '#fff',
+                                    shadowSize: 0
+                                }],
+
+                                {
+                                    xaxis: {
+                                        tickLength: 0,
+                                        tickDecimals: 0,
+                                        mode: "categories",
+                                        min: 0,
+                                        font: {
+                                            lineHeight: 14,
+                                            style: "normal",
+                                            variant: "small-caps",
+                                            color: "#6F7B8A"
+                                        }
+                                    },
+                                    yaxis: {
+                                        ticks: 5,
+                                        tickDecimals: 0,
+                                        tickColor: "#eee",
+                                        font: {
+                                            lineHeight: 14,
+                                            style: "normal",
+                                            variant: "small-caps",
+                                            color: "#6F7B8A"
+                                        }
+                                    },
+                                    grid: {
+                                        hoverable: true,
+                                        clickable: true,
+                                        tickColor: "#eee",
+                                        borderColor: "#eee",
+                                        borderWidth: 1
+                                    }
+                                });
+                        });
+
+                        $(document).on('click','#female',function(){
+                            $('#male').removeClass('active');
+                            $(this).addClass('active');
+                            plot_statistics = $.plot($("#site_statistics"), [{
+                                    data: female_visitors,
+                                    lines: {
+                                        fill: 0.6,
+                                        lineWidth: 0
+                                    },
+                                    color: ['#f89f9f']
+                                }, {
+                                    data: female_visitors,
+                                    points: {
+                                        show: true,
+                                        fill: true,
+                                        radius: 5,
+                                        fillColor: "#f89f9f",
+                                        lineWidth: 3
+                                    },
+                                    color: '#fff',
+                                    shadowSize: 0
+                                }],
+
+                                {
+                                    xaxis: {
+                                        tickLength: 0,
+                                        tickDecimals: 0,
+                                        mode: "categories",
+                                        min: 0,
+                                        font: {
+                                            lineHeight: 14,
+                                            style: "normal",
+                                            variant: "small-caps",
+                                            color: "#6F7B8A"
+                                        }
+                                    },
+                                    yaxis: {
+                                        ticks: 5,
+                                        tickDecimals: 0,
+                                        tickColor: "#eee",
+                                        font: {
+                                            lineHeight: 14,
+                                            style: "normal",
+                                            variant: "small-caps",
+                                            color: "#6F7B8A"
+                                        }
+                                    },
+                                    grid: {
+                                        hoverable: true,
+                                        clickable: true,
+                                        tickColor: "#eee",
+                                        borderColor: "#eee",
+                                        borderWidth: 1
+                                    }
+                                });
+                        });
+
+                        plot_statistics = $.plot($("#site_statistics"), [{
+                                data: male_visitors,
                                 lines: {
                                     fill: 0.6,
                                     lineWidth: 0
                                 },
                                 color: ['#f89f9f']
                             }, {
-                                data: visitors,
+                                data: male_visitors,
                                 points: {
                                     show: true,
                                     fill: true,
@@ -1451,7 +1558,7 @@
                     if (typeof(AmCharts) === 'undefined' || $('#dashboard_amchart_3_1').size() === 0) {
                         return;
                     }
-
+                    var number_of_club_members = JSON.parse('<?= $number_of_club_members ?>');
                     var chart = AmCharts.makeChart("dashboard_amchart_3_1", {
                         "type": "serial",
                         "addClassNames": true,
@@ -1469,34 +1576,7 @@
                             "color": "#ffffff"
                         },
 
-                        "dataProvider": [{
-                            "year": 2002,
-                            "income": 23,
-                            "expenses": 32
-                        }, {
-                            "year": 2013,
-                            "income": 26,
-                            "expenses": 40
-                        }, {
-                            "year": 2014,
-                            "income": 30,
-                            "expenses": 44
-                        }, {
-                            "year": 2015,
-                            "income": 34,
-                            "expenses": 44
-                        }, {
-                            "year": 2016,
-                            "income": 34,
-                            "expenses": 49,
-                        }, {
-                            "year": 2017,
-                            "income": 35,
-                            "expenses": 53,
-                            "dashLengthColumn": 5,
-                            "alpha": 0.2,
-                            "additional": "(projection)"
-                        }],
+                        "dataProvider":  $.map(number_of_club_members,function(el){ return el }),
                         "valueAxes": [{
                             "axisAlpha": 0,
                             "position": "left"
@@ -1953,70 +2033,11 @@
                         function randValue() {
                             return (Math.floor(Math.random() * (1 + 40 - 20))) + 20;
                         }
-                        var visitors = [
-                            [1, 345],
-                            [2, 352],
-                            [3, 355],
-                            [4, 304],
-                            [5, 328],
-                            [6, 390],
-                            [7, 388],
-                            [8, 320],
-                            [9, 460],
-                            [10, 471],
-                            [11, 420],
-                            [12, 430],
-                            [13, 450],
-                            [14, 431],
-                            [15, 440],
-                            [16, 470],
-                            [17, 485],
-                            [18, 520],
-                            [19, 550],
-                            [20, 580],
-                            [21, 621],
-                            [22, 645],
-                            [23, 699],
-                            [24, 670],
-                            [25, 680],
-                            [26, 750],
-                            [27, 810],
-                            [28, 820],
-                            [29, 900],
-                            [30, 951]
-                        ];
-                        var pageviews = [
-                            [1, 245],
-                            [2, 252],
-                            [3, 295],
-                            [4, 284],
-                            [5, 298],
-                            [6, 303],
-                            [7, 308],
-                            [8, 308],
-                            [9, 321],
-                            [10, 340],
-                            [11, 340],
-                            [12, 340],
-                            [13, 350],
-                            [14, 331],
-                            [15, 360],
-                            [16, 370],
-                            [17, 385],
-                            [18, 410],
-                            [19, 450],
-                            [20, 452],
-                            [21, 475],
-                            [22, 475],
-                            [23, 475],
-                            [24, 452],
-                            [25, 438],
-                            [26, 550],
-                            [27, 591],
-                            [28, 600],
-                            [29, 600],
-                            [30, 621]
-                        ];
+
+                        var members_growth = JSON.parse('<?= $members_growth ?>');
+                        var visitors = $.map(members_growth.visitors, function(el) { return [$.map(el,function(e){ return e })]});
+                        var pageviews = $.map(members_growth.pageviews, function(el) { return [$.map(el,function(e){ return e })]});
+
 
                         var plot = $.plot($("#chart_2"), [{
                             data: pageviews,
@@ -2457,28 +2478,10 @@
                         };
                     }
 
-                    var data1 = [{ label: "Federation M.", data:61}, {label: "non-Federation", data: 39}];
-                    var data2 = [{ label: 'Nord-Noreg', data:33},
-                        {label: 'Midt-Noreg', data:14},
-                        {label: 'Vestlandet', data:25},
-                        {label: 'Sørlandet or Agder', data:15},
-                        {label: 'Østlandet/Austlandet', data:14}];
-                    var data3 = [{
-                        label: "Drop-In's",
-                        data: 18
-                    }, {
-                        label: "Full Day",
-                        data: 20
-                    }, {
-                        label: "Half Day",
-                        data: 35
-                    }, {
-                        label: "Morning",
-                        data: 12
-                    }, {
-                        label: "Others",
-                        data: 15
-                    }];
+                    var data1 = $.map(JSON.parse('<?= $total_players ?>'),function(el){ return el });
+                    var data2 = $.map(JSON.parse('<?= $total_courts ?>'),function(el){ return el });
+                    var overall_bookings = JSON.parse('<?= $overall_bookings ?>');
+                    var data3 = $.map(overall_bookings, function(el){ return el });
 
                     // DEFAULT
                     if ($('#pie_chart').size() !== 0) {
