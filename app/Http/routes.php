@@ -637,7 +637,10 @@ Route::group(['middleware' => 'web'], function () {
         'uses'  => 'EmailsController@reset_default'
     ]);
 
-
+    Route::get('admin/templates_email/make_default/{id}', [
+        'as'    => 'admin/templates_email/make_default/{id}',
+        'uses'  => 'EmailsController@make_default'
+    ]);
 
     Route::post('admin/templates_email/delete', [
         'as'    => 'admin/templates_email/delete',
@@ -1068,6 +1071,22 @@ Route::group(['prefix'=>'ajax', 'middleware' => 'web'], function(){
         'as'    => 'ajax/buy_store_credit',
         'uses'  => 'FrontEndUserController@add_store_credit'
     ]);
+    
+    Route::post('auth_chek_email', [
+        'as'    => 'ajax/auth_chek_email',
+        'uses'  => 'FrontEndUserController@auth_chek_email'
+    ]);
+    
+    Route::post('auth_check_password', [
+        'as'    => 'ajax/auth_check_password',
+        'uses'  => 'FrontEndUserController@auth_check_password'
+    ]);
+    
+    Route::post('auth_autorize', [
+        'as'    => 'ajax/auth_autorize',
+        'uses'  => 'FrontEndUserController@auth_autorize'
+    ]);
+    
 });
 
 Route::group(['prefix' => 'optimize', 'middleware' => 'web'], function(){

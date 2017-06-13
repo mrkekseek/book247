@@ -31,6 +31,11 @@
             <div class="col-md-12">
                 <div class="portlet light portlet-fit portlet-datatable bordered">
                     <div class="portlet-title">
+                        <div class="pull-left back-link">
+                            <a href="javascript:void(0);" data-href="/admin/templates_email/list_all" class="back">
+                                <i class="fa fa-chevron-left"></i>
+                            </a>
+                        </div>
                         <div class="caption">
                             Add new template
                         </div>
@@ -45,8 +50,8 @@
                                     </div>
                                 </div>
 
-                                 <div class="col-sm-12 form-group">
-                                    <label for="content" class="col-sm-2 control-label">Country list</label>
+                                <div class="col-sm-12 form-group">
+                                    <label for="content" class="col-sm-2 control-label">Country</label>
                                     <div class="col-sm-10">
                                         <select class="form-control" name="country">
                                             <option value="">Select country</option>
@@ -59,21 +64,38 @@
 
                                 <div class="col-sm-12 form-group">
                                     <div class="col-sm-2 control-label">
+                                        Hook
+                                    </div>
+                                    <div class="col-sm-10">
+                                        <input type="text" class="form-control" placeholder="Hook" name="hook" />
+                                    </div>
+                                </div>
+
+                                <div class="col-sm-12 form-group">
+                                    <div class="col-sm-2 control-label">
                                         Variables
                                     </div>
                                     <div class="col-sm-10">
-                                        <select data-placeholder="Select variables" name="variables" class="form-control select2-multiple" multiple>
-                                            @foreach ($variables as $index => $var)
+                                        <select data-placeholder="Add variables" name="variables" class="form-control select2-multiple" multiple>
+                                            <!--@foreach ($variables as $index => $var)
                                                 <option value="{{ $index }}">{{ $var }}</option>
-                                            @endforeach
+                                            @endforeach-->
                                         </select>
                                     </div>
                                 </div>
 
-                                <div class="col-sm-12 form-group">        
-                                    <label for="hook" class="col-sm-2 control-label">Hook</label>
-                                    <div class="col-sm-10">
-                                        <input type="text" class="form-control" name="hook" placeholder="Hook" />
+                                <div class="col-sm-12 form-group">
+                                    <div class="col-sm-2"></div>
+                                    <div class="col-sm-8">
+                                        <input type="text" id="name-var" class="form-control" placeholder="Name variable" />
+                                    </div>
+                                    <!--<div class="col-sm-5">
+                                        <input type="text" id="value-var" class="form-control" placeholder="Value" />
+                                    </div>-->
+                                    <div class="col-sm-2 text-right">
+                                        <button type="button" id="add-var" class="btn btn-default btn-block">
+                                            <i class="fa fa-plus"></i>
+                                        </button>
                                     </div>
                                 </div>
 
@@ -98,6 +120,25 @@
                             </div>
                         </form>
                     </div>  
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="modal fade" id="confirm-exit-without-save">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Exit without save?</h4>
+                </div>
+                <div class="modal-body">
+                    <p>This action will not save the changes you have apllied to this template</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <a href="/admin/templates_email/list_all" class="btn btn-primary">Exit</a>
                 </div>
             </div>
         </div>
@@ -129,13 +170,13 @@
     <script type="text/javascript">
         var FormValidation = function () {
 
-            $.validator.addMethod("variables", function(value, element) {
-                return value && value.length ? true : false;
-            }, "Please select variables");
-
             $.validator.addMethod("description", function(value, element) {
                 return value && value.length ? true : false;
             }, "Please enter description");
+
+             $.validator.addMethod("variables", function(value, element) {
+                return $.trim($(element).text()) ? true : false;
+            }, "Please enter variables");
 
             var handleValidation = function() 
             {
@@ -159,11 +200,11 @@
                             required: true
                         },
                         variables : {
-                            variables : false,
+                            variables : true,
                             required : true
                         },
-                        hook: {
-                            required: true
+                        hook : {
+                            required : true
                         },
                         description : {
                             required : true,
@@ -179,8 +220,8 @@
                             minlength: "Your title must consist of at least 5 characters",
                             required: "Please enter title"
                         },
-                        hook: {
-                            required: "Please enter title"
+                        variables: {
+                            required: "Please add variables"
                         }
                     },
 
@@ -221,8 +262,14 @@
             };
         }();
 
+
         function add_new_template()
         {
+            var variables = [];
+            $("select[name=variables] option:selected").each(function(k, v){
+                variables.push($(v).text());
+            });
+
             $.ajax({
                 url: '{{ route('admin/templates_email/create') }}',
                 type: "post",
@@ -230,8 +277,8 @@
                     'title'       :  $('input[name=title]').val(),
                     'country_id'  :  $('select[name=country]').val(),
                     'content'     :  $('textarea[name=content]').val(),
-                    'variables'   :  $('select[name=variables]').val(),
                     'hook'        :  $('input[name=hook]').val(),
+                    'variables'   :  variables,
                     'description' :  $('textarea[name=description]').val()
                 },
                 success: function(data){
@@ -239,15 +286,26 @@
                     {
                         show_notification(data.title, data.message, 'lime', 3500, 0);
                         setTimeout(function(){
-                            location.reload();
+                            location.href = "/admin/templates_email/list_all";
                         },2000);
                     }
                     else
                     {
-                        show_notification(data.title, data.errors, 'ruby', 3500, 0);
+                        change = false;
+                        for(var i in data.errors)
+                        {
+                            show_notification(data.title, data.errors[i], 'ruby', 3500, 0);
+                        }
+                        
                     }
                 }
             });
+        }
+
+        var change = false;
+        function action()
+        {
+            change = true;
         }
 
         $(document).ready(function(){
@@ -257,7 +315,6 @@
                 var element = $("textarea[name=description]");
                 var parent = $(element).closest(".form-group");
 
-  
                 if( ! $(element).summernote('isEmpty'))
                 {
                     parent.removeClass("has-error").addClass("has-success");
@@ -269,9 +326,45 @@
 
             }});
 
+            $('select[name=variables]').select2();
+
             $("select[name=variables]").change(function() {
-                var value = $(this).val();
-                //console.log(value);
+                var element = $(this);
+                var parent = $(element).closest(".form-group");
+                
+                if($(element).val())
+                {
+                    parent.removeClass("has-error").addClass("has-success");
+                }
+                else
+                {
+                   parent.removeClass("has-success").addClass("has-error");
+                }
+            });
+
+            $('input[name=title]').change(action);
+            $('select[name=country]').change(action);
+            $('textarea[name=content]').change(action);
+            $('input[name=hook]').change(action);
+            $('textarea[name=description]').change(action);
+            
+            $("#add-var").click(function(){
+                var name = $("#name-var").val();
+                $("select[name=variables]").append(new Option(name, name, true, true)).trigger('change');
+                $("#name-var").val("");
+                $("#value-var").val("");
+            });
+
+            $(".back").click(function(event){
+                event.preventDefault();
+                if (change)
+                {
+                    $("#confirm-exit-without-save").modal("show");
+                }
+                else
+                {
+                    window.location.href = $(this).data("href");                
+                }
             });
 
         });

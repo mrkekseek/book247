@@ -139,7 +139,7 @@ class BackEndUserController extends Controller
             'first_name'    => $vars['first_name'],
             'middle_name'   => $vars['middle_name'],
             'last_name'     => $vars['last_name'],
-            'username'      => $vars['username'],
+            'username'      => $vars['email'],
             'email'         => $vars['email'],
             'password'      => $vars['password'],
             'password_api'      => $vars['password'],
