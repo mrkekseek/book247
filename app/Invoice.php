@@ -176,6 +176,51 @@ class Invoice extends Model
         }
     }
 
+    public function get_partial_payment(){
+        $partialPayment = 0;
+        $transactions = InvoiceFinancialTransaction::where('invoice_id','=',$this->id)->whereIn('status',['completed'])->get();
+        foreach($transactions as $one){
+            $partialPayment+=$one->transaction_amount;
+        }
+
+        return $partialPayment;
+    }
+
+    public function get_outstanding_amount(){
+        $total      = $this->get_invoice_total();
+        //xdebug_var_dump($total['total_sum']);
+        $partial    = $this->get_partial_payment();
+        //xdebug_var_dump($partial);
+        $outstanding_amount = $total['total_sum'] - $partial;
+
+        return $outstanding_amount;
+    }
+
+    public function get_unpaid_invoice_items(){
+        // we get paid or pending transactions
+        $transactions = InvoiceFinancialTransaction::where('invoice_id','=',$this->id)->whereIn('status',['pending','processing','completed'])->get();
+        $alreadyPaid = [];
+        foreach($transactions as $single){
+            $items = json_decode($single->invoice_items);
+            if ($items){
+                $alreadyPaid = array_merge($alreadyPaid, $items);
+            }
+        }
+
+        $unpaidItems = InvoiceItem::where('invoice_id','=',$this->id)->whereNotIn('id', $alreadyPaid)->get();
+        if ($unpaidItems){
+            $unpaid = [];
+            foreach($unpaidItems as $single){
+                $unpaid[] = $single->id;
+            }
+        }
+        else{
+            $unpaid = [];
+        }
+
+        return $unpaid;
+    }
+
     public function add_transaction($user_id, $transaction_type, $status, $otherDetails, $id_partial_payment = false, $invoice_items = []){
         // not all invoice items are paid
         if ($id_partial_payment){
@@ -189,21 +234,20 @@ class Invoice extends Model
         }
         // all invoice items are paid
         else{
-            $total_sum = $this->get_invoice_total();
-            $transactionAmount = $total_sum['total_sum'];
-            $invoiceItems = '';
+            $transactionAmount = $this->get_outstanding_amount();
+            $invoiceItems = json_encode($this->get_unpaid_invoice_items());
         }
 
         $fillable = [
-            'user_id'       => $user_id,
-            'invoice_id'    => $this->id,
-            'invoice_items' => $invoiceItems,
+            'user_id'               => $user_id,
+            'invoice_id'            => $this->id,
+            'invoice_items'         => $invoiceItems,
             'transaction_amount'    => $transactionAmount,
             'transaction_currency'  => Config::get('constants.finance.currency'),
-            'transaction_type'  => $transaction_type,
-            'transaction_date'  => Carbon::now()->format('Y-m-d'),
-            'status'        => $status,
-            'other_details' => is_array($otherDetails)?json_encode($otherDetails):$otherDetails,
+            'transaction_type'      => $transaction_type,
+            'transaction_date'      => Carbon::now()->format('Y-m-d'),
+            'status'                => $status,
+            'other_details'         => is_array($otherDetails)?json_encode($otherDetails):$otherDetails,
         ];
 
         $validator = Validator::make($fillable, InvoiceFinancialTransaction::rules('POST'), InvoiceFinancialTransaction::$message, InvoiceFinancialTransaction::$attributeNames);
@@ -252,7 +296,7 @@ class Invoice extends Model
             $this->status = 'completed';
         }
         else{
-            $this->status = 'processing';
+            $this->status = 'incomplete';
         }
         $this->save();
     }
@@ -398,5 +442,63 @@ class Invoice extends Model
         ];
         $invoice->add_invoice_item($storeCreditItem);
         return true;
+    }
+
+    public function mark_bookings_as_paid($userId){
+        // get invoice items and unpaid ones
+        $bookingItems = InvoiceItem::where('invoice_id','=',$this->id)->where('item_type','=','booking_invoice_item')->get();
+        if (sizeof($bookingItems)>0){
+            // we get the bookingInvoice - from an old version of the code - and check for booking_financial_transactions
+            $bookingInvoice = BookingInvoice::where('id','=',$this->invoice_reference_id)->first();
+
+            // we have booking items on selected invoice so we get the items that have completed statuses
+            $paidItems = [];
+            $itemTransactions = InvoiceFinancialTransaction::where('invoice_id','=',$this->id)->where('status','=','completed')->get();
+            if (sizeof($itemTransactions)>0){
+                foreach ($itemTransactions as $item){
+                    $paidItems = array_merge($paidItems, json_decode($item->invoice_items));
+                }
+            }
+
+            foreach($bookingItems as $item){
+                // check completed transactions
+                if (in_array($item->id, $paidItems)){
+                    // mark booking as paid by adding a bookingFinancialTransaction
+
+                    // -----------------------------------------------------------------------------------------------
+                    $fillable = [
+                        'booking_invoice_id'        => $bookingInvoice->id,
+                        'booking_invoice_item_id'   => $item->item_reference_id,
+                        'user_id'                   => $userId,
+                        'transaction_amount'        => $item->price,
+                        'transaction_currency'      => Config::get('constants.finance.currency'),
+                        'transaction_type'          => $method,
+                        'transaction_date'          => Carbon::now(),
+                        'other_details'             => $details,
+                        'status'                    => $status
+                    ];
+
+                    $validator = Validator::make($fillable, BookingFinancialTransaction::rules('POST'), BookingFinancialTransaction::$message, BookingFinancialTransaction::$attributeNames);
+                    if ($validator->fails()){
+
+                    }
+                    else{
+                        $transaction = BookingFinancialTransaction::where('booking_invoice_id','=',$this->booking_invoice_id)->whereIn('status',['pending','processing'])->orderBy('created_at','DESC')->get()->first();
+                        if ($transaction){
+                            // we cancel pending and processing transactions and add the new one
+                            $transaction->status='cancelled';
+                            $transaction->save();
+                        }
+                        BookingFinancialTransaction::create($fillable);
+                    }
+                    // -----------------------------------------------------------------------------------------------
+                }
+            }
+
+            $bookingInvoice->check_if_paid();
+        }
+
+        // mark the difference between all items and unpaid ones as paid in bookings table
+
     }
 }

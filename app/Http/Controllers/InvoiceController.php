@@ -3,12 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Invoice;
+use App\InvoiceFinancialTransaction;
 use App\InvoiceItem;
 use Illuminate\Http\Request;
 use Auth;
 use App\User;
 
 use App\Http\Requests;
+use Regulus\ActivityLog\Models\Activity;
 use Webpatser\Countries\Countries;
 
 class InvoiceController extends Controller
@@ -23,7 +25,7 @@ class InvoiceController extends Controller
             return redirect()->intended(route('admin/login'));
         }
 
-        $invoice = Invoice::where('invoice_number','=',$id)->get()->first();
+        $invoice = Invoice::with('transactions')->where('invoice_number','=',$id)->get()->first();
         if ($invoice){
             $subtotal = 0;
             $total = 0;
@@ -51,11 +53,7 @@ class InvoiceController extends Controller
             }
 
             $member = User::with('ProfessionalDetail')->with('PersonalDetail')->where('id','=',$invoice->user_id)->get()->first();
-            $member_professional = $member->ProfessionalDetail;
             $member_personal = $member->PersonalDetail;
-            //xdebug_var_dump($member_professional);
-            //xdebug_var_dump($member_personal);
-            //xdebug_var_dump($member);
 
             if ($member->country_id==0){
                 $country = '-';
@@ -71,6 +69,11 @@ class InvoiceController extends Controller
                 'date_of_birth' => @$member_personal->date_of_birth,
                 'country'   => $country,
             ];
+
+            $transactions = $invoice->transactions;
+        }
+        else{
+            // error page
         }
 
         $breadcrumbs = [
@@ -87,16 +90,17 @@ class InvoiceController extends Controller
         $sidebar_link= 'admin-backend-shop-new_order';
 
         return view('admin/finance/view_invoice', [
-            'breadcrumbs' => $breadcrumbs,
-            'text_parts'  => $text_parts,
-            'in_sidebar'  => $sidebar_link,
-            'invoice'   => $invoice,
+            'breadcrumbs'   => $breadcrumbs,
+            'text_parts'    => $text_parts,
+            'in_sidebar'    => $sidebar_link,
+            'invoice'       => $invoice,
             'invoice_items' => @$items,
-            'member'    => @$invoice_user,
-            'sub_total' => $subtotal,
-            'discount' => $discount,
-            'vat' => $vat,
-            'grand_total' => $total
+            'member'        => @$invoice_user,
+            'sub_total'     => $subtotal,
+            'discount'      => $discount,
+            'vat'           => $vat,
+            'grand_total'   => $total,
+            'financialTransactions' => $transactions
         ]);
     }
 
@@ -106,5 +110,97 @@ class InvoiceController extends Controller
 
     public function update_invoice($id){
 
+    }
+
+    public function mark_as_paid(Request $request){
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
+            return [
+                'success' => false,
+                'title'   => 'You need to be logged in',
+                'errors'  => 'This function is available to logged users only'];
+        }
+
+        $vars = $request->only('invoice_number','method','other_details');
+        $invoice = Invoice::where('invoice_number','=',$vars['invoice_number'])->get();
+
+        if (sizeof($invoice)!=1){
+            // return error - something is wrong
+
+        }
+        else{
+            $invoice = $invoice[0];
+            // make manual payment
+            switch ($vars['method']){
+                case 'credit' :
+                    $otherDetails = 'Backend - paid with store credit';
+                    // we check if the amount of store credit that is needed for this transaction is available
+                    $member = User::where('id','=',$invoice->user_id)->get()->first();
+                    if (!$member){
+                        return [
+                            'success'   => false,
+                            'errors'    => 'Could not find invoiced member'];
+                    }
+
+                    $totalAmount = $invoice->get_outstanding_amount();
+                    $availableStoreCredit = $member->get_available_store_credit();
+
+                    if ($availableStoreCredit<$totalAmount){
+                        return [
+                            'success' => false,
+                            'errors' => 'Not enough store credit.'];
+                    }
+                    else{
+                        $member->spend_store_credit($invoice->id, $totalAmount);
+                    }
+                    break;
+                case 'card' :
+                    $otherDetails = 'Backend - manual credit card payment';
+                    break;
+                case 'cash' :
+                    $otherDetails = 'Backend - manual cash payment';
+                    break;
+                default:
+                    return [
+                        'success' => false,
+                        'title'   => 'You need to be logged in',
+                        'errors'  => 'This function is available to logged users only'];
+                    break;
+            }
+
+            if (!isset($vars['status'])){
+                // manual payment at the store/location, so status is finished
+                $vars['status'] = 'completed';
+            }
+
+            $message = $invoice->add_transaction($user->id, $vars['method'], $vars['status'], $otherDetails );
+            if ($message['success']==true){
+                // check if invoice is all paid
+                $invoice->check_if_paid();
+                // if invoice type is booking_invoice then we check if all paid bookings are marked as paid
+                if ($invoice->invoice_type=="booking_invoice"){
+                    $invoice->mark_bookings_as_paid();
+                }
+
+                Activity::log([
+                    'contentId'     => $user->id,
+                    'contentType'   => 'booking_invoices',
+                    'action'        => 'Invoice transaction update',
+                    'description'   => 'New transaction recorded for the invoice',
+                    'details'       => 'User Email : '.$user->email,
+                    'updated'       => true,
+                ]);
+
+                return [
+                    'success' => true,
+                    'message' => 'Transaction successfully registered.'];
+            }
+            else{
+                // something went wrong and we need to give the store credit back
+                return [
+                    'success' => false,
+                    'errors' => 'Error Creating Transaction! Please reload the page or try logout/login before trying the same action.'];
+            }
+        }
     }
 }

@@ -845,15 +845,129 @@ class User extends Authenticatable
     }
 
     public function get_available_store_credit(){
-        return 0;
+        $a = $this->calculate_available_store_credit();
+        //xdebug_var_dump($a); exit;
+
+        $storeCredit = UserStoreCredits::where('member_id','=',$this->id)->orderBy('created_at','DESC')->first();
+        if ($storeCredit){
+            return $storeCredit->total_amount;
+        }
+        else{
+            return 0;
+        }
     }
 
     public function calculate_available_store_credit(){
-        return 0;
+        ini_set('max_execution_time',5);
+
+        $realValue  = 0;
+        $creditIn   = [];
+        $startKey   = 0;
+
+        $storeCreditActivities = UserStoreCredits::where('member_id','=',$this->id)->where('value','>=',0)->orderBy('created_at','ASC')->get();
+        foreach($storeCreditActivities as $activity){
+            $creditIn[$startKey++] = ['id' => $activity->id,
+                'amount'        => $activity->value,
+                'available'     => $activity->value,
+                'expires'       => Carbon::createFromFormat('Y-m-d', $activity->expiration_date)];
+            $realValue+=$activity->value;
+        }
+
+        //xdebug_var_dump($creditIn);
+        //echo 'Real value : '.$realValue.'<br />';
+        $storeCreditActivities = UserStoreCredits::where('member_id','=',$this->id)->where('value','<',0)->orderBy('created_at','ASC')->get();
+        foreach($storeCreditActivities as $activity){
+            $spent = (-1)*$activity->value;
+            //echo 'Spent : '.$spent.'<br />';
+            //xdebug_var_dump($creditIn);
+            // we get all expenses and deduct them from the realValue var + deduct them from each creditIn specific var
+            // we also check for expiration dates to see if we have packages that are expired
+            foreach($creditIn as $key=>$single){
+                if ($single['available']==0){
+                    //echo 'This ID is 0 : '.$single['id'].'<br />';
+                    continue;
+                }
+                elseif ($single['expires']->lt(Carbon::createFromFormat('Y-m-d',$activity->expiration_date))){
+                    // make it expired and mark it as 0
+                    //echo 'This ID is expired : '.$single['id'].' : with value in : '.$single['available'].'<br />';
+                    $realValue-=$single['available'];
+                    $creditIn[$key]['available'] = 0;
+                    continue;
+                }
+
+                if ($single['available']<=$spent){
+                    //echo 'This ID : '.$single['id'].' : available : '.$single['available'].' - spent : '.$spent.' - all <br />';
+                    $spent-=$single['available'];
+                    $creditIn[$key]['available']=0;
+                    $realValue-=$single['available'];
+                }
+                else{
+                    //echo 'This ID : '.$single['id'].' : available : '.$single['available'].' - spent : '.$spent.' - a part <br />';
+                    $creditIn[$key]['available']-=$spent;
+                    $realValue-=$spent;
+                    break;
+                }
+
+                if ($spent==0){
+                    break;
+                }
+                //xdebug_var_dump($spent);
+            }
+            //xdebug_var_dump($creditIn);
+            //echo 'Real value after spent : '.$realValue.'<br />';
+        }
+
+        return $realValue;
     }
 
-    public function spend_store_credit(){
+    public function spend_store_credit($invoiceId, $amount){
+        $user = Auth::user();
+        if (!$user) {
+            return [
+                'success' => false,
+                'title'   => 'You need to be logged in',
+                'errors'  => 'This function is available to logged users only'];
+        }
 
+        // get memberID from the $invoiceId received
+        $invoice = Invoice::where('id','=',$invoiceId)->where('user_id','=',$this->id)->take(1)->get();
+        if (!$invoice){
+            return [
+                'success' => false,
+                'title'   => 'Error',
+                'errors'  => 'Invoice not found'];
+        }
+
+        // make store credit fillable for validation
+        $store_credit_fill = [
+            'member_id'     => $this->id,
+            'back_user_id'  => $user->id,
+            'title'         => 'Store Credit Spent',
+            'value'         => (-1)*intval($amount),
+            'total_amount'  => $this->get_available_store_credit() - intval($amount),
+            'invoice_id'    => $invoiceId,
+            'expiration_date'   => Carbon::today()->format('Y-m-d'),
+            'status'        => 'expired',
+        ];
+
+        $validator = Validator::make($store_credit_fill, UserStoreCredits::rules('POST'), UserStoreCredits::$message, UserStoreCredits::$attributeNames);
+        if ($validator->fails()){
+            //xdebug_var_dump($validator->errors()); exit;
+            // note could not be created
+            return [
+                'success' => false,
+                'title'   => 'Could not add store credit',
+                'errors'  => 'There is something wrong with the validity of the access card you want to add!'];
+        }
+
+        $storeCredit = UserStoreCredits::create($store_credit_fill);
+
+        return [
+            'success'   => true,
+            'title'     => 'Store Credit Added',
+            'message'   => 'User received the store credit',
+            'storeCredit'   => $storeCredit
+        ];
     }
     /** Store Credit functions - STOP */
 }

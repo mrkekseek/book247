@@ -1087,7 +1087,7 @@ class BookingController extends Controller
                 }
                 else {
                     $main_message = 'Your booking for ' . $booking_details['bookingDate'] . ' - ' . $booking_details['timeStart'] . ' to ' . $booking_details['timeStop'] . ' was created. <br /><br />' .
-                                    'Below you can check the full booking summary :<br />';
+                        'Below you can check the full booking summary :<br />';
                     $main_message.= 'Booking Date : '.$booking_details['bookingDate'].' <br />';
                     $main_message.= 'Time of booking : '.$booking_details['timeStart'].' - '.$booking_details['timeStop'].' <br />';
                     $main_message.= 'Booking Location : '.$booking_details['location'].' - '.$booking_details['room'].' <br />';
@@ -1580,13 +1580,13 @@ class BookingController extends Controller
             }
 
             foreach($singleHour as $key2=>$singleBook){
-                $hasNote = GeneralNote::where('note_type','=','general note')->where('for_user_id','=',$singleBook['player_id'])->first();
+                $hasNote = GeneralNote::where('note_type','=','general note')->where('for_user_id','=',$singleBook['player_id'])->where('privacy','=','employees')->whereIn('status',['pending'])->first();
                 if($hasNote){
                     $location_bookings['hours'][$key1][$key2]['alertOn'] = 'red';
                 }
             }
         }
-//xdebug_var_dump($location_bookings['hours']);
+
         $buttons_color = [
             'is_show'           => 'bg-green-jungle bg-font-green-jungle',
             'is_no_show'        => 'bg-red-thunderbird bg-font-red-thunderbird',
@@ -1594,6 +1594,7 @@ class BookingController extends Controller
 
             'is_paid_cash'      => 'bg-blue bg-font-blue',
             'is_paid_card'      => 'bg-purple bg-font-purple',
+            'is_paid_credit'    => 'bg-green-seagreen bg-font-green-seagreen',
             'is_paid_online'    => 'bg-yellow-haze bg-font-yellow-haze',
             'payment_issues'    => 'bg-red-thunderbird bg-font-red-thunderbird',
             'payment_btn_active'=> 'btn-default',
@@ -1994,6 +1995,7 @@ class BookingController extends Controller
             'show_btn_active'   => '',
             'is_paid_cash'      => '',
             'is_paid_card'      => '',
+            'is_paid_credit'    => '',
             'is_paid_online'    => '',
             'payment_issues'    => '',
             'payment_btn_active'=> '',
@@ -2153,6 +2155,9 @@ class BookingController extends Controller
                                                     case 'card' :
                                                         $formatted_booking['button_finance'] = 'is_paid_card';
                                                         break;
+                                                    case 'credit' :
+                                                        $formatted_booking['button_finance'] = 'is_paid_credit';
+                                                        break;
                                                     default :
                                                         $formatted_booking['button_finance'] = 'is_paid_online';
                                                         break;
@@ -2170,6 +2175,9 @@ class BookingController extends Controller
                                                     break;
                                                 case 'card' :
                                                     $formatted_booking['button_finance'] = 'is_paid_card';
+                                                    break;
+                                                case 'credit' :
+                                                    $formatted_booking['button_finance'] = 'is_paid_credit';
                                                     break;
                                                 default :
                                                     $formatted_booking['button_finance'] = 'is_paid_online';
@@ -2228,6 +2236,9 @@ class BookingController extends Controller
                                                 break;
                                             case 'card' :
                                                 $formatted_booking['button_finance'] = 'is_paid_card';
+                                                break;
+                                            case 'credit' :
+                                                $formatted_booking['button_finance'] = 'is_paid_credit';
                                                 break;
                                             default :
                                                 $formatted_booking['button_finance'] = 'is_paid_online';
@@ -2291,6 +2302,9 @@ class BookingController extends Controller
                                                     break;
                                                 case 'card' :
                                                     $formatted_booking['button_finance'] = 'is_paid_card';
+                                                    break;
+                                                case 'credit' :
+                                                    $formatted_booking['button_finance'] = 'is_paid_credit';
                                                     break;
                                                 default :
                                                     $formatted_booking['button_finance'] = 'is_paid_online';
@@ -3265,15 +3279,36 @@ class BookingController extends Controller
                 // manual payment at the store/location, so status is finished
                 $vars['status'] = 'completed';
             }
+
             if (!isset($vars['other_details'])){
                 // manual payment at the store/location, so status is finished
                 $vars['other_details'] = 'Calendar view manual payment';
             }
 
+            if ($vars['method']=='credit'){
+                // we check if the amount of store credit that is needed for this transaction is available
+                $mainInvoice = Invoice::where('invoice_type','=','booking_invoice')->where('invoice_reference_id','=',$invoice->id)->get()->first();
+                $member      = User::where('id','=',$mainInvoice->user_id)->get()->first();
+                if (!$member){
+                    return [
+                        'success'   => false,
+                        'errors'    => 'Could not find invoiced member'];
+                }
+                $availableStoreCredit = $member->get_available_store_credit();
+                if ($availableStoreCredit<$totalAmount){
+                    return [
+                        'success' => false,
+                        'errors' => 'Not enough store credit.'];
+                }
+                else{
+                    $member->spend_store_credit($mainInvoice->id, $totalAmount);
+                }
+            }
+
             $message = $invoice->add_transaction($user->id, $invoiceItem->id, $totalAmount, $vars['method'], $vars['other_details'], $vars['status'] );
             if ($message['success']==true){
                 // check if invoice is all paid
-                $invoice->check_if_paid();
+                $invoice->check_if_paid($user->id);
 
                 Activity::log([
                     'contentId'     => $user->id,
@@ -3289,6 +3324,7 @@ class BookingController extends Controller
                     'message' => 'Transaction successfully registered.'];
             }
             else{
+                // something went wrong and we need to give the store credit back
                 return [
                     'success' => false,
                     'errors' => 'Error Creating Transaction! Please reload the page or try logout/login before trying the same action.'];
@@ -4079,6 +4115,9 @@ class BookingController extends Controller
                                                 case 'card' :
                                                     $formatted_booking['button_finance'] = 'is_paid_card';
                                                     break;
+                                                case 'credit' :
+                                                    $formatted_booking['button_finance'] = 'is_paid_credit';
+                                                    break;
                                                 default :
                                                     $formatted_booking['button_finance'] = 'is_paid_online';
                                                     break;
@@ -4136,6 +4175,9 @@ class BookingController extends Controller
                                                 break;
                                             case 'card' :
                                                 $formatted_booking['button_finance'] = 'is_paid_card';
+                                                break;
+                                            case 'credit' :
+                                                $formatted_booking['button_finance'] = 'is_paid_credit';
                                                 break;
                                             default :
                                                 $formatted_booking['button_finance'] = 'is_paid_online';
@@ -4199,6 +4241,9 @@ class BookingController extends Controller
                                                     break;
                                                 case 'card' :
                                                     $formatted_booking['button_finance'] = 'is_paid_card';
+                                                    break;
+                                                case 'credit' :
+                                                    $formatted_booking['button_finance'] = 'is_paid_credit';
                                                     break;
                                                 default :
                                                     $formatted_booking['button_finance'] = 'is_paid_online';

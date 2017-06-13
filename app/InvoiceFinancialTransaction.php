@@ -48,7 +48,7 @@ class InvoiceFinancialTransaction extends Model
                     'invoice_id'            => 'required|exists:invoices,id',
                     'transaction_amount'    => 'required|numeric',
                     'transaction_currency'  => 'required',
-                    'transaction_type'      => 'required|in:cash,card,manual',
+                    'transaction_type'      => 'required|in:cash,card,credit,manual',
                     'transaction_date'      => 'required|date',
                     'status'                => 'required|in:pending,processing,completed,cancelled,declined,incomplete',
                 ];
@@ -61,7 +61,7 @@ class InvoiceFinancialTransaction extends Model
                     'booking_invoice_id'    => 'required|exists:booking_invoices,id',
                     'transaction_amount'    => 'required|numeric',
                     'transaction_currency'  => 'required',
-                    'transaction_type'      => 'required|in:cash,card,manual',
+                    'transaction_type'      => 'required|in:cash,card,credit,manual',
                     'transaction_date'      => 'required|date',
                     'status'                => 'required|in:pending,processing,completed,cancelled,declined,incomplete',
                 ];

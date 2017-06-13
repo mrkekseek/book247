@@ -565,6 +565,11 @@ Route::group(['middleware' => 'web'], function () {
         'as'    => 'admin/invoices/view',
         'uses'  => 'InvoiceController@view_invoice'
     ]);
+
+    Route::post('ajax/finance_action_invoice_paid',[
+        'as'    => 'ajax/finance_action_invoice_paid',
+        'uses'  => 'InvoiceController@mark_as_paid'
+    ]);
     /** Stop Finance Part */
 
     /* Start General Settings Part */
