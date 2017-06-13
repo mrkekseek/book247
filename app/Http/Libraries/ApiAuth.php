@@ -143,14 +143,13 @@ class ApiAuth
             switch ($key)
             {
                 case 'username':
-                    //$apiData['Username'] = $value;
+                    $apiData['Username'] = $value;
                     break;
                 case 'password_api':
                     $apiData['Password'] = $value;
                     break;
                 case 'email':
                     $apiData['Email'] = $value;
-                    $apiData['Username'] = $value;
                     break;
                 case 'first_name':
                     $apiData['FirstName'] = $value;
