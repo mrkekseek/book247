@@ -4694,7 +4694,7 @@ class FrontEndUserController extends Controller
                     ];
                     break;
                 case ('only_local'):
-                    if (AuthLocal::once(['username' => $data['email'], 'password' => $data['password']])){
+                    if (AuthLocal::once(['username' => $data['email'], 'password' => $data['password']]) || AuthLocal::once(['email' => $data['email'], 'password' => $data['password']])){
                         $local_id = AuthLocal::user()->id;
                         $user = User::find($local_id)->toArray();
                         $user['password_api'] = $data['password'];
@@ -4725,6 +4725,7 @@ class FrontEndUserController extends Controller
     
     public function auth_autorize(Request $request){
         $data = $request->input('data');
+        //dd(ApiAuth::accounts_get_by_username('tk59'));
         if (Auth::attempt(['email' => $data['username'], 'password' => $request->data['password']])) {
             $user = Auth::user();
             Activity::log([

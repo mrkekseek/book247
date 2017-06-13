@@ -233,7 +233,7 @@ class AdminController extends Controller
 
     public function authenticate(Request $request)
     {
-        if (Auth::attempt(['email' => $request->input('username'), 'password' => $request->input('password')])) {
+        if (Auth::attempt(['email' => $request->input('email'), 'password' => $request->input('password')])) {
             // Authentication passed...
             $user = Auth::user();
             if ($user->hasRole(['manager','employee'])){
