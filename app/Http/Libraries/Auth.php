@@ -46,7 +46,7 @@ class Auth
 
     public static function attempt($data = [])
     {   
-        if (AuthLocal::once(['username' => $data['email'], 'password' => $data['password'], 'sso_user_id' => NULL]))
+        if (AuthLocal::once(['username' => $data['email'], 'password' => $data['password'], 'sso_user_id' => NULL]) || AuthLocal::once(['email' => $data['email'], 'password' => $data['password'], 'sso_user_id' => NULL]))
         {   
             $local_id = AuthLocal::user()->id;
             $user = User::find($local_id)->toArray();                                  
@@ -154,8 +154,9 @@ class Auth
             case (1): $local_user['gender'] = 'M'; break;
             case (2): $local_user['gender'] = 'F'; break;
         }
-        //$user = User::firstOrNew(['sso_user_id'=>$sso_user_id]);        
-        $user = User::firstOrNew(['username'=>$api_user->username]);        
+        
+        $user = User::firstOrNew(['username'=>$api_user->username]);
+        $user = ( ! $user->exists) ? User::firstOrNew(['email'=>$api_user->username]): $user;
         $user->fill($local_user);        
         if (!$user->exists)
         {
