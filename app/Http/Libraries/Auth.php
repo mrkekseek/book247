@@ -46,7 +46,7 @@ class Auth
 
     public static function attempt($data = [])
     {   
-        if (AuthLocal::once(['username' => $data['email'], 'password' => $data['password'], 'sso_user_id' => NULL]))
+        if (AuthLocal::once(['username' => $data['email'], 'password' => $data['password'], 'sso_user_id' => NULL]) || AuthLocal::once(['email' => $data['email'], 'password' => $data['password'], 'sso_user_id' => NULL]))
         {   
             $local_id = AuthLocal::user()->id;
             $user = User::find($local_id)->toArray();                                  
@@ -106,7 +106,7 @@ class Auth
     private static function set_session()
     {
         $cookie_sso = Cookie::get('sso_user_id');                
-        $session_sso = Session::get('sso_user_id');                
+        $session_sso = Session::get('sso_user_id'); 
         if (!empty($cookie_sso) && !empty($session_sso) && $session_sso !== $cookie_sso)
         {            
             $session_sso = false;
@@ -147,15 +147,16 @@ class Auth
             'first_name'=>$api_user->firstName,
             'last_name'=>$api_user->lastName,
             'middle_name'=>$api_user->middleName,            
-            'country_id'=> config('constants.globalWebsite.defaultCountryId'),
             ];
         switch ($api_user->gender)
         {
             case (1): $local_user['gender'] = 'M'; break;
             case (2): $local_user['gender'] = 'F'; break;
         }
-        //$user = User::firstOrNew(['sso_user_id'=>$sso_user_id]);        
-        $user = User::firstOrNew(['username'=>$api_user->username]);        
+        
+        $user = User::firstOrNew(['username'=>$api_user->username]);
+        $user = ( ! $user->exists) ? User::firstOrNew(['email'=>$api_user->username]): $user;
+        $local_user['country_id'] = ! $user->exists ? config('constants.globalWebsite.defaultCountryId') : $user->country_id;
         $user->fill($local_user);        
         if (!$user->exists)
         {
@@ -179,7 +180,7 @@ class Auth
         return false;
     }
     
-    private static function set_personal_details($local_user_id, $api_user)
+    public static function set_personal_details($local_user_id, $api_user)
     {
         $personalDetail = PersonalDetail::firstOrNew(['user_id'=>$local_user_id]);
         $personalDetail->personal_email = $api_user->email;
