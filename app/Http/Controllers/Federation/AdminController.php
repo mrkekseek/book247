@@ -220,21 +220,38 @@ class AdminController extends Controller
         }
     }
 
+    private static function generateApiKey($data)
+    {
+        $key = env('APIKEY',"");
+        if ($key) {
+            $data = json_encode($data,JSON_UNESCAPED_SLASHES);
+            $hash = base64_encode(hash_hmac('sha256', $data, $key, TRUE));
+            return $hash;
+        } else {
+            return "";
+        }
+
+    }
 
     public function get_from_api($get = null){
         $url = env('APIURL',"");
-        $key = env('APIKEY',"");
         $site_id = env('MY_API_ID',"");
-        if ($url && $key && $get && $site_id) {
+        if ($url &&  $get && $site_id) {
             $url = $url.'/'.$get;
             $token = str_random(32);
-            $data = array('token' => $token, 'encrypted_token' => base64_encode(hash_hmac('sha256', $token, $key, TRUE)), 'site_id' => $site_id);
-
-            $ch = curl_init();
-
-            curl_setopt($ch,CURLOPT_URL, $url);
-            curl_setopt($ch,CURLOPT_POST, count($data));
-            curl_setopt($ch,CURLOPT_POSTFIELDS, $data);
+            $data = array('token' => $token,  'site_id' => $site_id);
+            $ApiKey = self::generateApiKey($data);
+            if ($ApiKey == "") {
+                return "";
+            }
+            $ch = curl_init($url);
+            $headers = [
+                'Content-Type: application/json',
+                'ApiKey:'.$ApiKey,
+                'Accept: application/json'
+            ];
+            curl_setopt($ch,CURLOPT_POSTFIELDS, json_encode($data));
+            curl_setopt($ch, CURLOPT_HTTPHEADER,$headers);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             $result = curl_exec($ch);
             curl_close($ch);
@@ -248,30 +265,4 @@ class AdminController extends Controller
         }
     }
 
-    public function get_from_api_test(){
-        $url = env('APIURL',"");
-        $key = env('APIKEY',"");
-        $get = 'squash_players';
-        if ($url && $key && $get) {
-            $url = $url.'/'.$get;
-            $token = str_random(32);
-            $data = array('token' => $token, 'encrypted_token' => base64_encode(hash_hmac('sha256', $token, $key, TRUE)));
-
-            $ch = curl_init();
-
-            curl_setopt($ch,CURLOPT_URL, $url);
-            curl_setopt($ch,CURLOPT_POST, count($data));
-            curl_setopt($ch,CURLOPT_POSTFIELDS, $data);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            $result = curl_exec($ch);
-            curl_close($ch);
-            if ($result) {
-                return $result;
-            } else {
-                return "";
-            }
-        } else {
-            return "";
-        }
-    }
 }
