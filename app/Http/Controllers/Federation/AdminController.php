@@ -51,34 +51,36 @@ class AdminController extends Controller
         ];
         $sidebar_link= 'admin-home_dashboard';
 
-        $new_players_this_week = json_decode($this->get_from_api('new_players_this_week'));
-        $income_this_week = json_decode($this->get_from_api('income_this_week'));
-        $upcoming_tournaments = json_decode($this->get_from_api('upcoming_tournaments'));
-        $registered_players = json_decode($this->get_from_api('registered_players'));
-        $squash_players = $this->get_from_api('squash_players');
-        $members_growth = $this->get_from_api('members_growth');
-        $number_of_club_members = $this->get_from_api('number_of_club_members');
-        $overall_bookings = $this->get_from_api('overall_bookings');
-        $total_players = $this->get_from_api('total_players');
-        $total_courts = $this->get_from_api('total_courts');
+//        $new_players_this_week = json_decode($this->get_from_api('new_players_this_week'));
+//        $income_this_week = json_decode($this->get_from_api('income_this_week'));
+//        $upcoming_tournaments = json_decode($this->get_from_api('upcoming_tournaments'));
+//        $registered_players = json_decode($this->get_from_api('registered_players'));
+//        $squash_players = $this->get_from_api('squash_players');
+//        $members_growth = $this->get_from_api('members_growth');
+//        $number_of_club_members = $this->get_from_api('number_of_club_members');
+//        $overall_bookings = $this->get_from_api('overall_bookings');
+//        $total_players = $this->get_from_api('total_players');
+//        $total_courts = $this->get_from_api('total_courts');
 
         return view('admin/main_page_public_federation',[
-            'new_players_this_week' => $new_players_this_week,
-            'income_this_week' => $income_this_week,
-            'upcoming_tournaments' => $upcoming_tournaments,
-            'registered_players' => $registered_players,
-            'squash_players' => $squash_players,
-            'members_growth' => $members_growth,
-            'number_of_club_members' => $number_of_club_members,
-            'overall_bookings' => $overall_bookings,
-            'total_players' => $total_players,
-            'total_courts' => $total_courts,
+//            'new_players_this_week' => $new_players_this_week,
+//            'income_this_week' => $income_this_week,
+//            'upcoming_tournaments' => $upcoming_tournaments,
+//            'registered_players' => $registered_players,
+//            'squash_players' => $squash_players,
+//            'members_growth' => $members_growth,
+//            'number_of_club_members' => $number_of_club_members,
+//            'overall_bookings' => $overall_bookings,
+//            'total_players' => $total_players,
+//            'total_courts' => $total_courts,
             'breadcrumbs'   => $breadcrumbs,
             'text_parts'    => $text_parts,
             'in_sidebar'    => $sidebar_link
         ]);
 
     }
+
+
 
 
     public function authenticate(Request $request)
@@ -193,6 +195,31 @@ class AdminController extends Controller
     private function prelevate_data(){
 
     }
+
+    public function front_api_call(Request $r){
+        $method = $r->get('method');
+        if ($method) {
+            $response = $this->get_from_api($method);
+            if ($response) {
+                return json_encode(array(
+                        'success' => true ,
+                        'data' => $response
+                    )
+                );
+            } else {
+                return json_encode(array(
+                    'success' => false
+                    )
+                );
+            }
+        } else {
+            return json_encode(array(
+                    'success' => false
+                )
+            );
+        }
+    }
+
 
     public function get_from_api($get = null){
         $url = env('APIURL',"");

@@ -54,7 +54,7 @@
                     </div>
                     <div class="details">
                         <div class="number">
-                            <span data-counter="counterup" data-value="{{ $new_players_this_week }}"></span>
+                            <span data-counter="counterup" id="new_players_this_week" data-value="0"></span>
                         </div>
                         <div class="desc"> New players this week </div>
                     </div>
@@ -70,7 +70,7 @@
                     </div>
                     <div class="details">
                         <div class="number">
-                            <span data-counter="counterup" data-value="{{ $income_this_week }}"></span>$ </div>
+                            <span data-counter="counterup" id="income_this_week" data-value="0"></span>$ </div>
                         <div class="desc"> Income this week </div>
                     </div>
                     <a class="more" href="javascript:;"> View more
@@ -85,7 +85,7 @@
                     </div>
                     <div class="details">
                         <div class="number">
-                            <span data-counter="counterup" data-value="{{ $upcoming_tournaments }}"></span>
+                            <span data-counter="counterup" id="upcoming_tournaments" data-value="0"></span>
                         </div>
                         <div class="desc"> Upcoming Tournaments </div>
                     </div>
@@ -101,7 +101,7 @@
                     </div>
                     <div class="details">
                         <div class="number"> +
-                            <span data-counter="counterup" data-value="{{ $registered_players }}"></span> </div>
+                            <span data-counter="counterup" id="registered_players" data-value="0"></span> </div>
                         <div class="desc"> Registered players </div>
                     </div>
                     <a class="more" href="javascript:;"> View more
@@ -375,6 +375,92 @@
                     });
                 },
 
+                initFourBox: function() {
+                    var nptw = $('#new_players_this_week');
+                    var itw = $('#income_this_week');
+                    var ut = $('#upcoming_tournaments');
+                    var rp = $('#registered_players');
+                    if (nptw.length) {
+                        $.ajax({
+                            url: '/api_call',
+                            type: 'POST',
+                            dataType: 'json',
+                            data: { 'method' : 'new_players_this_week'},
+                            success : function(res) {
+                                if (res.success){
+                                    $('#new_players_this_week').attr('data-value', res.data).counterUp();
+                                } else {
+                                    console.log('success but failure')
+                                }
+
+                            },
+                            error: function(res){
+                                console.log('failure');
+                            }
+
+                        });
+                    } else { console.log('counter 1 not av') }
+                    if (itw.length) {
+                        $.ajax({
+                            url: '/api_call',
+                            type: 'POST',
+                            dataType: 'json',
+                            data: { 'method' : 'income_this_week'},
+                            success : function(res) {
+                                if (res.success){
+                                    $('#income_this_week').attr('data-value', res.data).counterUp();
+                                } else {
+                                    console.log('success but failure')
+                                }
+
+                            },
+                            error: function(res){
+                                console.log('failure');
+                            }
+
+                        });
+                    } else { console.log('counter 2 not av') }
+                    if (ut.length) {
+                        $.ajax({
+                            url: '/api_call',
+                            type: 'POST',
+                            dataType: 'json',
+                            data: { 'method' : 'upcoming_tournaments'},
+                            success : function(res) {
+                                if (res.success){
+                                    $('#upcoming_tournaments').attr('data-value', res.data).counterUp();
+                                } else {
+                                    console.log('success but failure')
+                                }
+
+                            },
+                            error: function(res){
+                                console.log('failure');
+                            }
+
+                        });
+                    } else { console.log('counter 3 not av') }
+                    if (rp.length) {
+                        $.ajax({
+                            url: '/api_call',
+                            type: 'POST',
+                            dataType: 'json',
+                            data: { 'method' : 'registered_players'},
+                            success : function(res) {
+                                if (res.success){
+                                    $('#registered_players').attr('data-value', res.data).counterUp();
+                                } else {
+                                    console.log('success but failure')
+                                }
+                            },
+                            error: function(res){
+                                console.log('failure');
+                            }
+
+                        });
+                    } else { console.log('counter 4 not av') }
+                },
+
                 initCalendar: function() {
                     if (!jQuery().fullCalendar) {
                         return;
@@ -505,206 +591,222 @@
                         return (Math.floor(Math.random() * (1 + 50 - 20))) + 10;
                     }
 
-                    var squash_players = JSON.parse('<?= $squash_players ?>');
-                    var male_visitors = $.map(squash_players.male, function(el) { return [$.map(el,function(e){ return e })]});
-                    var female_visitors = $.map(squash_players.female, function(el) { return [$.map(el,function(e){ return e })]});
+                    $.ajax({
+                        url: '/api_call',
+                        type: 'POST',
+                        dataType: 'json',
+                        data: { 'method' : 'squash_players'},
+                        success: function(res) {
+                            if (res.success) {
+                                var squash_players = JSON.parse(res.data);
+                                var male_visitors = $.map(squash_players.male, function(el) { return [$.map(el,function(e){ return e })]});
+                                var female_visitors = $.map(squash_players.female, function(el) { return [$.map(el,function(e){ return e })]});
 
-                    if ($('#site_statistics').size() != 0) {
+                                if ($('#site_statistics').size() != 0) {
 
-                        $('#site_statistics_loading').hide();
-                        $('#site_statistics_content').show();
+                                    $('#site_statistics_loading').hide();
+                                    $('#site_statistics_content').show();
 
 
-                        var male = $('#male');
-                        var female = $('#female');
+                                    var male = $('#male');
+                                    var female = $('#female');
 
-                        $(document).on('click','#male',function(){
-                            $('#female').removeClass('active');
-                            $(this).addClass('active');
-                            plot_statistics = $.plot($("#site_statistics"), [{
-                                    data: male_visitors,
-                                    lines: {
-                                        fill: 0.6,
-                                        lineWidth: 0
-                                    },
-                                    color: ['#f89f9f']
-                                }, {
-                                    data: male_visitors,
-                                    points: {
-                                        show: true,
-                                        fill: true,
-                                        radius: 5,
-                                        fillColor: "#f89f9f",
-                                        lineWidth: 3
-                                    },
-                                    color: '#fff',
-                                    shadowSize: 0
-                                }],
+                                    $(document).on('click','#male',function(){
+                                        $('#female').removeClass('active');
+                                        $(this).addClass('active');
+                                        plot_statistics = $.plot($("#site_statistics"), [{
+                                                data: male_visitors,
+                                                lines: {
+                                                    fill: 0.6,
+                                                    lineWidth: 0
+                                                },
+                                                color: ['#f89f9f']
+                                            }, {
+                                                data: male_visitors,
+                                                points: {
+                                                    show: true,
+                                                    fill: true,
+                                                    radius: 5,
+                                                    fillColor: "#f89f9f",
+                                                    lineWidth: 3
+                                                },
+                                                color: '#fff',
+                                                shadowSize: 0
+                                            }],
 
-                                {
-                                    xaxis: {
-                                        tickLength: 0,
-                                        tickDecimals: 0,
-                                        mode: "categories",
-                                        min: 0,
-                                        font: {
-                                            lineHeight: 14,
-                                            style: "normal",
-                                            variant: "small-caps",
-                                            color: "#6F7B8A"
+                                            {
+                                                xaxis: {
+                                                    tickLength: 0,
+                                                    tickDecimals: 0,
+                                                    mode: "categories",
+                                                    min: 0,
+                                                    font: {
+                                                        lineHeight: 14,
+                                                        style: "normal",
+                                                        variant: "small-caps",
+                                                        color: "#6F7B8A"
+                                                    }
+                                                },
+                                                yaxis: {
+                                                    ticks: 5,
+                                                    tickDecimals: 0,
+                                                    tickColor: "#eee",
+                                                    font: {
+                                                        lineHeight: 14,
+                                                        style: "normal",
+                                                        variant: "small-caps",
+                                                        color: "#6F7B8A"
+                                                    }
+                                                },
+                                                grid: {
+                                                    hoverable: true,
+                                                    clickable: true,
+                                                    tickColor: "#eee",
+                                                    borderColor: "#eee",
+                                                    borderWidth: 1
+                                                }
+                                            });
+                                    });
+
+                                    $(document).on('click','#female',function(){
+                                        $('#male').removeClass('active');
+                                        $(this).addClass('active');
+                                        plot_statistics = $.plot($("#site_statistics"), [{
+                                                data: female_visitors,
+                                                lines: {
+                                                    fill: 0.6,
+                                                    lineWidth: 0
+                                                },
+                                                color: ['#f89f9f']
+                                            }, {
+                                                data: female_visitors,
+                                                points: {
+                                                    show: true,
+                                                    fill: true,
+                                                    radius: 5,
+                                                    fillColor: "#f89f9f",
+                                                    lineWidth: 3
+                                                },
+                                                color: '#fff',
+                                                shadowSize: 0
+                                            }],
+
+                                            {
+                                                xaxis: {
+                                                    tickLength: 0,
+                                                    tickDecimals: 0,
+                                                    mode: "categories",
+                                                    min: 0,
+                                                    font: {
+                                                        lineHeight: 14,
+                                                        style: "normal",
+                                                        variant: "small-caps",
+                                                        color: "#6F7B8A"
+                                                    }
+                                                },
+                                                yaxis: {
+                                                    ticks: 5,
+                                                    tickDecimals: 0,
+                                                    tickColor: "#eee",
+                                                    font: {
+                                                        lineHeight: 14,
+                                                        style: "normal",
+                                                        variant: "small-caps",
+                                                        color: "#6F7B8A"
+                                                    }
+                                                },
+                                                grid: {
+                                                    hoverable: true,
+                                                    clickable: true,
+                                                    tickColor: "#eee",
+                                                    borderColor: "#eee",
+                                                    borderWidth: 1
+                                                }
+                                            });
+                                    });
+
+                                    plot_statistics = $.plot($("#site_statistics"), [{
+                                            data: male_visitors,
+                                            lines: {
+                                                fill: 0.6,
+                                                lineWidth: 0
+                                            },
+                                            color: ['#f89f9f']
+                                        }, {
+                                            data: male_visitors,
+                                            points: {
+                                                show: true,
+                                                fill: true,
+                                                radius: 5,
+                                                fillColor: "#f89f9f",
+                                                lineWidth: 3
+                                            },
+                                            color: '#fff',
+                                            shadowSize: 0
+                                        }],
+
+                                        {
+                                            xaxis: {
+                                                tickLength: 0,
+                                                tickDecimals: 0,
+                                                mode: "categories",
+                                                min: 0,
+                                                font: {
+                                                    lineHeight: 14,
+                                                    style: "normal",
+                                                    variant: "small-caps",
+                                                    color: "#6F7B8A"
+                                                }
+                                            },
+                                            yaxis: {
+                                                ticks: 5,
+                                                tickDecimals: 0,
+                                                tickColor: "#eee",
+                                                font: {
+                                                    lineHeight: 14,
+                                                    style: "normal",
+                                                    variant: "small-caps",
+                                                    color: "#6F7B8A"
+                                                }
+                                            },
+                                            grid: {
+                                                hoverable: true,
+                                                clickable: true,
+                                                tickColor: "#eee",
+                                                borderColor: "#eee",
+                                                borderWidth: 1
+                                            }
+                                        });
+
+                                    var previousPoint = null;
+                                    $("#site_statistics").bind("plothover", function(event, pos, item) {
+                                        $("#x").text(pos.x.toFixed(2));
+                                        $("#y").text(pos.y.toFixed(2));
+                                        if (item) {
+                                            if (previousPoint != item.dataIndex) {
+                                                previousPoint = item.dataIndex;
+
+                                                $("#tooltip").remove();
+                                                var x = item.datapoint[0].toFixed(2),
+                                                    y = item.datapoint[1].toFixed(2);
+
+                                                showChartTooltip(item.pageX, item.pageY, item.datapoint[0], item.datapoint[1] + ' visits');
+                                            }
+                                        } else {
+                                            $("#tooltip").remove();
+                                            previousPoint = null;
                                         }
-                                    },
-                                    yaxis: {
-                                        ticks: 5,
-                                        tickDecimals: 0,
-                                        tickColor: "#eee",
-                                        font: {
-                                            lineHeight: 14,
-                                            style: "normal",
-                                            variant: "small-caps",
-                                            color: "#6F7B8A"
-                                        }
-                                    },
-                                    grid: {
-                                        hoverable: true,
-                                        clickable: true,
-                                        tickColor: "#eee",
-                                        borderColor: "#eee",
-                                        borderWidth: 1
-                                    }
-                                });
-                        });
-
-                        $(document).on('click','#female',function(){
-                            $('#male').removeClass('active');
-                            $(this).addClass('active');
-                            plot_statistics = $.plot($("#site_statistics"), [{
-                                    data: female_visitors,
-                                    lines: {
-                                        fill: 0.6,
-                                        lineWidth: 0
-                                    },
-                                    color: ['#f89f9f']
-                                }, {
-                                    data: female_visitors,
-                                    points: {
-                                        show: true,
-                                        fill: true,
-                                        radius: 5,
-                                        fillColor: "#f89f9f",
-                                        lineWidth: 3
-                                    },
-                                    color: '#fff',
-                                    shadowSize: 0
-                                }],
-
-                                {
-                                    xaxis: {
-                                        tickLength: 0,
-                                        tickDecimals: 0,
-                                        mode: "categories",
-                                        min: 0,
-                                        font: {
-                                            lineHeight: 14,
-                                            style: "normal",
-                                            variant: "small-caps",
-                                            color: "#6F7B8A"
-                                        }
-                                    },
-                                    yaxis: {
-                                        ticks: 5,
-                                        tickDecimals: 0,
-                                        tickColor: "#eee",
-                                        font: {
-                                            lineHeight: 14,
-                                            style: "normal",
-                                            variant: "small-caps",
-                                            color: "#6F7B8A"
-                                        }
-                                    },
-                                    grid: {
-                                        hoverable: true,
-                                        clickable: true,
-                                        tickColor: "#eee",
-                                        borderColor: "#eee",
-                                        borderWidth: 1
-                                    }
-                                });
-                        });
-
-                        plot_statistics = $.plot($("#site_statistics"), [{
-                                data: male_visitors,
-                                lines: {
-                                    fill: 0.6,
-                                    lineWidth: 0
-                                },
-                                color: ['#f89f9f']
-                            }, {
-                                data: male_visitors,
-                                points: {
-                                    show: true,
-                                    fill: true,
-                                    radius: 5,
-                                    fillColor: "#f89f9f",
-                                    lineWidth: 3
-                                },
-                                color: '#fff',
-                                shadowSize: 0
-                            }],
-
-                            {
-                                xaxis: {
-                                    tickLength: 0,
-                                    tickDecimals: 0,
-                                    mode: "categories",
-                                    min: 0,
-                                    font: {
-                                        lineHeight: 14,
-                                        style: "normal",
-                                        variant: "small-caps",
-                                        color: "#6F7B8A"
-                                    }
-                                },
-                                yaxis: {
-                                    ticks: 5,
-                                    tickDecimals: 0,
-                                    tickColor: "#eee",
-                                    font: {
-                                        lineHeight: 14,
-                                        style: "normal",
-                                        variant: "small-caps",
-                                        color: "#6F7B8A"
-                                    }
-                                },
-                                grid: {
-                                    hoverable: true,
-                                    clickable: true,
-                                    tickColor: "#eee",
-                                    borderColor: "#eee",
-                                    borderWidth: 1
-                                }
-                            });
-
-                        var previousPoint = null;
-                        $("#site_statistics").bind("plothover", function(event, pos, item) {
-                            $("#x").text(pos.x.toFixed(2));
-                            $("#y").text(pos.y.toFixed(2));
-                            if (item) {
-                                if (previousPoint != item.dataIndex) {
-                                    previousPoint = item.dataIndex;
-
-                                    $("#tooltip").remove();
-                                    var x = item.datapoint[0].toFixed(2),
-                                        y = item.datapoint[1].toFixed(2);
-
-                                    showChartTooltip(item.pageX, item.pageY, item.datapoint[0], item.datapoint[1] + ' visits');
+                                    });
                                 }
                             } else {
-                                $("#tooltip").remove();
-                                previousPoint = null;
+                                console.log('success but failure');
                             }
-                        });
-                    }
+                        },
+                        error: function(res) {
+                            console.log('failure');
+                        }
+                    });
+
 
 
                     if ($('#site_activities').size() != 0) {
@@ -1558,61 +1660,76 @@
                     if (typeof(AmCharts) === 'undefined' || $('#dashboard_amchart_3_1').size() === 0) {
                         return;
                     }
-                    var number_of_club_members = JSON.parse('<?= $number_of_club_members ?>');
-                    var chart = AmCharts.makeChart("dashboard_amchart_3_1", {
-                        "type": "serial",
-                        "addClassNames": true,
-                        "theme": "light",
-                        "path": "../assets/global/plugins/amcharts/ammap/images/",
-                        "autoMargins": false,
-                        "marginLeft": 30,
-                        "marginRight": 8,
-                        "marginTop": 10,
-                        "marginBottom": 26,
-                        "balloon": {
-                            "adjustBorderColor": false,
-                            "horizontalPadding": 10,
-                            "verticalPadding": 8,
-                            "color": "#ffffff"
-                        },
+                    $.ajax({
+                        url: '/api_call',
+                        type: 'POST',
+                        dataType: 'json',
+                        data: { 'method' : 'number_of_club_members'},
+                        success: function (res) {
+                            if (res.success) {
+                                var number_of_club_members = JSON.parse(res.data);
+                                var chart = AmCharts.makeChart("dashboard_amchart_3_1", {
+                                    "type": "serial",
+                                    "addClassNames": true,
+                                    "theme": "light",
+                                    "path": "../assets/global/plugins/amcharts/ammap/images/",
+                                    "autoMargins": false,
+                                    "marginLeft": 30,
+                                    "marginRight": 8,
+                                    "marginTop": 10,
+                                    "marginBottom": 26,
+                                    "balloon": {
+                                        "adjustBorderColor": false,
+                                        "horizontalPadding": 10,
+                                        "verticalPadding": 8,
+                                        "color": "#ffffff"
+                                    },
 
-                        "dataProvider":  $.map(number_of_club_members,function(el){ return el }),
-                        "valueAxes": [{
-                            "axisAlpha": 0,
-                            "position": "left"
-                        }],
-                        "startDuration": 1,
-                        "graphs": [{
-                            "alphaField": "alpha",
-                            "balloonText": "<span style='font-size:12px;'>[[title]] in [[category]]:<br><span style='font-size:20px;'>[[value]]</span> [[additional]]</span>",
-                            "fillAlphas": 1,
-                            "title": "Squash clubs",
-                            "type": "column",
-                            "valueField": "income",
-                            "dashLengthField": "dashLengthColumn"
-                        }, {
-                            "id": "graph2",
-                            "balloonText": "<span style='font-size:12px;'>[[title]] in [[category]]:<br><span style='font-size:20px;'>[[value]]</span> [[additional]]</span>",
-                            "bullet": "round",
-                            "lineThickness": 3,
-                            "bulletSize": 7,
-                            "bulletBorderAlpha": 1,
-                            "bulletColor": "#FFFFFF",
-                            "useLineColorForBulletBorder": true,
-                            "bulletBorderThickness": 3,
-                            "fillAlphas": 0,
-                            "lineAlpha": 1,
-                            "title": "Squash rooms",
-                            "valueField": "expenses"
-                        }],
-                        "categoryField": "year",
-                        "categoryAxis": {
-                            "gridPosition": "start",
-                            "axisAlpha": 0,
-                            "tickLength": 0
+                                    "dataProvider":  $.map(number_of_club_members,function(el){ return el }),
+                                    "valueAxes": [{
+                                        "axisAlpha": 0,
+                                        "position": "left"
+                                    }],
+                                    "startDuration": 1,
+                                    "graphs": [{
+                                        "alphaField": "alpha",
+                                        "balloonText": "<span style='font-size:12px;'>[[title]] in [[category]]:<br><span style='font-size:20px;'>[[value]]</span> [[additional]]</span>",
+                                        "fillAlphas": 1,
+                                        "title": "Squash clubs",
+                                        "type": "column",
+                                        "valueField": "income",
+                                        "dashLengthField": "dashLengthColumn"
+                                    }, {
+                                        "id": "graph2",
+                                        "balloonText": "<span style='font-size:12px;'>[[title]] in [[category]]:<br><span style='font-size:20px;'>[[value]]</span> [[additional]]</span>",
+                                        "bullet": "round",
+                                        "lineThickness": 3,
+                                        "bulletSize": 7,
+                                        "bulletBorderAlpha": 1,
+                                        "bulletColor": "#FFFFFF",
+                                        "useLineColorForBulletBorder": true,
+                                        "bulletBorderThickness": 3,
+                                        "fillAlphas": 0,
+                                        "lineAlpha": 1,
+                                        "title": "Squash rooms",
+                                        "valueField": "expenses"
+                                    }],
+                                    "categoryField": "year",
+                                    "categoryAxis": {
+                                        "gridPosition": "start",
+                                        "axisAlpha": 0,
+                                        "tickLength": 0
+                                    },
+                                    "export": {
+                                        "enabled": true
+                                    }
+                                });
+                            } else {
+                                console.log('successs but num club members failures');
+                            }
                         },
-                        "export": {
-                            "enabled": true
+                        error: function (res) {
+                            console.log('num club members failures');
                         }
                     });
                 },
@@ -1879,6 +1996,7 @@
                 init: function() {
 
                     this.initJQVMAP();
+                    this.initFourBox();
                     this.initCalendar();
                     this.initCharts();
                     this.initEasyPieCharts();
@@ -2033,102 +2151,114 @@
                         function randValue() {
                             return (Math.floor(Math.random() * (1 + 40 - 20))) + 20;
                         }
+                        $.ajax({
+                            url: '/api_call',
+                            type: 'POST',
+                            dataType: 'json',
+                            data: { 'method' : 'members_growth'},
+                            success: function(res){
+                                if (res.success) {
+                                    var members_growth = JSON.parse(res.data);
+                                    var visitors = $.map(members_growth.visitors, function(el) { return [$.map(el,function(e){ return e })]});
+                                    var pageviews = $.map(members_growth.pageviews, function(el) { return [$.map(el,function(e){ return e })]});
 
-                        var members_growth = JSON.parse('<?= $members_growth ?>');
-                        var visitors = $.map(members_growth.visitors, function(el) { return [$.map(el,function(e){ return e })]});
-                        var pageviews = $.map(members_growth.pageviews, function(el) { return [$.map(el,function(e){ return e })]});
 
+                                    var plot = $.plot($("#chart_2"), [{
+                                        data: pageviews,
+                                        label: "Paying members",
+                                        lines: {
+                                            lineWidth: 1,
+                                        },
+                                        shadowSize: 0
 
-                        var plot = $.plot($("#chart_2"), [{
-                            data: pageviews,
-                            label: "Paying members",
-                            lines: {
-                                lineWidth: 1,
-                            },
-                            shadowSize: 0
-
-                        }, {
-                            data: visitors,
-                            label: "Non paying members",
-                            lines: {
-                                lineWidth: 1,
-                            },
-                            shadowSize: 0
-                        }], {
-                            series: {
-                                lines: {
-                                    show: true,
-                                    lineWidth: 2,
-                                    fill: true,
-                                    fillColor: {
-                                        colors: [{
-                                            opacity: 0.05
-                                        }, {
-                                            opacity: 0.01
-                                        }]
+                                    }, {
+                                        data: visitors,
+                                        label: "Non paying members",
+                                        lines: {
+                                            lineWidth: 1,
+                                        },
+                                        shadowSize: 0
+                                    }], {
+                                        series: {
+                                            lines: {
+                                                show: true,
+                                                lineWidth: 2,
+                                                fill: true,
+                                                fillColor: {
+                                                    colors: [{
+                                                        opacity: 0.05
+                                                    }, {
+                                                        opacity: 0.01
+                                                    }]
+                                                }
+                                            },
+                                            points: {
+                                                show: true,
+                                                radius: 3,
+                                                lineWidth: 1
+                                            },
+                                            shadowSize: 2
+                                        },
+                                        grid: {
+                                            hoverable: true,
+                                            clickable: true,
+                                            tickColor: "#eee",
+                                            borderColor: "#eee",
+                                            borderWidth: 1
+                                        },
+                                        colors: ["#d12610", "#37b7f3", "#52e136"],
+                                        xaxis: {
+                                            ticks: 11,
+                                            tickDecimals: 0,
+                                            tickColor: "#eee",
+                                        },
+                                        yaxis: {
+                                            ticks: 11,
+                                            tickDecimals: 0,
+                                            tickColor: "#eee",
+                                        }
+                                    });
+                                    function showTooltip(x, y, contents) {
+                                        $('<div id="tooltip">' + contents + '</div>').css({
+                                            position: 'absolute',
+                                            display: 'none',
+                                            top: y + 5,
+                                            left: x + 15,
+                                            border: '1px solid #333',
+                                            padding: '4px',
+                                            color: '#fff',
+                                            'border-radius': '3px',
+                                            'background-color': '#333',
+                                            opacity: 0.80
+                                        }).appendTo("body").fadeIn(200);
                                     }
-                                },
-                                points: {
-                                    show: true,
-                                    radius: 3,
-                                    lineWidth: 1
-                                },
-                                shadowSize: 2
-                            },
-                            grid: {
-                                hoverable: true,
-                                clickable: true,
-                                tickColor: "#eee",
-                                borderColor: "#eee",
-                                borderWidth: 1
-                            },
-                            colors: ["#d12610", "#37b7f3", "#52e136"],
-                            xaxis: {
-                                ticks: 11,
-                                tickDecimals: 0,
-                                tickColor: "#eee",
-                            },
-                            yaxis: {
-                                ticks: 11,
-                                tickDecimals: 0,
-                                tickColor: "#eee",
-                            }
-                        });
 
+                                    var previousPoint = null;
+                                    $("#chart_2").bind("plothover", function(event, pos, item) {
+                                        $("#x").text(pos.x.toFixed(2));
+                                        $("#y").text(pos.y.toFixed(2));
 
-                        function showTooltip(x, y, contents) {
-                            $('<div id="tooltip">' + contents + '</div>').css({
-                                position: 'absolute',
-                                display: 'none',
-                                top: y + 5,
-                                left: x + 15,
-                                border: '1px solid #333',
-                                padding: '4px',
-                                color: '#fff',
-                                'border-radius': '3px',
-                                'background-color': '#333',
-                                opacity: 0.80
-                            }).appendTo("body").fadeIn(200);
-                        }
+                                        if (item) {
+                                            if (previousPoint != item.dataIndex) {
+                                                previousPoint = item.dataIndex;
 
-                        var previousPoint = null;
-                        $("#chart_2").bind("plothover", function(event, pos, item) {
-                            $("#x").text(pos.x.toFixed(2));
-                            $("#y").text(pos.y.toFixed(2));
+                                                $("#tooltip").remove();
+                                                var x = item.datapoint[0].toFixed(2),
+                                                    y = item.datapoint[1].toFixed(2);
 
-                            if (item) {
-                                if (previousPoint != item.dataIndex) {
-                                    previousPoint = item.dataIndex;
-
-                                    $("#tooltip").remove();
-                                    var x = item.datapoint[0].toFixed(2),
-                                        y = item.datapoint[1].toFixed(2);
-
-                                    showTooltip(item.pageX, item.pageY, item.series.label + " of " + x + " = " + y);
+                                                showTooltip(item.pageX, item.pageY, item.series.label + " of " + x + " = " + y);
+                                            }
+                                        } else {
+                                            $("#tooltip").remove();
+                                            previousPoint = null;
+                                        }
+                                    });
+                                } else {
+                                    console.log('success but failure mem growth');
                                 }
-                            } else {
-                                $("#tooltip").remove();
-                                previousPoint = null;
+                            },
+                            error: function(){
+                                console.log('failure mem growth');
                             }
                         });
                     }
@@ -2478,10 +2608,6 @@
                         };
                     }
 
-                    var data1 = $.map(JSON.parse('<?= $total_players ?>'),function(el){ return el });
-                    var data2 = $.map(JSON.parse('<?= $total_courts ?>'),function(el){ return el });
-                    var overall_bookings = JSON.parse('<?= $overall_bookings ?>');
-                    var data3 = $.map(overall_bookings, function(el){ return el });
 
                     // DEFAULT
                     if ($('#pie_chart').size() !== 0) {
@@ -2653,74 +2779,124 @@
 
                     // GRAPH 8
                     if ($('#pie_chart_8').size() !== 0) {
-                        $.plot($("#pie_chart_8"), data1, {
-                            series: {
-                                pie: {
-                                    show: true,
-                                    radius: 280,
-                                    label: {
-                                        show: true,
-                                        formatter: function(label, series) {
-                                            return '<div style="font-size:8pt;text-align:center;padding:2px;color:white;">' + label + '<br/>' + Math.round(series.percent) + '%</div>';
+                        $.ajax({
+                            url: '/api_call',
+                            type: 'POST',
+                            dataType: 'json',
+                            data: { 'method' : 'total_players'},
+                            success: function (res) {
+                                if (res.success) {
+                                    var data1 = $.map(JSON.parse(res.data),function(el){ return el });
+
+                                    $.plot($("#pie_chart_8"), data1, {
+                                        series: {
+                                            pie: {
+                                                show: true,
+                                                radius: 280,
+                                                label: {
+                                                    show: true,
+                                                    formatter: function(label, series) {
+                                                        return '<div style="font-size:8pt;text-align:center;padding:2px;color:white;">' + label + '<br/>' + Math.round(series.percent) + '%</div>';
+                                                    },
+                                                    threshold: 0.1
+                                                }
+                                            }
                                         },
-                                        threshold: 0.1
-                                    }
+                                        legend: {
+                                            show: false
+                                        }
+                                    });
+                                } else {
+                                    console.log('success but failure');
                                 }
                             },
-                            legend: {
-                                show: false
+                            error: function(res){
+                                console.log('failure');
                             }
                         });
                     }
 
                     // GRAPH 8_1
                     if ($('#pie_chart_8_1').size() !== 0) {
-                        $.plot($("#pie_chart_8_1"), data2, {
-                            series: {
-                                pie: {
-                                    show: true,
-                                    radius: 280,
-                                    label: {
-                                        show: true,
-                                        formatter: function(label, series) {
-                                            return '<div style="font-size:8pt;text-align:center;padding:2px;color:white;">' + label + '<br/>' + Math.round(series.percent) + '%</div>';
+                        $.ajax({
+                            url: '/api_call',
+                            type: 'POST',
+                            dataType: 'json',
+                            data: { 'method' : 'total_courts'},
+                            success: function (res) {
+                                if (res.success) {
+                                    var data2 = $.map(JSON.parse(res.data),function(el){ return el });
+                                    $.plot($("#pie_chart_8_1"), data2, {
+                                        series: {
+                                            pie: {
+                                                show: true,
+                                                radius: 280,
+                                                label: {
+                                                    show: true,
+                                                    formatter: function(label, series) {
+                                                        return '<div style="font-size:8pt;text-align:center;padding:2px;color:white;">' + label + '<br/>' + Math.round(series.percent) + '%</div>';
+                                                    },
+                                                    threshold: 0.1
+                                                }
+                                            }
                                         },
-                                        threshold: 0.1
-                                    }
+                                        legend: {
+                                            show: false
+                                        }
+                                    });
+                                } else {
+                                    console.log('success but failure');
                                 }
                             },
-                            legend: {
-                                show: false
+                            error: function(res){
+                                console.log('failure');
                             }
                         });
                     }
 
                     // GRAPH 9
                     if ($('#pie_chart_9').size() !== 0) {
-                        $.plot($("#pie_chart_9"), data3, {
-                            series: {
-                                pie: {
-                                    show: true,
-                                    radius: 1,
-                                    tilt: 0.5,
-                                    label: {
-                                        show: true,
-                                        radius: 1,
-                                        formatter: function(label, series) {
-                                            return '<div style="font-size:8pt;text-align:center;padding:2px;color:white;">' + label + '<br/>' + Math.round(series.percent) + '%</div>';
+                        $.ajax({
+                            url: '/api_call',
+                            type: 'POST',
+                            dataType: 'json',
+                            data: { 'method' : 'overall_bookings'},
+                            success: function (res) {
+                                if (res.success) {
+                                    var overall_bookings = JSON.parse(res.data);
+                                    var data3 = $.map(overall_bookings, function(el){ return el });
+                                    $.plot($("#pie_chart_9"), data3, {
+                                        series: {
+                                            pie: {
+                                                show: true,
+                                                radius: 1,
+                                                tilt: 0.5,
+                                                label: {
+                                                    show: true,
+                                                    radius: 1,
+                                                    formatter: function(label, series) {
+                                                        return '<div style="font-size:8pt;text-align:center;padding:2px;color:white;">' + label + '<br/>' + Math.round(series.percent) + '%</div>';
+                                                    },
+                                                    background: {
+                                                        opacity: 0.8
+                                                    }
+                                                },
+                                                combine: {
+                                                    color: '#999',
+                                                    threshold: 0.1
+                                                }
+                                            }
                                         },
-                                        background: {
-                                            opacity: 0.8
+                                        legend: {
+                                            show: false
                                         }
-                                    },
-                                    combine: {
-                                        color: '#999',
-                                        threshold: 0.1
-                                    }
+                                    });
+                                } else {
+                                    console.log('success but failure');
                                 }
                             },
-                            legend: {
-                                show: false
+                            error: function(res){
+                                console.log('failure');
                             }
                         });
                     }

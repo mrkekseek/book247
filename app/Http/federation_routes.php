@@ -52,6 +52,11 @@ Route::group(['middleware' => 'web'], function () {
         'uses'  => 'Federation\AdminController@index'
     ]);
 
+    Route::post('/api_call', [
+        'as'    => 'api_call',
+        'uses'  => 'Federation\AdminController@front_api_call'
+    ]);
+
     Route::get('/admin-home-public', [
         'as'    => 'admin-home-public',
         'uses'  => 'Federation\AdminController@index'
