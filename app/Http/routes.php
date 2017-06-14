@@ -561,6 +561,11 @@ Route::group(['middleware' => 'web'], function () {
         'uses'  => 'InvoiceController@list_all_invoices'
     ]);
 
+     Route::get('admin/invoices/payment/{id}', [
+        'as'    => 'admin/invoices/payment',
+        'uses'  => 'InvoiceController@payment'
+    ]);
+
     Route::get('admin/invoices/{id}/view', [
         'as'    => 'admin/invoices/view',
         'uses'  => 'InvoiceController@view_invoice'
