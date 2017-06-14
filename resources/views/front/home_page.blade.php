@@ -92,8 +92,7 @@
 
                                         <div class="portlet-title">
                                             <div class="caption">
-                                                <span class="caption-subject font-green-haze bold uppercase">User Login</span>
-                                                <span class="caption-helper">account details...</span>
+                                                <span class="caption-subject bold uppercase">seamles user login</span>
                                             </div>
                                         </div>
                                         <div class="alert alert-danger display-hide">
@@ -111,7 +110,7 @@
                                         <div class="form-actions">
                                             <button type="submit" class="btn red btn-block uppercase">Login</button>
                                         </div>
-                                        <div class="form-actions">
+                                        <div class="form-actions links">
                                             <div class="pull-left">
                                                 <label class="rememberme check">
                                                     <input type="checkbox" name="remember" value="1" />Remember me </label>
@@ -121,9 +120,13 @@
                                             </div>
                                         </div>
                                         <div class="create-account bg-white bg-font-white">
-                                            <p>
-                                                <a href="javascript:;" class="green-meadow btn" id="pre-register-btn">Create an account</a>
-                                            </p>
+                                            <div class="portlet-title">
+                                                <div class="caption">
+                                                    <span class="caption-subject bold uppercase">don't have an account?</span>
+                                                </div>
+                                            </div>
+                                            
+                                            <button type="button" id="pre-register-btn" class="btn green-meadow center uppercase">create one now</button>
                                         </div>
                                     </form>
                                     <!-- END LOGIN FORM -->
@@ -149,10 +152,15 @@
                                     <!-- END FORGOT PASSWORD FORM -->
                                     <!-- BEGIN PREREGISTRATION FORM -->
                                     <form class="pre-register-form portlet light " method="post" name="user_pregistration_form" id="user_preregistration_form">
-                                        <div class="portlet-title">
+                                        <!--div class="portlet-title">
                                             <div class="caption">
                                                 <span class="caption-subject font-green-haze bold uppercase">Register on book247 & rankedin</span>
                                                 <span class="caption-helper"></span>
+                                            </div>
+                                        </div-->
+                                        <div class="portlet-title">
+                                            <div class="caption">
+                                                <span class="caption-subject bold uppercase">register on book247 & rankedin</span>
                                             </div>
                                         </div>
                                         <div class="alert alert-danger display-hide">
@@ -240,6 +248,15 @@
                                         </div>
                                     </form>
                                     <!-- END REGISTRATION FORM -->
+                                    <div class="powered center-block">
+                                        <div class="caption">
+                                            Powered by:
+                                        </div>
+                                        <a class="min-logo logo-book247">
+                                        </a>
+                                        <a class="min-logo logo-rankedin">
+                                        </a>
+                                    </div>
                                 </div>
                             @endif
                             <div class="portlet light search-page search-content-1 hidden-xs hidden-sm">
