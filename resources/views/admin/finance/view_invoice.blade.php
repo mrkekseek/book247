@@ -34,11 +34,12 @@
                 <div class="portlet light portlet-fit portlet-datatable bordered">
                     <div class="portlet-body">
                         <div class="invoice">
-                            <div class="row invoice-logo">
+                            <div class="row invoice-logo ">
                                 <div class="col-md-6 invoice-logo-space">
-                                    <img src="{{ asset('assets/global/img/sqf-logo.png') }}" class="img-responsive" alt="" /> </div>
+                                    <img src="{{ asset('assets/global/img/sqf-logo.png') }}" class="img-responsive" alt="" />
+                                </div>
                                 <div class="col-md-6">
-                                    <p> #{{ $invoice->invoice_number }} / {{ \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $invoice->created_at)->format('d M Y') }}
+                                    <p class="md-text-center"> #{{ $invoice->invoice_number }} / {{ \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $invoice->created_at)->format('d M Y') }}
                                         <span class="muted"> {{ $invoice->invoice_type }} </span>
                                     </p>
                                 </div>
@@ -59,9 +60,11 @@
                                     <h3>Payment Details:</h3>
                                     <ul class="list-unstyled">
                                         <li>
-                                            <strong>V.A.T Reg #:</strong> 542554(DEMO)78 </li>
+                                            <strong>V.A.T Reg #:</strong> 542554(DEMO)78
+                                        </li>
                                         <li>
-                                            <strong>Account Name:</strong> FoodMaster Ltd </li>
+                                            <strong>Account Name:</strong> FoodMaster Ltd
+                                        </li>
                                         <li>
                                             <strong>SWIFT code:</strong> 45454DEMO545DEMO </li>
                                     </ul>
