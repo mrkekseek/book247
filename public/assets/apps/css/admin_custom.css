@@ -35,3 +35,10 @@ textarea[name=content] {
 .back-link {
 	padding-top: 7px;
 }
+
+@media (max-width: 768px)
+{
+	.invoice .invoice-logo .md-text-center	{
+		text-align: center;
+	}
+}
