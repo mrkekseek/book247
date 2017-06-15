@@ -279,9 +279,19 @@
                         $(".bordered").find("[hidden]").show();
 
                         var doc = new jsPDF("p", "mm", "a4");
-                        doc.addImage(canvas, 'PNG', 10, 20, 190, 180);
+
+                        var width = doc.internal.pageSize.width,
+                            height = doc.internal.pageSize.height - 10,
+                            image = canvas.toDataURL("image/png"),
+                            charts_width = canvas.width / (canvas.height / height);
+                        
+                        charts_width -= 170;
+                        console.log(charts_width);
+
+                        // left top width hegiht
+                        doc.addImage(image, 'PNG', 10, 10, 190, 180);
                         doc.save('export.pdf');
-                         
+
                     }
                 });
             });
