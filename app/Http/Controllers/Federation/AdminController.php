@@ -15,6 +15,7 @@ use Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\MessageBag;
 use Carbon\Carbon;
+use App\Http\Controllers\Api;
 
 class AdminController extends Controller
 {
@@ -51,36 +52,13 @@ class AdminController extends Controller
         ];
         $sidebar_link= 'admin-home_dashboard';
 
-//        $new_players_this_week = json_decode($this->get_from_api('new_players_this_week'));
-//        $income_this_week = json_decode($this->get_from_api('income_this_week'));
-//        $upcoming_tournaments = json_decode($this->get_from_api('upcoming_tournaments'));
-//        $registered_players = json_decode($this->get_from_api('registered_players'));
-//        $squash_players = $this->get_from_api('squash_players');
-//        $members_growth = $this->get_from_api('members_growth');
-//        $number_of_club_members = $this->get_from_api('number_of_club_members');
-//        $overall_bookings = $this->get_from_api('overall_bookings');
-//        $total_players = $this->get_from_api('total_players');
-//        $total_courts = $this->get_from_api('total_courts');
-
         return view('admin/main_page_public_federation',[
-//            'new_players_this_week' => $new_players_this_week,
-//            'income_this_week' => $income_this_week,
-//            'upcoming_tournaments' => $upcoming_tournaments,
-//            'registered_players' => $registered_players,
-//            'squash_players' => $squash_players,
-//            'members_growth' => $members_growth,
-//            'number_of_club_members' => $number_of_club_members,
-//            'overall_bookings' => $overall_bookings,
-//            'total_players' => $total_players,
-//            'total_courts' => $total_courts,
             'breadcrumbs'   => $breadcrumbs,
             'text_parts'    => $text_parts,
             'in_sidebar'    => $sidebar_link
         ]);
 
     }
-
-
 
 
     public function authenticate(Request $request)
@@ -192,14 +170,15 @@ class AdminController extends Controller
             'in_sidebar'  => $sidebar_link,
         ]);
     }
-    private function prelevate_data(){
-
-    }
 
     public function front_api_call(Request $r){
         $method = $r->get('method');
         if ($method) {
-            $response = $this->get_from_api($method);
+            $data = $r->all();
+            if ($r->method() == 'POST') {
+                $data[] = ['site_id' => env('MY_API_ID',"")];
+            }
+            $response = json_encode(Api::send_curl($data, $method, $r->method()));
             if ($response) {
                 return json_encode(array(
                         'success' => true ,
@@ -217,51 +196,6 @@ class AdminController extends Controller
                     'success' => false
                 )
             );
-        }
-    }
-
-    private static function generateApiKey($data)
-    {
-        $key = env('APIKEY',"");
-        if ($key) {
-            $data = json_encode($data,JSON_UNESCAPED_SLASHES);
-            $hash = base64_encode(hash_hmac('sha256', $data, $key, TRUE));
-            return $hash;
-        } else {
-            return "";
-        }
-
-    }
-
-    public function get_from_api($get = null){
-        $url = env('APIURL',"");
-        $site_id = env('MY_API_ID',"");
-        if ($url &&  $get && $site_id) {
-            $url = $url.'/'.$get;
-            $token = str_random(32);
-            $data = array('token' => $token,  'site_id' => $site_id);
-            $ApiKey = self::generateApiKey($data);
-            if ($ApiKey == "") {
-                return "";
-            }
-            $ch = curl_init($url);
-            $headers = [
-                'Content-Type: application/json',
-                'ApiKey:'.$ApiKey,
-                'Accept: application/json'
-            ];
-            curl_setopt($ch,CURLOPT_POSTFIELDS, json_encode($data));
-            curl_setopt($ch, CURLOPT_HTTPHEADER,$headers);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            $result = curl_exec($ch);
-            curl_close($ch);
-            if ($result) {
-                return $result;
-            } else {
-                return "";
-            }
-        } else {
-            return "";
         }
     }
 
