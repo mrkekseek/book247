@@ -127,11 +127,15 @@
                                             <strong>Total:</strong> {{$grand_total}} </li>
                                     </ul>
                                     <br/>
-                                    <a class="btn btn-lg blue hidden-print margin-bottom-5" onclick="javascript:window.print();"> Print
+                                    <a class="btn btn-lg blue hidden-print margin-bottom-5" hidden onclick="javascript:window.print();"> Print
                                         <i class="fa fa-print"></i>
                                     </a>
+                                    <a class="btn btn-lg blue hidden-print margin-bottom-5 download" hidden >
+                                        Download PDF
+                                        <i class="fa fa-download"></i>
+                                    </a>
                                     @if ($invoice->status=='pending')
-                                    <a class="btn btn-lg green hidden-print margin-bottom-5"> Make Payment
+                                    <a class="btn btn-lg green hidden-print margin-bottom-5" hidden > Make Payment
                                         <i class="fa fa-check"></i>
                                     </a>
                                     @elseif ($invoice->status=='processing')
@@ -173,6 +177,8 @@
     <script src="{{ asset('assets/layouts/layout4/scripts/layout.min.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/layouts/layout4/scripts/demo.min.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/layouts/global/scripts/quick-sidebar.min.js') }}" type="text/javascript"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.4/jspdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></script>
 @endsection
 
 @section('pageCustomJScripts')
@@ -265,6 +271,21 @@
 
         $(document).ready(function(){
             FormValidation.init();
+
+            $(".download").click(function(){
+                $(".bordered").find("[hidden]").hide();
+                html2canvas($('.bordered')[0], {
+                    onrendered: function(canvas) {
+                        $(".bordered").find("[hidden]").show();
+
+                        var doc = new jsPDF("p", "mm", "a4");
+                        doc.addImage(canvas, 'PNG', 10, 20, 190, 180);
+                        doc.save('export.pdf');
+                         
+                    }
+                });
+            });
+            
         });
     </script>
 @endsection
