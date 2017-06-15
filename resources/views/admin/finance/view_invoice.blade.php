@@ -35,9 +35,9 @@
                     <div class="portlet-body">
                         <div class="invoice">
                             <div class="row invoice-logo">
-                                <div class="col-xs-6 invoice-logo-space">
+                                <div class="col-md-6 invoice-logo-space">
                                     <img src="{{ asset('assets/global/img/sqf-logo.png') }}" class="img-responsive" alt="" /> </div>
-                                <div class="col-xs-6">
+                                <div class="col-md-6">
                                     <p> #{{ $invoice->invoice_number }} / {{ \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $invoice->created_at)->format('d M Y') }}
                                         <span class="muted"> {{ $invoice->invoice_type }} </span>
                                     </p>
@@ -45,7 +45,7 @@
                             </div>
                             <hr/>
                             <div class="row">
-                                <div class="col-xs-4">
+                                <div class="col-md-4">
                                     <h3>Client:</h3>
                                     <ul class="list-unstyled">
                                         <li> {{ $member['full_name'] }} </li>
@@ -53,9 +53,9 @@
                                         <li> {{ $member['country'] }} </li>
                                     </ul>
                                 </div>
-                                <div class="col-xs-4  hidden-print">
+                                <div class="col-md-4  hidden-print">
                                 </div>
-                                <div class="col-xs-4 invoice-payment">
+                                <div class="col-md-4 invoice-payment">
                                     <h3>Payment Details:</h3>
                                     <ul class="list-unstyled">
                                         <li>
@@ -98,7 +98,7 @@
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-xs-4">
+                                <div class="col-md-4">
                                     <div class="well">
                                         <address>
                                             <strong>Rud Squash AS</strong>
@@ -113,7 +113,7 @@
                                         </address>
                                     </div>
                                 </div>
-                                <div class="col-xs-8 invoice-block">
+                                <div class="col-md-8 invoice-block">
                                     <ul class="list-unstyled amounts">
                                         <li>
                                             <strong>Sub - Total amount:</strong> {{$sub_total}} </li>
@@ -279,16 +279,8 @@
                         $(".bordered").find("[hidden]").show();
 
                         var doc = new jsPDF("p", "mm", "a4");
+                        var image = canvas.toDataURL("image/png");
 
-                        var width = doc.internal.pageSize.width,
-                            height = doc.internal.pageSize.height - 10,
-                            image = canvas.toDataURL("image/png"),
-                            charts_width = canvas.width / (canvas.height / height);
-                        
-                        charts_width -= 170;
-                        console.log(charts_width);
-
-                        // left top width hegiht
                         doc.addImage(image, 'PNG', 10, 10, 190, 160 );
                         doc.save('export.pdf');
 
