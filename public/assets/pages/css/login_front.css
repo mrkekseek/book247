@@ -146,7 +146,6 @@ Login page
 
 .login .content .check {
     color: #8290a3;
-    text-align: center;
 }
 
 .login .content .rememberme {
@@ -205,6 +204,7 @@ Login page
 }
 .login .portlet-title .caption{
     padding: 10px 0 0 0 !important;
+    color: #000000 !important;
 }
 .login .login-form .links{
     padding: 0 30px 25px 30px;
@@ -223,7 +223,7 @@ Login page
 .login .powered .min-logo{
     background-position: center;
     background-repeat: no-repeat;
-    width: 30%;
+    width: 29%;
     display: inline-block;
     vertical-align: middle;
 }
@@ -235,11 +235,22 @@ Login page
     background-image: url("../img/login/logo-rankedin.png");
     height: 20px;
 }
+.login .powered .separator-logo{
+    height: 15px;
+    width: 1px;
+    background-color: #999;
+    vertical-align: middle;
+    display: inline-block;
+}
 .login #back-btn,
 .login #pre-back-btn{
     color:#999;
     border-right: 1px solid #999;
-    margin-right: 5px;
+    margin-right: 8px;
+    padding-right: 4px;
+}
+.login button.grey{
+    color:#80898e !important;
 }
 .login #back-btn:hover,
 .login #pre-back-btn:hover{
@@ -253,10 +264,13 @@ Login page
     color:#999;
 }
 
-@media (max-width: 440px) {
+@media (max-width: 440px) and (max-width: 766px){
     /***
     Login page
     ***/
+    .login .content{
+        margin-top: 25px !important;
+    }
     .login .logo {
         margin-top: 10px; }
     .login .content {
@@ -276,15 +290,18 @@ Login page
         width: 100%;
     }
     .login .powered{
-        width: 75%;
+        width: 90%;
     }
 }
 
-@media (max-width: 767px) {
+@media (min-width: 441px) and (max-width: 767px) {
+    .login .content{
+        margin-top: 25px !important;
+    }
     .icon-btn {height:40px;
         padding-top:10px;}
-    .portlet.light{
-
+    .login .content .check {
+        text-align: center;
     }
     .portlet{
         margin-bottom:20px;}
@@ -293,5 +310,5 @@ Login page
     }
     .login .powered{
         width: 75%;
-    } 
+    }
 }

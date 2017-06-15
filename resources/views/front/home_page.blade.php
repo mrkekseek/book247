@@ -147,7 +147,7 @@
                                         <div class="form-group">
                                             <input class="form-control placeholder-no-fix" type="text" autocomplete="off" placeholder="Enter you email adress" name="email" /> </div>
                                         <div class="form-actions">
-                                            <button type="button" class="btn btn-block uppercase" onClick="javascript: $('#password_reset_form').submit();">Submit</button>
+                                            <button type="button" class="btn grey btn-block uppercase" onClick="javascript: $('#password_reset_form').submit();">next</button>
                                         </div>
                                     </form>
                                     <!-- END FORGOT PASSWORD FORM -->
@@ -158,10 +158,10 @@
                                                 <span class="caption-subject bold uppercase"> can't remember your password </span>
                                             </div>
                                         </div>
-                                        <p class="hint"> We've just send an email. Folow the instructions to reset your password. Click "Next" if the system does not automatically redirect you. </p>
+                                        <p class="hint"> We've just send you an email. Folow the instructions to reset your password. Click "Next" if the system does not automatically redirect you. </p>
                                         <div class="form-actions">
                                             <a href="/">
-                                                <button type="button" class="btn center btn-block uppercase">next</button>
+                                                <button type="button" class="btn grey center btn-block uppercase">next</button>
                                             </a>
                                         </div>
                                     </form>
@@ -175,7 +175,7 @@
                                                     <i class="fa fa-angle-left"></i>
                                                 </a>
                                                 <span class="separator-header"></span>
-                                                <span class="caption-subject bold uppercase">register on book247 & rankedin</span>
+                                                <span class="caption-subject bold uppercase">register an unuque user on our platform</span>
                                             </div>
                                         </div>
                                         <div class="alert alert-danger display-hide">
@@ -185,9 +185,9 @@
                                         <p class="hint"> Enter your email address: </p>
                                         <div class="form-group">
                                             <label class="control-label visible-ie8 visible-ie9">Email</label>
-                                            <input class="form-control placeholder-no-fix" type="text" placeholder="Email" name="email" /> </div>
+                                            <input class="form-control placeholder-no-fix" type="text" placeholder="Email your email address" name="email" /> </div>
                                         <div class="form-actions">
-                                            <button type="submit" id="preregister-btn" class="btn red btn-block uppercase">Next</button>
+                                            <button type="submit" id="preregister-btn" class="btn grey btn-block uppercase">Next</button>
                                         </div>
                                     </form>
                                     <!-- END PREREGISTRATION  FORM -->
@@ -199,13 +199,13 @@
                                                     <i class="fa fa-angle-left"></i>
                                                 </a>
                                                 <span class="separator-header"></span>
-                                                <span class="caption-subject bold uppercase">register on book247 & rankedin</span>
+                                                <span class="caption-subject bold uppercase">email already registered</span>
                                             </div>
                                         </div>
                                         <p class="hint"> </p>
                                         <div class="form-group">
                                             <label class="control-label visible-ie8 visible-ie9">Password</label>
-                                            <input class="form-control placeholder-no-fix" type="password" placeholder="Password" name="password" /> 
+                                            <input class="form-control placeholder-no-fix" type="password" placeholder="Enter your password for login Password" name="password" /> 
                                         </div>
                                             <input type="hidden" name="email" />                                            
                                             <input type="hidden" name="type" />
@@ -268,7 +268,7 @@
                                             <input class="form-control placeholder-no-fix" type="password" autocomplete="off" placeholder="Re-type Your Password" name="re_rpassword" /> </div>
                                         <div class="form-group margin-top-20 margin-bottom-20">
                                             <label class="check center-block center-align">
-                                                <span class="loginblue-font">By registering you agree to our <br></span>
+                                                <span class="loginblue-font">By registering you agree to our </span>
                                                 <a href="javascript:;" class="loginblue-link">Terms of Service</a>
                                                 <span class="loginblue-font">and</span>
                                                 <a href="javascript:;" class="loginblue-link">Privacy Policy </a>
@@ -286,6 +286,7 @@
                                         </div>
                                         <a class="min-logo logo-book247">
                                         </a>
+                                        <span class="separator-logo"></span>
                                         <a class="min-logo logo-rankedin">
                                         </a>
                                     </div>
