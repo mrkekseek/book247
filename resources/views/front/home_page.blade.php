@@ -125,7 +125,6 @@
                                                     <span class="caption-subject bold uppercase">don't have an account?</span>
                                                 </div>
                                             </div>
-                                            
                                             <button type="button" id="pre-register-btn" class="btn green-meadow center uppercase">create one now</button>
                                         </div>
                                     </form>
@@ -134,8 +133,11 @@
                                     <form class="forget-form portlet light " action="#" id="password_reset_form">
                                         <div class="portlet-title">
                                             <div class="caption">
-                                                <span class="caption-subject font-green-haze bold uppercase"> Forget Password ?</span>
-                                                <span class="caption-helper">Enter your e-mail to reset it...</span>
+                                                <a href="javascript::void()" id="back-btn" >
+                                                    <i class="fa fa-angle-left"></i>
+                                                </a>
+                                                <span class="separator-header"></span>
+                                                <span class="caption-subject bold uppercase">can't remember your password</span>
                                             </div>
                                         </div>
                                         <div class="alert alert-danger display-hide">
@@ -143,23 +145,36 @@
                                         <div class="alert alert-success display-hide">
                                             <button class="close" data-close="alert"></button> Information is valid, please wait! </div>
                                         <div class="form-group">
-                                            <input class="form-control placeholder-no-fix" type="text" autocomplete="off" placeholder="Email" name="email" /> </div>
+                                            <input class="form-control placeholder-no-fix" type="text" autocomplete="off" placeholder="Enter you email adress" name="email" /> </div>
                                         <div class="form-actions">
-                                            <button type="button" id="back-btn" class="btn grey-steel">Back</button>
-                                            <button type="button" class="btn btn-primary uppercase pull-right" onClick="javascript: $('#password_reset_form').submit();">Submit</button>
+                                            <button type="button" class="btn btn-block uppercase" onClick="javascript: $('#password_reset_form').submit();">Submit</button>
                                         </div>
                                     </form>
                                     <!-- END FORGOT PASSWORD FORM -->
-                                    <!-- BEGIN PREREGISTRATION FORM -->
-                                    <form class="pre-register-form portlet light " method="post" name="user_pregistration_form" id="user_preregistration_form">
-                                        <!--div class="portlet-title">
-                                            <div class="caption">
-                                                <span class="caption-subject font-green-haze bold uppercase">Register on book247 & rankedin</span>
-                                                <span class="caption-helper"></span>
-                                            </div>
-                                        </div-->
+                                    <!-- BEGIN RESULT FORGOT PASSWORD FORM -->
+                                    <form class="result-forget-form portlet light" method="post"  id="user_result_forget_form">
                                         <div class="portlet-title">
                                             <div class="caption">
+                                                <span class="caption-subject bold uppercase"> can't remember your password </span>
+                                            </div>
+                                        </div>
+                                        <p class="hint"> We've just send an email. Folow the instructions to reset your password. Click "Next" if the system does not automatically redirect you. </p>
+                                        <div class="form-actions">
+                                            <a href="/">
+                                                <button type="button" class="btn center btn-block uppercase">next</button>
+                                            </a>
+                                        </div>
+                                    </form>
+                                    <!-- END RESULT FORGOT PASSWORD FORM -->
+                                    
+                                    <!-- BEGIN PREREGISTRATION FORM -->
+                                    <form class="pre-register-form portlet light " method="post" name="user_pregistration_form" id="user_preregistration_form">
+                                        <div class="portlet-title">
+                                            <div class="caption">
+                                                <a href="javascript::void()" id="pre-back-btn" >
+                                                    <i class="fa fa-angle-left"></i>
+                                                </a>
+                                                <span class="separator-header"></span>
                                                 <span class="caption-subject bold uppercase">register on book247 & rankedin</span>
                                             </div>
                                         </div>
@@ -172,8 +187,7 @@
                                             <label class="control-label visible-ie8 visible-ie9">Email</label>
                                             <input class="form-control placeholder-no-fix" type="text" placeholder="Email" name="email" /> </div>
                                         <div class="form-actions">
-                                            <button type="button" id="pre-back-btn" class="btn grey-steel">Back</button>
-                                            <button type="submit" id="preregister-btn" class="btn grey-steel pull-right">Next</button>
+                                            <button type="submit" id="preregister-btn" class="btn red btn-block uppercase">Next</button>
                                         </div>
                                     </form>
                                     <!-- END PREREGISTRATION  FORM -->
@@ -181,8 +195,11 @@
                                     <form class="pre-register-form portlet light" method="post"  id="user_preregistration_password_form">
                                         <div class="portlet-title">
                                             <div class="caption">
-                                                <span class="caption-subject font-green-haze bold uppercase">Register on book247 & rankedin</span>
-                                                <span class="caption-helper"></span>
+                                                <a href="javascript::void()" id="pre-back-btn" >
+                                                    <i class="fa fa-angle-left"></i>
+                                                </a>
+                                                <span class="separator-header"></span>
+                                                <span class="caption-subject bold uppercase">register on book247 & rankedin</span>
                                             </div>
                                         </div>
                                         <p class="hint"> </p>
@@ -193,17 +210,35 @@
                                             <input type="hidden" name="email" />                                            
                                             <input type="hidden" name="type" />
                                         <div class="form-actions">
-                                            <button type="button" id="pre-back-btn" class="btn grey-steel">Back</button>
-                                            <button type="submit" id="preregister-btn" class="btn red pull-right">Login</button>
+                                            <button type="submit" id="preregister-btn" class="btn red btn-block uppercase">Login</button>
                                         </div>
                                     </form>
-                                    <!-- BEGIN PREREGISTRATION  PASSWORD FORM -->
+                                    <!-- END PREREGISTRATION  PASSWORD FORM -->
+                                    
+                                    <!-- BEGIN RESULT REGISTRATION FORM -->
+                                    <form class="result-register-form portlet light" method="post"  id="user_result_registration_form">
+                                        <div class="portlet-title">
+                                            <div class="caption">
+                                                <span class="caption-subject bold uppercase"></span>
+                                            </div>
+                                        </div>
+                                        <p class="hint"> Thank you for using our platform. You are now also registered on Book247. Click "Next" if the system does not automatically redirect you. </p>
+                                        <div class="form-actions">
+                                            <a href="/">
+                                                <button type="button" class="btn center btn-block uppercase">next</button>
+                                            </a>
+                                        </div>
+                                    </form>
+                                    <!-- END RESULT REGISTRATION FORM -->
                                     <!-- BEGIN REGISTRATION FORM -->
                                     <form class="register-form portlet light " method="post" name="user_registration_form" id="user_registration_form">
                                         <div class="portlet-title">
                                             <div class="caption">
-                                                <span class="caption-subject font-green-haze bold uppercase">Sign Up</span>
-                                                <span class="caption-helper"></span>
+                                                <a href="javascript::void()" id="pre-back-btn" >
+                                                    <i class="fa fa-angle-left"></i>
+                                                </a>
+                                                <span class="separator-header"></span>
+                                                <span class="caption-subject bold uppercase">account details</span>
                                             </div>
                                         </div>
                                         <div class="alert alert-danger display-hide">
@@ -220,8 +255,7 @@
                                         <div class="form-group">
                                             <label class="control-label visible-ie8 visible-ie9">Phone Number</label>
                                             <input class="form-control placeholder-no-fix" type="text" placeholder="Phone Number" name="phone" /> </div>
-
-                                        <p class="hint"> Enter your account details below: </p>
+                                        <p class="hint"> Choose a password </p>
                                         <div class="form-group">
                                             <!--ie8, ie9 does not support html5 placeholder, so we just show field title for that-->
                                             <label class="control-label visible-ie8 visible-ie9">Email</label>
@@ -233,9 +267,8 @@
                                             <label class="control-label visible-ie8 visible-ie9">Re-type Your Password</label>
                                             <input class="form-control placeholder-no-fix" type="password" autocomplete="off" placeholder="Re-type Your Password" name="re_rpassword" /> </div>
                                         <div class="form-group margin-top-20 margin-bottom-20">
-                                            <label class="check">
-                                                <input type="checkbox" name="tnc" />
-                                                <span class="loginblue-font">I agree to the </span>
+                                            <label class="check center-block center-align">
+                                                <span class="loginblue-font">By registering you agree to our <br></span>
                                                 <a href="javascript:;" class="loginblue-link">Terms of Service</a>
                                                 <span class="loginblue-font">and</span>
                                                 <a href="javascript:;" class="loginblue-link">Privacy Policy </a>
@@ -243,8 +276,7 @@
                                             <div id="register_tnc_error"> </div>
                                         </div>
                                         <div class="form-actions">
-                                            <button type="button" id="register-back-btn" class="btn grey-steel">Back</button>
-                                            <button type="submit" class="btn red uppercase pull-right">Submit</button>
+                                            <button type="submit" class="btn red btn-block uppercase">Submit</button>
                                         </div>
                                     </form>
                                     <!-- END REGISTRATION FORM -->
@@ -1106,6 +1138,9 @@
                 success: function (data) {
                     if (data.success==1) {
                         show_notification('You are now registered', 'After page reload, use the email/password combination you used for registration and login', 'lemon', 3500, 0);
+                        $('#user_registration_form').hide();
+                        $('#user_result_registration_form .caption-subject').html('account registered');
+                        $('#user_result_registration_form').show();
                         setTimeout(function(){
                             window.location.reload(true);
                         },2500);
@@ -1128,6 +1163,8 @@
                 success: function (data) {
                     if (data.success==1) {
                         show_notification(data.title, data.message, 'lime', 5000, 0);
+                        $('#password_reset_form').hide();
+                        $('#user_result_forget_form').show();
                         setTimeout(function(){
                             window.location.reload(true);
                         },5500);
@@ -1186,8 +1223,11 @@
                 },
                 success: function (data) {
                     if (data.success == true){
-                        window.location.reload(true);
+                        $('#user_preregistration_password_form').hide();
+                        $('#user_result_registration_form .caption-subject').html('email already registered');
+                        $('#user_result_registration_form').show();
                         show_notification(data.title, data.errors, 'lime', 5000, 0);
+                        window.location.reload(true);
                    }
                    else{
                         show_notification(data.title, data.errors, 'lemon', 5000, 0);

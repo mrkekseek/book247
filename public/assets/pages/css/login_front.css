@@ -46,11 +46,10 @@ Login page
     margin: 0px; }
 
 .login .content .form-control {
-    /*border: none;*/
     background-color: #e9edef;
     height: 43px;
     color: #8290a3;
-    /*border: 1px solid #dde3ec;*/ }
+}
 .login .content .form-control:focus,
 .login .content .form-control:active {
     border: 1px solid #c3ccda; }
@@ -66,8 +65,12 @@ Login page
     padding-left: 9px;
     padding-right: 9px; }
 
+.login .content .result-forget-form ,
 .login .content .forget-form {
     display: none; }
+.login .content .forget-form button{
+    color: #999;
+}
 
 .login .content .register-form {
     display: none; }
@@ -80,7 +83,6 @@ Login page
     clear: both;
     overflow:auto;
     border: 0px;
-    /*border-bottom: 1px solid #eee;*/
     padding: 5px 30px 10px 30px;
     margin-left: -30px;
     margin-right: -30px; }
@@ -143,14 +145,15 @@ Login page
     margin-top: 10px; }
 
 .login .content .check {
-    color: #8290a3; }
+    color: #8290a3;
+    text-align: center;
+}
 
 .login .content .rememberme {
     margin-left: 8px;
     margin-top: 10px; }
 
 .login .content .create-account {
-    /*margin: 0 -40px -30px -40px;*/
     padding: 15px 0 17px 0;
     text-align: center;
     background-color: #6c7a8d;
@@ -173,7 +176,7 @@ Login page
     display: inline-block;
     margin-top: 5px; }
 .login .content .create-account button {
-    width: 50%;
+    width: 55%;
     margin-top: 15px;
     font-weight: 600;
     line-height: 2;
@@ -192,7 +195,8 @@ Login page
     padding-right:7px;}
 
 .login .content .pre-register-form,
-.login .content .pre-register-password-api{
+.login .content .pre-register-password-api,
+.login .content .result-register-form{
     display: none; 
 }
 .login .portlet-title{
@@ -231,6 +235,24 @@ Login page
     background-image: url("../img/login/logo-rankedin.png");
     height: 20px;
 }
+.login #back-btn,
+.login #pre-back-btn{
+    color:#999;
+    border-right: 1px solid #999;
+    margin-right: 5px;
+}
+.login #back-btn:hover,
+.login #pre-back-btn:hover{
+    text-decoration: none;
+}
+.result-register-form a{
+    color:#999;
+}
+.result-register-form a:hover{
+    text-decoration: none;
+    color:#999;
+}
+
 @media (max-width: 440px) {
     /***
     Login page
@@ -249,7 +271,14 @@ Login page
         float: left;
         padding-top: 3px; }
     .login .checkbox {
-        font-size: 13px; } }
+        font-size: 13px; }
+    .login .content .create-account button {
+        width: 100%;
+    }
+    .login .powered{
+        width: 75%;
+    }
+}
 
 @media (max-width: 767px) {
     .icon-btn {height:40px;
@@ -259,4 +288,10 @@ Login page
     }
     .portlet{
         margin-bottom:20px;}
+    .login .content .create-account button {
+        width: 100%;
+    }
+    .login .powered{
+        width: 75%;
+    } 
 }
