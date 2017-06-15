@@ -188,7 +188,8 @@ class AdminController extends Controller
             } else if($response === false) {
                 return json_encode(array(
                     'success' => false,
-                    'error' => Api::$error
+                    'error' => Api::$error,
+                    'c_url_error' => Api::$curl_error
                     )
                 );
             } else {

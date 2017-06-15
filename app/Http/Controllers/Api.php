@@ -7,6 +7,8 @@ class Api {
 
     public static $error = '';
 
+    public static $curl_error = '';
+
     private static function generateApiKey($data)
     {
         if (is_array($data) )
@@ -65,11 +67,14 @@ class Api {
         curl_close($curl);
         if ($result && !isset($result->Code))
         {
+            curl_close($curl);
             return $result;
         }
         else
         {
+            self::$curl_error = curl_error($curl);
             self::$error = isset($result->Message)?$result->Message:'';
+            curl_close($curl);
             return false;
         }
     }
