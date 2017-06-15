@@ -185,10 +185,15 @@ class AdminController extends Controller
                         'data' => $response
                     )
                 );
-            } else {
+            } else if($response === false) {
                 return json_encode(array(
                     'success' => false,
                     'error' => Api::$error
+                    )
+                );
+            } else {
+                return json_encode(array(
+                        'error' => Api::$error
                     )
                 );
             }
