@@ -178,7 +178,7 @@ class AdminController extends Controller
             if ($r->method() == 'POST') {
                 $data[] = ['site_id' => env('MY_API_ID',"")];
             }
-            $response = Api::send_curl($data, $method, $r->method());
+            $response = json_encode(Api::send_curl($data, $method, $r->method()));
             if ($response) {
                 return json_encode(array(
                         'success' => true ,

@@ -593,7 +593,7 @@
 
                     $.ajax({
                         url: '/api_call',
-                        type: 'GET',
+                        type: 'POST',
                         dataType: 'json',
                         data: { 'method' : 'squash_players'},
                         success: function(res) {
