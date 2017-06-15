@@ -289,7 +289,7 @@
                         console.log(charts_width);
 
                         // left top width hegiht
-                        doc.addImage(image, 'PNG', 10, 10, 190, 180);
+                        doc.addImage(image, 'PNG', 10, 10, 190, 160 );
                         doc.save('export.pdf');
 
                     }
