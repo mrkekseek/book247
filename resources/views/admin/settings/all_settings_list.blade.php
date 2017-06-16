@@ -69,12 +69,12 @@
                                             <tr>
                                                 <th> # </th>
                                                 <th> Name </th>
-                                                <th> Internal name </th>
                                                 <th> Desctiption </th>
-                                                <th> Type </th>
-                                                <th></th>
-                                                <th></th>
-                                                <th></th>
+                                                <th> Min </th>
+                                                <th> Max </th>
+                                                <th> Add value </th>
+                                                <th> Edit </th>
+                                                <th> Delete </th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -82,9 +82,10 @@
                                                 <tr>
                                                     <td> {{ $s->id }} </td>
                                                     <td> {{ $s->name }} </td>
-                                                    <td> {{ $s->system_internal_name }} </td>
                                                     <td> {{ $s->description }} </td>
-                                                    <td> {{ $data_types[$s->data_type] }} </td>
+                                                    <td> {{ $s->min_value }} </td>
+                                                    <td> {{ $s->max_value }} </td>
+                                                    
                                                     @if ($s->constrained)
                                                     <td>
                                                          <button class="btn btn-success add-items-settings btn-sm">
