@@ -161,7 +161,7 @@
                                         <p class="hint"> We've just send you an email. Folow the instructions to reset your password. Click "Next" if the system does not automatically redirect you. </p>
                                         <div class="form-actions">
                                             <a href="/">
-                                                <button type="button" class="btn grey center btn-block uppercase">next</button>
+                                                <button type="button" class="btn grey btn-block uppercase">next</button>
                                             </a>
                                         </div>
                                     </form>
@@ -379,7 +379,7 @@
                                     <a href="javascript:;" class="btn default purple-stripe btn-lg" style="padding:5px 10px; font-size:14px; cursor:default; margin-bottom:5px;"> Outside membership rules </a>
                                     <a href="{{ route('front/active_membership') }}" class="btn default btn-lg" style="padding: 1px 5px 0px; cursor: pointer; margin-bottom: 5px; font-size: 21px;"><span class="item-box"><span class="item"><span aria-hidden="true" class="icon-question"></span></span></span></a>
                                 @else
-                                    <a href="javascript:;" class="btn default dark-stripe btn-lg book_step" style="padding:5px 10px; font-size:14px; cursor:default;"> You need to be logged in to view availability </a>
+                                    <a href="javascript:;" class="btn default dark-stripe btn-lg book_step book_step_link" style=""> You need to be logged in to view availability </a>
                                 @endif
                             </div>
                         </div>

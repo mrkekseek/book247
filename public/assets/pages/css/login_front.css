@@ -259,12 +259,13 @@ Login page
 .result-register-form a{
     color:#999;
 }
+.result-forget-form a:hover,
 .result-register-form a:hover{
     text-decoration: none;
     color:#999;
 }
 
-@media (max-width: 440px) and (max-width: 766px){
+@media (max-width: 440px){
     /***
     Login page
     ***/
@@ -292,6 +293,14 @@ Login page
     .login .powered{
         width: 90%;
     }
+    .login .book_step_link{
+        font-size: 12px;
+        padding: 5px 6px; 
+    }
+    .page-footer{
+        text-align: center;
+    }
+    
 }
 
 @media (min-width: 441px) and (max-width: 767px) {
@@ -310,5 +319,8 @@ Login page
     }
     .login .powered{
         width: 75%;
+    }
+    .page-footer{
+        text-align: center;
     }
 }
