@@ -3954,11 +3954,24 @@ class FrontEndUserController extends Controller
                 'title'     => 'Invalid email provided'
             ];
         }
-
-        $user->password = bcrypt($vars['password1']);
-        $user->save();
-        DB::delete('delete from password_resets where email=:email and token=:token limit 1', ['email' => $vars['email'], 'token' => $vars['token']]);
-
+        $token = \App\Http\Libraries\ApiAuth::resetPassword($user->email)['data'];
+        $apiData = [
+            "Credentials" => [
+              "Username" => $user->email,
+              "Password" => ''
+            ],
+            "Token"=> $token,
+            "NewPassword"=> $vars['password1'],                        
+        ];                    
+        $updatePassword = \App\Http\Libraries\ApiAuth::updatePassword($apiData);
+        if (!$updatePassword['success'])
+        {
+            return [
+                'success' => false,
+                'title'  => 'Error updating password',
+                'errors' => $updatePassword['message']
+            ];
+        }
         $top_title_message = 'Dear <span>'.$user->first_name.' '.$user->middle_name.' '.$user->last_name .'</span>';
         $main_message = 'You have successfully updated your password using the reset password link we sent. Now you can login using your new password. <br /><br />'.
                         'If this was not you, please contact the Booking System administrator and report this issue.';
