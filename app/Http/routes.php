@@ -561,11 +561,6 @@ Route::group(['middleware' => 'web'], function () {
         'uses'  => 'InvoiceController@list_all_invoices'
     ]);
 
-     Route::get('admin/invoices/payment/{id}', [
-        'as'    => 'admin/invoices/payment',
-        'uses'  => 'InvoiceController@payment'
-    ]);
-
     Route::get('admin/invoices/{id}/view', [
         'as'    => 'admin/invoices/view',
         'uses'  => 'InvoiceController@view_invoice'
@@ -758,6 +753,11 @@ Route::group(['prefix'=>'front', 'middleware'=>'web'], function(){
         'uses'  => 'BookingController@front_my_bookings'
     ]);
 
+    Route::get('finance/invoice/{id}',  [
+        'as'    => 'front/finance/invoice/{id}',
+        'uses'  => 'FrontEndUserController@invoice_payment'
+    ]);
+
     Route::get('bookings_archive', [
         'as'    => 'front/bookings_archive',
         'uses'  => 'BookingController@front_bookings_archive'
@@ -862,6 +862,7 @@ Route::group(['prefix'=>'front', 'middleware'=>'web'], function(){
         'as'    => 'back_error_404',
         'uses'  => 'AdminController@error_404'
     ]);
+
 });
 /** Stop Routes for front end */
 
