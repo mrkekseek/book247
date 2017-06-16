@@ -172,8 +172,8 @@ class Auth
             {
                 $user->update_from_api = true;
                 $user->save();                                            
-                self::set_personal_details($user->id, $api_user);
             } 
+            self::set_personal_details($user->id, $api_user);
             self::set_cookie_session($sso_user_id);
             return true;
         }
