@@ -106,7 +106,7 @@ class Auth
     private static function set_session()
     {
         $cookie_sso = Cookie::get('sso_user_id');                
-        $session_sso = Session::get('sso_user_id');                
+        $session_sso = Session::get('sso_user_id'); 
         if (!empty($cookie_sso) && !empty($session_sso) && $session_sso !== $cookie_sso)
         {            
             $session_sso = false;
@@ -139,7 +139,7 @@ class Auth
     
     public static function set_local_user($sso_user_id)
     {
-        $api_user = ApiAuth::accounts_get($sso_user_id)['data'];                
+        $api_user = ApiAuth::accounts_get($sso_user_id)['data'];
         $local_user = [
             'sso_user_id'=>$api_user->id,
             'username'=>$api_user->username,
@@ -147,7 +147,6 @@ class Auth
             'first_name'=>$api_user->firstName,
             'last_name'=>$api_user->lastName,
             'middle_name'=>$api_user->middleName,            
-            'country_id'=> config('constants.globalWebsite.defaultCountryId'),
             ];
         switch ($api_user->gender)
         {
@@ -157,6 +156,7 @@ class Auth
         
         $user = User::firstOrNew(['username'=>$api_user->username]);
         $user = ( ! $user->exists) ? User::firstOrNew(['email'=>$api_user->username]): $user;
+        $local_user['country_id'] = ! $user->exists ? config('constants.globalWebsite.defaultCountryId') : $user->country_id;
         $user->fill($local_user);        
         if (!$user->exists)
         {
@@ -172,8 +172,8 @@ class Auth
             {
                 $user->update_from_api = true;
                 $user->save();                                            
-                self::set_personal_details($user->id, $api_user);
             } 
+            self::set_personal_details($user->id, $api_user);
             self::set_cookie_session($sso_user_id);
             return true;
         }
@@ -184,6 +184,7 @@ class Auth
     {
         $personalDetail = PersonalDetail::firstOrNew(['user_id'=>$local_user_id]);
         $personalDetail->personal_email = $api_user->email;
+        $personalDetail->mobile_number = $api_user->phoneNumber;
         $personalDetail->date_of_birth = date('Y-m-d', strtotime($api_user->birthday));
         $personalDetail->save();
     }
@@ -224,6 +225,7 @@ class Auth
             case ('M'): $apiData['gender'] = 1; break;
             case ('F'): $apiData['gender'] = 2; break;
         }
+        $apiData['birthday'] = isset($apiData['birthday']) ? $apiData['birthday'] : '';
         $apiData['birthday'] = date('Y-m-d',strtotime($apiData['birthday'])).'T00:00:00';
         $api_user = ApiAuth::accounts_update($apiData);
         if ($api_user['success'])

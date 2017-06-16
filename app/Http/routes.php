@@ -753,6 +753,11 @@ Route::group(['prefix'=>'front', 'middleware'=>'web'], function(){
         'uses'  => 'BookingController@front_my_bookings'
     ]);
 
+    Route::get('finance/invoice/{id}',  [
+        'as'    => 'front/finance/invoice/{id}',
+        'uses'  => 'FrontEndUserController@invoice_payment'
+    ]);
+
     Route::get('bookings_archive', [
         'as'    => 'front/bookings_archive',
         'uses'  => 'BookingController@front_bookings_archive'
@@ -857,6 +862,7 @@ Route::group(['prefix'=>'front', 'middleware'=>'web'], function(){
         'as'    => 'back_error_404',
         'uses'  => 'AdminController@error_404'
     ]);
+
 });
 /** Stop Routes for front end */
 
@@ -1060,6 +1066,32 @@ Route::group(['prefix'=>'ajax', 'middleware' => 'web'], function(){
     Route::post('register_new_setting',[
         'as'    => 'ajax/register_new_setting',
         'uses'  => 'AppSettings@register_new_setting'
+    ]);
+
+    Route::post('get_settings', [
+        'as'    => 'ajax/get_settings',
+        'uses'  => 'AppSettings@get_settings'
+    ]);
+
+    Route::post('get_items_settings', [
+        'as'    => 'ajax/get_items_settings',
+        'uses'  => 'AppSettings@get_items_settings'
+    ]);
+
+    Route::post('add_items_settings', [
+        'as'    => 'ajax/add_items_settings',
+        'uses'  => 'AppSettings@add_items_settings'
+    ]);
+
+
+    Route::post('update_settings', [
+        'as'    => 'ajax/update_settings',
+        'uses'  => 'AppSettings@update_settings'
+    ]);
+
+    Route::post('delete_settings', [
+        'as'    => 'ajax/delete_settings',
+        'uses'  => 'AppSettings@delete_settings'
     ]);
 
     Route::post('get_all_list_members', [
