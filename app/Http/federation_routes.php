@@ -11,6 +11,24 @@
 
 Route::get('/get','Federation\AdminController@get_from_api_test' );
 
+
+//LOCAL API ROUTES
+Route::get('api/federation_member_has_valid_license', [
+    'as'    => 'api/federation_member_has_valid_license',
+    'uses'  => 'Federation\FederationApi@federation_member_has_valid_license'
+]);
+
+Route::get('api/federation_list_of_licenses', [
+    'as'    => 'api/federation_list_of_licenses',
+    'uses'  => 'Federation\FederationApi@federation_list_of_licenses'
+]);
+
+Route::get('api/federation_buy_license', [
+    'as'    => 'api/federation_buy_license',
+    'uses'  => 'Federation\FederationApi@federation_buy_license'
+]);
+
+
 Route::group(['middleware' => 'web'], function () {
     // default login/register/forgot password routes
     Route::auth();
@@ -60,6 +78,12 @@ Route::group(['middleware' => 'web'], function () {
     Route::get('/api_call', [
         'as'    => 'api_call',
         'uses'  => 'Federation\AdminController@front_api_call'
+    ]);
+
+
+    Route::get('admin/test_api_call', [
+        'as'    => 'test_api_call',
+        'uses'  => 'Federation\AdminController@testRoute'
     ]);
 
 

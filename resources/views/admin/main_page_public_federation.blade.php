@@ -597,6 +597,7 @@
                         dataType: 'json',
                         data: { 'method' : 'squash_players'},
                         success: function(res) {
+                            console.log(res);
                             if (res.success) {
                                 var squash_players = JSON.parse(res.data);
                                 var male_visitors = $.map(squash_players.male, function(el) { return [$.map(el,function(e){ return e })]});

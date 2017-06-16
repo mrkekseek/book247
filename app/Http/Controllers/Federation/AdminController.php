@@ -34,6 +34,11 @@ class AdminController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+
+    public function testRoute(){
+
+    }
+
     public function index()
     {
         $user = Auth::user();
@@ -178,11 +183,12 @@ class AdminController extends Controller
             if ($r->method() == 'POST') {
                 $data[] = ['site_id' => env('MY_API_ID',"")];
             }
-            $response = json_encode(Api::send_curl($data, $method, $r->method()));
-            if ($response) {
+            $response = Api::send_curl($data, $method, $r->method());
+//            dd($response);
+            if ($response->code == 1) {
                 return json_encode(array(
                         'success' => true ,
-                        'data' => $response
+                        'data' => $response->data
                     )
                 );
             } else if($response === false) {
