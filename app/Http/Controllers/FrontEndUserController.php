@@ -1516,6 +1516,7 @@ class FrontEndUserController extends Controller
             $user->gender      = $userVars["gender"];
             $user->email       = $userVars["email"];
             $user->birthday    = $vars['date_of_birth'];
+            $user->phone_number    = $vars['mobile_number'];
             //$user->username    = $userVars["email"];            
             if (!$user->save() && !empty(Auth::$error))            
             {                
@@ -2627,6 +2628,7 @@ class FrontEndUserController extends Controller
         }
 
         $credentials['password_api'] = $vars['password'];
+        $credentials['phone_number'] = $vars['phone_number'];
         $text_psw    = $vars['password'];
         $credentials['password'] = Hash::make($credentials['password']);
         $the_plan = MembershipPlan::where('id','=',$vars['membership_plan'])->where('id','!=',1)->where('status','=','active')->get()->first();        

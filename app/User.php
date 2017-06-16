@@ -36,6 +36,7 @@ class User extends Authenticatable
         'status',
         'password_api',
         'sso_user_id',
+        'phone_number',
     ];
 
     public static $messages = [
@@ -115,6 +116,7 @@ class User extends Authenticatable
             if ($api_user)
             {                
                 unset($model->password_api);
+                unset($model->phone_number);
                 $model->sso_user_id = $api_user;                    
                 return true;
             }
@@ -132,6 +134,7 @@ class User extends Authenticatable
             if ($api_user)
             {
                 unset($model->birthday);
+                unset($model->phone_number);
                 return $api_user;
             }
             return false;            
