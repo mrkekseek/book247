@@ -1067,6 +1067,32 @@ Route::group(['prefix'=>'ajax', 'middleware' => 'web'], function(){
         'uses'  => 'AppSettings@register_new_setting'
     ]);
 
+    Route::post('get_settings', [
+        'as'    => 'ajax/get_settings',
+        'uses'  => 'AppSettings@get_settings'
+    ]);
+
+    Route::post('get_items_settings', [
+        'as'    => 'ajax/get_items_settings',
+        'uses'  => 'AppSettings@get_items_settings'
+    ]);
+
+    Route::post('add_items_settings', [
+        'as'    => 'ajax/add_items_settings',
+        'uses'  => 'AppSettings@add_items_settings'
+    ]);
+
+
+    Route::post('update_settings', [
+        'as'    => 'ajax/update_settings',
+        'uses'  => 'AppSettings@update_settings'
+    ]);
+
+    Route::post('delete_settings', [
+        'as'    => 'ajax/delete_settings',
+        'uses'  => 'AppSettings@delete_settings'
+    ]);
+
     Route::post('get_all_list_members', [
         'as'    => 'ajax/get_all_list_members',
         'uses'  => 'FrontEndUserController@get_front_members_ajax_call'

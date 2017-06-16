@@ -108,7 +108,8 @@
                                             <br/> Postbox 60
                                             <br/> N-1309 Rud
                                             <br/>
-                                            <abbr title="Phone">P:</abbr> (234) 145-1810 </address>
+                                            <abbr title="Phone">P:</abbr> (234) 145-1810 
+                                        </address>
                                         <address>
                                             <strong>{{ $member['full_name'] }}</strong>
                                             <br/>
