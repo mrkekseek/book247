@@ -137,7 +137,8 @@
                                                     <i class="fa fa-angle-left"></i>
                                                 </a>
                                                 <span class="separator-header"></span>
-                                                <span class="caption-subject bold uppercase">can't remember your password</span>
+                                                <span class="caption-subject bold uppercase hidden-sm hidden-xs">can't remember your password</span>
+                                                <span class="caption-subject bold uppercase hidden-md hidden-lg">forgot password?</span>
                                             </div>
                                         </div>
                                         <div class="alert alert-danger display-hide">
@@ -175,7 +176,9 @@
                                                     <i class="fa fa-angle-left"></i>
                                                 </a>
                                                 <span class="separator-header"></span>
-                                                <span class="caption-subject bold uppercase">register an unuque user on our platform</span>
+                                                <span class="caption-subject bold uppercase hidden-sm hidden-xs">register an unuque user on our platform</span>
+                                                <span class="caption-subject bold uppercase hidden-md hidden-lg">register an unuque user</span>
+
                                             </div>
                                         </div>
                                         <div class="alert alert-danger display-hide">
@@ -205,7 +208,7 @@
                                         <p class="hint"> </p>
                                         <div class="form-group">
                                             <label class="control-label visible-ie8 visible-ie9">Password</label>
-                                            <input class="form-control placeholder-no-fix" type="password" placeholder="Enter your password for login Password" name="password" /> 
+                                            <input class="form-control placeholder-no-fix" type="password" placeholder="Enter your password for login" name="password" /> 
                                         </div>
                                             <input type="hidden" name="email" />                                            
                                             <input type="hidden" name="type" />
@@ -265,7 +268,7 @@
                                             <input class="form-control placeholder-no-fix" type="password" autocomplete="off" id="rpassword" placeholder="Password - at least 8 characters" name="rpassword" /> </div>
                                         <div class="form-group">
                                             <label class="control-label visible-ie8 visible-ie9">Re-type Your Password</label>
-                                            <input class="form-control placeholder-no-fix" type="password" autocomplete="off" placeholder="Re-type Your Password" name="re_rpassword" /> </div>
+                                            <input class="form-control placeholder-no-fix" type="password" autocomplete="off" placeholder="Retype your password" name="re_rpassword" /> </div>
                                         <div class="form-group margin-top-20 margin-bottom-20">
                                             <label class="check center-block center-align">
                                                 <span class="loginblue-font">By registering you agree to our </span>
@@ -815,6 +818,7 @@
                 jQuery('.login').on('click','#pre-back-btn', function (){
                     jQuery('.login-form').show();
                     jQuery('.pre-register-form').hide();
+                    jQuery('.register-form').hide();
                 });
                 
                 $('#user_preregistration_form').validate({

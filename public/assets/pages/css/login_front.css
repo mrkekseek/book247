@@ -41,9 +41,16 @@ Login page
     margin: 15px 0 7px 0; }
 
 .login .content .login-form,
-.login .content .forget-form {
+.login .content .forget-form{
     padding: 0px;
-    margin: 0px; }
+    margin: 0px; 
+}
+.login .content .pre-register-form,
+.login .content .pre-register-form,
+.login .content .result-register-form{
+    padding: 0px;
+    margin: 0 0 25px 0; 
+}
 
 .login .content .form-control {
     background-color: #e9edef;
@@ -195,6 +202,7 @@ Login page
 
 .login .content .pre-register-form,
 .login .content .pre-register-password-api,
+.login .content .user_result_forget_form,
 .login .content .result-register-form{
     display: none; 
 }
@@ -300,6 +308,9 @@ Login page
     .page-footer{
         text-align: center;
     }
+    .login .content {
+        padding: 20px;
+    }
     
 }
 
@@ -323,4 +334,5 @@ Login page
     .page-footer{
         text-align: center;
     }
+
 }
