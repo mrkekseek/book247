@@ -56,7 +56,9 @@ class ApiAuth
             'MiddleName'=> '',
             'LastName'=> '',
             'ResetToken'=> '',
-            'ResetTokenDate'=> null
+            'ResetTokenDate'=> null,
+            'PhoneNumber' => ''
+
         ];
         $apiData = [                                    
             'ResetToken'=> '',
@@ -91,6 +93,9 @@ class ApiAuth
                 case 'birthday':                    
                     $apiData['Birthday'] = $value;
                     break;
+                case 'phone_number':
+                    $apiData['PhoneNumber'] = $value;
+                    break;   
             }
         }        
         foreach ($sortingArray as $key=>$value)
@@ -127,7 +132,8 @@ class ApiAuth
             'MiddleName'=> '',
             'LastName'=> '',
             'ResetToken'=> '',
-            'ResetTokenDate'=> null
+            'ResetTokenDate'=> null,
+            'PhoneNumber' => ''
         ];
         $apiData = [
             'Id'=> 0,            
@@ -159,7 +165,10 @@ class ApiAuth
                     break;
                 case 'last_name':
                     $apiData['LastName'] = $value;
-                    break;                
+                    break;
+                case 'phone_number':
+                    $apiData['PhoneNumber'] = $value;
+                    break;                   
             }
         }        
         foreach ($sortingArray as $key=>$value)

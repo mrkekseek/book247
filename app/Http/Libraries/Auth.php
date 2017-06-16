@@ -139,7 +139,7 @@ class Auth
     
     public static function set_local_user($sso_user_id)
     {
-        $api_user = ApiAuth::accounts_get($sso_user_id)['data'];                
+        $api_user = ApiAuth::accounts_get($sso_user_id)['data'];
         $local_user = [
             'sso_user_id'=>$api_user->id,
             'username'=>$api_user->username,
@@ -184,6 +184,7 @@ class Auth
     {
         $personalDetail = PersonalDetail::firstOrNew(['user_id'=>$local_user_id]);
         $personalDetail->personal_email = $api_user->email;
+        $personalDetail->mobile_number = $api_user->phoneNumber;
         $personalDetail->date_of_birth = date('Y-m-d', strtotime($api_user->birthday));
         $personalDetail->save();
     }
