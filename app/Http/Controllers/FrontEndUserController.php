@@ -666,7 +666,7 @@ class FrontEndUserController extends Controller
                 }
 
                 //xdebug_var_dump(Carbon::createFromFormat('Y-m-d',$onlyOne->issued_date));
-                if ($signOutDate->lte(Carbon::createFromFormat('Y-m-d',$onlyOne->issued_date))){
+                if ($signOutDate->lte(Carbon::createFromFormat('Y-m-d',$onlyOne->last_active_date))){
                     $invoiceCancellation[$onlyOne->id] = Carbon::createFromFormat('Y-m-d',$onlyOne->last_active_date)->addDay()->format('jS \o\f F, Y');
                 }
             }
