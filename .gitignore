@@ -8,3 +8,4 @@ storage/app/members/
 sh.exe.stackdump
 config/constants.php
 composer.lock
+/api/app/Cache.php

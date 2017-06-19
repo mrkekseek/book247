@@ -113,10 +113,10 @@
                                                 @if(isset($location_bookings[$key][$resource['id']]['membership_starts_today']))
                                                     <a href="javascript:;" class="btn btn-icon-only bg-blue-sharp bg-font-blue-sharp border-white finance-btn"> <i class="icon-star"></i> </a>
                                                 @endif
-                                            @elseif ($location_bookings[$key][$resource['id']]['button_finance'] == 'is_paid_cash' || $location_bookings[$key][$resource['id']]['button_finance'] == 'is_paid_card' || $location_bookings[$key][$resource['id']]['button_finance'] == 'is_paid_online')
+                                            @elseif ($location_bookings[$key][$resource['id']]['button_finance'] == 'is_paid_cash' || $location_bookings[$key][$resource['id']]['button_finance'] == 'is_paid_card' || $location_bookings[$key][$resource['id']]['button_finance'] == 'is_paid_credit' || $location_bookings[$key][$resource['id']]['button_finance'] == 'is_paid_online')
                                                 <a href="javascript:;" class="btn btn-icon-only {{ $button_color[$location_bookings[$key][$resource['id']]['button_finance']] }} border-white finance-btn"> $ </a>
                                             @else
-                                                <a href="javascript:;" class="btn btn-icon-only {{ $button_color[$location_bookings[$key][$resource['id']]['button_finance']] }} border-white invoice_cash_card finance-btn" data-key="{{ $location_bookings[$key][$resource['id']]['search_key'] }}" data-toggle="confirmation" data-original-title="How would you pay?" data-btn-ok-label="CASH" data-btn-ok-icon="" data-btn-cancel-label="CARD" data-btn-cancel-icon="" data-singleton="true"> $ </a>
+                                                <a href="javascript:;" class="btn btn-icon-only {{ $button_color[$location_bookings[$key][$resource['id']]['button_finance']] }} border-white invoice_cash_card finance-btn" data-key="{{ $location_bookings[$key][$resource['id']]['search_key'] }}" data-toggle="confirmation-custom" data-original-title="How would you pay?" data-singleton="true"> $ </a>
                                             @endif
                                             @if ($location_bookings[$key][$resource['id']]['button_more'] == 'is_disabled')
                                                 <a href="javascript:;" class="btn btn-icon-only {{ $button_color['is_disabled'] }} border-white more-info-btn"><i class="icon-speech"></i></a>
@@ -565,7 +565,7 @@
 @section('pageBelowLevelPlugins')
     <script src="{{ asset('assets/global/plugins/jquery-validation/js/jquery.validate.min.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/global/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}" type="text/javascript"></script>
-    <script src="{{ asset('assets/global/plugins/bootstrap-confirmation-2-2/bootstrap-confirmation.min.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('assets/global/plugins/bootstrap-confirmation-2-4/bootstrap-confirmation.min.js') }}" type="text/javascript"></script>
 
     <script src="{{ asset('assets/global/scripts/datatable.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/global/plugins/datatables/datatables.min.js') }}" type="text/javascript"></script>
@@ -1120,8 +1120,6 @@
             });
         }
 
-        $('[data-toggle=confirmation]').confirmation({ container: 'body', btnOkClass: 'btn btn-sm blue', btnCancelClass: 'btn purple btn-sm', copyAttributes: 'data-key'});
-
         $('.check_as_in').on('click', function(){
             var book_key = $(this).parent().attr('search-key');
 
@@ -1159,32 +1157,11 @@
             });
         }
 
-        $('[data-toggle=confirmation]').on('confirmed.bs.confirmation', function () {
-            var alink = $('div[search-key="' + $(this).attr('data-key') + '"]');
-            var abutton = alink.find('a[data-key="' + $(this).attr('data-key') + '"]');
-            abutton.addClass('{{ $button_color['is_paid_cash'] }}');
-
-            abutton.confirmation('destroy');
-            abutton.css('cursor','default');
-            mark_invoice_as_paid($(this).attr('data-key'), 'cash');
-            //console.log("Cash for : " + $(this).attr('data-key'));
-        });
-
-        $('[data-toggle=confirmation]').on('canceled.bs.confirmation', function () {
-            var alink = $('div[search-key="' + $(this).attr('data-key') + '"]');
-            var abutton = alink.find('a[data-key="' + $(this).attr('data-key') + '"]');
-            abutton.addClass('{{ $button_color['is_paid_card'] }}');
-
-            abutton.confirmation('destroy');
-            abutton.css('cursor','default');
-            mark_invoice_as_paid($(this).attr('data-key'), 'card');
-            //console.log(" Card for :" + $(this).attr('data-key'));
-        });
-
         function mark_invoice_as_paid(booking_key, payment_type){
-            $.ajax({
+            var returnStatus = $.ajax({
                 url: '{{route('ajax/booking_action_invoice_paid')}}',
                 type: "post",
+                async: false,
                 cache: false,
                 data: {
                     'search_key': booking_key,
@@ -1193,16 +1170,16 @@
                 success: function (data) {
                     if(data.success){
                         show_notification('Booking Paid', data.message, 'lime', 3500, 0);
+                        return '1';
                     }
                     else{
                         show_notification('Error marking Paiment', data.errors, 'ruby', 3500, 0);
+                        return '2';
                     }
-
-                    //$('#small').find('.book_details_cancel_place').html('');
-                    $('#cancel_confirm_box').modal('hide');
-                    $('#changeIt').modal('hide');
                 }
-            });
+            }).responseJSON.success;
+
+            return returnStatus;
         }
 
         $(document).on('click', '.open_more_options', function(){
@@ -1851,6 +1828,68 @@
                 }
             }
         });
+
+        $('[data-toggle=confirmation-custom]').confirmation({
+            copyAttributes: ['data-key'],
+            buttons: [
+                {
+                    label: 'Cash',
+                    class: 'btn btn-sm blue',
+
+                    onClick: function() {
+                        var alink = $('div[search-key="' + $(this).attr('data-key') + '"]');
+                        var abutton = alink.find('a[data-key="' + $(this).attr('data-key') + '"]');
+                        abutton.addClass('{{ $button_color['is_paid_cash'] }}');
+
+                        abutton.confirmation('destroy');
+                        abutton.unbind('click');
+                        abutton.css('cursor','default');
+                        mark_invoice_as_paid($(this).attr('data-key'), 'cash');
+                    }
+                },
+                {
+                    label: 'Card',
+                    class: 'btn btn-sm purple-seance',
+
+                    onClick: function() {
+                        var alink = $('div[search-key="' + $(this).attr('data-key') + '"]');
+                        var abutton = alink.find('a[data-key="' + $(this).attr('data-key') + '"]');
+                        abutton.addClass('{{ $button_color['is_paid_card'] }}');
+
+                        abutton.confirmation('destroy');
+                        abutton.unbind('click');
+                        abutton.css('cursor','default');
+                        mark_invoice_as_paid($(this).attr('data-key'), 'card');
+                    }
+                },
+                {
+                    label: 'Credit',
+                    class: 'btn btn-sm green-seagreen',
+
+                    onClick: function() {
+                        var alink = $('div[search-key="' + $(this).attr('data-key') + '"]');
+                        //console.log(alink);
+                        var abutton = alink.find('a[data-key="' + $(this).attr('data-key') + '"]').first();
+                        //console.log(abutton);
+                        var pay_answer = mark_invoice_as_paid($(this).attr('data-key'), 'credit');
+
+                        if ( pay_answer == true ){
+                            abutton.addClass('{{ $button_color['is_paid_credit'] }}');
+                            abutton.confirmation('destroy');
+                            abutton.unbind('click');
+                            abutton.css('cursor','default');
+                        }
+                        else{
+                            abutton.confirmation('toggle');
+                        }
+                    }
+                }
+            ]
+        });
+
+        function destroy_finance_element(the_element){
+            the_element.confirmation('destroy');
+        }
 
         /* Start Play with friends part */
         function show_play_with_friends(){

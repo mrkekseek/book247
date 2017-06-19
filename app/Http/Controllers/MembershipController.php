@@ -338,7 +338,7 @@ class MembershipController extends Controller
                         ];
                     }
                     else{
-                        $member->cancel_membership_plan($old_plan, $cancellation_date->format('Y-m-d'), $cancellation_date);
+                        $member->cancel_membership_plan($old_plan, $cancellation_date->format('Y-m-d'), $cancellation_date->addDays(-1)->format('Y-m-d'));
                         return [
                             'success'   => true,
                             'message'   => 'Membership plan is set to cancel on the requested date.',
@@ -351,7 +351,7 @@ class MembershipController extends Controller
                 $plannedInvoiceCancelled = UserMembershipInvoicePlanning::where('id','=',$vars['cancellation_date'])
                     ->where('user_membership_id','=',$old_plan->id)
                     ->where('status','=','pending')
-                    ->take(1)->get()->first();
+                    ->take(1)->first();
                 if (!$plannedInvoiceCancelled){
                     return [
                         'success'   => false,

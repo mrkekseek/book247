@@ -245,10 +245,15 @@ class User extends Authenticatable
         else{
             try {
                 $cancel_date = Carbon::createFromFormat('Y-m-d',$cancel_date);
-                $last_date = Carbon::createFromFormat('Y-m-d',$last_date);
             }
             catch (\Exception $ex){
                 $cancel_date = Carbon::today();
+            }
+
+            try {
+                $last_date = Carbon::createFromFormat('Y-m-d',$last_date);
+            }
+            catch (\Exception $ex){
                 $last_date   = Carbon::tomorrow();
             }
         }
@@ -278,7 +283,7 @@ class User extends Authenticatable
 
             $theAction = UserMembershipAction::create($fillable);
 
-            // if the freeze starts today, then we freeze the membership plan
+            // if the cancellation starts today, then we cancel the membership plan
             if (Carbon::today()->toDateString() == $cancel_date->toDateString()) {
                 $theAction->process_action();
             }
@@ -880,8 +885,54 @@ class User extends Authenticatable
         return $realValue;
     }
 
-    public function spend_store_credit(){
+    public function spend_store_credit($invoiceId, $amount){
+        $user = Auth::user();
+        if (!$user) {
+            return [
+                'success' => false,
+                'title'   => 'You need to be logged in',
+                'errors'  => 'This function is available to logged users only'];
+        }
 
+        // get memberID from the $invoiceId received
+        $invoice = Invoice::where('id','=',$invoiceId)->where('user_id','=',$this->id)->take(1)->get();
+        if (!$invoice){
+            return [
+                'success' => false,
+                'title'   => 'Error',
+                'errors'  => 'Invoice not found'];
+        }
+
+        // make store credit fillable for validation
+        $store_credit_fill = [
+            'member_id'     => $this->id,
+            'back_user_id'  => $user->id,
+            'title'         => 'Store Credit Spent',
+            'value'         => (-1)*intval($amount),
+            'total_amount'  => $this->get_available_store_credit() - intval($amount),
+            'invoice_id'    => $invoiceId,
+            'expiration_date'   => Carbon::today()->format('Y-m-d'),
+            'status'        => 'expired',
+        ];
+
+        $validator = Validator::make($store_credit_fill, UserStoreCredits::rules('POST'), UserStoreCredits::$message, UserStoreCredits::$attributeNames);
+        if ($validator->fails()){
+            //xdebug_var_dump($validator->errors()); exit;
+            // note could not be created
+            return [
+                'success' => false,
+                'title'   => 'Could not add store credit',
+                'errors'  => 'There is something wrong with the validity of the access card you want to add!'];
+        }
+
+        $storeCredit = UserStoreCredits::create($store_credit_fill);
+
+        return [
+            'success'   => true,
+            'title'     => 'Store Credit Added',
+            'message'   => 'User received the store credit',
+            'storeCredit'   => $storeCredit
+        ];
     }
     /** Store Credit functions - STOP */
 }
