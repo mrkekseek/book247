@@ -245,10 +245,15 @@ class User extends Authenticatable
         else{
             try {
                 $cancel_date = Carbon::createFromFormat('Y-m-d',$cancel_date);
-                $last_date = Carbon::createFromFormat('Y-m-d',$last_date);
             }
             catch (\Exception $ex){
                 $cancel_date = Carbon::today();
+            }
+
+            try {
+                $last_date = Carbon::createFromFormat('Y-m-d',$last_date);
+            }
+            catch (\Exception $ex){
                 $last_date   = Carbon::tomorrow();
             }
         }
@@ -278,7 +283,7 @@ class User extends Authenticatable
 
             $theAction = UserMembershipAction::create($fillable);
 
-            // if the freeze starts today, then we freeze the membership plan
+            // if the cancellation starts today, then we cancel the membership plan
             if (Carbon::today()->toDateString() == $cancel_date->toDateString()) {
                 $theAction->process_action();
             }

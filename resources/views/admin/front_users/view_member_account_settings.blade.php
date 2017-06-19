@@ -320,7 +320,7 @@
                                                                 <div class="form-group">
                                                                     <label class="control-label col-md-3 inline"> Membership Start Date </label>
                                                                     <div class="col-md-8">
-                                                                        <div class="input-group input date date-picker" data-date="{{ \Carbon\Carbon::today()->format('d-m-Y') }}" data-date-format="dd-mm-yyyy" data-date-viewmode="years" style="display:inline-flex; margin-top:2px; margin-right:40px;">
+                                                                        <div class="input-group input date date-picker" data-date-start-date="-30d" data-date="{{ \Carbon\Carbon::today()->format('d-m-Y') }}" data-date-format="dd-mm-yyyy" data-date-viewmode="years" style="display:inline-flex; margin-top:2px; margin-right:40px;">
                                                                             <input type="text" class="form-control" name="start_date" readonly style="background-color:#ffffff;" value="{{ \Carbon\Carbon::today()->format('d-m-Y') }}">
                                                                             <span class="input-group-btn">
                                                                                 <button class="btn default" type="button">
@@ -753,7 +753,7 @@
                                 <div class="note note-danger" style="margin-bottom:0px;">
                                     <div class="form-group margin-bottom-5">
                                         <span class="help-inline">Membership Cancellation Date</span>
-                                        <div class="input-group input-small date date-picker" data-date="{{ \Carbon\Carbon::today()->format('d-m-Y') }}" data-date-format="dd-mm-yyyy" data-date-viewmode="month" style="display:inline-flex; margin-top:2px; margin-right:40px;">
+                                        <div class="input-group input-small date date-picker" data-date-start-date="today" data-date="{{ \Carbon\Carbon::today()->format('d-m-Y') }}" data-date-format="dd-mm-yyyy" data-date-viewmode="month" style="display:inline-flex; margin-top:2px; margin-right:40px;">
                                             <input type="text" class="form-control" name="custom_cancel_date" readonly style="background-color:#ffffff;">
                                             <span class="input-group-btn">
                                                 <button class="btn default" type="button">
@@ -1230,7 +1230,6 @@
                         autoclose: true,
                         daysOfWeekHighlighted: "0",
                         weekStart:1,
-                        startDate:'today'
                     });
                     //$('body').removeClass("modal-open"); // fix bug when inline picker is used in modal
                 }
@@ -1477,7 +1476,7 @@
                     'member_id':userID,
                     'cancellation_date':$('select[name="date_cancellation_time"]').val(),
                     @if (Auth::user()->can('general-permission-overwrite'))
-                    'is_overwrite':$('#overwrite_admin_cancellation_rule').val(),
+                    'is_overwrite':$('#overwrite_admin_cancellation_rule:checked').val(),
                     'custom_cancellation_date':$('input[name="custom_cancel_date"]').val()
                     @endif
                 },
