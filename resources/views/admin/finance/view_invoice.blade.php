@@ -374,9 +374,12 @@
 
                         var pay_answer = mark_invoice_as_paid($(this).attr('data-key'), 'cash');
                         if ( pay_answer == true ){
-                            abutton.confirmation('destroy');
-                            abutton.unbind('click');
-                            abutton.css('cursor','default');
+                            abutton.remove();
+                            location.reload();
+
+                            //abutton.confirmation('destroy');
+                            //abutton.unbind('click');
+                            //abutton.css('cursor','default');
                         }
                         else{
                             abutton.confirmation('toggle');
@@ -392,9 +395,12 @@
 
                         var pay_answer = mark_invoice_as_paid($(this).attr('data-key'), 'card');
                         if ( pay_answer == true ){
-                            abutton.confirmation('destroy');
-                            abutton.unbind('click');
-                            abutton.css('cursor','default');
+                            abutton.remove();
+                            location.reload();
+
+                            //abutton.confirmation('destroy');
+                            //abutton.unbind('click');
+                            //abutton.css('cursor','default');
                         }
                         else{
                             abutton.confirmation('toggle');
@@ -410,9 +416,12 @@
 
                         var pay_answer = mark_invoice_as_paid($(this).attr('data-key'), 'credit');
                         if ( pay_answer == true ){
-                            abutton.confirmation('destroy');
-                            abutton.unbind('click');
-                            abutton.css('cursor','default');
+                            abutton.remove();
+                            location.reload();
+
+                            //abutton.confirmation('destroy');
+                            //abutton.unbind('click');
+                            //abutton.css('cursor','default');
                         }
                         else{
                             abutton.confirmation('toggle');
