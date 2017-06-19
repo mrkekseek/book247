@@ -238,6 +238,13 @@ class Invoice extends Model
             $invoiceItems = json_encode($this->get_unpaid_invoice_items());
         }
 
+        if ($transactionAmount==0){
+            // nothing to pay so we don't add any transactions
+            return [
+                'success' => false,
+                'errors'  => 'This invoice is already paid'];
+        }
+
         $fillable = [
             'user_id'               => $user_id,
             'invoice_id'            => $this->id,
@@ -453,10 +460,19 @@ class Invoice extends Model
 
             // we have booking items on selected invoice so we get the items that have completed statuses
             $paidItems = [];
+            $itemTransactionDetails = [];
             $itemTransactions = InvoiceFinancialTransaction::where('invoice_id','=',$this->id)->where('status','=','completed')->get();
             if (sizeof($itemTransactions)>0){
                 foreach ($itemTransactions as $item){
-                    $paidItems = array_merge($paidItems, json_decode($item->invoice_items));
+                    $itemSplit = json_decode($item->invoice_items);
+                    $paidItems = array_merge($paidItems, $itemSplit);
+
+                    foreach($itemSplit as $single){
+                        $itemTransactionDetails[$single] = [
+                            'method' => $item->transaction_type,
+                            'status' => $item->status,
+                            'details'=> $item->other_details];
+                    }
                 }
             }
 
@@ -472,10 +488,10 @@ class Invoice extends Model
                         'user_id'                   => $userId,
                         'transaction_amount'        => $item->price,
                         'transaction_currency'      => Config::get('constants.finance.currency'),
-                        'transaction_type'          => $method,
+                        'transaction_type'          => $itemTransactionDetails[$item->id]['method'],
                         'transaction_date'          => Carbon::now(),
-                        'other_details'             => $details,
-                        'status'                    => $status
+                        'other_details'             => $itemTransactionDetails[$item->id]['details'],
+                        'status'                    => $itemTransactionDetails[$item->id]['status']
                     ];
 
                     $validator = Validator::make($fillable, BookingFinancialTransaction::rules('POST'), BookingFinancialTransaction::$message, BookingFinancialTransaction::$attributeNames);

@@ -185,7 +185,10 @@
                                     @foreach($financialTransactions as $single)
                                         <tr>
                                             <td> 2 </td>
-                                            <td> Larry </td>
+                                            <td>@foreach ($single->names as $itemNames)
+                                                    {{$itemNames}}<br />
+                                                @endforeach
+                                            </td>
                                             <td> {{$single->transaction_amount}} {{$single->transaction_currency}} </td>
                                             <td> {{$single->transaction_type}} </td>
                                             <td> {{$single->transaction_date}} </td>
@@ -367,13 +370,20 @@
                     class: 'btn btn-sm blue',
 
                     onClick: function() {
-                        var alink = $('div[search-key="' + $(this).attr('data-key') + '"]');
-                        var abutton = alink.find('a[data-key="' + $(this).attr('data-key') + '"]');
+                        var abutton = $('a[data-key="' + $(this).attr('data-key') + '"]');
 
-                        abutton.confirmation('destroy');
-                        abutton.unbind('click');
-                        abutton.css('cursor','default');
-                        mark_invoice_as_paid($(this).attr('data-key'), 'cash');
+                        var pay_answer = mark_invoice_as_paid($(this).attr('data-key'), 'cash');
+                        if ( pay_answer == true ){
+                            abutton.remove();
+                            location.reload();
+
+                            //abutton.confirmation('destroy');
+                            //abutton.unbind('click');
+                            //abutton.css('cursor','default');
+                        }
+                        else{
+                            abutton.confirmation('toggle');
+                        }
                     }
                 },
                 {
@@ -381,13 +391,20 @@
                     class: 'btn btn-sm purple-seance',
 
                     onClick: function() {
-                        var alink = $('div[search-key="' + $(this).attr('data-key') + '"]');
-                        var abutton = alink.find('a[data-key="' + $(this).attr('data-key') + '"]');
+                        var abutton = $('a[data-key="' + $(this).attr('data-key') + '"]');
 
-                        abutton.confirmation('destroy');
-                        abutton.unbind('click');
-                        abutton.css('cursor','default');
-                        mark_invoice_as_paid($(this).attr('data-key'), 'card');
+                        var pay_answer = mark_invoice_as_paid($(this).attr('data-key'), 'card');
+                        if ( pay_answer == true ){
+                            abutton.remove();
+                            location.reload();
+
+                            //abutton.confirmation('destroy');
+                            //abutton.unbind('click');
+                            //abutton.css('cursor','default');
+                        }
+                        else{
+                            abutton.confirmation('toggle');
+                        }
                     }
                 },
                 {
@@ -395,16 +412,16 @@
                     class: 'btn btn-sm green-seagreen',
 
                     onClick: function() {
-                        var alink = $('div[search-key="' + $(this).attr('data-key') + '"]');
-                        //console.log(alink);
-                        var abutton = alink.find('a[data-key="' + $(this).attr('data-key') + '"]').first();
-                        //console.log(abutton);
-                        var pay_answer = mark_invoice_as_paid($(this).attr('data-key'), 'credit');
+                        var abutton = $('a[data-key="' + $(this).attr('data-key') + '"]');
 
+                        var pay_answer = mark_invoice_as_paid($(this).attr('data-key'), 'credit');
                         if ( pay_answer == true ){
-                            abutton.confirmation('destroy');
-                            abutton.unbind('click');
-                            abutton.css('cursor','default');
+                            abutton.remove();
+                            location.reload();
+
+                            //abutton.confirmation('destroy');
+                            //abutton.unbind('click');
+                            //abutton.css('cursor','default');
                         }
                         else{
                             abutton.confirmation('toggle');
