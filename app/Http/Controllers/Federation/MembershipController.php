@@ -4,12 +4,12 @@ namespace App\Http\Controllers\Federation;
 
 use App\MembershipPlan;
 use App\MembershipPlanPrice;
-use App\Http\Controllers\Controller;
 use App\Role;
 use App\UserMembership;
 use App\ShopResourceCategory;
 use App\UserMembershipAction;
 use App\UserMembershipInvoicePlanning;
+use App\Http\Controllers\Controller;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Auth;
@@ -339,7 +339,7 @@ class MembershipController extends Controller
                         ];
                     }
                     else{
-                        $member->cancel_membership_plan($old_plan, $cancellation_date->format('Y-m-d'), $cancellation_date);
+                        $member->cancel_membership_plan($old_plan, $cancellation_date->format('Y-m-d'), $cancellation_date->addDays(-1)->format('Y-m-d'));
                         return [
                             'success'   => true,
                             'message'   => 'Membership plan is set to cancel on the requested date.',
@@ -352,7 +352,7 @@ class MembershipController extends Controller
                 $plannedInvoiceCancelled = UserMembershipInvoicePlanning::where('id','=',$vars['cancellation_date'])
                     ->where('user_membership_id','=',$old_plan->id)
                     ->where('status','=','pending')
-                    ->take(1)->get()->first();
+                    ->take(1)->first();
                 if (!$plannedInvoiceCancelled){
                     return [
                         'success'   => false,
@@ -713,6 +713,27 @@ class MembershipController extends Controller
         }
         else{
             return ['success' => true, 'message' => 'No invoice updated'];
+        }
+    }
+
+    public function iframed($sso_id, $membership_id){
+        return view('front/iframe/federation/buy_license' ,[
+            'user_id' => $sso_id ,
+            'membership' => null
+        ]);
+    }
+
+    public function iframed_pay(Request $r){
+        if (isset($r->user_id) && isset($r->payment_method) && isset($r->payment_method)) {
+            if ($r->payment_method == 'paypal') {
+
+            }
+
+        } else {
+            return view('front/iframe/federation/buy_license' ,[
+                'user_id' => null ,
+                'membership' => null
+            ]);
         }
     }
 }

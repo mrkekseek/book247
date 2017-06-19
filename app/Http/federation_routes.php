@@ -28,6 +28,15 @@ Route::get('api/federation_buy_license', [
     'uses'  => 'Federation\FederationApi@federation_buy_license'
 ]);
 
+Route::get('buy_license/{sso_id}/{license_id}', [
+    'as'    => 'buy_license',
+    'uses'  => 'Federation\MembershipController@iframed'
+]);
+
+Route::post('membership/payment', [
+    'as'    => 'membership/pay',
+    'uses'  => 'Federation\MembershipController@iframed_pay'
+]);
 
 Route::group(['middleware' => 'web'], function () {
     // default login/register/forgot password routes

@@ -28,6 +28,12 @@ class Api {
     {
         $api_base = env('APIURL','');
         $data['token'] = str_random(32);
+        if ($data) {
+            foreach ($data as $key=>$value) {
+                $data[$key] = (string)$value;
+            }
+        }
+
         if ($method == 'GET')
         {
             $get_url = '';
