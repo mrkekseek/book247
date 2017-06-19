@@ -202,6 +202,8 @@
                                     <!-- END REGISTRATION FORM -->
                                 </div>
                             @endif
+                        </div>
+                        <div class="col-md-6 ">
                             <div class="portlet light search-page search-content-1 hidden-xs hidden-sm">
                                 <div class="search-container " style="text-align: center;">
                                     <div id="fb-root"></div>
@@ -215,83 +217,81 @@
                                     <div class="fb-page" data-href="https://www.facebook.com/squashandfitness/?fref=ts" data-tabs="timeline" data-width="535" data-height="460" data-small-header="false" data-adapt-container-width="true" data-hide-cover="false" data-show-facepile="true"><blockquote cite="https://www.facebook.com/squashandfitness/?fref=ts" class="fb-xfbml-parse-ignore"><a href="https://www.facebook.com/squashandfitness/?fref=ts">SQF.no - Squash &amp; Fitness</a></blockquote></div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="col-md-6 ">
-                            <div class="portlet light margin-bottom-15">
-                                <dt>Select Location</dt>
-                                <div class="portlet-body">
-                                    @foreach($shops as $shop)
-                                        @if (sizeof($shop->resources)>0)
-                                        <a class="btn btn-sm border-blue-steel location_btn " data-id="{{ $shop->id }}" href="javascript:;" style="margin-bottom:3px;">
-                                            {{$shop->name}} <span class="badge badge-success resource_activity_nr"> - </span>
-                                        </a>
-                                        @endif
-                                    @endforeach
-                                    <input type="hidden" name="selected_location" value="{{ isset($settings['settings_preferred_location'])?$settings['settings_preferred_location']:4 }}" />
-                                </div>
-                            </div>
+                            {{--<div class="portlet light margin-bottom-15">--}}
+                                {{--<dt>Select Location</dt>--}}
+                                {{--<div class="portlet-body">--}}
+                                    {{--@foreach($shops as $shop)--}}
+                                        {{--@if (sizeof($shop->resources)>0)--}}
+                                        {{--<a class="btn btn-sm border-blue-steel location_btn " data-id="{{ $shop->id }}" href="javascript:;" style="margin-bottom:3px;">--}}
+                                            {{--{{$shop->name}} <span class="badge badge-success resource_activity_nr"> - </span>--}}
+                                        {{--</a>--}}
+                                        {{--@endif--}}
+                                    {{--@endforeach--}}
+                                    {{--<input type="hidden" name="selected_location" value="{{ isset($settings['settings_preferred_location'])?$settings['settings_preferred_location']:4 }}" />--}}
+                                {{--</div>--}}
+                            {{--</div>--}}
 
-                            <div class="portlet light margin-bottom-15" id="activities-widget">
-                                <dt>Select Activity</dt>
-                                <div class="portlet-body">
-                                    <div class="clearfix util-btn-margin-bottom-5">
-                                        @foreach($resourceCategories as $key=>$category)
-                                            @if ($category['resources_count']>0)
-                                                <a class="btn btn-sm btn-outline blue-steel is_resource {{ $key==2?'active':'' }}" data-id="{{$key}}" href="javascript:;"> {{$category['name']}}
-                                                    <span class="glyphicon glyphicon-cog"> </span>
-                                                </a>
-                                            @endif
-                                        @endforeach
-                                        <input type="hidden" name="selected_category" value="{{ isset($settings['settings_preferred_activity'])?$settings['settings_preferred_activity']:2 }}" />
-                                    </div>
-                                </div>
-                            </div>
+                            {{--<div class="portlet light margin-bottom-15" id="activities-widget">--}}
+                                {{--<dt>Select Activity</dt>--}}
+                                {{--<div class="portlet-body">--}}
+                                    {{--<div class="clearfix util-btn-margin-bottom-5">--}}
+                                        {{--@foreach($resourceCategories as $key=>$category)--}}
+                                            {{--@if ($category['resources_count']>0)--}}
+                                                {{--<a class="btn btn-sm btn-outline blue-steel is_resource {{ $key==2?'active':'' }}" data-id="{{$key}}" href="javascript:;"> {{$category['name']}}--}}
+                                                    {{--<span class="glyphicon glyphicon-cog"> </span>--}}
+                                                {{--</a>--}}
+                                            {{--@endif--}}
+                                        {{--@endforeach--}}
+                                        {{--<input type="hidden" name="selected_category" value="{{ isset($settings['settings_preferred_activity'])?$settings['settings_preferred_activity']:2 }}" />--}}
+                                    {{--</div>--}}
+                                {{--</div>--}}
+                            {{--</div>--}}
 
-                            <div class="portlet light margin-bottom-15">
-                                <dt>Select date of booking</dt>
-                                <div class="portlet-body">
-                                    <div id="datepaginator_sample_4"> </div>
-                                </div>
-                                <input type="hidden" name="selected_date" value="{{ \Carbon\Carbon::now()->format("Y-m-d") }}" />
-                            </div>
+                            {{--<div class="portlet light margin-bottom-15">--}}
+                                {{--<dt>Select date of booking</dt>--}}
+                                {{--<div class="portlet-body">--}}
+                                    {{--<div id="datepaginator_sample_4"> </div>--}}
+                                {{--</div>--}}
+                                {{--<input type="hidden" name="selected_date" value="{{ \Carbon\Carbon::now()->format("Y-m-d") }}" />--}}
+                            {{--</div>--}}
 
-                            @if (Auth::check() && Auth::user()->is_front_user())
-                            <div class="portlet light margin-bottom-15 hidden-xs" id="all_friends_men">
-                                <dt>Friends List</dt>
-                                <div class="portlet-body">
-                                    <div class="clearfix util-btn-margin-bottom-5">
-                                        <div id="friends_list">
+                            {{--@if (Auth::check() && Auth::user()->is_front_user())--}}
+                            {{--<div class="portlet light margin-bottom-15 hidden-xs" id="all_friends_men">--}}
+                                {{--<dt>Friends List</dt>--}}
+                                {{--<div class="portlet-body">--}}
+                                    {{--<div class="clearfix util-btn-margin-bottom-5">--}}
+                                        {{--<div id="friends_list">--}}
 
-                                        </div>
+                                        {{--</div>--}}
 
-                                        <a class="btn btn-sm blue-steel " href="javascript:add_new_friend_popup();">
-                                            <span class="icon-user-follow"> </span> Add new friend
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                            @endif
+                                        {{--<a class="btn btn-sm blue-steel " href="javascript:add_new_friend_popup();">--}}
+                                            {{--<span class="icon-user-follow"> </span> Add new friend--}}
+                                        {{--</a>--}}
+                                    {{--</div>--}}
+                                {{--</div>--}}
+                            {{--</div>--}}
+                            {{--@endif--}}
 
-                            <div class="portlet light margin-bottom-15" id="tasks-widget">
-                                <div class="portlet-title" style="min-height:27px; margin-bottom:3px;">
-                                    <dt>Select booking start time</dt>
-                                </div>
-                                <div class="portlet-body util-btn-margin-bottom-5">
-                                    <div class="clearfix" id="booking_hours">
+                            {{--<div class="portlet light margin-bottom-15" id="tasks-widget">--}}
+                                {{--<div class="portlet-title" style="min-height:27px; margin-bottom:3px;">--}}
+                                    {{--<dt>Select booking start time</dt>--}}
+                                {{--</div>--}}
+                                {{--<div class="portlet-body util-btn-margin-bottom-5">--}}
+                                    {{--<div class="clearfix" id="booking_hours">--}}
 
-                                    </div>
-                                </div>
-                                <div class="portlet-title" style="min-height:5px; margin-bottom:5px;"> </div>
-                                @if (Auth::check() && Auth::user()->is_front_user())
-                                    <a href="javascript:;" class="btn default green-jungle-stripe" style="padding:5px 10px; font-size:14px; cursor:default; margin-bottom:5px;"> Many courts available </a>
-                                    <a href="javascript:;" class="btn default yellow-saffron-stripe" style="padding:5px 10px; font-size:14px; cursor:default; margin-bottom:5px;"> Less courts available </a>
-                                    <a href="javascript:;" class="btn default red-stripe btn-lg" style="padding:5px 10px; font-size:14px; cursor:default; margin-bottom:5px;"> All courts are booked </a>
-                                    <a href="javascript:;" class="btn default purple-stripe btn-lg" style="padding:5px 10px; font-size:14px; cursor:default; margin-bottom:5px;"> Outside membership rules </a>
-                                    <a href="{{ route('front/active_membership') }}" class="btn default btn-lg" style="padding: 1px 5px 0px; cursor: pointer; margin-bottom: 5px; font-size: 21px;"><span class="item-box"><span class="item"><span aria-hidden="true" class="icon-question"></span></span></span></a>
-                                @else
-                                    <a href="javascript:;" class="btn default dark-stripe btn-lg book_step" style="padding:5px 10px; font-size:14px; cursor:default;"> You need to be logged in to view availability </a>
-                                @endif
-                            </div>
+                                    {{--</div>--}}
+                                {{--</div>--}}
+                                {{--<div class="portlet-title" style="min-height:5px; margin-bottom:5px;"> </div>--}}
+                                {{--@if (Auth::check() && Auth::user()->is_front_user())--}}
+                                    {{--<a href="javascript:;" class="btn default green-jungle-stripe" style="padding:5px 10px; font-size:14px; cursor:default; margin-bottom:5px;"> Many courts available </a>--}}
+                                    {{--<a href="javascript:;" class="btn default yellow-saffron-stripe" style="padding:5px 10px; font-size:14px; cursor:default; margin-bottom:5px;"> Less courts available </a>--}}
+                                    {{--<a href="javascript:;" class="btn default red-stripe btn-lg" style="padding:5px 10px; font-size:14px; cursor:default; margin-bottom:5px;"> All courts are booked </a>--}}
+                                    {{--<a href="javascript:;" class="btn default purple-stripe btn-lg" style="padding:5px 10px; font-size:14px; cursor:default; margin-bottom:5px;"> Outside membership rules </a>--}}
+                                    {{--<a href="{{ route('front/active_membership') }}" class="btn default btn-lg" style="padding: 1px 5px 0px; cursor: pointer; margin-bottom: 5px; font-size: 21px;"><span class="item-box"><span class="item"><span aria-hidden="true" class="icon-question"></span></span></span></a>--}}
+                                {{--@else--}}
+                                    {{--<a href="javascript:;" class="btn default dark-stripe btn-lg book_step" style="padding:5px 10px; font-size:14px; cursor:default;"> You need to be logged in to view availability </a>--}}
+                                {{--@endif--}}
+                            {{--</div>--}}
                         </div>
                     </div>
                 </div>
@@ -720,34 +720,33 @@
             };
         }();
 
-        var UIDatepaginator = function () {
+        {{--var UIDatepaginator = function () {--}}
 
-            return {
-                //main function to initiate the module
-                init: function () {
-                    //sample #3
-                    var options_sample3 = {
-                        /*selectedDate: '{{ \Carbon\Carbon::today()->format('Y-m-d') }}',*/
-                        startDate:'{{ \Carbon\Carbon::today()->format('Y-m-d') }}',
-                        endDate: '{{ \Carbon\Carbon::today()->addDays(7)->format('Y-m-d') }}',
-                        showOffDays:false,
-                        size:'large',
-                        itemWidth:45,
-                        selectedDateFormat:  'Do, MMM YYYY',
-                        onSelectedDateChanged: function(event, date) {
-                            //alert("Selected date: " + moment(date).format("YYYY-MM-DD"));
-                            $('input[name=selected_date]').val(moment(date).format("YYYY-MM-DD"));
-                            get_booking_hours(moment(date).format("YYYY-MM-DD"));
-                        }
-                    }
+            {{--return {--}}
+                {{--//main function to initiate the module--}}
+                {{--init: function () {--}}
+                    {{--//sample #3--}}
+                    {{--var options_sample3 = {--}}
+                        {{--startDate:'{{ \Carbon\Carbon::today()->format('Y-m-d') }}',--}}
+                        {{--endDate: '{{ \Carbon\Carbon::today()->addDays(7)->format('Y-m-d') }}',--}}
+                        {{--showOffDays:false,--}}
+                        {{--size:'large',--}}
+                        {{--itemWidth:45,--}}
+                        {{--selectedDateFormat:  'Do, MMM YYYY',--}}
+                        {{--onSelectedDateChanged: function(event, date) {--}}
+                            {{--//alert("Selected date: " + moment(date).format("YYYY-MM-DD"));--}}
+                            {{--$('input[name=selected_date]').val(moment(date).format("YYYY-MM-DD"));--}}
+                            {{--get_booking_hours(moment(date).format("YYYY-MM-DD"));--}}
+                        {{--}--}}
+                    {{--}--}}
 
-                    $('#datepaginator_sample_4').datepaginator(options_sample3);
+                    {{--$('#datepaginator_sample_4').datepaginator(options_sample3);--}}
 
-                } // end init
+                {{--} // end init--}}
 
-            };
+            {{--};--}}
 
-        }();
+        {{--}();--}}
 
         var FormValidation = function () {
             var handleValidation1 = function() {
@@ -979,14 +978,14 @@
             });
         }
 
-        $(document).on('click', '.is_resource', function(){
-            $('.is_resource').removeClass('active');
-            $(this).addClass('active');
-
-            $('input[name=selected_category]').val($(this).attr('data-id'));
-            get_booking_hours();
-            get_rooms_per_location();
-        });
+//        $(document).on('click', '.is_resource', function(){
+//            $('.is_resource').removeClass('active');
+//            $(this).addClass('active');
+//
+//            $('input[name=selected_category]').val($(this).attr('data-id'));
+//            get_booking_hours();
+//            get_rooms_per_location();
+//        });
 
         var timeinterval = ''; /* Interval timer */
         $(document).on('click', '.book_step', function(){
@@ -1017,13 +1016,13 @@
         @endif
         });
 
-        $(document).on('click', '.location_btn', function(){
-            $('.location_btn').removeClass('blue-steel');
-            $(this).addClass('blue-steel');
-
-            $('input[name=selected_location]').val($(this).attr('data-id'));
-            get_booking_hours();
-        });
+//        $(document).on('click', '.location_btn', function(){
+//            $('.location_btn').removeClass('blue-steel');
+//            $(this).addClass('blue-steel');
+//
+//            $('input[name=selected_location]').val($(this).attr('data-id'));
+//            get_booking_hours();
+//        });
 
         $(document).on('click', '.booking_step_next', function(){
             var own_box = $(this).parents('.form-group').first();
@@ -1084,40 +1083,40 @@
             own_next.find('.booking_step_content').first().show();
         });
 
-        function get_booking_hours(selectedDate){
-            App.blockUI({
-                target: '#tasks-widget',
-                boxed: true,
-                message: 'Processing...'
-            });
-            App.blockUI({
-                target: '#activities-widget',
-                boxed: true,
-                message: 'Refreshing...'
-            });
+        {{--function get_booking_hours(selectedDate){--}}
+            {{--App.blockUI({--}}
+                {{--target: '#tasks-widget',--}}
+                {{--boxed: true,--}}
+                {{--message: 'Processing...'--}}
+            {{--});--}}
+            {{--App.blockUI({--}}
+                {{--target: '#activities-widget',--}}
+                {{--boxed: true,--}}
+                {{--message: 'Refreshing...'--}}
+            {{--});--}}
 
-            selectedDate = typeof selectedDate !== 'undefined' ? selectedDate : $('input[name=selected_date]').val();
-            $('.pre_book_date').html($('.dp-selected').attr('title'));
-            var randUI = Math.floor((Math.random() * 100000000000000000) + 1);
+            {{--selectedDate = typeof selectedDate !== 'undefined' ? selectedDate : $('input[name=selected_date]').val();--}}
+            {{--$('.pre_book_date').html($('.dp-selected').attr('title'));--}}
+            {{--var randUI = Math.floor((Math.random() * 100000000000000000) + 1);--}}
 
-            $.ajax({
-                url: '{{route('ajax/get_booking_hours')}}',
-                type: "post",
-                cache: false,
-                data: {
-                    'location_selected':    $('input[name=selected_location]').val(),
-                    'date_selected':        selectedDate,
-                    'selected_category':    $('input[name=selected_category]').val(),
-                    'randUI':               randUI
-                },
-                success: function(data){
-                    hide_unavailable_activities(data.available_activities);
-                    time_of_booking_format_hours(data.hours);
-                    place_of_booking_format_rooms(data.shopResources);
-                    App.unblockUI('#tasks-widget');
-                }
-            });
-        }
+            {{--$.ajax({--}}
+                {{--url: '{{route('ajax/get_booking_hours')}}',--}}
+                {{--type: "post",--}}
+                {{--cache: false,--}}
+                {{--data: {--}}
+                    {{--'location_selected':    $('input[name=selected_location]').val(),--}}
+                    {{--'date_selected':        selectedDate,--}}
+                    {{--'selected_category':    $('input[name=selected_category]').val(),--}}
+                    {{--'randUI':               randUI--}}
+                {{--},--}}
+                {{--success: function(data){--}}
+                    {{--hide_unavailable_activities(data.available_activities);--}}
+                    {{--time_of_booking_format_hours(data.hours);--}}
+                    {{--place_of_booking_format_rooms(data.shopResources);--}}
+                    {{--App.unblockUI('#tasks-widget');--}}
+                {{--}--}}
+            {{--});--}}
+        {{--}--}}
 
         function hide_unavailable_activities(activities){
             $('.is_resource').hide();
@@ -1332,232 +1331,232 @@
             });
         }
 
-        function save_booking(field, resource_for_hour, players_list_select, own_box, own_next){
-            field = typeof field !== 'undefined' ? field : "";
-            if (field.hasClass('is_own_booking') || field.hasClass('friend_booking')){
-                var sel_time     = field.find('input[name="time_book_hour"]').val();
-                var sel_resource = field.find('select[name="resources_room"]');
-                    sel_resource = sel_resource.find(":selected").val();
-                var sel_key = field.find('input[name="time_book_key"]').val();
-                var player  = field.find('select[name="friend_booking"]');
-                    player = player.find(":selected").val();
-            }
-            else{
-                //var sel_time     = $('input[name=selected_time]').val();
-                //var sel_resource = $('select[name=resources_rooms]').val();
+        {{--function save_booking(field, resource_for_hour, players_list_select, own_box, own_next){--}}
+            {{--field = typeof field !== 'undefined' ? field : "";--}}
+            {{--if (field.hasClass('is_own_booking') || field.hasClass('friend_booking')){--}}
+                {{--var sel_time     = field.find('input[name="time_book_hour"]').val();--}}
+                {{--var sel_resource = field.find('select[name="resources_room"]');--}}
+                    {{--sel_resource = sel_resource.find(":selected").val();--}}
+                {{--var sel_key = field.find('input[name="time_book_key"]').val();--}}
+                {{--var player  = field.find('select[name="friend_booking"]');--}}
+                    {{--player = player.find(":selected").val();--}}
+            {{--}--}}
+            {{--else{--}}
+                {{--//var sel_time     = $('input[name=selected_time]').val();--}}
+                {{--//var sel_resource = $('select[name=resources_rooms]').val();--}}
 
-                return false;
-            }
-            var sel_location = $('input[name=selected_location]').val();
-            var sel_activity = $('input[name=selected_category]').val();
-            var sel_date     = $('input[name=selected_date]').val();
-            //var sel_payment  = $('input[name=payment_method]:radio:checked').val();
-            var sel_payment  = 'cash';
+                {{--return false;--}}
+            {{--}--}}
+            {{--var sel_location = $('input[name=selected_location]').val();--}}
+            {{--var sel_activity = $('input[name=selected_category]').val();--}}
+            {{--var sel_date     = $('input[name=selected_date]').val();--}}
+            {{--//var sel_payment  = $('input[name=payment_method]:radio:checked').val();--}}
+            {{--var sel_payment  = 'cash';--}}
 
-            $.ajax({
-                url: '{{route('booking.store')}}',
-                type: "post",
-                cache: false,
-                data: {
-                    'selected_location':    sel_location,
-                    'selected_activity':    sel_activity,
-                    'selected_date':        sel_date,
-                    'selected_time':        sel_time,
-                    'selected_resource':    sel_resource,
-                    'selected_payment':     sel_payment,
-                    'book_key':             sel_key,
-                    'player':               player,
-                },
-                success: function(data){
-                    if (data.booking_key==''){
-                        // something went wrong, reload resources for the window
-                    }
-                    else{
-                        field.find('input[name="time_book_key"]').val(data.booking_key);
+            {{--$.ajax({--}}
+                {{--url: '{{route('booking.store')}}',--}}
+                {{--type: "post",--}}
+                {{--cache: false,--}}
+                {{--data: {--}}
+                    {{--'selected_location':    sel_location,--}}
+                    {{--'selected_activity':    sel_activity,--}}
+                    {{--'selected_date':        sel_date,--}}
+                    {{--'selected_time':        sel_time,--}}
+                    {{--'selected_resource':    sel_resource,--}}
+                    {{--'selected_payment':     sel_payment,--}}
+                    {{--'book_key':             sel_key,--}}
+                    {{--'player':               player,--}}
+                {{--},--}}
+                {{--success: function(data){--}}
+                    {{--if (data.booking_key==''){--}}
+                        {{--// something went wrong, reload resources for the window--}}
+                    {{--}--}}
+                    {{--else{--}}
+                        {{--field.find('input[name="time_book_key"]').val(data.booking_key);--}}
 
-                        if (resource_for_hour==0 || resource_for_hour==0){
+                        {{--if (resource_for_hour==0 || resource_for_hour==0){--}}
 
-                        }
-                        else{
-                            get_players_list(players_list_select);
-                            get_resources_for_hour(resource_for_hour.book_friend_time, resource_for_hour.resource_room);
-                        }
+                        {{--}--}}
+                        {{--else{--}}
+                            {{--get_players_list(players_list_select);--}}
+                            {{--get_resources_for_hour(resource_for_hour.book_friend_time, resource_for_hour.resource_room);--}}
+                        {{--}--}}
 
-                        var payment_type_book = own_box.find('.booking_payment_type');
-                        if (data.booking_type == 'membership'){
-                            payment_type_book.html('<i class="fa fa-thumbs-o-up"></i>');
-                        }
-                        else{
-                            payment_type_book.html('<i class="fa fa-credit-card"></i>');
-                        }
+                        {{--var payment_type_book = own_box.find('.booking_payment_type');--}}
+                        {{--if (data.booking_type == 'membership'){--}}
+                            {{--payment_type_book.html('<i class="fa fa-thumbs-o-up"></i>');--}}
+                        {{--}--}}
+                        {{--else{--}}
+                            {{--payment_type_book.html('<i class="fa fa-credit-card"></i>');--}}
+                        {{--}--}}
 
-                        get_booking_hours();
+                        {{--get_booking_hours();--}}
 
-                        if (own_next.hasClass('booking_summary_box')){
-                            get_booking_summary(own_next);
-                        }
+                        {{--if (own_next.hasClass('booking_summary_box')){--}}
+                            {{--get_booking_summary(own_next);--}}
+                        {{--}--}}
 
-                        own_box.find('.booking_step_content').first().hide();
-                        own_next.find('.booking_step_content').first().show();
-                    }
-                }
-            });
-        }
+                        {{--own_box.find('.booking_step_content').first().hide();--}}
+                        {{--own_next.find('.booking_step_content').first().show();--}}
+                    {{--}--}}
+                {{--}--}}
+            {{--});--}}
+        {{--}--}}
 
-        function get_booking_summary(place){
-            var all_bookings = '';
-            $('input[name="time_book_key"]').each(function(){
-                //console.log($(this).val());
-                if ( $(this).val().length > 4 ) {
-                    all_bookings += $(this).val() + ',';
-                }
-            });
+        {{--function get_booking_summary(place){--}}
+            {{--var all_bookings = '';--}}
+            {{--$('input[name="time_book_key"]').each(function(){--}}
+                {{--//console.log($(this).val());--}}
+                {{--if ( $(this).val().length > 4 ) {--}}
+                    {{--all_bookings += $(this).val() + ',';--}}
+                {{--}--}}
+            {{--});--}}
 
-            $.ajax({
-                url: '{{route('ajax/get_bookings_summary')}}',
-                type: "post",
-                cache: false,
-                data: {
-                    'all_bookings': all_bookings,
-                },
-                success: function(data){
-                    if (data.success=='true') {
-                        if (data.membership_nr == 0){
-                            var membership_bookings = '<h5>Membership included bookings : <span id="membership_bookings_nr"> None </span></h5>';
-                        }
-                        else{
-                            var membership_bookings = '<h5>Membership included bookings : <span id="membership_bookings_nr">' + data.membership_nr + '</span></h5>';
-                        }
+            {{--$.ajax({--}}
+                {{--url: '{{route('ajax/get_bookings_summary')}}',--}}
+                {{--type: "post",--}}
+                {{--cache: false,--}}
+                {{--data: {--}}
+                    {{--'all_bookings': all_bookings,--}}
+                {{--},--}}
+                {{--success: function(data){--}}
+                    {{--if (data.success=='true') {--}}
+                        {{--if (data.membership_nr == 0){--}}
+                            {{--var membership_bookings = '<h5>Membership included bookings : <span id="membership_bookings_nr"> None </span></h5>';--}}
+                        {{--}--}}
+                        {{--else{--}}
+                            {{--var membership_bookings = '<h5>Membership included bookings : <span id="membership_bookings_nr">' + data.membership_nr + '</span></h5>';--}}
+                        {{--}--}}
 
-                        if (data.cash_nr == 0){
-                            var cash_bookings = '<h5>Paid bookings : <span id="membership_bookings_nr"> None </span></h5>';
-                        }
-                        else{
-                            var cash_bookings = '<h5>Paid bookings : <span id="membership_bookings_nr">' + data.cash_nr + '</span> - <span>' + data.cash_amount + '{{ Config::get('constants.finance.currency') }}</span> in total</h5>';
-                        }
+                        {{--if (data.cash_nr == 0){--}}
+                            {{--var cash_bookings = '<h5>Paid bookings : <span id="membership_bookings_nr"> None </span></h5>';--}}
+                        {{--}--}}
+                        {{--else{--}}
+                            {{--var cash_bookings = '<h5>Paid bookings : <span id="membership_bookings_nr">' + data.cash_nr + '</span> - <span>' + data.cash_amount + '{{ Config::get('constants.finance.currency') }}</span> in total</h5>';--}}
+                        {{--}--}}
 
-                        $('.booking_summary_price_membership').html(membership_bookings + ' ' + cash_bookings);
-                    }
-                    else {
-                        show_notification(data.error.title, data.error.message, 'lemon', 3500, 0);
-                    }
-                }
-            });
-        }
+                        {{--$('.booking_summary_price_membership').html(membership_bookings + ' ' + cash_bookings);--}}
+                    {{--}--}}
+                    {{--else {--}}
+                        {{--show_notification(data.error.title, data.error.message, 'lemon', 3500, 0);--}}
+                    {{--}--}}
+                {{--}--}}
+            {{--});--}}
+        {{--}--}}
 
-        function confirm_booking(){
-            var all_bookings = '';
-            $('input[name="time_book_key"]').each(function(){
-                if ( $(this).val().length > 4 ) {
-                    all_bookings += $(this).val() + ',';
-                }
-            });
+        {{--function confirm_booking(){--}}
+            {{--var all_bookings = '';--}}
+            {{--$('input[name="time_book_key"]').each(function(){--}}
+                {{--if ( $(this).val().length > 4 ) {--}}
+                    {{--all_bookings += $(this).val() + ',';--}}
+                {{--}--}}
+            {{--});--}}
 
-            $.ajax({
-                url: '{{route('ajax/confirm_bookings')}}',
-                type: "post",
-                cache: false,
-                data: {
-                    'selected_bookings': all_bookings,
-                },
-                success: function(data){
-                    // clean book keys
-                    $('input[name="time_book_key"]').val('');
-                    $('input[name="time_book_hour"]').val('');
+            {{--$.ajax({--}}
+                {{--url: '{{route('ajax/confirm_bookings')}}',--}}
+                {{--type: "post",--}}
+                {{--cache: false,--}}
+                {{--data: {--}}
+                    {{--'selected_bookings': all_bookings,--}}
+                {{--},--}}
+                {{--success: function(data){--}}
+                    {{--// clean book keys--}}
+                    {{--$('input[name="time_book_key"]').val('');--}}
+                    {{--$('input[name="time_book_hour"]').val('');--}}
 
-                    $('#booking_modal_end_time').modal('hide');
-                    show_notification('Booking Confirmed', 'Your booking is now confirmed. You can see it in your list of bookings.', 'lemon', 3500, 0);
+                    {{--$('#booking_modal_end_time').modal('hide');--}}
+                    {{--show_notification('Booking Confirmed', 'Your booking is now confirmed. You can see it in your list of bookings.', 'lemon', 3500, 0);--}}
 
-                    get_booking_hours();
-                    clean_booking_popup();
-                }
-            });
-        }
+                    {{--get_booking_hours();--}}
+                    {{--clean_booking_popup();--}}
+                {{--}--}}
+            {{--});--}}
+        {{--}--}}
 
-        function cancel_booking(opt1, opt2){
-            var all_bookings = '';
-            $('input[name="time_book_key"]').each(function(){
-                if ( $(this).val().length > 4 ) {
-                    all_bookings += $(this).val() + ',';
-                }
-            });
+        {{--function cancel_booking(opt1, opt2){--}}
+            {{--var all_bookings = '';--}}
+            {{--$('input[name="time_book_key"]').each(function(){--}}
+                {{--if ( $(this).val().length > 4 ) {--}}
+                    {{--all_bookings += $(this).val() + ',';--}}
+                {{--}--}}
+            {{--});--}}
 
-            $.ajax({
-                url: '{{route('ajax/cancel_bookings')}}',
-                type: "post",
-                cache: false,
-                data: {
-                    'selected_bookings': all_bookings,
-                },
-                success: function(data){
-                    $('#booking_modal_end_time').modal('hide');
-                    if (opt2==1) {
-                        show_notification('Bookings Canceled', 'The pending bookings were canceled. You can do another booking at any time.', 'lemon', 3500, 0);
-                    }
+            {{--$.ajax({--}}
+                {{--url: '{{route('ajax/cancel_bookings')}}',--}}
+                {{--type: "post",--}}
+                {{--cache: false,--}}
+                {{--data: {--}}
+                    {{--'selected_bookings': all_bookings,--}}
+                {{--},--}}
+                {{--success: function(data){--}}
+                    {{--$('#booking_modal_end_time').modal('hide');--}}
+                    {{--if (opt2==1) {--}}
+                        {{--show_notification('Bookings Canceled', 'The pending bookings were canceled. You can do another booking at any time.', 'lemon', 3500, 0);--}}
+                    {{--}--}}
 
-                    get_booking_hours();
+                    {{--get_booking_hours();--}}
 
-                    if (opt1==1) {
-                        clean_booking_popup();
-                    }
-                }
-            });
-        }
+                    {{--if (opt1==1) {--}}
+                        {{--clean_booking_popup();--}}
+                    {{--}--}}
+                {{--}--}}
+            {{--});--}}
+        {{--}--}}
 
-        $('.cancel_booking_popup_btn').on('click', function(){
-            cancel_booking(1,1);
-        });
+//        $('.cancel_booking_popup_btn').on('click', function(){
+//            cancel_booking(1,1);
+//        });
 
-        function clean_booking_popup(){
-            $('#booking_end_time').html('');
+//        function clean_booking_popup(){
+//            $('#booking_end_time').html('');
+//
+//            var nr = 1;
+//            $('#booking-step-one > div > div.form-group').each(function(){
+//                if (nr==1){
+//                    $(this).find('.booking_step_content').first().show();
+//                }
+//                else{
+//                    $(this).find('.booking_step_content').first().hide();
+//                }
+//
+//                if ($(this).hasClass('is_own_booking')){
+//                    $(this).find('span[data-id="start_time"]').html('');
+//                    $(this).find('span[data-id="room_booked"]').html('');
+//                    $(this).find('.booking_payment_type').html('');
+//                }
+//                else if ($(this).hasClass('friend_booking')){
+//                    $(this).remove();
+//                }
+//                nr++;
+//            });
+//
+//            if(typeof timeinterval !== "undefined"){
+//                clearInterval(timeinterval);
+//            }
+//        }
 
-            var nr = 1;
-            $('#booking-step-one > div > div.form-group').each(function(){
-                if (nr==1){
-                    $(this).find('.booking_step_content').first().show();
-                }
-                else{
-                    $(this).find('.booking_step_content').first().hide();
-                }
+//        $('#booking_modal_end_time').on('hidden.bs.modal', function () {
+//            if ($('#booking_end_time').html()!=''){
+//                show_notification('Booking Operation Was Broken', 'You closed the popup window before the booking was finished. You can always try again.', 'lemon', 3500, 0);
+//
+//                cancel_booking(1,0);
+//                //clean_booking_popup();
+//            }
+//        });
 
-                if ($(this).hasClass('is_own_booking')){
-                    $(this).find('span[data-id="start_time"]').html('');
-                    $(this).find('span[data-id="room_booked"]').html('');
-                    $(this).find('.booking_payment_type').html('');
-                }
-                else if ($(this).hasClass('friend_booking')){
-                    $(this).remove();
-                }
-                nr++;
-            });
-
-            if(typeof timeinterval !== "undefined"){
-                clearInterval(timeinterval);
-            }
-        }
-
-        $('#booking_modal_end_time').on('hidden.bs.modal', function () {
-            if ($('#booking_end_time').html()!=''){
-                show_notification('Booking Operation Was Broken', 'You closed the popup window before the booking was finished. You can always try again.', 'lemon', 3500, 0);
-
-                cancel_booking(1,0);
-                //clean_booking_popup();
-            }
-        });
-
-        function booking_step_two(){
-            jQuery('#booking-step-one').hide();
-            jQuery('.submit_form_2').hide();
-            jQuery('#booking-step-two').show();
-            jQuery('.submit_form_3').show();
-        }
-
-        function booking_step_one(){
-            jQuery('#booking-step-one').show();
-            jQuery('.submit_form_2').show();
-            jQuery('#booking-step-two').hide();
-            jQuery('.submit_form_3').hide();
-        }
+//        function booking_step_two(){
+//            jQuery('#booking-step-one').hide();
+//            jQuery('.submit_form_2').hide();
+//            jQuery('#booking-step-two').show();
+//            jQuery('.submit_form_3').show();
+//        }
+//
+//        function booking_step_one(){
+//            jQuery('#booking-step-one').show();
+//            jQuery('.submit_form_2').show();
+//            jQuery('#booking-step-two').hide();
+//            jQuery('.submit_form_3').hide();
+//        }
 
         function add_new_friend_popup(){
             $('#new_friend_modal').modal('show');
@@ -1601,30 +1600,30 @@
             };
         }
 
-        function initializeClock(id, endtime) {
-            var clock = document.getElementById(id);
-            //var daysSpan = clock.querySelector('.days');
-            //var hoursSpan = clock.querySelector('.hours');
-            var minutesSpan = clock.querySelector('.minutes');
-            var secondsSpan = clock.querySelector('.seconds');
-
-            function updateClock() {
-                var t = getTimeRemaining(endtime);
-
-                //daysSpan.innerHTML = t.days;
-                //hoursSpan.innerHTML = ('0' + t.hours).slice(-2);
-                minutesSpan.innerHTML = ('0' + t.minutes).slice(-2);
-                secondsSpan.innerHTML = ('0' + t.seconds).slice(-2);
-
-                if (t.total <= 0) {
-                    //clearInterval(timeinterval);
-                    $('#booking_modal_end_time').modal('hide');
-                }
-            }
-
-            updateClock();
-            timeinterval = setInterval(updateClock, 1000);
-        }
+//        function initializeClock(id, endtime) {
+//            var clock = document.getElementById(id);
+//            //var daysSpan = clock.querySelector('.days');
+//            //var hoursSpan = clock.querySelector('.hours');
+//            var minutesSpan = clock.querySelector('.minutes');
+//            var secondsSpan = clock.querySelector('.seconds');
+//
+//            function updateClock() {
+//                var t = getTimeRemaining(endtime);
+//
+//                //daysSpan.innerHTML = t.days;
+//                //hoursSpan.innerHTML = ('0' + t.hours).slice(-2);
+//                minutesSpan.innerHTML = ('0' + t.minutes).slice(-2);
+//                secondsSpan.innerHTML = ('0' + t.seconds).slice(-2);
+//
+//                if (t.total <= 0) {
+//                    //clearInterval(timeinterval);
+//                    $('#booking_modal_end_time').modal('hide');
+//                }
+//            }
+//
+//            updateClock();
+//            timeinterval = setInterval(updateClock, 1000);
+//        }
 
         function refreshAt(hours, minutes, seconds) {
             var now  = new Date();
