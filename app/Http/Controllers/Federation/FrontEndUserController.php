@@ -3673,7 +3673,7 @@ class FrontEndUserController extends Controller
         ];
         $sidebar_link= 'front-settings_account';
 
-        return view('front/settings/account',[
+        return view('front/settings/federation/account',[
             'breadcrumbs' => $breadcrumbs,
             'text_parts'  => $text_parts,
             'in_sidebar'  => $sidebar_link,
@@ -3740,7 +3740,7 @@ class FrontEndUserController extends Controller
         ];
         $sidebar_link= 'front-settings_personal';
 
-        return view('front/settings/personal',[
+        return view('front/settings/federation/personal',[
             'breadcrumbs'   => $breadcrumbs,
             'text_parts'    => $text_parts,
             'in_sidebar'    => $sidebar_link,
@@ -3849,7 +3849,7 @@ class FrontEndUserController extends Controller
         ];
         $sidebar_link= 'front-settings_personal';
 
-        return view('front/settings/all_messages',[
+        return view('front/settings/federation/all_messages',[
             'breadcrumbs'   => $breadcrumbs,
             'text_parts'    => $text_parts,
             'in_sidebar'    => $sidebar_link,

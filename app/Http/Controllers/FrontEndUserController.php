@@ -3740,7 +3740,7 @@ class FrontEndUserController extends Controller
         ];
         $sidebar_link= 'front-settings_personal';
 
-        return view('front/settings/personal',[
+        return view('front/settings/federation/personal',[
             'breadcrumbs'   => $breadcrumbs,
             'text_parts'    => $text_parts,
             'in_sidebar'    => $sidebar_link,

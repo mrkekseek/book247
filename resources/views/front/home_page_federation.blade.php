@@ -924,7 +924,7 @@
             Login.init();
 
             // initialize the date pagination part
-            UIDatepaginator.init();
+//            UIDatepaginator.init();
 
             // initialize the forms validation part
             FormValidation.init();
@@ -1146,26 +1146,26 @@
             });
         }
 
-        function get_friends_list(){
-            App.blockUI({
-                target: '#all_friends_men',
-                boxed: true,
-                message: 'Processing...'
-            });
+        {{--function get_friends_list(){--}}
+            {{--App.blockUI({--}}
+                {{--target: '#all_friends_men',--}}
+                {{--boxed: true,--}}
+                {{--message: 'Processing...'--}}
+            {{--});--}}
 
-            $.ajax({
-                url: '{{route('ajax/get_friends_list')}}',
-                type: "post",
-                cache: false,
-                data: {
-                    'limit': 5,
-                },
-                success: function(data){
-                    all_friends_format(data);
-                    App.unblockUI('#all_friends_men');
-                }
-            });
-        }
+            {{--$.ajax({--}}
+                {{--url: '{{route('ajax/get_friends_list')}}',--}}
+                {{--type: "post",--}}
+                {{--cache: false,--}}
+                {{--data: {--}}
+                    {{--'limit': 5,--}}
+                {{--},--}}
+                {{--success: function(data){--}}
+                    {{--all_friends_format(data);--}}
+                    {{--App.unblockUI('#all_friends_men');--}}
+                {{--}--}}
+            {{--});--}}
+        {{--}--}}
 
         function get_players_list(container){
             App.blockUI({
@@ -1651,7 +1651,7 @@
             $('.location_btn[data-id="{{ isset($settings['settings_preferred_location'])?$settings['settings_preferred_location']:4 }}"]').click();
 
             //get_booking_hours();
-            get_friends_list();
+//            get_friends_list();
         });
 
         @if($errors->has('email') || $errors->has('password'))

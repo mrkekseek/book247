@@ -728,60 +728,60 @@ Route::group(['middleware'=>'web', 'prefix'=>'admin'], function(){
 
 /** Start Routes for front end */
 Route::group(['prefix'=>'front', 'middleware'=>'web'], function(){
-    Route::get('my_bookings', [
-        'as'    => 'front/my_bookings',
-        'uses'  => 'BookingController@front_my_bookings'
-    ]);
+//    Route::get('my_bookings', [
+//        'as'    => 'front/my_bookings',
+//        'uses'  => 'BookingController@front_my_bookings'
+//    ]);
 
-    Route::get('bookings_archive', [
-        'as'    => 'front/bookings_archive',
-        'uses'  => 'BookingController@front_bookings_archive'
-    ]);
+//    Route::get('bookings_archive', [
+//        'as'    => 'front/bookings_archive',
+//        'uses'  => 'BookingController@front_bookings_archive'
+//    ]);
 
-    Route::post('bookings_archive', [
-        'as'    => 'front/bookings_archive',
-        'uses'  => 'BookingController@get_user_booking_archive'
-    ]);
+//    Route::post('bookings_archive', [
+//        'as'    => 'front/bookings_archive',
+//        'uses'  => 'BookingController@get_user_booking_archive'
+//    ]);
 
     Route::get('friends_list', [
         'as'    => 'front/member_friend_list',
-        'uses'  => 'FrontEndUserController@member_friends_list'
+        'uses'  => 'Federation\FrontEndUserController@member_friends_list'
     ]);
 
     Route::get('invoice_list', [
         'as'    => 'front/member_invoice_list',
-        'uses'  => 'FrontEndUserController@front_invoice_list'
+        'uses'  => 'Federation\FrontEndUserController@front_invoice_list'
     ]);
 
     Route::post('invoice_list', [
         'as'    => 'front/member_invoice_list',
-        'uses'  => 'FrontEndUserController@get_user_invoice_list'
+        'uses'  => 'Federation\FrontEndUserController@get_user_invoice_list'
     ]);
 
     Route::get('view_invoice/{id}', [
         'as'    => 'front/view_invoice/',
-        'uses'  => 'FrontEndUserController@front_show_invoice'
+        'uses'  => 'Federation\FrontEndUserController@front_show_invoice'
     ]);
 
     Route::get('list_of_memberships', [
         'as'    => 'front/membership_types',
-        'uses'  => 'FrontEndUserController@type_of_memberships'
+        'uses'  => 'Federation\FrontEndUserController@type_of_memberships'
     ]);
 
     Route::get('contact', [
         'as'    => 'front/contact_locations',
-        'uses'  => 'FrontEndUserController@contact_locations'
+        'uses'  => 'Federation\FrontEndUserController@contact_locations'
     ]);
 
     Route::get('active_membership', [
         'as'    => 'front/active_membership',
-        'uses'  => 'FrontEndUserController@member_active_membership'
+        'uses'  => 'Federation\FrontEndUserController@member_active_membership'
     ]);
 
-    Route::get('calendar_booking/{day}/',[
-        'as'    => 'front_calendar_booking',
-        'uses'  => 'BookingController@front_bookings_calendar_view'
-    ]);
+//    Route::get('calendar_booking/{day}/',[
+//        'as'    => 'front_calendar_booking',
+//        'uses'  => 'BookingController@front_bookings_calendar_view'
+//    ]);
 
     Route::get('calendar_booking/{day}/{location}/{activity}/',[
         'as'    => 'front_calendar_booking_all',
@@ -790,47 +790,47 @@ Route::group(['prefix'=>'front', 'middleware'=>'web'], function(){
 
     Route::get('settings/account', [
         'as'    => 'settings/account',
-        'uses'  => 'FrontEndUserController@settings_account'
+        'uses'  => 'Federation\FrontEndUserController@settings_account'
     ]);
 
     Route::get('settings/personal', [
         'as'    => 'settings/personal',
-        'uses'  => 'FrontEndUserController@settings_personal'
+        'uses'  => 'Federation\FrontEndUserController@settings_personal'
     ]);
 
     Route::post('settings/personal/info', [
         'as'    => 'settings/personal/info',
-        'uses'  => 'FrontEndUserController@settings_personal_info'
+        'uses'  => 'Federation\FrontEndUserController@settings_personal_info'
     ]);
 
     Route::post('settings/personal/avatar', [
         'as'    => 'settings/personal/avatar',
-        'uses'  => 'FrontEndUserController@settings_personal_avatar'
+        'uses'  => 'Federation\FrontEndUserController@settings_personal_avatar'
     ]);
 
     Route::post('settings/personal/update_password', [
         'as'    => 'settings/personal/update_password',
-        'uses'  => 'FrontEndUserController@settings_personal_update_password'
+        'uses'  => 'Federation\FrontEndUserController@settings_personal_update_password'
     ]);
 
     Route::get('reset_password/{token}',[
         'as'    => 'reset_password',
-        'uses'  => 'FrontEndUserController@password_reset_form'
+        'uses'  => 'Federation\FrontEndUserController@password_reset_form'
     ]);
 
     Route::get('my_messages',[
         'as'    => 'my_messages',
-        'uses'  => 'FrontEndUserController@front_view_all_messages'
+        'uses'  => 'Federation\FrontEndUserController@front_view_all_messages'
     ]);
 
     Route::post('reset_password/{token}',[
         'as'    => 'reset_password',
-        'uses'  => 'FrontEndUserController@password_reset_action'
+        'uses'  => 'Federation\FrontEndUserController@password_reset_action'
     ]);
 
     Route::get('error_404', [
         'as'    => 'error_404',
-        'uses'  => 'FrontPageController@error_404'
+        'uses'  => 'Federation\FrontPageController@error_404'
     ]);
 
     Route::get('back_error_404', [
@@ -844,7 +844,7 @@ Route::group(['prefix'=>'ajax', 'middleware' => 'web'], function(){
 
     Route::post('get_booking_hours',[
         'as'    => 'ajax/get_booking_hours',
-        'uses'  => 'FrontPageController@get_booking_hours'
+        'uses'  => 'Federation\FrontPageController@get_booking_hours'
     ]);
 
     Route::post('get_rooms_for_activity', [
@@ -854,12 +854,12 @@ Route::group(['prefix'=>'ajax', 'middleware' => 'web'], function(){
 
     Route::post('book_resource',[
         'as'    => 'ajax/book_resource',
-        'uses'  => 'FrontPageController@book_resource'
+        'uses'  => 'Federation\FrontPageController@book_resource'
     ]);
 
     Route::post('resources_available_for_date_time',[
         'as'    => 'ajax/get_resource_date_time',
-        'uses'  => 'FrontPageController@get_resource_list_for_date_time'
+        'uses'  => 'Federation\FrontPageController@get_resource_list_for_date_time'
     ]);
 
 //    Route::post('booking_confirmed', [
@@ -919,27 +919,27 @@ Route::group(['prefix'=>'ajax', 'middleware' => 'web'], function(){
 
     Route::post('add_friend_by_phone', [
         'as'    => 'ajax/add_friend_by_phone',
-        'uses'  => 'FrontEndUserController@add_friend_by_phone'
+        'uses'  => 'Federation\FrontEndUserController@add_friend_by_phone'
     ]);
 
     Route::post('remove_friend_from_list', [
         'as'    => 'ajax/remove_friend_from_list',
-        'uses'  => 'FrontEndUserController@remove_friend_from_list'
+        'uses'  => 'Federation\FrontEndUserController@remove_friend_from_list'
     ]);
 
     Route::post('approve_pending_friend', [
         'as'    => 'ajax/approve_pending_friend',
-        'uses'  => 'FrontEndUserController@approve_pending_friend'
+        'uses'  => 'Federation\FrontEndUserController@approve_pending_friend'
     ]);
 
     Route::post('get_friends_list', [
         'as'    => 'ajax/get_friends_list',
-        'uses'  => 'FrontEndUserController@ajax_get_friends_list'
+        'uses'  => 'Federation\FrontEndUserController@ajax_get_friends_list'
     ]);
 
     Route::post('get_friends_players_list', [
         'as'    => 'ajax/get_players_list',
-        'uses'  => 'FrontEndUserController@ajax_get_available_players_list'
+        'uses'  => 'Federation\FrontEndUserController@ajax_get_available_players_list'
     ]);
 
 //    Route::post('booking_action_player_show', [
@@ -994,12 +994,12 @@ Route::group(['prefix'=>'ajax', 'middleware' => 'web'], function(){
 
     Route::post('validate_phone_number_for_registration', [
         'as'    => 'ajax/check_phone_for_member_registration',
-        'uses'  => 'FrontEndUserController@validate_phone_for_member'
+        'uses'  => 'Federation\FrontEndUserController@validate_phone_for_member'
     ]);
 
     Route::post('validate_email_for_registration', [
         'as'    => 'ajax/check_email_for_member_registration',
-        'uses'  => 'FrontEndUserController@validate_email_for_member'
+        'uses'  => 'Federation\FrontEndUserController@validate_email_for_member'
     ]);
 
     Route::post('register_new_user_front', [
@@ -1009,12 +1009,12 @@ Route::group(['prefix'=>'ajax', 'middleware' => 'web'], function(){
 
     Route::post('update_general_settings', [
         'as'    => 'ajax/update_general_settings',
-        'uses'  => 'FrontEndUserController@update_general_settings'
+        'uses'  => 'Federation\FrontEndUserController@update_general_settings'
     ]);
 
     Route::post('password_reset_request',[
         'as'    => 'ajax/password_reset_request',
-        'uses'  => 'FrontEndUserController@password_reset_request'
+        'uses'  => 'Federation\FrontEndUserController@password_reset_request'
     ]);
 
     Route::post('general_note_add_new', [
@@ -1029,12 +1029,12 @@ Route::group(['prefix'=>'ajax', 'middleware' => 'web'], function(){
 
     Route::post('front_member_change_status', [
         'as'    => 'ajax/front_member_change_status',
-        'uses'  => 'FrontEndUserController@change_account_status'
+        'uses'  => 'Federation\FrontEndUserController@change_account_status'
     ]);
 
     Route::post('front_member_update_access_card', [
         'as'    => 'ajax/front_member_update_access_card',
-        'uses'  => 'FrontEndUserController@update_access_card'
+        'uses'  => 'Federation\FrontEndUserController@update_access_card'
     ]);
 
     Route::post('register_new_setting',[
@@ -1044,12 +1044,12 @@ Route::group(['prefix'=>'ajax', 'middleware' => 'web'], function(){
 
     Route::post('get_all_list_members', [
         'as'    => 'ajax/get_all_list_members',
-        'uses'  => 'FrontEndUserController@get_front_members_ajax_call'
+        'uses'  => 'Federation\FrontEndUserController@get_front_members_ajax_call'
     ]);
 
     Route::post('buy_store_credit', [
         'as'    => 'ajax/buy_store_credit',
-        'uses'  => 'FrontEndUserController@add_store_credit'
+        'uses'  => 'Federation\FrontEndUserController@add_store_credit'
     ]);
 });
 

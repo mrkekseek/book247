@@ -28,12 +28,15 @@
     @yield('themeGlobalStyle')
     <!-- END THEME GLOBAL STYLES -->
     <!-- BEGIN THEME LAYOUT STYLES -->
-    <!-- BEGIN THEME LAYOUT STYLES --
+    <!-- BEGIN THEME LAYOUT STYLES -->
     @yield('themeLayoutStyle')
+
     <link href="{{ asset('assets/layouts/layout3/css/layout.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('assets/layouts/layout3/css/themes/default.min.css') }}" rel="stylesheet" type="text/css" id="style_color" />
     <link href="{{ asset('assets/layouts/layout3/css/custom.min.css') }}" rel="stylesheet" type="text/css" />
     <!-- END THEME LAYOUT STYLES -->
+
+
     <link rel="shortcut icon" href="{{ asset('favicon.ico') }}" /> </head>
 <!-- END HEAD -->
 
