@@ -275,7 +275,7 @@
                                         <div class="form-group margin-top-20 margin-bottom-20">
                                             <label class="check center-block center-align">
                                                 <input type="checkbox" name="tnc" />
-                                                <span class="loginblue-font">By registering you agree to our </span>
+                                                <span class="loginblue-font">I agree to the</span>
                                                 <a href="javascript:;" class="loginblue-link">Terms of Service</a>
                                                 <span class="loginblue-font">and</span>
                                                 <a href="javascript:;" class="loginblue-link">Privacy Policy </a>
