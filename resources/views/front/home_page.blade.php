@@ -274,6 +274,7 @@
                                             <input class="form-control placeholder-no-fix" type="password" autocomplete="off" placeholder="Retype your password" name="re_rpassword" /> </div>
                                         <div class="form-group margin-top-20 margin-bottom-20">
                                             <label class="check center-block center-align">
+                                                <input type="checkbox" name="tnc" />
                                                 <span class="loginblue-font">By registering you agree to our </span>
                                                 <a href="javascript:;" class="loginblue-link">Terms of Service</a>
                                                 <span class="loginblue-font">and</span>
