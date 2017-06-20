@@ -188,6 +188,34 @@ class Auth
         $personalDetail->date_of_birth = date('Y-m-d', strtotime($api_user->birthday));
         $personalDetail->save();
     }
+    
+    public static function create_local_user($sso_user_id = FALSE, $sso_username = FALSE)
+    {
+        $api_user = ! empty($sso_username) ? ApiAuth::accounts_get_by_username($sso_username)['data'] : ApiAuth::accounts_get($sso_user_id)['data'];
+        $local_user = [
+            'sso_user_id'=>$api_user->id,
+            'username'=>$api_user->username,
+            'email'=>$api_user->email,
+            'first_name'=>$api_user->firstName,
+            'last_name'=>$api_user->lastName,
+            'middle_name'=>$api_user->middleName,            
+            'country_id'=>config('constants.globalWebsite.defaultCountryId')            
+            ];
+        switch ($api_user->gender)
+        {
+            case (1): $local_user['gender'] = 'M'; break;
+            case (2): $local_user['gender'] = 'F'; break;
+        }
+        $user = new User();
+        $user->fill($local_user);
+        if ($user->save())
+        {
+            $user->attachRole(6);
+            self::set_personal_details($user->id, $api_user);
+            return $user;
+        }
+        return FALSE;
+    }
 
     public static function create_api_user($user, $password = FALSE)
     {   

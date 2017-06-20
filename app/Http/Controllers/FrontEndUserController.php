@@ -4008,35 +4008,49 @@ class FrontEndUserController extends Controller
             ];
         }
 
-        $user = User::where('email','=',$vars['email'])->get()->first();
-        if ($user){
-            $generateKey = $this->createNewToken();
-            $oldKey = DB::select('select * from password_resets where email = :email limit 1', ['email'=>$user->email]);
-            if (sizeof($oldKey)>0){
-                // we have old key so we delete it then insert the new key
-                DB::delete('delete from password_resets where email = :email limit 1', ['email'=>$user->email]);
+        $user = User::where('username','=',$vars['email'])->get()->first();
+        if (empty($user))
+        {
+            if (Auth::check_exist_api_user($vars['email']))
+            {
+                $user = Auth::create_local_user(FALSE, $vars['email']);
             }
-
-            DB::insert('insert into password_resets (email, token, created_at) values (:email, :key, :now_time)', ['email'=>$user->email, 'key'=>$generateKey, 'now_time'=>Carbon::now()]);
-
-            $top_title_message = 'Dear <span>'.$user->first_name.' '.$user->middle_name.' '.$user->last_name .'</span>';
-            $main_message = 'This is a password reset request email sent by Booking System Agent. If you did not request a password reset, ignore this email.<br /><br />'.
-                            'If this request was initiated by you, click the following link to <a href="'.route('reset_password', ['token'=>$generateKey]).'" target="_blank">reset your password</a>.'.
-                            'The link will be available for the next 60 minutes, after that you will need to request another password reset request.<br /><br />';
-            $main_message.= 'Once the password is reset you will get a new email with the outcome of your action, then you can login to the system with your newly created password.<br />'.
-                            '<b>Remember this link is active for the next 60 minutes.</b>';
-
-            $beauty_mail = app()->make(Beautymail::class);
-            $beauty_mail->send('emails.email_default',
-                ['body_header_title'=>$top_title_message, 'body_message' => $main_message],
-                function($message) use ($user) {
-                    $message
-                        ->from(Config::get('constants.globalWebsite.system_email'))
-                        ->to($user->email, $user->first_name.' '.$user->middle_name.' '.$user->last_name)
-                        ->subject(Config::get('constants.globalWebsite.email_company_name_in_title').' - Password reset request');
-                });
+            else
+            {
+                return [
+                    'success'   => false,
+                    'errors'    => 'User not found.',
+                    'title'     => 'Error'
+                ];
+            }
+        }
+        
+        $generateKey = $this->createNewToken();
+        $oldKey = DB::select('select * from password_resets where email = :email limit 1', ['email'=>$user->email]);
+        if (sizeof($oldKey)>0){
+            // we have old key so we delete it then insert the new key
+            DB::delete('delete from password_resets where email = :email limit 1', ['email'=>$user->email]);
         }
 
+        DB::insert('insert into password_resets (email, token, created_at) values (:email, :key, :now_time)', ['email'=>$user->email, 'key'=>$generateKey, 'now_time'=>Carbon::now()]);
+
+        $top_title_message = 'Dear <span>'.$user->first_name.' '.$user->middle_name.' '.$user->last_name .'</span>';
+        $main_message = 'This is a password reset request email sent by Booking System Agent. If you did not request a password reset, ignore this email.<br /><br />'.
+                        'If this request was initiated by you, click the following link to <a href="'.route('reset_password', ['token'=>$generateKey]).'" target="_blank">reset your password</a>.'.
+                        'The link will be available for the next 60 minutes, after that you will need to request another password reset request.<br /><br />';
+        $main_message.= 'Once the password is reset you will get a new email with the outcome of your action, then you can login to the system with your newly created password.<br />'.
+                        '<b>Remember this link is active for the next 60 minutes.</b>';
+
+        $beauty_mail = app()->make(Beautymail::class);
+        $beauty_mail->send('emails.email_default',
+            ['body_header_title'=>$top_title_message, 'body_message' => $main_message],
+            function($message) use ($user) {
+                $message
+                    ->from(Config::get('constants.globalWebsite.system_email'))
+                    ->to($user->email, $user->first_name.' '.$user->middle_name.' '.$user->last_name)
+                    ->subject(Config::get('constants.globalWebsite.email_company_name_in_title').' - Password reset request');
+            });
+        
         return [
             'success'   => true,
             'title'     => 'Password reset action',
