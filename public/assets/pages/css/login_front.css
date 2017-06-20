@@ -272,6 +272,10 @@ Login page
     text-decoration: none;
     color:#999;
 }
+.login .content .pre-register-form a#forget-password{
+    margin-top: 0;
+    margin-bottom: 3px;
+}
 
 @media (max-width: 440px){
     /***

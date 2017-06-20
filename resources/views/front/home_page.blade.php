@@ -210,8 +210,11 @@
                                             <label class="control-label visible-ie8 visible-ie9">Password</label>
                                             <input class="form-control placeholder-no-fix" type="password" placeholder="Enter your password for login" name="password" /> 
                                         </div>
-                                            <input type="hidden" name="email" />                                            
-                                            <input type="hidden" name="type" />
+                                        <div class="pull-right forget-password-block">
+                                            <a href="javascript:;" id="forget-password" class="forget-password">Forgot Password?</a>
+                                        </div>
+                                        <input type="hidden" name="email" />                                            
+                                        <input type="hidden" name="type" />
                                         <div class="form-actions">
                                             <button type="submit" id="preregister-btn" class="btn red btn-block uppercase">Login</button>
                                         </div>
@@ -785,10 +788,11 @@
                     }
                 });
 
-                jQuery('#forget-password').click(function() {
+                jQuery('.login').on('click','#forget-password', function (){
                     jQuery('.login-form').hide();
+                    jQuery('.pre-register-form').hide();
                     jQuery('.forget-form').show();
-                });
+                })
 
                 jQuery('#back-btn').click(function() {
                     jQuery('.login-form').show();
@@ -1192,7 +1196,6 @@
                 },
                 success: function (data) {
                    if (data.success == true){
-                      console.log(data);
                       if (typeof data.show !== 'undefined'){
                           $(data.show).show();
                       }
