@@ -96,7 +96,7 @@
                         <p>Can not book squash</p>
                         <div class="button-box">
                             <a data-toggle="tab" href="#step-3" class="steps-button pay-but form-choice" data-id="payment-method" data-value="card">PAY WITH A CARD</a>
-                            <a data-toggle="tab" href="#step-3" class="steps-button pay-but form-choice deploy-paypal" data-id="payment-method" data-value="paypal">
+                            <a data-toggle="tab" href="#step-4" class="steps-button pay-but form-choice deploy-paypal" data-id="payment-method" data-value="paypal">
                                 <span>PAY WITH</span>
                                 <img src="{{  asset('assets/iframe/img/icon-pay.png') }}" alt="PayPal">
                             </a>
@@ -152,6 +152,94 @@
                     </div>
                 </div>
             </div>
+            <div id="step-2" class="tab-pane fade">
+                <div class="step-box clearfix">
+                    <div class="box-item">
+                        <h2 class="h2">Dag/Helg - Fitness</h2>
+                        <p class="after-cap"> 2 months signing out period and no binding.</p>
+                        <h3 class="h3">149,-/mo</h3>
+                        <p>First month fee 199,-</p>
+                        <ul class="list">
+                            <li>Billing: monthly</li>
+                            <li>Binding: none</li>
+                            <li>Sign out: 2 months</li>
+                        </ul>
+                        <p>Can not book squash</p>
+                        <div class="button-box">
+                            <a data-toggle="tab" href="#step-3" class="steps-button pay-but form-choice" data-id="payment-method" data-value="card">PAY WITH A CARD</a>
+                            <a data-toggle="tab" href="#step-3" class="steps-button pay-but form-choice deploy-paypal" data-id="payment-method" data-value="paypal">
+                                <span>PAY WITH</span>
+                                <img src="{{  asset('assets/iframe/img/icon-pay.png') }}" alt="PayPal">
+                            </a>
+                        </div>
+                    </div>
+                    <div class="picture-item">
+                        <img src="{{  asset('assets/iframe/img/picture.jpg') }}" alt="picture">
+                    </div>
+                </div>
+            </div>
+            <style>
+                #step-4 {
+                    height: 300px;
+                }
+                #step-4 .step-box{
+                    display: inline-block;
+                    top: 50%;
+                    left: 50%;
+                    position: relative;
+                    transform: translateX(-50%) translateY(-50%);
+
+                }
+                @-webkit-keyframes doting {
+                    0%   { opacity: 1; }
+                    100% { opacity: 0; }
+                }
+                @-moz-keyframes doting {
+                    0%   { opacity: 1; }
+                    100% { opacity: 0; }
+                }
+                @-o-keyframes doting {
+                    0%   { opacity: 1; }
+                    100% { opacity: 0; }
+                }
+                @keyframes doting {
+                    0%   { opacity: 1; }
+                    100% { opacity: 0; }
+                }
+
+                #step-4 .dot:first-child {
+                    -webkit-animation: doting 2s infinite; /* Safari 4+ */
+                    -moz-animation:    doting 2s infinite; /* Fx 5+ */
+                    -o-animation:      doting 2s infinite; /* Opera 12+ */
+                    animation:         doting 2s infinite; /* IE 10+, Fx 29+ */
+                }
+
+                #step-4 .dot:nth-child(2) {
+                    -webkit-animation: doting 2s infinite 0.5s; /* Safari 4+ */
+                    -moz-animation:    doting 2s infinite 0.5s; /* Fx 5+ */
+                    -o-animation:      doting 2s infinite 0.5s; /* Opera 12+ */
+                    animation:         doting 2s infinite 0.5s; /* IE 10+, Fx 29+ */
+                }
+
+                #step-4 .dot:last-child {
+                    -webkit-animation: doting 2s infinite 1s; /* Safari 4+ */
+                    -moz-animation:    doting 2s infinite 1s; /* Fx 5+ */
+                    -o-animation:      doting 2s infinite 1s; /* Opera 12+ */
+                    animation:         doting 2s infinite 1s; /* IE 10+, Fx 29+ */
+                }
+
+
+
+            </style>
+
+            <div id="step-4" class="tab-pane fade active ">
+                <div class="step-box clearfix">
+                    <span> Payment in prgress </span>
+                    <span class="dot">.</span>
+                    <span class="dot">.</span>
+                    <span class="dot">.</span>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -188,11 +276,11 @@
                     }
                 }
             });
-            $('.deploy-paypal').click(function(){
-                $form.attr('action','membership/paypal_payment');
-                $form.attr('method','POST');
-                $form.submit();
-            });
+//            $('.deploy-paypal').click(function(){
+//                $form.attr('action','membership/paypal_payment');
+//                $form.attr('method','POST');
+//                $form.submit();
+//            });
         });
     } )(jQuery);
 </script>
