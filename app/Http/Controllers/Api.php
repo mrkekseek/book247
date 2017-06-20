@@ -23,16 +23,27 @@ class Api {
 
     }
 
+    private static function convert_to_string($data){
+        if(is_array($data)) {
+            foreach ($data as $key=>$value) {
+                if(is_array($value)){
+                    $data[$key] = self::convert_to_string($value);
+                } else {
+                    $data[$key] = (string)$value;
+                }
+            }
+            return $data;
+        } else {
+            return (string) $data;
+        }
+    }
+
 
     public static function send_curl($data, $api_url, $method = 'GET')
     {
         $api_base = env('APIURL','');
         $data['token'] = str_random(32);
-        if ($data) {
-            foreach ($data as $key=>$value) {
-                $data[$key] = (string)$value;
-            }
-        }
+        $data = self::convert_to_string($data);
 
         if ($method == 'GET')
         {
