@@ -89,6 +89,51 @@ class AppSettings extends Controller
         /** Stop - Add shop location to database */
     }
 
+    public function manage_settings(Request $request)
+    {
+        $user = Auth::user();
+        if ( ! $user || ! $user->is_back_user())
+        {
+            return redirect()->intended(route('admin/login'));
+        }
+
+        $breadcrumbs = [
+            'Home'              => route('admin'),
+            'Administration'    => route('admin'),
+            'Settings'          => '',
+        ];
+
+        $text_parts  = [
+            'title'     => 'Manage settings',
+            'subtitle'  => 'list all',
+            'table_head_text1' => ''
+        ];
+
+        $sidebar_link = 'admin-settings-manage_settings';
+
+        $allowed = array();
+        foreach (DB::table("allowed_setting_values")->get() as $row)
+        {
+            $allowed[$row->setting_id][] = $row;
+        }
+
+        $settings = array();
+        foreach (Settings::all() as $row) 
+        {
+            $row['allowed'] = isset($allowed[$row->id]) ? $allowed[$row->id] : FALSE;
+            $settings[] = $row;
+        }
+
+        return view('admin/settings/manage_settings', [
+            'breadcrumbs' => $breadcrumbs,
+            'text_parts'  => $text_parts,
+            'in_sidebar'  => $sidebar_link,
+            'settings'    => $settings,
+            'data_types'  => array("string" => "String / Alphanumeric Values", "text" => "Text", "numeric" => "Numeric Only", "date" => "Date / DateTime Value"),
+            'allowed'     => $allowed
+        ]);
+    }
+
     public function update_settings(Request $request)
     {
         $user = Auth::user();
@@ -227,7 +272,6 @@ class AppSettings extends Controller
                 'message'   => 'Add Items Settings'
             ];
         }
-        
     }
 
     public function get_settings(Request $request)

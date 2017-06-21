@@ -572,6 +572,11 @@ Route::group(['middleware' => 'web'], function () {
         'as'    => 'admin/settings/list_all',
         'uses'  => 'AppSettings@index'
     ]);
+
+    Route::get('admin/settings/manage_settings', [
+        'as'    => 'admin/settings/manage_settings',
+        'uses'  => 'AppSettings@manage_settings'
+    ]);
     /* Stop General Settings Part */
 
     /* Start Finance Profiles Part */
