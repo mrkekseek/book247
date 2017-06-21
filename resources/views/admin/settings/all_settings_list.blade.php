@@ -73,6 +73,7 @@
                                                 <th> Type </th>
                                                 <th class="text-center"> Min </th>
                                                 <th class="text-center"> Max </th>
+                                                <th> Add values </th>
                                                 <th> Edit </th>
                                                 <th> Delete </th>
                                             </tr>
@@ -87,15 +88,15 @@
                                                     <td> {{ $data_types[$s->data_type] }} </td>
                                                     <td class="text-center"> {{ $s->min_value }} </td>
                                                     <td class="text-center"> {{ $s->max_value }} </td>
+                                                    <td></td>
                                                     @else
-                                                    <td colspan="3" class="text-center">
+                                                    <td colspan="3"></td>
+                                                    <td class="text-center">
                                                         <button class="btn btn-success add-items-settings btn-sm" data-id="{{ $s->id }}">
                                                             <i class="fa fa-plus"></i>
-                                                            Add values
                                                         </button>
                                                     </td>
                                                     @endif
-                                                    
                                                     <td> 
                                                         <button class="btn btn-primary edit-settings btn-sm" data-id="{{ $s->id }}">
                                                             <i class="fa fa-edit"></i>
@@ -692,7 +693,7 @@
                             context += "</td>";
 
                             context += "<td>";
-                            context += "<button class='btn btn-delete-caption'><i class='fa fa-minus'></i></button>";
+                            context += "<button class='btn btn-danger btn-delete-caption'><i class='fa fa-minus'></i></button>";
                             context += "</td>";
 
 
@@ -738,7 +739,7 @@
                 tr += $("#settings_items_cation").val();
                 tr += "</td>";
                 tr += "<td>";
-                tr += "<button class='btn btn-delete-caption'><i class='fa fa-minus'></i></button>";
+                tr += "<button class='btn btn-danger btn-delete-caption'><i class='fa fa-minus'></i></button>";
                 tr += "</td>";
                 tr += "</tr>";
                 $("#list_itmes_cation").append(tr);
