@@ -70,9 +70,9 @@
                                                 <th> # </th>
                                                 <th> Name </th>
                                                 <th> Desctiption </th>
-                                                <th> Min </th>
-                                                <th> Max </th>
-                                                <th> Add value </th>
+                                                <th> Type </th>
+                                                <th class="text-center"> Min </th>
+                                                <th class="text-center"> Max </th>
                                                 <th> Edit </th>
                                                 <th> Delete </th>
                                             </tr>
@@ -83,19 +83,19 @@
                                                     <td> {{ $s->id }} </td>
                                                     <td> {{ $s->name }} </td>
                                                     <td> {{ $s->description }} </td>
-                                                    <td> {{ $s->min_value }} </td>
-                                                    <td> {{ $s->max_value }} </td>
-                                                    
-                                                    @if ($s->constrained)
-                                                    <td>
-                                                         <button class="btn btn-success add-items-settings btn-sm">
+                                                    @if ( ! $s->constrained)
+                                                    <td> {{ $data_types[$s->data_type] }} </td>
+                                                    <td class="text-center"> {{ $s->min_value }} </td>
+                                                    <td class="text-center"> {{ $s->max_value }} </td>
+                                                    @else
+                                                    <td colspan="3" class="text-center">
+                                                        <button class="btn btn-success add-items-settings btn-sm">
                                                             <i class="fa fa-plus"></i>
+                                                            Add values
                                                         </button>
                                                     </td>
-                                                    @else
-                                                    <td>
-                                                    </td>
                                                     @endif
+                                                    
                                                     <td> 
                                                         <button class="btn btn-primary edit-settings btn-sm" data-id="{{ $s->id }}">
                                                             <i class="fa fa-edit"></i>
@@ -307,7 +307,7 @@
                                     <input type="text" class="form-control" id="settings_items_name" placeholder="Name ..." />
                                 </div>
                                 <div class="col-md-5">
-                                    <input type="text" class="form-control" id="settings_items_cation" placeholder="Cation ... " />
+                                    <input type="text" class="form-control" id="settings_items_cation" placeholder="Caption ... " />
                                 </div>
                                 <div class="col-md-2">
                                     <button class="btn btn-primary btn-block" id="add_items_settings_btn">
@@ -450,8 +450,6 @@
                         add_new_setting(); // submit the form
                     }
                 });
-
-
             }
 
             return {

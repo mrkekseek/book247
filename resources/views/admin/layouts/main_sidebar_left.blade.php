@@ -249,9 +249,9 @@
                 <span class="arrow"></span>
             </a>
             <ul class="sub-menu">
-                <li class="nav-item {{ $in_sidebar=='admin-settings-all_list'?'active open':'' }}">
+                <li class="nav-item {{ $in_sidebar == 'admin-settings-all_list' ? 'active open' : '' }}">
                     <a href="{{route('admin/settings/list_all')}}" class="nav-link ">
-                        <span class="title">List all settings</span>
+                        <span class="title">Define and mentain</span>
                     </a>
                 </li>
                 <li class="nav-item {{ $in_sidebar=='admin-settings-financial_profiles-add_new'?'active open':'' }}">
