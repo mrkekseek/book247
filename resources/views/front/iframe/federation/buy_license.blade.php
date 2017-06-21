@@ -22,6 +22,7 @@
     <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
 </head>
+
 <body class="body-iframe body-iframe-step-1">
 <div class="wrapper">
     <div class="container-iframe">
@@ -29,6 +30,7 @@
             <div id="step-1" class="tab-pane fade {{ (isset($paying) && $paying) ? "" : "in active"}}">
                 <div class="carusel-wraper">
                     <div class="carusel">
+
                         <div class="carusel-item-content carusel-item-content-1">
                             <div class="box-item">
                                 <h2 class="h2">Dag/Helg - Fitness</h2>

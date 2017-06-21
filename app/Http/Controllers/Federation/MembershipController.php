@@ -716,26 +716,46 @@ class MembershipController extends Controller
         }
     }
 
-    public function iframed($sso_id, $membership_id){
-        return view('front/iframe/federation/buy_license' ,[
+    public function iframed($sso_id, $membership_id = null)
+    {
+        $membership = null;
+        $membership_list = null;
+        if (isset($membership_id)) {
+            $membership = MembershipPlan::find($membership_id);
+        }
+        $prices = [];
+        if (!$membership) {
+            $membership_id = null;
+            $membership_list = MembershipPlan::all();
+            $membership_prices = MembershipPlanPrice::all();
+
+            foreach ($membership_prices as $price ) {
+                $prices[$price->membership_id] = $price->price;
+            }
+        }
+
+        return view('front/iframe/federation/buy_license_new' ,[
             'user_id' => $sso_id ,
-            'membership' => null
+            'membership' => $membership ,
+            'membership_list' => $membership_list,
+            'prices' => $prices
         ]);
     }
 
-    public function iframed_pay(Request $r){
-
+    public function iframed_paypal_pay(Request $r)
+    {
         if ($r->get('user_id')  && $r->get('payment_method') && $r->get('membership')) {
             if ($r->get('payment_method') == 'paypal') {
                 $u = User::where('sso_user_id',$r->get('user_id'))->first();
+                $membership = MembershipPlan::find($r->get('membership'));
                 return json_encode([
                     'success' => true ,
                     'data' => [
                         'paying' => true,
                         'payment_method' => $r->get('payment_method'),
                         'user' => $u,
-                        'membership_name' => 'Nume',
-                        'price' => 100
+                        'membership_name' => $membership->name,
+                        'price' => $membership->get_price()->price
                         ]
                     ]
                 );

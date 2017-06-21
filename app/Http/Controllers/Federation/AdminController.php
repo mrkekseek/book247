@@ -38,7 +38,7 @@ class AdminController extends Controller
     public function testRoute(){
 //        return json_encode(Api::send_curl(['memberSSOid'=>5 , 'country'=> 'NO' ,'activity' => 1],'federation_member_has_valid_license','GET'));
         return view('development',[
-            'link' => Api::send_curl(['memberSSOid' => 15 ,'activity' => 24],'federation_buy_license','GET')->iFrameUrl
+            'link' => Api::send_curl(['memberSSOid' => 15 ,'activity' => null],'federation_buy_license','GET')->iFrameUrl
         ]);
     }
 
