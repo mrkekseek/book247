@@ -26,7 +26,7 @@
 <div class="wrapper">
     <div class="container-iframe">
         <div class="tab-content">
-            <div id="step-1" class="tab-pane fade in active">
+            <div id="step-1" class="tab-pane fade {{ (isset($paying) && $paying) ? "" : "in active"}}">
                 <div class="carusel-wraper">
                     <div class="carusel">
                         <div class="carusel-item-content carusel-item-content-1">
@@ -95,8 +95,8 @@
                         </ul>
                         <p>Can not book squash</p>
                         <div class="button-box">
-                            <a data-toggle="tab" href="#step-3" class="steps-button pay-but form-choice" data-id="payment-method" data-value="card">PAY WITH A CARD</a>
-                            <a data-toggle="tab" href="#step-4" class="steps-button pay-but form-choice deploy-paypal" data-id="payment-method" data-value="paypal">
+                            <a data-toggle="tab" href="#step-3" class="steps-button pay-but form-choice" data-id="payment_method" data-value="card">PAY WITH A CARD</a>
+                            <a data-toggle="tab" href="#step-4" class="steps-button pay-but form-choice deploy-payment" data-id="payment_method" data-value="paypal">
                                 <span>PAY WITH</span>
                                 <img src="{{  asset('assets/iframe/img/icon-pay.png') }}" alt="PayPal">
                             </a>
@@ -147,107 +147,48 @@
                                 <span>Card Holder Name (as seen on the card)</span>
                                 <input type="text" id="HolderName" name="HolderName">
                             </label>
-                            <a data-toggle="tab" href="" class="steps-button payment-but">PAY NOW</a>
+                            <a data-toggle="tab" href="#step-4" class="steps-button payment-but deploy-payment">PAY NOW</a>
                         </form>
                     </div>
                 </div>
             </div>
-            <div id="step-2" class="tab-pane fade">
+            <div id="step-4" class="tab-pane fade {{ (isset($paying) && $paying) ? "in active" : "" }} ">
                 <div class="step-box clearfix">
-                    <div class="box-item">
-                        <h2 class="h2">Dag/Helg - Fitness</h2>
-                        <p class="after-cap"> 2 months signing out period and no binding.</p>
-                        <h3 class="h3">149,-/mo</h3>
-                        <p>First month fee 199,-</p>
-                        <ul class="list">
-                            <li>Billing: monthly</li>
-                            <li>Binding: none</li>
-                            <li>Sign out: 2 months</li>
-                        </ul>
-                        <p>Can not book squash</p>
-                        <div class="button-box">
-                            <a data-toggle="tab" href="#step-3" class="steps-button pay-but form-choice" data-id="payment-method" data-value="card">PAY WITH A CARD</a>
-                            <a data-toggle="tab" href="#step-3" class="steps-button pay-but form-choice deploy-paypal" data-id="payment-method" data-value="paypal">
-                                <span>PAY WITH</span>
-                                <img src="{{  asset('assets/iframe/img/icon-pay.png') }}" alt="PayPal">
-                            </a>
-                        </div>
-                    </div>
-                    <div class="picture-item">
-                        <img src="{{  asset('assets/iframe/img/picture.jpg') }}" alt="picture">
-                    </div>
-                </div>
-            </div>
-            <style>
-                #step-4 {
-                    height: 300px;
-                }
-                #step-4 .step-box{
-                    display: inline-block;
-                    top: 50%;
-                    left: 50%;
-                    position: relative;
-                    transform: translateX(-50%) translateY(-50%);
-
-                }
-                @-webkit-keyframes doting {
-                    0%   { opacity: 1; }
-                    100% { opacity: 0; }
-                }
-                @-moz-keyframes doting {
-                    0%   { opacity: 1; }
-                    100% { opacity: 0; }
-                }
-                @-o-keyframes doting {
-                    0%   { opacity: 1; }
-                    100% { opacity: 0; }
-                }
-                @keyframes doting {
-                    0%   { opacity: 1; }
-                    100% { opacity: 0; }
-                }
-
-                #step-4 .dot:first-child {
-                    -webkit-animation: doting 2s infinite; /* Safari 4+ */
-                    -moz-animation:    doting 2s infinite; /* Fx 5+ */
-                    -o-animation:      doting 2s infinite; /* Opera 12+ */
-                    animation:         doting 2s infinite; /* IE 10+, Fx 29+ */
-                }
-
-                #step-4 .dot:nth-child(2) {
-                    -webkit-animation: doting 2s infinite 0.5s; /* Safari 4+ */
-                    -moz-animation:    doting 2s infinite 0.5s; /* Fx 5+ */
-                    -o-animation:      doting 2s infinite 0.5s; /* Opera 12+ */
-                    animation:         doting 2s infinite 0.5s; /* IE 10+, Fx 29+ */
-                }
-
-                #step-4 .dot:last-child {
-                    -webkit-animation: doting 2s infinite 1s; /* Safari 4+ */
-                    -moz-animation:    doting 2s infinite 1s; /* Fx 5+ */
-                    -o-animation:      doting 2s infinite 1s; /* Opera 12+ */
-                    animation:         doting 2s infinite 1s; /* IE 10+, Fx 29+ */
-                }
-
-
-
-            </style>
-
-            <div id="step-4" class="tab-pane fade active ">
-                <div class="step-box clearfix">
-                    <span> Payment in prgress </span>
-                    <span class="dot">.</span>
-                    <span class="dot">.</span>
-                    <span class="dot">.</span>
+                    <span> Payment in progress </span>
+                    <span class="dot dot-one">.</span>
+                    <span class="dot dot-two">.</span>
+                    <span class="dot dot-three">.</span>
                 </div>
             </div>
         </div>
     </div>
 </div>
 <form id="main-form" style="display: none">
-    <input name="user_id" type="hidden" value="{{ $user_id }}"/>
-    <input name="membership" type="text" id="membership"/>
-    <input name="payment-method" type="text" id="payment-method"/>
+    <input name="user_id" type="hidden" value="{{ isset($user_id) ? $user_id : '' }}"/>
+    <input name="membership" type="text" id="membership" value="{{ isset($membership) ? $membership : '' }}"/>
+    <input name="payment_method" type="text" id="payment_method"/>
 </form>
+
+
+
+<form id="paypal-form" action="https://www.paypal.com/cgi-bin/webscr" method="post" style="display: none;">
+    <input type="hidden" name="cmd" value="_xclick">
+    <input type="hidden" name="business" value="{{ env('PAYPAL_EMAIL') }}">
+    <input type="hidden" name="return" value="">
+    <input type="hidden" name="item_name" value="">
+    <input type="hidden" name="amount" value="">
+    <input type="hidden" name="quantity" value="1">
+    <input type="hidden" name="currency_code" value="USD">
+
+    <!-- Set variables that override the address stored with PayPal. -->
+
+    <input type="hidden" name="first_name" value="">
+    <input type="hidden" name="last_name" value="">
+    <input type="hidden" name="email" value="">
+
+</form>
+
+
 <!--====END MODAL====-->
 <script src="{{ asset ('assets/iframe/libs/JQ_1-9-1/jquery.min.js') }}"></script>
 <script src="{{ asset ('assets/iframe/libs/slick/slick.min.js') }}"></script>
@@ -263,6 +204,7 @@
     (function($){
         $(document).ready(function() {
             var $form = $('#main-form');
+            var $paypal_form = $('#paypal-form');
             if (!inIframe()) {
                 $('body').text('accessed only in iframe!');
             }
@@ -270,17 +212,43 @@
                 var $input = $form.find('#'+$(this).data('id'));
                 if($input.length) {
                     $input.attr('value',$(this).data('value'));
+                    console.log('form updated');
                 } else {
                     if($(this).data('id') && $(this).data('id') !== 'user_id') {
                         $form.append('<input type="text" name="' + $(this).data('id') + '" id="' + $(this).data('id') + '" value="' + $(this).data('value') + '">');
                     }
                 }
             });
-//            $('.deploy-paypal').click(function(){
-//                $form.attr('action','membership/paypal_payment');
+            $('.deploy-payment').click(function(){
+
+                $.ajax({
+                    url: '/membership/payment',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: {
+                        'user_id' : $('input[name=user_id]').val() ,
+                        'membership' : $('#membership').val(),
+                        'payment_method' : $('#payment_method').val()
+                    },
+                    success: function(response)
+                    {
+                        $paypal_form.find('input[name=item_name]').attr('value',response.data.membership_name);
+                        $paypal_form.find('input[name=amount]').attr('value',response.data.price);
+                        $paypal_form.find('input[name=first_name]').attr('value',response.data.user.first_name);
+                        $paypal_form.find('input[name=last_name]').attr('value',response.data.user.last_name);
+                        $paypal_form.find('input[name=email]').attr('value',response.data.user.email);
+                        $paypal_form.submit();
+                    },
+                    error: function(response)
+                    {
+                        $('#step-4').removeClass('active').removeClass('in');
+                        $('#step-1').addClass('active').addClass('in');
+                    }
+                });
+//                $form.attr('action','/membership/payment');
 //                $form.attr('method','POST');
 //                $form.submit();
-//            });
+            });
         });
     } )(jQuery);
 </script>

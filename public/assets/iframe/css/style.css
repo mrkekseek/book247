@@ -350,7 +350,61 @@ p,
 .payment-but:hover {
 	opacity: 0.7;
 }
+
+
 /*END STEP-3 PAGE*/
+
+
+/*START STEP-4 PAGE*/
+#step-4 {
+	height: 300px;
+}
+#step-4 .step-box{
+	display: inline-block;
+	top: 50%;
+	left: 50%;
+	position: relative;
+	transform: translateX(-50%) translateY(-50%);
+
+}
+@-webkit-keyframes doting {
+	0%   { opacity: 1; }
+	100% { opacity: 0; }
+}
+@-moz-keyframes doting {
+	0%   { opacity: 1; }
+	100% { opacity: 0; }
+}
+@-o-keyframes doting {
+	0%   { opacity: 1; }
+	100% { opacity: 0; }
+}
+@keyframes doting {
+	0%   { opacity: 1; }
+	100% { opacity: 0; }
+}
+
+#step-4 .dot-one {
+	-webkit-animation: doting 2s infinite; /* Safari 4+ */
+	-moz-animation:    doting 2s infinite; /* Fx 5+ */
+	-o-animation:      doting 2s infinite; /* Opera 12+ */
+	animation:         doting 2s infinite; /* IE 10+, Fx 29+ */
+}
+
+#step-4 .dot-two {
+	-webkit-animation: doting 2s infinite 0.5s; /* Safari 4+ */
+	-moz-animation:    doting 2s infinite 0.5s; /* Fx 5+ */
+	-o-animation:      doting 2s infinite 0.5s; /* Opera 12+ */
+	animation:         doting 2s infinite 0.5s; /* IE 10+, Fx 29+ */
+}
+
+#step-4 .dot-three {
+	-webkit-animation: doting 2s infinite 1s; /* Safari 4+ */
+	-moz-animation:    doting 2s infinite 1s; /* Fx 5+ */
+	-o-animation:      doting 2s infinite 1s; /* Opera 12+ */
+	animation:         doting 2s infinite 1s; /* IE 10+, Fx 29+ */
+}
+/*END STEP-4 PAGE*/
 
 /*MEDIA*/
 @media only screen and (min-width : 769px) and (max-width : 920px) {

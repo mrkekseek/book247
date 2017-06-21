@@ -54,7 +54,7 @@
                     </div>
                     <div class="details">
                         <div class="number">
-                            <span data-counter="counterup" id="new_players_this_week" data-value="0"></span>
+                            <span data-counter="counterup" id="new_players_this_week" data-value="0" data-cached="false"></span>
                         </div>
                         <div class="desc"> New players this week </div>
                     </div>
@@ -70,7 +70,7 @@
                     </div>
                     <div class="details">
                         <div class="number">
-                            <span data-counter="counterup" id="income_this_week" data-value="0"></span>$ </div>
+                            <span data-counter="counterup" id="income_this_week" data-value="0" data-cached="false"></span>$ </div>
                         <div class="desc"> Income this week </div>
                     </div>
                     <a class="more" href="javascript:;"> View more
@@ -85,7 +85,7 @@
                     </div>
                     <div class="details">
                         <div class="number">
-                            <span data-counter="counterup" id="upcoming_tournaments" data-value="0"></span>
+                            <span data-counter="counterup" id="upcoming_tournaments" data-value="0" data-cached="false"></span>
                         </div>
                         <div class="desc"> Upcoming Tournaments </div>
                     </div>
@@ -101,7 +101,7 @@
                     </div>
                     <div class="details">
                         <div class="number"> +
-                            <span data-counter="counterup" id="registered_players" data-value="0"></span> </div>
+                            <span data-counter="counterup" id="registered_players" data-value="0" data-cached="false"></span> </div>
                         <div class="desc"> Registered players </div>
                     </div>
                     <a class="more" href="javascript:;"> View more
@@ -131,7 +131,7 @@
                         <div id="site_statistics_loading">
                             <img src="../assets/global/img/loading.gif" alt="loading" /> </div>
                         <div id="site_statistics_content" class="display-none">
-                            <div id="site_statistics" class="chart" style="height:370px;"> </div>
+                            <div id="site_statistics" data-cached="false" class="chart" style="height:370px;"> </div>
                         </div>
                     </div>
                 </div>
@@ -148,7 +148,7 @@
                         </div>
                     </div>
                     <div class="portlet-body">
-                        <div id="chart_2" class="chart" style="height:360px;"> </div>
+                        <div id="chart_2" data-cached="false" class="chart" style="height:360px;"> </div>
                     </div>
                 </div>
                 <!-- END INTERACTIVE CHART PORTLET-->
@@ -164,7 +164,7 @@
                         </div>
                     </div>
                     <div class="portlet-body">
-                        <div id="dashboard_amchart_3_1" class="CSSAnimationChart"></div>
+                        <div id="dashboard_amchart_3_1" data-cached="false" class="CSSAnimationChart"></div>
                     </div>
                 </div>
             </div>
@@ -178,7 +178,7 @@
                     </div>
                     <div class="portlet-body">
                         <h4>Percentage by type</h4>
-                        <div id="pie_chart_9" class="chart" style="height:447px;"> </div>
+                        <div id="pie_chart_9" data-cached="false" class="chart" style="height:447px;"> </div>
                     </div>
                 </div>
             </div>
@@ -194,7 +194,7 @@
                     </div>
                     <div class="portlet-body">
                         <h4>Federation Members vs non-Federation Members</h4>
-                        <div id="pie_chart_8" class="chart"> </div>
+                        <div id="pie_chart_8" data-cached="false" class="chart"> </div>
                     </div>
                 </div>
             </div>
@@ -208,7 +208,7 @@
                     </div>
                     <div class="portlet-body">
                         <h4>Percentage of courts per geographic area.</h4>
-                        <div id="pie_chart_8_1" class="chart"> </div>
+                        <div id="pie_chart_8_1" data-cached="false" class="chart"> </div>
                     </div>
                 </div>
             </div>
@@ -380,12 +380,15 @@
                     var itw = $('#income_this_week');
                     var ut = $('#upcoming_tournaments');
                     var rp = $('#registered_players');
+
                     if (nptw.length) {
                         $.ajax({
                             url: '/api_call',
                             type: 'POST',
                             dataType: 'json',
-                            data: { 'method' : 'new_players_this_week'},
+                            data: { 'method': 'new_players_this_week',
+                                    'cache': nptw.attr('data-cached')
+                            },
                             success : function(res) {
                                 if (res.success){
                                     $('#new_players_this_week').attr('data-value', res.data).counterUp();
@@ -405,7 +408,9 @@
                             url: '/api_call',
                             type: 'POST',
                             dataType: 'json',
-                            data: { 'method' : 'income_this_week'},
+                            data: { 'method' : 'income_this_week',
+                                    'cache': itw.attr('data-cached')
+                            },
                             success : function(res) {
                                 if (res.success){
                                     $('#income_this_week').attr('data-value', res.data).counterUp();
@@ -425,7 +430,9 @@
                             url: '/api_call',
                             type: 'POST',
                             dataType: 'json',
-                            data: { 'method' : 'upcoming_tournaments'},
+                            data: { 'method' : 'upcoming_tournaments',
+                                    'cache': ut.attr('data-cached')
+                            },
                             success : function(res) {
                                 if (res.success){
                                     $('#upcoming_tournaments').attr('data-value', res.data).counterUp();
@@ -445,7 +452,9 @@
                             url: '/api_call',
                             type: 'POST',
                             dataType: 'json',
-                            data: { 'method' : 'registered_players'},
+                            data: { 'method' : 'registered_players',
+                                    'cache': rp.attr('data-cached')
+                            },
                             success : function(res) {
                                 if (res.success){
                                     $('#registered_players').attr('data-value', res.data).counterUp();
@@ -595,9 +604,10 @@
                         url: '/api_call',
                         type: 'POST',
                         dataType: 'json',
-                        data: { 'method' : 'squash_players'},
+                        data: { 'method' : 'squash_players',
+                                'cache': $('#site_statistics').attr('data-cached')
+                        },
                         success: function(res) {
-                            console.log(res);
                             if (res.success) {
                                 var squash_players = JSON.parse(res.data);
                                 var male_visitors = $.map(squash_players.male, function(el) { return [$.map(el,function(e){ return e })]});
@@ -1665,7 +1675,9 @@
                         url: '/api_call',
                         type: 'POST',
                         dataType: 'json',
-                        data: { 'method' : 'number_of_club_members'},
+                        data: { 'method' : 'number_of_club_members',
+                                'cache' : $('#dashboard_amchart_3_1').attr('data-cached')
+                        },
                         success: function (res) {
                             if (res.success) {
                                 var number_of_club_members = JSON.parse(res.data);
@@ -2156,7 +2168,9 @@
                             url: '/api_call',
                             type: 'POST',
                             dataType: 'json',
-                            data: { 'method' : 'members_growth'},
+                            data: { 'method' : 'members_growth',
+                                    'cache' : $('#chart_2').attr('data-cached')
+                                },
                             success: function(res){
                                 if (res.success) {
                                     var members_growth = JSON.parse(res.data);
@@ -2784,7 +2798,9 @@
                             url: '/api_call',
                             type: 'POST',
                             dataType: 'json',
-                            data: { 'method' : 'total_players'},
+                            data: { 'method' : 'total_players',
+                                    'cache' : $('#pie_chart_8').attr('data-cached')
+                            },
                             success: function (res) {
                                 if (res.success) {
                                     var data1 = $.map(JSON.parse(res.data),function(el){ return el });
@@ -2823,7 +2839,9 @@
                             url: '/api_call',
                             type: 'POST',
                             dataType: 'json',
-                            data: { 'method' : 'total_courts'},
+                            data: { 'method' : 'total_courts',
+                                    'cache' : $('#pie_chart_8_1').attr('data-cached')
+                            },
                             success: function (res) {
                                 if (res.success) {
                                     var data2 = $.map(JSON.parse(res.data),function(el){ return el });
@@ -2861,7 +2879,9 @@
                             url: '/api_call',
                             type: 'POST',
                             dataType: 'json',
-                            data: { 'method' : 'overall_bookings'},
+                            data: { 'method' : 'overall_bookings',
+                                    'cache' : $('#pie_chart_9').attr('data-cached')
+                            },
                             success: function (res) {
                                 if (res.success) {
                                     var overall_bookings = JSON.parse(res.data);

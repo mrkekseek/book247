@@ -36,6 +36,7 @@ class AdminController extends Controller
      */
 
     public function testRoute(){
+//        return json_encode(Api::send_curl(['memberSSOid'=>5 , 'country'=> 'NO' ,'activity' => 1],'federation_member_has_valid_license','GET'));
         return view('development',[
             'link' => Api::send_curl(['memberSSOid' => 15 ,'activity' => 24],'federation_buy_license','GET')->iFrameUrl
         ]);
@@ -182,9 +183,7 @@ class AdminController extends Controller
         $method = $r->get('method');
         if ($method) {
             $data = $r->all();
-            if ($r->method() == 'POST') {
-                $data[] = ['site_id' => env('MY_API_ID',"")];
-            }
+            unset($data['method']);
             $response = Api::send_curl($data, $method, $r->method());
 //            dd($response);
             if ($response->code == 1) {
@@ -201,7 +200,8 @@ class AdminController extends Controller
                 );
             } else {
                 return json_encode(array(
-                        'error' => Api::$error
+                        'error' => Api::$error,
+                        'data' => json_encode($response)
                     )
                 );
             }

@@ -724,13 +724,32 @@ class MembershipController extends Controller
     }
 
     public function iframed_pay(Request $r){
-        if (isset($r->user_id) && isset($r->payment_method) && isset($r->payment_method)) {
-            if ($r->payment_method == 'paypal') {
 
+        if ($r->get('user_id')  && $r->get('payment_method') && $r->get('membership')) {
+            if ($r->get('payment_method') == 'paypal') {
+                $u = User::where('sso_user_id',$r->get('user_id'))->first();
+                return json_encode([
+                    'success' => true ,
+                    'data' => [
+                        'paying' => true,
+                        'payment_method' => $r->get('payment_method'),
+                        'user' => $u,
+                        'membership_name' => 'Nume',
+                        'price' => 100
+                        ]
+                    ]
+                );
+            } else {
+                return json_encode([
+                    'success' => true,
+                    'data' => [
+                        'paying' => true,
+                        'payment_method' => $r->get('payment_method')
+                    ]
+                ]);
             }
-
         } else {
-            return view('front/iframe/federation/buy_license' ,[
+            return json_encode([
                 'user_id' => null ,
                 'membership' => null
             ]);

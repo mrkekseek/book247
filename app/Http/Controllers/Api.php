@@ -23,7 +23,8 @@ class Api {
 
     }
 
-    private static function convert_to_string($data){
+    private static function convert_to_string($data)
+    {
         if(is_array($data)) {
             foreach ($data as $key=>$value) {
                 if(is_array($value)){
@@ -42,8 +43,12 @@ class Api {
     public static function send_curl($data, $api_url, $method = 'GET')
     {
         $api_base = env('APIURL','');
-        $data['token'] = str_random(32);
-        $data = self::convert_to_string($data);
+
+        $data['site_id'] = env('MY_API_ID',"");
+
+        if(is_array($data)) {
+            $data = self::convert_to_string($data);
+        }
 
         if ($method == 'GET')
         {
@@ -51,11 +56,18 @@ class Api {
             foreach ($data as $key => $e) {
                 $get_url .= $key.'='.$e.'&';
             }
+            $get_url = rtrim($get_url,'&');
+
             if ($get_url) {
-                $api_url .= '?'.$get_url;
+                $api_url .= '?'. $get_url;
             }
+//            dd('<'.$get_url.'>');
+            $ApiKey = self::generateApiKey($get_url);
+//            dd($get_url. '  ' . $ApiKey );
+        } else {
+            $ApiKey = self::generateApiKey($data);
         }
-        $ApiKey = self::generateApiKey($data);
+
         $curl = curl_init($api_base.'/'.$api_url);
         curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $method);
         $headers = [

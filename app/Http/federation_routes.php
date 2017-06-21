@@ -34,7 +34,7 @@ Route::get('buy_license/{sso_id}/{license_id}', [
 ]);
 
 Route::post('membership/payment', [
-    'as'    => 'membership/pay',
+    'as'    => 'membership/payment',
     'uses'  => 'Federation\MembershipController@iframed_pay'
 ]);
 
