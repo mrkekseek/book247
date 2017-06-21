@@ -89,7 +89,7 @@
                                                     <td class="text-center"> {{ $s->max_value }} </td>
                                                     @else
                                                     <td colspan="3" class="text-center">
-                                                        <button class="btn btn-success add-items-settings btn-sm">
+                                                        <button class="btn btn-success add-items-settings btn-sm" data-id="{{ $s->id }}">
                                                             <i class="fa fa-plus"></i>
                                                             Add values
                                                         </button>
@@ -290,9 +290,9 @@
                                     <table class="table table-striped table-hover">
                                         <thead>
                                             <tr>
-                                                <th> # </th>
                                                 <th> Name </th>
-                                                <th> Caption </th>
+                                                <th> Caption  </th>
+                                                <th> Delete </th>
                                             </tr>
                                         </thead>
                                         <tbody id="list_itmes_cation">
@@ -302,7 +302,7 @@
                             </div>
                         </div>
                         <div class="modal-footer clearfix">
-                            <div class="row">
+                            <div class="row form-group">
                                 <div class="col-md-5">
                                     <input type="text" class="form-control" id="settings_items_name" placeholder="Name ..." />
                                 </div>
@@ -315,7 +315,13 @@
                                     </button>
                                 </div>
                             </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <button class="btn btn-primary save-items-settings">Add confined values</button>
+                                </div>
+                            </div>
                         </div>
+
                     </div>
                 </div>
             </div>
@@ -540,6 +546,7 @@
         }();
 
         var update_id = 0;
+        var adds_id = 0;
 
         $(document).ready(function(){
             
@@ -619,63 +626,26 @@
                 });
             });
 
-            $(".add-items-settings").click(function(){
-               var id = $(this).data("id");
-                show_wait();
-                $.ajax({
-                    url: '{{ route('ajax/get_items_settings') }}',
-                    type: "post",
-                    cache: false,
-                    data: {
-                        'settings_id' : id
-                    },
-                    success: function (data) {
-                        
-                        hide_wait();
+            $(".save-items-settings").click(function(){
+            
+                var list_caption = [];
+                $("#list_itmes_cation tr").each(function(index, value){
+                    if ( ! $(value).hasClass('empty_list'))
+                    {
+                        var name = $(value).find("td:nth-child(1)").text();
+                        var value = $(value).find("td:nth-child(2)").text();
 
-                        var context = "",
-                            index   = 1;
-
-                        for(var i in data)
-                        {
-                            context += "<tr>";
-                            
-                            context += "<td>";
-                            context += index;
-                            context += "</td>";
-
-                            context += "<td>";
-                            context += data[i].item_value;
-                            context += "</td>";
-
-                            context += "<td>";
-                            context += data[i].caption;
-                            context += "</td>";
-
-                            context += "<tr>";
-                            index ++;
-                        }
-
-                        if ( ! context)
-                        {
-                            context = "<tr><td class='text-center' colspan='3'>Eampty list</td></tr>";
-                        }
-
-                        $("#list_itmes_cation").append(context);
-
-                        $("#add_items_settings").modal("show");
+                        list_caption.push({name : name, value : value});
                     }
                 });
-            });
 
-            $('#add_items_settings_btn').click(function(){
                 $.ajax({
                     url: '{{ route('ajax/add_items_settings') }}',
                     type: "post",
                     cache: false,
                     data: {
-                        'item_value' :  $('#settings_items_name').val(),
-                        'caption'    : $('#settings_items_cation').val()
+                        'setting_id' : add_id, 
+                        'list' : list_caption
                     },
                     success: function (data) {
                         if (data.success) {
@@ -689,6 +659,98 @@
                         }
                     }
                 });
+            });
+
+            $(".add-items-settings").click(function(){
+               var id = $(this).data("id");
+               add_id = id;
+                show_wait();
+                $.ajax({
+                    url: '{{ route('ajax/get_items_settings') }}',
+                    type: "post",
+                    cache: false,
+                    data: {
+                        'settings_id' : id
+                    },
+                    success: function (data) {
+                        
+                        hide_wait();
+
+                        var context = "";
+
+                        for(var i in data)
+                        {
+                            context += "<tr>";
+                            
+                            
+                            context += "<td>";
+                            context += data[i].item_value;
+                            context += "</td>";
+
+                            context += "<td>";
+                            context += data[i].caption;
+                            context += "</td>";
+
+                            context += "<td>";
+                            context += "<button class='btn btn-delete-caption'><i class='fa fa-minus'></i></button>";
+                            context += "</td>";
+
+
+                            context += "</tr>";
+                            
+                        }
+
+                        if ( ! context)
+                        {
+                            context = "<tr class='empty_list'><td class='text-center' colspan='3'>Empty list</td></tr>";
+                        }
+
+                        $("#list_itmes_cation").empty();
+                        $("#list_itmes_cation").append(context);
+
+                        $("#add_items_settings").modal("show");
+
+                        $(".btn-delete-caption").click(function(){
+                            $(this).closest("tr").remove();
+                            if ( ! $("#list_itmes_cation tr").size())
+                            {
+                                $("#list_itmes_cation").append("<tr class='empty_list'><td class='text-center' colspan='3'>Empty list</td></tr>");    
+                            }
+                        });
+
+                    }
+                });
+            });
+
+            $('#add_items_settings_btn').click(function(){
+
+                if ($("#list_itmes_cation tr.empty_list").size())
+                {
+                    $("#list_itmes_cation").empty();
+                }
+
+                var tr = "";
+                tr += "<tr>";
+                tr += "<td>";
+                tr += $("#settings_items_name").val();
+                tr += "</td>";
+                tr += "<td>";
+                tr += $("#settings_items_cation").val();
+                tr += "</td>";
+                tr += "<td>";
+                tr += "<button class='btn btn-delete-caption'><i class='fa fa-minus'></i></button>";
+                tr += "</td>";
+                tr += "</tr>";
+                $("#list_itmes_cation").append(tr);
+
+                $(".btn-delete-caption").click(function(){
+                    $(this).closest("tr").remove();
+                    if ( ! $("#list_itmes_cation tr").size())
+                    {
+                        $("#list_itmes_cation").append("<tr class='empty_list'><td class='text-center' colspan='3'>Empty list</td></tr>");    
+                    }
+                });
+
             });
         });
 

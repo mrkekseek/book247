@@ -176,7 +176,7 @@ class AppSettings extends Controller
             ];
         }
 
-        return DB::table("allowed_setting_values")->where("setting_id", $request->input("id"))->get();
+        return DB::table("allowed_setting_values")->where("setting_id", $request->input("settings_id"))->get();
     }
 
     public function add_items_settings(Request $request)
@@ -191,12 +191,27 @@ class AppSettings extends Controller
             ];
         }
 
-        $fillable = array(
-            "item_value" => $request->input("item_value"),
-            "caption" => $request->input("caption")
-        );
+        DB::table("allowed_setting_values")->where("setting_id", $request->input("setting_id"))->delete();
 
-        if ( ! DB::table("allowed_setting_values")->insert($fillable))
+        $check = TRUE;
+        if ($request->input("list"))
+        {
+            foreach ($request->input("list") as $row)
+            {
+                $fillable = array(
+                    "item_value" => $row["name"],
+                    "caption" => $row["value"],
+                    "setting_id" => $request->input("setting_id")
+                );
+
+                if ( ! DB::table("allowed_setting_values")->insert($fillable))
+                {
+                    $check = FALSE;
+                }
+            }
+        }
+
+        if ( ! $check)
         {
             return array(
                 'success'   => false,
@@ -212,6 +227,7 @@ class AppSettings extends Controller
                 'message'   => 'Add Items Settings'
             ];
         }
+        
     }
 
     public function get_settings(Request $request)
