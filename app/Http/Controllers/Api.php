@@ -7,21 +7,6 @@ class Api {
 
     public static $error = '';
 
-//    private static function generateApiKey($data)
-//    {
-//        if (is_array($data) )
-//        {
-//            $data = json_encode($data,JSON_UNESCAPED_SLASHES);
-//        }
-//        $key = env('APIKEY','');
-//        if ($key) {
-//            $hash = base64_encode(hash_hmac('sha256', $data, $key, TRUE));
-//            return $hash;
-//        } else {
-//            return '';
-//        }
-//
-//    }
 
     private static function generateApiKey($data)
     {
@@ -76,6 +61,9 @@ class Api {
             $ApiKey = self::generateApiKey($data);
         }
         $curl = curl_init($api_base.'/'.$api_url);
+
+//        dd($api_base.'/'.$api_url . '    ' .$ApiKey . '    ' . json_encode($data));
+//        dd(json_encode($data,JSON_UNESCAPED_SLASHES));
         curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $method);
         $headers = [
             'Content-Type: application/json',

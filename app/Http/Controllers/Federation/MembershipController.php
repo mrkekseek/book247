@@ -14,6 +14,8 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Auth;
 use App\User;
+use App\Invoice;
+use App\InvoiceItem;
 use App\Http\Requests;
 use Validator;
 use Regulus\ActivityLog\Models\Activity;
@@ -716,6 +718,16 @@ class MembershipController extends Controller
         }
     }
 
+    private function build_invoice_from_iframe($membership_id ,$sso_id){
+        $user = User::where('memeber_sso_id',$sso_id)->first();
+        $membership = MembershipPlan::find('membership_id');
+        if( !$user || !$membership) {
+            return false;
+        }
+        $invoice = new Invoice();
+        $invoice_item = new InvoiceItem();
+    }
+
     public function iframed($sso_id, $membership_id = null)
     {
         $membership = null;
@@ -737,6 +749,7 @@ class MembershipController extends Controller
 
     public function iframed_paypal_pay(Request $r)
     {
+
         if ($r->get('user_id')  && $r->get('payment_method') && $r->get('membership')) {
             if ($r->get('payment_method') == 'paypal') {
                 $u = User::where('sso_user_id',$r->get('user_id'))->first();

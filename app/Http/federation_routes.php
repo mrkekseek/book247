@@ -28,6 +28,11 @@ Route::get('api/federation_buy_license', [
     'uses'  => 'Federation\FederationApi@federation_buy_license'
 ]);
 
+Route::post('api/federation_buy_license', [
+    'as'    => 'api/federation_buy_license',
+    'uses'  => 'Federation\FederationApi@federation_buy_license'
+]);
+
 Route::get('buy_license/{sso_id}/{license_id?}', [
     'as'    => 'buy_license',
     'uses'  => 'Federation\MembershipController@iframed'
@@ -95,11 +100,6 @@ Route::group(['middleware' => 'web'], function () {
         'uses'  => 'Federation\AdminController@testRoute'
     ]);
 
-
-    Route::get('/admin-home-public', [
-        'as'    => 'admin-home-public',
-        'uses'  => 'Federation\AdminController@index'
-    ]);
 
     Route::get('/admin/error/permission_denied', [
         'as'    => 'admin/error/permission_denied',

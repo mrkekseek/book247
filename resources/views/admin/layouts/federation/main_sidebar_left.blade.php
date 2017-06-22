@@ -145,16 +145,16 @@
                             </a>
                         </li>
                     @endif
-                    <li class="nav-item {{ $in_sidebar=='admin-backend-user_roles'?'active open':'' }}">
-                        <a href="{{ route('admin/back_users/user_roles') }}" class="nav-link ">
-                            <span class="title"> Employees Roles </span>
-                        </a>
-                    </li>
-                    <li class="nav-item {{ $in_sidebar=='admin-backend-roles_permission'?'active open':'' }}">
-                        <a href="{{ route('admin/back_users/roles_permissions') }}" class="nav-link ">
-                            <span class="title"> Roles Permission </span>
-                        </a>
-                    </li>
+                    {{--<li class="nav-item {{ $in_sidebar=='admin-backend-user_roles'?'active open':'' }}">--}}
+                        {{--<a href="{{ route('admin/back_users/user_roles') }}" class="nav-link ">--}}
+                            {{--<span class="title"> Employees Roles </span>--}}
+                        {{--</a>--}}
+                    {{--</li>--}}
+                    {{--<li class="nav-item {{ $in_sidebar=='admin-backend-roles_permission'?'active open':'' }}">--}}
+                        {{--<a href="{{ route('admin/back_users/roles_permissions') }}" class="nav-link ">--}}
+                            {{--<span class="title"> Roles Permission </span>--}}
+                        {{--</a>--}}
+                    {{--</li>--}}
                     @if ($in_sidebar=="admin-backend-permission_details_view")
                         <li class="nav-item {{ $in_sidebar=='admin-backend-permission_details_view'?'active open':'' }}">
                             <a class="nav-link ">

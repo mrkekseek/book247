@@ -617,10 +617,11 @@
     <script src="{{ asset('assets/global/plugins/bootstrap-colorpicker/js/bootstrap-colorpicker.js') }}" type="text/javascript"></script>
 @endsection
 
+
 @section('pageBelowLevelScripts')
     <script src="{{ asset('assets/global/plugins/jquery-notific8/jquery.notific8.min.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/global/scripts/jquery.matchHeight.js') }}" type="text/javascript"></script>
-
+    {{--get match height--}}
 @endsection
 
 @section('themeBelowLayoutScripts')

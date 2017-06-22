@@ -41,7 +41,7 @@ class FederationApi extends Controller {
             if(isset($r->memberSSOid) && $user) {
                 return json_encode(array(
                     'code' => 1,
-                    'iFrameUrl' => route('buy_license',[ 'sso_id' => $r->memberSSOid,'membership_id' => $r->activity ])
+                    'iFrameUrl' => route('buy_license',[ 'sso_id' => $r->memberSSOid,'membership_id' => $r->membership_id ])
                 ),JSON_FORCE_OBJECT);
             } else {
                 return json_encode(array(
