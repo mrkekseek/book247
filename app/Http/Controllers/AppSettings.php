@@ -61,7 +61,7 @@ class AppSettings extends Controller
             'system_internal_name'  => $vars['system_internal_name'],
             'description'           => $vars['description'],
             'constrained'           => $vars['contained'] == "true" ? 1 : 0,
-            'data_type'             => $vars['data_type'],
+            'data_type'             => $vars['data_type'] ? $vars['data_type'] : "",
             'min_value'             => $vars['min_value'],
             'max_value'             => $vars['max_value']
         ];
@@ -87,6 +87,70 @@ class AppSettings extends Controller
             ];
         }
         /** Stop - Add shop location to database */
+    }
+
+    public function save_setting_application(Request $request)
+    {
+        $user = Auth::user();
+        if ( ! $user || ! $user->is_back_user())
+        {
+            return redirect()->intended(route('admin/login'));
+        }
+
+        $fillable = array(
+                "setting_id" => $request->input("setting_id"),
+                "unconstrained_value" => $request->input("value"),
+                "updated_by_id" => Auth::user()->id
+            );
+
+        $setting = DB::table("application_settings")->where("setting_id", $request->input("setting_id"))->where("updated_by_id", Auth::user()->id);
+
+        if ( ! $setting->count())
+        {
+            DB::table("application_settings")->insert($fillable);
+        }
+        else
+        {
+            DB::table("application_settings")->where("id", $setting->first()->id)->update($fillable);
+        }
+
+        return [
+            'success'   => true,
+            'title'     => 'Setting Variable Created',
+            'message'   => 'A new variable was created and can be used in the system. Remember to give it a value before using it'
+        ];
+    }
+
+    public function save_allowed_setting(Request $request)
+    {
+        $user = Auth::user();
+        if ( ! $user || ! $user->is_back_user())
+        {
+            return redirect()->intended(route('admin/login'));
+        }
+
+        $fillable = array(
+                "setting_id" => $request->input("setting_id"),
+                "allowed_setting_value_id" => $request->input("allowed_id"),
+                "updated_by_id" => Auth::user()->id
+            );
+
+        $setting = DB::table("application_settings")->where("setting_id", $request->input("setting_id"))->where("updated_by_id", Auth::user()->id);
+
+        if ( ! $setting->count())
+        {
+            DB::table("application_settings")->insert($fillable);
+        }
+        else
+        {
+            DB::table("application_settings")->where("id", $setting->first()->id)->update($fillable);
+        }
+
+        return [
+            'success'   => true,
+            'title'     => 'Setting Variable Created',
+            'message'   => 'A new variable was created and can be used in the system. Remember to give it a value before using it'
+        ];
     }
 
     public function manage_settings(Request $request)
@@ -117,9 +181,16 @@ class AppSettings extends Controller
             $allowed[$row->setting_id][] = $row;
         }
 
+        $app_settings = array();
+        foreach (DB::table("application_settings")->get() as $row)
+        {
+            $app_settings[$row->updated_by_id][$row->setting_id] = $row->unconstrained_value != '' ? $row->unconstrained_value : $row->allowed_setting_value_id;
+        }
+
         $settings = array();
         foreach (Settings::all() as $row) 
         {
+            $row['value'] = isset($app_settings[Auth::user()->id][$row->id]) ? $app_settings[Auth::user()->id][$row->id] : "";
             $row['allowed'] = isset($allowed[$row->id]) ? $allowed[$row->id] : FALSE;
             $settings[] = $row;
         }

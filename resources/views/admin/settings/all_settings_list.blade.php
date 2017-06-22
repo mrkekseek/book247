@@ -140,64 +140,65 @@
                     </div>
                     <form role="form" name="add_setting_form" id="add_setting_form">
                         <div class="modal-body">
-                                <div class="form-body">
-                                    <div class="form-group">
-                                        <label>Setting Name</label>
-                                        <div class="input-group">
-                                                <span class="input-group-addon">
-                                                    <i class="fa fa-envelope"></i>
-                                                </span>
-                                            <input type="text" class="form-control input-sm" name="setting_name" placeholder="Enter setting name here"> 
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Setting Internal Name</label>
-                                        <div class="input-group">
-                                                <span class="input-group-addon">
-                                                    <i class="fa fa-envelope"></i>
-                                                </span>
-                                            <input type="text" class="form-control input-sm" name="setting_internal_name" placeholder="Enter setting internal name here; Ex : setting_name_with_underlines "> </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Short Description</label>
-                                        <textarea class="form-control input-sm" name="setting_description" rows="3"></textarea>
-                                    </div>
-
-                                    <div class="form-group select_type">
-                                        <label>Setting Type</label>
-                                        <select class="form-control input-sm" name="setting_type">
-                                           @foreach($data_types as $key => $val)
-                                                <option value="{{ $key }}">{{ $val }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-
-                                    <div class="form-group select_type">
-                                         <label>Min and Max values (if they exists)</label>
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <input class="form-control input-sm" placeholder="min value" name="setting_min_val" type="text"> </div>
-                                            <div class="col-md-6">
-                                                <input class="form-control input-sm" placeholder="max value" name="setting_max_val" type="text"> </div>
-                                        </div>
-                                    </div>
-
-
-                                    <div class="form-group">
-                                        <label> Is Constrained [has predefined values for selection] </label>
-                                        <div class="mt-radio-inline">
-                                            <label class="mt-radio">
-                                                <input name="setting_constrained" value="yes" type="radio"> Yes
-                                                <span></span>
-                                            </label>
-                                            <label class="mt-radio">
-                                                <input name="setting_constrained" value="no" checked="checked" type="radio"> No
-                                                <span></span>
-                                            </label>
-                                        </div>
+                            <div class="form-body">
+                                <div class="form-group">
+                                    <label>Setting Name</label>
+                                    <div class="input-group">
+                                            <span class="input-group-addon">
+                                                <i class="fa fa-envelope"></i>
+                                            </span>
+                                        <input type="text" class="form-control input-sm" name="setting_name" placeholder="Enter setting name here"> 
                                     </div>
                                 </div>
-                            
+                                <div class="form-group">
+                                    <label>Setting Internal Name</label>
+                                    <div class="input-group">
+                                            <span class="input-group-addon">
+                                                <i class="fa fa-envelope"></i>
+                                            </span>
+                                        <input type="text" class="form-control input-sm" name="setting_internal_name" placeholder="Enter setting internal name here; Ex : setting_name_with_underlines "> </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Short Description</label>
+                                    <textarea class="form-control input-sm" name="setting_description" rows="3"></textarea>
+                                </div>
+
+                                <div class="form-group select_type">
+                                    <label>Setting Type</label>
+                                    <select class="form-control input-sm" name="setting_type">
+                                        <option value="">Select type</option>
+                                       @foreach($data_types as $key => $val)
+
+                                            <option value="{{ $key }}">{{ $val }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+
+                                <div class="form-group select_type">
+                                     <label>Min and Max values (if they exists)</label>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <input class="form-control input-sm" placeholder="min value" name="setting_min_val" type="text"> </div>
+                                        <div class="col-md-6">
+                                            <input class="form-control input-sm" placeholder="max value" name="setting_max_val" type="text"> </div>
+                                    </div>
+                                </div>
+
+
+                                <div class="form-group">
+                                    <label> Is Constrained [has predefined values for selection] </label>
+                                    <div class="mt-radio-inline">
+                                        <label class="mt-radio">
+                                            <input name="setting_constrained" value="yes" type="radio"> Yes
+                                            <span></span>
+                                        </label>
+                                        <label class="mt-radio">
+                                            <input name="setting_constrained" value="no" checked="checked" type="radio"> No
+                                            <span></span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <div class="modal-footer">
                             <button type="submit" class="btn blue">Add General Setting</button>
@@ -417,9 +418,6 @@
                             minlength: 5,
                             required: true
                         },
-                        setting_type: {
-                            required: true
-                        },
                         setting_min_val: {
                             number: true
                         },
@@ -556,6 +554,9 @@
                 else
                 {
                     $(".select_type, .field").hide();
+                    $("[name=setting_type]").val("");
+                    $("[name=setting_min_val]").val("");
+                    $("[name=setting_max_val]").val("");
                 }
             });
 
@@ -585,7 +586,10 @@
                             }
                         });
 
-
+                        if ($("[name='setting_constrained']").val() == "yes")
+                        {
+                            $(".select_type").hide();
+                        }
 
                         $('#edit_setting_form input[name="setting_constrained"]').each(function(index, value){
                             if ($(value).data("type") == data.constrained)

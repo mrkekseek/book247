@@ -577,6 +577,8 @@ Route::group(['middleware' => 'web'], function () {
         'as'    => 'admin/settings/manage_settings',
         'uses'  => 'AppSettings@manage_settings'
     ]);
+    
+     
     /* Stop General Settings Part */
 
     /* Start Finance Profiles Part */
@@ -1122,6 +1124,16 @@ Route::group(['prefix'=>'ajax', 'middleware' => 'web'], function(){
     Route::post('auth_autorize', [
         'as'    => 'ajax/auth_autorize',
         'uses'  => 'FrontEndUserController@auth_autorize'
+    ]);
+
+    Route::post('save_setting_application', [
+        'as'    => 'ajax/save_setting_application',
+        'uses'  => 'AppSettings@save_setting_application'
+    ]);
+
+    Route::post('save_allowed_setting', [
+        'as'    => 'ajax/save_allowed_setting',
+        'uses'  => 'AppSettings@save_allowed_setting'
     ]);
     
 });
