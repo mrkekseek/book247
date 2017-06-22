@@ -131,7 +131,7 @@
 
     <!-- BEGIN MODALS -->
         <!-- BEGIN MODAL ADD -->
-        <div class="modal fade" id="add_settings_modal">
+        <div class="modal" id="add_settings_modal" >
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -162,7 +162,8 @@
                                         <label>Short Description</label>
                                         <textarea class="form-control input-sm" name="setting_description" rows="3"></textarea>
                                     </div>
-                                    <div class="form-group">
+
+                                    <div class="form-group select_type">
                                         <label>Setting Type</label>
                                         <select class="form-control input-sm" name="setting_type">
                                            @foreach($data_types as $key => $val)
@@ -170,8 +171,9 @@
                                             @endforeach
                                         </select>
                                     </div>
-                                    <div class="form-group">
-                                        <label>Min and Max values (if they exists)</label>
+
+                                    <div class="form-group select_type">
+                                         <label>Min and Max values (if they exists)</label>
                                         <div class="row">
                                             <div class="col-md-6">
                                                 <input class="form-control input-sm" placeholder="min value" name="setting_min_val" type="text"> </div>
@@ -179,6 +181,8 @@
                                                 <input class="form-control input-sm" placeholder="max value" name="setting_max_val" type="text"> </div>
                                         </div>
                                     </div>
+
+
                                     <div class="form-group">
                                         <label> Is Constrained [has predefined values for selection] </label>
                                         <div class="mt-radio-inline">
@@ -235,7 +239,7 @@
                                         <label>Short Description</label>
                                         <textarea class="form-control input-sm" name="setting_description" rows="3"></textarea>
                                     </div>
-                                    <div class="form-group">
+                                    <div class="form-group select_type">
                                         <label>Setting Type</label>
                                         <select class="form-control input-sm" name="setting_type">
                                             @foreach($data_types as $key => $val)
@@ -243,7 +247,7 @@
                                             @endforeach
                                         </select>
                                     </div>
-                                    <div class="form-group">
+                                    <div class="form-group select_type">
                                         <label>Min and Max values (if they exists)</label>
                                         <div class="row">
                                             <div class="col-md-6">
@@ -252,7 +256,7 @@
                                                 <input class="form-control input-sm" placeholder="max value" name="setting_max_val" type="text"> </div>
                                         </div>
                                     </div>
-                                    <div class="form-group">
+                                    <div class="form-group ">
                                         <label> Is Constrained [has predefined values for selection] </label>
                                         <div class="mt-radio-inline">
                                             <label class="mt-radio">
@@ -492,15 +496,6 @@
                             minlength: 5,
                             required: true
                         },
-                        setting_type: {
-                            required: true
-                        },
-                        setting_min_val: {
-                            number: true
-                        },
-                        setting_max_val: {
-                            number: true
-                        },
                     },
 
                     invalidHandler: function (event, validator) {
@@ -553,6 +548,17 @@
             
             FormValidation.init();
             
+            $("input[name=setting_constrained]").change(function(){
+                if ($(this).val() != "yes")
+                {
+                   $(".select_type").show();
+                }
+                else
+                {
+                    $(".select_type, .field").hide();
+                }
+            });
+
             $(".edit-settings").click(function(){
                 var id = $(this).data("id");
                 update_id = id;
