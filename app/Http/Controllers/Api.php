@@ -7,20 +7,30 @@ class Api {
 
     public static $error = '';
 
+//    private static function generateApiKey($data)
+//    {
+//        if (is_array($data) )
+//        {
+//            $data = json_encode($data,JSON_UNESCAPED_SLASHES);
+//        }
+//        $key = env('APIKEY','');
+//        if ($key) {
+//            $hash = base64_encode(hash_hmac('sha256', $data, $key, TRUE));
+//            return $hash;
+//        } else {
+//            return '';
+//        }
+//
+//    }
+
     private static function generateApiKey($data)
     {
-        if (is_array($data) )
+        if (is_array($data))
         {
             $data = json_encode($data,JSON_UNESCAPED_SLASHES);
         }
-        $key = env('APIKEY','');
-        if ($key) {
-            $hash = base64_encode(hash_hmac('sha256', $data, $key, TRUE));
-            return $hash;
-        } else {
-            return '';
-        }
-
+        $hash = base64_encode(hash_hmac('sha256', $data, env('APIKEY',''), TRUE));
+        return $hash;
     }
 
     private static function convert_to_string($data)
@@ -44,11 +54,11 @@ class Api {
     {
         $api_base = env('APIURL','');
 
-        $data['site_id'] = env('MY_API_ID',"");
+//        $data['site_id'] = env('MY_API_ID',"");
 
-        if(is_array($data)) {
-            $data = self::convert_to_string($data);
-        }
+//        if(is_array($data)) {
+//            $data = self::convert_to_string($data);
+//        }
 
         if ($method == 'GET')
         {
@@ -61,13 +71,10 @@ class Api {
             if ($get_url) {
                 $api_url .= '?'. $get_url;
             }
-//            dd('<'.$get_url.'>');
             $ApiKey = self::generateApiKey($get_url);
-//            dd($get_url. '  ' . $ApiKey );
         } else {
             $ApiKey = self::generateApiKey($data);
         }
-
         $curl = curl_init($api_base.'/'.$api_url);
         curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $method);
         $headers = [

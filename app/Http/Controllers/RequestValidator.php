@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-class Validator
+class RequestValidator
 {
     public static function validate(Request $r)
     {
@@ -33,19 +33,12 @@ class Validator
 
     private static function generateApiKey($data)
     {
-        if (is_array($data) )
+        if (is_array($data))
         {
             $data = json_encode($data,JSON_UNESCAPED_SLASHES);
         }
-        $key = env('APIKEY','');
-        if ($key) {
-            $hash = base64_encode(hash_hmac('sha256', $data, $key, TRUE));
-            return $hash;
-        } else {
-            return '';
-        }
-
+        $hash = base64_encode(hash_hmac('sha256', $data, env('APIKEY',''), TRUE));
+        return $hash;
     }
-
 
 }
