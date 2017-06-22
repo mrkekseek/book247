@@ -39,7 +39,7 @@ class AdminController extends Controller
 //        return json_encode(Api::send_curl(['memberSSOid'=>5 , 'country'=> 'NO' ,'activity' => 1],'federation_member_has_valid_license','GET'));
 //        return json_encode(Api::send_curl(['account_key' => '22180-18684-57649-48111-90720'],'get_federation_url','POST'));
         return view('development',[
-            'link' => Api::send_curl(['memberSSOid' => 15 ,'activity' => null],'federation_buy_license','GET')->iFrameUrl
+            'link' => Api::send_curl(['memberSSOid' => 15 ,'activity' => 2],'federation_buy_license','GET')->iFrameUrl
         ]);
     }
 

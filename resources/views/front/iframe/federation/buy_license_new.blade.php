@@ -34,7 +34,7 @@
                             <p class="after-cap">
                                 {{ $m->short_description  }}
                             </p>
-                            <h3 class="h3" style="color: {{ $m->plan_calendar_color }}">{{ $prices[$m->id] }},-/mo</h3>
+                            <h3 class="h3" style="color: {{ $m->plan_calendar_color }}">{{ $m->get_price()->price }},-/mo</h3>
                             <p>First month fee {{ $m->administration_fee_amount }},-</p>
                             <ul class="list">
                                 <li>Billing: monthly</li>
@@ -57,12 +57,12 @@
 
         <div class="step-box clearfix">
             @if (isset($membership) && is_object($membership))
-                <div class="box-item" style="border-top: 8px solid {{ $m->plan_calendar_color }}">
+                <div class="box-item" style="border-top: 8px solid {{ $membership->plan_calendar_color }}">
                     <h2 class="h2">{{ $membership->name }}</h2>
                     <p class="after-cap">
                         {{ $membership->short_description  }}
                     </p>
-                    <h3 class="h3" style="color: {{ $membership->plan_calendar_color }}">{{ $prices[$membership->id] }},-/mo</h3>
+                    <h3 class="h3" style="color: {{ $membership->plan_calendar_color }}">{{ $membership->get_price()->price }},-/mo</h3>
                     <p>First month fee {{ $membership->administration_fee_amount }},-</p>
                     <ul class="list">
                         <li>Billing: monthly</li>
@@ -71,7 +71,7 @@
                     </ul>
                     <p>Can not book squash</p>
                     <div class="button-box">
-                        <a href="#" data-id="payment_method" data-value="card" class="steps-button pay-but pay-with-card form-choice" style="background: {{ $m->plan_calendar_color }}">PAY WITH A CARD</a>
+                        <a href="#" data-id="payment_method" data-value="card" class="steps-button pay-but pay-with-card form-choice" style="background: {{ $membership->plan_calendar_color }}">PAY WITH A CARD</a>
                         <a href="#" data-id="payment_method" data-value="paypal" class="steps-button pay-but pay-with-paypal form-choice">
                             <span>PAY WITH</span>
                             <img src="{{  asset('assets/iframe/img/icon-pay.png') }}" alt="PayPal">

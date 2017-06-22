@@ -46,7 +46,7 @@ class FederationApi extends Controller {
             } else {
                 return json_encode(array(
                     'code' => 2,
-                    'message' => 'Invalid request.'
+                    'message' => 'Invalid request. User does not exist.'
                 ),JSON_FORCE_OBJECT);
             }
         } else {

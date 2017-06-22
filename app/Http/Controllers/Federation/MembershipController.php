@@ -723,22 +723,15 @@ class MembershipController extends Controller
         if (isset($membership_id)) {
             $membership = MembershipPlan::find($membership_id);
         }
-        $prices = [];
         if (!$membership) {
             $membership_id = null;
             $membership_list = MembershipPlan::all();
-            $membership_prices = MembershipPlanPrice::all();
-
-            foreach ($membership_prices as $price ) {
-                $prices[$price->membership_id] = $price->price;
-            }
         }
 
         return view('front/iframe/federation/buy_license_new' ,[
             'user_id' => $sso_id ,
             'membership' => $membership ,
-            'membership_list' => $membership_list,
-            'prices' => $prices
+            'membership_list' => $membership_list
         ]);
     }
 
