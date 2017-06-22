@@ -58,8 +58,8 @@
                                             <tr>
                                                 <th> # </th>
                                                 <th> Name </th>
+                                                <th> Settings type </th>
                                                 <th>  </th>
-                                                <th> Save </th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -67,53 +67,60 @@
                                                 <tr>
                                                     <td> {{ $s->id }} </td>
                                                     <td> {{ $s->name }} </td>
+                                                    <td> {{ $s->data_type ? $data_types[$s->data_type] : "" }} </td>
                                                     @if ($s->constrained)
-                                                        @if ($s->allowed)
-                                                        <td>   
-                                                            <select class="form-control">
-                                                                @foreach($s->allowed as $row)
-                                                                    <option value="{{ $row->id }}">{{ $row->item_value }}</option>
-                                                                @endforeach
-                                                            </select>
+                                                        <td>
+                                                            <form role="form" class="setting_unconstrained" data-id="{{ $s->id }}">
+                                                                <div class="col-sm-10">
+                                                                    <select class="form-control" name="field_unconstrained">
+                                                                        @if ($s->allowed) @foreach($s->allowed as $row)
+                                                                            <option value="{{ $row->id }}" @if($s->value == $row->id) selected="selected" @endif>{{ $row->item_value }}</option>
+                                                                        @endforeach @endif
+                                                                    </select>
+                                                                </div>
+                                                                <div class="col-sm-2 form-group text-center">
+                                                                     <button type="submit" class="btn btn-primary edit-settings btn-sm">
+                                                                        <i class="fa fa-save"></i>
+                                                                    </button>
+                                                                </div>
+                                                            </form>
                                                         </td>
-                                                        @endif
                                                     @else
-                                                        @if ($s->data_type == 'numeric')
-                                                            <td>
-                                                                <div class="row">
-                                                                    <div class="col-sm-6">
-                                                                        <input type="text" class="form-control" placeholder="Min"  />
+                                                        <td>
+                                                            <form role="form" class="setting_values" data-id="{{ $s->id }}" data-type="{{ $s->data_type }}">
+                                                                @if ($s->data_type == 'numeric')
+                                                                    <div class="col-sm-5 form-group">
+                                                                        <input type="text" class="form-control" data-validate="number" name="field_min" placeholder="Min"  />
                                                                     </div>
-                                                                    <div class="col-sm-6">
-                                                                        <input type="text" class="form-control" placeholder="Max" />
+                                                                    <div class="col-sm-5 form-group">
+                                                                        <input type="text" class="form-control" data-validate="number" name="field_max" placeholder="Max" />
                                                                     </div>
+                                                                @elseif ($s->data_type == 'string')
+                                                               
+                                                                    <div class="col-sm-10 form-group">
+                                                                        <input type="text" class="form-control" value="{{ $s->value }}" data-validate="string" name="field_string" placeholder="String"  />
+                                                                    </div>
+                                                               
+                                                                @elseif ($s->data_type == 'text')
+                                                                
+                                                                    <div class="col-sm-10 form-group">
+                                                                        <textarea type="text" class="form-control" data-validate="string" name="field_text" placeholder="Text">{{ $s->value }}</textarea>
+                                                                    </div>
+                                                                
+                                                                 @elseif ($s->data_type == 'date')
+                                                               
+                                                                    <div class="col-sm-10 form-group">
+                                                                        <input type="text" class="form-control" value="{{ $s->value }}" data-validate="date" name="field_date" placeholder="Date"  />
+                                                                    </div>
+                                                                 @endif
+                                                                <div class="col-sm-2 form-group text-center">
+                                                                     <button type="submit" class="btn btn-primary edit-settings btn-sm" >
+                                                                        <i class="fa fa-save"></i>
+                                                                    </button>
                                                                 </div>
-                                                            </td>
-                                                        @elseif ($s->data_type == 'string')
-                                                            <td>
-                                                                <div class="row">
-                                                                    <div class="col-sm-12">
-                                                                        <input type="text" class="form-control" placeholder="Text"  />
-                                                                    </div>
-                                                                </div>
-                                                            </td>
-                                                        @elseif ($s->data_type == 'date')
-                                                            <td>
-                                                                <div class="row">
-                                                                    <div class="col-sm-12">
-                                                                        <input type="text" class="form-control" placeholder="Date"  />
-                                                                    </div>
-                                                                </div>
-                                                            </td>
-                                                        @endif
-                                                     
-
+                                                            </form>
+                                                        </td>
                                                     @endif
-                                                    <td> 
-                                                        <button class="btn btn-primary edit-settings btn-sm" data-id="{{ $s->id }}">
-                                                            <i class="fa fa-save"></i>
-                                                        </button>
-                                                    </td>
                                                 </tr>
                                             @endforeach
                                             @if( ! count($settings))
@@ -172,5 +179,198 @@
 @section('pageCustomJScripts')
     <script type="text/javascript">
 
+         var FormValidationUnconstrained = function () {
+            var handleValidation = function(elm) {
+
+                var form = $(elm);
+                var error = $('.alert-danger', form);
+                var success = $('.alert-success', form);
+
+                form.validate({
+                    errorElement: 'span',
+                    errorClass: 'help-block help-block-error',
+                    focusInvalid: false,
+                    ignore: "", 
+                    rules: {
+                        field_unconstrained : {
+                            required : true
+                        }
+                    },
+
+                    invalidHandler: function (event, validator) {
+                        success.hide();
+                        error.show();
+                    },
+
+                    errorPlacement: function (error, element) {
+                        var icon = $(element).parent('.input-icon').children('i');
+                        icon.removeClass('fa-check').addClass("fa-warning");
+                        icon.attr("data-original-title", error.text()).tooltip({'container': 'body'});
+                    },
+
+                    highlight: function (element) {
+                        $(element)
+                                .closest('.form-group').removeClass("has-success").addClass('has-error');
+                    },
+
+                    unhighlight: function (element) {
+
+                    },
+
+                    success: function (label, element) {
+                        var icon = $(element).parent('.input-icon').children('i');
+                        $(element).closest('.form-group').removeClass('has-error').addClass('has-success');
+                        icon.removeClass("fa-warning").addClass("fa-check");
+                    },
+
+                    submitHandler: function (form) {
+                        success.show();
+                        error.hide();
+                        save_unconstrained_setting(form); 
+                    }
+                });
+            }
+
+            return {
+                init: function () {
+                    $(".setting_unconstrained").each(function(index, value){
+                        handleValidation(value);
+                    });
+                }
+            };
+        }();
+
+        var FormValidation = function () {
+            var handleValidation = function(elm) {
+
+                var form = $(elm);
+                var error = $('.alert-danger', form);
+                var success = $('.alert-success', form);
+
+                form.validate({
+                    errorElement: 'span',
+                    errorClass: 'help-block help-block-error',
+                    focusInvalid: false,
+                    ignore: "", 
+                    rules: {
+                        field_text : {
+                            required : true
+                        },
+                        field_min : {
+                            number : true,
+                            required : true
+                        },
+                        field_max : {
+                            number : true,
+                            required : true
+                        },
+                        field_string : {
+                            string : true,
+                            required : true
+                        },
+                        field_unconstrained : {
+                            required : true
+                        }
+                    },
+
+                    invalidHandler: function (event, validator) {
+                        success.hide();
+                        error.show();
+                    },
+
+                    errorPlacement: function (error, element) {
+                        var icon = $(element).parent('.input-icon').children('i');
+                        icon.removeClass('fa-check').addClass("fa-warning");
+                        icon.attr("data-original-title", error.text()).tooltip({'container': 'body'});
+                    },
+
+                    highlight: function (element) {
+                        $(element)
+                                .closest('.form-group').removeClass("has-success").addClass('has-error');
+                    },
+
+                    unhighlight: function (element) {
+
+                    },
+
+                    success: function (label, element) {
+                        var icon = $(element).parent('.input-icon').children('i');
+                        $(element).closest('.form-group').removeClass('has-error').addClass('has-success');
+                        icon.removeClass("fa-warning").addClass("fa-check");
+                    },
+
+                    submitHandler: function (form) {
+                        success.show();
+                        error.hide();
+                        save_setting(form); 
+                    }
+                });
+            }
+
+            return {
+                init: function () {
+                    $(".setting_values").each(function(index, value){
+                        handleValidation(value);
+                    });
+                }
+            };
+        }();
+
+
+        $(document).ready(function(){
+            FormValidation.init();
+            FormValidationUnconstrained.init();
+        })
+
+        function save_setting(form)
+        {
+            var inputs = $(form).find(".form-control"),
+                id     = $(form).data("id"),
+                type   = $(form).data("type");
+
+            $.ajax({
+                url : "{{ route('ajax/save_setting_application') }}",
+                method : "POST",
+                data : {
+                    setting_id : id,
+                    value :  $(inputs).val()
+                },
+                success : function(data){
+                   if (data.success)
+                    {
+                        show_notification('Settings update', 'The details entered were correct', 'lime', 3500, 0);
+                       
+                    }
+                    else
+                    {
+                        show_notification('Settings update ERROR', 'Something went wrong.', 'tangerine', 3500, 0);
+                    }
+                }
+            });
+        }
+
+        function save_unconstrained_setting(form)
+        {
+
+            $.ajax({
+                url : "{{ route('ajax/save_allowed_setting') }}",
+                method : "POST",
+                data : {
+                    setting_id : $(form).data("id"),
+                    allowed_id :  $(form).find(".form-control").val()
+                },
+                success : function(data){
+                   if (data.success)
+                    {
+                        show_notification('Settings update', 'The details entered were correct', 'lime', 3500, 0);
+                       
+                    }
+                    else
+                    {
+                        show_notification('Settings update ERROR', 'Something went wrong.', 'tangerine', 3500, 0);
+                    }
+                }
+            });
+        }
     </script>
 @endsection
