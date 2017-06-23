@@ -84,6 +84,7 @@ body.body-iframe{
 	line-height: 24px;
 	color:#fff;
 	padding: 30px;
+	padding-bottom: 80px;
 	background-color: #fff;
 	margin: 0 auto;
 }
@@ -145,7 +146,9 @@ p,
 
 .carusel-button {
 	max-width: 240px;
-	margin:27px auto 0;
+	margin: 27px auto 0;
+	position: absolute;
+	bottom: 0;
 }
 
 .carusel-button:hover {

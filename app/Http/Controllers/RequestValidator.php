@@ -21,7 +21,7 @@ class RequestValidator
             } else {
                 $hash = self::generateApiKey($r->all());
             }
-            if ($hash == $r->header('apiKey')) {
+            if ($hash == $r->header('ApiKey')) {
                 return true;
             } else {
                 return false;
@@ -31,7 +31,7 @@ class RequestValidator
         }
     }
 
-    private static function generateApiKey($data)
+    public static function generateApiKey($data)
     {
         if (is_array($data))
         {

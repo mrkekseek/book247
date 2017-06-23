@@ -6,6 +6,7 @@ use App\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\RequestValidator;
 use App\User as UserModel;
+use App\IframePermission;
 
 
 class FederationApi extends Controller {
@@ -33,15 +34,14 @@ class FederationApi extends Controller {
         }
     }
 
-
-
     public function federation_buy_license(Request $r){
         if(RequestValidator::validate($r)){
             $user = isset($r->memberSSOid) ? UserModel::where('sso_user_id',$r->memberSSOid)->first() : null;
             if(isset($r->memberSSOid) && $user) {
+                $token = IframePermission::createPermission($r->memberSSOid);
                 return json_encode(array(
                     'code' => 1,
-                    'iFrameUrl' => route('buy_license',[ 'sso_id' => $r->memberSSOid,'membership_id' => $r->membership_id ])
+                    'iFrameUrl' => route('buy_license',[ 'token' => $token , 'sso_id' => $r->memberSSOid,'membership_id' => $r->membership_id ])
                 ),JSON_FORCE_OBJECT);
             } else {
                 return json_encode(array(

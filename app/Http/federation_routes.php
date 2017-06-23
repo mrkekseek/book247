@@ -33,7 +33,7 @@ Route::post('api/federation_buy_license', [
     'uses'  => 'Federation\FederationApi@federation_buy_license'
 ]);
 
-Route::get('buy_license/{sso_id}/{license_id?}', [
+Route::get('buy_license/{token}/{sso_id}/{license_id?}', [
     'as'    => 'buy_license',
     'uses'  => 'Federation\MembershipController@iframed'
 ]);

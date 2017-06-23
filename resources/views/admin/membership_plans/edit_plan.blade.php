@@ -590,7 +590,7 @@
                     </div>
                     <!-- /.modal-content -->
                 </div>
-                <!-- /.modal-dialog -->
+                <!-- /.modal-dialog -->`
             </div>
         @else
             <div class="col-md-12">

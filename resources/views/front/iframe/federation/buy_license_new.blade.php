@@ -26,10 +26,10 @@
 <div class="wrapper body-iframe-step-1" id="body-iframe-step-1">
     <div class="container-iframe">
         <div class="carusel-wraper">
-            <div class="carusel">
-                @foreach ($membership_list as $m)
-                    <div class="carusel-item-content carusel-item-content-{{ $m->id }}">
-                        <div class="box-item" style="border-top: 8px solid {{ $m->plan_calendar_color }}">
+            <div class="carusel items-container simple-items">
+                @foreach ($membership_list as $key => $m)
+                    <div class="carusel-item-content carusel-item-content-{{ $m->id }}" >
+                        <div class="box-item item item-{{ $key }}" style="border-top: 8px solid {{ $m->plan_calendar_color }}"  data-match-height="memberships-options">
                             <h2 class="h2">{{ $m->name }}</h2>
                             <p class="after-cap">
                                 {{ $m->short_description  }}
@@ -170,7 +170,7 @@
     <input name="payment_method" type="text" id="payment_method"/>
 </form>
 
-<form id="paypal-form" action="{{ env('PAYPAL_SANDBOX') }}"  method="post" style="display: none;">
+<form id="paypal-form" action="{{ env('PAYPAL_LINK') }}"  method="post" style="display: none;">
     <input type="hidden" name="cmd" value="_xclick">
     <input type="hidden" name="business" value="{{ env('PAYPAL_EMAIL') }}">
     <input type="hidden" name="return" value="https://www.rankedin.com/">
@@ -190,6 +190,7 @@
 <script src="{{ asset ('assets/iframe/libs/JQ_1-9-1/jquery.min.js') }}"></script>
 <script src="{{ asset ('assets/iframe/libs/slick/slick.min.js') }}"></script>
 <script src="{{ asset ('assets/iframe/js/common.js') }}"></script>
+<script src="{{ asset('assets/global/scripts/jquery.matchHeight.js') }}"></script>
 <script type="text/javascript">
     function inIframe () {
         try {

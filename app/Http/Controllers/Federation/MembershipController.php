@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Federation;
 
 use App\MembershipPlan;
 use App\MembershipPlanPrice;
+use App\IframePermission;
 use App\Role;
 use App\UserMembership;
 use App\ShopResourceCategory;
@@ -728,8 +729,14 @@ class MembershipController extends Controller
         $invoice_item = new InvoiceItem();
     }
 
-    public function iframed($sso_id, $membership_id = null)
+    public function iframed($token ,$sso_id, $membership_id = null)
     {
+        $permission = IframePermission::where('user_id',$sso_id)->first();
+        if(!isset($permission) || $permission->permission_token != $token) {
+            return "You have no permission";
+        } else {
+            $permission->delete();
+        }
         $membership = null;
         $membership_list = null;
         if (isset($membership_id)) {
