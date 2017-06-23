@@ -650,9 +650,16 @@
                             }
                         });
 
-                        if ($("[name='setting_constrained']").val() == "yes")
+                        
+
+                        if (data.constrained || data.data_type == 'numeric')
                         {
                             $(".select_type").hide();
+                        }
+                        
+                        if ( ! data.constrained)
+                        {
+                            $(".select_type").show();
                         }
 
                         $('#edit_setting_form input[name="setting_constrained"]').each(function(index, value){
