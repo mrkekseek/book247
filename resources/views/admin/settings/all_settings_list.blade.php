@@ -310,20 +310,20 @@
                         <div class="modal-footer clearfix">
                             <div class="row form-group">
                                 <div class="col-md-5">
-                                    <input type="text" class="form-control" id="settings_items_name" placeholder="Name ..." />
+                                    <input type="text" class="form-control" required="required" name="settings_items_name" id="settings_items_name" placeholder="Name ..." />
                                 </div>
                                 <div class="col-md-5">
-                                    <input type="text" class="form-control" id="settings_items_cation" placeholder="Caption ... " />
+                                    <input type="text" class="form-control" required="required" name="settings_items_cation" id="settings_items_cation" placeholder="Caption ... " />
                                 </div>
                                 <div class="col-md-2">
-                                    <button class="btn btn-primary btn-block" id="add_items_settings_btn">
+                                    <button class="btn btn-primary btn-block" type="button" id="add_items_settings_btn">
                                         <i class="fa fa-plus"></i>
                                     </button>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-md-12">
-                                    <button class="btn btn-primary save-items-settings">Add confined values</button>
+                                    <button  class="btn btn-primary save-items-settings">Add confined values</button>
                                 </div>
                             </div>
                         </div>
@@ -369,6 +369,69 @@
 
 @section('pageCustomJScripts')
     <script type="text/javascript">
+
+        var FormValidationItems = function () {
+            var handleValidation = function() {
+
+                var form = $(".form_items_add");
+                var error = $('.alert-danger', form);
+                var success = $('.alert-success', form);
+
+                form.validate({
+                    errorElement: 'span',
+                    errorClass: 'help-block help-block-error',
+                    focusInvalid: false,
+                    ignore: "", 
+                    rules: {
+                        settings_items_name : {
+                            required : true
+                        }
+                    },
+
+                    invalidHandler: function (event, validator) {
+                        success.hide();
+                        error.show();
+                    },
+
+                    errorPlacement: function (error, element) {
+                        var icon = $(element).parent('.input-icon').children('i');
+                        icon.removeClass('fa-check').addClass("fa-warning");
+                        icon.attr("data-original-title", error.text()).tooltip({'container': 'body'});
+                    },
+
+                    highlight: function (element) {
+                        $(element)
+                                .closest('.form-group').removeClass("has-success").addClass('has-error');
+                    },
+
+                    unhighlight: function (element) {
+
+                    },
+
+                    success: function (label, element) {
+                        var icon = $(element).parent('.input-icon').children('i');
+                        $(element).closest('.form-group').removeClass('has-error').addClass('has-success');
+                        icon.removeClass("fa-warning").addClass("fa-check");
+                    },
+
+                    submitHandler: function (form) {
+                        success.show();
+                        error.hide();
+                        save_setting(form); 
+                    }
+                });
+            }
+
+            return {
+                init: function () {
+                    $(".setting_values").each(function(index, value){
+                        handleValidation(value);
+                    });
+                }
+            };
+        }();
+
+
         $.validator.addMethod("datePickerDate",function(value, element) {
             // put your own logic here, this is just a (crappy) example
             return value.match(/^\d\d?-\d\d?-\d\d\d\d$/);
@@ -545,6 +608,7 @@
         $(document).ready(function(){
             
             FormValidation.init();
+            FormValidationItems.init();
             
             $("input[name=setting_constrained]").change(function(){
                 if ($(this).val() != "yes")
@@ -739,6 +803,27 @@
                 {
                     $("#list_itmes_cation").empty();
                 }
+
+                if ( ! $("#settings_items_name").val())
+                {
+                    $("#settings_items_name").parent().removeClass('has-success').addClass('has-error');
+                    return;
+                }
+                else
+                {
+                    $("#settings_items_name").parent().removeClass('has-error').addClass('has-success');
+                }
+
+                if ( ! $("#settings_items_cation").val())
+                {
+                    $("#settings_items_cation").parent().removeClass('has-success').addClass('has-error');
+                    return;
+                }
+                else
+                {
+                    $("#settings_items_cation").parent().removeClass('has-error').addClass('has-success');
+                }
+
 
                 var tr = "";
                 tr += "<tr>";
