@@ -59,6 +59,8 @@
                                                 <th> # </th>
                                                 <th> Name </th>
                                                 <th> Settings type </th>
+                                                <th> Min </th>
+                                                <th> Max </th>
                                                 <th>  </th>
                                             </tr>
                                         </thead>
@@ -68,6 +70,13 @@
                                                     <td> {{ $s->id }} </td>
                                                     <td> {{ $s->name }} </td>
                                                     <td> {{ $s->data_type ? $data_types[$s->data_type] : "" }} </td>
+                                                    @if ($s->data_type == 'numeric')
+                                                    <td> {{ $s->min_value }}</td>
+                                                    <td> {{ $s->max_value }} </td>
+                                                    @else
+                                                    <td> </td>
+                                                    <td> </td>
+                                                    @endif
                                                     @if ($s->constrained)
                                                         <td>
                                                             <form role="form" class="setting_unconstrained" data-id="{{ $s->id }}">
@@ -87,30 +96,27 @@
                                                         </td>
                                                     @else
                                                         <td>
-                                                            <form role="form" class="setting_values" data-id="{{ $s->id }}" data-type="{{ $s->data_type }}">
+                                                            <form role="form" class="setting_values" data-min="{{ $s->min_value }}" data-max="{{ $s->max_value }}" data-id="{{ $s->id }}" data-type="{{ $s->data_type }}">
                                                                 @if ($s->data_type == 'numeric')
-                                                                    <div class="col-sm-5 form-group">
-                                                                        <input type="text" class="form-control" data-validate="number" name="field_min" placeholder="Min"  />
-                                                                    </div>
-                                                                    <div class="col-sm-5 form-group">
-                                                                        <input type="text" class="form-control" data-validate="number" name="field_max" placeholder="Max" />
+                                                                    <div class="col-sm-10 form-group">
+                                                                        <input data-min="{{ $s->min_value }}" data-max="{{ $s->max_value }}" type="text" class="form-control" name="field_numeric" value="{{ $s->value }}" placeholder="{{ $s->min_value }} ... {{ $s->max_value }}"  />
                                                                     </div>
                                                                 @elseif ($s->data_type == 'string')
                                                                
                                                                     <div class="col-sm-10 form-group">
-                                                                        <input type="text" class="form-control" value="{{ $s->value }}" data-validate="string" name="field_string" placeholder="String"  />
+                                                                        <input type="text" class="form-control" value="{{ $s->value }}" name="field_string" placeholder="String"  />
                                                                     </div>
                                                                
                                                                 @elseif ($s->data_type == 'text')
                                                                 
                                                                     <div class="col-sm-10 form-group">
-                                                                        <textarea type="text" class="form-control" data-validate="string" name="field_text" placeholder="Text">{{ $s->value }}</textarea>
+                                                                        <textarea type="text" class="form-control" name="field_text" placeholder="Text">{{ $s->value }}</textarea>
                                                                     </div>
                                                                 
                                                                  @elseif ($s->data_type == 'date')
                                                                
                                                                     <div class="col-sm-10 form-group">
-                                                                        <input type="text" class="form-control" value="{{ $s->value }}" data-validate="date" name="field_date" placeholder="Date"  />
+                                                                        <input type="text" class="form-control" value="{{ $s->value }}" name="field_date" placeholder="Date"  />
                                                                     </div>
                                                                  @endif
                                                                 <div class="col-sm-2 form-group text-center">
@@ -240,6 +246,12 @@
             };
         }();
 
+        $.validator.addMethod('range',function(value, element, param) {
+            value = value * 1;
+            return (value >= $(element).data("min")) && (value <= $(element).data("max"));
+        },"Enter value from min to max");
+
+
         var FormValidation = function () {
             var handleValidation = function(elm) {
 
@@ -256,16 +268,12 @@
                         field_text : {
                             required : true
                         },
-                        field_min : {
+                        field_numeric: {
                             number : true,
-                            required : true
-                        },
-                        field_max : {
-                            number : true,
-                            required : true
+                            required : true,
+                            range : true
                         },
                         field_string : {
-                            string : true,
                             required : true
                         },
                         field_unconstrained : {
