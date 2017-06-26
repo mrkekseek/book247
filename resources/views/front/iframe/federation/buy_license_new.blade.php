@@ -172,7 +172,7 @@
     <input name="payment_method" type="text" id="payment_method"/>
 </form>
 
-<form id="paypal-form" action="{{ env('PAYPAL_PAYPAL') }}"  method="post" style="display: none;">
+<form id="paypal-form" action="{{ env('PAYPAL_SANDBOX') }}"  method="post" style="display: none;">
     <input type="hidden" name="cmd" value="_xclick">
     <input type="hidden" name="business" value="{{ env('PAYPAL_EMAIL') }}">
     <input type="hidden" name="return" value="https://www.rankedin.com/">
