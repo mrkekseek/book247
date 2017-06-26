@@ -28,23 +28,25 @@
         <div class="carusel-wraper">
             <div class="carusel items-container simple-items">
                 @foreach ($membership_list as $key => $m)
-                    <div class="carusel-item-content carusel-item-content-{{ $m->id }}" >
-                        <div class="box-item item item-{{ $key }}" style="border-top: 8px solid {{ $m->plan_calendar_color }}"  data-match-height="memberships-options">
-                            <h2 class="h2">{{ $m->name }}</h2>
-                            <p class="after-cap">
-                                {{ $m->short_description  }}
-                            </p>
-                            <h3 class="h3" style="color: {{ $m->plan_calendar_color }}">{{ $m->get_price()->price }},-/mo</h3>
-                            <p>First month fee {{ $m->administration_fee_amount }},-</p>
-                            <ul class="list">
-                                <li>Billing: monthly</li>
-                                <li>Binding: {{ $m->binding_period }} months</li>
-                                <li>Sign out: {{ $m->sign_out_period ? $m->sign_out_period .' months' : 'none'}}</li>
-                            </ul>
-                            <p>Can not book squash</p>
-                            <a href="#" data-id="membership" data-value="{{ $m->id }}" class="form-choice carusel-button steps-button" style="background: {{ $m->plan_calendar_color }}">GET IT NOW</a>
+                    @if ($m->status == 'active')
+                        <div class="carusel-item-content carusel-item-content-{{ $m->id }}" >
+                            <div class="box-item item item-{{ $key }}" style="border-top: 8px solid {{ $m->plan_calendar_color }}"  data-match-height="memberships-options">
+                                <h2 class="h2">{{ $m->name }}</h2>
+                                <p class="after-cap">
+                                    {{ $m->short_description  }}
+                                </p>
+                                <h3 class="h3" style="color: {{ $m->plan_calendar_color }}">{{ $m->get_price()->price }},-/mo</h3>
+                                <p>First month fee {{ $m->administration_fee_amount }},-</p>
+                                <ul class="list">
+                                    <li>Billing: monthly</li>
+                                    <li>Binding: {{ $m->binding_period }} months</li>
+                                    <li>Sign out: {{ $m->sign_out_period ? $m->sign_out_period .' months' : 'none'}}</li>
+                                </ul>
+                                <p>Can not book squash</p>
+                                <a href="#" data-id="membership" data-value="{{ $m->id }}" class="form-choice carusel-button steps-button" style="background: {{ $m->plan_calendar_color }}">GET IT NOW</a>
+                            </div>
                         </div>
-                    </div>
+                    @endif
                 @endforeach
             </div>
         </div>
@@ -170,7 +172,7 @@
     <input name="payment_method" type="text" id="payment_method"/>
 </form>
 
-<form id="paypal-form" action="{{ env('PAYPAL_LINK') }}"  method="post" style="display: none;">
+<form id="paypal-form" action="{{ env('PAYPAL_PAYPAL') }}"  method="post" style="display: none;">
     <input type="hidden" name="cmd" value="_xclick">
     <input type="hidden" name="business" value="{{ env('PAYPAL_EMAIL') }}">
     <input type="hidden" name="return" value="https://www.rankedin.com/">
