@@ -63,7 +63,7 @@ class MembershipController extends Controller
         if (!$the_plan){
             return [
                 'success'   => false,
-                'errors'    => 'The selected plan could not be found in the system; the plan might not be active. Please check.',
+                'errors'    => 'The selected plan could not be found in the system; the plan might not be active.',
                 'title'     => 'An error occurred'
             ];
         }
@@ -171,7 +171,7 @@ class MembershipController extends Controller
                 else{
                     return [
                         'success'   => false,
-                        'errors'    => 'Could not freeze the current membership plan or no active plan at this moment. Please logout/login then try again.',
+                        'errors'    => 'Could not freeze the current membership plan or no active plan at this moment.',
                         'title'     => 'An error occurred'
                     ];
                 }
@@ -182,14 +182,14 @@ class MembershipController extends Controller
 
             return [
                 'success'   => true,
-                'message'   => 'Membership status changed to freeze. At the end of the selected period the membership will automatically re-activate.',
+                'message'   => 'Membership status changed to freeze. At the end of the freez period, membership will automatically re-activate.',
                 'title'     => 'Membership plan froze'
             ];
         }
         else{
             return [
                 'success'   => false,
-                'errors'    => 'Could not freeze the current membership plan or no active plan at this moment. Please logout/login then try again.',
+                'errors'    => 'Could not freeze the current membership plan or no active plan at this moment.',
                 'title'     => 'An error occurred'
             ];
         }
@@ -319,18 +319,39 @@ class MembershipController extends Controller
         if ($old_plan) {
             if (isset($vars['is_overwrite']) && $vars['is_overwrite']==1 && $user->can('general-permission-overwrite')){
                 try{
-                    $cancellation_date = Carbon::createFromFormat('d-m-Y H:i:s',$vars['custom_cancellation_date'].' 00:00:00')->format('Y-m-d');
+                    $cancellation_date = Carbon::createFromFormat('d-m-Y H:i:s',$vars['custom_cancellation_date'].' 00:00:00');
                 }
                 catch (\Exception $err){
-                    // do nothing
+                    return [
+                        'success'   => false,
+                        'errors'    => 'Invalid cancellation date. Reload page and try again.',
+                        'title'     => 'An error occurred'
+                    ];
                 }
 
                 if (isset($cancellation_date)){
-                    $member->cancel_membership_plan($old_plan, $cancellation_date, $cancellation_date);
+                    if (Carbon::today()->gt($cancellation_date)){
+                        return [
+                            'success'   => false,
+                            'errors'    => 'Membership can not be cancelled in the past.',
+                            'title'     => 'An error occurred'
+                        ];
+                    }
+                    else{
+                        $member->cancel_membership_plan($old_plan, $cancellation_date->format('Y-m-d'), $cancellation_date->addDays(-1)->format('Y-m-d'));
+                        return [
+                            'success'   => true,
+                            'message'   => 'Membership plan is set to cancel on the requested date.',
+                            'title'     => 'Membership plan - Planned Canceled'
+                        ];
+                    }
                 }
             }
             else{
-                $plannedInvoiceCancelled = UserMembershipInvoicePlanning::where('id','=',$vars['cancellation_date'])->where('user_membership_id','=',$old_plan->id)->get()->first();
+                $plannedInvoiceCancelled = UserMembershipInvoicePlanning::where('id','=',$vars['cancellation_date'])
+                    ->where('user_membership_id','=',$old_plan->id)
+                    ->where('status','=','pending')
+                    ->take(1)->first();
                 if (!$plannedInvoiceCancelled){
                     return [
                         'success'   => false,
@@ -338,19 +359,19 @@ class MembershipController extends Controller
                         'title'     => 'Error Validating Date'
                     ];
                 }
-                $member->cancel_membership_plan($old_plan, $plannedInvoiceCancelled->issued_date, $plannedInvoiceCancelled->last_active_date);
-            }
 
-            return [
-                'success'   => true,
-                'message'   => 'Membership plan is set to cancel on the requested date. Another plan can be applied after that date.',
-                'title'     => 'Membership plan - Planned Canceled'
-            ];
+                $member->cancel_membership_plan($old_plan, $plannedInvoiceCancelled->issued_date, $plannedInvoiceCancelled->last_active_date);
+                return [
+                    'success'   => true,
+                    'message'   => 'Membership plan is set to cancel on the requested date.',
+                    'title'     => 'Membership plan - Planned Canceled'
+                ];
+            }
         }
         else{
             return [
                 'success'   => false,
-                'errors'    => 'Could not plan a cancellation to current membership plan or no active plan at this moment. Please logout/login then try again.',
+                'errors'    => 'Could not plan a cancellation to current membership plan or no active plan at this moment.',
                 'title'     => 'An error occurred'
             ];
         }

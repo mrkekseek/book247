@@ -347,4 +347,5 @@ class AdminController extends Controller
             'in_sidebar'  => $sidebar_link,
         ]);
     }
+
 }

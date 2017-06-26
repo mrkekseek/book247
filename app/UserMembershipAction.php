@@ -110,7 +110,7 @@ class UserMembershipAction extends Model
                         }
                     }
 
-                    echo '- freeze processed today for Membership ID '.$userMembership->id.PHP_EOL;
+                    //echo '- freeze processed today for Membership ID '.$userMembership->id.PHP_EOL;
                 }
                 else {
                     // we need to freeze the membership plan if the freeze starts today
@@ -122,7 +122,7 @@ class UserMembershipAction extends Model
                         $this->processed = 1;
                         $this->save();
 
-                        echo '- Freeze started today for membership ID '.$userMembership->id.PHP_EOL;
+                        //echo '- Freeze started today for membership ID '.$userMembership->id.PHP_EOL;
                     } // we need to unfreez the membership plan if the freeze stops today
                     elseif (Carbon::today()->eq($to_date)) {
                         $userMembership->status = 'active';
@@ -132,10 +132,10 @@ class UserMembershipAction extends Model
                         $this->add_note('Membership unfrozen today : ' . time() . ' : by System User');
                         $this->save();
 
-                        echo '- Freeze over today for membership ID '.$userMembership->id.PHP_EOL;
+                        //echo '- Freeze over today for membership ID '.$userMembership->id.PHP_EOL;
                     }
                     else {
-                        echo '- Freeze not today, starts on '.$from_date->format('Y-m-d').' for membership ID '.$userMembership->id.PHP_EOL;
+                        //echo '- Freeze not today, starts on '.$from_date->format('Y-m-d').' for membership ID '.$userMembership->id.PHP_EOL;
                         continue;
                     }
                 }
@@ -179,13 +179,19 @@ class UserMembershipAction extends Model
                     $this->save();
 
                     $memberRole = Role::where('name','=','front-member')->get()->first();
+                    $userRole   = Role::where('name','=','front-user')->get()->first();
+
                     $userID = User::find($userMembership->user_id);
                     $userID->detachRole($memberRole);
 
-                    echo '- Cancelled today - membership ID '.$userMembership->id.PHP_EOL;
+                    if ($userID->hasRole('front-user')===false){
+                        $userID->attachRole($userRole);
+                    }
+
+                    //echo '- Cancelled today - membership ID '.$userMembership->id.PHP_EOL;
                 }
                 else{
-                    echo '- Not today - cancel on '.$from_date->format('Y-m-d').PHP_EOL;
+                    //echo '- Not today - cancel on '.$from_date->format('Y-m-d').PHP_EOL;
                 }
                 break;
             }
@@ -209,10 +215,10 @@ class UserMembershipAction extends Model
                     $this->status = 'old';
                     $this->save();
 
-                    echo '- updated today - membership ID '.$userMembership->id.PHP_EOL;
+                    //echo '- updated today - membership ID '.$userMembership->id.PHP_EOL;
                 }
                 else{
-                    echo '- update will run on '.$from_date->format('Y-m-d').' for membership ID : '.$userMembership->id.PHP_EOL;
+                    //echo '- update will run on '.$from_date->format('Y-m-d').' for membership ID : '.$userMembership->id.PHP_EOL;
                 }
                 break;
             }

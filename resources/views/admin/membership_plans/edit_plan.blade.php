@@ -529,7 +529,7 @@
                     </div>
                 </div>
             </div>
-
+            @if (isset($restriction['id']))
             <div class="col-md-12">
                 <div class="portlet light bordered">
                     <div class="portlet-title">
@@ -552,6 +552,7 @@
                     </div>
                 </div>
             </div>
+            @endif
 
             <div class="modal fade bs-modal-sm" id="cancel_confirm_box" tabindex="-1" role="dialog" aria-hidden="true">
                 <div class="modal-dialog">
@@ -589,7 +590,7 @@
                     </div>
                     <!-- /.modal-content -->
                 </div>
-                <!-- /.modal-dialog -->
+                <!-- /.modal-dialog -->`
             </div>
         @else
             <div class="col-md-12">
@@ -616,10 +617,11 @@
     <script src="{{ asset('assets/global/plugins/bootstrap-colorpicker/js/bootstrap-colorpicker.js') }}" type="text/javascript"></script>
 @endsection
 
+
 @section('pageBelowLevelScripts')
     <script src="{{ asset('assets/global/plugins/jquery-notific8/jquery.notific8.min.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/global/scripts/jquery.matchHeight.js') }}" type="text/javascript"></script>
-
+    {{--get match height--}}
 @endsection
 
 @section('themeBelowLayoutScripts')

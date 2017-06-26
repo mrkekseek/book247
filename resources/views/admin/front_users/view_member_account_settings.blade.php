@@ -181,10 +181,14 @@
                                                         <!-- BEGIN FORM-->
                                                         <form action="#" id="add_store_credit" class="form-horizontal">
                                                             <div class="form-body">
+                                                                <label class="control-label col-md-4 margin-bottom-10"> Available Store Credit </label>
+                                                                <div class="col-md-8 margin-bottom-10">
+                                                                    <a href="#" disabled role="button" class="btn yellow"> {!! sizeof($storeCreditNotes)>0?$storeCreditNotes[0]->total_amount:0 !!} credits</a>
+                                                                </div>
                                                                 <div class="form-group" style="margin-bottom:0px;">
-                                                                    <label class="control-label col-md-4"> Store Credit </label>
+                                                                    <label class="control-label col-md-4"> Add Store Credit </label>
                                                                     <div class="col-md-8">
-                                                                        <input class="form-control input-inline inline-block input-xlarge" name="store_credit_value" placeholder="insert credit amount here" value="" />
+                                                                        <input class="form-control input-inline inline-block input-xlarge" name="store_credit_value" placeholder="store credit amount" value="" />
                                                                         <button class="btn uppercase green-meadow inline-block">Add to account</button>
                                                                     </div>
                                                                 </div>
@@ -228,10 +232,19 @@
                                                                 @if (sizeof($storeCreditNotes)>0)
                                                                     @foreach($storeCreditNotes as $single)
                                                                     <tr>
-                                                                        <td></td>
-                                                                        <td></td>
-                                                                        <td></td>
-                                                                        <td></td>
+                                                                        <td>
+                                                                            <span class="item {!! $single->value<0?'font-red-flamingo':'font-green-jungle' !!}">
+                                                                                <span aria-hidden="true" class="icon-{!! $single->value<0?'logout':'login' !!}"></span>
+                                                                                {{ $single->created_at->format('d-m-Y') }} by {{ $single->full_name }}
+                                                                            </span>
+                                                                        </td>
+                                                                        <td class="{!! $single->value<0?'font-red-flamingo':'font-green-jungle' !!}">{{ $single->value }}</td>
+                                                                        <td class="font-blue-steel"> <strong>{{ $single->total_amount }}</strong> </td>
+                                                                        <td>
+                                                                            @if ($single->value>0)
+                                                                            <span class="label label-sm label-{{ $single->status=='active'?'success':'warning' }}"> {{ $single->status }} </span>
+                                                                            @endif
+                                                                        </td>
                                                                     </tr>
                                                                     @endforeach
                                                                 @endif
@@ -307,7 +320,7 @@
                                                                 <div class="form-group">
                                                                     <label class="control-label col-md-3 inline"> Membership Start Date </label>
                                                                     <div class="col-md-8">
-                                                                        <div class="input-group input date date-picker" data-date="{{ \Carbon\Carbon::today()->format('d-m-Y') }}" data-date-format="dd-mm-yyyy" data-date-viewmode="years" style="display:inline-flex; margin-top:2px; margin-right:40px;">
+                                                                        <div class="input-group input date date-picker" data-date-start-date="-30d" data-date="{{ \Carbon\Carbon::today()->format('d-m-Y') }}" data-date-format="dd-mm-yyyy" data-date-viewmode="years" style="display:inline-flex; margin-top:2px; margin-right:40px;">
                                                                             <input type="text" class="form-control" name="start_date" readonly style="background-color:#ffffff;" value="{{ \Carbon\Carbon::today()->format('d-m-Y') }}">
                                                                             <span class="input-group-btn">
                                                                                 <button class="btn default" type="button">
@@ -740,7 +753,7 @@
                                 <div class="note note-danger" style="margin-bottom:0px;">
                                     <div class="form-group margin-bottom-5">
                                         <span class="help-inline">Membership Cancellation Date</span>
-                                        <div class="input-group input-small date date-picker" data-date="{{ \Carbon\Carbon::today()->format('d-m-Y') }}" data-date-format="dd-mm-yyyy" data-date-viewmode="month" style="display:inline-flex; margin-top:2px; margin-right:40px;">
+                                        <div class="input-group input-small date date-picker" data-date-start-date="today" data-date="{{ \Carbon\Carbon::today()->format('d-m-Y') }}" data-date-format="dd-mm-yyyy" data-date-viewmode="month" style="display:inline-flex; margin-top:2px; margin-right:40px;">
                                             <input type="text" class="form-control" name="custom_cancel_date" readonly style="background-color:#ffffff;">
                                             <span class="input-group-btn">
                                                 <button class="btn default" type="button">
@@ -1156,7 +1169,8 @@
                         store_credit_value: {
                             minlength: 1,
                             required: true,
-                            number:true
+                            number:true,
+                            min:1
                         },
                     },
 
@@ -1462,20 +1476,22 @@
                     'member_id':userID,
                     'cancellation_date':$('select[name="date_cancellation_time"]').val(),
                     @if (Auth::user()->can('general-permission-overwrite'))
-                    'is_overwrite':$('#overwrite_admin_cancellation_rule').val(),
+                    'is_overwrite':$('#overwrite_admin_cancellation_rule:checked').val(),
                     'custom_cancellation_date':$('input[name="custom_cancel_date"]').val()
                     @endif
                 },
                 success: function(data){
                     if (data.success) {
-                        $('#cancel_confirm_box').modal('hide');
-                        show_notification(data.title, data.message, 'lime', 3500, 0);
+                        $('#cancel_plan_confirm_box').modal('hide');
+                        $('#cancel_plan_box').modal('hide');
+                        show_notification(data.title, data.message, 'lime', 3100, 0);
 
                         setTimeout(function(){
                             location.reload();
-                        },200000);
+                        },3500);
                     }
                     else{
+                        $('#cancel_plan_confirm_box').modal('hide');
                         show_notification(data.title, data.errors, 'tangerine', 3500, 0);
                     }
                 }
@@ -1518,7 +1534,7 @@
                 success: function (data) {
                     if (data.success) {
                         $('#change_member_status').modal('hide');
-                        show_notification(data.title, data.message, 'lemon', 3500, 0);
+                        show_notification(data.title, data.message, 'lime', 3500, 0);
                         location.reload();
                     }
                     else{

@@ -16,6 +16,7 @@ use App\UserDocuments;
 use Illuminate\Http\Response;
 use Illuminate\Http\Request;
 use App\Http\Requests;
+use App\Http\Controllers\Controller;
 use App\User;
 use Validator;
 use Auth;

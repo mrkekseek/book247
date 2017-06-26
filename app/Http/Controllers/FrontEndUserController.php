@@ -668,7 +668,7 @@ class FrontEndUserController extends Controller
                 }
 
                 //xdebug_var_dump(Carbon::createFromFormat('Y-m-d',$onlyOne->issued_date));
-                if ($signOutDate->lte(Carbon::createFromFormat('Y-m-d',$onlyOne->issued_date))){
+                if ($signOutDate->lte(Carbon::createFromFormat('Y-m-d',$onlyOne->last_active_date))){
                     $invoiceCancellation[$onlyOne->id] = Carbon::createFromFormat('Y-m-d',$onlyOne->last_active_date)->addDay()->format('jS \o\f F, Y');
                 }
             }
@@ -753,11 +753,15 @@ class FrontEndUserController extends Controller
             }
         }
 
-        $storeCredit = UserStoreCredits::where('','=','')->orderBy('','DESC')->get();
+        $storeCredit = UserStoreCredits::where('member_id','=',$member->id)->orderBy('created_at','DESC')->get();
         if($storeCredit){
-
+            $userNames = [];
             foreach($storeCredit as $single){
-
+                if (!isset($userNames[$single->back_user_id])){
+                    $theName = User::where('id','=',$single->back_user_id)->first();
+                    $userNames[$single->back_user_id] = $theName->first_name.' '.$theName->middle_name.' '.$theName->last_name;
+                }
+                $single->full_name = $userNames[$single->back_user_id];
             }
         }
 
@@ -790,7 +794,8 @@ class FrontEndUserController extends Controller
             'canFreeze'         => $canFreeze,
             'canUpdate'         => $canUpdate,
             'accessCardNo'      => @$accessCardNo,
-            'InvoicesActionsPlanned'=> $plannedInvoicesAndActions
+            'InvoicesActionsPlanned'=> $plannedInvoicesAndActions,
+            'storeCreditNotes'  => $storeCredit
         ]);
     }
 
@@ -1207,34 +1212,38 @@ class FrontEndUserController extends Controller
             foreach ($generalInvoices as $single_invoice){
                 switch ($single_invoice->status) {
                     case 'pending':
-                        $colorStatus = 'warning';
+                        $colorStatus = 'label-info';
                         $buttons = 'yellow-gold';
-                        $explained = 'Not Paid';
+                        $explained = 'Pending';
                         break;
                     case 'ordered':
                     case 'processing':
-                        $colorStatus = 'info';
+                        $colorStatus = 'label-success';
                         $buttons = 'green-meadow';
                         $explained = 'Processing';
                         break;
                     case 'completed':
-                        $colorStatus = 'success';
+                        $colorStatus = 'label-success';
                         $buttons = 'green-jungle';
-                        $explained = 'Paid';
+                        $explained = 'All Paid';
                         break;
                     case 'cancelled':
-                        $colorStatus = 'warning';
+                        $colorStatus = 'label-default';
                         $buttons = 'yellow-lemon';
                         $explained = 'Cancelled';
                         break;
                     case 'declined':
-                    case 'incomplete':
-                        $colorStatus = 'danger';
-                        $buttons = 'red-thunderbird';
+                        $colorStatus = 'label-error';
+                        $buttons = 'yellow-gold';
                         $explained = 'Declined';
                         break;
+                    case 'incomplete':
+                        $colorStatus = 'label-warning';
+                        $buttons = 'red-thunderbird';
+                        $explained = 'Part paid';
+                        break;
                     case 'preordered':
-                        $colorStatus = 'info';
+                        $colorStatus = 'label-info';
                         $buttons = 'green-meadow';
                         $explained = '';
                         break;
@@ -1292,10 +1301,6 @@ class FrontEndUserController extends Controller
                     break;
                 }
 
-                //if ( $invoice['invoice_type'] == 'booking_invoice'){
-                //    continue;
-                //}
-
                 $sum_price = 0;
                 $sum_discount = 0;
                 $sum_total = 0;
@@ -1332,13 +1337,13 @@ class FrontEndUserController extends Controller
                     case 'pending' :
                         $colorStatus = 'label-warning';
                         break;
-                    case 'expired' :
+                    case 'ordered' :
                         $colorStatus = 'label-default';
                         break;
-                    case 'active' :
+                    case 'processing' :
                         $colorStatus = 'label-success';
                         break;
-                    case 'paid' :
+                    case 'completed' :
                         $colorStatus = 'label-success';
                         break;
                     case 'unpaid' :
@@ -1361,7 +1366,7 @@ class FrontEndUserController extends Controller
                     'item_type' => '',
                     'status'            => $invoice['status'],
                     'status_explained'  => $invoice['status_explained'],
-                    'color_status'      => $colorStatus,
+                    'color_status'      => $invoice['color_status'],
                     'price'     => $sum_price,
                     'discount'  => $sum_discount,
                     'total'     => $sum_total,
@@ -1386,10 +1391,6 @@ class FrontEndUserController extends Controller
             $member->first_name.' '.$member->middle_name.' '.$member->last_name => '',
         ];
         $sidebar_link= 'admin-frontend-user_details_view';
-
-        //xdebug_var_dump($invoicesList);
-        //xdebug_var_dump($generalInvoiceList);
-        //xdebug_var_dump($lastTenGeneralInvoice);
 
         return view('admin/front_users/view_member_finance', [
             'user'      => $member,
@@ -3775,7 +3776,7 @@ class FrontEndUserController extends Controller
         ];
         $sidebar_link= 'front-settings_personal';
 
-        return view('front/settings/personal',[
+        return view('front/settings/federation/personal',[
             'breadcrumbs'   => $breadcrumbs,
             'text_parts'    => $text_parts,
             'in_sidebar'    => $sidebar_link,
