@@ -90,10 +90,10 @@ class ApiAuth
                 case  ('gender'):
                     $apiData['Gender'] = $value;
                     break;                
-                case 'birthday':                    
+                case 'date_of_birth':                    
                     $apiData['Birthday'] = $value;
                     break;
-                case 'phone_number':
+                case 'mobile_number':
                     $apiData['PhoneNumber'] = $value;
                     break;   
             }
@@ -104,7 +104,7 @@ class ApiAuth
             {
                 $sortingArray[$key] = $apiData[$key];
             }
-        }        
+        }
         self::send_curl($sortingArray,'api/Accounts', 'PUT');                
         if (empty(self::$error))
         {
@@ -166,8 +166,14 @@ class ApiAuth
                 case 'last_name':
                     $apiData['LastName'] = $value;
                     break;
-                case 'phone_number':
+                case 'mobile_number':
                     $apiData['PhoneNumber'] = $value;
+                    break;                   
+                case 'gender':
+                    $apiData['Gender'] = $value;
+                    break;                   
+                case 'date_of_birth':
+                    $apiData['Birthday'] = $value;
                     break;                   
             }
         }        
@@ -177,7 +183,7 @@ class ApiAuth
             {
                 $sortingArray[$key] = $apiData[$key];
             }
-        }        
+        }
         $response = self::send_curl($sortingArray,'api/Accounts', 'POST');
         if ($response)
         {

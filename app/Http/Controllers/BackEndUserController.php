@@ -142,11 +142,11 @@ class BackEndUserController extends Controller
             'username'      => $vars['email'],
             'email'         => $vars['email'],
             'password'      => $vars['password'],
-            'password_api'      => $vars['password'],
             'country_id'    => $vars['country_id'],
             'status'        => 'active',
             'user_type'     => $vars['user_type']
         ];
+        $password_api = $vars['password'];
         $validator = Validator::make($credentials, User::rules('POST'), User::$messages, User::$attributeNames);
         if ($validator->fails()){
             //return $validator->errors()->all();
@@ -159,6 +159,17 @@ class BackEndUserController extends Controller
 
         $credentials['password'] = bcrypt($credentials['password']);
         try {
+            $dataForApi = $credentials;
+            $api_user = Auth::create_api_user($dataForApi, $password_api);
+            if ( ! $api_user)
+            {
+                return [
+                    'success'   => false,
+                    'title'     => 'Api error',
+                    'errors'    => Auth::$error
+                ];
+            }
+            $credentials['sso_user_id'] = $api_user;
             $user = User::create($credentials);
             // attach the roles to the new created user
             $user->attachRole($vars['user_type']);

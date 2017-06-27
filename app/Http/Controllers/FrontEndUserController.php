@@ -1515,17 +1515,18 @@ class FrontEndUserController extends Controller
             $user->country_id  = $userVars["country_id"];
             $user->gender      = $userVars["gender"];
             $user->email       = $userVars["email"];
-            $user->birthday    = $vars['date_of_birth'];
-            $user->phone_number    = $vars['mobile_number'];
-            //$user->username    = $userVars["email"];            
-            if (!$user->save() && !empty(Auth::$error))            
-            {                
-                return array(
+            $dataForApi = $user->toArray() + $userVars;
+            $dataForApi['mobile_number'] = trim($vars['mobile_number']);
+            $api_user = Auth::update_api_user($dataForApi);
+            if ( ! $api_user)
+            {
+                return [
                     'success'   => false,
-                    'title'     => 'Api error',                    
-                    'errors'  => [''=>[Auth::$error]]
-                );
-            }            
+                    'title'     => 'Api error',
+                    'errors'    => [''=>[Auth::$error]]
+                ];
+            }
+            $user->save();
         }
 
         $personalData = [
@@ -2627,8 +2628,7 @@ class FrontEndUserController extends Controller
             );
         }
 
-        $credentials['password_api'] = $vars['password'];
-        $credentials['phone_number'] = $vars['phone_number'];
+        $password_api = $vars['password'];
         $text_psw    = $vars['password'];
         $credentials['password'] = Hash::make($credentials['password']);
         $the_plan = MembershipPlan::where('id','=',$vars['membership_plan'])->where('id','!=',1)->where('status','=','active')->get()->first();        
@@ -2651,8 +2651,9 @@ class FrontEndUserController extends Controller
                 );
             }
             else{
-                $user = User::create($credentials);                        
-                if (!empty (Auth::$error))
+                $dataForApi = $credentials + $personalData;
+                $api_user = Auth::create_api_user($dataForApi, $password_api);
+                if ( ! $api_user)
                 {
                     return [
                         'success'   => false,
@@ -2660,6 +2661,8 @@ class FrontEndUserController extends Controller
                         'errors'    => Auth::$error
                     ];
                 }
+                $credentials['sso_user_id'] = $api_user;
+                $user = User::create($credentials);
                 $personalDetails['user_id'] = $user->id;
                 $user->attachRole($userType);    
                 $personalDetails = PersonalDetail::firstOrNew(['user_id'=>$user->id]);

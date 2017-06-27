@@ -225,6 +225,18 @@ class Auth
         }
         if (!self::check_exist_api_user($user['username']))
         {            
+            if (isset($user['gender']))
+            {
+                switch ($user['gender'])
+                {
+                    case ('M'): $user['gender'] = 1; break;
+                    case ('F'): $user['gender'] = 2; break;
+                }
+            }
+            if (isset($user['date_of_birth']))
+            {
+                $user['date_of_birth'] = date('Y-m-d', strtotime($user['date_of_birth'])).'T00:00:00';
+            }
             $api_user = ApiAuth::account_create($user);                    
             if ($api_user['success'])
             {
@@ -253,8 +265,8 @@ class Auth
             case ('M'): $apiData['gender'] = 1; break;
             case ('F'): $apiData['gender'] = 2; break;
         }
-        $apiData['birthday'] = isset($apiData['birthday']) ? $apiData['birthday'] : '';
-        $apiData['birthday'] = date('Y-m-d',strtotime($apiData['birthday'])).'T00:00:00';
+        $apiData['date_of_birth'] = isset($apiData['date_of_birth']) ? $apiData['date_of_birth'] : '';
+        $apiData['date_of_birth'] = date('Y-m-d',strtotime($apiData['date_of_birth'])).'T00:00:00';
         $api_user = ApiAuth::accounts_update($apiData);
         if ($api_user['success'])
         {
