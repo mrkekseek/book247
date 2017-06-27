@@ -174,7 +174,7 @@
                                     </select>
                                 </div>
 
-                                <div class="form-group row">
+                                <div class="form-group row select_type">
                                     <div class="col-sm-12">
                                         <label>Min and Max values (if they exists)</label>
                                     </div>
@@ -256,7 +256,7 @@
                                         </select>
                                     </div>
 
-                                    <div class="form-group row">
+                                    <div class="form-group row select_type">
                                         <div class="col-sm-12">
                                             <label>Min and Max values (if they exists)</label>
                                         </div>
@@ -654,7 +654,7 @@
                     },
                     success: function (data) {
                         clear();
-
+                        
                         $('#edit_setting_form input[name="setting_name"]').val(data.name);
                         $('#edit_setting_form input[name="setting_internal_name"]').val(data.system_internal_name);
                         $('#edit_setting_form textarea[name="setting_description"]').val(data.description);
@@ -667,16 +667,16 @@
                             }
                         });
 
-                        if (data.constrained || data.data_type == 'numeric')
+                        if ((data.constrained * 1) || data.data_type == 'numeric')
                         {
                             $(".select_type").hide();
                         }
                         
-                        if ( ! data.constrained)
+                        if ( ! (data.constrained * 1))
                         {
                             $(".select_type").show();
                         }
-
+                        
                         $('#edit_setting_form input[name="setting_constrained"]').each(function(index, value){
                             if ($(value).data("type") == data.constrained)
                             {
