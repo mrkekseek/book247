@@ -242,16 +242,21 @@
         @endif
 
         @if (Auth::user()->can('view-general-settings-menu'))
-        <li class="nav-item {{ in_array($in_sidebar, ['admin-settings-all_list','admin-settings-financial_profiles-add_new','admin-settings-financial_profiles-list_all','admin-settings-financial_profiles-view_edit', 'admin-templates_email-list_all'])?'active open':'' }} ">
+        <li class="nav-item {{ in_array($in_sidebar, ['admin-settings-all_list','admin-settings-financial_profiles-add_new','admin-settings-financial_profiles-list_all','admin-settings-financial_profiles-view_edit', 'admin-templates_email-list_all', 'admin-settings-manage_settings'])?'active open':'' }} ">
             <a href="javascript:;" class="nav-link nav-toggle">
                 <i class="icon-shield"></i>
                 <span class="title"> General Settings </span>
                 <span class="arrow"></span>
             </a>
             <ul class="sub-menu">
-                <li class="nav-item {{ $in_sidebar=='admin-settings-all_list'?'active open':'' }}">
+                <li class="nav-item {{ $in_sidebar == 'admin-settings-all_list' ? 'active open' : '' }}">
                     <a href="{{route('admin/settings/list_all')}}" class="nav-link ">
-                        <span class="title">List all settings</span>
+                        <span class="title">Define and mentain</span>
+                    </a>
+                </li>
+                 <li class="nav-item {{ $in_sidebar == 'admin-settings-manage_settings' ? 'active open' : '' }}">
+                    <a href="{{route('admin/settings/manage_settings')}}" class="nav-link ">
+                        <span class="title">Manage settings</span>
                     </a>
                 </li>
                 <li class="nav-item {{ $in_sidebar=='admin-settings-financial_profiles-add_new'?'active open':'' }}">

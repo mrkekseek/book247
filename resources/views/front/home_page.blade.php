@@ -92,8 +92,7 @@
 
                                         <div class="portlet-title">
                                             <div class="caption">
-                                                <span class="caption-subject font-green-haze bold uppercase">User Login</span>
-                                                <span class="caption-helper">account details...</span>
+                                                <span class="caption-subject bold uppercase">seamles user login</span>
                                             </div>
                                         </div>
                                         <div class="alert alert-danger display-hide">
@@ -111,7 +110,7 @@
                                         <div class="form-actions">
                                             <button type="submit" class="btn red btn-block uppercase">Login</button>
                                         </div>
-                                        <div class="form-actions">
+                                        <div class="form-actions links">
                                             <div class="pull-left">
                                                 <label class="rememberme check">
                                                     <input type="checkbox" name="remember" value="1" />Remember me </label>
@@ -121,9 +120,12 @@
                                             </div>
                                         </div>
                                         <div class="create-account bg-white bg-font-white">
-                                            <p>
-                                                <a href="javascript:;" class="green-meadow btn" id="pre-register-btn">Create an account</a>
-                                            </p>
+                                            <div class="portlet-title">
+                                                <div class="caption">
+                                                    <span class="caption-subject bold uppercase">don't have an account?</span>
+                                                </div>
+                                            </div>
+                                            <button type="button" id="pre-register-btn" class="btn green-meadow center uppercase">create one now</button>
                                         </div>
                                     </form>
                                     <!-- END LOGIN FORM -->
@@ -131,8 +133,12 @@
                                     <form class="forget-form portlet light " action="#" id="password_reset_form">
                                         <div class="portlet-title">
                                             <div class="caption">
-                                                <span class="caption-subject font-green-haze bold uppercase"> Forget Password ?</span>
-                                                <span class="caption-helper">Enter your e-mail to reset it...</span>
+                                                <a href="javascript::void()" id="back-btn" >
+                                                    <i class="fa fa-angle-left"></i>
+                                                </a>
+                                                <span class="separator-header"></span>
+                                                <span class="caption-subject bold uppercase hidden-sm hidden-xs">can't remember your password</span>
+                                                <span class="caption-subject bold uppercase hidden-md hidden-lg">forgot password?</span>
                                             </div>
                                         </div>
                                         <div class="alert alert-danger display-hide">
@@ -140,19 +146,39 @@
                                         <div class="alert alert-success display-hide">
                                             <button class="close" data-close="alert"></button> Information is valid, please wait! </div>
                                         <div class="form-group">
-                                            <input class="form-control placeholder-no-fix" type="text" autocomplete="off" placeholder="Email" name="email" /> </div>
+                                            <input class="form-control placeholder-no-fix" type="text" autocomplete="off" placeholder="Enter you email adress" name="email" /> </div>
                                         <div class="form-actions">
-                                            <button type="button" id="back-btn" class="btn grey-steel">Back</button>
-                                            <button type="button" class="btn btn-primary uppercase pull-right" onClick="javascript: $('#password_reset_form').submit();">Submit</button>
+                                            <button type="button" class="btn grey btn-block uppercase" onClick="javascript: $('#password_reset_form').submit();">next</button>
                                         </div>
                                     </form>
                                     <!-- END FORGOT PASSWORD FORM -->
+                                    <!-- BEGIN RESULT FORGOT PASSWORD FORM -->
+                                    <form class="result-forget-form portlet light" method="post"  id="user_result_forget_form">
+                                        <div class="portlet-title">
+                                            <div class="caption">
+                                                <span class="caption-subject bold uppercase"> can't remember your password </span>
+                                            </div>
+                                        </div>
+                                        <p class="hint"> We've just send you an email. Folow the instructions to reset your password. Click "Next" if the system does not automatically redirect you. </p>
+                                        <div class="form-actions">
+                                            <a href="/">
+                                                <button type="button" class="btn grey btn-block uppercase">next</button>
+                                            </a>
+                                        </div>
+                                    </form>
+                                    <!-- END RESULT FORGOT PASSWORD FORM -->
+                                    
                                     <!-- BEGIN PREREGISTRATION FORM -->
                                     <form class="pre-register-form portlet light " method="post" name="user_pregistration_form" id="user_preregistration_form">
                                         <div class="portlet-title">
                                             <div class="caption">
-                                                <span class="caption-subject font-green-haze bold uppercase">Register on book247 & rankedin</span>
-                                                <span class="caption-helper"></span>
+                                                <a href="javascript::void()" id="pre-back-btn" >
+                                                    <i class="fa fa-angle-left"></i>
+                                                </a>
+                                                <span class="separator-header"></span>
+                                                <span class="caption-subject bold uppercase hidden-sm hidden-xs">register an unuque user on our platform</span>
+                                                <span class="caption-subject bold uppercase hidden-md hidden-lg">register an unuque user</span>
+
                                             </div>
                                         </div>
                                         <div class="alert alert-danger display-hide">
@@ -162,10 +188,9 @@
                                         <p class="hint"> Enter your email address: </p>
                                         <div class="form-group">
                                             <label class="control-label visible-ie8 visible-ie9">Email</label>
-                                            <input class="form-control placeholder-no-fix" type="text" placeholder="Email" name="email" /> </div>
+                                            <input class="form-control placeholder-no-fix" type="text" placeholder="Email your email address" name="email" /> </div>
                                         <div class="form-actions">
-                                            <button type="button" id="pre-back-btn" class="btn grey-steel">Back</button>
-                                            <button type="submit" id="preregister-btn" class="btn grey-steel pull-right">Next</button>
+                                            <button type="submit" id="preregister-btn" class="btn grey btn-block uppercase">Next</button>
                                         </div>
                                     </form>
                                     <!-- END PREREGISTRATION  FORM -->
@@ -173,29 +198,53 @@
                                     <form class="pre-register-form portlet light" method="post"  id="user_preregistration_password_form">
                                         <div class="portlet-title">
                                             <div class="caption">
-                                                <span class="caption-subject font-green-haze bold uppercase">Register on book247 & rankedin</span>
-                                                <span class="caption-helper"></span>
+                                                <a href="javascript::void()" id="pre-back-btn" >
+                                                    <i class="fa fa-angle-left"></i>
+                                                </a>
+                                                <span class="separator-header"></span>
+                                                <span class="caption-subject bold uppercase">email already registered</span>
                                             </div>
                                         </div>
                                         <p class="hint"> </p>
                                         <div class="form-group">
                                             <label class="control-label visible-ie8 visible-ie9">Password</label>
-                                            <input class="form-control placeholder-no-fix" type="password" placeholder="Password" name="password" /> 
+                                            <input class="form-control placeholder-no-fix" type="password" placeholder="Enter your password for login" name="password" /> 
                                         </div>
-                                            <input type="hidden" name="email" />                                            
-                                            <input type="hidden" name="type" />
+                                        <div class="pull-right forget-password-block">
+                                            <a href="javascript:;" id="forget-password" class="forget-password">Forgot Password?</a>
+                                        </div>
+                                        <input type="hidden" name="email" />                                            
+                                        <input type="hidden" name="type" />
                                         <div class="form-actions">
-                                            <button type="button" id="pre-back-btn" class="btn grey-steel">Back</button>
-                                            <button type="submit" id="preregister-btn" class="btn red pull-right">Login</button>
+                                            <button type="submit" id="preregister-btn" class="btn red btn-block uppercase">Login</button>
                                         </div>
                                     </form>
-                                    <!-- BEGIN PREREGISTRATION  PASSWORD FORM -->
+                                    <!-- END PREREGISTRATION  PASSWORD FORM -->
+                                    
+                                    <!-- BEGIN RESULT REGISTRATION FORM -->
+                                    <form class="result-register-form portlet light" method="post"  id="user_result_registration_form">
+                                        <div class="portlet-title">
+                                            <div class="caption">
+                                                <span class="caption-subject bold uppercase"></span>
+                                            </div>
+                                        </div>
+                                        <p class="hint"> Thank you for using our platform. You are now also registered on Book247. Click "Next" if the system does not automatically redirect you. </p>
+                                        <div class="form-actions">
+                                            <a href="/">
+                                                <button type="button" class="btn center btn-block uppercase">next</button>
+                                            </a>
+                                        </div>
+                                    </form>
+                                    <!-- END RESULT REGISTRATION FORM -->
                                     <!-- BEGIN REGISTRATION FORM -->
                                     <form class="register-form portlet light " method="post" name="user_registration_form" id="user_registration_form">
                                         <div class="portlet-title">
                                             <div class="caption">
-                                                <span class="caption-subject font-green-haze bold uppercase">Sign Up</span>
-                                                <span class="caption-helper"></span>
+                                                <a href="javascript::void()" id="pre-back-btn" >
+                                                    <i class="fa fa-angle-left"></i>
+                                                </a>
+                                                <span class="separator-header"></span>
+                                                <span class="caption-subject bold uppercase">account details</span>
                                             </div>
                                         </div>
                                         <div class="alert alert-danger display-hide">
@@ -210,10 +259,39 @@
                                             <label class="control-label visible-ie8 visible-ie9">Last Name</label>
                                             <input class="form-control placeholder-no-fix" type="text" placeholder="Last Name" name="lastname" /> </div>
                                         <div class="form-group">
+                                            <label class="control-label visible-ie8 visible-ie9">Middle Name</label>
+                                            <input class="form-control placeholder-no-fix" type="text" placeholder="Middle Name" name="middlename" /> </div>
+                                        <div class="form-group">
                                             <label class="control-label visible-ie8 visible-ie9">Phone Number</label>
                                             <input class="form-control placeholder-no-fix" type="text" placeholder="Phone Number" name="phone" /> </div>
-
-                                        <p class="hint"> Enter your account details below: </p>
+                                        <div class="form-group">
+                                            <div class="control-label">
+                                                <div class="input-group date date-picker" data-date="" data-date-format="dd-mm-yyyy" data-date-viewmode="years">
+                                                    <input type="text" class="form-control" name="DOB" id="DOB" placeholder="Date of Birth" value="" readonly>
+                                                    <span class="input-group-btn">
+                                                        <button class="btn default" type="button">
+                                                            <i class="fa fa-calendar"></i>
+                                                        </button>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <select name="gender" class="form-control">
+                                                <option value="">Select Gender</option>
+                                                <option value="M"> Male </option>
+                                                <option value="F"> Female </option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <select name="country" id="country" class="form-control">
+                                                <option value="">Select Citizenship</option>
+                                                @foreach ($countries as $country)
+                                                    <option value="{{ $country->id }}" {!! ($country->id==$user->country_id ? ' selected="selected" ' : '') !!}>{{ $country->citizenship }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                        <p class="hint"> Choose a password </p>
                                         <div class="form-group">
                                             <!--ie8, ie9 does not support html5 placeholder, so we just show field title for that-->
                                             <label class="control-label visible-ie8 visible-ie9">Email</label>
@@ -223,11 +301,11 @@
                                             <input class="form-control placeholder-no-fix" type="password" autocomplete="off" id="rpassword" placeholder="Password - at least 8 characters" name="rpassword" /> </div>
                                         <div class="form-group">
                                             <label class="control-label visible-ie8 visible-ie9">Re-type Your Password</label>
-                                            <input class="form-control placeholder-no-fix" type="password" autocomplete="off" placeholder="Re-type Your Password" name="re_rpassword" /> </div>
+                                            <input class="form-control placeholder-no-fix" type="password" autocomplete="off" placeholder="Retype your password" name="re_rpassword" /> </div>
                                         <div class="form-group margin-top-20 margin-bottom-20">
-                                            <label class="check">
+                                            <label class="check center-block center-align">
                                                 <input type="checkbox" name="tnc" />
-                                                <span class="loginblue-font">I agree to the </span>
+                                                <span class="loginblue-font">I agree to the</span>
                                                 <a href="javascript:;" class="loginblue-link">Terms of Service</a>
                                                 <span class="loginblue-font">and</span>
                                                 <a href="javascript:;" class="loginblue-link">Privacy Policy </a>
@@ -235,11 +313,20 @@
                                             <div id="register_tnc_error"> </div>
                                         </div>
                                         <div class="form-actions">
-                                            <button type="button" id="register-back-btn" class="btn grey-steel">Back</button>
-                                            <button type="submit" class="btn red uppercase pull-right">Submit</button>
+                                            <button type="submit" class="btn red btn-block uppercase">Submit</button>
                                         </div>
                                     </form>
                                     <!-- END REGISTRATION FORM -->
+                                    <div class="powered center-block">
+                                        <div class="caption">
+                                            Powered by:
+                                        </div>
+                                        <a class="min-logo logo-book247">
+                                        </a>
+                                        <span class="separator-logo"></span>
+                                        <a class="min-logo logo-rankedin">
+                                        </a>
+                                    </div>
                                 </div>
                             @endif
                             <div class="portlet light search-page search-content-1 hidden-xs hidden-sm">
@@ -329,7 +416,7 @@
                                     <a href="javascript:;" class="btn default purple-stripe btn-lg" style="padding:5px 10px; font-size:14px; cursor:default; margin-bottom:5px;"> Outside membership rules </a>
                                     <a href="{{ route('front/active_membership') }}" class="btn default btn-lg" style="padding: 1px 5px 0px; cursor: pointer; margin-bottom: 5px; font-size: 21px;"><span class="item-box"><span class="item"><span aria-hidden="true" class="icon-question"></span></span></span></a>
                                 @else
-                                    <a href="javascript:;" class="btn default dark-stripe btn-lg book_step" style="padding:5px 10px; font-size:14px; cursor:default;"> You need to be logged in to view availability </a>
+                                    <a href="javascript:;" class="btn default dark-stripe btn-lg book_step book_step_link" style=""> You need to be logged in to view availability </a>
                                 @endif
                             </div>
                         </div>
@@ -732,10 +819,11 @@
                     }
                 });
 
-                jQuery('#forget-password').click(function() {
+                jQuery('.login').on('click','#forget-password', function (){
                     jQuery('.login-form').hide();
+                    jQuery('.pre-register-form').hide();
                     jQuery('.forget-form').show();
-                });
+                })
 
                 jQuery('#back-btn').click(function() {
                     jQuery('.login-form').show();
@@ -765,6 +853,7 @@
                 jQuery('.login').on('click','#pre-back-btn', function (){
                     jQuery('.login-form').show();
                     jQuery('.pre-register-form').hide();
+                    jQuery('.register-form').hide();
                 });
                 
                 $('#user_preregistration_form').validate({
@@ -850,6 +939,16 @@
                 
                 
             }
+            
+            var handleDatePickers = function () {
+                if (jQuery().datepicker) {
+                    $('.date-picker').datepicker({
+                        rtl: App.isRTL(),
+                        orientation: "left",
+                        autoclose: true
+                    });
+                }
+            }
 
             return {
                 //main function to initiate the module
@@ -859,6 +958,7 @@
                     handleForgetPassword();
                     handleRegister();
                     handlePreRegister();
+                    handleDatePickers();
                 }
             };
         }();
@@ -997,6 +1097,18 @@
                                 }
                             }
                         },
+                        DOB: {
+                            required: true,
+                            datePickerDate:true
+                        },
+                        gender: {
+                            required: true,
+                            minlength:1
+                        },
+                        country: {
+                            required: true,
+                            minlength:1
+                        },
                         rpassword: {
                             required:true,
                             minlength: 8,
@@ -1085,10 +1197,17 @@
                     'email': $('input[name="reg_email"]').val(),
                     'phone_number': $('input[name="phone"]').val(),
                     'password': $('input[name="rpassword"]').val(),
+                    'middle_name': $('input[name="middlename"]').val(),
+                    'dob': $('input[name="DOB"]').val(),
+                    'gender': $('select[name=gender]').val(),
+                    'country': $('select[name=country]').val(),
                 },
                 success: function (data) {
                     if (data.success==1) {
                         show_notification('You are now registered', 'After page reload, use the email/password combination you used for registration and login', 'lemon', 3500, 0);
+                        $('#user_registration_form').hide();
+                        $('#user_result_registration_form .caption-subject').html('account registered');
+                        $('#user_result_registration_form').show();
                         setTimeout(function(){
                             window.location.reload(true);
                         },2500);
@@ -1111,6 +1230,8 @@
                 success: function (data) {
                     if (data.success==1) {
                         show_notification(data.title, data.message, 'lime', 5000, 0);
+                        $('#password_reset_form').hide();
+                        $('#user_result_forget_form').show();
                         setTimeout(function(){
                             window.location.reload(true);
                         },5500);
@@ -1133,7 +1254,6 @@
                 },
                 success: function (data) {
                    if (data.success == true){
-                      console.log(data);
                       if (typeof data.show !== 'undefined'){
                           $(data.show).show();
                       }
@@ -1169,8 +1289,11 @@
                 },
                 success: function (data) {
                     if (data.success == true){
-                        window.location.reload(true);
+                        $('#user_preregistration_password_form').hide();
+                        $('#user_result_registration_form .caption-subject').html('email already registered');
+                        $('#user_result_registration_form').show();
                         show_notification(data.title, data.errors, 'lime', 5000, 0);
+                        window.location.reload(true);
                    }
                    else{
                         show_notification(data.title, data.errors, 'lemon', 5000, 0);

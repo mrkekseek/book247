@@ -1515,16 +1515,18 @@ class FrontEndUserController extends Controller
             $user->country_id  = $userVars["country_id"];
             $user->gender      = $userVars["gender"];
             $user->email       = $userVars["email"];
-            $user->birthday    = $vars['date_of_birth'];
-            //$user->username    = $userVars["email"];            
-            if (!$user->save() && !empty(Auth::$error))            
-            {                
-                return array(
+            $dataForApi = $user->toArray() + $userVars;
+            $dataForApi['mobile_number'] = trim($vars['mobile_number']);
+            $api_user = Auth::update_api_user($dataForApi);
+            if ( ! $api_user)
+            {
+                return [
                     'success'   => false,
-                    'title'     => 'Api error',                    
-                    'errors'  => [''=>[Auth::$error]]
-                );
-            }            
+                    'title'     => 'Api error',
+                    'errors'    => [''=>[Auth::$error]]
+                ];
+            }
+            $user->save();
         }
 
         $personalData = [
@@ -2626,7 +2628,7 @@ class FrontEndUserController extends Controller
             );
         }
 
-        $credentials['password_api'] = $vars['password'];
+        $password_api = $vars['password'];
         $text_psw    = $vars['password'];
         $credentials['password'] = Hash::make($credentials['password']);
         $the_plan = MembershipPlan::where('id','=',$vars['membership_plan'])->where('id','!=',1)->where('status','=','active')->get()->first();        
@@ -2649,8 +2651,9 @@ class FrontEndUserController extends Controller
                 );
             }
             else{
-                $user = User::create($credentials);                        
-                if (!empty (Auth::$error))
+                $dataForApi = $credentials + $personalData;
+                $api_user = Auth::create_api_user($dataForApi, $password_api);
+                if ( ! $api_user)
                 {
                     return [
                         'success'   => false,
@@ -2658,6 +2661,8 @@ class FrontEndUserController extends Controller
                         'errors'    => Auth::$error
                     ];
                 }
+                $credentials['sso_user_id'] = $api_user;
+                $user = User::create($credentials);
                 $personalDetails['user_id'] = $user->id;
                 $user->attachRole($userType);    
                 $personalDetails = PersonalDetail::firstOrNew(['user_id'=>$user->id]);
@@ -3624,6 +3629,7 @@ class FrontEndUserController extends Controller
             'breadcrumbs' => $breadcrumbs,
             'text_parts'  => $text_parts,
             'in_sidebar'  => $sidebar_link,
+            'plans'       => DB::table("membership_plans")->join("membership_plan_prices", "membership_plans.price_id", "=", "membership_plan_prices.id")->get()
         ]);
     }
 
@@ -3951,11 +3957,24 @@ class FrontEndUserController extends Controller
                 'title'     => 'Invalid email provided'
             ];
         }
-
-        $user->password = bcrypt($vars['password1']);
-        $user->save();
-        DB::delete('delete from password_resets where email=:email and token=:token limit 1', ['email' => $vars['email'], 'token' => $vars['token']]);
-
+        $token = \App\Http\Libraries\ApiAuth::resetPassword($user->email)['data'];
+        $apiData = [
+            "Credentials" => [
+              "Username" => $user->email,
+              "Password" => ''
+            ],
+            "Token"=> $token,
+            "NewPassword"=> $vars['password1'],                        
+        ];                    
+        $updatePassword = \App\Http\Libraries\ApiAuth::updatePassword($apiData);
+        if (!$updatePassword['success'])
+        {
+            return [
+                'success' => false,
+                'title'  => 'Error updating password',
+                'errors' => $updatePassword['message']
+            ];
+        }
         $top_title_message = 'Dear <span>'.$user->first_name.' '.$user->middle_name.' '.$user->last_name .'</span>';
         $main_message = 'You have successfully updated your password using the reset password link we sent. Now you can login using your new password. <br /><br />'.
                         'If this was not you, please contact the Booking System administrator and report this issue.';
@@ -3991,35 +4010,49 @@ class FrontEndUserController extends Controller
             ];
         }
 
-        $user = User::where('email','=',$vars['email'])->get()->first();
-        if ($user){
-            $generateKey = $this->createNewToken();
-            $oldKey = DB::select('select * from password_resets where email = :email limit 1', ['email'=>$user->email]);
-            if (sizeof($oldKey)>0){
-                // we have old key so we delete it then insert the new key
-                DB::delete('delete from password_resets where email = :email limit 1', ['email'=>$user->email]);
+        $user = User::where('username','=',$vars['email'])->get()->first();
+        if (empty($user))
+        {
+            if (Auth::check_exist_api_user($vars['email']))
+            {
+                $user = Auth::create_local_user(FALSE, $vars['email']);
             }
-
-            DB::insert('insert into password_resets (email, token, created_at) values (:email, :key, :now_time)', ['email'=>$user->email, 'key'=>$generateKey, 'now_time'=>Carbon::now()]);
-
-            $top_title_message = 'Dear <span>'.$user->first_name.' '.$user->middle_name.' '.$user->last_name .'</span>';
-            $main_message = 'This is a password reset request email sent by Booking System Agent. If you did not request a password reset, ignore this email.<br /><br />'.
-                            'If this request was initiated by you, click the following link to <a href="'.route('reset_password', ['token'=>$generateKey]).'" target="_blank">reset your password</a>.'.
-                            'The link will be available for the next 60 minutes, after that you will need to request another password reset request.<br /><br />';
-            $main_message.= 'Once the password is reset you will get a new email with the outcome of your action, then you can login to the system with your newly created password.<br />'.
-                            '<b>Remember this link is active for the next 60 minutes.</b>';
-
-            $beauty_mail = app()->make(Beautymail::class);
-            $beauty_mail->send('emails.email_default',
-                ['body_header_title'=>$top_title_message, 'body_message' => $main_message],
-                function($message) use ($user) {
-                    $message
-                        ->from(Config::get('constants.globalWebsite.system_email'))
-                        ->to($user->email, $user->first_name.' '.$user->middle_name.' '.$user->last_name)
-                        ->subject(Config::get('constants.globalWebsite.email_company_name_in_title').' - Password reset request');
-                });
+            else
+            {
+                return [
+                    'success'   => false,
+                    'errors'    => 'User not found.',
+                    'title'     => 'Error'
+                ];
+            }
+        }
+        
+        $generateKey = $this->createNewToken();
+        $oldKey = DB::select('select * from password_resets where email = :email limit 1', ['email'=>$user->email]);
+        if (sizeof($oldKey)>0){
+            // we have old key so we delete it then insert the new key
+            DB::delete('delete from password_resets where email = :email limit 1', ['email'=>$user->email]);
         }
 
+        DB::insert('insert into password_resets (email, token, created_at) values (:email, :key, :now_time)', ['email'=>$user->email, 'key'=>$generateKey, 'now_time'=>Carbon::now()]);
+
+        $top_title_message = 'Dear <span>'.$user->first_name.' '.$user->middle_name.' '.$user->last_name .'</span>';
+        $main_message = 'This is a password reset request email sent by Booking System Agent. If you did not request a password reset, ignore this email.<br /><br />'.
+                        'If this request was initiated by you, click the following link to <a href="'.route('reset_password', ['token'=>$generateKey]).'" target="_blank">reset your password</a>.'.
+                        'The link will be available for the next 60 minutes, after that you will need to request another password reset request.<br /><br />';
+        $main_message.= 'Once the password is reset you will get a new email with the outcome of your action, then you can login to the system with your newly created password.<br />'.
+                        '<b>Remember this link is active for the next 60 minutes.</b>';
+
+        $beauty_mail = app()->make(Beautymail::class);
+        $beauty_mail->send('emails.email_default',
+            ['body_header_title'=>$top_title_message, 'body_message' => $main_message],
+            function($message) use ($user) {
+                $message
+                    ->from(Config::get('constants.globalWebsite.system_email'))
+                    ->to($user->email, $user->first_name.' '.$user->middle_name.' '.$user->last_name)
+                    ->subject(Config::get('constants.globalWebsite.email_company_name_in_title').' - Password reset request');
+            });
+        
         return [
             'success'   => true,
             'title'     => 'Password reset action',
@@ -4754,5 +4787,81 @@ class FrontEndUserController extends Controller
                         'errors'  => 'Inorect password'
                     ];
         }
+    }
+
+    public function invoice_payment($id)
+    {
+        $user = Auth::user();
+        if ( ! $user || ! $user->is_front_user())
+        {
+            return redirect()->intended(route('admin/login'));
+        }
+
+        $invoice = Invoice::where('invoice_number', '=', $id)->get()->first();
+        if ($invoice)
+        {
+            $subtotal = 0;
+            $total = 0;
+            $discount = 0;
+            $vat = [];
+
+            $items = InvoiceItem::where('invoice_id', '=', $invoice->id)->get();
+
+            foreach($items as $item)
+            { 
+                $item_one_price = $item->price - (($item->price*$item->discount)/100);
+                $item_vat = $item_one_price * ($item->vat/100);
+
+                if (isset($vat[$item->vat]))
+                {
+                    $vat[$item->vat] += $item_vat*$item->quantity;
+                }
+                else
+                {
+                    $vat[$item->vat] = $item_vat*$item->quantity;
+                }
+
+                $discount += (($item->price*$item->discount)/100)*$item->quantity;
+                $subtotal += $item->price * $item->quantity;
+
+                $total += ($item_one_price + $item_vat)*$item->quantity;
+            }
+        }
+        else
+        {
+            return redirect('/');
+        }
+        
+
+        $member = User::with('ProfessionalDetail')->with('PersonalDetail')->where('id', $invoice->user_id)->get()->first();
+        $member->country = Countries::where('id', $member->country_id)->get()->first();
+
+        $breadcrumbs = [
+            'Home'              => route('admin'),
+            'Administration'    => route('admin'),
+            'Back End User'     => route('admin'),
+            'All Backend Users' => '',
+        ];
+        
+        $text_parts  = [
+            'title'     => 'Back-End Users',
+            'subtitle'  => 'view all users',
+            'table_head_text1' => 'Backend User List'
+        ];
+
+        $sidebar_link = 'admin-backend-shops-invoices-payment';
+
+        return view('front/finance/finance_peyment', [
+            'breadcrumbs' => $breadcrumbs,
+            'text_parts'  => $text_parts,
+            'in_sidebar'  => $sidebar_link,
+            'invoice'   => $invoice,
+            'invoice_items' => @$items,
+            'member'    => $member,
+            'sub_total' => $subtotal,
+            'discount' => $discount,
+            'vat' => $vat,
+            'grand_total' => $total
+        ]);
     }
 }

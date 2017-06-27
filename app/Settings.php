@@ -31,7 +31,8 @@ class Settings extends Model
         'max_value'
     ];
 
-    public static function rules($method, $id=0){
+    public static function rules($method, $id = 0)
+    {
         switch($method){
             case 'GET':
             case 'DELETE':
@@ -43,6 +44,18 @@ class Settings extends Model
                 return [
                     'name'                  => 'required|unique:settings,name',
                     'system_internal_name'  => 'required|unique:settings,system_internal_name',
+                    'description'   => 'required|min:5',
+                    'constrained'   => 'required',
+                    //'data_type'     => 'required',
+                    'min_value'     => 'numeric',
+                    'max_value'     => 'numeric',
+                ];
+            }
+            case 'UPDATE':
+            {
+                return [
+                    'name'                  => 'required|unique:settings,id,name',
+                    'system_internal_name'  => 'required|unique:settings,id,system_internal_name',
                     'description'   => 'required|min:5',
                     'constrained'   => 'required',
                     'data_type'     => 'required',

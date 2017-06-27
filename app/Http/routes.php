@@ -572,6 +572,13 @@ Route::group(['middleware' => 'web'], function () {
         'as'    => 'admin/settings/list_all',
         'uses'  => 'AppSettings@index'
     ]);
+
+    Route::get('admin/settings/manage_settings', [
+        'as'    => 'admin/settings/manage_settings',
+        'uses'  => 'AppSettings@manage_settings'
+    ]);
+    
+     
     /* Stop General Settings Part */
 
     /* Start Finance Profiles Part */
@@ -753,6 +760,11 @@ Route::group(['prefix'=>'front', 'middleware'=>'web'], function(){
         'uses'  => 'BookingController@front_my_bookings'
     ]);
 
+    Route::get('finance/invoice/{id}',  [
+        'as'    => 'front/finance/invoice/{id}',
+        'uses'  => 'FrontEndUserController@invoice_payment'
+    ]);
+
     Route::get('bookings_archive', [
         'as'    => 'front/bookings_archive',
         'uses'  => 'BookingController@front_bookings_archive'
@@ -857,6 +869,7 @@ Route::group(['prefix'=>'front', 'middleware'=>'web'], function(){
         'as'    => 'back_error_404',
         'uses'  => 'AdminController@error_404'
     ]);
+
 });
 /** Stop Routes for front end */
 
@@ -1062,6 +1075,32 @@ Route::group(['prefix'=>'ajax', 'middleware' => 'web'], function(){
         'uses'  => 'AppSettings@register_new_setting'
     ]);
 
+    Route::post('get_settings', [
+        'as'    => 'ajax/get_settings',
+        'uses'  => 'AppSettings@get_settings'
+    ]);
+
+    Route::post('get_items_settings', [
+        'as'    => 'ajax/get_items_settings',
+        'uses'  => 'AppSettings@get_items_settings'
+    ]);
+
+    Route::post('add_items_settings', [
+        'as'    => 'ajax/add_items_settings',
+        'uses'  => 'AppSettings@add_items_settings'
+    ]);
+
+
+    Route::post('update_settings', [
+        'as'    => 'ajax/update_settings',
+        'uses'  => 'AppSettings@update_settings'
+    ]);
+
+    Route::post('delete_settings', [
+        'as'    => 'ajax/delete_settings',
+        'uses'  => 'AppSettings@delete_settings'
+    ]);
+
     Route::post('get_all_list_members', [
         'as'    => 'ajax/get_all_list_members',
         'uses'  => 'FrontEndUserController@get_front_members_ajax_call'
@@ -1085,6 +1124,16 @@ Route::group(['prefix'=>'ajax', 'middleware' => 'web'], function(){
     Route::post('auth_autorize', [
         'as'    => 'ajax/auth_autorize',
         'uses'  => 'FrontEndUserController@auth_autorize'
+    ]);
+
+    Route::post('save_setting_application', [
+        'as'    => 'ajax/save_setting_application',
+        'uses'  => 'AppSettings@save_setting_application'
+    ]);
+
+    Route::post('save_allowed_setting', [
+        'as'    => 'ajax/save_allowed_setting',
+        'uses'  => 'AppSettings@save_allowed_setting'
     ]);
     
 });
