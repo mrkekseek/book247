@@ -376,10 +376,6 @@
                         if ( pay_answer == true ){
                             abutton.remove();
                             location.reload();
-
-                            //abutton.confirmation('destroy');
-                            //abutton.unbind('click');
-                            //abutton.css('cursor','default');
                         }
                         else{
                             abutton.confirmation('toggle');
@@ -397,10 +393,6 @@
                         if ( pay_answer == true ){
                             abutton.remove();
                             location.reload();
-
-                            //abutton.confirmation('destroy');
-                            //abutton.unbind('click');
-                            //abutton.css('cursor','default');
                         }
                         else{
                             abutton.confirmation('toggle');
