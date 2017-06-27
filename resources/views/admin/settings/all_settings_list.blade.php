@@ -657,7 +657,7 @@
                             $(".select_type").hide();
                         }
                         
-                        if ( ! data.constrained)
+                        if ( ! data.constrained) 
                         {
                             $(".select_type").show();
                         }
