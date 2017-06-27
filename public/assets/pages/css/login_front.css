@@ -280,6 +280,9 @@ Login page
     margin-top: 0;
     margin-bottom: 3px;
 }
+.login .date-picker button{
+    line-height: 2.1 !important;
+}
 
 @media (max-width: 440px){
     /***
