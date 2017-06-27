@@ -47,8 +47,8 @@ class Settings extends Model
                     'description'   => 'required|min:5',
                     'constrained'   => 'required',
                     //'data_type'     => 'required',
-                    'min_value'     => '',
-                    'max_value'     => '',
+                    'min_value'     => 'numeric',
+                    'max_value'     => 'numeric',
                 ];
             }
             case 'UPDATE':
