@@ -60,30 +60,57 @@ class MembershipController extends Base
     {
 
         if ($r->get('user_id')  && $r->get('payment_method') && $r->get('membership')) {
-//            $user = User::where('sso_user_id',$r->get('user_id'))->first();
-//            if (Auth::loginUsingId($user->id)) {
-//                $r->request->add(['member_id' => $user->id, 'selected_plan' => $r->get('membership'), 'start_date' => date('Y-m-d')]);
-//                $status = $this->assign_membership_to_member($r);
-//                Auth::logout();
-//                if($status['success'] == false ){
-//                    return json_encode([
-//                            'success' => false ,
-//                            'message' => $status['errors']
-//                        ]
-//                    );
-//                }
-//            }
+
+            $user = User::where('sso_user_id',$r->get('user_id'))->first();
+
+            if (Auth::loginUsingId($user->id)) {
+
+                $r->request->add([
+                    'member_id' => $user->id,
+                    'selected_plan' => $r->get('membership'),
+                    'start_date' => date('Y-m-d')
+                ]);
+
+                $membership = UserMembership::where([
+                    ['user_id','=',$user->id],
+                    ['membership_id','=',$r->get('membership')]
+                ])->first();
+
+                if(!isset($membership)) {
+                    $status = $this->assign_membership_to_member($r,'pending');
+                    if($status['success'] == false ){
+                        return json_encode([
+                                'success' => false ,
+                                'message' => $status['errors']
+                            ]
+                        );
+                    }
+                }
+
+                Auth::logout();
+
+            }
             if ($r->get('payment_method') == 'paypal') {
                 $u = User::where('sso_user_id',$r->get('user_id'))->first();
                 $membership = MembershipPlan::find($r->get('membership'));
+                $userMembership = UserMembership::where([
+                    ['user_id','=',$u->id],
+                    ['membership_id','=',$r->get('membership')]
+                ])->first();
+
+                $invoicePlan = UserMembershipInvoicePlanning::where('user_membership_id', $userMembership->id)->first();
+
+                $invoices = InvoiceItem::where('invoice_id',$invoicePlan->invoice_id)->get();
+
                 return json_encode([
                     'success' => true ,
                     'data' => [
                         'paying' => true,
                         'payment_method' => $r->get('payment_method'),
                         'user' => $u,
-                        'membership_name' => $membership->name,
-                        'price' => $membership->get_price()->price
+                        'invoices' => $invoices
+//                        'membership_name' => $membership->name,
+//                        'price' => $membership->get_price()->price
                         ]
                     ]
                 );
@@ -101,6 +128,14 @@ class MembershipController extends Base
                 'user_id' => null ,
                 'membership' => null
             ]);
+        }
+    }
+    public function ipn(Request $r)
+    {
+        $header = "HTTP/1.1 200 OK";
+        $res = "cmd=_notify-validate";
+        foreach($r->all() as $key => $el){
+            $res .= "&$key=".urlencode(stripslashes($el));
         }
     }
 }

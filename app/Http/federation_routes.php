@@ -38,6 +38,16 @@ Route::get('buy_license/{token}/{sso_id}/{license_id?}', [
     'uses'  => 'Federation\MembershipController@iframed'
 ]);
 
+Route::post('membership/ipn', [
+    'as'    => 'membership/ipn',
+    'uses'  => 'Federation\MembershipController@ipn'
+]);
+
+
+Route::post('membership/buy_succes', [
+    'as'    => 'membership/buy_succes',
+    'uses'  => 'Federation\MembershipController@payment_success'
+]);
 Route::post('membership/paypal_payment', [
     'as'    => 'membership/paypal_payment',
     'uses'  => 'Federation\MembershipController@iframed_paypal_pay'

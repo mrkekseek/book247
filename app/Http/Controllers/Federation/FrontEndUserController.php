@@ -1116,6 +1116,7 @@ class FrontEndUserController extends Base
             return redirect()->intended(route('admin/error/permission_denied'));
         }
 
+        /** @var  $vars */
         $vars = $request->only('_token','_method','start_date','membership_type','sign_location');
 
         $allRows = [];
@@ -1406,6 +1407,7 @@ class FrontEndUserController extends Base
                     // Default free plan is the first plan
                     if (strlen($member['membership_plan'])>0 && isset($arrayPlan[$member['membership_plan']])){
                         // we have a plan and we apply it
+                        /** @var User $new_member */
                         $new_member->attach_membership_plan($arrayPlan[$member['membership_plan']]['full_plan'], $user, $member['contract_start']!=''?$member['contract_start']:$the_date, $member['contract_number']);
 
                         $msg.= 'Membership plan assigned : '.$arrayPlan[$member['membership_plan']]['full_plan']->name.' <br />';

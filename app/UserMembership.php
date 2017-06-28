@@ -24,7 +24,8 @@ class UserMembership extends Model
         'discount'      => 'Discount',
         'membership_restrictions' => 'Membership Restrictions',
         'signed_by'     => 'Signed By',
-        'contract_number'   => 'Contract Number'
+        'contract_number'   => 'Contract Number',
+        'status' => 'Membership status'
     );
 
     public static $message = array();
@@ -42,7 +43,8 @@ class UserMembership extends Model
         'discount',
         'membership_restrictions',
         'signed_by',
-        'contract_number'
+        'contract_number',
+        'status'
     ];
 
     public static function rules($method, $id=0){
@@ -67,7 +69,7 @@ class UserMembership extends Model
                     'discount'  => 'numeric',
                     'membership_restrictions'   => 'required|min:3',
                     'signed_by' => 'required|exists:users,id',
-                    'status'    => 'required|in:active,suspended,canceled,expired',
+                    'status'    => 'required|in:active,suspended,canceled,expired,pending',
                     'contract_number'   => 'required|numeric|unique:user_memberships,contract_number|min:3'
                 ];
             }
@@ -87,7 +89,7 @@ class UserMembership extends Model
                     'discount'  => 'numeric',
                     'membership_restrictions'   => 'required|min:3',
                     'signed_by' => 'required|exists:users,id',
-                    'status'    => 'required|in:active,suspended,canceled,expired',
+                    'status'    => 'required|in:active,suspended,canceled,expired,pending',
                     'contract_number'   => 'required|numeric|min:3|unique:user_memberships,contract_number'.($id ? ",$id,id" : '')
                 ];
             }
@@ -170,7 +172,7 @@ class UserMembership extends Model
         return $plan_details;
     }
 
-    public function create_new(User $user, MembershipPlan $plan, User $signed_by, $day_start = false, $contract_number = 0) {
+    public function create_new(User $user, MembershipPlan $plan, User $signed_by, $day_start = false, $status = 'active', $contract_number = 0) {
         $to_be_paid = $plan->get_price();
 
         if ($day_start==false){
@@ -210,7 +212,7 @@ class UserMembership extends Model
             'discount'      => 0,
             'membership_restrictions'   => '',
             'signed_by'     => $signed_by->id,
-            'status'        => 'active',
+            'status'        => $status,
             'contract_number'   => $this->get_next_membership_number($contract_number)
         ];
 

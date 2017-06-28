@@ -7,7 +7,7 @@
     "require": {
         "php": ">=5.5.9",
         "laravel/framework": "5.2.*",
-        "doctrine/dbal": "v2.4.2",
+        "doctrine/dbal": "v2.5.10",
         "nesbot/carbon": "~1.21",
         "snowfire/beautymail": "dev-master",
         "regulus/activity-log": "0.6.*",
