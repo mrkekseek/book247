@@ -754,6 +754,11 @@ Route::group(['middleware'=>'web', 'prefix'=>'admin'], function(){
         'uses'  => 'MembershipProductsController@update'
     ]);
 
+    Route::get('invoices/payment/{id}', [
+        'as'    => 'admin/invoices/payment/{id}',
+        'uses'  => 'BackEndUserController@invoice_payment'
+    ]);
+
     /** Stop  - Membership Management */
 });
 
