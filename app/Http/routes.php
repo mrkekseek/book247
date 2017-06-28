@@ -40,6 +40,10 @@ Route::group(['middleware' => 'web'], function () {
         return view('login');
     });
 
+    Route::get('registration', function(){
+        return view('registration-form');
+    });
+
     Route::get('admin/login', [
         'as' => 'admin/login',
         function(){
