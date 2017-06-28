@@ -22,7 +22,11 @@ use Regulus\ActivityLog\Models\Activity;
  */
 class MembershipController extends Controller
 {
-    public function assign_membership_to_member(Request $request){
+    public static $PAYMENT_PENDING = "pending";
+
+    public static $PAYMENT_DONE = "done";
+
+    public function assign_membership_to_member(Request $request, $status = 'active'){
         if (!Auth::check()) {
             return [
                 'success'   => false,
@@ -84,9 +88,9 @@ class MembershipController extends Controller
         $old_plan = UserMembership::where('user_id','=',$member->id)->whereIn('status',['active','suspended'])->orderBy('created_at','desc')->get()->first();
 
         $new_plan = new UserMembership();
-        if ($new_plan->create_new($member, $the_plan, $user, $startDate)){
+        if ($new_plan->create_new($member, $the_plan, $user, $startDate, $status = $status)){
             if ($old_plan) {
-                $old_plan->status = 'canceled';
+                $old_plan->status = $status;
                 $old_plan->save();
             }
 

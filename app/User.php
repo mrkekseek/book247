@@ -177,14 +177,14 @@ class User extends Authenticatable
         return $membership;
     }
 
-    public function attach_membership_plan(MembershipPlan $the_plan, User $signed_by, $day_start = false, $contract_number = 0){
+    public function attach_membership_plan(MembershipPlan $the_plan, User $signed_by, $day_start = false, $contract_number = 0, $status = 'active'){
         if ($this->is_back_user()){
             return false;
         }
 
         $user_plan = new UserMembership();
         //$user_plan->assign_plan($this, $the_plan, $signed_by);
-        if ( $user_plan->create_new($this, $the_plan, $signed_by, $day_start, $contract_number) ){
+        if ( $user_plan->create_new($this, $the_plan, $signed_by, $day_start, $contract_number,$status) ){
             return true;
         }
         else{
