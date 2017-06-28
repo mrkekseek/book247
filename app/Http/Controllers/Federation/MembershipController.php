@@ -6,6 +6,7 @@ use App\Http\Controllers\MembershipController as Base;
 use App\MembershipPlan;
 use App\MembershipPlanPrice;
 use App\IframePermission;
+use App\Paypal;
 use App\Role;
 use App\UserMembership;
 use App\ShopResourceCategory;
@@ -132,10 +133,34 @@ class MembershipController extends Base
     }
     public function ipn(Request $r)
     {
-        $header = "HTTP/1.1 200 OK";
-        $res = "cmd=_notify-validate";
-        foreach($r->all() as $key => $el){
-            $res .= "&$key=".urlencode(stripslashes($el));
-        }
+        $log = new Paypal();
+        $log->fill([
+            'invoice_id' => -1,
+            'paypal_response' => json_encode($r->all())
+        ]);
+        $log->save();
+    }
+
+    public function paypal_success(Request $r)
+    {
+        $amount = $r->get('amt');
+        $curency = $r->get('cc');
+        $invoice_id = $r->get('cm');
+        $transactionId = $r->get('tx');
+
+        return view('front/iframe/federation/redirect_page',[
+            'text' => 'Payment successful!',
+            'status' => 'Success',
+            'link' => 'http://book.net/admin/test_api_call'
+        ]);
+    }
+
+    public function paypal_cencel(Request $r)
+    {
+        return view('front/iframe/federation/redirect_page',[
+            'text' => 'Payment Canceled :(',
+            'status' => 'Failed',
+            'link' => 'http://book.net/admin/test_api_call'
+        ]);
     }
 }

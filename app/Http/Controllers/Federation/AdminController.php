@@ -24,13 +24,18 @@ class AdminController extends Base
     /**
      * Show the application dashboard.
      *
-     * @return \Illuminate\Http\Response
+     * @param Request $r
+     * @return String
      */
 
-    public function testRoute(){
+    public function testRoute(Request $r){
 //        return json_encode(Api::send_curl(['memberSSOid'=>5 , 'country'=> 'NO' ,'activity' => 1],'federation_member_has_valid_license','GET'));
 //        return json_encode(Api::send_curl(['account_key' => '11381-46565-30640-84804-20809'],'validate_account_key','POST'));
 //        return Api::send_curl(['memberSSOid' => 15 ,'activity' => null],'federation_buy_license','POST');
+
+        if($r->method() == "POST"){
+            return json_encode($r->all());
+        }
         $result =  Api::send_curl(['memberSSOid' => 15 ,'membership_id' => null,'account_key' => '81381-46565-30640-84804-20809'],'federation_buy_license','POST');
         if(isset($result->iFrameUrl)) {
             return view('development',['link' => $result->iFrameUrl]);
@@ -42,6 +47,7 @@ class AdminController extends Base
             }
         }
     }
+
 
     public function index()
     {
