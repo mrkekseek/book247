@@ -180,6 +180,7 @@ class EmailsController extends Controller
         $fillable = array(
             "title"       => $default_template->title,
             "content"     => $default_template->content,
+            "variables"   => $default_template->variables,
             "country_id"  => $default_template->country_id,
             "description" => $default_template->description
         );

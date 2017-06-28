@@ -59,7 +59,7 @@
                                         </td>
                                         <td> 
                                               @foreach($templates[$i]["variables"] as $index => $var)
-                                                <span class="label label-default">{{ $var }}</span>
+                                                <span class="label label-default label-var">{{ $var }}</span>
                                               @endforeach
                                        </td>
                                        <td>

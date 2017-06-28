@@ -23,6 +23,7 @@ use DatePeriod;
 use Carbon\CarbonInterval;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\MessageBag;
+use Webpatser\Countries\Countries;
 
 class FrontPageController extends Controller
 {
@@ -132,13 +133,15 @@ class FrontPageController extends Controller
             'table_head_text1' => 'Dashboard Summary'
         ];
         $sidebar_link= 'front-homepage';
-
+        $countries = Countries::orderBy('name')->get();
+        
         return view('front/home_page',[
             'breadcrumbs' => $breadcrumbs,
             'text_parts'  => $text_parts,
             'in_sidebar'  => $sidebar_link,
             'user'  => $user,
             'shops' => $shopLocations,
+            'countries' => $countries,
             'resourceCategories' => $resourceCategories,
             'meAndFriendsBookings' => @$own_friends_bookings,
             'settings'  => @$settings,

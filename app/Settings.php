@@ -46,9 +46,9 @@ class Settings extends Model
                     'system_internal_name'  => 'required|unique:settings,system_internal_name',
                     'description'   => 'required|min:5',
                     'constrained'   => 'required',
-                    'data_type'     => 'required',
-                    'min_value'     => '',
-                    'max_value'     => '',
+                    //'data_type'     => 'required',
+                    'min_value'     => 'numeric',
+                    'max_value'     => 'numeric',
                 ];
             }
             case 'UPDATE':

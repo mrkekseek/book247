@@ -188,6 +188,34 @@ class Auth
         $personalDetail->date_of_birth = date('Y-m-d', strtotime($api_user->birthday));
         $personalDetail->save();
     }
+    
+    public static function create_local_user($sso_user_id = FALSE, $sso_username = FALSE)
+    {
+        $api_user = ! empty($sso_username) ? ApiAuth::accounts_get_by_username($sso_username)['data'] : ApiAuth::accounts_get($sso_user_id)['data'];
+        $local_user = [
+            'sso_user_id'=>$api_user->id,
+            'username'=>$api_user->username,
+            'email'=>$api_user->email,
+            'first_name'=>$api_user->firstName,
+            'last_name'=>$api_user->lastName,
+            'middle_name'=>$api_user->middleName,            
+            'country_id'=>config('constants.globalWebsite.defaultCountryId')            
+            ];
+        switch ($api_user->gender)
+        {
+            case (1): $local_user['gender'] = 'M'; break;
+            case (2): $local_user['gender'] = 'F'; break;
+        }
+        $user = new User();
+        $user->fill($local_user);
+        if ($user->save())
+        {
+            $user->attachRole(6);
+            self::set_personal_details($user->id, $api_user);
+            return $user;
+        }
+        return FALSE;
+    }
 
     public static function create_api_user($user, $password = FALSE)
     {   
@@ -197,6 +225,18 @@ class Auth
         }
         if (!self::check_exist_api_user($user['username']))
         {            
+            if (isset($user['gender']))
+            {
+                switch ($user['gender'])
+                {
+                    case ('M'): $user['gender'] = 1; break;
+                    case ('F'): $user['gender'] = 2; break;
+                }
+            }
+            if (isset($user['date_of_birth']))
+            {
+                $user['date_of_birth'] = date('Y-m-d', strtotime($user['date_of_birth'])).'T00:00:00';
+            }
             $api_user = ApiAuth::account_create($user);                    
             if ($api_user['success'])
             {
@@ -225,8 +265,8 @@ class Auth
             case ('M'): $apiData['gender'] = 1; break;
             case ('F'): $apiData['gender'] = 2; break;
         }
-        $apiData['birthday'] = isset($apiData['birthday']) ? $apiData['birthday'] : '';
-        $apiData['birthday'] = date('Y-m-d',strtotime($apiData['birthday'])).'T00:00:00';
+        $apiData['date_of_birth'] = isset($apiData['date_of_birth']) ? $apiData['date_of_birth'] : '';
+        $apiData['date_of_birth'] = date('Y-m-d',strtotime($apiData['date_of_birth'])).'T00:00:00';
         $api_user = ApiAuth::accounts_update($apiData);
         if ($api_user['success'])
         {
