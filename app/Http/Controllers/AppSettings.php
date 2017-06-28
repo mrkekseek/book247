@@ -5,21 +5,18 @@ namespace App\Http\Controllers;
 use App\Settings;
 use Illuminate\Http\Request;
 
+use DB;
 use App\Http\Requests;
-use Illuminate\Support\Facades\Auth;
+use Auth;
 use Illuminate\Support\Facades\Validator;
 
 class AppSettings extends Controller
 {
-    public function __construct()
-    {
-        //$this->middleware('auth');
-    }
-
     public function index()
     {
         $user = Auth::user();
-        if (!$user || !$user->is_back_user()) {
+        if ( ! $user || ! $user->is_back_user())
+        {
             return redirect()->intended(route('admin/login'));
         }
 
@@ -41,12 +38,16 @@ class AppSettings extends Controller
             'breadcrumbs' => $breadcrumbs,
             'text_parts'  => $text_parts,
             'in_sidebar'  => $sidebar_link,
+            'settings'    => Settings::all(),
+            'data_types'  => array("string" => "String / Alphanumeric Values", "text" => "Text", "numeric" => "Numeric Only", "date" => "Date / DateTime Value")
         ]);
     }
 
-    public function register_new_setting(Request $request){
+    public function register_new_setting(Request $request)
+    {
         $user = Auth::user();
-        if (!$user || !$user->is_back_user()) {
+        if ( ! $user || ! $user->is_back_user())
+        {
             return [
                 'success'   => false,
                 'title'     => 'Login Error',
@@ -56,18 +57,18 @@ class AppSettings extends Controller
 
         $vars = $request->only('contained', 'data_type', 'description', 'max_value', 'min_value', 'name', 'system_internal_name');
         $fillable = [
-            'name'          => $vars['name'],
+            'name'                  => $vars['name'],
             'system_internal_name'  => $vars['system_internal_name'],
-            'description'   => $vars['description'],
-            'constrained'   => $vars['contained'],
-            'data_type'     => $vars['data_type'],
-            'min_value'     => $vars['min_value'],
-            'max_value'     => $vars['max_value']
+            'description'           => $vars['description'],
+            'constrained'           => $vars['contained'] == "true" ? 1 : 0,
+            'data_type'             => $vars['data_type'],
+            'min_value'             => $vars['min_value'],
+            'max_value'             => $vars['max_value']
         ];
 
         $settingValidator = Validator::make($fillable, Settings::rules('POST'), Settings::$validationMessages, Settings::$attributeNames);
-        if ($settingValidator->fails()){
-            //return $validator->errors()->all();
+        if ($settingValidator->fails())
+        {
             return array(
                 'success'   => false,
                 'title'     => 'Error Shop Details',
@@ -86,5 +87,145 @@ class AppSettings extends Controller
             ];
         }
         /** Stop - Add shop location to database */
+    }
+
+    public function update_settings(Request $request)
+    {
+        $user = Auth::user();
+        if ( ! $user || ! $user->is_back_user())
+        {
+            return [
+                'success'   => false,
+                'title'     => 'Login Error',
+                'errors'    => 'You need to be logged in to access this function'
+            ];
+        }
+
+        $vars = $request->only('contained', 'data_type', 'description', 'max_value', 'min_value', 'name', 'system_internal_name', 'id');
+        $fillable = [
+            'name'                  => $vars['name'],
+            'system_internal_name'  => $vars['system_internal_name'],
+            'description'           => $vars['description'],
+            'constrained'           => $vars['contained'] == "true" ? 1 : 0,
+            'data_type'             => $vars['data_type'],
+            'min_value'             => $vars['min_value'],
+            'max_value'             => $vars['max_value']
+        ];
+
+        $settingValidator = Validator::make($fillable, Settings::rules('UPDATE'), Settings::$validationMessages, Settings::$attributeNames);
+        if ($settingValidator->fails())
+        {
+            return array(
+                'success'   => false,
+                'title'     => 'Error Shop Details',
+                'errors'    => $settingValidator->getMessageBag()->toArray()
+            );
+        }
+        else
+        {
+            $settings = Settings::where("id", $vars["id"])->get()->first();
+            $settings->update($fillable);
+
+            return [
+                'success'   => true,
+                'title'     => 'New Setting Variable Created',
+                'message'   => 'A new variable was created and can be used in the system. Remember to give it a value before using it'
+            ];
+        }
+    }
+
+    public function delete_settings(Request $request)
+    {
+        $user = Auth::user();
+        if ( ! $user || ! $user->is_back_user())
+        {
+            return [
+                'success'   => false,
+                'title'     => 'Login Error',
+                'errors'    => 'You need to be logged in to access this function'
+            ];
+        }
+
+        if ( ! Settings::where("id", $request->input('id'))->delete())
+        {
+            return array(
+                'success'   => false,
+                'title'     => 'Error Shop Details',
+                'errors'    => 'Database error'
+            );
+        }
+        else
+        {
+            return [
+                'success'   => true,
+                'title'     => 'Delete settings',
+                'message'   => 'Delete setting was created'
+            ];
+        }
+    }
+
+    public function get_items_settings(Request $request)
+    {
+        $user = Auth::user();
+        if ( ! $user || ! $user->is_back_user())
+        {
+            return [
+                'success'   => false,
+                'title'     => 'Login Error',
+                'errors'    => 'You need to be logged in to access this function'
+            ];
+        }
+
+        return DB::table("allowed_setting_values")->where("setting_id", $request->input("id"))->get();
+    }
+
+    public function add_items_settings(Request $request)
+    {
+        $user = Auth::user();
+        if ( ! $user || ! $user->is_back_user())
+        {
+            return [
+                'success'   => false,
+                'title'     => 'Login Error',
+                'errors'    => 'You need to be logged in to access this function'
+            ];
+        }
+
+        $fillable = array(
+            "item_value" => $request->input("item_value"),
+            "caption" => $request->input("caption")
+        );
+
+        if ( ! DB::table("allowed_setting_values")->insert($fillable))
+        {
+            return array(
+                'success'   => false,
+                'title'     => 'Database error',
+                'errors'    => 'Database error'
+            );
+        }
+        else
+        {
+            return [
+                'success'   => true,
+                'title'     => 'Add Items Settings',
+                'message'   => 'Add Items Settings'
+            ];
+        }
+    }
+
+    public function get_settings(Request $request)
+    {
+        $user = Auth::user();
+        if ( ! $user || ! $user->is_back_user())
+        {
+            return [
+                'success'   => false,
+                'title'     => 'Login Error',
+                'errors'    => 'You need to be logged in to access this function'
+            ];
+        }
+
+        return Settings::where("id", $request->input('settings_id'))->get()->first();
     }
 }

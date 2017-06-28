@@ -564,17 +564,12 @@ if (env('FEDERATION',false)) {
             'uses'  => 'InvoiceController@list_all_invoices'
         ]);
 
-    Route::get('admin/invoices/{id}/view', [
-        'as'    => 'admin/invoices/view',
-        'uses'  => 'InvoiceController@view_invoice'
-    ]);
+        Route::get('admin/invoices/{id}/view', [
+            'as'    => 'admin/invoices/view',
+            'uses'  => 'InvoiceController@view_invoice'
+        ]);
 
-    Route::post('ajax/finance_action_invoice_paid',[
-        'as'    => 'ajax/finance_action_invoice_paid',
-        'uses'  => 'InvoiceController@mark_as_paid'
-    ]);
-    /** Stop Finance Part */
-
+        /** Stop Finance Part */
         /* Start General Settings Part */
         Route::get('admin/settings/list_all', [
             'as'    => 'admin/settings/list_all',
@@ -613,108 +608,60 @@ if (env('FEDERATION',false)) {
             'uses'  => 'FinancialProfiles@update_shop_financial_profile'
         ]);
         /* Stop Finance Profiles Part */
-    });
 
-    Route::group(['middleware'=>'web', 'prefix'=>'admin'], function(){
-        /** Start - Membership Management */
-
-        Route::resource('membership_plan', 'MembershipPlansController');
-        //GET 	        /membership_plan 	        index 	    admin.membership_plan.index
-        //GET 	        /membership_plan/create 	create 	    admin.membership_plan.create
-        //POST 	        /membership_plan 	        store 	    admin.membership_plan.store
-        //GET 	        /membership_plan/{id} 	    show 	    admin.membership_plan.show
-        //GET 	        /membership_plan/{id}/edit 	edit 	    admin.membership_plan.edit
-        //PUT/PATCH 	/membership_plan/{id} 	    update 	    admin.membership_plan.update
-        //DELETE 	    /membership_plan/{id} 	    destroy 	admin.membership_plan.destroy
-
-        Route::post('membership_plan/add_restriction', [
-            'as'    => 'membership_plan-add_restriction',
-            'uses'  => 'MembershipPlansController@add_plan_restriction'
+        /* Start Email Templates Part */
+        Route::get('admin/templates_email/list_all', [
+            'as'    => 'admin/templates_email/list_all',
+            'uses'  => 'EmailsController@list_all'
         ]);
 
-        Route::post('membership_plan/remove_restriction', [
-            'as'    => 'membership_plan-remove_restriction',
-            'uses'  => 'MembershipPlansController@remove_plan_restriction'
+        Route::get('/admin/templates_email/add', [
+            'as'    => 'admin/templates_email/add',
+            'uses'  => 'EmailsController@add'
         ]);
 
-        Route::post('membership_plan/resync_restriction', [
-            'as'    => 'membership_plan-resync_restriction',
-            'uses'  => 'MembershipPlansController@resync_restriction'
+        Route::get('admin/templates_email/edit/{id}', [
+            'as'    => 'admin/templates_email/edit/{id}',
+            'uses'  => 'EmailsController@edit'
         ]);
 
-        Route::post('membership_plan/resync_member_restriction', [
-            'as'    => 'membership_plan-resync_member_restriction',
-            'uses'  => 'MembershipPlansController@resync_member_restriction'
+        Route::post('admin/templates_email/create', [
+            'as'    => 'admin/templates_email/create',
+            'uses'  => 'EmailsController@store_email_template'
         ]);
 
-        Route::post('membership_plan/ajax_get_details', [
-            'as'    => 'admin/membership_plans/ajax_get_details',
-            'uses'  => 'MembershipPlansController@ajax_get_plan_details'
+        Route::post('admin/templates_email/update/{id}', [
+            'as'    => 'admin/templates_email/update/{id}',
+            'uses'  => 'EmailsController@update_email_template'
         ]);
 
-        Route::post('membership_plans/assign_to_member', [
-            'as'    => 'admin/membership_plans/assign_to_member',
-            'uses'  => 'MembershipController@assign_membership_to_member'
+        Route::get('admin/templates_email/reset_default/{id}', [
+            'as'    => 'admin/templates_email/reset_default/{id}',
+            'uses'  => 'EmailsController@reset_default'
         ]);
 
-        Route::post('membership_plans/changed_active_plan', [
-            'as'    => 'admin/membership_plans/changed_active_plan',
-            'uses'  => 'MembershipController@change_active_membership_for_member'
+        Route::get('admin/templates_email/make_default/{id}', [
+            'as'    => 'admin/templates_email/make_default/{id}',
+            'uses'  => 'EmailsController@make_default'
         ]);
 
-        Route::post('membership_plans/freeze_member_plan', [
-            'as'    => 'admin/membership_plans/freeze_member_plan',
-            'uses'  => 'MembershipController@freeze_membership_for_member'
+        Route::post('admin/templates_email/delete', [
+            'as'    => 'admin/templates_email/delete',
+            'uses'  => 'EmailsController@delete_email_template'
         ]);
-
-        Route::post('membership_plans/cancel_member_plan', [
-            'as'    => 'admin/membership_plans/cancel_member_plan',
-            'uses'  => 'MembershipController@cancel_membership_for_member'
-        ]);
-
-        Route::post('membership_plans/delete_pending_action', [
-            'as'    => 'admin/membership_plans/delete_pending_action',
-            'uses'  => 'MembershipController@cancel_membership_planned_action'
-        ]);
-
-        Route::get('membership_products/list_all', [
-            'as'    => 'admin/membership_products/list_all',
-            'uses'  => 'MembershipProductsController@index'
-        ]);
-
-        Route::get('membership_products/add_new', [
-            'as'    => 'admin/membership_products/add_new',
-            'uses'  => 'MembershipProductsController@create'
-        ]);
-
-        Route::post('membership_products/add_new', [
-            'as'    => 'admin/membership_products/add_new',
-            'uses'  => 'MembershipProductsController@store'
-        ]);
-
-        Route::get('membership_products/{id}', [
-            'as'    => 'admin/membership_products/view',
-            'uses'  => 'MembershipProductsController@show'
-        ]);
-
-        Route::get('membership_products/{id}/edit', [
-            'as'    => 'admin/membership_products/edit',
-            'uses'  => 'MembershipProductsController@edit'
-        ]);
-
-        Route::post('membership_products/{id}/update', [
-            'as'    => 'admin/membership_products/update',
-            'uses'  => 'MembershipProductsController@update'
-        ]);
-
-        /** Stop  - Membership Management */
+        /* Stop Email Templates Part */
     });
 
     /** Start Routes for front end */
-    Route::group(['prefix'=>'front', 'middleware'=>'web'], function(){
+    Route::group(['prefix' => 'front',    'middleware' => 'web'], function(){
         Route::get('my_bookings', [
             'as'    => 'front/my_bookings',
             'uses'  => 'BookingController@front_my_bookings'
+        ]);
+
+        Route::get('finance/invoice/{id}',  [
+            'as'    => 'front/finance/invoice/{id}',
+            'uses'  => 'FrontEndUserController@invoice_payment'
         ]);
 
         Route::get('bookings_archive', [
@@ -821,10 +768,12 @@ if (env('FEDERATION',false)) {
             'as'    => 'back_error_404',
             'uses'  => 'AdminController@error_404'
         ]);
+
     });
     /** Stop Routes for front end */
 
-    Route::group(['prefix'=>'ajax', 'middleware' => 'web'], function(){
+    /** Start Routes for ajax calls */
+    Route::group(['prefix' => 'ajax',     'middleware' => 'web'], function(){
 
         Route::post('get_booking_hours',[
             'as'    => 'ajax/get_booking_hours',
@@ -919,6 +868,101 @@ if (env('FEDERATION',false)) {
         Route::post('get_friends_list', [
             'as'    => 'ajax/get_friends_list',
             'uses'  => 'FrontEndUserController@ajax_get_friends_list'
+        ]);
+
+        Route::post('ajax/finance_action_invoice_paid',[
+            'as'    => 'ajax/finance_action_invoice_paid',
+            'uses'  => 'InvoiceController@mark_as_paid'
+        ]);
+        /** Stop Finance Part */
+
+        /* Start General Settings Part */
+        Route::get('admin/settings/list_all', [
+            'as'    => 'admin/settings/list_all',
+            'uses'  => 'AppSettings@index'
+        ]);
+        /* Stop General Settings Part */
+
+        /* Start Finance Profiles Part */
+        Route::get('admin/settings_financial_profiles/list_all', [
+            'as'    => 'admin/settings_financial_profiles/list_all',
+            'uses'  => 'FinancialProfiles@list_all'
+        ]);
+
+        Route::get('admin/settings_financial_profiles/add', [
+            'as'    => 'admin/settings_financial_profiles/add',
+            'uses'  => 'FinancialProfiles@add_shop_financial_profile'
+        ]);
+
+        Route::post('admin/settings_financial_profiles/create', [
+            'as'    => 'admin/settings_financial_profiles/create',
+            'uses'  => 'FinancialProfiles@store_shop_financial_profile'
+        ]);
+
+        Route::get('admin/settings_financial_profiles/{id}/show', [
+            'as'    => 'admin/settings_financial_profiles/show',
+            'uses'  => 'FinancialProfiles@show_shop_financial_profile'
+        ]);
+
+        Route::get('admin/settings_financial_profiles/{id}/edit', [
+            'as'    => 'admin/settings_financial_profiles/edit',
+            'uses'  => 'FinancialProfiles@edit_shop_financial_profile'
+        ]);
+
+        Route::post('admin/settings_financial_profiles/{id}/update', [
+            'as'    => 'admin/settings_financial_profiles/update',
+            'uses'  => 'FinancialProfiles@update_shop_financial_profile'
+        ]);
+        /* Stop Finance Profiles Part */
+
+        Route::post('get_settings', [
+            'as'    => 'ajax/get_settings',
+            'uses'  => 'AppSettings@get_settings'
+        ]);
+
+        Route::post('get_items_settings', [
+            'as'    => 'ajax/get_items_settings',
+            'uses'  => 'AppSettings@get_items_settings'
+        ]);
+
+        Route::post('add_items_settings', [
+            'as'    => 'ajax/add_items_settings',
+            'uses'  => 'AppSettings@add_items_settings'
+        ]);
+
+        Route::post('update_settings', [
+            'as'    => 'ajax/update_settings',
+            'uses'  => 'AppSettings@update_settings'
+        ]);
+
+        Route::post('delete_settings', [
+            'as'    => 'ajax/delete_settings',
+            'uses'  => 'AppSettings@delete_settings'
+        ]);
+
+        Route::post('get_all_list_members', [
+            'as'    => 'ajax/get_all_list_members',
+            'uses'  => 'FrontEndUserController@get_front_members_ajax_call'
+        ]);
+
+        Route::post('buy_store_credit', [
+            'as'    => 'ajax/buy_store_credit',
+            'uses'  => 'FrontEndUserController@add_store_credit'
+        ]);
+
+        Route::post('auth_chek_email', [
+            'as'    => 'ajax/auth_chek_email',
+            'uses'  => 'FrontEndUserController@auth_chek_email'
+        ]);
+
+        Route::post('auth_check_password', [
+            'as'    => 'ajax/auth_check_password',
+            'uses'  => 'FrontEndUserController@auth_check_password'
+        ]);
+
+        Route::post('auth_autorize', [
+            'as'    => 'ajax/auth_autorize',
+            'uses'  => 'FrontEndUserController@auth_autorize'
         ]);
 
         Route::post('get_friends_players_list', [
@@ -1025,28 +1069,115 @@ if (env('FEDERATION',false)) {
             'as'    => 'ajax/register_new_setting',
             'uses'  => 'AppSettings@register_new_setting'
         ]);
-
-        Route::post('get_all_list_members', [
-            'as'    => 'ajax/get_all_list_members',
-            'uses'  => 'FrontEndUserController@get_front_members_ajax_call'
-        ]);
-
-        Route::post('buy_store_credit', [
-            'as'    => 'ajax/buy_store_credit',
-            'uses'  => 'FrontEndUserController@add_store_credit'
-        ]);
     });
+    /** Stop Routes for ajax calls */
+
+    /** Start Routes for admin end */
+    Route::group(['prefix' => 'admin',    'middleware' => 'web'], function(){
+        /** Start - Membership Management */
+
+        Route::resource('membership_plan', 'MembershipPlansController');
+        //GET 	        /membership_plan 	        index 	    admin.membership_plan.index
+        //GET 	        /membership_plan/create 	create 	    admin.membership_plan.create
+        //POST 	        /membership_plan 	        store 	    admin.membership_plan.store
+        //GET 	        /membership_plan/{id} 	    show 	    admin.membership_plan.show
+        //GET 	        /membership_plan/{id}/edit 	edit 	    admin.membership_plan.edit
+        //PUT/PATCH 	/membership_plan/{id} 	    update 	    admin.membership_plan.update
+        //DELETE 	    /membership_plan/{id} 	    destroy 	admin.membership_plan.destroy
+
+        Route::post('membership_plan/add_restriction', [
+            'as'    => 'membership_plan-add_restriction',
+            'uses'  => 'MembershipPlansController@add_plan_restriction'
+        ]);
+
+        Route::post('membership_plan/remove_restriction', [
+            'as'    => 'membership_plan-remove_restriction',
+            'uses'  => 'MembershipPlansController@remove_plan_restriction'
+        ]);
+
+        Route::post('membership_plan/resync_restriction', [
+            'as'    => 'membership_plan-resync_restriction',
+            'uses'  => 'MembershipPlansController@resync_restriction'
+        ]);
+
+        Route::post('membership_plan/resync_member_restriction', [
+            'as'    => 'membership_plan-resync_member_restriction',
+            'uses'  => 'MembershipPlansController@resync_member_restriction'
+        ]);
+
+        Route::post('membership_plan/ajax_get_details', [
+            'as'    => 'admin/membership_plans/ajax_get_details',
+            'uses'  => 'MembershipPlansController@ajax_get_plan_details'
+        ]);
+
+        Route::post('membership_plans/assign_to_member', [
+            'as'    => 'admin/membership_plans/assign_to_member',
+            'uses'  => 'MembershipController@assign_membership_to_member'
+        ]);
+
+        Route::post('membership_plans/changed_active_plan', [
+            'as'    => 'admin/membership_plans/changed_active_plan',
+            'uses'  => 'MembershipController@change_active_membership_for_member'
+        ]);
+
+        Route::post('membership_plans/freeze_member_plan', [
+            'as'    => 'admin/membership_plans/freeze_member_plan',
+            'uses'  => 'MembershipController@freeze_membership_for_member'
+        ]);
+
+        Route::post('membership_plans/cancel_member_plan', [
+            'as'    => 'admin/membership_plans/cancel_member_plan',
+            'uses'  => 'MembershipController@cancel_membership_for_member'
+        ]);
+
+        Route::post('membership_plans/delete_pending_action', [
+            'as'    => 'admin/membership_plans/delete_pending_action',
+            'uses'  => 'MembershipController@cancel_membership_planned_action'
+        ]);
+
+        Route::get('membership_products/list_all', [
+            'as'    => 'admin/membership_products/list_all',
+            'uses'  => 'MembershipProductsController@index'
+        ]);
+
+        Route::get('membership_products/add_new', [
+            'as'    => 'admin/membership_products/add_new',
+            'uses'  => 'MembershipProductsController@create'
+        ]);
+
+        Route::post('membership_products/add_new', [
+            'as'    => 'admin/membership_products/add_new',
+            'uses'  => 'MembershipProductsController@store'
+        ]);
+
+        Route::get('membership_products/{id}', [
+            'as'    => 'admin/membership_products/view',
+            'uses'  => 'MembershipProductsController@show'
+        ]);
+
+        Route::get('membership_products/{id}/edit', [
+            'as'    => 'admin/membership_products/edit',
+            'uses'  => 'MembershipProductsController@edit'
+        ]);
+
+        Route::post('membership_products/{id}/update', [
+            'as'    => 'admin/membership_products/update',
+            'uses'  => 'MembershipProductsController@update'
+        ]);
+
+        /** Stop  - Membership Management */
+    });
+    /** Stop Routes for admin end */
 
     Route::group(['prefix' => 'optimize', 'middleware' => 'web'], function(){
         Route::get('search_top_members', [
             'as'    => 'optimize/search_top_members',
             'uses'  => 'Optimizations@make_search_member_table_optimization'
         ]);
-
+        
         Route::get('amend_search_top_members', [
             'as'    => 'optimize/amend_search_top_members',
             'uses'  => 'Optimizations@add_new_members_to_table'
         ]);
     });
 }
-

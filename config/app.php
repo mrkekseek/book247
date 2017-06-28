@@ -178,7 +178,7 @@ return [
 
         'App'       => Illuminate\Support\Facades\App::class,
         'Artisan'   => Illuminate\Support\Facades\Artisan::class,
-        'Auth'      => Illuminate\Support\Facades\Auth::class,
+        //'Auth'      => Illuminate\Support\Facades\Auth::class,
         'Blade'     => Illuminate\Support\Facades\Blade::class,
         'Cache'     => Illuminate\Support\Facades\Cache::class,
         'Config'    => Illuminate\Support\Facades\Config::class,
@@ -211,6 +211,7 @@ return [
         'Activity'  => Regulus\ActivityLog\Models\Activity::class,
         'Debugbar'  => Barryvdh\Debugbar\Facade::class,
         'Excel'     => Maatwebsite\Excel\Facades\Excel::class,
+        'Auth'     => App\Http\Libraries\Auth::class,
     ],
 
 ];

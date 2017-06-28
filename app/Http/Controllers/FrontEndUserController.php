@@ -44,6 +44,8 @@ use PhpParser\Node\Expr\Cast\Bool_;
 use Regulus\ActivityLog\Models\Activity;
 use Webpatser\Countries\Countries;
 use Auth;
+use App\Http\Libraries\ApiAuth;
+use Illuminate\Support\Facades\Auth as AuthLocal;
 use Hash;
 use Storage;
 use Carbon\Carbon;
@@ -1499,12 +1501,12 @@ class FrontEndUserController extends Controller
             'email'         => 'required|email|unique:users,email,'.$id.',id',
             'username'      => 'required|email|unique:users,username,'.$id.',id'
         ]);
-
+        
         if ($validator->fails()){
             return [
                 'success' => false,
                 'title'   => 'Validation Error',
-                'errors'  => $validator->getMessageBag()->toArray()
+                'errors'  => $validator->getMessageBag()->toArray()                
             ];
         }
         else{
@@ -1514,8 +1516,17 @@ class FrontEndUserController extends Controller
             $user->country_id  = $userVars["country_id"];
             $user->gender      = $userVars["gender"];
             $user->email       = $userVars["email"];
-            $user->username    = $userVars["email"];
-            $user->save();
+            $user->birthday    = $vars['date_of_birth'];
+            $user->phone_number    = $vars['mobile_number'];
+            //$user->username    = $userVars["email"];            
+            if (!$user->save() && !empty(Auth::$error))            
+            {                
+                return array(
+                    'success'   => false,
+                    'title'     => 'Api error',                    
+                    'errors'  => [''=>[Auth::$error]]
+                );
+            }            
         }
 
         $personalData = [
@@ -1526,7 +1537,7 @@ class FrontEndUserController extends Controller
             'user_id'       => $user->id
         ];
         $validator = Validator::make($personalData, PersonalDetail::rules('PUT',$user->id), PersonalDetail::$messages, PersonalDetail::$attributeNames);
-        if ($validator->fails()){
+        if ($validator->fails()){            
             return array(
                 'success'   => false,
                 'title'     => 'You have some errors',
@@ -1685,7 +1696,7 @@ class FrontEndUserController extends Controller
                 'errors'  => $validator->getMessageBag()->toArray()
             ];
         }
-        else {
+        else {            
             if ($is_staff){
                 $user->fill([
                     'password' => Hash::make($request->password1)
@@ -1697,18 +1708,34 @@ class FrontEndUserController extends Controller
                     'message' => 'Old password changed ... user updated'
                 ];
             }
-            else{
-                $auth = auth();
-                if ($auth->attempt([ 'id' => $id, 'password' => $userVars['old_password'] ])) {
-                    $user->fill([
-                        'password' => Hash::make($request->password1)
-                    ])->save();
-
-                    return [
-                        'success' => true,
-                        'title' => 'Password updated',
-                        'message' => 'Old password changed ... user updated'
-                    ];
+            else{                
+                if (Auth::attempt(['email' => Auth::user()->email, 'password' => $userVars['old_password']])) {
+                    $token = \App\Http\Libraries\ApiAuth::resetPassword(Auth::user()->email)['data'];
+                    $apiData = [
+                        "Credentials" => [
+                          "Username" => Auth::user()->email,
+                          "Password" => ''
+                        ],
+                        "Token"=> $token,
+                        "NewPassword"=> $request->password1,                        
+                    ];                    
+                    $updatePassword = \App\Http\Libraries\ApiAuth::updatePassword($apiData);
+                    if ($updatePassword['success'])
+                    {
+                        return [
+                            'success' => true,
+                            'title' => 'Password updated',
+                            'message' => 'Old password changed ... user updated'
+                        ];
+                    }
+                    else
+                    {
+                        return [
+                            'success' => false,
+                            'title'  => 'Error updating password',
+                            'errors' => $updatePassword['message']
+                        ];
+                    }                    
                 }
                 else{
                     return [
@@ -2529,7 +2556,7 @@ class FrontEndUserController extends Controller
         $vars = $request->only('first_name', 'middle_name', 'last_name', 'gender', 'email', 'phone_number', 'dob', 'password', 'rpassword', 'username', 'user_type',
             'address1', 'address2', 'city', 'adr_country_id', 'postal_code', 'region',
             'membership_plan', 'start_date', 'sign_location'); //exit;
-
+        
         if (!isset($vars['middle_name'])){
             $vars['middle_name'] = '';
         }
@@ -2553,7 +2580,7 @@ class FrontEndUserController extends Controller
         }
 
         if (!isset($vars['country_id'])){
-            $vars['country_id'] = Config::get('constants.globalWebsite.defaultCountryId');
+            $vars['country_id'] = Config::get('constants.globalWebsite.defaultCountryId');            
         }
 
         if (!isset($vars['dob']) || $vars['dob']==''){
@@ -2583,7 +2610,7 @@ class FrontEndUserController extends Controller
             'middle_name'   => trim($vars['middle_name']),
             'last_name'     => trim($vars['last_name']),
             'gender'        => $vars['gender'],
-            'username'      => trim($vars['username']),
+            'username'      => trim($vars['email']),
             'email'         => trim($vars['email']),
             'password'      => $vars['password'],
             'country_id'    => $vars['country_id'],
@@ -2601,30 +2628,23 @@ class FrontEndUserController extends Controller
             );
         }
 
+        $credentials['password_api'] = $vars['password'];
+        $credentials['phone_number'] = $vars['phone_number'];
         $text_psw    = $vars['password'];
         $credentials['password'] = Hash::make($credentials['password']);
-        $the_plan = MembershipPlan::where('id','=',$vars['membership_plan'])->where('id','!=',1)->where('status','=','active')->get()->first();
-
-        try {
-            $user = User::create($credentials);
-            $user->attachRole($userType);
-
+        $the_plan = MembershipPlan::where('id','=',$vars['membership_plan'])->where('id','!=',1)->where('status','=','active')->get()->first();        
+        try {            
             $personalData = [
                 'personal_email'=> $vars['email'],
                 'mobile_number' => $vars['phone_number'],
                 'date_of_birth' => $vars['date_of_birth'],
                 'bank_acc_no'   => 0,
                 'social_sec_no' => 0,
-                'about_info'    => '',
-                'user_id'       => $user->id,
+                'about_info'    => '',                
                 'customer_number'   => $user->get_next_customer_number()
-            ];
-
-            $validator = Validator::make($personalData, PersonalDetail::rules('POST'), PersonalDetail::$messages, PersonalDetail::$attributeNames);
-            if ($validator->fails()){
-                $user->detachAllRoles();
-                $user->delete();
-
+            ];            
+            $validator = Validator::make($personalData, PersonalDetail::rules('POST'), PersonalDetail::$messages, PersonalDetail::$attributeNames);            
+            if ($validator->fails()){                
                 return array(
                     'success'   => false,
                     'title'     => 'Error validating',
@@ -2632,10 +2652,21 @@ class FrontEndUserController extends Controller
                 );
             }
             else{
+                $user = User::create($credentials);                        
+                if (!empty (Auth::$error))
+                {
+                    return [
+                        'success'   => false,
+                        'title'     => 'Api error',
+                        'errors'    => Auth::$error
+                    ];
+                }
+                $personalDetails['user_id'] = $user->id;
+                $user->attachRole($userType);    
                 $personalDetails = PersonalDetail::firstOrNew(['user_id'=>$user->id]);
                 $personalDetails->fill($personalData);
                 $personalDetails->save();
-            }
+            }          
 
             $top_title_message = 'Dear <span>'.$user->first_name.' '.$user->middle_name.' '.$user->last_name .'</span>';
             $main_message = 'SQF/Book247 is the official booking system for Drammen & Økern. Within approximately 30 days time Book 247 will be used for all SquashFitness locations. Please log in and "add your friends" (playing partners). By doing this you and your playing partners can book on behalf of each other and according to the booking rules. This will make the booking procedure faster for you, your partners and our receptionists.'. PHP_EOL . ' <br /><br /> '.
@@ -2737,8 +2768,8 @@ class FrontEndUserController extends Controller
             $client_vars['user_type'] = Role::where('name','=','front-user')->get()->first()->id;
         }
 
-        if ($client_vars['password']==""){
-            $client_vars['password'] = substr(bcrypt(str_random(12)),0,8);
+        if ($client_vars['password']==""){            
+            $client_vars['password'] = substr(bcrypt(str_random(12)),0,8);            
         }
 
         $validator = Validator::make($client_vars, User::rules('POST'), User::$messages, User::$attributeNames);
@@ -2753,12 +2784,11 @@ class FrontEndUserController extends Controller
 
         $credentials = $client_vars;
         $text_psw    = $client_vars['password'];
+        $credentials['password_api'] = $credentials['password'];
         $credentials['password'] = Hash::make($credentials['password']);
 
-        try {
-            $user = User::create($credentials);
-            $user->attachRole($client_vars['user_type']);
-
+        try {            
+            $user = new User;
             if (isset($client_vars['customer_number']) && strlen($client_vars['customer_number'])>0){
                 $customer_number = $user->get_next_customer_number($client_vars['customer_number']);
             }
@@ -2773,32 +2803,37 @@ class FrontEndUserController extends Controller
                 'mobile_number'     => $client_vars['phone_number'],
                 'bank_acc_no'       => 0,
                 'social_sec_no'     => 0,
-                'about_info'        => $client_vars['about_info'],
-                'user_id'           => $user->id,
+                'about_info'        => $client_vars['about_info'],                
                 'customer_number'   => $customer_number
             ];
             $validator = Validator::make($personalData, PersonalDetail::rules('POST'), PersonalDetail::$messages, PersonalDetail::$attributeNames);
             if ($validator->fails()){
-                $user->detachAllRoles();
-                $user->delete();
-
                 return [
                     'success'   => false,
                     'errors'    => $validator->getMessageBag()->toArray()
                 ];
             }
-
-            $personalDetails = PersonalDetail::firstOrNew(['user_id'=>$user->id]);
-            $personalData['date_of_birth'] = $client_vars['date_of_birth']!=''?$client_vars['date_of_birth']:Carbon::today()->toDateString();
-            $personalDetails->fill($personalData);
-            $personalDetails->save();
-
-
-            return [
-                'success'   => true,
-                'password'  => $text_psw,
-                'user'      => $user
-            ];
+            else{
+                $user = User::create($credentials);
+                if (!empty (Auth::$error))
+                {
+                    return [
+                        'success'   => false,                    
+                        'errors'    => ['Api erorr' => [0 => Auth::$error]]
+                    ];
+                }
+                $user->attachRole($client_vars['user_type']);
+                $personalData['user_id'] = $user->id;
+                $personalDetails = PersonalDetail::firstOrNew(['user_id'=>$user->id]);
+                $personalData['date_of_birth'] = $client_vars['date_of_birth']!=''?$client_vars['date_of_birth']:Carbon::today()->toDateString();
+                $personalDetails->fill($personalData);
+                $personalDetails->save();
+                return [
+                    'success'   => true,
+                    'password'  => $text_psw,
+                    'user'      => $user
+                ];
+            }
         }
         catch (Exception $e) {
             return [
@@ -3105,12 +3140,12 @@ class FrontEndUserController extends Controller
 
             foreach ($members as $member){
                 //xdebug_var_dump($member); //exit;
-                // add member
+                // add member                
                 $newUser = FrontEndUserController::register_new_client($member);
 
                 if ($newUser['success']==false){
                     $msg = 'Following errors occurred : <br />';
-                    foreach ($newUser['errors'] as $key=>$error){
+                    foreach ($newUser['errors'] as $key=>$error){                        
                         $msg.= $key.' : '.implode(', ',$error).'; <br />';
                     }
                 }
@@ -3592,6 +3627,7 @@ class FrontEndUserController extends Controller
             'breadcrumbs' => $breadcrumbs,
             'text_parts'  => $text_parts,
             'in_sidebar'  => $sidebar_link,
+            'plans'       => DB::table("membership_plans")->join("membership_plan_prices", "membership_plans.price_id", "=", "membership_plan_prices.id")->get()
         ]);
     }
 
@@ -3919,11 +3955,24 @@ class FrontEndUserController extends Controller
                 'title'     => 'Invalid email provided'
             ];
         }
-
-        $user->password = bcrypt($vars['password1']);
-        $user->save();
-        DB::delete('delete from password_resets where email=:email and token=:token limit 1', ['email' => $vars['email'], 'token' => $vars['token']]);
-
+        $token = \App\Http\Libraries\ApiAuth::resetPassword($user->email)['data'];
+        $apiData = [
+            "Credentials" => [
+              "Username" => $user->email,
+              "Password" => ''
+            ],
+            "Token"=> $token,
+            "NewPassword"=> $vars['password1'],                        
+        ];                    
+        $updatePassword = \App\Http\Libraries\ApiAuth::updatePassword($apiData);
+        if (!$updatePassword['success'])
+        {
+            return [
+                'success' => false,
+                'title'  => 'Error updating password',
+                'errors' => $updatePassword['message']
+            ];
+        }
         $top_title_message = 'Dear <span>'.$user->first_name.' '.$user->middle_name.' '.$user->last_name .'</span>';
         $main_message = 'You have successfully updated your password using the reset password link we sent. Now you can login using your new password. <br /><br />'.
                         'If this was not you, please contact the Booking System administrator and report this issue.';
@@ -4497,4 +4546,306 @@ class FrontEndUserController extends Controller
         }
     }
     // Stop - Store credit add - backend add store credit to member
+    
+    public function auth_chek_email(Request $request){
+        $email = $request->input('email');
+        $existLocal = User::where('email', $email)->first();
+        $existApi = Auth::check_exist_api_user($email);
+        switch (TRUE){
+            case (empty($existLocal) && empty($existApi)) :
+                return [
+                    'success' => true,
+                    'show' =>'.register-form',
+                    'hide' =>'.pre-register-form',
+                    'fieldValue' =>[
+                        [
+                            'selector'=>'.register-form input[name="reg_email"]',
+                            'value' => $email,                        
+                        ]
+                    ],
+                    'title'   => 'Registration',
+                    'errors'  => 'Please fill in the following fields'
+            ];
+            break;
+            case (empty($existLocal) && ! empty($existApi)):
+                return [
+                    'success' => true,
+                    'show' =>'#user_preregistration_password_form',
+                    'hide' =>'#user_preregistration_form',
+                    'fieldValue' =>[
+                        [
+                            'selector'=>'#user_preregistration_password_form input[name="email"]',
+                            'value' => $email,
+                        ],
+                        [
+                            'selector'=>'#user_preregistration_password_form input[name="type"]',
+                            'value' => 'only_api',
+                        ]
+                    ],
+                    'fieldHtml' =>[
+                        [
+                            'selector'=>'#user_preregistration_password_form p.hint',
+                            'value' => 'Your are registered on the Book247/Rankedln environement because of the Single Sign On feature. Enter your password to link this club: ',
+                        ]
+                    ],
+                    'title'   => 'Autorization',
+                    'errors'  => 'Please enter your password'
+                    ];
+                break;
+            case ( ! empty($existLocal) && ! empty($existApi)):
+                return [
+                    'success' => true,
+                    'show' =>'#user_preregistration_password_form',
+                    'hide' =>'#user_preregistration_form',
+                    'fieldValue' =>[
+                        [
+                            'selector'=>'#user_preregistration_password_form input[name="email"]',
+                            'value' => $email,
+                        ],
+                        [
+                            'selector'=>'#user_preregistration_password_form input[name="type"]',
+                            'value' => 'local_and_api',
+                        ]
+                    ],
+                    'fieldHtml' =>[
+                        [
+                            'selector'=>'#user_preregistration_password_form p.hint',
+                            'value' => 'Your are already have account with us. Enter your password to login: ',
+                        ]
+                    ],
+                    'title'   => 'Autorization',
+                    'errors'  => 'Please enter your password'
+                    ];
+                break;
+            case ( ! empty($existLocal) && empty($existApi)):
+                return [
+                    'success' => true,
+                    'show' =>'#user_preregistration_password_form',
+                    'hide' =>'#user_preregistration_form',
+                    'fieldValue' =>[
+                        [
+                            'selector'=>'#user_preregistration_password_form input[name="email"]',
+                            'value' => $email,
+                        ],
+                        [
+                            'selector'=>'#user_preregistration_password_form input[name="type"]',
+                            'value' => 'only_local',
+                        ]
+                    ],
+                    'fieldHtml' =>[
+                        [
+                            'selector'=>'#user_preregistration_password_form p.hint',
+                            'value' => 'Your are already have account with us. Enter your password to login: ',
+                        ]
+                    ],
+                    'title'   => 'Autorization',
+                    'errors'  => 'Please enter your password'
+                    ];
+                break;
+        }        
+        return [
+            'success' => false,
+            'title'   => 'Error',
+            'errors'  => 'Something went wrong'
+            ];
+        
+    }
+    
+    public function auth_check_password(Request $request){
+        $data = $request->input('data');
+        switch ($data['type']){
+            case ('only_api'):
+                if (ApiAuth::autorize($data)['success'])
+                {  
+                    $api_user = ApiAuth::accounts_get_by_username($data['email'])['data'];
+                    $local_user = [
+                        'sso_user_id'=>$api_user->id,
+                        'username'=>$api_user->username,
+                        'email'=>$api_user->username,
+                        'first_name'=>$api_user->firstName,
+                        'last_name'=>$api_user->lastName,
+                        'middle_name'=>$api_user->middleName,            
+                        'country_id'=> config('constants.globalWebsite.defaultCountryId'),
+                        'password'=> bcrypt($data['password']),
+                    ];
+                    switch ($api_user->gender)
+                    {
+                        case (1): $local_user['gender'] = 'M'; break;
+                        case (2): $local_user['gender'] = 'F'; break;
+                    }
+                    $user = new User;
+                    $user->fill($local_user);
+                    if ($user->save()){
+                        $user->attachRole(6);
+                        Auth::set_personal_details($user->id, $api_user);
+                        Auth::set_cookie_session($user->sso_user_id);
+                        return [
+                            'success' => true,
+                            'title'   => 'Autorization',
+                            'errors'  => 'You log in successfully'
+                        ];
+                    }
+                }
+                return [
+                    'success' => false,
+                    'title'   => 'Error',
+                    'errors'  => 'Inorect password'
+                ];
+                break;
+                case('local_and_api'):
+                     if (ApiAuth::autorize($data)['success'])
+                    {  
+                            $api_user = ApiAuth::accounts_get_by_username($data['email'])['data'];
+                            Auth::set_local_user($api_user->id);
+                            Auth::set_cookie_session($api_user->id);
+                            return [
+                                'success' => true,
+                                'title'   => 'Autorization',
+                                'errors'  => 'You log in successfully'
+                            ];
+                    }
+                    return [
+                        'success' => false,
+                        'title'   => 'Error',
+                        'errors'  => 'Inorect password'
+                    ];
+                    break;
+                case ('only_local'):
+                    if (AuthLocal::once(['username' => $data['email'], 'password' => $data['password']]) || AuthLocal::once(['email' => $data['email'], 'password' => $data['password']])){
+                        $local_id = AuthLocal::user()->id;
+                        $user = User::find($local_id)->toArray();
+                        $user['password_api'] = $data['password'];
+                        $api_user = ApiAuth::account_create($user); 
+                        if ($api_user['success'])
+                        {
+                            $update_user = User::find($local_id);
+                            $update_user->update_from_api = true;
+                            $update_user->sso_user_id = $api_user['data'];
+                            if ($update_user->save()){
+                                Auth::set_cookie_session($update_user->sso_user_id);
+                                    return [
+                                        'success' => true,
+                                        'title'   => 'Autorization',
+                                        'errors'  => 'You log in successfully'
+                                ];
+                            }
+                        }
+                    }
+                    return [
+                        'success' => false,
+                        'title'   => 'Error',
+                        'errors'  => 'Inorect password'
+                    ];
+                    break;
+        }
+    }
+    
+    public function auth_autorize(Request $request){
+        $data = $request->input('data');
+        //dd(ApiAuth::accounts_get_by_username('tk59'));
+        if (Auth::attempt(['email' => $data['username'], 'password' => $request->data['password']])) {
+            $user = Auth::user();
+            Activity::log([
+                'contentId'     => $user->id,
+                'contentType'   => 'login',
+                'action'        => 'Front end login',
+                'description'   => 'Successful login for '.$user->first_name.' '.$user->middle_name.' '.$user->last_name,
+                'details'       => 'User Email : '.$user->email,
+                'updated'       => false,
+            ]);
+            return [
+                        'success' => true,
+                    ];
+        }
+        else {
+            if (!empty(Auth::$error)){
+                return [
+                            'success' => false,
+                            'title'   => 'Api error',
+                            'errors'  => Auth::$error
+                        ];
+            }
+            return [
+                        'success' => false,
+                        'title'   => 'Error',
+                        'errors'  => 'Inorect password'
+                    ];
+        }
+    }
+
+    public function invoice_payment($id)
+    {
+        $user = Auth::user();
+        if ( ! $user || ! $user->is_front_user())
+        {
+            return redirect()->intended(route('admin/login'));
+        }
+
+        $invoice = Invoice::where('invoice_number', '=', $id)->get()->first();
+        if ($invoice)
+        {
+            $subtotal = 0;
+            $total = 0;
+            $discount = 0;
+            $vat = [];
+
+            $items = InvoiceItem::where('invoice_id', '=', $invoice->id)->get();
+
+            foreach($items as $item)
+            { 
+                $item_one_price = $item->price - (($item->price*$item->discount)/100);
+                $item_vat = $item_one_price * ($item->vat/100);
+
+                if (isset($vat[$item->vat]))
+                {
+                    $vat[$item->vat] += $item_vat*$item->quantity;
+                }
+                else
+                {
+                    $vat[$item->vat] = $item_vat*$item->quantity;
+                }
+
+                $discount += (($item->price*$item->discount)/100)*$item->quantity;
+                $subtotal += $item->price * $item->quantity;
+
+                $total += ($item_one_price + $item_vat)*$item->quantity;
+            }
+        }
+        else
+        {
+            return redirect('/');
+        }
+        
+
+        $member = User::with('ProfessionalDetail')->with('PersonalDetail')->where('id', $invoice->user_id)->get()->first();
+        $member->country = Countries::where('id', $member->country_id)->get()->first();
+
+        $breadcrumbs = [
+            'Home'              => route('admin'),
+            'Administration'    => route('admin'),
+            'Back End User'     => route('admin'),
+            'All Backend Users' => '',
+        ];
+        
+        $text_parts  = [
+            'title'     => 'Back-End Users',
+            'subtitle'  => 'view all users',
+            'table_head_text1' => 'Backend User List'
+        ];
+
+        $sidebar_link = 'admin-backend-shops-invoices-payment';
+
+        return view('front/finance/finance_peyment', [
+            'breadcrumbs' => $breadcrumbs,
+            'text_parts'  => $text_parts,
+            'in_sidebar'  => $sidebar_link,
+            'invoice'   => $invoice,
+            'invoice_items' => @$items,
+            'member'    => $member,
+            'sub_total' => $subtotal,
+            'discount' => $discount,
+            'vat' => $vat,
+            'grand_total' => $total
+        ]);
+    }
 }

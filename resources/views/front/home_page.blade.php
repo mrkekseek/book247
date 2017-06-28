@@ -92,19 +92,15 @@
 
                                         <div class="portlet-title">
                                             <div class="caption">
-                                                <span class="caption-subject font-green-haze bold uppercase">User Login</span>
-                                                <span class="caption-helper">account details...</span>
+                                                <span class="caption-subject bold uppercase">seamles user login</span>
                                             </div>
                                         </div>
                                         <div class="alert alert-danger display-hide">
                                             <button class="close" data-close="alert"></button>
-                                            <span> Incorrect username/password combination ... </span>
+                                            <span>  </span>
                                         </div>
                                         <div class="form-group">
                                             <!--ie8, ie9 does not support html5 placeholder, so we just show field title for that-->
-                                            <label class="control-label visible-ie8 visible-ie9">Username
-                                                <span class="required"> * </span>
-                                            </label>
                                             <input class="form-control form-control-solid placeholder-no-fix {{ $errors->has('username') ? ' has-error' : '' }}" type="text" autocomplete="off" placeholder="Email" name="username" id="username_focus" value="{{ old('username') }}" /> </div>
                                         <div class="form-group">
                                             <label class="control-label visible-ie8 visible-ie9">Password
@@ -114,7 +110,7 @@
                                         <div class="form-actions">
                                             <button type="submit" class="btn red btn-block uppercase">Login</button>
                                         </div>
-                                        <div class="form-actions">
+                                        <div class="form-actions links">
                                             <div class="pull-left">
                                                 <label class="rememberme check">
                                                     <input type="checkbox" name="remember" value="1" />Remember me </label>
@@ -124,9 +120,12 @@
                                             </div>
                                         </div>
                                         <div class="create-account bg-white bg-font-white">
-                                            <p>
-                                                <a href="javascript:;" class="green-meadow btn" id="register-btn">Create an account</a>
-                                            </p>
+                                            <div class="portlet-title">
+                                                <div class="caption">
+                                                    <span class="caption-subject bold uppercase">don't have an account?</span>
+                                                </div>
+                                            </div>
+                                            <button type="button" id="pre-register-btn" class="btn green-meadow center uppercase">create one now</button>
                                         </div>
                                     </form>
                                     <!-- END LOGIN FORM -->
@@ -134,8 +133,12 @@
                                     <form class="forget-form portlet light " action="#" id="password_reset_form">
                                         <div class="portlet-title">
                                             <div class="caption">
-                                                <span class="caption-subject font-green-haze bold uppercase"> Forget Password ?</span>
-                                                <span class="caption-helper">Enter your e-mail to reset it...</span>
+                                                <a href="javascript::void()" id="back-btn" >
+                                                    <i class="fa fa-angle-left"></i>
+                                                </a>
+                                                <span class="separator-header"></span>
+                                                <span class="caption-subject bold uppercase hidden-sm hidden-xs">can't remember your password</span>
+                                                <span class="caption-subject bold uppercase hidden-md hidden-lg">forgot password?</span>
                                             </div>
                                         </div>
                                         <div class="alert alert-danger display-hide">
@@ -143,19 +146,102 @@
                                         <div class="alert alert-success display-hide">
                                             <button class="close" data-close="alert"></button> Information is valid, please wait! </div>
                                         <div class="form-group">
-                                            <input class="form-control placeholder-no-fix" type="text" autocomplete="off" placeholder="Email" name="email" /> </div>
+                                            <input class="form-control placeholder-no-fix" type="text" autocomplete="off" placeholder="Enter you email adress" name="email" /> </div>
                                         <div class="form-actions">
-                                            <button type="button" id="back-btn" class="btn grey-steel">Back</button>
-                                            <button type="button" class="btn btn-primary uppercase pull-right" onClick="javascript: $('#password_reset_form').submit();">Submit</button>
+                                            <button type="button" class="btn grey btn-block uppercase" onClick="javascript: $('#password_reset_form').submit();">next</button>
                                         </div>
                                     </form>
                                     <!-- END FORGOT PASSWORD FORM -->
+                                    <!-- BEGIN RESULT FORGOT PASSWORD FORM -->
+                                    <form class="result-forget-form portlet light" method="post"  id="user_result_forget_form">
+                                        <div class="portlet-title">
+                                            <div class="caption">
+                                                <span class="caption-subject bold uppercase"> can't remember your password </span>
+                                            </div>
+                                        </div>
+                                        <p class="hint"> We've just send you an email. Folow the instructions to reset your password. Click "Next" if the system does not automatically redirect you. </p>
+                                        <div class="form-actions">
+                                            <a href="/">
+                                                <button type="button" class="btn grey btn-block uppercase">next</button>
+                                            </a>
+                                        </div>
+                                    </form>
+                                    <!-- END RESULT FORGOT PASSWORD FORM -->
+                                    
+                                    <!-- BEGIN PREREGISTRATION FORM -->
+                                    <form class="pre-register-form portlet light " method="post" name="user_pregistration_form" id="user_preregistration_form">
+                                        <div class="portlet-title">
+                                            <div class="caption">
+                                                <a href="javascript::void()" id="pre-back-btn" >
+                                                    <i class="fa fa-angle-left"></i>
+                                                </a>
+                                                <span class="separator-header"></span>
+                                                <span class="caption-subject bold uppercase hidden-sm hidden-xs">register an unuque user on our platform</span>
+                                                <span class="caption-subject bold uppercase hidden-md hidden-lg">register an unuque user</span>
+
+                                            </div>
+                                        </div>
+                                        <div class="alert alert-danger display-hide">
+                                            <button class="close" data-close="alert"></button> You have some errors in the form. Please check below. </div>
+                                        <div class="alert alert-success display-hide">
+                                            <button class="close" data-close="alert"></button> Information is valid, please wait! </div>
+                                        <p class="hint"> Enter your email address: </p>
+                                        <div class="form-group">
+                                            <label class="control-label visible-ie8 visible-ie9">Email</label>
+                                            <input class="form-control placeholder-no-fix" type="text" placeholder="Email your email address" name="email" /> </div>
+                                        <div class="form-actions">
+                                            <button type="submit" id="preregister-btn" class="btn grey btn-block uppercase">Next</button>
+                                        </div>
+                                    </form>
+                                    <!-- END PREREGISTRATION  FORM -->
+                                    <!-- BEGIN PREREGISTRATION  PASSWORD FORM -->
+                                    <form class="pre-register-form portlet light" method="post"  id="user_preregistration_password_form">
+                                        <div class="portlet-title">
+                                            <div class="caption">
+                                                <a href="javascript::void()" id="pre-back-btn" >
+                                                    <i class="fa fa-angle-left"></i>
+                                                </a>
+                                                <span class="separator-header"></span>
+                                                <span class="caption-subject bold uppercase">email already registered</span>
+                                            </div>
+                                        </div>
+                                        <p class="hint"> </p>
+                                        <div class="form-group">
+                                            <label class="control-label visible-ie8 visible-ie9">Password</label>
+                                            <input class="form-control placeholder-no-fix" type="password" placeholder="Enter your password for login" name="password" /> 
+                                        </div>
+                                            <input type="hidden" name="email" />                                            
+                                            <input type="hidden" name="type" />
+                                        <div class="form-actions">
+                                            <button type="submit" id="preregister-btn" class="btn red btn-block uppercase">Login</button>
+                                        </div>
+                                    </form>
+                                    <!-- END PREREGISTRATION  PASSWORD FORM -->
+                                    
+                                    <!-- BEGIN RESULT REGISTRATION FORM -->
+                                    <form class="result-register-form portlet light" method="post"  id="user_result_registration_form">
+                                        <div class="portlet-title">
+                                            <div class="caption">
+                                                <span class="caption-subject bold uppercase"></span>
+                                            </div>
+                                        </div>
+                                        <p class="hint"> Thank you for using our platform. You are now also registered on Book247. Click "Next" if the system does not automatically redirect you. </p>
+                                        <div class="form-actions">
+                                            <a href="/">
+                                                <button type="button" class="btn center btn-block uppercase">next</button>
+                                            </a>
+                                        </div>
+                                    </form>
+                                    <!-- END RESULT REGISTRATION FORM -->
                                     <!-- BEGIN REGISTRATION FORM -->
                                     <form class="register-form portlet light " method="post" name="user_registration_form" id="user_registration_form">
                                         <div class="portlet-title">
                                             <div class="caption">
-                                                <span class="caption-subject font-green-haze bold uppercase">Sign Up</span>
-                                                <span class="caption-helper"></span>
+                                                <a href="javascript::void()" id="pre-back-btn" >
+                                                    <i class="fa fa-angle-left"></i>
+                                                </a>
+                                                <span class="separator-header"></span>
+                                                <span class="caption-subject bold uppercase">account details</span>
                                             </div>
                                         </div>
                                         <div class="alert alert-danger display-hide">
@@ -172,22 +258,20 @@
                                         <div class="form-group">
                                             <label class="control-label visible-ie8 visible-ie9">Phone Number</label>
                                             <input class="form-control placeholder-no-fix" type="text" placeholder="Phone Number" name="phone" /> </div>
-
-                                        <p class="hint"> Enter your account details below: </p>
+                                        <p class="hint"> Choose a password </p>
                                         <div class="form-group">
                                             <!--ie8, ie9 does not support html5 placeholder, so we just show field title for that-->
                                             <label class="control-label visible-ie8 visible-ie9">Email</label>
-                                            <input class="form-control placeholder-no-fix" type="text" placeholder="Email" name="reg_email" /> </div>
+                                            <input class="form-control placeholder-no-fix" type="hidden" placeholder="Email" name="reg_email" /> </div>
                                         <div class="form-group">
                                             <label class="control-label visible-ie8 visible-ie9">Password</label>
                                             <input class="form-control placeholder-no-fix" type="password" autocomplete="off" id="rpassword" placeholder="Password - at least 8 characters" name="rpassword" /> </div>
                                         <div class="form-group">
                                             <label class="control-label visible-ie8 visible-ie9">Re-type Your Password</label>
-                                            <input class="form-control placeholder-no-fix" type="password" autocomplete="off" placeholder="Re-type Your Password" name="re_rpassword" /> </div>
+                                            <input class="form-control placeholder-no-fix" type="password" autocomplete="off" placeholder="Retype your password" name="re_rpassword" /> </div>
                                         <div class="form-group margin-top-20 margin-bottom-20">
-                                            <label class="check">
-                                                <input type="checkbox" name="tnc" />
-                                                <span class="loginblue-font">I agree to the </span>
+                                            <label class="check center-block center-align">
+                                                <span class="loginblue-font">By registering you agree to our </span>
                                                 <a href="javascript:;" class="loginblue-link">Terms of Service</a>
                                                 <span class="loginblue-font">and</span>
                                                 <a href="javascript:;" class="loginblue-link">Privacy Policy </a>
@@ -195,11 +279,20 @@
                                             <div id="register_tnc_error"> </div>
                                         </div>
                                         <div class="form-actions">
-                                            <button type="button" id="register-back-btn" class="btn grey-steel">Back</button>
-                                            <button type="submit" class="btn red uppercase pull-right">Submit</button>
+                                            <button type="submit" class="btn red btn-block uppercase">Submit</button>
                                         </div>
                                     </form>
                                     <!-- END REGISTRATION FORM -->
+                                    <div class="powered center-block">
+                                        <div class="caption">
+                                            Powered by:
+                                        </div>
+                                        <a class="min-logo logo-book247">
+                                        </a>
+                                        <span class="separator-logo"></span>
+                                        <a class="min-logo logo-rankedin">
+                                        </a>
+                                    </div>
                                 </div>
                             @endif
                             <div class="portlet light search-page search-content-1 hidden-xs hidden-sm">
@@ -289,7 +382,7 @@
                                     <a href="javascript:;" class="btn default purple-stripe btn-lg" style="padding:5px 10px; font-size:14px; cursor:default; margin-bottom:5px;"> Outside membership rules </a>
                                     <a href="{{ route('front/active_membership') }}" class="btn default btn-lg" style="padding: 1px 5px 0px; cursor: pointer; margin-bottom: 5px; font-size: 21px;"><span class="item-box"><span class="item"><span aria-hidden="true" class="icon-question"></span></span></span></a>
                                 @else
-                                    <a href="javascript:;" class="btn default dark-stripe btn-lg book_step" style="padding:5px 10px; font-size:14px; cursor:default;"> You need to be logged in to view availability </a>
+                                    <a href="javascript:;" class="btn default dark-stripe btn-lg book_step book_step_link" style=""> You need to be logged in to view availability </a>
                                 @endif
                             </div>
                         </div>
@@ -574,50 +667,58 @@
             var handleLogin = function() {
 
                 $('.login-form').validate({
-                    errorElement: 'span', //default input error message container
-                    errorClass: 'help-block', // default input error message class
+                    //errorElement: 'span', //default input error message container
+                    //errorClass: 'help-block', // default input error message class
+                    //  focusCleanup: true,
                     focusInvalid: false, // do not focus the last invalid input
                     rules: {
                         username: {
-                            required: true
+                            required: true,
+                            email: true,
                         },
                         password: {
-                            required: true
+                            required: true,
+                            minlength: 8
                         },
-                        remember: {
-                            required: false
-                        }
                     },
-
                     messages: {
                         username: {
-                            required: "Username is required."
+                            required: "Email is required.",
+                            email: "Email not valid.",
                         },
                         password: {
-                            required: "Password is required."
+                            required: "Password is required.",
+                            minlength : "Min 8 symbol"
                         }
                     },
-
-                    invalidHandler: function(event, validator) { //display error alert on form submit
-                        $('.alert-danger', $('.login-form')).show();
+                    showErrors: function(errorMap, errorList) {
+                        var errors = this.numberOfInvalids();
+                        if (errors) {
+                            $('.alert-danger').show();
+                        } 
+                        else {
+                            $('.alert-danger').hide();
+                        }
+                        this.defaultShowErrors();
                     },
-
-                    highlight: function(element) { // hightlight error inputs
-                        $(element)
-                                .closest('.form-group').addClass('has-error'); // set error class to the control group
+                   highlight: function(element) { // hightlight error inputs
+                        $(element).closest('.form-group').addClass('has-error'); // set error class to the control group
                     },
-
+                    unhighlight  : function(element) { // hightlight error inputs
+                        $(element).closest('.form-group').removeClass('has-error'); // set error class to the control group
+                    },
                     success: function(label) {
-                        label.closest('.form-group').removeClass('has-error');
-                        label.remove();
+                       
                     },
-
                     errorPlacement: function(error, element) {
-                        error.insertAfter(element.closest('.input-icon'));
+                        $('.alert-danger span').append(error);
                     },
-
                     submitHandler: function(form) {
-                        form.submit(); // form validation success, call ajax form submit
+                        var data = {
+                            username : $(form).find('input[name="username"]').val(),
+                            password : $(form).find('input[name="password"]').val(),
+                        };
+                        auth_autorize(data);
                     }
                 });
 
@@ -707,6 +808,102 @@
                     jQuery('.register-form').hide();
                 });
             }
+            
+            var handlePreRegister = function() {
+                jQuery('#pre-register-btn').click(function() {
+                    jQuery('.login-form').hide();
+                    jQuery('#user_preregistration_form').show();
+                });
+
+                jQuery('.login').on('click','#pre-back-btn', function (){
+                    jQuery('.login-form').show();
+                    jQuery('.pre-register-form').hide();
+                    jQuery('.register-form').hide();
+                });
+                
+                $('#user_preregistration_form').validate({
+                    errorElement: 'span', //default input error message container
+                    errorClass: 'help-block', // default input error message class
+                    focusInvalid: false, // do not focus the last invalid input
+                    ignore: "",
+                    rules: {
+                        email: {
+                            required: true,
+                            email: true,
+                        }
+                    },
+                    messages: {
+                        email: {
+                            required: "Email is required.",
+                            email: "Email not valid"
+                        }
+                    },
+                    invalidHandler: function(event, validator) { //display error alert on form submit
+                    },
+
+                    highlight: function(element) { // hightlight error inputs
+                        $(element)
+                                .closest('.form-group').addClass('has-error'); // set error class to the control group
+                    },
+                    success: function(label) {
+                        label.closest('.form-group').removeClass('has-error');
+                        label.remove();
+                    },
+                    
+                    errorPlacement: function(error, element) {
+                        error.insertAfter(element.closest('.form-control'));
+                    },
+
+                    submitHandler: function(form) {
+                        auth_chek_email($(form).find('input[name="email"]').val());
+                    }
+                });
+                
+                $('#user_preregistration_password_form').validate({
+                    errorElement: 'span', //default input error message container
+                    errorClass: 'help-block', // default input error message class
+                    focusInvalid: false, // do not focus the last invalid input
+                    ignore: "",
+                    rules: {
+                        password: {
+                            required: true,
+                            minlength: 8
+                        }
+                    },
+                    messages: {
+                        password: {
+                            required: "Password is required.",
+                            minlength: "Min 8 symbol"
+                        }
+                    },
+                    invalidHandler: function(event, validator) { //display error alert on form submit
+                    },
+
+                    highlight: function(element) { // hightlight error inputs
+                        $(element)
+                                .closest('.form-group').addClass('has-error'); // set error class to the control group
+                    },
+                    success: function(label) {
+                        label.closest('.form-group').removeClass('has-error');
+                        label.remove();
+                    },
+                    
+                    errorPlacement: function(error, element) {
+                        error.insertAfter(element.closest('.form-control'));
+                    },
+
+                    submitHandler: function(form) {
+                        var data = {
+                            email : $(form).find('input[name="email"]').val(),
+                            password : $(form).find('input[name="password"]').val(),
+                            type : $(form).find('input[name="type"]').val()
+                        };
+                        auth_check_password(data);
+                    }
+                });
+                
+                
+            }
 
             return {
                 //main function to initiate the module
@@ -715,7 +912,7 @@
                     handleLogin();
                     handleForgetPassword();
                     handleRegister();
-
+                    handlePreRegister();
                 }
             };
         }();
@@ -946,6 +1143,9 @@
                 success: function (data) {
                     if (data.success==1) {
                         show_notification('You are now registered', 'After page reload, use the email/password combination you used for registration and login', 'lemon', 3500, 0);
+                        $('#user_registration_form').hide();
+                        $('#user_result_registration_form .caption-subject').html('account registered');
+                        $('#user_result_registration_form').show();
                         setTimeout(function(){
                             window.location.reload(true);
                         },2500);
@@ -968,12 +1168,94 @@
                 success: function (data) {
                     if (data.success==1) {
                         show_notification(data.title, data.message, 'lime', 5000, 0);
+                        $('#password_reset_form').hide();
+                        $('#user_result_forget_form').show();
                         setTimeout(function(){
                             window.location.reload(true);
                         },5500);
                     }
                     else{
                         show_notification(data.title, data.errors, 'lemon', 5000, 0);
+                    }
+                }
+            });
+        }
+        
+        
+        function auth_chek_email(email){
+            $.ajax({
+                url: '{{ route('ajax/auth_chek_email') }}',
+                type: "post",
+                cache: false,
+                data: {
+                    'email': email,
+                },
+                success: function (data) {
+                   if (data.success == true){
+                      console.log(data);
+                      if (typeof data.show !== 'undefined'){
+                          $(data.show).show();
+                      }
+                      if (typeof data.hide !== 'undefined'){
+                          $(data.hide).hide();
+                      }
+                      if (typeof data.fieldValue !== 'undefined'){
+                          for (var i in data.fieldValue){
+                              $(data.fieldValue[i].selector).val(data.fieldValue[i].value);
+                          }
+                      }
+                      if (typeof data.fieldHtml !== 'undefined'){
+                          for (var i in data.fieldHtml){
+                              $(data.fieldHtml[i].selector).html(data.fieldHtml[i].value);
+                          }
+                      }
+                      show_notification(data.title, data.errors, 'lime', 5000, 0);
+                   }
+                   else{
+                        show_notification(data.title, data.errors, 'lemon', 5000, 0);
+                    }
+                }
+            });
+        }
+        
+        function auth_check_password(data){
+            $.ajax({
+                url: '{{ route('ajax/auth_check_password') }}',
+                type: "post",
+                cache: false,
+                data: {
+                    'data': data,
+                },
+                success: function (data) {
+                    if (data.success == true){
+                        $('#user_preregistration_password_form').hide();
+                        $('#user_result_registration_form .caption-subject').html('email already registered');
+                        $('#user_result_registration_form').show();
+                        show_notification(data.title, data.errors, 'lime', 5000, 0);
+                        window.location.reload(true);
+                   }
+                   else{
+                        show_notification(data.title, data.errors, 'lemon', 5000, 0);
+                    }
+                }
+            });
+        }
+        
+        function auth_autorize(data){
+            $.ajax({
+                url: '{{ route('ajax/auth_autorize') }}',
+                type: "post",
+                cache: false,
+                data: {
+                    'data': data,
+                },
+                success: function (data) {
+                    if (data.success == true){
+                        window.location.reload(true);
+                   }
+                   else{
+                       $('.alert-danger').show();
+                       $('.alert-danger span').html(data.errors);
                     }
                 }
             });

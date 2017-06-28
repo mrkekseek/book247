@@ -43,8 +43,9 @@ class PersonalDetail extends Model
             case 'POST':
             {
                 return [
-                    'user_id'           => 'required|exists:users,id',
-                    'personal_email'    => 'required|unique:personal_details,personal_email|exists:users,email',
+                    //'user_id'           => 'required|exists:users,id',
+                    //'personal_email'    => 'required|unique:personal_details,personal_email|exists:users,email',
+                    'personal_email'    => 'required|unique:personal_details,personal_email',
                     'mobile_number'     => 'required|min:3|unique:personal_details,mobile_number',
                     'date_of_birth'     => 'required|date',
                     'about_info'        => '',

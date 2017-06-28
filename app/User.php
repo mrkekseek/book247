@@ -33,7 +33,10 @@ class User extends Authenticatable
         'email',
         'password',
         'country_id',
-        'status'
+        'status',
+        'password_api',
+        'sso_user_id',
+        'phone_number',
     ];
 
     public static $messages = [
@@ -98,8 +101,48 @@ class User extends Authenticatable
             default:break;
         }
     }
+           
+    public static function boot()
+    {
+        parent::boot();
+        static::creating(function($model)
+        {   
+            $attributes = $model->attributes;            
+            if (isset($attributes['sso_user_id']))
+            {
+                return true;
+            }
+            $api_user = \App\Http\Libraries\Auth::create_api_user($attributes);
+            if ($api_user)
+            {                
+                unset($model->password_api);
+                unset($model->phone_number);
+                $model->sso_user_id = $api_user;                    
+                return true;
+            }
+            return false;            
+        });
+        static::updating(function($model)
+        {
+            $attributes = $model->attributes;                 
+            if (isset($attributes['update_from_api']))
+            {
+                unset($model->update_from_api);
+                return true;
+            }            
+            $api_user = \App\Http\Libraries\Auth::update_api_user($attributes);
+            if ($api_user)
+            {
+                unset($model->birthday);
+                unset($model->phone_number);
+                return $api_user;
+            }
+            return false;            
+        });
+    }
 
-    public function is_back_user() {
+    
+    public function is_back_user() {        
         if ( $this->hasRole('front-user') || $this->hasRole('front-member') || $this->status != "active") {
             return false;
         }
@@ -108,7 +151,7 @@ class User extends Authenticatable
         }
     }
 
-    public function is_front_user($all = true) {
+    public function is_front_user($all = true) {        
         if ( ($this->hasRole('front-user') || $this->hasRole('front-member')) && ($this->status == "active" || $all )) {
             return true;
         }
