@@ -172,10 +172,13 @@
     <input name="payment_method" type="text" id="payment_method"/>
 </form>
 
-<form id="paypal-form" action="{{ env('PAYPAL_SANDBOX') }}"   method="post" style="display: none;">
+<form id="paypal-form" action="{{ env('PAYPAL_SANDBOX') }}"  target="_parent" method="post" style="display: none;">
     <input type="hidden" name="cmd" value="_cart">
     <input type="hidden" name="business" value="{{ env('PAYPAL_EMAIL') }}">
-    <input type="hidden" name="return" value="https://www.rankedin.com/">
+    <input type="hidden" name="return" value="{{ env('MY_SERVER_URL') }}/membership/paypal_success">
+    <input type="hidden" name="cancel_url" value="{{ env('MY_SERVER_URL') }}/membership/paypal_cancel">
+    <input type="hidden" name="notify_url" value="{{ env('MY_SERVER_URL') }}/membership/ipn">
+    <input type="hidden" name="rm" value="2">
     <input type="hidden" name="upload" value="1">
 
     <input type="hidden" name="item_name" value="">
@@ -188,6 +191,8 @@
     <input type="hidden" name="first_name" value="">
     <input type="hidden" name="last_name" value="">
     <input type="hidden" name="email" value="">
+
+    <input type="hidden" name="custom" value="">
 
 </form>
 <!--====END MODAL====-->
@@ -258,7 +263,7 @@
                             $paypal_form.find('input[name=amount]').val(response.data.invoices[0].price);
                             $paypal_form.find('input[name=quantity]').val(1);
                         }
-
+                        $paypal_form.find('input[name=custom]').attr('value',response.data.invoices[0].invoice_id);
                         $paypal_form.find('input[name=first_name]').attr('value',response.data.user.first_name);
                         $paypal_form.find('input[name=last_name]').attr('value',response.data.user.last_name);
                         $paypal_form.find('input[name=email]').attr('value',response.data.user.email);

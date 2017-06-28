@@ -9,6 +9,8 @@
 |
 */
 
+
+
 Route::get('/get','Federation\AdminController@get_from_api_test' );
 
 
@@ -38,11 +40,21 @@ Route::get('buy_license/{token}/{sso_id}/{license_id?}', [
     'uses'  => 'Federation\MembershipController@iframed'
 ]);
 
+
 Route::post('membership/ipn', [
     'as'    => 'membership/ipn',
     'uses'  => 'Federation\MembershipController@ipn'
 ]);
 
+Route::get('membership/paypal_success', [
+    'as'    => 'membership/paypal_success',
+    'uses'  => 'Federation\MembershipController@paypal_success'
+]);
+
+Route::get('membership/paypal_cancel', [
+    'as'    => 'membership/paypal_cancel',
+    'uses'  => 'Federation\MembershipController@paypal_cancel'
+]);
 
 Route::post('membership/buy_succes', [
     'as'    => 'membership/buy_succes',
@@ -109,6 +121,7 @@ Route::group(['middleware' => 'web'], function () {
         'as'    => 'test_api_call',
         'uses'  => 'Federation\AdminController@testRoute'
     ]);
+
 
 
     Route::get('/admin/error/permission_denied', [
