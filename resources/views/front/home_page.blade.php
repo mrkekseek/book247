@@ -210,8 +210,11 @@
                                             <label class="control-label visible-ie8 visible-ie9">Password</label>
                                             <input class="form-control placeholder-no-fix" type="password" placeholder="Enter your password for login" name="password" /> 
                                         </div>
-                                            <input type="hidden" name="email" />                                            
-                                            <input type="hidden" name="type" />
+                                        <div class="pull-right forget-password-block">
+                                            <a href="javascript:;" id="forget-password" class="forget-password">Forgot Password?</a>
+                                        </div>
+                                        <input type="hidden" name="email" />                                            
+                                        <input type="hidden" name="type" />
                                         <div class="form-actions">
                                             <button type="submit" id="preregister-btn" class="btn red btn-block uppercase">Login</button>
                                         </div>
@@ -256,8 +259,38 @@
                                             <label class="control-label visible-ie8 visible-ie9">Last Name</label>
                                             <input class="form-control placeholder-no-fix" type="text" placeholder="Last Name" name="lastname" /> </div>
                                         <div class="form-group">
+                                            <label class="control-label visible-ie8 visible-ie9">Middle Name</label>
+                                            <input class="form-control placeholder-no-fix" type="text" placeholder="Middle Name" name="middlename" /> </div>
+                                        <div class="form-group">
                                             <label class="control-label visible-ie8 visible-ie9">Phone Number</label>
                                             <input class="form-control placeholder-no-fix" type="text" placeholder="Phone Number" name="phone" /> </div>
+                                        <div class="form-group">
+                                            <div class="control-label">
+                                                <div class="input-group date date-picker" data-date="" data-date-format="dd-mm-yyyy" data-date-viewmode="years">
+                                                    <input type="text" class="form-control" name="DOB" id="DOB" placeholder="Date of Birth" value="" readonly>
+                                                    <span class="input-group-btn">
+                                                        <button class="btn default" type="button">
+                                                            <i class="fa fa-calendar"></i>
+                                                        </button>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <select name="gender" class="form-control">
+                                                <option value="">Select Gender</option>
+                                                <option value="M"> Male </option>
+                                                <option value="F"> Female </option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <select name="country" id="country" class="form-control">
+                                                <option value="">Select Citizenship</option>
+                                                @foreach ($countries as $country)
+                                                    <option value="{{ $country->id }}" {!! ($country->id==$user->country_id ? ' selected="selected" ' : '') !!}>{{ $country->citizenship }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
                                         <p class="hint"> Choose a password </p>
                                         <div class="form-group">
                                             <!--ie8, ie9 does not support html5 placeholder, so we just show field title for that-->
@@ -271,7 +304,8 @@
                                             <input class="form-control placeholder-no-fix" type="password" autocomplete="off" placeholder="Retype your password" name="re_rpassword" /> </div>
                                         <div class="form-group margin-top-20 margin-bottom-20">
                                             <label class="check center-block center-align">
-                                                <span class="loginblue-font">By registering you agree to our </span>
+                                                <input type="checkbox" name="tnc" />
+                                                <span class="loginblue-font">I agree to the</span>
                                                 <a href="javascript:;" class="loginblue-link">Terms of Service</a>
                                                 <span class="loginblue-font">and</span>
                                                 <a href="javascript:;" class="loginblue-link">Privacy Policy </a>
@@ -785,10 +819,11 @@
                     }
                 });
 
-                jQuery('#forget-password').click(function() {
+                jQuery('.login').on('click','#forget-password', function (){
                     jQuery('.login-form').hide();
+                    jQuery('.pre-register-form').hide();
                     jQuery('.forget-form').show();
-                });
+                })
 
                 jQuery('#back-btn').click(function() {
                     jQuery('.login-form').show();
@@ -904,6 +939,16 @@
                 
                 
             }
+            
+            var handleDatePickers = function () {
+                if (jQuery().datepicker) {
+                    $('.date-picker').datepicker({
+                        rtl: App.isRTL(),
+                        orientation: "left",
+                        autoclose: true
+                    });
+                }
+            }
 
             return {
                 //main function to initiate the module
@@ -913,6 +958,7 @@
                     handleForgetPassword();
                     handleRegister();
                     handlePreRegister();
+                    handleDatePickers();
                 }
             };
         }();
@@ -1051,6 +1097,18 @@
                                 }
                             }
                         },
+                        DOB: {
+                            required: true,
+                            datePickerDate:true
+                        },
+                        gender: {
+                            required: true,
+                            minlength:1
+                        },
+                        country: {
+                            required: true,
+                            minlength:1
+                        },
                         rpassword: {
                             required:true,
                             minlength: 8,
@@ -1139,6 +1197,10 @@
                     'email': $('input[name="reg_email"]').val(),
                     'phone_number': $('input[name="phone"]').val(),
                     'password': $('input[name="rpassword"]').val(),
+                    'middle_name': $('input[name="middlename"]').val(),
+                    'dob': $('input[name="DOB"]').val(),
+                    'gender': $('select[name=gender]').val(),
+                    'country': $('select[name=country]').val(),
                 },
                 success: function (data) {
                     if (data.success==1) {
@@ -1192,7 +1254,6 @@
                 },
                 success: function (data) {
                    if (data.success == true){
-                      console.log(data);
                       if (typeof data.show !== 'undefined'){
                           $(data.show).show();
                       }

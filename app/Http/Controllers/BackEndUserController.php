@@ -148,6 +148,7 @@ class BackEndUserController extends Controller
             'status'        => 'active',
             'user_type'     => $vars['user_type']
         ];
+        $password_api = $vars['password'];
         $validator = Validator::make($credentials, User::rules('POST'), User::$messages, User::$attributeNames);
         if ($validator->fails()){
             //return $validator->errors()->all();
@@ -160,6 +161,17 @@ class BackEndUserController extends Controller
 
         $credentials['password'] = bcrypt($credentials['password']);
         try {
+            $dataForApi = $credentials;
+            $api_user = Auth::create_api_user($dataForApi, $password_api);
+            if ( ! $api_user)
+            {
+                return [
+                    'success'   => false,
+                    'title'     => 'Api error',
+                    'errors'    => Auth::$error
+                ];
+            }
+            $credentials['sso_user_id'] = $api_user;
             $user = User::create($credentials);
             // attach the roles to the new created user
             $user->attachRole($vars['user_type']);
@@ -879,5 +891,86 @@ class BackEndUserController extends Controller
 
         return $user_address;
     }
+
+    public function invoice_payment($id)
+    {
+        /*$user = Auth::user();
+        if ( ! $user || ! $user->is_front_user())
+        {
+            return redirect()->intended(route('admin/login'));
+        }*/
+
+
+
+        $invoice = DB::table("invoices")->where('invoice_number', $id)->first();
+        if ($invoice)
+        {
+            $subtotal = 0;
+            $total = 0;
+            $discount = 0;
+            $vat = [];
+
+            $items = DB::table("invoice_items")->where('invoice_id', $invoice->id)->get();
+
+            foreach($items as $item)
+            { 
+                $item_one_price = $item->price - (($item->price*$item->discount)/100);
+                $item_vat = $item_one_price * ($item->vat/100);
+
+                if (isset($vat[$item->vat]))
+                {
+                    $vat[$item->vat] += $item_vat*$item->quantity;
+                }
+                else
+                {
+                    $vat[$item->vat] = $item_vat*$item->quantity;
+                }
+
+                $discount += (($item->price*$item->discount)/100)*$item->quantity;
+                $subtotal += $item->price * $item->quantity;
+
+                $total += ($item_one_price + $item_vat)*$item->quantity;
+            }
+        }
+        else
+        {
+            return redirect('/');
+        }
+        
+
+        $member = User::with('ProfessionalDetail')->with('PersonalDetail')->where('id', $invoice->user_id)->get()->first();
+        $member->country = Countries::where('id', $member->country_id)->get()->first();
+
+        $breadcrumbs = [
+            'Home'              => route('admin'),
+            'Administration'    => route('admin'),
+            'Back End User'     => route('admin'),
+            'All Backend Users' => '',
+        ];
+        
+        $text_parts  = [
+            'title'     => 'Back-End Users',
+            'subtitle'  => 'view all users',
+            'table_head_text1' => 'Backend User List'
+        ];
+
+        $sidebar_link = 'admin-backend-shops-invoices-payment';
+
+        return view('admin/finance/invoice/finance_peyment', [
+            'breadcrumbs' => $breadcrumbs,
+            'text_parts'  => $text_parts,
+            'in_sidebar'  => $sidebar_link,
+            'invoice'   => $invoice,
+            'invoice_items' => @$items,
+            'member'    => $member,
+            'sub_total' => $subtotal,
+            'discount' => $discount,
+            'vat' => $vat,
+            'grand_total' => $total
+        ]);
+    }
+
+
+
 
 }
