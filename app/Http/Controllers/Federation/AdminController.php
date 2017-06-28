@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Federation;
 
+use App\Http\Controllers\AdminController as Base;
 use App\Booking;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
@@ -17,17 +18,8 @@ use Illuminate\Support\MessageBag;
 use Carbon\Carbon;
 use App\Http\Controllers\Api;
 
-class AdminController extends Controller
+class AdminController extends Base
 {
-    /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        //$this->middleware('auth');
-    }
 
     /**
      * Show the application dashboard.
@@ -75,117 +67,6 @@ class AdminController extends Controller
             'in_sidebar'    => $sidebar_link
         ]);
 
-    }
-
-
-    public function authenticate(Request $request)
-    {
-        if (Auth::attempt(['email' => $request->input('username'), 'password' => $request->input('password')])) {
-            // Authentication passed...
-            $user = Auth::user();
-            if ($user->hasRole(['manager','employee'])){
-                return redirect()->route('bookings/location_calendar_day_view',['day'=>\Carbon\Carbon::now()->format('d-m-Y')]);
-            }
-            else{
-                return redirect()->intended('admin');
-            }
-        }
-        else {
-            $errors = new MessageBag([
-                'password' => ['Username and/or password invalid.'],
-                'username' => ['Username and/or password invalid.'],
-                'header' => ['Invalid Login Attempt'],
-                'message_body' => ['Username and/or password invalid.'],
-            ]);
-
-            return  redirect()->intended(route('admin/login'))
-                    ->withInput()
-                    ->withErrors($errors)
-                    ->with('message', 'Login Failed');
-        }
-    }
-
-    public function logout(){
-        Auth::logout();
-        return redirect()->intended(route('admin/login'));
-    }
-
-    public function permission_denied(){
-        $user = Auth::user();
-        if (!$user || !$user->is_back_user()) {
-            return redirect()->intended(route('admin/login'));
-        }
-
-        $breadcrumbs = [
-            'Home'              => route('admin'),
-            'Administration'    => route('admin'),
-            'Back End User'     => route('admin'),
-            'Permissions'        => '',
-        ];
-        $text_parts  = [
-            'title'     => 'Add new membership plan',
-            'subtitle'  => '',
-            'table_head_text1' => 'Membership Plans - Create New'
-        ];
-        $sidebar_link = 'error_permission_denied';
-
-        return view('admin/errors/permission_denied', [
-            'breadcrumbs' => $breadcrumbs,
-            'text_parts'  => $text_parts,
-            'in_sidebar'  => $sidebar_link,
-        ]);
-    }
-
-    public function not_found(){
-        $user = Auth::user();
-        if (!$user || !$user->is_back_user()) {
-            return redirect()->intended(route('admin/login'));
-        }
-
-        $breadcrumbs = [
-            'Home'              => route('admin'),
-            'Administration'    => route('admin'),
-            'Back End User'     => route('admin'),
-            'Permissions'        => '',
-        ];
-        $text_parts  = [
-            'title'     => 'Add new membership plan',
-            'subtitle'  => '',
-            'table_head_text1' => 'Membership Plans - Create New'
-        ];
-        $sidebar_link = 'error_not_found';
-
-        return view('admin/errors/not_found', [
-            'breadcrumbs' => $breadcrumbs,
-            'text_parts'  => $text_parts,
-            'in_sidebar'  => $sidebar_link,
-        ]);
-    }
-
-    public function error_404(){
-        $user = Auth::user();
-        if (!$user || !$user->is_back_user()) {
-            return redirect()->intended(route('admin/login'));
-        }
-
-        $breadcrumbs = [
-            'Home'              => route('admin'),
-            'Administration'    => route('admin'),
-            'Back End User'     => route('admin'),
-            'Permissions'        => '',
-        ];
-        $text_parts  = [
-            'title'     => 'Add new membership plan',
-            'subtitle'  => '',
-            'table_head_text1' => 'Membership Plans - Create New'
-        ];
-        $sidebar_link = 'error_not_found';
-
-        return view('admin/errors/not_found', [
-            'breadcrumbs' => $breadcrumbs,
-            'text_parts'  => $text_parts,
-            'in_sidebar'  => $sidebar_link,
-        ]);
     }
 
     public function front_api_call(Request $r){
