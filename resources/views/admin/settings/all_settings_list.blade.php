@@ -85,10 +85,17 @@
                                                 <td> {{ $s->name }} </td>
                                                 <td> {{ $s->description }} </td>
                                                 @if ( ! $s->constrained)
+                                                    @if ( isset($data_types[$s->data_type]))
                                                     <td> {{ $data_types[$s->data_type] }} </td>
                                                     <td class="text-center"> {{ $s->min_value }} </td>
                                                     <td class="text-center"> {{ $s->max_value }} </td>
                                                     <td></td>
+                                                    @else
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    @endif
                                                 @else
                                                     <td colspan="3"></td>
                                                     <td class="text-center">
@@ -469,6 +476,16 @@
             }
         },"Please enter a valid Email.");
 
+        $.validator.addMethod("setting_type_check", function(value, element) {
+           
+            if ( $("[name=setting_max_val]").val() && $("[name=setting_max_val]").val() && value == "")
+            {
+                return false;
+            }
+        
+            return true;
+        },"Please select type");
+
         var FormValidation = function () {
             var handleValidation2 = function() {
                 var form2 = $('#add_setting_form');
@@ -499,6 +516,9 @@
                         setting_max_val: {
                             number: true
                         },
+                        setting_type : {
+                            setting_type_check : true
+                        }
                     },
 
                     invalidHandler: function (event, validator) {
