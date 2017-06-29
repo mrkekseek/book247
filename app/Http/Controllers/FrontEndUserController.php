@@ -4734,14 +4734,24 @@ class FrontEndUserController extends Controller
                     if (AuthLocal::once(['username' => $data['email'], 'password' => $data['password']]) || AuthLocal::once(['email' => $data['email'], 'password' => $data['password']])){
                         $local_id = AuthLocal::user()->id;
                         $user = User::find($local_id)->toArray();
-                        $user['password_api'] = $data['password'];
-                        $api_user = ApiAuth::account_create($user); 
-                        if ($api_user['success'])
+                        $personalData = PersonalDetail::where('user_id', $local_id)->first();
+                        $personalData = ! empty($personalData) ? $personalData->toArray() : [];
+                        $dataForApi = $user + $personalData;
+                        $api_user = Auth::create_api_user($dataForApi, $data['password']);
+                        if ( ! $api_user)
+                        {
+                            return [
+                                'success'   => false,
+                                'title'     => 'Api error',
+                                'errors'    => Auth::$error
+                            ];
+                        }
+                        else
                         {
                             $update_user = User::find($local_id);
-                            $update_user->update_from_api = true;
-                            $update_user->sso_user_id = $api_user['data'];
-                            if ($update_user->save()){
+                            $update_user->sso_user_id = $api_user;
+                            if ($update_user->save())
+                            {
                                 Auth::set_cookie_session($update_user->sso_user_id);
                                     return [
                                         'success' => true,
