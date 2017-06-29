@@ -59,8 +59,7 @@
                                                 <th> # </th>
                                                 <th> Name </th>
                                                 <th> Settings type </th>
-                                                <th> Min </th>
-                                                <th> Max </th>
+                                                <th> Description </th>
                                                 <th>  </th>
                                             </tr>
                                         </thead>
@@ -70,13 +69,8 @@
                                                     <td> {{ $s->id }} </td>
                                                     <td> {{ $s->name }} </td>
                                                     <td> {{ $s->data_type ? $data_types[$s->data_type] : "" }} </td>
-                                                    @if ($s->data_type == 'numeric')
-                                                    <td> {{ $s->min_value }}</td>
-                                                    <td> {{ $s->max_value }} </td>
-                                                    @else
-                                                    <td> </td>
-                                                    <td> </td>
-                                                    @endif
+                                                    <td> {{ $s->description }}</td>
+                                                    
                                                     @if ($s->constrained)
                                                         <td>
                                                             <form role="form" class="setting_unconstrained" data-id="{{ $s->id }}">
