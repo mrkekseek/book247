@@ -43,9 +43,7 @@ if (env('FEDERATION',false)){
             return view('login');
         });
 
-        Route::get('registration', function () {
-            return view('registration-form');
-        });
+        Route::get('registration', 'RegistrationStepsController@registrationSteps');
 
         Route::get('admin/login', [
             'as' => 'admin/login',

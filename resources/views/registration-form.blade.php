@@ -1,12 +1,6 @@
 @extends('login_header');
 
 @section('main_content')
-<!-- BEGIN LOGO -->
-<div class="logo">
-    <a href="index.html">
-        <img src="{{ asset('assets/pages/img/logo-big.png') }}" alt="" /> </a>
-</div>
-<!-- END LOGO -->
 <!-- BEGIN REGISTRATION -->
     <div class="container">
         <div class="row">
@@ -56,12 +50,11 @@
                                             <button class="close" data-dismiss="alert"></button> Your form validation is successful! </div>
                                         <!--STEP 1-->
                                         <div class="tab-pane active" id="tab1">
-                                            <h3 class="block">Location</h3>
                                             <div class="form-group">
                                                 <label class="control-label col-md-3">Club name
                                                     <span class="required"> * </span>
                                                 </label>
-                                                <div class="col-md-4">
+                                                <div class="col-md-5">
                                                     <input type="text" class="form-control" name="clubname" required/ >
                                                     <span class="help-block"> Provide your Club name </span>
                                                 </div>
@@ -70,7 +63,7 @@
                                                 <label class="control-label col-md-3">Contact Email
                                                     <span class="required"> * </span>
                                                 </label>
-                                                <div class="col-md-4">
+                                                <div class="col-md-5">
                                                     <input type="text" class="form-control" name="email" required />
                                                     <span class="help-block"> Provide your email address </span>
                                                 </div>
@@ -79,7 +72,7 @@
                                                 <label class="control-label col-md-3">Phone
                                                     <span class="required"> * </span>
                                                 </label>
-                                                <div class="col-md-4">
+                                                <div class="col-md-5">
                                                     <input type="text" class="form-control" name="phone" required />
                                                     <span class="help-block"> Provide your Phone </span>
                                                 </div>
@@ -88,7 +81,7 @@
                                                 <label class="control-label col-md-3"> Fax
                                                     <span class="required"> * </span>
                                                 </label>
-                                                <div class="col-md-4">
+                                                <div class="col-md-5">
                                                     <input type="text" class="form-control" name="fax" required />
                                                     <span class="help-block"> Provide your Fax </span>
                                                 </div>
@@ -97,7 +90,7 @@
                                                 <label class="control-label col-md-3"> Address Line1
                                                     <span class="required"> * </span>
                                                 </label>
-                                                <div class="col-md-4">
+                                                <div class="col-md-5">
                                                     <input type="text" class="form-control" name="addressline1" required />
                                                     <span class="help-block"> Provide your Address Line1</span>
                                                 </div>
@@ -105,7 +98,7 @@
                                             <div class="form-group">
                                                 <label class="control-label col-md-3"> Address Line2
                                                 </label>
-                                                <div class="col-md-4">
+                                                <div class="col-md-5">
                                                     <input type="text" class="form-control" name="addressline2" />
                                                     <span class="help-block"> Provide your Address Line2</span>
                                                 </div>
@@ -114,7 +107,7 @@
                                                 <label class="control-label col-md-3"> City
                                                     <span class="required"> * </span>
                                                 </label>
-                                                <div class="col-md-4">
+                                                <div class="col-md-5">
                                                     <input type="text" class="form-control" name="city" required />
                                                     <span class="help-block"> Provide your  City</span>
                                                 </div>
@@ -123,7 +116,7 @@
                                                 <label class="control-label col-md-3"> Region
                                                     <span class="required"> * </span>
                                                 </label>
-                                                <div class="col-md-4">
+                                                <div class="col-md-5">
                                                     <input type="text" class="form-control" name="region" required />
                                                     <span class="help-block"> Provide your  Region</span>
                                                 </div>
@@ -132,7 +125,7 @@
                                                 <label class="control-label col-md-3"> Postal Code
                                                     <span class="required"> * </span>
                                                 </label>
-                                                <div class="col-md-4">
+                                                <div class="col-md-5">
                                                     <input type="text" class="form-control" name="postalcode" required />
                                                     <span class="help-block"> Provide your  Postal Code</span>
                                                 </div>
@@ -141,12 +134,12 @@
                                                 <label class="control-label col-md-3">Country
                                                     <span class="required"> * </span>
                                                 </label>
-                                                <div class="col-md-4">
-                                                    <select name="country" id="country" class="form-control">
-                                                        <option value="">Select your Country</option>
-                                                        <option value="AF">Afghanistan</option>
-                                                        <option value="AL">Albania</option>
-                                                        <option value="DZ">Algeria</option>
+                                                <div class="col-md-5">
+                                                    <select name="country" class="form-control" id="country">
+                                                        <option value="">Select country from a list</option>
+                                                        @foreach($countries as $country)
+                                                             <option value="{{ $country->id }}">{{ $country->name }}</option>
+                                                        @endforeach
                                                     </select>
                                                     <span class="help-block"> Provide your Country</span>
                                                 </div>
@@ -155,12 +148,12 @@
                                                 <label class="control-label col-md-3"> Currency
                                                     <span class="required"> * </span>
                                                 </label>
-                                                <div class="col-md-4">
-                                                    <select name="currency" id="currency" class="form-control" required>
-                                                       <option value="">Select your Currency</option>
-                                                        <option value="EUR">Euro</option>
-                                                        <option value="AOA">Kwanza</option>
-                                                        <option value="USD">US dollar</option>
+                                                <div class="col-md-5">
+                                                    <select name="currency" class="form-control" id="currency">
+                                                        <option value="">Select your Currency</option>
+                                                        @foreach($currencies as $currency)
+                                                             <option value="{{ $currency->currency_code }}">{{ $currency->currency_code }}</option>
+                                                        @endforeach
                                                     </select>
                                                     <span class="help-block"> Provide your  Currency</span>
                                                 </div>
@@ -169,12 +162,11 @@
                                         <!--END STEP 1-->
                                         <!--STEP 2-->
                                         <div class="tab-pane" id="tab2">
-                                            <h3 class="block">Information about sport</h3>
                                             <div class="form-group">
                                                 <label class="control-label col-md-3">Activity
                                                     <span class="required"> * </span>
                                                 </label>
-                                                <div class="col-md-4">
+                                                <div class="col-md-5">
                                                     <select name="sport" id="sport" class="form-control" required>
                                                         <option value="">Select activity</option>
                                                         <option value="1">Tennis</option>
@@ -189,7 +181,7 @@
                                                 <label class="control-label col-md-3">Minimum reservation time/time slot per booking
                                                     <span class="required"> * </span>
                                                 </label>
-                                                <div class="col-md-4">
+                                                <div class="col-md-5">
                                                     <select name="time" id="time" class="form-control" required>
                                                         <option value="">Select minimum reservation time</option>
                                                         <option value="1">30 min per slot</option>
@@ -203,7 +195,6 @@
                                         <!--END STEP 2-->
                                         <!--STEP 3-->
                                         <div class="tab-pane" id="tab3">
-                                            <h3 class="block">Booking behavior for drop-in customers</h3>
                                             <div class="form-group">
                                                 <div class="col-md-offset-3 col-md-4">
                                                     <div class="well">
@@ -215,7 +206,7 @@
                                                 <label class="control-label col-md-3"> Do you allow to book drop-ins by non-members?
                                                     <span class="required"> * </span>
                                                 </label>
-                                                <div class="col-md-4">
+                                                <div class="col-md-5">
                                                     <select name="members" id="members" class="form-control" required>
                                                         <option value="">Please select</option>
                                                         <option value="1">Yes</option>
@@ -228,7 +219,7 @@
                                                 <label class="control-label col-md-3"> May customers pay for reservations online?
                                                     <span class="required"> * </span>
                                                 </label>
-                                                <div class="col-md-4">
+                                                <div class="col-md-5">
                                                     <select name="pay" id="pay" class="form-control" required>
                                                         <option value="">Please select</option>
                                                         <option value="1">Yes</option>
@@ -246,7 +237,7 @@
                                                 <label class="control-label col-md-3"> Who may see your resource availability?
                                                     <span class="required"> * </span>
                                                 </label>
-                                                <div class="col-md-4">
+                                                <div class="col-md-5">
                                                     <select name="resource" id="resource" class="form-control" required>
                                                         <option value="">Please select</option>
                                                         <option value="1">Everyone</option>
@@ -259,7 +250,7 @@
                                                 <label class="control-label col-md-3"> How early do you want users to be able to create bookings?
                                                     <span class="required"> * </span>
                                                 </label>
-                                                <div class="col-md-4">
+                                                <div class="col-md-5">
                                                     <select name="day" id="day" class="form-control" required>
                                                         <option value="">Please select</option>
                                                         <option value="1">Monday</option>
@@ -282,7 +273,7 @@
                                                 <label class="control-label col-md-3"> Cancellation limit?
                                                     <span class="required"> * </span>
                                                 </label>
-                                                <div class="col-md-4">
+                                                <div class="col-md-5">
                                                     <select name="limit" id="limit" class="form-control" required>
                                                         <option value="">Please select</option>
                                                         <option value="1">1 hours</option>
@@ -304,7 +295,6 @@
                                         <!--END STEP 3-->
                                         <!--STEP 4-->
                                         <div class="tab-pane clearfix" id="tab4">
-                                            <h3 class="block">Finish</h3>
                                             <div class="col-md-offset-4 col-md-4 well">
                                                 <p><strong>Finish:</strong> <a href="#" class="text-info">"Click here"</a> to finish your registration! But don`t worry if you want to make changes. Every setting can be changed in "General settings".</p>
                                             </div>
@@ -338,7 +328,7 @@
     </div>
 <!-- END REGISTRATION -->
 <!-- BEGIN COPYRIGHT -->
-<div class="copyright"> 2014 &copy; Metronic - Admin Dashboard Template. </div>
+<div class="copyright"> 2016 © BookingSystem by SQF. Squash Fitness! </div>
 <!-- END COPYRIGHT -->
 <!--[if lt IE 9]>
 <script src="{{ asset('assets/global/plugins/respond.min.js') }}"></script>
