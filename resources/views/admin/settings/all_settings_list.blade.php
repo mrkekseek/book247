@@ -486,6 +486,16 @@
             return true;
         },"Please select type");
 
+        $.validator.addMethod("setting_type_edit_check", function(value, element) {
+           console.log(value);
+            if ( $("#edit_setting_form [name=setting_min_val]").val() && $("#edit_setting_form [name=setting_max_val]").val() && !value )
+            {
+                return false;
+            }
+        
+            return true;
+        },"Please select type");
+
         var FormValidation = function () {
             var handleValidation2 = function() {
                 var form2 = $('#add_setting_form');
@@ -593,6 +603,9 @@
                         },
                         setting_max_val : {
                             number : true
+                        },
+                        setting_type : {
+                            setting_type_edit_check : true
                         }
                     },
 
