@@ -249,9 +249,19 @@
                     <span class="arrow"></span>
                 </a>
                 <ul class="sub-menu">
+                    {{--<li class="nav-item {{ $in_sidebar=='admin-settings-all_list'?'active open':'' }}">--}}
+                        {{--<a href="{{route('admin/settings/list_all')}}" class="nav-link ">--}}
+                            {{--<span class="title">List all settings</span>--}}
+                        {{--</a>--}}
+                    {{--</li>--}}
                     <li class="nav-item {{ $in_sidebar=='admin-settings-all_list'?'active open':'' }}">
-                        <a href="{{route('admin/settings/list_all')}}" class="nav-link ">
-                            <span class="title">List all settings</span>
+                        <a href="" class="nav-link ">
+                            <span class="title">Define and mentain</span>
+                        </a>
+                    </li>
+                    <li class="nav-item {{ $in_sidebar=='admin-settings-all_list'?'active open':'' }}">
+                        <a href="" class="nav-link ">
+                            <span class="title">Manage settings</span>
                         </a>
                     </li>
                     <li class="nav-item {{ $in_sidebar=='admin-settings-financial_profiles-add_new'?'active open':'' }}">
@@ -262,6 +272,11 @@
                     <li class="nav-item {{ $in_sidebar=='admin-settings-financial_profiles-list_all'?'active open':'' }}">
                         <a href="{{route('admin/settings_financial_profiles/list_all')}}" class="nav-link ">
                             <span class="title">All Financial Profiles</span>
+                        </a>
+                    </li>
+                    <li class="nav-item {{ $in_sidebar=='admin-settings-financial_profiles-list_all'?'active open':'' }}">
+                        <a href="" class="nav-link ">
+                            <span class="title">Email templates</span>
                         </a>
                     </li>
                     @if ($in_sidebar=='admin-settings-financial_profiles-view_edit')

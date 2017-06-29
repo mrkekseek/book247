@@ -17,11 +17,10 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Auth;
 use App\User;
-use App\Invoice;
 use App\InvoiceItem;
-use App\Http\Requests;
+use Illuminate\Support\Facades\Input;
 use Validator;
-use Regulus\ActivityLog\Models\Activity;
+use Illuminate\Support\Facades\Auth as AuthLocal;
 
 /*
  * This controller is linked to the User Membership Plan assigned to him. The actions here are linked to an active membership plan assigned to a user or a plan that will be assigned
@@ -29,7 +28,7 @@ use Regulus\ActivityLog\Models\Activity;
 class MembershipController extends Base
 {
 
-    public function iframed($token ,$sso_id, $membership_id = null)
+    public function iframed($token ,$sso_id, $membership_id)
     {
 //        $permission = IframePermission::where([['user_id','=',$sso_id],['permission_token','=',$token]])->first();
 //        if(!isset($permission)) {
@@ -40,6 +39,7 @@ class MembershipController extends Base
 //                $p->delete();
 //            }
 //        }
+        $redirect_url = Input::get('redirect_url',false);
         $membership = null;
         $membership_list = null;
         if (isset($membership_id)) {
@@ -53,7 +53,8 @@ class MembershipController extends Base
         return view('front/iframe/federation/buy_license_new' ,[
             'user_id' => $sso_id ,
             'membership' => $membership ,
-            'membership_list' => $membership_list
+            'membership_list' => $membership_list,
+            'redirect_url' => $redirect_url
         ]);
     }
 
@@ -63,8 +64,8 @@ class MembershipController extends Base
         if ($r->get('user_id')  && $r->get('payment_method') && $r->get('membership')) {
 
             $user = User::where('sso_user_id',$r->get('user_id'))->first();
-
-            if (Auth::loginUsingId($user->id)) {
+            $status = AuthLocal::loginUsingId($user->id);
+            if ( $status ) {
 
                 $r->request->add([
                     'member_id' => $user->id,
@@ -88,7 +89,7 @@ class MembershipController extends Base
                     }
                 }
 
-                Auth::logout();
+                AuthLocal::logout();
 
             }
             if ($r->get('payment_method') == 'paypal') {
@@ -145,22 +146,38 @@ class MembershipController extends Base
     {
         $amount = $r->get('amt');
         $curency = $r->get('cc');
-        $invoice_id = $r->get('cm');
         $transactionId = $r->get('tx');
+        $url = $r->get('cm');
 
+        $breadcrumbs = [
+            'Home'      => route('admin'),
+            'Dashboard' => '',
+        ];
+        $text_parts  = [
+            'title'     => 'Home',
+            'subtitle'  => 'users dashboard',
+            'table_head_text1' => 'Dashboard Summary'
+        ];
+        $sidebar_link= 'front-homepage';
         return view('front/iframe/federation/redirect_page',[
+            'breadcrumbs' => $breadcrumbs,
+            'text_parts'  => $text_parts,
+            'in_sidebar'  => $sidebar_link,
             'text' => 'Payment successful!',
             'status' => 'Success',
-            'link' => 'http://book.net/admin/test_api_call'
+            'link' => 'http://book.net/admin/test_api_call',
+            'url' => $url
         ]);
     }
 
     public function paypal_cencel(Request $r)
     {
+        $url = $r->get('cm');
         return view('front/iframe/federation/redirect_page',[
             'text' => 'Payment Canceled :(',
             'status' => 'Failed',
-            'link' => 'http://book.net/admin/test_api_call'
+            'link' => 'http://book.net/admin/test_api_call',
+            'url' => $url
         ]);
     }
 }

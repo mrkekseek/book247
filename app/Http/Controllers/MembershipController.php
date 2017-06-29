@@ -11,12 +11,12 @@ use App\UserMembershipAction;
 use App\UserMembershipInvoicePlanning;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Auth;
+//use Auth;
 use App\User;
 use App\Http\Requests;
 use Validator;
 use Regulus\ActivityLog\Models\Activity;
-
+use Illuminate\Support\Facades\Auth;
 /*
  * This controller is linked to the User Membership Plan assigned to him. The actions here are linked to an active membership plan assigned to a user or a plan that will be assigned
  */

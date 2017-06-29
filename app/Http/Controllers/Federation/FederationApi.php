@@ -41,7 +41,7 @@ class FederationApi extends Controller {
                 $token = IframePermission::createPermission($r->memberSSOid);
                 return json_encode(array(
                     'code' => 1,
-                    'iFrameUrl' => route('buy_license',[ 'token' => $token , 'sso_id' => $r->memberSSOid,'membership_id' => $r->membership_id ])
+                    'iFrameUrl' => route('buy_license',[ 'token' => $token , 'sso_id' => $r->memberSSOid,'membership_id' => isset($r->membership_id) ? $r->membership_id : -1 ]).'?redirect_url='.$r->get('return_url')
                 ),JSON_FORCE_OBJECT);
             } else {
                 return json_encode(array(
