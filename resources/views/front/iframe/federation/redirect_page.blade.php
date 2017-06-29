@@ -1,4 +1,4 @@
-@extends('layouts.status_page')
+@extends('layouts.federation.main')
 
 @section('themeGlobalStyle')
     <link href="{{ asset('assets/global/css/components-rounded.min.css') }}" rel="stylesheet" id="style_components" type="text/css" />
@@ -47,7 +47,7 @@
 @endsection]
 
 
-@section('custom_js')
+@section('pageCustomJScripts')
     <script type="text/javascript">
         $(document).ready(function(){
             setTimeout(function(){
