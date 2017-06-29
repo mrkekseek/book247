@@ -894,13 +894,10 @@ class BackEndUserController extends Controller
 
     public function invoice_payment($id)
     {
-        /*$user = Auth::user();
-        if ( ! $user || ! $user->is_front_user())
-        {
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
             return redirect()->intended(route('admin/login'));
-        }*/
-
-
+        }
 
         $invoice = DB::table("invoices")->where('invoice_number', $id)->first();
         if ($invoice)
