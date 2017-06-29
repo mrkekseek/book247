@@ -36,6 +36,7 @@ class User extends Authenticatable
         'status',
         'password_api',
         'sso_user_id',
+        'phone_number',
     ];
 
     public static $messages = [
@@ -100,44 +101,6 @@ class User extends Authenticatable
             default:break;
         }
     }
-           
-    public static function boot()
-    {
-        parent::boot();
-        static::creating(function($model)
-        {   
-            $attributes = $model->attributes;            
-            if (isset($attributes['sso_user_id']))
-            {
-                return true;
-            }
-            $api_user = \App\Http\Libraries\Auth::create_api_user($attributes);
-            if ($api_user)
-            {                
-                unset($model->password_api);
-                $model->sso_user_id = $api_user;                    
-                return true;
-            }
-            return false;            
-        });
-        static::updating(function($model)
-        {
-            $attributes = $model->attributes;                 
-            if (isset($attributes['update_from_api']))
-            {
-                unset($model->update_from_api);
-                return true;
-            }            
-            $api_user = \App\Http\Libraries\Auth::update_api_user($attributes);
-            if ($api_user)
-            {
-                unset($model->birthday);
-                return $api_user;
-            }
-            return false;            
-        });
-    }
-
     
     public function is_back_user() {        
         if ( $this->hasRole('front-user') || $this->hasRole('front-member') || $this->status != "active") {
@@ -285,10 +248,15 @@ class User extends Authenticatable
         else{
             try {
                 $cancel_date = Carbon::createFromFormat('Y-m-d',$cancel_date);
-                $last_date = Carbon::createFromFormat('Y-m-d',$last_date);
             }
             catch (\Exception $ex){
                 $cancel_date = Carbon::today();
+            }
+
+            try {
+                $last_date = Carbon::createFromFormat('Y-m-d',$last_date);
+            }
+            catch (\Exception $ex){
                 $last_date   = Carbon::tomorrow();
             }
         }
@@ -318,7 +286,7 @@ class User extends Authenticatable
 
             $theAction = UserMembershipAction::create($fillable);
 
-            // if the freeze starts today, then we freeze the membership plan
+            // if the cancellation starts today, then we cancel the membership plan
             if (Carbon::today()->toDateString() == $cancel_date->toDateString()) {
                 $theAction->process_action();
             }

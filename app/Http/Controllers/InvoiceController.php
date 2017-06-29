@@ -25,15 +25,15 @@ class InvoiceController extends Controller
             return redirect()->intended(route('admin/login'));
         }
 
-        $invoice = Invoice::with('transactions')->where('invoice_number','=',$id)->get()->first();
+        $invoice = Invoice::with('transactions')->with('items')->where('invoice_number','=',$id)->get()->first();
         if ($invoice){
             $subtotal = 0;
             $total = 0;
             $discount = 0;
             $vat = [];
 
-            $items = InvoiceItem::where('invoice_id','=',$invoice->id)->get();
-            foreach($items as $item){
+            $itemNames = [];
+            foreach($invoice->items as $item){
                 // base price minus the discount
                 $item_one_price = $item->price - (($item->price*$item->discount)/100);
                 // apply the vat to the price
@@ -48,8 +48,19 @@ class InvoiceController extends Controller
 
                 $discount+= (($item->price*$item->discount)/100)*$item->quantity;
                 $subtotal+= $item->price * $item->quantity;
-
                 $total+= ($item_one_price + $item_vat)*$item->quantity;
+
+                $itemNames[$item->id] = $item->item_name;
+            }
+
+            foreach($invoice->transactions as &$transaction){
+                $innerItems = json_decode($transaction->invoice_items);
+                $transactionItemNames = [];
+                foreach($innerItems as $single){
+                    $transactionItemNames[] = $itemNames[$single];
+                }
+
+                $transaction->names = $transactionItemNames;
             }
 
             $member = User::with('ProfessionalDetail')->with('PersonalDetail')->where('id','=',$invoice->user_id)->get()->first();
@@ -94,7 +105,7 @@ class InvoiceController extends Controller
             'text_parts'    => $text_parts,
             'in_sidebar'    => $sidebar_link,
             'invoice'       => $invoice,
-            'invoice_items' => @$items,
+            'invoice_items' => @$invoice->items,
             'member'        => @$invoice_user,
             'sub_total'     => $subtotal,
             'discount'      => $discount,
@@ -179,7 +190,7 @@ class InvoiceController extends Controller
                 $invoice->check_if_paid();
                 // if invoice type is booking_invoice then we check if all paid bookings are marked as paid
                 if ($invoice->invoice_type=="booking_invoice"){
-                    $invoice->mark_bookings_as_paid();
+                    $invoice->mark_bookings_as_paid($user->id);
                 }
 
                 Activity::log([
@@ -199,7 +210,7 @@ class InvoiceController extends Controller
                 // something went wrong and we need to give the store credit back
                 return [
                     'success' => false,
-                    'errors' => 'Error Creating Transaction! Please reload the page or try logout/login before trying the same action.'];
+                    'errors' => $message['errors']];
             }
         }
     }

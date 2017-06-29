@@ -42,7 +42,7 @@
                         <table class="table table-striped table-bordered table-hover table-checkable order-column" id="all_permissions">
                             <thead>
                             <tr>
-                                <th> Id </th>
+                                <th> № </th>
                                 <th> Hook </th>
                                 <th> Variables </th>
                                 <th> Country </th>
@@ -51,39 +51,39 @@
                             </tr>
                             </thead>
                             <tbody>
-                                @foreach($templates as $template)
-                                    <tr class="odd gradeX">
-                                        <td> {{ $template["id"] }} </td>
-                                        <td> 
-                                            {{ $template["hook"] }}
-                                        </td>
-                                        <td> 
-                                              @foreach($template["variables"] as $index => $var)
-                                                <span class="label label-default">{{ $var }}</span>
-                                              @endforeach
-                                       </td>
-                                       <td>
-                                            {{ $template["country"]->name }}
-                                       </td>
-                                       <td class="text-center">
-                                            <a href="/admin/templates_email/edit/{{ $template['id'] }}" class="edit">
-                                                <i class="fa fa-edit"></i>
-                                            </a>
-                                        </td>
-                                        <td class="text-center">
-                                            <a href="javascript:void(0);"  data-id="{{ $template['id'] }}" class="delete">
-                                                <i class="fa fa-trash-o"></i>
-                                            </a>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                                @if ( ! $templates)
-                                    <tr>
-                                        <td colspan="6">
-                                            No records found
-                                        </td>
-                                    </tr>
-                                @endif
+                            @for($i = 0; $i < count($templates); $i++)
+                                <tr class="odd gradeX">
+                                    <td> {{ $i + 1 }} </td>
+                                    <td>
+                                        {{ $templates[$i]["hook"] }}
+                                    </td>
+                                    <td>
+                                        @foreach($templates[$i]["variables"] as $index => $var)
+                                            <span class="label label-default label-var">{{ $var }}</span>
+                                        @endforeach
+                                    </td>
+                                    <td>
+                                        {{ $templates[$i]["country"]->name }}
+                                    </td>
+                                    <td class="text-center">
+                                        <a href="/admin/templates_email/edit/{{ $templates[$i]['id'] }}" class="edit">
+                                            <i class="fa fa-edit"></i>
+                                        </a>
+                                    </td>
+                                    <td class="text-center">
+                                        <a href="javascript:void(0);"  data-id="{{ $templates[$i]['id'] }}" class="delete">
+                                            <i class="fa fa-trash-o"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            @endfor
+                            @if ( ! $templates)
+                                <tr>
+                                    <td colspan="6">
+                                        No records found
+                                    </td>
+                                </tr>
+                            @endif
                             </tbody>
                         </table>
                     </div>
@@ -133,37 +133,37 @@
 
 @section('pageCustomJScripts')
     <script type="text/javascript">
-        
+
         $(document).ready(function(){
             $(".delete").click(function(){
                 var template_id = $(this).data("id");
                 $("#confirm-delete-template").modal("show");
                 $("#confirm-delete").click(function(){
                     $.ajax({
-                            url: '{{ route('admin/templates_email/delete') }}',
-                            type: "post",
-                            data: {
-                                'id' : template_id
-                            },
-                            success: function(data){
-                                if(data.success)
-                                {
-                                    show_notification(data.title, data.message, 'lime', 3500, 0);
-                                    setTimeout(function(){
-                                        location.reload();
-                                    },2000);
-                                }
-                                else
-                                {
-                                    show_notification(data.title, data.errors, 'ruby', 3500, 0);
-                                }
+                        url: '{{ route('admin/templates_email/delete') }}',
+                        type: "post",
+                        data: {
+                            'id' : template_id
+                        },
+                        success: function(data){
+                            if(data.success)
+                            {
+                                show_notification(data.title, data.message, 'lime', 3500, 0);
+                                setTimeout(function(){
+                                    location.reload();
+                                },2000);
                             }
-                        });
+                            else
+                            {
+                                show_notification(data.title, data.errors, 'ruby', 3500, 0);
+                            }
+                        }
+                    });
                 });
             });
         });
 
-        
+
 
     </script>
 @endsection

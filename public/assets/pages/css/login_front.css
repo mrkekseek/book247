@@ -41,16 +41,22 @@ Login page
     margin: 15px 0 7px 0; }
 
 .login .content .login-form,
-.login .content .forget-form {
+.login .content .forget-form{
     padding: 0px;
-    margin: 0px; }
+    margin: 0px; 
+}
+.login .content .pre-register-form,
+.login .content .pre-register-form,
+.login .content .result-register-form{
+    padding: 0px;
+    margin: 0 0 25px 0; 
+}
 
 .login .content .form-control {
-    /*border: none;*/
     background-color: #e9edef;
     height: 43px;
     color: #8290a3;
-    /*border: 1px solid #dde3ec;*/ }
+}
 .login .content .form-control:focus,
 .login .content .form-control:active {
     border: 1px solid #c3ccda; }
@@ -66,11 +72,19 @@ Login page
     padding-left: 9px;
     padding-right: 9px; }
 
+.login .content .result-forget-form ,
 .login .content .forget-form {
     display: none; }
+.login .content .forget-form button{
+    color: #999;
+}
 
 .login .content .register-form {
     display: none; }
+
+.login .content .register-form div.checker {
+    margin-left: -2px;
+}
 
 .login .content .form-title {
     font-weight: 300;
@@ -80,7 +94,6 @@ Login page
     clear: both;
     overflow:auto;
     border: 0px;
-    border-bottom: 1px solid #eee;
     padding: 5px 30px 10px 30px;
     margin-left: -30px;
     margin-right: -30px; }
@@ -143,17 +156,19 @@ Login page
     margin-top: 10px; }
 
 .login .content .check {
-    color: #8290a3; }
+    color: #8290a3;
+}
 
 .login .content .rememberme {
     margin-left: 8px;
     margin-top: 10px; }
 
 .login .content .create-account {
-    margin: 0 -40px -30px -40px;
     padding: 15px 0 17px 0;
     text-align: center;
     background-color: #6c7a8d;
+    font-size: 16px;
+    border-top: 1px solid #eee;
     -webkit-border-radius: 0 0 7px 7px;
     -moz-border-radius: 0 0 7px 7px;
     -ms-border-radius: 0 0 7px 7px;
@@ -163,14 +178,19 @@ Login page
     margin: 0; }
 
 .login .content .create-account p a {
-    font-weight: 600;
+    font-weight: 700;
     font-size: 14px;
     color: #ffffff; }
 
 .login .content .create-account a {
     display: inline-block;
     margin-top: 5px; }
-
+.login .content .create-account button {
+    width: 55%;
+    margin-top: 15px;
+    font-weight: 600;
+    line-height: 2;
+}
 /* footer copyright */
 .login .copyright {
     text-align: center;
@@ -184,10 +204,93 @@ Login page
 .icon-btn {padding-left:7px;
     padding-right:7px;}
 
-@media (max-width: 440px) {
+.login .content .pre-register-form,
+.login .content .pre-register-password-api,
+.login .content .user_result_forget_form,
+.login .content .result-register-form{
+    display: none; 
+}
+.login .portlet-title{
+    border:none;
+    min-height: 0 !important;
+}
+.login .portlet-title .caption{
+    padding: 10px 0 0 0 !important;
+    color: #000000 !important;
+}
+.login .login-form .links{
+    padding: 0 30px 25px 30px;
+}
+.login .powered{
+    width: 50%;
+}
+.login .powered .caption{
+    margin-left: 3%;
+    display: inline-block;
+    height: 20px;
+    line-height: 20px;
+    color: #8290a3;
+    font-weight: 400;
+}
+.login .powered .min-logo{
+    background-position: center;
+    background-repeat: no-repeat;
+    width: 29%;
+    display: inline-block;
+    vertical-align: middle;
+}
+.login .powered .logo-book247{
+    background-image: url("../img/login/logo-book247.png");
+    height: 20px;
+}
+.login .powered .logo-rankedin{
+    background-image: url("../img/login/logo-rankedin.png");
+    height: 20px;
+}
+.login .powered .separator-logo{
+    height: 15px;
+    width: 1px;
+    background-color: #999;
+    vertical-align: middle;
+    display: inline-block;
+}
+.login #back-btn,
+.login #pre-back-btn{
+    color:#999;
+    border-right: 1px solid #999;
+    margin-right: 8px;
+    padding-right: 4px;
+}
+.login button.grey{
+    color:#80898e !important;
+}
+.login #back-btn:hover,
+.login #pre-back-btn:hover{
+    text-decoration: none;
+}
+.result-register-form a{
+    color:#999;
+}
+.result-forget-form a:hover,
+.result-register-form a:hover{
+    text-decoration: none;
+    color:#999;
+}
+.login .content .pre-register-form a#forget-password{
+    margin-top: 0;
+    margin-bottom: 3px;
+}
+.login .date-picker button{
+    line-height: 2.1 !important;
+}
+
+@media (max-width: 440px){
     /***
     Login page
     ***/
+    .login .content{
+        margin-top: 25px !important;
+    }
     .login .logo {
         margin-top: 10px; }
     .login .content {
@@ -202,14 +305,45 @@ Login page
         float: left;
         padding-top: 3px; }
     .login .checkbox {
-        font-size: 13px; } }
+        font-size: 13px; }
+    .login .content .create-account button {
+        width: 100%;
+    }
+    .login .powered{
+        width: 90%;
+    }
+    .login .book_step_link{
+        font-size: 12px;
+        padding: 5px 6px; 
+    }
+    .page-footer{
+        text-align: center;
+    }
+    .login .content {
+        padding: 20px;
+    }
+    
+}
 
-@media (max-width: 767px) {
+@media (min-width: 441px) and (max-width: 767px) {
+    .login .content{
+        margin-top: 25px !important;
+    }
     .icon-btn {height:40px;
         padding-top:10px;}
-    .portlet.light{
-
+    .login .content .check {
+        text-align: center;
     }
     .portlet{
         margin-bottom:20px;}
+    .login .content .create-account button {
+        width: 100%;
+    }
+    .login .powered{
+        width: 75%;
+    }
+    .page-footer{
+        text-align: center;
+    }
+
 }

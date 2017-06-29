@@ -56,7 +56,9 @@ class ApiAuth
             'MiddleName'=> '',
             'LastName'=> '',
             'ResetToken'=> '',
-            'ResetTokenDate'=> null
+            'ResetTokenDate'=> null,
+            'PhoneNumber' => ''
+
         ];
         $apiData = [                                    
             'ResetToken'=> '',
@@ -87,10 +89,13 @@ class ApiAuth
                     break;                
                 case  ('gender'):
                     $apiData['Gender'] = $value;
-                    break;                
-                case 'birthday':                    
+                    break;
+                case 'date_of_birth':                    
                     $apiData['Birthday'] = $value;
                     break;
+                case 'mobile_number':
+                    $apiData['PhoneNumber'] = $value;
+                    break;   
             }
         }        
         foreach ($sortingArray as $key=>$value)
@@ -99,7 +104,7 @@ class ApiAuth
             {
                 $sortingArray[$key] = $apiData[$key];
             }
-        }        
+        }
         self::send_curl($sortingArray,'api/Accounts', 'PUT');                
         if (empty(self::$error))
         {
@@ -127,7 +132,8 @@ class ApiAuth
             'MiddleName'=> '',
             'LastName'=> '',
             'ResetToken'=> '',
-            'ResetTokenDate'=> null
+            'ResetTokenDate'=> null,
+            'PhoneNumber' => ''
         ];
         $apiData = [
             'Id'=> 0,            
@@ -159,7 +165,16 @@ class ApiAuth
                     break;
                 case 'last_name':
                     $apiData['LastName'] = $value;
-                    break;                
+                    break;
+                case 'mobile_number':
+                    $apiData['PhoneNumber'] = $value;
+                    break;                   
+                case 'gender':
+                    $apiData['Gender'] = $value;
+                    break;                   
+                case 'date_of_birth':
+                    $apiData['Birthday'] = $value;
+                    break;
             }
         }        
         foreach ($sortingArray as $key=>$value)
@@ -168,7 +183,7 @@ class ApiAuth
             {
                 $sortingArray[$key] = $apiData[$key];
             }
-        }        
+        }
         $response = self::send_curl($sortingArray,'api/Accounts', 'POST');
         if ($response)
         {

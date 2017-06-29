@@ -2699,7 +2699,7 @@ class BookingController extends Controller
                 'date_of_booking'       => $selected_date,
                 'booking_time_start'    => $booking_start_time,
                 'booking_time_stop'     => $booking_end_time,
-                'payment_type'          => 'membership',
+                'payment_type'          => $booking->payment_type,
                 'payment_amount'        => 0,
                 'membership_id'         => -1,
                 'invoice_id'            => -1,
@@ -2713,8 +2713,12 @@ class BookingController extends Controller
                     return ['success' => false];
                 }
 
+                $oldStatus = $booking->status;
+                $booking->status = 'canceled';
                 BookingController::save_pending_booking_with_member_details($msg['booking_key'], $booking->by_user_id, $booking->for_user_id);
                 BookingController::confirm_pending_booking($msg['booking_key'], $booking->membership_product_id);
+
+                $booking->status = $oldStatus;
                 $booking->cancel_booking();
 
                 return [

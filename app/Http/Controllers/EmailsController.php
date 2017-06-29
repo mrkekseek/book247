@@ -93,7 +93,7 @@ class EmailsController extends Controller
             'text_parts'   => $text_parts,
             'in_sidebar'   => $sidebar_link,
             'variables'    => $this->variables,
-            'country_list' => DB::table("countries")->get()
+            'country_list' => DB::table("countries")->orderBy("name", "asc")->get()
         ));
     }
 
@@ -180,6 +180,7 @@ class EmailsController extends Controller
         $fillable = array(
             "title"       => $default_template->title,
             "content"     => $default_template->content,
+            "variables"   => $default_template->variables,
             "country_id"  => $default_template->country_id,
             "description" => $default_template->description
         );
@@ -296,7 +297,7 @@ class EmailsController extends Controller
             'in_sidebar'    => $sidebar_link,
             'template'      => $template = TempalteEmail::where('id', $request->id)->get()->first(),
             'template_id'   => $template->id,
-            'country_list'  => DB::table("countries")->get(),
+            'country_list'  => DB::table("countries")->orderBy("name", "asc")->get(),
             'variables'     => $this->variables,
             'isset_default' => TempalteEmail::where("hook", TempalteEmail::where("id", $request->id)->first()->hook)->where("is_default", 1)->first() ? TRUE : FALSE
         ));
