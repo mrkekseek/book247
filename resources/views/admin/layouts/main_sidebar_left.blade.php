@@ -179,14 +179,14 @@
                         <span class="title"> List All Locations </span>
                     </a>
                 </li>
-                @if ($in_sidebar=="admin-backend-shop-locations-details-view")
+                @if ( $in_sidebar == "admin-backend-shop-locations-details-view")
                     <li class="nav-item {{ $in_sidebar=='admin-backend-shop-locations-details-view'?'active open':'' }}">
                         <a class="nav-link ">
                             <span class="title">Location Details</span>
                         </a>
                     </li>
                 @endif
-                @if ($in_sidebar=="admin-backend-locations-resource-details-view")
+                @if ( $in_sidebar == "admin-backend-locations-resource-details-view")
                     <li class="nav-item {{ $in_sidebar=='admin-backend-locations-resource-details-view'?'active open':'' }}">
                         <a class="nav-link ">
                             <span class="title">Location Details</span>
@@ -242,16 +242,21 @@
         @endif
 
         @if (Auth::user()->can('view-general-settings-menu'))
-        <li class="nav-item {{ in_array($in_sidebar, ['admin-settings-all_list','admin-settings-financial_profiles-add_new','admin-settings-financial_profiles-list_all','admin-settings-financial_profiles-view_edit'])?'active open':'' }} ">
+        <li class="nav-item {{ in_array($in_sidebar, ['admin-settings-all_list','admin-settings-financial_profiles-add_new','admin-settings-financial_profiles-list_all','admin-settings-financial_profiles-view_edit', 'admin-templates_email-list_all', 'admin-settings-manage_settings'])?'active open':'' }} ">
             <a href="javascript:;" class="nav-link nav-toggle">
                 <i class="icon-shield"></i>
                 <span class="title"> General Settings </span>
                 <span class="arrow"></span>
             </a>
             <ul class="sub-menu">
-                <li class="nav-item {{ $in_sidebar=='admin-settings-all_list'?'active open':'' }}">
+                <li class="nav-item {{ $in_sidebar == 'admin-settings-all_list' ? 'active open' : '' }}">
                     <a href="{{route('admin/settings/list_all')}}" class="nav-link ">
-                        <span class="title">List all settings</span>
+                        <span class="title">Define and mentain</span>
+                    </a>
+                </li>
+                 <li class="nav-item {{ $in_sidebar == 'admin-settings-manage_settings' ? 'active open' : '' }}">
+                    <a href="{{route('admin/settings/manage_settings')}}" class="nav-link ">
+                        <span class="title">Manage settings</span>
                     </a>
                 </li>
                 <li class="nav-item {{ $in_sidebar=='admin-settings-financial_profiles-add_new'?'active open':'' }}">
@@ -262,6 +267,11 @@
                 <li class="nav-item {{ $in_sidebar=='admin-settings-financial_profiles-list_all'?'active open':'' }}">
                     <a href="{{route('admin/settings_financial_profiles/list_all')}}" class="nav-link ">
                         <span class="title">All Financial Profiles</span>
+                    </a>
+                </li>
+               <li class="nav-item {{ $in_sidebar == 'admin-templates_email-list_all' ? 'active open': '' }}">
+                    <a href="{{ route('admin/templates_email/list_all') }}" class="nav-link ">
+                        <span class="title">Email templates</span>
                     </a>
                 </li>
                 @if ($in_sidebar=='admin-settings-financial_profiles-view_edit')

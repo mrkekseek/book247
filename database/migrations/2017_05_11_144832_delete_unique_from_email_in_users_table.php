@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AddSsoUserIdToUsersTable extends Migration
+class DeleteUniqueFromEmailInUsersTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,9 @@ class AddSsoUserIdToUsersTable extends Migration
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->integer('sso_user_id')->unsigned()->nullable()->after('id');
+            $table->dropUnique('users_email_unique');
         });
     }
-
     /**
      * Reverse the migrations.
      *
@@ -25,7 +24,7 @@ class AddSsoUserIdToUsersTable extends Migration
     public function down()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn(['sso_user_id']);
+            $table->unique('email', 'users_email_unique');
         });
     }
 }

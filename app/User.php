@@ -33,7 +33,10 @@ class User extends Authenticatable
         'email',
         'password',
         'country_id',
-        'status'
+        'status',
+        'password_api',
+        'sso_user_id',
+        'phone_number',
     ];
 
     public static $messages = [
@@ -98,8 +101,8 @@ class User extends Authenticatable
             default:break;
         }
     }
-
-    public function is_back_user() {
+    
+    public function is_back_user() {        
         if ( $this->hasRole('front-user') || $this->hasRole('front-member') || $this->status != "active") {
             return false;
         }
@@ -108,7 +111,7 @@ class User extends Authenticatable
         }
     }
 
-    public function is_front_user($all = true) {
+    public function is_front_user($all = true) {        
         if ( ($this->hasRole('front-user') || $this->hasRole('front-member')) && ($this->status == "active" || $all )) {
             return true;
         }

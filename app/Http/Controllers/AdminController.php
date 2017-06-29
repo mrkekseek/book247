@@ -35,6 +35,7 @@ class AdminController extends Controller
     public function index()
     {
         $user = Auth::user();
+        //dd($user);
         if (!$user || !$user->is_back_user()) {
             return redirect()->intended(route('admin/login'));
         }
@@ -232,7 +233,7 @@ class AdminController extends Controller
 
     public function authenticate(Request $request)
     {
-        if (Auth::attempt(['email' => $request->input('username'), 'password' => $request->input('password')])) {
+        if (Auth::attempt(['email' => $request->input('email'), 'password' => $request->input('password')])) {
             // Authentication passed...
             $user = Auth::user();
             if ($user->hasRole(['manager','employee'])){
@@ -248,8 +249,15 @@ class AdminController extends Controller
                 'username' => ['Username and/or password invalid.'],
                 'header' => ['Invalid Login Attempt'],
                 'message_body' => ['Username and/or password invalid.'],
-            ]);
-
+            ]);            
+            if (!empty(Auth::$error)){
+                $errors = new MessageBag([                
+                    'password' => ['Username and/or password invalid.'],
+                    'username' => ['Username and/or password invalid.'],
+                    'header' => ['Invalid Login Attempt'],
+                    'message_body' => [Auth::$error],
+                ]);
+            }
             return  redirect()->intended(route('admin/login'))
                     ->withInput()
                     ->withErrors($errors)
