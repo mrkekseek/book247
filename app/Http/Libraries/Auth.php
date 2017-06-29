@@ -55,7 +55,6 @@ class Auth
                 $sso_user = ApiAuth::accounts_get_by_username($user['username']);
                 $sso_user_id = $sso_user['data']->id;
                 $update_user = User::find($local_id);
-                $update_user->update_from_api = true;
                 $update_user->sso_user_id = $sso_user_id;
                 $update_user->save();
                 self::set_cookie_session($sso_user_id);
@@ -67,7 +66,6 @@ class Auth
                 if ($new_sso_id)
                 {
                     $update_user = User::find($local_id);
-                    $update_user->update_from_api = true;
                     $update_user->sso_user_id = $new_sso_id;
                     $update_user->save();
                     self::set_cookie_session($new_sso_id);
@@ -98,16 +96,18 @@ class Auth
     
     public static function set_cookie_session($sso_user_id)
     {   
-        $domain = self::get_domain();        
+        $domain = self::get_domain();
+        Session::flash('new_auth', TRUE);            
         Session::put('sso_user_id',$sso_user_id);            
-        Cookie::queue(Cookie::forever('sso_user_id', $sso_user_id, '/', $domain));            
+        Cookie::queue(Cookie::forever('sso_user_id', $sso_user_id, '/', $domain));
     }
 
     private static function set_session()
     {
         $cookie_sso = Cookie::get('sso_user_id');                
-        $session_sso = Session::get('sso_user_id'); 
-        if (!empty($cookie_sso) && !empty($session_sso) && $session_sso !== $cookie_sso)
+        $session_sso = Session::get('sso_user_id');
+        $new_auth = Session::get('new_auth');
+        if (!empty($cookie_sso) && !empty($session_sso) && $session_sso !== $cookie_sso && empty($new_auth))
         {            
             $session_sso = false;
         }
@@ -124,7 +124,6 @@ class Auth
                 if (!empty($exist))
                 {                    
                     $exist->sso_user_id = $api_user['data']->id;
-                    $exist->update_from_api = TRUE;
                     $exist->save();
                 }
                 Session::put('sso_user_id',$api_user['data']->id);
@@ -170,7 +169,6 @@ class Auth
         {   
             if ($user->isDirty())
             {
-                $user->update_from_api = true;
                 $user->save();                                            
             } 
             self::set_personal_details($user->id, $api_user);
