@@ -193,7 +193,7 @@
     <input type="hidden" name="email" value="">
 
     <input type="hidden" name="custom" value="{{ $redirect_url }}">
-    <input type="hidden" name="item_number" value="">
+    <input type="hidden" name="invoice" value="">
 
 </form>
 <!--====END MODAL====-->
@@ -214,7 +214,7 @@
             var $form = $('#main-form');
             var $paypal_form = $('#paypal-form');
             if (!inIframe()) {
-                $('body').text('accessed only in iframe!');
+//                $('body').text('accessed only in iframe!');
             }
             $('.form-choice').click(function(){
                 var $input = $form.find('#'+$(this).data('id'));
@@ -264,7 +264,7 @@
                             $paypal_form.find('input[name=amount]').val(response.data.invoices[0].price);
                             $paypal_form.find('input[name=quantity]').val(1);
                         }
-                        $paypal_form.find('input[name=item_number]').attr('value',response.data.invoices[0].invoice_id);
+                        $paypal_form.find('input[name=invoice]').attr('value',response.data.invoices[0].invoice_id);
                         $paypal_form.find('input[name=first_name]').attr('value',response.data.user.first_name);
                         $paypal_form.find('input[name=last_name]').attr('value',response.data.user.last_name);
                         $paypal_form.find('input[name=email]').attr('value',response.data.user.email);

@@ -21,6 +21,7 @@ use App\InvoiceItem;
 use Illuminate\Support\Facades\Input;
 use Validator;
 use Illuminate\Support\Facades\Auth as AuthLocal;
+use App\Http\Libraries\ApiAuth;
 
 /*
  * This controller is linked to the User Membership Plan assigned to him. The actions here are linked to an active membership plan assigned to a user or a plan that will be assigned
@@ -30,15 +31,17 @@ class MembershipController extends Base
 
     public function iframed($token ,$sso_id, $membership_id)
     {
-//        $permission = IframePermission::where([['user_id','=',$sso_id],['permission_token','=',$token]])->first();
-//        if(!isset($permission)) {
-//            return "You have no permission";
-//        } else {
-//            $permissions = IframePermission::where('user_id',$sso_id)->get();
-//            foreach ($permissions as $p) {
-//                $p->delete();
-//            }
-//        }
+        $permission = IframePermission::where([['user_id','=',$sso_id],['permission_token','=',$token]])->first();
+        if(!isset($permission)) {
+            return "You have no permission";
+        }
+        $permission->delete();
+
+        $synchronized = ApiAuth::synchronize($sso_id);
+        if($synchronized != true) {
+            return $synchronized;
+        }
+
         $redirect_url = Input::get('redirect_url',false);
         $membership = null;
         $membership_list = null;
