@@ -62,9 +62,16 @@ class AppSettings extends Controller
             'description'           => $vars['description'],
             'constrained'           => $vars['contained'] == "true" ? 1 : 0,
             'data_type'             => $vars['data_type'] ? $vars['data_type'] : "",
-            'min_value'             => $vars['min_value'],
-            'max_value'             => $vars['max_value']
+            'min_value'             => $vars['min_value'] * 1 ? $vars['min_value'] : 0,
+            'max_value'             => $vars['max_value'] * 1 ? $vars['max_value'] : 0
         ];
+
+        if ($fillable["constrained"])
+        {
+            $fillable["data_type"] = "";
+            $fillable["min_value"] = 0;
+            $fillable["max_value"] = 0;
+        }
 
         $settingValidator = Validator::make($fillable, Settings::rules('POST'), Settings::$validationMessages, Settings::$attributeNames);
         if ($settingValidator->fails())
@@ -224,8 +231,8 @@ class AppSettings extends Controller
             'description'           => $vars['description'],
             'constrained'           => $vars['contained'] == "true" ? 1 : 0,
             'data_type'             => $vars['data_type'],
-            'min_value'             => $vars['min_value'],
-            'max_value'             => $vars['max_value']
+            'min_value'             => $vars['min_value'] * 1 ? $vars['min_value'] : 0,
+            'max_value'             => $vars['min_value'] * 1 ? $vars['min_value'] : 0
         ];
 
         $settingValidator = Validator::make($fillable, Settings::rules('UPDATE'), Settings::$validationMessages, Settings::$attributeNames);

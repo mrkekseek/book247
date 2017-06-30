@@ -96,16 +96,18 @@ class Auth
     
     public static function set_cookie_session($sso_user_id)
     {   
-        $domain = self::get_domain();        
+        $domain = self::get_domain();
+        Session::flash('new_auth', TRUE);            
         Session::put('sso_user_id',$sso_user_id);            
-        Cookie::queue(Cookie::forever('sso_user_id', $sso_user_id, '/', $domain));            
+        Cookie::queue(Cookie::forever('sso_user_id', $sso_user_id, '/', $domain));
     }
 
     private static function set_session()
     {
         $cookie_sso = Cookie::get('sso_user_id');                
-        $session_sso = Session::get('sso_user_id'); 
-        if (!empty($cookie_sso) && !empty($session_sso) && $session_sso !== $cookie_sso)
+        $session_sso = Session::get('sso_user_id');
+        $new_auth = Session::get('new_auth');
+        if (!empty($cookie_sso) && !empty($session_sso) && $session_sso !== $cookie_sso && empty($new_auth))
         {            
             $session_sso = false;
         }
@@ -180,7 +182,7 @@ class Auth
     {
         $personalDetail = PersonalDetail::firstOrNew(['user_id'=>$local_user_id]);
         $personalDetail->personal_email = $api_user->email;
-        $personalDetail->mobile_number = $api_user->phoneNumber;
+        $personalDetail->mobile_number = ! empty($api_user->phoneNumber) ? $api_user->phoneNumber : '';
         $personalDetail->date_of_birth = date('Y-m-d', strtotime($api_user->birthday));
         $personalDetail->save();
     }
@@ -228,6 +230,10 @@ class Auth
                     case ('M'): $user['gender'] = 1; break;
                     case ('F'): $user['gender'] = 2; break;
                 }
+            }
+            else
+            {
+                $user['gender'] = 1;
             }
             if (isset($user['date_of_birth']))
             {
