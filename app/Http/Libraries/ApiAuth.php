@@ -355,45 +355,45 @@ class ApiAuth
             }
             return "User found locally! Cannot save this SSO!";
         } else {
-//            $country = Countries::where('iso_3166_2',$sso_user->countryCode)->first();
-//            $user = new User();
-//            $user->fill([
-//                'sso_user_id' => $sso_user->id,
-//                'first_name' => $sso_user->firstName,
-//                'middle_name' => $sso_user->middleName,
-//                'last_name' => $sso_user->lastName,
-//                'username' => $sso_user->username,
-//                'email' => $sso_user->email,
-//                'country_id' => isset($country) ? $country->id : config('constants.globalWebsite.defaultCountryId') ,
-//                'status' => 'active',
-//                'gender' => $sso_user->gender == 2 ? 'F' : 'M'
-//            ]);
-//            if (!$user->save()){
-//                return "User cannot be saved locally!";
-//            }
-//            $user = User::where('sso_user_id',$sso_id)->first();
-//            $user_info = new PersonalDetail();
-//            $i = 0;
-//            $number = "";
-//            while ($i<18) {
-//                $number .= rand(0,9);
-//                $i += 1;
-//            }
-//            $user_info->fill([
-//                'user_id' => $user->id,
-//                'personal_email' => $user->email,
-//                'mobile_number' => $sso_user->phoneNumber ? $sso_user->phoneNumber : $number,
-//                'date_of_birth' => $sso_user->birthday
-//            ]);
-//            if (!$user_info->save()){
-//                return "User info cannot be saved locally!";
-//            }
-
-            $status = Auth::create_local_user($sso_id);
-
-            if (!isset($status)){
+            $country = Countries::where('iso_3166_2',$sso_user->countryCode)->first();
+            $user = new User();
+            $user->fill([
+                'sso_user_id' => $sso_user->id,
+                'first_name' => $sso_user->firstName,
+                'middle_name' => $sso_user->middleName,
+                'last_name' => $sso_user->lastName,
+                'username' => $sso_user->username,
+                'email' => $sso_user->email,
+                'country_id' => isset($country) ? $country->id : config('constants.globalWebsite.defaultCountryId') ,
+                'status' => 'active',
+                'gender' => $sso_user->gender == 2 ? 'F' : 'M'
+            ]);
+            if (!$user->save()){
+                return "User cannot be saved locally!";
+            }
+            $user = User::where('sso_user_id',$sso_id)->first();
+            $user_info = new PersonalDetail();
+            $i = 0;
+            $number = "";
+            while ($i<18) {
+                $number .= rand(0,9);
+                $i += 1;
+            }
+            $user_info->fill([
+                'user_id' => $user->id,
+                'personal_email' => $user->email,
+                'mobile_number' => $sso_user->phoneNumber ? $sso_user->phoneNumber : $number,
+                'date_of_birth' => $sso_user->birthday
+            ]);
+            if (!$user_info->save()){
                 return "User info cannot be saved locally!";
             }
+
+//            $status = Auth::create_local_user($sso_id);
+//
+//            if (!isset($status)){
+//                return "User info cannot be saved locally!";
+//            }
             return true;
         }
 
