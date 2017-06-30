@@ -291,7 +291,7 @@
                                                         <option value="13">13 day</option>
                                                         <option value="14">14 day</option>
                                                     </select>
-                                                    <span class="help-block"> Provide your day</span>
+                                                    <span class="help-block"> Select your day</span>
                                                 </div>
                                                 <div class="col-md-4">
                                                     <button class="btn btn-default popovers blue" data-container="body" data-trigger="hover" data-placement="right" data-content="This will effect how many days ahead a user may reserve a resource (it possible to create a setting for this per membership)">
@@ -355,7 +355,7 @@
                                                         <option value="47">47 hours</option>
                                                         <option value="48">48 hours</option>
                                                     </select>
-                                                    <span class="help-block"> Provide your hours</span>
+                                                    <span class="help-block"> Select your hours</span>
                                                 </div>
                                                 <div class="col-md-4">
                                                     <button class="btn btn-default popovers blue" data-container="body" data-trigger="hover" data-placement="right" data-content='The user will be able to cancel "x" amount of hours before booking starting time'>
