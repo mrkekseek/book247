@@ -356,7 +356,22 @@ class AppSettings extends Controller
                 'errors'    => 'You need to be logged in to access this function'
             ];
         }
-
         return Settings::where("id", $request->input('settings_id'))->get()->first();
+    }
+
+    public static function get_setting_value_by_name($settingName) {
+
+        $setting = Settings::with('applicationSetting')->with('constraint')->where("system_internal_name", '=', $settingName)->first();
+        if ($setting){
+            if ($setting->constrained===0){
+                // free value variable
+            }
+            else{
+                // constrained value variable
+            }
+        }
+        else {
+            return false;
+        }
     }
 }
