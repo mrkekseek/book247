@@ -2949,13 +2949,19 @@ class FrontEndUserController extends Controller
 
                 $formattedList = Excel::load('storage/app/temp/'.$name.'.'.$extension)->get();
                 foreach ($formattedList->toArray() as $row) {
+
+                    $row['date_of_birth'] = isset($row['date_of_birth']) ? date("d.m.Y", strtotime($row['date_of_birth'])) : "";
+                    $row['start_date'] = isset($row['start_date']) ? date("d.m.Y", strtotime($row['start_date'])) : "";
+                    $row['last_playing_date'] = isset($row['last_playing_date']) ? date("d.m.Y", strtotime($row['last_playing_date'])) : "";
+
+                    
                     $singleRow = [];
                     $nr = 1;
                     $chars = 0;
 
                     foreach($row as $vals){
                         $singleRow[$nr++] = $vals;
-                        $chars+=trim(strlen($vals));
+                        $chars += trim(strlen($vals));
                     }
 
                     $allRows[] = $singleRow;
@@ -2970,6 +2976,7 @@ class FrontEndUserController extends Controller
                         break;
                     }
                 }
+
                 //xdebug_var_dump($allRows);
                 $selectMembership = $vars['membership_type'];
                 $selectLocation = $vars['sign_location'];
