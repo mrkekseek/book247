@@ -231,6 +231,10 @@ class Auth
                     case ('F'): $user['gender'] = 2; break;
                 }
             }
+            else
+            {
+                $user['gender'] = 1;
+            }
             if (isset($user['date_of_birth']))
             {
                 $user['date_of_birth'] = date('Y-m-d', strtotime($user['date_of_birth'])).'T00:00:00';
