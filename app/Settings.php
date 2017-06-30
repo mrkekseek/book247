@@ -93,10 +93,10 @@ class Settings extends Model
     }
 
     public function constraint(){
-        return $this->hasMany('App\allowedSettingValue', 'setting_id', 'id');
+        return $this->hasMany('App\allowedSettingValue','setting_id', 'id');
     }
 
-    public function applicationSetting(){
+    public function application_setting(){
         return $this->hasOne('App\applicationSetting', 'setting_id', 'id');
     }
 
