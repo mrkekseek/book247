@@ -478,7 +478,7 @@
 
         $.validator.addMethod("setting_type_check", function(value, element) {
            
-            if ( $("[name=setting_max_val]").val() && $("[name=setting_max_val]").val() && value == "")
+            if (($("[name=setting_min_val]").val() || $("[name=setting_max_val]").val()) && ! value)
             {
                 return false;
             }
@@ -488,7 +488,7 @@
 
         $.validator.addMethod("setting_type_edit_check", function(value, element) {
            console.log(value);
-            if ( $("#edit_setting_form [name=setting_min_val]").val() && $("#edit_setting_form [name=setting_max_val]").val() && !value )
+            if (($("#edit_setting_form [name=setting_min_val]").val() || $("#edit_setting_form [name=setting_max_val]").val()) && !value )
             {
                 return false;
             }

@@ -98,3 +98,7 @@ textarea[name=content] {
 		text-align: center;
 	}
 }
+
+.table-manage tr td:last-child {
+	width: 30%;
+}

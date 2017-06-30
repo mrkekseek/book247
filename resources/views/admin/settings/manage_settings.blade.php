@@ -53,7 +53,7 @@
                             </div>
                             <div class="portlet-body">
                                 <div class="table-scrollable">
-                                    <table class="table table-striped table-hover">
+                                    <table class="table table-striped table-hover table-manage">
                                         <thead>
                                             <tr>
                                                 <th> # </th>
