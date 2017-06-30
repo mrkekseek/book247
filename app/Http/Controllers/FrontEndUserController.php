@@ -140,7 +140,7 @@ class FrontEndUserController extends Controller
             'subtitle'  => 'list all',
             'table_head_text1' => 'Backend User List'
         ];
-        $sidebar_link= 'admin-frontend-all_members';
+        $sidebar_link = 'admin-frontend-all_members';
 
         $role = Role::where('name','=','front-user')->get()->first();
         //xdebug_var_dump($all_roles);
