@@ -143,7 +143,7 @@
                                                                 <input type="text" name="personalEmail" id="personalEmail" placeholder="Personal Email Address" class="form-control" value="{{@$personal->personal_email}}" /> </div>
                                                             <div class="form-group">
                                                                 <label class="control-label">Mobile Phone Number</label>
-                                                                <input type="text" name="personalPhone" id="personalPhone" placeholder="+1 234 567 8910 (6284)" class="form-control" value="{{@$personal->mobile_number}}" /> </div>
+                                                                <input type="text" name="personalPhone" id="personalPhone" placeholder="123456789" class="form-control" value="{{@$personal->mobile_number}}" /> </div>
                                                             <div class="form-group">
                                                                 <label class="control-label">Preferred Location</label>
                                                                 <select name="preferredLocation" id="preferredLocation" class="form-control">
