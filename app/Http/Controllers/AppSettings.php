@@ -66,6 +66,13 @@ class AppSettings extends Controller
             'max_value'             => $vars['max_value'] * 1 ? $vars['max_value'] : 0
         ];
 
+        if ($fillable["constrained"])
+        {
+            $fillable["data_type"] = "";
+            $fillable["min_value"] = 0;
+            $fillable["max_value"] = 0;
+        }
+
         $settingValidator = Validator::make($fillable, Settings::rules('POST'), Settings::$validationMessages, Settings::$attributeNames);
         if ($settingValidator->fails())
         {

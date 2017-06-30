@@ -2652,7 +2652,6 @@ class FrontEndUserController extends Controller
                 );
             }
             else{
-
                 $dataForApi = $credentials + $personalData;
                 $api_user = Auth::create_api_user($dataForApi, $password_api);
                 if ( ! $api_user)
