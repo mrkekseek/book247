@@ -345,7 +345,12 @@
 
             $(".download").click(function(){
                 $(".bordered").find("[hidden]").hide();
-                html2canvas($('.bordered')[0], {
+                var doc = new jsPDF();
+                doc.addHTML($('.bordered').first(), function(){
+                    $(".bordered").find("[hidden]").show();
+                    doc.save("test.pdf");
+                })
+                /*html2canvas($('.bordered')[0], {
                     onrendered: function(canvas) {
                         $(".bordered").find("[hidden]").show();
 
@@ -356,7 +361,8 @@
                         doc.save('export.pdf');
 
                     }
-                });
+                });*/
+
             });
             
         });
