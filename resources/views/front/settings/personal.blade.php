@@ -13,6 +13,7 @@
     <link href="{{ asset('assets/global/css/plugins.min.css') }}" rel="stylesheet" type="text/css" />
 
     <link href="{{ asset('assets/pages/css/profile.min.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/layouts/layout/css/custom.css') }}" rel="stylesheet" type="text/css" />
 @endsection
 
 @section('themeLayoutStyle')
@@ -37,8 +38,8 @@
                                 <!-- PORTLET MAIN -->
                                 <div class="portlet light profile-sidebar-portlet ">
                                     <!-- SIDEBAR USERPIC -->
-                                    <div class="profile-userpic">
-                                        <img src="{{ $avatar }}" class="img-responsive" alt="" />
+                                    <div class="profile-userpic" style="background-image: url('{{ $avatar }}'); ">
+                                       <!-- <img src="{{ $avatar }}" class="img-responsive" alt="" /> -->
                                     </div>
                                     <!-- END SIDEBAR USERPIC -->
                                     <!-- SIDEBAR USER TITLE -->
@@ -143,7 +144,7 @@
                                                                 <input type="text" name="personalEmail" id="personalEmail" placeholder="Personal Email Address" class="form-control" value="{{@$personal->personal_email}}" /> </div>
                                                             <div class="form-group">
                                                                 <label class="control-label">Mobile Phone Number</label>
-                                                                <input type="text" name="personalPhone" id="personalPhone" placeholder="+1 234 567 8910 (6284)" class="form-control" value="{{@$personal->mobile_number}}" /> </div>
+                                                                <input type="text" name="personalPhone" id="personalPhone" placeholder="123456789" class="form-control" value="{{@$personal->mobile_number}}" /> </div>
                                                             <div class="form-group">
                                                                 <label class="control-label">Preferred Location</label>
                                                                 <select name="preferredLocation" id="preferredLocation" class="form-control">

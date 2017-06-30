@@ -58,7 +58,6 @@
                                             <tr>
                                                 <th> # </th>
                                                 <th> Name </th>
-                                                <th> Settings type </th>
                                                 <th> Description </th>
                                                 <th>  </th>
                                             </tr>
@@ -68,7 +67,6 @@
                                                 <tr>
                                                     <td> {{ $s->id }} </td>
                                                     <td> {{ $s->name }} </td>
-                                                    <td> {{ $s->data_type ? $data_types[$s->data_type] : "" }} </td>
                                                     <td> {{ $s->description }}</td>
                                                     
                                                     @if ($s->constrained)
