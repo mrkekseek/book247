@@ -34,9 +34,7 @@ class User extends Authenticatable
         'password',
         'country_id',
         'status',
-        'password_api',
         'sso_user_id',
-        'phone_number',
     ];
 
     public static $messages = [
