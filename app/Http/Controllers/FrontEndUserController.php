@@ -2652,7 +2652,6 @@ class FrontEndUserController extends Controller
                 );
             }
             else{
-
                 $dataForApi = $credentials + $personalData;
                 $api_user = Auth::create_api_user($dataForApi, $password_api);
                 if ( ! $api_user)
@@ -3758,7 +3757,7 @@ class FrontEndUserController extends Controller
             $personalAddress = new Address();
         }*/
 
-        $countries = Countries::orderBy('name')->get();
+        $countries = Countries::orderBy('citizenship', 'asc')->get();
         //$userCountry = Countries::find($user->country_id);
 
         $avatar = $user->get_avatar_image();
