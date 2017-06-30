@@ -98,3 +98,8 @@ textarea[name=content] {
 		text-align: center;
 	}
 }
+
+.btn-info-paragraphe.dropdown-menu {
+    padding: 10px;
+    min-width: 290px;
+}
