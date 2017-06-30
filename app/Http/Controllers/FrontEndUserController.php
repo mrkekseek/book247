@@ -2789,7 +2789,7 @@ class FrontEndUserController extends Controller
 
         $credentials = $client_vars;
         $text_psw    = $client_vars['password'];
-        $credentials['password_api'] = $credentials['password'];
+        $password_api = $credentials['password'];
         $credentials['password'] = Hash::make($credentials['password']);
 
         try {            
@@ -2819,14 +2819,18 @@ class FrontEndUserController extends Controller
                 ];
             }
             else{
-                $user = User::create($credentials);
-                if (!empty (Auth::$error))
+                $dataForApi = $credentials + $personalData;
+                $api_user = Auth::create_api_user($dataForApi, $password_api);
+                if ( ! $api_user)
                 {
                     return [
-                        'success'   => false,                    
+                        'success'   => false,
+                        'title'     => 'Api error',
                         'errors'    => ['Api erorr' => [0 => Auth::$error]]
                     ];
                 }
+                $credentials['sso_user_id'] = $api_user;
+                $user = User::create($credentials);
                 $user->attachRole($client_vars['user_type']);
                 $personalData['user_id'] = $user->id;
                 $personalDetails = PersonalDetail::firstOrNew(['user_id'=>$user->id]);
