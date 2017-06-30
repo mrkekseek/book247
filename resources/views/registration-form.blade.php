@@ -379,7 +379,7 @@
                                 </div>
                                 <div class="form-actions">
                                     <div class="row">
-                                        <div class="col-md-offset-4 col-md-8">
+                                        <div class="col-md-12 text-center">
                                             <a href="javascript:;" class="btn default button-previous">
                                                 <i class="fa fa-angle-left"></i> Back </a>
                                             <a href="javascript:;" class="btn btn-outline green button-next"> Continue
@@ -400,7 +400,7 @@
     </div>
 <!-- END REGISTRATION -->
 <!-- BEGIN COPYRIGHT -->
-<div class="copyright"> 2016 © BookingSystem by SQF. Squash Fitness! </div>
+<div class="copyright"> 2017 © BookingSystem by SQF. Squash Fitness! </div>
 <!-- END COPYRIGHT -->
 <!--[if lt IE 9]>
 <script src="{{ asset('assets/global/plugins/respond.min.js') }}"></script>
