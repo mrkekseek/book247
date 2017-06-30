@@ -251,9 +251,12 @@
                                                     <span class="help-block"> Select "Yes" or "No"</span>
                                                 </div>
                                                 <div class="col-md-4">
-                                                    <button class="btn btn-default popovers blue" data-container="body" data-trigger="hover" data-placement="right" data-content="This question regards online payment via Paypal or other online payment solutions. By saying 'No', you can still allow members to pay with 'store credit' (pre paid voucher)">
-                                                        <i class="fa fa-info"></i>
-                                                    </button>
+                                                    <div class="btn-group">
+                                                        <a class="btn blue dropdown-toggle" data-toggle="dropdown" href="javascript:;" aria-expanded="false">  <i class="fa fa-info"></i></a>
+                                                        <p class="dropdown-menu btn-info-paragraphe">
+                                                            This question regards online payment via Paypal or other online payment solutions. By saying 'No', you can still allow members to pay with 'store credit' (pre paid voucher).
+                                                        </p>
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div class="form-group">
@@ -291,12 +294,15 @@
                                                         <option value="13">13 day</option>
                                                         <option value="14">14 day</option>
                                                     </select>
-                                                    <span class="help-block"> Select your day</span>
+                                                    <span class="help-block"> Select a day</span>
                                                 </div>
                                                 <div class="col-md-4">
-                                                    <button class="btn btn-default popovers blue" data-container="body" data-trigger="hover" data-placement="right" data-content="This will effect how many days ahead a user may reserve a resource (it possible to create a setting for this per membership)">
-                                                        <i class="fa fa-info"></i>
-                                                    </button>
+                                                    <div class="btn-group">
+                                                        <a class="btn blue dropdown-toggle" data-toggle="dropdown" href="javascript:;" aria-expanded="false">  <i class="fa fa-info"></i></a>
+                                                        <p class="dropdown-menu btn-info-paragraphe">
+                                                            This will effect how many days ahead a user may reserve a resource (it possible to create a setting for this per membership)
+                                                        </p>
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div class="form-group">
@@ -355,12 +361,15 @@
                                                         <option value="47">47 hours</option>
                                                         <option value="48">48 hours</option>
                                                     </select>
-                                                    <span class="help-block"> Select your hours</span>
+                                                    <span class="help-block"> Select an hours</span>
                                                 </div>
                                                 <div class="col-md-4">
-                                                    <button class="btn btn-default popovers blue" data-container="body" data-trigger="hover" data-placement="right" data-content='The user will be able to cancel "x" amount of hours before booking starting time'>
-                                                        <i class="fa fa-info"></i>
-                                                    </button>
+                                                     <div class="btn-group">
+                                                        <a class="btn blue dropdown-toggle" data-toggle="dropdown" href="javascript:;" aria-expanded="false">  <i class="fa fa-info"></i></a>
+                                                        <p class="dropdown-menu btn-info-paragraphe">
+                                                            The user will be able to cancel "x" amount of hours before booking starting time
+                                                        </p>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
