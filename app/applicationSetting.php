@@ -51,4 +51,8 @@ class applicationSetting extends Model
             default:break;
         }
     }
+
+    public function setting(){
+        return $this->BelongsTo('App\Settings', 'id', 'setting_id');
+    }
 }

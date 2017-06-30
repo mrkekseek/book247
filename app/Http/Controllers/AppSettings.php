@@ -202,6 +202,9 @@ class AppSettings extends Controller
             $settings[] = $row;
         }
 
+        //$a = $this->get_setting_value_by_name('globalWebsite_auto_show_status_change');
+        //xdebug_var_dump($a); exit;
+
         return view('admin/settings/manage_settings', [
             'breadcrumbs' => $breadcrumbs,
             'text_parts'  => $text_parts,
@@ -368,13 +371,24 @@ class AppSettings extends Controller
 
     public static function get_setting_value_by_name($settingName) {
 
-        $setting = Settings::with('applicationSetting')->with('constraint')->where("system_internal_name", '=', $settingName)->first();
-        if ($setting){
+        $setting = Settings::with('constraint')->with('application_setting')->where("system_internal_name", '=', $settingName)->first();
+
+        //echo $setting->id;
+        //xdebug_var_dump($setting->application_setting);
+        //xdebug_var_dump($setting->constraint);
+        if ($setting->constraint){
             if ($setting->constrained===0){
                 // free value variable
+                if ($setting->application_setting->unconstrained_value){
+                    return $setting->application_setting->unconstrained_value;
+                }
+                else {
+                    return false;
+                }
             }
             else{
                 // constrained value variable
+                return $setting->application_setting->caption;
             }
         }
         else {
