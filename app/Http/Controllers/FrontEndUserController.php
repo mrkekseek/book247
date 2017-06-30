@@ -140,7 +140,7 @@ class FrontEndUserController extends Controller
             'subtitle'  => 'list all',
             'table_head_text1' => 'Backend User List'
         ];
-        $sidebar_link= 'admin-frontend-all_members';
+        $sidebar_link = 'admin-frontend-all_members';
 
         $role = Role::where('name','=','front-user')->get()->first();
         //xdebug_var_dump($all_roles);
@@ -2789,7 +2789,7 @@ class FrontEndUserController extends Controller
 
         $credentials = $client_vars;
         $text_psw    = $client_vars['password'];
-        $credentials['password_api'] = $credentials['password'];
+        $password_api = $credentials['password'];
         $credentials['password'] = Hash::make($credentials['password']);
 
         try {            
@@ -2819,14 +2819,18 @@ class FrontEndUserController extends Controller
                 ];
             }
             else{
-                $user = User::create($credentials);
-                if (!empty (Auth::$error))
+                $dataForApi = $credentials + $personalData;
+                $api_user = Auth::create_api_user($dataForApi, $password_api);
+                if ( ! $api_user)
                 {
                     return [
-                        'success'   => false,                    
+                        'success'   => false,
+                        'title'     => 'Api error',
                         'errors'    => ['Api erorr' => [0 => Auth::$error]]
                     ];
                 }
+                $credentials['sso_user_id'] = $api_user;
+                $user = User::create($credentials);
                 $user->attachRole($client_vars['user_type']);
                 $personalData['user_id'] = $user->id;
                 $personalDetails = PersonalDetail::firstOrNew(['user_id'=>$user->id]);
@@ -2948,13 +2952,19 @@ class FrontEndUserController extends Controller
 
                 $formattedList = Excel::load('storage/app/temp/'.$name.'.'.$extension)->get();
                 foreach ($formattedList->toArray() as $row) {
+
+                    $row['date_of_birth'] = isset($row['date_of_birth']) ? date("d.m.Y", strtotime($row['date_of_birth'])) : "";
+                    $row['start_date'] = isset($row['start_date']) ? date("d.m.Y", strtotime($row['start_date'])) : "";
+                    $row['last_playing_date'] = isset($row['last_playing_date']) ? date("d.m.Y", strtotime($row['last_playing_date'])) : "";
+
+                    
                     $singleRow = [];
                     $nr = 1;
                     $chars = 0;
 
                     foreach($row as $vals){
                         $singleRow[$nr++] = $vals;
-                        $chars+=trim(strlen($vals));
+                        $chars += trim(strlen($vals));
                     }
 
                     $allRows[] = $singleRow;
@@ -2969,6 +2979,7 @@ class FrontEndUserController extends Controller
                         break;
                     }
                 }
+
                 //xdebug_var_dump($allRows);
                 $selectMembership = $vars['membership_type'];
                 $selectLocation = $vars['sign_location'];
@@ -3750,7 +3761,7 @@ class FrontEndUserController extends Controller
             $personalAddress = new Address();
         }*/
 
-        $countries = Countries::orderBy('name')->get();
+        $countries = Countries::orderBy('citizenship', 'asc')->get();
         //$userCountry = Countries::find($user->country_id);
 
         $avatar = $user->get_avatar_image();

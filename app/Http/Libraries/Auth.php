@@ -182,7 +182,10 @@ class Auth
     {
         $personalDetail = PersonalDetail::firstOrNew(['user_id'=>$local_user_id]);
         $personalDetail->personal_email = $api_user->email;
-        $personalDetail->mobile_number = ! empty($api_user->phoneNumber) ? $api_user->phoneNumber : '';
+        if (empty($api_user->phoneNumber) && empty($personalDetail->mobile_number) )
+        {
+            $personalDetail->mobile_number = rand(100000, 999999).rand(100000, 999999).rand(100000, 999999);
+        }
         $personalDetail->date_of_birth = date('Y-m-d', strtotime($api_user->birthday));
         $personalDetail->save();
     }

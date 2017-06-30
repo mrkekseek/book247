@@ -310,8 +310,10 @@
                 <!-- END INBOX DROPDOWN -->
                 <!-- BEGIN USER LOGIN DROPDOWN -->
                 <li class="dropdown dropdown-user dropdown-dark">
-                    <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true">
-                        <img alt="" class="img-circle" src="{{ Auth::user()->get_avatar_image(true) }}">
+                    <a href="javascript:;" class="dropdown-toggle " data-toggle="dropdown" data-hover="dropdown" data-close-others="true" >
+                        
+                        <div class="menu-user-avatar pull-left" style="background-image: url('{{ Auth::user()->get_avatar_image(true) }}')"></div>
+
                         <span class="username username-hide-mobile">{{Auth::user()->first_name.' '.Auth::user()->middle_name.' '.Auth::user()->last_name}}</span>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-default">
