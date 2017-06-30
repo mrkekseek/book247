@@ -13,6 +13,7 @@
     <link href="{{ asset('assets/global/css/plugins.min.css') }}" rel="stylesheet" type="text/css" />
 
     <link href="{{ asset('assets/pages/css/profile.min.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/layouts/layout/css/custom.css') }}" rel="stylesheet" type="text/css" />
 @endsection
 
 @section('themeLayoutStyle')
@@ -37,8 +38,8 @@
                                 <!-- PORTLET MAIN -->
                                 <div class="portlet light profile-sidebar-portlet ">
                                     <!-- SIDEBAR USERPIC -->
-                                    <div class="profile-userpic">
-                                        <img src="{{ $avatar }}" class="img-responsive" alt="" />
+                                    <div class="profile-userpic" style="background-image: url('{{ $avatar }}'); ">
+                                       <!-- <img src="{{ $avatar }}" class="img-responsive" alt="" /> -->
                                     </div>
                                     <!-- END SIDEBAR USERPIC -->
                                     <!-- SIDEBAR USER TITLE -->

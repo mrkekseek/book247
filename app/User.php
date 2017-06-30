@@ -375,10 +375,12 @@ class User extends Authenticatable
 
     public function get_avatar_image($is_link = false){
         $avatar = $this->avatar;
-        if (!$avatar) {
+       
+        if ( ! $avatar) {
             $avatar = new UserAvatars();
+            
             $avatar->file_location = 'employees/default/avatars/';
-            $avatar->file_name = 'default.jpg';
+            $avatar->file_name = 'gender_' . strtolower($this->gender) . '.png';   
         }
 
         if ($this->is_back_user()){
@@ -394,9 +396,9 @@ class User extends Authenticatable
             }
         }
 
-        if (!isset($avatarContent) || !isset($avatarType)){
-            $avatarContent      = Storage::disk('local')->get('members/default/avatars/default.jpg');
-            $avatarType         = Storage::disk('local')->mimeType('members/default/avatars/default.jpg');
+        if ( ! isset($avatarContent) || ! isset($avatarType)){
+            $avatarContent      = Storage::disk('local')->get('members/default/avatars/gender_' . strtolower($this->gender) . '.png');
+            $avatarType         = Storage::disk('local')->mimeType('members/default/avatars/gender_' . strtolower($this->gender) . '.png');
         }
 
         if ($is_link==true){
