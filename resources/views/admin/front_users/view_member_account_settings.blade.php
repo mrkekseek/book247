@@ -361,8 +361,8 @@
                                                                 <div class="note note-info font-grey-mint membership_options" style="margin:0 0 10px; padding:5px 20px 10px 10px;">
                                                                     <p> <b>Price</b> / Discount </p>
                                                                     <h4 class="block" style="margin-bottom:0px; font-size:28px;">
-                                                                        <b>{{ $plan_details['price'].' '.Config::get('constants.finance.currency') }} </b> /
-                                                                        {{ $plan_details['discount'].' '.Config::get('constants.finance.currency') }}
+                                                                        <b>{{ $plan_details['price'].' '.\App\Http\Controllers\AppSettings::get_setting_value_by_name('finance_currency') }} </b> /
+                                                                        {{ $plan_details['discount'].' '.\App\Http\Controllers\AppSettings::get_setting_value_by_name('finance_currency') }}
                                                                     </h4>
                                                                 </div>
                                                             </div>
@@ -499,7 +499,7 @@
                                                                         </td>
                                                                         <td> {{ $singlePlanned['object']['issued_date'] }} - {{ $singlePlanned['object']['status'] }} </td>
                                                                         <td> {{ $singlePlanned['object']['last_active_date'] }} </td>
-                                                                        <td class="hidden-xs"> {{ $singlePlanned['object']['price'].' '.Config::get('constants.finance.currency') }} </td>
+                                                                        <td class="hidden-xs"> {{ $singlePlanned['object']['price'].' '.\App\Http\Controllers\AppSettings::get_setting_value_by_name('finance_currency') }} </td>
                                                                         <td>
                                                                             @if ($singlePlanned['object']['invoiceStatus']!='')
                                                                                 <span class="label label-sm label-success"> {{$singlePlanned['object']['invoiceStatus']}} </span>

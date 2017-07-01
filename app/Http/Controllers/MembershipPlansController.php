@@ -19,6 +19,7 @@ use Validator;
 use App\ShopLocations;
 use App\CashTerminal;
 use Illuminate\Support\Facades\Config;
+use App\Http\Controllers\AppSettings;
 
 /*
  * This controller is linked to the Membership Plans and the management of the membership plans
@@ -714,10 +715,10 @@ class MembershipPlansController extends Controller
             $details = [
                 'success'   => true,
                 'name'      => $the_plan->name,
-                'price'     => $the_plan->price[0]->price.' '.Config::get('constants.finance.currency'),
+                'price'     => $the_plan->price[0]->price.' '.AppSettings::get_setting_value_by_name('finance_currency'),
                 'invoice_time'  => $the_plan->plan_period,
                 'one_time_fee_name' => $the_plan->administration_fee_name,
-                'one_time_fee_value'=> $the_plan->administration_fee_amount.' '.Config::get('constants.finance.currency'),
+                'one_time_fee_value'=> $the_plan->administration_fee_amount.' '.AppSettings::get_setting_value_by_name('finance_currency'),
                 'description'   => $the_plan->short_description,
                 'plan_order_id' => $the_plan->id,
                 'sign_out_period'   => $the_plan->sign_out_period

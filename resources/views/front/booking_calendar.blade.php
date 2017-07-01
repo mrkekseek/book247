@@ -672,7 +672,7 @@
                             var cash_bookings = '<h5>Paid bookings : <span id="membership_bookings_nr"> None </span></h5>';
                         }
                         else if (data.cash_nr > 0 && data.recurring_nr == 0){
-                            var cash_bookings = '<h5>Paid bookings : <span id="membership_bookings_nr">' + data.cash_nr + '</span> - <span>' + data.cash_amount + '{{ Config::get('constants.finance.currency') }}</span> in total</h5>';
+                            var cash_bookings = '<h5>Paid bookings : <span id="membership_bookings_nr">' + data.cash_nr + '</span> - <span>' + data.cash_amount + '{{ \App\Http\Controllers\AppSettings::get_setting_value_by_name('finance_currency') }}</span> in total</h5>';
                         }
                         else{
                             var cash_bookings = '';
@@ -680,7 +680,7 @@
 
                         var recurring = '';
                         if (data.recurring_nr > 0){
-                            recurring = '<h5>Recurring bookings : <span id="membership_bookings_nr">' + data.recurring_nr + '</span> - <span>' + data.recurring_cash + '{{ Config::get('constants.finance.currency') }}</span> in total</h5>';
+                            recurring = '<h5>Recurring bookings : <span id="membership_bookings_nr">' + data.recurring_nr + '</span> - <span>' + data.recurring_cash + '{{ \App\Http\Controllers\AppSettings::get_setting_value_by_name('finance_currency') }}</span> in total</h5>';
                         }
 
                         $('.booking_summary_price_membership').html(membership_bookings + ' ' + cash_bookings + ' ' + recurring);

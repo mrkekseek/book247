@@ -89,7 +89,7 @@
                                             <div class="col-md-4">
                                                 <div class="note note-info font-grey-mint" style="min-height:105px; margin:0 0 10px; padding:5px 20px 10px 10px;">
                                                     <p> Price </p>
-                                                    <h4 class="block" style="margin-bottom:0px; font-size:32px;"> <b>{{ $plan_details['price'].' '.Config::get('constants.finance.currency') }} </b> </h4>
+                                                    <h4 class="block" style="margin-bottom:0px; font-size:32px;"> <b>{{ $plan_details['price'].' '.\App\Http\Controllers\AppSettings::get_setting_value_by_name('finance_currency') }} </b> </h4>
                                                 </div>
                                             </div>
                                             @if ($plan_details['discount']!=0)

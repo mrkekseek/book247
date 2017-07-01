@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\URL;
 use Maatwebsite\Excel\Facades\Excel;
 use Snowfire\Beautymail\Beautymail;
 use Illuminate\Support\Facades\Config;
+use App\Http\Controllers\AppSettings;
 
 class BookingDailyPlannerEmail extends Command
 {
@@ -47,7 +48,7 @@ class BookingDailyPlannerEmail extends Command
      */
     public function handle()
     {
-        URL::forceRootUrl( Config::get('constants.globalWebsite.baseUrl') );
+        URL::forceRootUrl( AppSettings::get_setting_value_by_name('globalWebsite_baseUrl') );
 
         $today = Carbon::today()->format('Y-m-d');
         $email_body = '<strong>Booking summary for '.Carbon::today()->format('d-m-Y').' generated at '.Carbon::now()->format('H:i').'</strong> <br /><br />';
@@ -148,9 +149,9 @@ class BookingDailyPlannerEmail extends Command
                     ['body_header_title'=>$top_title_message, 'body_message' => $main_message],
                     function($message) use ($single, $listOfBookings) {
                         $message
-                            ->from(Config::get('constants.globalWebsite.system_email'))
+                            ->from(AppSettings::get_setting_value_by_name('globalWebsite_system_email'))
                             ->to($single->email, $single->first_name.' '.$single->middle_name.' '.$single->last_name)
-                            ->subject(Config::get('constants.globalWebsite.email_company_name_in_title').' -  morning bookings summary for all locations - '.Carbon::today()->format('d-m-Y'));
+                            ->subject(AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title').' -  morning bookings summary for all locations - '.Carbon::today()->format('d-m-Y'));
                         foreach($listOfBookings as $val){
                             $message->attach($val['location'].'.xls', ['as'=>$val['name'].'.xls', 'mime' => 'application/vnd.ms-excel']);
                         }

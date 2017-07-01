@@ -10,6 +10,7 @@ use App\ShopResource;
 use App\VatRate;
 use Carbon\Carbon;
 use Auth;
+use App\Http\Controllers\AppSettings;
 
 class BookingInvoice extends Model
 {
@@ -146,7 +147,7 @@ class BookingInvoice extends Model
             'booking_invoice_item_id'   => $bookingItemID,
             'user_id'                   => $userId,
             'transaction_amount'        => $totalAmount,
-            'transaction_currency'      => Config::get('constants.finance.currency'),
+            'transaction_currency'      => AppSettings::get_setting_value_by_name('finance_currency'),
             'transaction_type'          => $method,
             'transaction_date'          => Carbon::now(),
             'other_details'             => $details,

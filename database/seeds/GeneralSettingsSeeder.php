@@ -20,6 +20,9 @@ class GeneralSettingsSeeder extends Seeder
         DB::table('allowed_setting_values')->delete();
         DB::unprepared('ALTER TABLE allowed_setting_values AUTO_INCREMENT=1;');
 
+        DB::table('application_settings')->delete();
+        DB::unprepared('ALTER TABLE application_settings AUTO_INCREMENT=1;');
+
         $settingsInsertValues = [
             [1, 'Global Website Url', 'globalWebsite_url', 'This is the URL of the website/domain', 0, 'string', 0, 0],
             [2, 'Global Website Country', 'globalWebsite_defaultCountryId', 'This is the default/base country for the account', 0, 'string', 0, 0],
@@ -76,5 +79,23 @@ class GeneralSettingsSeeder extends Seeder
                 'updated_at'=> Carbon::now()->format('Y-m-d H:i:s')
             ]);
         }
+
+        // we set up the domain for the application and some other default base settings
+        $query = "INSERT INTO application_settings (id, setting_id, allowed_setting_value_id, unconstrained_value, updated_by_id) VALUES (?,?,?,?,?)";
+
+        DB::insert($query, [1,   1, NULL, env('URL'), 1]);
+        DB::insert($query, [3,   2, NULL, '578', 1]);
+        DB::insert($query, [2,   3, NULL, env('MY_SERVER_URL'), 1]);
+        DB::insert($query, [4,   4, NULL, 'booking_agent@book247.net', 1]);
+        DB::insert($query, [8,   6, NULL, 'SQF', 1]);
+        DB::insert($query, [7,   7, NULL, 'NOK', 1]);
+        DB::insert($query, [6,   8, NULL, '6',  1]);
+        DB::insert($query, [9,   9, NULL, '6',  1]);
+        DB::insert($query, [10, 10, NULL, '1',  1]);
+
+        DB::unprepared('ALTER TABLE settings AUTO_INCREMENT=10000;');
+        DB::unprepared('ALTER TABLE allowed_setting_values AUTO_INCREMENT=10000;');
+        DB::unprepared('ALTER TABLE application_settings AUTO_INCREMENT=10000;');
+
     }
 }

@@ -54,6 +54,7 @@ use DB;
 use Illuminate\Support\Str;
 use Snowfire\Beautymail\Beautymail;
 use Illuminate\Auth\Passwords\TokenRepositoryInterface;
+use App\Http\Controllers\AppSettings;
 
 class FrontEndUserController extends Controller
 {
@@ -2396,9 +2397,9 @@ class FrontEndUserController extends Controller
                             ['body_header_title'=>$top_title_message, 'body_message' => $main_message],
                             function($message) use ($friend) {
                                 $message
-                                    ->from(Config::get('constants.globalWebsite.system_email'))
+                                    ->from(AppSettings::get_setting_value_by_name('globalWebsite_system_email'))
                                     ->to($friend->email, $friend->first_name.' '.$friend->middle_name.' '.$friend->last_name)
-                                    ->subject(Config::get('constants.globalWebsite.email_company_name_in_title').' - You got a new friend request that needs approval');
+                                    ->subject(AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title').' - You got a new friend request that needs approval');
                             });
                     }
                     else{
@@ -2412,9 +2413,9 @@ class FrontEndUserController extends Controller
                             ['body_header_title'=>$top_title_message, 'body_message' => $main_message],
                             function($message) use ($friend) {
                                 $message
-                                    ->from(Config::get('constants.globalWebsite.system_email'))
+                                    ->from(AppSettings::get_setting_value_by_name('globalWebsite_system_email'))
                                     ->to($friend->email, $friend->first_name.' '.$friend->middle_name.' '.$friend->last_name)
-                                    ->subject(Config::get('constants.globalWebsite.email_company_name_in_title').' - You have a new friend');
+                                    ->subject(AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title').' - You have a new friend');
                             });
                     }
 
@@ -2581,7 +2582,7 @@ class FrontEndUserController extends Controller
         }
 
         if (!isset($vars['country_id'])){
-            $vars['country_id'] = Config::get('constants.globalWebsite.defaultCountryId');            
+            $vars['country_id'] = AppSettings::get_setting_value_by_name('globalWebsite_defaultCountryId');
         }
 
         if (!isset($vars['dob']) || $vars['dob']==''){
@@ -2684,9 +2685,9 @@ class FrontEndUserController extends Controller
                 ['user'=>$user, 'body_header_title'=>$top_title_message, 'body_message' => $main_message],
                 function($message) use ($user){
                     $message
-                        ->from(Config::get('constants.globalWebsite.system_email'))
+                        ->from(AppSettings::get_setting_value_by_name('globalWebsite_system_email'))
                         ->to($user->email, $user->first_name.' '.$user->middle_name.' '.$user->last_name)
-                        ->subject(Config::get('constants.globalWebsite.email_company_name_in_title').' - Online Booking System - You are registered!');
+                        ->subject(AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title').' - Online Booking System - You are registered!');
                 });
 
             $addressFill = [
@@ -3119,7 +3120,7 @@ class FrontEndUserController extends Controller
                     //'last_name'         => ucfirst(strtolower(trim(@$vars['col_'.$i][$lname]))),
                     'last_name'         => mb_convert_case(trim(@$vars['col_'.$i][$lname]), MB_CASE_TITLE, mb_detect_encoding(@$vars['col_'.$i][$lname])),
                     'email'             => mb_strtolower(trim(@$vars['col_'.$i][$email]), mb_detect_encoding(@$vars['col_'.$i][$email])),
-                    'country_id'        => Config::get('constants.globalWebsite.defaultCountryId'),
+                    'country_id'        => AppSettings::get_setting_value_by_name('globalWebsite_defaultCountryId'),
                     'phone_number'      => trim(@$vars['col_'.$i][$phone]),
                     'password'          => strlen(@$vars['col_'.$i][$passwd])>7?@$vars['col_'.$i][$passwd]:trim(@$vars['col_'.$i][$phone]),
                     'membership_plan'   => @$vars['membership_'.$i],
@@ -3178,7 +3179,7 @@ class FrontEndUserController extends Controller
                             'address1'      => $member['address1'],
                             'address2'      => isset($member['address2'])?$member['address2']:'',
                             'city'          => $member['city'],
-                            'country_id'    => Config::get('constants.globalWebsite.defaultCountryId'),
+                            'country_id'    => AppSettings::get_setting_value_by_name('globalWebsite_defaultCountryId'),
                             'postal_code'   => $member['postal_code'],
                             'region'        => $member['city'],
                         ];
@@ -3998,9 +3999,9 @@ class FrontEndUserController extends Controller
             ['body_header_title'=>$top_title_message, 'body_message' => $main_message],
             function($message) use ($user) {
                 $message
-                    ->from(Config::get('constants.globalWebsite.system_email'))
+                    ->from(AppSettings::get_setting_value_by_name('globalWebsite_system_email'))
                     ->to($user->email, $user->first_name.' '.$user->middle_name.' '.$user->last_name)
-                    ->subject(Config::get('constants.globalWebsite.email_company_name_in_title').' - Password successfully changed');
+                    ->subject(AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title').' - Password successfully changed');
             });
 
         return [
@@ -4062,9 +4063,9 @@ class FrontEndUserController extends Controller
             ['body_header_title'=>$top_title_message, 'body_message' => $main_message],
             function($message) use ($user) {
                 $message
-                    ->from(Config::get('constants.globalWebsite.system_email'))
+                    ->from(AppSettings::get_setting_value_by_name('globalWebsite_system_email'))
                     ->to($user->email, $user->first_name.' '.$user->middle_name.' '.$user->last_name)
-                    ->subject(Config::get('constants.globalWebsite.email_company_name_in_title').' - Password reset request');
+                    ->subject(AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title').' - Password reset request');
             });
         
         return [
@@ -4695,7 +4696,7 @@ class FrontEndUserController extends Controller
                         'first_name'=>$api_user->firstName,
                         'last_name'=>$api_user->lastName,
                         'middle_name'=>$api_user->middleName,            
-                        'country_id'=> config('constants.globalWebsite.defaultCountryId'),
+                        'country_id'=> AppSettings::get_setting_value_by_name('globalWebsite_defaultCountryId'),
                         'password'=> bcrypt($data['password']),
                     ];
                     switch ($api_user->gender)

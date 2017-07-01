@@ -36,6 +36,7 @@ use Regulus\ActivityLog\Models\Activity;
 use Snowfire\Beautymail\Beautymail;
 use Cache;
 use Illuminate\Support\Facades\Config;
+use App\Http\Controllers\AppSettings;
 
 class BookingController extends Controller
 {
@@ -325,9 +326,9 @@ class BookingController extends Controller
                             ['body_header_title'=>$top_title_message, 'body_message' => $main_message],
                             function($message) use ($player, $booking_details) {
                             $message
-                                ->from(Config::get('constants.globalWebsite.system_email'))
+                                ->from(AppSettings::get_setting_value_by_name('globalWebsite_system_email'))
                                 ->to($player->email, $player->first_name.' '.$player->middle_name.' '.$player->last_name)
-                                ->subject(Config::get('constants.globalWebsite.email_company_name_in_title').' -  Your booking for '.$booking_details["bookingDate"].' was canceled');
+                                ->subject(AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title').' -  Your booking for '.$booking_details["bookingDate"].' was canceled');
                         });
                     }
 
@@ -1071,11 +1072,11 @@ class BookingController extends Controller
                 // send_email_to_user
                 $player = User::where('id', '=', $player_id)->get()->first();
                 if (sizeof($booking_details)>1){
-                    $email_title = Config::get('constants.globalWebsite.email_company_name_in_title').' - Several bookings were created';
+                    $email_title = AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title').' - Several bookings were created';
                 }
                 else{
                     $booking_details = $booking_details[0];
-                    $email_title = Config::get('constants.globalWebsite.email_company_name_in_title').' - Your booking for ' . $booking_details["bookingDate"] . ' was created';
+                    $email_title = AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title').' - Your booking for ' . $booking_details["bookingDate"] . ' was created';
                 }
 
                 $top_title_message = 'Dear <span>' . $player->first_name . ' ' . $player->middle_name . ' ' . $player->last_name . '</span>';
@@ -1101,7 +1102,7 @@ class BookingController extends Controller
                     ['body_header_title'=>$top_title_message, 'body_message' => $main_message],
                     function ($message) use ($player, $email_title) {
                     $message
-                        ->from(Config::get('constants.globalWebsite.system_email'))
+                        ->from(AppSettings::get_setting_value_by_name('globalWebsite_system_email'))
                         ->to($player->email, $player->first_name.' '.$player->middle_name.' '.$player->last_name)
                         ->subject($email_title);
                 });
