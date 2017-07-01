@@ -14,6 +14,7 @@ use App\UserAvatars;
 use Storage;
 use Validator;
 use Illuminate\Support\Facades\Config;
+use App\Http\Controllers\AppSettings;
 
 class User extends Authenticatable
 {
@@ -784,7 +785,7 @@ class User extends Authenticatable
                 'errors'  => 'This function is available to logged users only'];
         }
 
-        $credit_validity = Config::get('constants.finance.store_credit_validity');
+        $credit_validity = AppSettings::get_setting_value_by_name('finance_store_credit_validity');
         if ($store_credit_fill['value']>=0){
             $store_credit_fill['expiration_date'] = Carbon::today()->addMonthsNoOverflow($credit_validity)->format('Y-m-d');
         }

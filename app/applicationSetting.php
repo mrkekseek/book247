@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class applicationSetting extends Model
 {
-    protected $table = 'allowed_setting_values';
+    protected $table = 'application_settings';
 
     public static $attributeNames = array(
         'setting_id'                => 'Setting ID',
@@ -53,6 +53,6 @@ class applicationSetting extends Model
     }
 
     public function setting(){
-        return $this->BelongsTo('App\Settings', 'id', 'setting_id');
+        return $this->BelongsTo('App\Settings', 'setting_id', 'id');
     }
 }

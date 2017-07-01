@@ -8,6 +8,7 @@ use Carbon\Carbon;
 use Illuminate\Console\Command;
 use App\Booking;
 use Illuminate\Support\Facades\Config;
+use App\Http\Controllers\AppSettings;
 
 class BookingsCheck extends Command
 {
@@ -42,7 +43,7 @@ class BookingsCheck extends Command
      */
     public function handle()
     {
-        $default_automatic_bookings_mark_as_show = Config::get('constants.globalWebsite.auto_show_status_change');
+        $default_automatic_bookings_mark_as_show = AppSettings::get_setting_value_by_name('globalWebsite_auto_show_status_change');
         $shops = ShopLocations::get();
 
         if ($shops){

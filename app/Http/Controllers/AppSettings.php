@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\allowedSettingValue;
+use App\applicationSetting;
 use App\Settings;
 use Illuminate\Http\Request;
 
@@ -9,6 +11,7 @@ use DB;
 use App\Http\Requests;
 use Auth;
 use Illuminate\Support\Facades\Validator;
+use Cache;
 
 class AppSettings extends Controller
 {
@@ -110,15 +113,16 @@ class AppSettings extends Controller
                 "updated_by_id" => Auth::user()->id
             );
 
-        $setting = DB::table("application_settings")->where("setting_id", $request->input("setting_id"))->where("updated_by_id", Auth::user()->id);
+        $setting = applicationSetting::with('setting')->where("setting_id", $request->input("setting_id"))->first();
 
-        if ( ! $setting->count())
+        if ( ! $setting)
         {
             DB::table("application_settings")->insert($fillable);
         }
         else
         {
             DB::table("application_settings")->where("id", $setting->first()->id)->update($fillable);
+            Cache::forget($setting->setting->system_internal_name);
         }
 
         return [
@@ -142,7 +146,7 @@ class AppSettings extends Controller
                 "updated_by_id" => Auth::user()->id
             );
 
-        $setting = DB::table("application_settings")->where("setting_id", $request->input("setting_id"))->where("updated_by_id", Auth::user()->id);
+        $setting = DB::table("application_settings")->where("setting_id", $request->input("setting_id"));
 
         if ( ! $setting->count())
         {
@@ -168,20 +172,6 @@ class AppSettings extends Controller
             return redirect()->intended(route('admin/login'));
         }
 
-        $breadcrumbs = [
-            'Home'              => route('admin'),
-            'Administration'    => route('admin'),
-            'Settings'          => '',
-        ];
-
-        $text_parts  = [
-            'title'     => 'Manage settings',
-            'subtitle'  => 'list all',
-            'table_head_text1' => ''
-        ];
-
-        $sidebar_link = 'admin-settings-manage_settings';
-
         $allowed = array();
         foreach (DB::table("allowed_setting_values")->get() as $row)
         {
@@ -191,19 +181,28 @@ class AppSettings extends Controller
         $app_settings = array();
         foreach (DB::table("application_settings")->get() as $row)
         {
-            $app_settings[$row->updated_by_id][$row->setting_id] = $row->unconstrained_value != '' ? $row->unconstrained_value : $row->allowed_setting_value_id;
+            $app_settings[$row->setting_id] = $row->unconstrained_value != '' ? $row->unconstrained_value : $row->allowed_setting_value_id;
         }
 
         $settings = array();
         foreach (Settings::all() as $row) 
         {
-            $row['value'] = isset($app_settings[Auth::user()->id][$row->id]) ? $app_settings[Auth::user()->id][$row->id] : "";
+            $row['value'] = isset($app_settings[$row->id]) ? $app_settings[$row->id] : "";
             $row['allowed'] = isset($allowed[$row->id]) ? $allowed[$row->id] : FALSE;
             $settings[] = $row;
         }
 
-        //$a = $this->get_setting_value_by_name('globalWebsite_auto_show_status_change');
-        //xdebug_var_dump($a); exit;
+        $breadcrumbs = [
+            'Home'              => route('admin'),
+            'Administration'    => route('admin'),
+            'Settings'          => '',
+        ];
+        $text_parts  = [
+            'title'     => 'Manage settings',
+            'subtitle'  => 'list all',
+            'table_head_text1' => ''
+        ];
+        $sidebar_link = 'admin-settings-manage_settings';
 
         return view('admin/settings/manage_settings', [
             'breadcrumbs' => $breadcrumbs,
@@ -272,16 +271,14 @@ class AppSettings extends Controller
             ];
         }
 
-        if ( ! Settings::where("id", $request->input('id'))->delete())
-        {
+        if ( ! Settings::where("id", $request->input('id'))->delete()) {
             return array(
                 'success'   => false,
                 'title'     => 'Error Shop Details',
                 'errors'    => 'Database error'
             );
         }
-        else
-        {
+        else {
             return [
                 'success'   => true,
                 'title'     => 'Delete settings',
@@ -370,29 +367,33 @@ class AppSettings extends Controller
     }
 
     public static function get_setting_value_by_name($settingName) {
-
-        $setting = Settings::with('constraint')->with('application_setting')->where("system_internal_name", '=', $settingName)->first();
-
-        //echo $setting->id;
-        //xdebug_var_dump($setting->application_setting);
-        //xdebug_var_dump($setting->constraint);
-        if ($setting->constraint){
-            if ($setting->constrained===0){
-                // free value variable
-                if ($setting->application_setting->unconstrained_value){
-                    return $setting->application_setting->unconstrained_value;
+        $value = Cache::remember($settingName, 1440, function() use ($settingName) {
+            $setting = Settings::with('constraint_values')->with('application_setting')->where("system_internal_name", '=', $settingName)->first();
+            if ($setting){
+                if ($setting->constrained===0){
+                    // free value variable so we get the value
+                    if ( isset($setting->application_setting->unconstrained_value)){
+                        return $setting->application_setting->unconstrained_value;
+                    }
+                    else {
+                        return false;
+                    }
                 }
-                else {
+                else{
+                    // constrained value variable so we get the selected allowed value
+                    foreach ($setting->constraint_values as $single){
+                        if ($setting->application_setting->allowed_setting_value_id === $single->id){
+                            return $single->caption;
+                        }
+                    }
+
                     return false;
                 }
             }
-            else{
-                // constrained value variable
-                return $setting->application_setting->caption;
+            else {
+                return false;
             }
-        }
-        else {
-            return false;
-        }
+        });
+        return $value;
     }
 }

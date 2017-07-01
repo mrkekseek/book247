@@ -52,6 +52,7 @@ use DB;
 use Illuminate\Support\Str;
 use Snowfire\Beautymail\Beautymail;
 use Illuminate\Auth\Passwords\TokenRepositoryInterface;
+use App\Http\Controllers\AppSettings;
 
 class FrontEndUserController extends Base
 {
@@ -1303,7 +1304,7 @@ class FrontEndUserController extends Base
                     //'last_name'         => ucfirst(strtolower(trim(@$vars['col_'.$i][$lname]))),
                     'last_name'         => mb_convert_case(trim(@$vars['col_'.$i][$lname]), MB_CASE_TITLE, mb_detect_encoding(@$vars['col_'.$i][$lname])),
                     'email'             => mb_strtolower(trim(@$vars['col_'.$i][$email]), mb_detect_encoding(@$vars['col_'.$i][$email])),
-                    'country_id'        => Config::get('constants.globalWebsite.defaultCountryId'),
+                    'country_id'        => AppSettings::get_setting_value_by_name('globalWebsite_defaultCountryId'),
                     'phone_number'      => trim(@$vars['col_'.$i][$phone]),
                     'password'          => strlen(@$vars['col_'.$i][$passwd])>7?@$vars['col_'.$i][$passwd]:trim(@$vars['col_'.$i][$phone]),
                     'membership_plan'   => @$vars['membership_'.$i],
@@ -1362,7 +1363,7 @@ class FrontEndUserController extends Base
                             'address1'      => $member['address1'],
                             'address2'      => isset($member['address2'])?$member['address2']:'',
                             'city'          => $member['city'],
-                            'country_id'    => Config::get('constants.globalWebsite.defaultCountryId'),
+                            'country_id'    => AppSettings::get_setting_value_by_name('globalWebsite_defaultCountryId'),
                             'postal_code'   => $member['postal_code'],
                             'region'        => $member['city'],
                         ];

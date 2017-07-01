@@ -7,7 +7,8 @@ use App\User;
 use App\PersonalDetail;
 use Illuminate\Support\Facades\Session;
 use \Illuminate\Support\Facades\Cookie;
-use Illuminate\Support\Facades\Auth as AuthLocal; 
+use Illuminate\Support\Facades\Auth as AuthLocal;
+use App\Http\Controllers\AppSettings;
 
 class Auth
 {
@@ -155,7 +156,7 @@ class Auth
         
         $user = User::firstOrNew(['username'=>$api_user->username]);
         $user = ( ! $user->exists) ? User::firstOrNew(['email'=>$api_user->username]): $user;
-        $local_user['country_id'] = ! $user->exists ? config('constants.globalWebsite.defaultCountryId') : $user->country_id;
+        $local_user['country_id'] = ! $user->exists ? AppSettings::get_setting_value_by_name('globalWebsite_defaultCountryId') : $user->country_id;
         $user->fill($local_user);        
         if (!$user->exists)
         {
@@ -200,7 +201,7 @@ class Auth
             'first_name'=>$api_user->firstName,
             'last_name'=>$api_user->lastName,
             'middle_name'=>$api_user->middleName,            
-            'country_id'=>config('constants.globalWebsite.defaultCountryId')            
+            'country_id'=>AppSettings::get_setting_value_by_name('globalWebsite_defaultCountryId')
             ];
         switch ($api_user->gender)
         {

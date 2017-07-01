@@ -6,6 +6,7 @@ use App\PersonalDetail;
 use App\User;
 use App\Http\Libraries\Auth;
 use Webpatser\Countries\Countries;
+use App\Http\Controllers\AppSettings;
 
 class ApiAuth
 {
@@ -364,7 +365,7 @@ class ApiAuth
                 'last_name' => $sso_user->lastName,
                 'username' => $sso_user->username,
                 'email' => $sso_user->email,
-                'country_id' => isset($country) ? $country->id : config('constants.globalWebsite.defaultCountryId') ,
+                'country_id' => isset($country) ? $country->id : AppSettings::get_setting_value_by_name('globalWebsite_defaultCountryId') ,
                 'status' => 'active',
                 'gender' => $sso_user->gender == 2 ? 'F' : 'M'
             ]);

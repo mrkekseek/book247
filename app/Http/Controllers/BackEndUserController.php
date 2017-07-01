@@ -28,6 +28,7 @@ use \App\Role;
 use Webpatser\Countries\Countries;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Config;
+use App\Http\Controllers\AppSettings;
 
 class BackEndUserController extends Controller
 {
@@ -133,7 +134,7 @@ class BackEndUserController extends Controller
         }
 
         if (!isset($vars['country_id'])){
-            $vars['country_id'] = Config::get('constants.globalWebsite.defaultCountryId');
+            $vars['country_id'] = AppSettings::get_setting_value_by_name('globalWebsite_defaultCountryId');
         }
         
         $credentials = [

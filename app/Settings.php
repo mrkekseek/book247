@@ -92,7 +92,7 @@ class Settings extends Model
         }
     }
 
-    public function constraint(){
+    public function constraint_values(){
         return $this->hasMany('App\allowedSettingValue','setting_id', 'id');
     }
 
