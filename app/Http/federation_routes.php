@@ -632,8 +632,18 @@ Route::group(['middleware' => 'web'], function () {
 
     /* Start General Settings Part */
     Route::get('admin/settings/list_all', [
-        'as'    => 'admin/settings/list_all',
-        'uses'  => 'AppSettings@index'
+        'as' => 'admin/settings/list_all',
+        'uses' => 'AppSettings@index'
+    ]);
+
+    Route::get('admin/settings/manage_settings', [
+        'as' => 'admin/settings/manage_settings',
+        'uses' => 'AppSettings@manage_settings'
+    ]);
+
+    Route::get('admin/settings/account_key', [
+        'as'    => 'admin/settings/account_key',
+        'uses'  => 'AppSettings@rankedin_app_key_integration'
     ]);
     /* Stop General Settings Part */
 

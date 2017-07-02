@@ -48,6 +48,10 @@ class BookingDailyPlannerEmail extends Command
      */
     public function handle()
     {
+        if (env('FEDERATION',false)){
+            exit;
+        }
+
         URL::forceRootUrl( AppSettings::get_setting_value_by_name('globalWebsite_baseUrl') );
 
         $today = Carbon::today()->format('Y-m-d');

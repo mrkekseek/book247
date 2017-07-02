@@ -36,7 +36,8 @@ class GeneralSettingsSeeder extends Seeder
             [10, 'Booking Upfront Reservation rule', 'bookings_upfront_reservation_rule', 'This setting decides how early a non member may reserve a court. The value represent the number of days.', 0, 'numeric', 0, 14],
             [11, 'Show Calendar Availability on Frontend rule', 'show_calendar_availability_rule', 'This setting decides if customers who visits you booking calendar hos to be logged in to see calendar availablity.', 1, '', 0, 0],
             [12, 'Bookings Online Payment rule', 'bookings_online_payment_rule', 'This setting decides if all custumers has to pay online directly when reserving a court.', 1, '', 0, 0],
-            [13, 'Bookings Court Refunds rule', 'bookings_court_refund_rule', 'This setting decides if a customer will get a refund when canelling a court within the cancelltion rule.', 1, '', 0, 0]
+            [13, 'Bookings Court Refunds rule', 'bookings_court_refund_rule', 'This setting decides if a customer will get a refund when canelling a court within the cancelltion rule.', 1, '', 0, 0],
+            [14, 'Global Website Rankedin Integration Key', 'globalWebsite_rankedin_integration_key', 'This is the key used to integrate Book247 account to your RankedIn account.', 0, 'string', 29, 29]
         ];
 
         // insert values into settings table
@@ -92,6 +93,7 @@ class GeneralSettingsSeeder extends Seeder
         DB::insert($query, [6,   8, NULL, '6',  1]);
         DB::insert($query, [9,   9, NULL, '6',  1]);
         DB::insert($query, [10, 10, NULL, '1',  1]);
+        DB::insert($query, [11, 14, NULL, '',   1]);
 
         DB::unprepared('ALTER TABLE settings AUTO_INCREMENT=10000;');
         DB::unprepared('ALTER TABLE allowed_setting_values AUTO_INCREMENT=10000;');

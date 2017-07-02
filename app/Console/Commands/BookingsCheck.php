@@ -43,6 +43,10 @@ class BookingsCheck extends Command
      */
     public function handle()
     {
+        if (env('FEDERATION',false)){
+            exit;
+        }
+
         $default_automatic_bookings_mark_as_show = AppSettings::get_setting_value_by_name('globalWebsite_auto_show_status_change');
         $shops = ShopLocations::get();
 
