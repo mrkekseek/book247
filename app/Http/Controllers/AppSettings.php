@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\allowedSettingValue;
 use App\applicationSetting;
 use App\Settings;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 use DB;
@@ -107,28 +108,30 @@ class AppSettings extends Controller
             return redirect()->intended(route('admin/login'));
         }
 
-        $fillable = array(
-                "setting_id" => $request->input("setting_id"),
-                "unconstrained_value" => $request->input("value"),
-                "updated_by_id" => Auth::user()->id
-            );
+        $fillable = ["setting_id"               => $request->input("setting_id"),
+                    "unconstrained_value"       => strlen($request->input("value"))>0    ? $request->input("value"):NULL,
+                    "allowed_setting_value_id"  => strlen( $request->input("caption"))>0 ? $request->input("caption"):NULL,
+                    "updated_by_id"             => $user->id];
 
         $setting = applicationSetting::with('setting')->where("setting_id", $request->input("setting_id"))->first();
+        if ( ! $setting) {
+            applicationSetting::create($fillable);
 
-        if ( ! $setting)
-        {
-            DB::table("application_settings")->insert($fillable);
+            $success_title = 'Application setting saved';
+            $success_message = 'Saved value will be used in the system';
         }
-        else
-        {
-            DB::table("application_settings")->where("id", $setting->first()->id)->update($fillable);
+        else {
+            $setting->update($fillable);
             Cache::forget($setting->setting->system_internal_name);
+
+            $success_title = 'Application setting updated';
+            $success_message = 'Updated value will be used in the system';
         }
 
         return [
             'success'   => true,
-            'title'     => 'Setting Variable Created',
-            'message'   => 'A new variable was created and can be used in the system. Remember to give it a value before using it'
+            'title'     => $success_title,
+            'message'   => $success_message
         ];
     }
 
@@ -395,5 +398,33 @@ class AppSettings extends Controller
             }
         });
         return $value;
+    }
+
+    public function rankedin_app_key_integration(){
+        $user = Auth::user();
+        if ( ! $user || ! $user->is_back_user()) {
+            return redirect()->intended(route('admin/login'));
+        }
+
+        $app_key = $this::get_setting_value_by_name('globalWebsite_rankedin_integration_key');
+
+        $breadcrumbs = [
+            'Home'              => route('admin'),
+            'Administration'    => route('admin'),
+            'Settings'          => '',
+        ];
+        $text_parts  = [
+            'title'     => 'RankedIn Integration - Account Key',
+            'subtitle'  => 'your unique identifier',
+            'table_head_text1' => ''
+        ];
+        $sidebar_link = 'admin-settings-rankedin_integration_app_key';
+
+        return view('admin/settings/rankedin_integration', [
+            'breadcrumbs' => $breadcrumbs,
+            'text_parts'  => $text_parts,
+            'in_sidebar'  => $sidebar_link,
+            'application_key'   => $app_key
+        ]);
     }
 }
