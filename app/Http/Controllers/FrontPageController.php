@@ -133,7 +133,7 @@ class FrontPageController extends Controller
             'table_head_text1' => 'Dashboard Summary'
         ];
         $sidebar_link= 'front-homepage';
-        $countries = Countries::orderBy('name')->get();
+        $countries = Countries::orderBy('citizenship', 'asc')->get();
         
         return view('front/home_page',[
             'breadcrumbs' => $breadcrumbs,

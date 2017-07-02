@@ -944,7 +944,7 @@
                 if (jQuery().datepicker) {
                     $('.date-picker').datepicker({
                         rtl: App.isRTL(),
-                        orientation: "left",
+                        orientation: "right",
                         autoclose: true
                     });
                 }
