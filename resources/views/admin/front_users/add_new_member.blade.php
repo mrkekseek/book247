@@ -296,8 +296,8 @@
                             minlength: 1,
                         },
                         date_of_birth: {
-                            //required:false,
-                            //datePickerDate: true,
+                            required:true,
+                            datePickerDate: true,
                         },
 
                         personal_addr1: {
@@ -312,6 +312,9 @@
                         personal_addr_pcode: {
                             minlength: 2,
                         },
+                        adr_country_id: {
+                            required:true,
+                        }
                     },
 
                     messages: { // custom messages for radio buttons and checkboxes
