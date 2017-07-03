@@ -375,39 +375,46 @@ class User extends Authenticatable
     public function get_avatar_image($is_link = false){
         $avatar = $this->avatar;
        
-        if ( ! $avatar) {
+        if ( ! $avatar)
+        {
             $avatar = new UserAvatars();
             
             $avatar->file_location = 'employees/default/avatars/';
             $avatar->file_name = 'gender_' . strtolower($this->gender) . '.png';   
         }
 
-        if ($this->is_back_user()){
+        if ($this->is_back_user())
+        {
             if (Storage::disk('local')->exists($avatar->file_location . $avatar->file_name)) {
                 $avatarContent  = Storage::disk('local')->get($avatar->file_location . $avatar->file_name);
                 $avatarType     = Storage::disk('local')->mimeType($avatar->file_location . $avatar->file_name);
             }
         }
-        elseif($this->is_front_user()){
+        elseif($this->is_front_user())
+        {
             if (Storage::disk('local')->exists($avatar->file_location . $avatar->file_name)) {
                 $avatarContent  = Storage::disk('local')->get($avatar->file_location . $avatar->file_name);
                 $avatarType     = Storage::disk('local')->mimeType($avatar->file_location . $avatar->file_name);
             }
         }
 
-        if ( (! isset($avatarContent) || ! isset($avatarType)) && in_array(strtolower($this->gender), ['m','f']) ){
+        if ( ( ! isset($avatarContent) || ! isset($avatarType)) && in_array(strtolower($this->gender), ['m','f']))
+        {
             $avatarContent      = Storage::disk('local')->get('members/default/avatars/gender_' . strtolower($this->gender) . '.png');
             $avatarType         = Storage::disk('local')->mimeType('members/default/avatars/gender_' . strtolower($this->gender) . '.png');
         }
-        else{
+        /*else
+        {
             $avatarContent      = Storage::disk('local')->get('members/default/avatars/gender_m.png');
             $avatarType         = Storage::disk('local')->mimeType('members/default/avatars/gender_m.png');
-        }
+        }*/
 
-        if ($is_link==true){
+        if ($is_link==true)
+        {
             return 'data:'.$avatarType.';base64,'.base64_encode($avatarContent);
         }
-        else{
+        else
+        {
             return [
                 'file_location'     => $avatar->file_location,
                 'avatar_content'    => $avatarContent,
