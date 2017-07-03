@@ -61,7 +61,10 @@
                                                     <div class="item">
                                                         <div class="item-head">
                                                             <div class="item-details">
-                                                                <img class="item-pic" src="{!! $knownBooking['avatar'] !!}">
+                                                                
+                                                                <div class="item-avatar" style="background-image: url({{ $knowBookin['avatar'] }});">
+                                                                </div>
+
                                                                 <a href="" class="item-name primary-link">{{ $knownBooking['breated_by'] }}</a>
                                                                 <span class="item-label">{{ $knownBooking['passed_time_since_creation'] }}</span>
                                                             </div>
