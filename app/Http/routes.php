@@ -109,6 +109,11 @@ if (env('FEDERATION',false)){
             'uses' => 'BackEndUserController@update_account_info',
         ]);
 
+        Route::post('admin/back_users/remove_avatar', [
+            'as' => 'admin/back_users/remove_avatar',
+            'uses' => 'BackEndUserController@remove_avatar',
+        ]);
+
         Route::post('admin/front_users/view_user/{id}/personal_info', [
             'as' => 'admin/front_users/view_user/personal_info',
             'uses' => 'FrontEndUserController@update_personal_info',

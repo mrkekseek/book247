@@ -109,3 +109,13 @@ textarea[name=content] {
 	width: 30%;
 
 }
+
+.header-avatar {
+	width: 35px;
+	height: 35px;
+	background-position: center center;
+	background-size: cover;
+	border-radius: 50%;
+	display: inline-block;
+	margin-right: 10px;
+}
