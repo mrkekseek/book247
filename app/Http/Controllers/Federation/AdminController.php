@@ -42,7 +42,7 @@ class AdminController extends Base
         if($r->method() == "POST"){
             return json_encode($r->all());
         }
-        $result =  Api::send_curl(['memberSSOid' => 126 ,'membership_id' => null, 'account_key' => '81381-46565-30640-84804-20809', 'return_url' => "http://book.net/admin/test_api_call" ],'federation_buy_license','POST');
+        $result =  Api::send_curl(['memberSSOid' => 126 ,'membership_id' => null, 'account_key' => '81381-46565-30640-84804-20809', 'return_url' => "federation.book247.net/admin/test_api_call" ],'federation_buy_license','POST');
         if(isset($result->iFrameUrl)) {
             return view('development',['link' => $result->iFrameUrl]);
         } else {
