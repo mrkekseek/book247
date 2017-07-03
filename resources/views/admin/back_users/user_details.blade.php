@@ -731,7 +731,7 @@
                                                 <label class="control-label">Citizenship</label>
                                                 <select name="personalCountry" id="personalCountry" class="form-control">
                                                     @foreach ($countries as $country)
-                                                        <option value="{{ $country->id }}" {!! ($country->id==$user->country_id ? ' selected="selected" ' : '') !!}>{{ $country->citizenship }}</option>
+                                                        <option value="{{ $country->id }}" {!! ($country->id==$user->country_id ? ' selected="selected" ' : '') !!}>{{ $country->name }}</option>
                                                     @endforeach
                                                 </select></div>
                                             <div class="form-group">

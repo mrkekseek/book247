@@ -287,7 +287,7 @@
                                             <select name="country" id="country" class="form-control">
                                                 <option value="">Select Citizenship</option>
                                                 @foreach ($countries as $country)
-                                                    <option value="{{ $country->id }}" {!! ($country->id==$user->country_id ? ' selected="selected" ' : '') !!}>{{ $country->citizenship }}</option>
+                                                    <option value="{{ $country->id }}" {!! ($country->id==$user->country_id ? ' selected="selected" ' : '') !!}>{{ $country->name }}</option>
                                                 @endforeach
                                             </select>
                                         </div>
