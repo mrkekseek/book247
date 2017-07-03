@@ -374,7 +374,6 @@ class User extends Authenticatable
 
     public function get_avatar_image($is_link = false){
         $avatar = $this->avatar;
-       
         if ( ! $avatar) {
             $avatar = new UserAvatars();
             
@@ -395,14 +394,15 @@ class User extends Authenticatable
             }
         }
 
-        if ( (! isset($avatarContent) || ! isset($avatarType)) && in_array(strtolower($this->gender), ['m','f']) ){
+        if ( (!isset($avatarContent) || !isset($avatarType)) && in_array(strtolower($this->gender), ['m','f']) ){
             $avatarContent      = Storage::disk('local')->get('members/default/avatars/gender_' . strtolower($this->gender) . '.png');
             $avatarType         = Storage::disk('local')->mimeType('members/default/avatars/gender_' . strtolower($this->gender) . '.png');
         }
-        else{
+        elseif ((!isset($avatarContent) || !isset($avatarType)) && !in_array(strtolower($this->gender), ['m','f'])){
             $avatarContent      = Storage::disk('local')->get('members/default/avatars/gender_m.png');
             $avatarType         = Storage::disk('local')->mimeType('members/default/avatars/gender_m.png');
         }
+
 
         if ($is_link==true){
             return 'data:'.$avatarType.';base64,'.base64_encode($avatarContent);
