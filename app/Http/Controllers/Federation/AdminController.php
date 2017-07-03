@@ -19,7 +19,6 @@ use Carbon\Carbon;
 use App\Http\Controllers\Api;
 use App\Http\Controllers\Federation\AnyApi;
 use App\Http\Libraries\ApiAuth;
-use App\User;
 
 class AdminController extends Base
 {
@@ -32,11 +31,9 @@ class AdminController extends Base
      */
 
     public function testRoute(Request $r){
-//        $user = User::find(112);
-//        dd($user->get_active_membership());
 //        return json_encode(Api::send_curl(['memberSSOid'=>5 , 'country'=> 'NO' ,'activity' => 1],'federation_member_has_valid_license','GET'));
 //        return json_encode(Api::send_curl(['account_key' => '11381-46565-30640-84804-20809'],'validate_account_key','POST'));
-//        return json_encode(Api::send_curl(['memberSSOid' => 115 ,'account_key'=>'45788-52757-20554-64471-70259'],'federation_member_has_valid_license','POST'));
+//        return Api::send_curl(['memberSSOid' => 15 ,'activity' => null],'federation_buy_license','POST');
 //        return ApiAuth::accounts_get(124);
 //        $x = ApiAuth::send('','http://rankedinbookingsso-test.azurewebsites.net/api/Accounts/136','GET');
 //        $x = AnyApi::send_curl('http://rankedinbookingsso-test.azurewebsites.net',[],'/api/Accounts/28','GET');
@@ -45,7 +42,7 @@ class AdminController extends Base
         if($r->method() == "POST"){
             return json_encode($r->all());
         }
-        $result =  Api::send_curl(['memberSSOid' => 78 ,'membership_id' => null, 'account_key' => '81381-46565-30640-84804-20809', 'return_url' => "federation.book247.net/admin/test_api_call" ],'federation_buy_license','POST');
+        $result =  Api::send_curl(['memberSSOid' => 126 ,'membership_id' => null, 'account_key' => '81381-46565-30640-84804-20809', 'return_url' => "federation.book247.net/admin/test_api_call" ],'federation_buy_license','POST');
         if(isset($result->iFrameUrl)) {
             return view('development',['link' => $result->iFrameUrl]);
         } else {
