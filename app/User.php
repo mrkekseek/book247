@@ -395,9 +395,13 @@ class User extends Authenticatable
             }
         }
 
-        if ( ! isset($avatarContent) || ! isset($avatarType)){
+        if ( (! isset($avatarContent) || ! isset($avatarType)) && in_array(strtolower($this->gender), ['m','f']) ){
             $avatarContent      = Storage::disk('local')->get('members/default/avatars/gender_' . strtolower($this->gender) . '.png');
             $avatarType         = Storage::disk('local')->mimeType('members/default/avatars/gender_' . strtolower($this->gender) . '.png');
+        }
+        else{
+            $avatarContent      = Storage::disk('local')->get('members/default/avatars/gender_m.png');
+            $avatarType         = Storage::disk('local')->mimeType('members/default/avatars/gender_m.png');
         }
 
         if ($is_link==true){
