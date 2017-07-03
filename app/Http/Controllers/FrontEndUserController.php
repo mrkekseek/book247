@@ -3762,7 +3762,7 @@ class FrontEndUserController extends Controller
             $personalAddress = new Address();
         }*/
 
-        $countries = Countries::orderBy('citizenship', 'asc')->get();
+        $countries = Countries::orderBy('name', 'asc')->get();
         //$userCountry = Countries::find($user->country_id);
 
         $avatar = $user->get_avatar_image();

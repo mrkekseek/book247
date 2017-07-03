@@ -256,6 +256,7 @@ class BackEndUserController extends Controller
 
         $roles = Role::all();
         $countries = Countries::orderBy('name')->get();
+       
         $userCountry = Countries::find($back_user->country_id);
 
         $avatar = $back_user->get_avatar_image();
