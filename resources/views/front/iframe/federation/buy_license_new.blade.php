@@ -178,7 +178,7 @@
     <input type="hidden" name="return" value="{{ env('MY_SERVER_URL') }}/membership/paypal_success">
     <input type="hidden" name="cancel_url" value="{{ env('MY_SERVER_URL') }}/membership/paypal_cancel">
     <input type="hidden" name="notify_url" value="{{ env('MY_SERVER_URL') }}/membership/ipn">
-    <input type="hidden" name="rm" value="2">
+    <input type="hidden" name="rm" value="1">
     <input type="hidden" name="upload" value="1">
 
     <input type="hidden" name="item_name" value="">
