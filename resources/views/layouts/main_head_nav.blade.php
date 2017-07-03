@@ -312,7 +312,7 @@
                 <li class="dropdown dropdown-user dropdown-dark">
                     <a href="javascript:;" class="dropdown-toggle " data-toggle="dropdown" data-hover="dropdown" data-close-others="true" >
                         
-                        <div class="menu-user-avatar pull-left" style="width: 35px; height: 35px; background-size: cover; border-radius: 50%;margin-right: 10px;background-image: url('{{ Auth::user()->get_avatar_image(true) }}')"></div>
+                        <div class="menu-user-avatar pull-left" style="width: 35px; height: 35px; background-size: cover; background-position: center center; border-radius: 50%;margin-right: 10px;background-image: url('{{ Auth::user()->get_avatar_image(true) }}')"></div>
 
                         <span class="username username-hide-mobile">{{Auth::user()->first_name.' '.Auth::user()->middle_name.' '.Auth::user()->last_name}}</span>
                     </a>
