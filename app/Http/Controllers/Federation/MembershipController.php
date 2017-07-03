@@ -168,8 +168,7 @@ class MembershipController extends Base
             'in_sidebar'  => $sidebar_link,
             'text' => 'Payment successful!',
             'status' => 'Success',
-            'link' => 'http://book.net/admin/test_api_call',
-            'url' => $url
+            'link' => $url
         ]);
     }
 
