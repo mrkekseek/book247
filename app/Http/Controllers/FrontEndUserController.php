@@ -1464,6 +1464,8 @@ class FrontEndUserController extends Controller
             $user = Auth::user();
         }
 
+        die;
+
         $is_staff = false;
         if (!$user->hasRole(['front-member','front-user'])){
             $is_staff = true;
