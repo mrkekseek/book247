@@ -373,7 +373,7 @@ class AppSettings extends Controller
         $value = Cache::remember($settingName, 1440, function() use ($settingName) {
             $setting = Settings::with('constraint_values')->with('application_setting')->where("system_internal_name", '=', $settingName)->first();
             if ($setting){
-                if ($setting->constrained===0){
+                if ($setting->constrained==0){
                     // free value variable so we get the value
                     if ( isset($setting->application_setting->unconstrained_value)){
                         return $setting->application_setting->unconstrained_value;
