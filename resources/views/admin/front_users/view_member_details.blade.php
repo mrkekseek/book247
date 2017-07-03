@@ -171,7 +171,7 @@
                                                         <a href="javascript:;" class="primary-link">Calendar Products</a>
                                                     </td>
                                                     <td align="center"> {{ $stat['drop_ins']['nr'] }} </td>
-                                                    <td> {{ $stat['drop_ins']['money'] }} {{ Config::get('constants.finance.currency') }} </td>
+                                                    <td> {{ $stat['drop_ins']['money'] }} {{ \App\Http\Controllers\AppSettings::get_setting_value_by_name('finance_currency') }} </td>
                                                     <td>
                                                         <span class="bold theme-font">{{ $stat['drop_ins']['rate']=='-'?'-':$stat['drop_ins']['rate'].'%' }}</span>
                                                     </td>
@@ -181,7 +181,7 @@
                                                         <a href="javascript:;" class="primary-link">Membership</a>
                                                     </td>
                                                     <td align="center"> {{ $stat['membership']['nr'] }} </td>
-                                                    <td> {{ $stat['membership']['money'] }} {{ Config::get('constants.finance.currency') }} </td>
+                                                    <td> {{ $stat['membership']['money'] }} {{ \App\Http\Controllers\AppSettings::get_setting_value_by_name('finance_currency') }} </td>
                                                     <td>
                                                         <span class="bold theme-font">{{ $stat['membership']['rate']=='-'?'-':$stat['membership']['rate'].'%' }}</span>
                                                     </td>
@@ -191,7 +191,7 @@
                                                         <a href="javascript:;" class="primary-link">Active</a>
                                                     </td>
                                                     <td align="center"> {{ $stat['active']['nr'] }} </td>
-                                                    <td> {{ $stat['active']['money'] }} {{ Config::get('constants.finance.currency') }} </td>
+                                                    <td> {{ $stat['active']['money'] }} {{ \App\Http\Controllers\AppSettings::get_setting_value_by_name('finance_currency') }} </td>
                                                     <td>
                                                         <span class="bold theme-font">{{ $stat['active']['rate']=='-'?'-':$stat['active']['rate'].'%' }}</span>
                                                     </td>
@@ -201,7 +201,7 @@
                                                         <a href="javascript:;" class="primary-link">Show</a>
                                                     </td>
                                                     <td align="center"> {{ $stat['show']['nr'] }} </td>
-                                                    <td> {{ $stat['show']['money'] }} {{ Config::get('constants.finance.currency') }} </td>
+                                                    <td> {{ $stat['show']['money'] }} {{ \App\Http\Controllers\AppSettings::get_setting_value_by_name('finance_currency') }} </td>
                                                     <td>
                                                         <span class="bold theme-font">{{ $stat['show']['rate']=='-'?'-':$stat['show']['rate'].'%' }}</span>
                                                     </td>
@@ -211,7 +211,7 @@
                                                         <a href="javascript:;" class="primary-link">No Show</a>
                                                     </td>
                                                     <td align="center"> {{ $stat['no_show']['nr'] }} </td>
-                                                    <td> {{ $stat['no_show']['money'] }} {{ Config::get('constants.finance.currency') }} </td>
+                                                    <td> {{ $stat['no_show']['money'] }} {{ \App\Http\Controllers\AppSettings::get_setting_value_by_name('finance_currency') }} </td>
                                                     <td>
                                                         <span class="bold theme-font">{{ $stat['no_show']['rate']=='-'?'-':$stat['no_show']['rate'].'%' }}</span>
                                                     </td>
@@ -221,7 +221,7 @@
                                                         <a href="javascript:;" class="primary-link">Cancelled</a>
                                                     </td>
                                                     <td align="center"> {{ $stat['canceled']['nr'] }} </td>
-                                                    <td> {{ $stat['canceled']['money'] }} {{ Config::get('constants.finance.currency') }} </td>
+                                                    <td> {{ $stat['canceled']['money'] }} {{ \App\Http\Controllers\AppSettings::get_setting_value_by_name('finance_currency') }} </td>
                                                     <td>
                                                         <span class="bold theme-font">{{ $stat['canceled']['rate']=='-'?'-':$stat['canceled']['rate'].'%' }}</span>
                                                     </td>

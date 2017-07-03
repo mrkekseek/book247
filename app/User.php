@@ -14,6 +14,7 @@ use App\UserAvatars;
 use Storage;
 use Validator;
 use Illuminate\Support\Facades\Config;
+use App\Http\Controllers\AppSettings;
 
 class User extends Authenticatable
 {
@@ -178,14 +179,14 @@ class User extends Authenticatable
         return $membership;
     }
 
-    public function attach_membership_plan(MembershipPlan $the_plan, User $signed_by, $day_start = false, $contract_number = 0){
+    public function attach_membership_plan(MembershipPlan $the_plan, User $signed_by, $day_start = false, $contract_number = 0, $status = 'active'){
         if ($this->is_back_user()){
             return false;
         }
 
         $user_plan = new UserMembership();
         //$user_plan->assign_plan($this, $the_plan, $signed_by);
-        if ( $user_plan->create_new($this, $the_plan, $signed_by, $day_start, $contract_number) ){
+        if ( $user_plan->create_new($this, $the_plan, $signed_by, $day_start, $contract_number,$status) ){
             return true;
         }
         else{
@@ -394,9 +395,13 @@ class User extends Authenticatable
             }
         }
 
-        if ( ! isset($avatarContent) || ! isset($avatarType)){
+        if ( (! isset($avatarContent) || ! isset($avatarType)) && in_array(strtolower($this->gender), ['m','f']) ){
             $avatarContent      = Storage::disk('local')->get('members/default/avatars/gender_' . strtolower($this->gender) . '.png');
             $avatarType         = Storage::disk('local')->mimeType('members/default/avatars/gender_' . strtolower($this->gender) . '.png');
+        }
+        else{
+            $avatarContent      = Storage::disk('local')->get('members/default/avatars/gender_m.png');
+            $avatarType         = Storage::disk('local')->mimeType('members/default/avatars/gender_m.png');
         }
 
         if ($is_link==true){
@@ -784,7 +789,7 @@ class User extends Authenticatable
                 'errors'  => 'This function is available to logged users only'];
         }
 
-        $credit_validity = Config::get('constants.finance.store_credit_validity');
+        $credit_validity = AppSettings::get_setting_value_by_name('finance_store_credit_validity');
         if ($store_credit_fill['value']>=0){
             $store_credit_fill['expiration_date'] = Carbon::today()->addMonthsNoOverflow($credit_validity)->format('Y-m-d');
         }

@@ -13,6 +13,7 @@ use App\Permission;
 use App\UserMembership;
 use Validator;
 use Illuminate\Support\Facades\URL;
+use App\Http\Controllers\AppSettings;
 
 class OptimizeSearchMembers extends Model
 {
@@ -120,7 +121,7 @@ class OptimizeSearchMembers extends Model
 
     private function rebuild_search_table(){
         ini_set('max_execution_time', 300);
-        URL::forceRootUrl( Config::get('constants.globalWebsite.baseUrl') );
+        URL::forceRootUrl( AppSettings::get_setting_value_by_name('globalWebsite_baseUrl') );
 
         DB::disableQueryLog();
         $query = DB::table('users')
@@ -188,7 +189,7 @@ class OptimizeSearchMembers extends Model
 
     private function update_search_table($last_date){
         ini_set('max_execution_time', 300);
-        URL::forceRootUrl( Config::get('constants.globalWebsite.baseUrl') );
+        URL::forceRootUrl( AppSettings::get_setting_value_by_name('globalWebsite_baseUrl') );
 
         DB::disableQueryLog();
         $query = DB::table('users')
@@ -253,7 +254,7 @@ class OptimizeSearchMembers extends Model
 
     private function update_search_table_with_user($ids){
         ini_set('max_execution_time', 300);
-        URL::forceRootUrl( Config::get('constants.globalWebsite.baseUrl') );
+        URL::forceRootUrl( AppSettings::get_setting_value_by_name('globalWebsite_baseUrl') );
 
         DB::disableQueryLog();
         $query = DB::table('users')

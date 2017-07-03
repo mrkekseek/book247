@@ -52,6 +52,7 @@ use DB;
 use Illuminate\Support\Str;
 use Snowfire\Beautymail\Beautymail;
 use Illuminate\Auth\Passwords\TokenRepositoryInterface;
+use App\Http\Controllers\AppSettings;
 
 class FrontEndUserController extends Base
 {
@@ -1116,6 +1117,7 @@ class FrontEndUserController extends Base
             return redirect()->intended(route('admin/error/permission_denied'));
         }
 
+        /** @var  $vars */
         $vars = $request->only('_token','_method','start_date','membership_type','sign_location');
 
         $allRows = [];
@@ -1302,7 +1304,7 @@ class FrontEndUserController extends Base
                     //'last_name'         => ucfirst(strtolower(trim(@$vars['col_'.$i][$lname]))),
                     'last_name'         => mb_convert_case(trim(@$vars['col_'.$i][$lname]), MB_CASE_TITLE, mb_detect_encoding(@$vars['col_'.$i][$lname])),
                     'email'             => mb_strtolower(trim(@$vars['col_'.$i][$email]), mb_detect_encoding(@$vars['col_'.$i][$email])),
-                    'country_id'        => Config::get('constants.globalWebsite.defaultCountryId'),
+                    'country_id'        => AppSettings::get_setting_value_by_name('globalWebsite_defaultCountryId'),
                     'phone_number'      => trim(@$vars['col_'.$i][$phone]),
                     'password'          => strlen(@$vars['col_'.$i][$passwd])>7?@$vars['col_'.$i][$passwd]:trim(@$vars['col_'.$i][$phone]),
                     'membership_plan'   => @$vars['membership_'.$i],
@@ -1361,7 +1363,7 @@ class FrontEndUserController extends Base
                             'address1'      => $member['address1'],
                             'address2'      => isset($member['address2'])?$member['address2']:'',
                             'city'          => $member['city'],
-                            'country_id'    => Config::get('constants.globalWebsite.defaultCountryId'),
+                            'country_id'    => AppSettings::get_setting_value_by_name('globalWebsite_defaultCountryId'),
                             'postal_code'   => $member['postal_code'],
                             'region'        => $member['city'],
                         ];
@@ -1406,6 +1408,7 @@ class FrontEndUserController extends Base
                     // Default free plan is the first plan
                     if (strlen($member['membership_plan'])>0 && isset($arrayPlan[$member['membership_plan']])){
                         // we have a plan and we apply it
+                        /** @var User $new_member */
                         $new_member->attach_membership_plan($arrayPlan[$member['membership_plan']]['full_plan'], $user, $member['contract_start']!=''?$member['contract_start']:$the_date, $member['contract_number']);
 
                         $msg.= 'Membership plan assigned : '.$arrayPlan[$member['membership_plan']]['full_plan']->name.' <br />';

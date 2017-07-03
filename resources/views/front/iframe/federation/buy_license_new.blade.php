@@ -172,10 +172,15 @@
     <input name="payment_method" type="text" id="payment_method"/>
 </form>
 
-<form id="paypal-form" action="{{ env('PAYPAL_SANDBOX') }}"  method="post" style="display: none;">
-    <input type="hidden" name="cmd" value="_xclick">
+<form id="paypal-form" action="{{ env('PAYPAL_SANDBOX') }}"  target="_parent" method="post" style="display: none;">
+    <input type="hidden" name="cmd" value="_cart">
     <input type="hidden" name="business" value="{{ env('PAYPAL_EMAIL') }}">
-    <input type="hidden" name="return" value="https://www.rankedin.com/">
+    <input type="hidden" name="return" value="{{ env('MY_SERVER_URL') }}/membership/paypal_success">
+    <input type="hidden" name="cancel_url" value="{{ env('MY_SERVER_URL') }}/membership/paypal_cancel">
+    <input type="hidden" name="notify_url" value="{{ env('MY_SERVER_URL') }}/membership/ipn">
+    <input type="hidden" name="rm" value="2">
+    <input type="hidden" name="upload" value="1">
+
     <input type="hidden" name="item_name" value="">
     <input type="hidden" name="amount" value="">
     <input type="hidden" name="quantity" value="1">
@@ -186,6 +191,9 @@
     <input type="hidden" name="first_name" value="">
     <input type="hidden" name="last_name" value="">
     <input type="hidden" name="email" value="">
+
+    <input type="hidden" name="custom" value="{{ $redirect_url }}">
+    <input type="hidden" name="invoice" value="">
 
 </form>
 <!--====END MODAL====-->
@@ -206,7 +214,7 @@
             var $form = $('#main-form');
             var $paypal_form = $('#paypal-form');
             if (!inIframe()) {
-                $('body').text('accessed only in iframe!');
+//                $('body').text('accessed only in iframe!');
             }
             $('.form-choice').click(function(){
                 var $input = $form.find('#'+$(this).data('id'));
@@ -233,8 +241,30 @@
                     success: function(response)
                     {
                         console.log(response);
-                        $paypal_form.find('input[name=item_name]').attr('value',response.data.membership_name);
-                        $paypal_form.find('input[name=amount]').attr('value',response.data.price);
+                        $paypal_form.find('input[name=item_name]');
+                        $paypal_form.find('input[name=amount]');
+//                        $paypal_form.find('input[name=item_name]').attr('value',response.data.membership_name);
+//                        $paypal_form.find('input[name=amount]').attr('value',response.data.price);
+                        if(response.data.invoices.length > 1){
+                            for (var i=1; i <= response.data.invoices.length ; i++) {
+                                console.log(response.data.invoices[i]);
+                                var $name_clone = $paypal_form.find('input[name=item_name]').clone();
+                                $name_clone.attr('name',$name_clone.attr('name') + '_' + i).val(response.data.invoices[i-1].item_name);
+                                var $amount_clone = $paypal_form.find('input[name=amount]').clone();
+                                $amount_clone.attr('name',$amount_clone.attr('name') + '_' + i).val(response.data.invoices[i-1].price);
+                                var $quantity_clone = $paypal_form.find('input[name=quantity]').clone();
+                                $quantity_clone.attr('name',$quantity_clone.attr('name') + '_' + i).val(1);
+                                $paypal_form.append($name_clone).append($amount_clone).append($quantity_clone);
+                            }
+                            $paypal_form.find('input[name=item_name]').remove();
+                            $paypal_form.find('input[name=amount]').remove();
+                            $paypal_form.find('input[name=quantity]').remove();
+                        } else {
+                            $paypal_form.find('input[name=item_name]').val(response.data.invoices[0].item_name);
+                            $paypal_form.find('input[name=amount]').val(response.data.invoices[0].price);
+                            $paypal_form.find('input[name=quantity]').val(1);
+                        }
+                        $paypal_form.find('input[name=invoice]').attr('value',response.data.invoices[0].invoice_id);
                         $paypal_form.find('input[name=first_name]').attr('value',response.data.user.first_name);
                         $paypal_form.find('input[name=last_name]').attr('value',response.data.user.last_name);
                         $paypal_form.find('input[name=email]').attr('value',response.data.user.email);
