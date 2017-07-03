@@ -275,7 +275,7 @@
                         </a>
                     </li>
                     <li class="nav-item {{ $in_sidebar=='admin-settings-financial_profiles-list_all'?'active open':'' }}">
-                        <a href="" class="nav-link ">
+                        <a href="{{ route('admin/templates_email/list_all') }}" class="nav-link ">
                             <span class="title">Email templates</span>
                         </a>
                     </li>

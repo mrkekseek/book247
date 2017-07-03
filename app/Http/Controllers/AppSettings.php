@@ -16,6 +16,7 @@ use Cache;
 
 class AppSettings extends Controller
 {
+
     public function index()
     {
         $user = Auth::user();

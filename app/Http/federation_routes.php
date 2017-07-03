@@ -633,49 +633,49 @@ Route::group(['middleware' => 'web'], function () {
     /* Start General Settings Part */
     Route::get('admin/settings/list_all', [
         'as' => 'admin/settings/list_all',
-        'uses' => 'AppSettings@index'
+        'uses' => 'Federation\AppSettings@index'
     ]);
 
     Route::get('admin/settings/manage_settings', [
         'as' => 'admin/settings/manage_settings',
-        'uses' => 'AppSettings@manage_settings'
+        'uses' => 'Federation\AppSettings@manage_settings'
     ]);
 
     Route::get('admin/settings/account_key', [
         'as'    => 'admin/settings/account_key',
-        'uses'  => 'AppSettings@rankedin_app_key_integration'
+        'uses'  => 'Federation\AppSettings@rankedin_app_key_integration'
     ]);
     /* Stop General Settings Part */
 
     /* Start Finance Profiles Part */
     Route::get('admin/settings_financial_profiles/list_all', [
         'as'    => 'admin/settings_financial_profiles/list_all',
-        'uses'  => 'FinancialProfiles@list_all'
+        'uses'  => 'Federation\FinancialProfiles@list_all'
     ]);
 
     Route::get('admin/settings_financial_profiles/add', [
         'as'    => 'admin/settings_financial_profiles/add',
-        'uses'  => 'FinancialProfiles@add_shop_financial_profile'
+        'uses'  => 'Federation\FinancialProfiles@add_shop_financial_profile'
     ]);
 
     Route::post('admin/settings_financial_profiles/create', [
         'as'    => 'admin/settings_financial_profiles/create',
-        'uses'  => 'FinancialProfiles@store_shop_financial_profile'
+        'uses'  => 'Federation\FinancialProfiles@store_shop_financial_profile'
     ]);
 
     Route::get('admin/settings_financial_profiles/{id}/show', [
         'as'    => 'admin/settings_financial_profiles/show',
-        'uses'  => 'FinancialProfiles@show_shop_financial_profile'
+        'uses'  => 'Federation\FinancialProfiles@show_shop_financial_profile'
     ]);
 
     Route::get('admin/settings_financial_profiles/{id}/edit', [
         'as'    => 'admin/settings_financial_profiles/edit',
-        'uses'  => 'FinancialProfiles@edit_shop_financial_profile'
+        'uses'  => 'Federation\FinancialProfiles@edit_shop_financial_profile'
     ]);
 
     Route::post('admin/settings_financial_profiles/{id}/update', [
         'as'    => 'admin/settings_financial_profiles/update',
-        'uses'  => 'FinancialProfiles@update_shop_financial_profile'
+        'uses'  => 'Federation\FinancialProfiles@update_shop_financial_profile'
     ]);
     /* Stop Finance Profiles Part */
 });
@@ -911,6 +911,41 @@ Route::group(['prefix'=>'ajax', 'middleware' => 'web'], function(){
         'uses'  => 'Federation\FrontPageController@get_resource_list_for_date_time'
     ]);
 
+    Route::post('get_settings', [
+        'as' => 'ajax/get_settings',
+        'uses' => 'Federation\AppSettings@get_settings'
+    ]);
+
+    Route::post('delete_settings', [
+        'as' => 'ajax/delete_settings',
+        'uses' => 'Federation\AppSettings@delete_settings'
+    ]);
+
+    Route::post('add_items_settings', [
+        'as' => 'ajax/add_items_settings',
+        'uses' => 'Federation\AppSettings@add_items_settings'
+    ]);
+
+    Route::post('get_items_settings', [
+        'as' => 'ajax/get_items_settings',
+        'uses' => 'Federation\AppSettings@get_items_settings'
+    ]);
+
+    Route::post('update_settings', [
+        'as' => 'ajax/update_settings',
+        'uses' => 'Federation\AppSettings@update_settings'
+    ]);
+
+    Route::post('save_setting_application', [
+        'as' => 'ajax/save_setting_application',
+        'uses' => 'Federation\AppSettings@save_setting_application'
+    ]);
+    Route::post('save_allowed_setting', [
+        'as' => 'ajax/save_allowed_setting',
+        'uses' => 'Federation\AppSettings@save_allowed_setting'
+    ]);
+
+
 //    Route::post('booking_confirmed', [
 //        'as'    => 'ajax/booking-confirm',
 //        'uses'  => 'BookingController@confirm_booking'
@@ -989,6 +1024,15 @@ Route::group(['prefix'=>'ajax', 'middleware' => 'web'], function(){
     Route::post('get_friends_players_list', [
         'as'    => 'ajax/get_players_list',
         'uses'  => 'Federation\FrontEndUserController@ajax_get_available_players_list'
+    ]);
+
+    Route::get('admin/templates_email/list_all', [
+        'as' => 'admin/templates_email/list_all',
+        'uses' => 'Federation\EmailsController@list_all'
+    ]);
+    Route::post('admin/templates_email/delete', [
+        'as' => 'admin/templates_email/delete',
+        'uses' => 'Federation\EmailsController@delete_email_template'
     ]);
 
 //    Route::post('booking_action_player_show', [
