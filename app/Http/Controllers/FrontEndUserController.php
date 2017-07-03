@@ -3825,9 +3825,11 @@ class FrontEndUserController extends Controller
         return $this->update_personal_info($request, $user->id);
     }
 
-    public function settings_personal_avatar(Request $request){
+    public function settings_personal_avatar(Request $request)
+    {
         $user = Auth::user();
-        if (!$user || $user->is_back_user()) {
+        if ( ! $user || $user->is_back_user())
+        {
             return [
                 'success' => false,
                 'title'   => 'Authentication Error',
@@ -3838,7 +3840,8 @@ class FrontEndUserController extends Controller
         $avatarLocation = 'members/'.$user->id.'/avatars/';
         $avatarFilename = $user->username.'.'.$request->file('user_avatar')->getClientOriginalExtension();
         $exists = Storage::disk('local')->exists($avatarLocation . $avatarFilename);
-        if ($exists){
+        if ($exists)
+        {
             $old_avatar_name = time().'-'.$avatarFilename.'.old';
             Storage::disk('local')->move( $avatarLocation . $avatarFilename, $avatarLocation . $old_avatar_name);
         }
@@ -3852,9 +3855,11 @@ class FrontEndUserController extends Controller
         ];
 
         $avatar = UserAvatars::find(['user_id' => $user->id])->first();
-        if (!$avatar) {
+        if ( ! $avatar)
+        {
             $avatar = new UserAvatars();
         }
+        
         $avatar->fill($avatarData);
         $avatar->save();
 
