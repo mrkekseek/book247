@@ -851,6 +851,13 @@ if (env('FEDERATION',false)){
             'uses' => 'FrontEndUserController@settings_personal_avatar'
         ]);
 
+        //settings/personal/remove_avatar
+
+         Route::post('settings/personal/remove_avatar', [
+            'as' => 'settings/personal/remove_avatar',
+            'uses' => 'FrontEndUserController@settings_personal_remove_avatar'
+        ]);
+
         Route::post('settings/personal/update_password', [
             'as' => 'settings/personal/update_password',
             'uses' => 'FrontEndUserController@settings_personal_update_password'

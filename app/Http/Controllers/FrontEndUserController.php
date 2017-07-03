@@ -3737,6 +3737,27 @@ class FrontEndUserController extends Controller
         ]);
     }
 
+    public function settings_personal_remove_avatar()
+    {
+        $user = Auth::user();
+        if ( ! $user || ! $user->is_front_user())
+        {
+            return redirect()->intended(route('homepage'));
+        }
+    
+        if(UserAvatars::where("user_id", Auth::user()->id)->delete())
+        {
+            return [
+                "success" => TRUE
+            ];
+        }
+
+        return [
+            "success" => FALSE
+        ];
+
+    }
+
     public function settings_personal(){
         $user = Auth::user();
         if (!$user || !$user->is_front_user()) {
