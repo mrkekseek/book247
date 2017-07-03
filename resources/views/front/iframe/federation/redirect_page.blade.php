@@ -32,6 +32,7 @@
 @endsection
 
 @section('title', $status)
+
 @section('pageBodyClass','page-container-bg-solid page-boxed login')
 
 @section('pageContentBody')
@@ -44,7 +45,7 @@
             </div>
         </div>
     </div>
-@endsection]
+@endsection
 
 
 @section('pageCustomJScripts')
@@ -56,7 +57,6 @@
                     window.location.replace(link);
                 },5000)
             }
-
         });
     </script>
 @endsection

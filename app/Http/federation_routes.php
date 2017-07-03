@@ -54,10 +54,10 @@ Route::get('membership/paypal_success', [
     'uses'  => 'Federation\MembershipController@paypal_success'
 ]);
 
-Route::post('membership/paypal_success', [
-    'as'    => 'membership/paypal_success',
-    'uses'  => 'Federation\MembershipController@paypal_success'
-]);
+//Route::post('membership/paypal_success', [
+//    'as'    => 'membership/paypal_success',
+//    'uses'  => 'Federation\MembershipController@paypal_success'
+//]);
 
 Route::get('membership/paypal_cancel', [
     'as'    => 'membership/paypal_cancel',
