@@ -117,5 +117,9 @@ textarea[name=content] {
 	background-size: cover;
 	border-radius: 50%;
 	display: inline-block;
-	margin-right: 10px;
+	margin: 11px 10px 3px 4px;
+}
+
+.page-header.navbar .top-menu .navbar-nav>li.dropdown-user .dropdown-toggle {
+    padding: 10px;
 }
