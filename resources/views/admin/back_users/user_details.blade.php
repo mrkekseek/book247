@@ -1385,8 +1385,7 @@
                         }
                     }
                 });
-            }); 
-
+            });
         });
 
         function store_account_info(){
