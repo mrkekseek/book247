@@ -114,6 +114,14 @@ textarea[name=content] {
 	margin: 11px 10px 3px 4px;
 }
 
-.page-header.navbar .top-menu .navbar-nav>li.dropdown-user .dropdown-toggle {
+.page-header.navbar .top-menu .navbar-nav > li.dropdown-user .dropdown-toggle {
     padding: 10px;
+}
+
+.page-header.navbar .top-menu .navbar-nav > li.dropdown>.dropdown-toggle:hover {
+    background-color: transparent;
+}
+
+.page-header.navbar .top-menu .navbar-nav > li.dropdown .dropdown-menu {
+	margin-top: 0;
 }
