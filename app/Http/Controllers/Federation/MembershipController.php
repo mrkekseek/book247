@@ -67,7 +67,7 @@ class MembershipController extends Base
         if ($r->get('user_id')  && $r->get('payment_method') && $r->get('membership')) {
 
             $user = User::where('sso_user_id',$r->get('user_id'))->first();
-            $status = AuthLocal::loginUsingId($user->id);
+            $status = Auth::loginUsingId($user->id);
             if ( $status ) {
 
                 $r->request->add([
@@ -92,7 +92,7 @@ class MembershipController extends Base
                     }
                 }
 
-                AuthLocal::logout();
+                Auth::logout();
 
             }
             if ($r->get('payment_method') == 'paypal') {
@@ -108,12 +108,12 @@ class MembershipController extends Base
                 $invoices = InvoiceItem::where('invoice_id',$invoicePlan->invoice_id)->get();
 
                 return json_encode([
-                    'success' => true ,
-                    'data' => [
-                        'paying' => true,
-                        'payment_method' => $r->get('payment_method'),
-                        'user' => $u,
-                        'invoices' => $invoices
+                        'success' => true ,
+                        'data' => [
+                            'paying' => true,
+                            'payment_method' => $r->get('payment_method'),
+                            'user' => $u,
+                            'invoices' => $invoices
 //                        'membership_name' => $membership->name,
 //                        'price' => $membership->get_price()->price
                         ]
@@ -182,4 +182,5 @@ class MembershipController extends Base
             'url' => $url
         ]);
     }
+
 }

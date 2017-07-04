@@ -15,7 +15,7 @@ class FederationApi extends Controller {
         if(RequestValidator::validate($r)){
             if ( $r->get('memberSSOid') ) {
                 $user = User::where('sso_user_id', $r->get('memberSSOid'))->first();
-                if (isset($user) && $user->status == 'active') {
+                if (isset($user) && $user->status == 'active' && is_object($user->get_active_membership())) {
                     return json_encode(array(
                         'code' => 1,
                         'isValid' => true

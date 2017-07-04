@@ -6,11 +6,13 @@ use App\MembershipPlan;
 use App\MembershipPlanPrice;
 use App\Role;
 use App\UserMembership;
+use App\IframePermission;
 use App\ShopResourceCategory;
 use App\UserMembershipAction;
 use App\UserMembershipInvoicePlanning;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use App\Http\Libraries\ApiAuth;
 //use Auth;
 use App\User;
 use App\Http\Requests;
@@ -718,4 +720,8 @@ class MembershipController extends Controller
             return ['success' => true, 'message' => 'No invoice updated'];
         }
     }
+
+
+
+
 }
