@@ -24,7 +24,16 @@
 
 if (env('FEDERATION',false)){
     include('federation_routes.php');
-} else {
+}
+else
+{
+
+    Route::get('test', [
+            'as' => 'homepage',
+            'uses' => 'FrontEndUserController@test'
+        ]);
+
+
     Route::group(['middleware' => 'web'], function () {
         // default login/register/forgot password routes
         Route::auth();

@@ -55,6 +55,8 @@ use Illuminate\Support\Str;
 use Snowfire\Beautymail\Beautymail;
 use Illuminate\Auth\Passwords\TokenRepositoryInterface;
 use App\Http\Controllers\AppSettings;
+use Illuminate\Support\Facades\Mail;
+use App\Http\Controllers\EmailsController;
 
 class FrontEndUserController extends Controller
 {
@@ -3963,6 +3965,7 @@ class FrontEndUserController extends Controller
     }
 
     public function password_reset_action(Request $request, $token){
+        
         $this->check_expired_password_requests();
 
         $vars = $request->only('token', 'email', 'password1', 'password2');
@@ -4018,6 +4021,16 @@ class FrontEndUserController extends Controller
                 'errors' => $updatePassword['message']
             ];
         }
+       
+        $data = [
+            'first_name' => $user->first_name,
+            'last_name'  => $user->last_name,
+            'middle_name' => $user->middle_name,
+            'company_name' => '',
+            'reset_password_link' => ''
+        ];
+
+
         $top_title_message = 'Dear <span>'.$user->first_name.' '.$user->middle_name.' '.$user->last_name .'</span>';
         $main_message = 'You have successfully updated your password using the reset password link we sent. Now you can login using your new password. <br /><br />'.
                         'If this was not you, please contact the Booking System administrator and report this issue.';
@@ -4079,7 +4092,31 @@ class FrontEndUserController extends Controller
 
         DB::insert('insert into password_resets (email, token, created_at) values (:email, :key, :now_time)', ['email'=>$user->email, 'key'=>$generateKey, 'now_time'=>Carbon::now()]);
 
-        $top_title_message = 'Dear <span>'.$user->first_name.' '.$user->middle_name.' '.$user->last_name .'</span>';
+        $data = [
+            'first_name' => $user->first_name,
+            'middle_name' => $user->middle_name,
+            'last_name' => $user->last_name,
+            'company_name' => '',
+            'reset_password_link' => $generateKey
+        ];
+
+        $tempalte = EmailsController::build('Password reset – first step after reset password', $data);
+
+    
+        if ($tempalte)
+        {
+            $mail = app()->make(Beautymail::class);
+            $mail->send('emails.email_container', ['content' => $tempalte["message"]], function($message) use ($user, $tempalte) {
+                   
+                   $message
+                    ->from(AppSettings::get_setting_value_by_name('globalWebsite_system_email'))
+                    ->to($user->email, $user->first_name.' '.$user->middle_name.' '.$user->last_name)
+                    ->subject(AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title').' - Password reset request');
+            });
+        }
+
+
+        /*$top_title_message = 'Dear <span>'.$user->first_name.' '.$user->middle_name.' '.$user->last_name .'</span>';
         $main_message = 'This is a password reset request email sent by Booking System Agent. If you did not request a password reset, ignore this email.<br /><br />'.
                         'If this request was initiated by you, click the following link to <a href="'.route('reset_password', ['token'=>$generateKey]).'" target="_blank">reset your password</a>.'.
                         'The link will be available for the next 60 minutes, after that you will need to request another password reset request.<br /><br />';
@@ -4095,7 +4132,7 @@ class FrontEndUserController extends Controller
                     ->to($user->email, $user->first_name.' '.$user->middle_name.' '.$user->last_name)
                     ->subject(AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title').' - Password reset request');
             });
-        
+       */ 
         return [
             'success'   => true,
             'title'     => 'Password reset action',

@@ -371,6 +371,7 @@ class AppSettings extends Controller
     }
 
     public static function get_setting_value_by_name($settingName) {
+
         $value = Cache::remember($settingName, 1440, function() use ($settingName) {
             $setting = Settings::with('constraint_values')->with('application_setting')->where("system_internal_name", '=', $settingName)->first();
             if ($setting){
