@@ -44,7 +44,7 @@
 
                                     <div class="panel panel-primary">
                                         <div class="panel-heading">
-                                            <h3 class="panel-title">Enter personal details - mandatory</h3>
+                                            <h3 class="panel-title">Enter personal details</h3>
                                         </div>
                                         <div class="panel-body">
                                             <div class="form-group">
@@ -67,27 +67,20 @@
                                                     <option value="M">Male</option>
                                                 </select>
                                             </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="panel panel-info">
-                                        <div class="panel-heading">
-                                            <h3 class="panel-title">Personal details - optional</h3>
-                                        </div>
-                                        <div class="panel-body">
                                             <div class="form-group">
                                                 <span class="help-inline">Date of Birth</span>
                                                 <div class="input-group input-medium date date-picker" data-date="{{ \Carbon\Carbon::today()->format('d-m-Y') }}" data-date-format="dd-mm-yyyy" data-date-viewmode="years" style="display:inline-flex; margin-top:2px; margin-right:40px;">
                                                     <input type="text" class="form-control" name="date_of_birth" readonly style="background-color:#ffffff;">
-                                                        <span class="input-group-btn">
-                                                            <button class="btn default" type="button">
-                                                                <i class="fa fa-calendar"></i>
-                                                            </button>
-                                                        </span>
+                                                    <span class="input-group-btn">
+                                                        <button class="btn default" type="button">
+                                                            <i class="fa fa-calendar"></i>
+                                                        </button>
+                                                    </span>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
+
 
                                     <div class="panel panel-primary">
                                         <div class="panel-heading">
@@ -112,7 +105,7 @@
                                             </div>
                                             <div class="panel-body">
                                                 <div class="form-group">
-                                                    <span class="help-inline">Membership Start Date</span>
+                                                    <span class="help-inline responsive-width-15">Membership Start Date</span>
                                                     <div class="input-group input-medium date date-picker" data-date="{{ \Carbon\Carbon::today()->format('d-m-Y') }}" data-date-format="dd-mm-yyyy" data-date-viewmode="years" style="display:inline-flex; margin-top:2px; margin-right:40px;">
                                                         <input type="text" class="form-control" name="start_date" readonly style="background-color:#ffffff;">
                                                         <span class="input-group-btn">
@@ -123,7 +116,7 @@
                                                     </div>
                                                 </div>
                                                 <div class="form-group">
-                                                    <span class="help-inline">Membership Type</span>
+                                                    <span class="help-inline responsive-width-15">Membership Type</span>
                                                     <select class="form-control input-group input-inline input-medium" name="membership_plan">
                                                         <option value="1" selected="selected">No membership plan</option>
                                                         @foreach($memberships as $plan)
@@ -132,7 +125,7 @@
                                                     </select>
                                                 </div>
                                                 <div class="form-group">
-                                                    <span class="help-inline">User Access Card</span>
+                                                    <span class="help-inline responsive-width-15">User Access Card</span>
                                                     <input class="form-control input-group input-inline input-medium" name="membership_number" placeholder="insert/paste number here" />
                                                 </div>
 
