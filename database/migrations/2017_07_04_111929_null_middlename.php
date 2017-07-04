@@ -12,9 +12,7 @@ class NullMiddlename extends Migration
      */
     public function up()
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->string('middle_name')->nullable()->change();
-        });
+        DB::statement('ALTER TABLE `users` CHANGE `middle_name` `middle_name` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL;');
     }
 
     /**
@@ -24,8 +22,6 @@ class NullMiddlename extends Migration
      */
     public function down()
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->string('middle_name')->change();
-        });
+        DB::statement('ALTER TABLE `users` CHANGE `middle_name` `middle_name` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL;');
     }
 }
