@@ -1464,6 +1464,8 @@ class FrontEndUserController extends Controller
             $user = Auth::user();
         }
 
+        die;
+
         $is_staff = false;
         if (!$user->hasRole(['front-member','front-user'])){
             $is_staff = true;
@@ -2393,7 +2395,7 @@ class FrontEndUserController extends Controller
                                         'Sincerely,<br />Book247 Team.';
 
                         $beautymail = app()->make(Beautymail::class);
-                        $beautymail->send('emails.email_default',
+                        $beautymail->send('emails.email_default_v2',
                             ['body_header_title'=>$top_title_message, 'body_message' => $main_message],
                             function($message) use ($friend) {
                                 $message
@@ -2409,7 +2411,7 @@ class FrontEndUserController extends Controller
                             'Sincerely,<br />Book247 Team.';
 
                         $beautymail = app()->make(Beautymail::class);
-                        $beautymail->send('emails.email_default',
+                        $beautymail->send('emails.email_default_v2',
                             ['body_header_title'=>$top_title_message, 'body_message' => $main_message],
                             function($message) use ($friend) {
                                 $message
@@ -2681,7 +2683,7 @@ class FrontEndUserController extends Controller
                             'Your phone : <strong>'.$personalDetails->mobile_number.'</strong> that is registered in the system can be used to send you alerts when you create a booking or when a booking is created on your behalf. <br /><br />';
 
             $beautymail = app()->make(Beautymail::class);
-            $beautymail->send('emails.email_default',
+            $beautymail->send('emails.email_default_v2',
                 ['user'=>$user, 'body_header_title'=>$top_title_message, 'body_message' => $main_message],
                 function($message) use ($user){
                     $message
@@ -3737,6 +3739,27 @@ class FrontEndUserController extends Controller
         ]);
     }
 
+    public function settings_personal_remove_avatar()
+    {
+        $user = Auth::user();
+        if ( ! $user || ! $user->is_front_user())
+        {
+            return redirect()->intended(route('homepage'));
+        }
+    
+        if(UserAvatars::where("user_id", Auth::user()->id)->delete())
+        {
+            return [
+                "success" => TRUE
+            ];
+        }
+
+        return [
+            "success" => FALSE
+        ];
+
+    }
+
     public function settings_personal(){
         $user = Auth::user();
         if (!$user || !$user->is_front_user()) {
@@ -4000,7 +4023,7 @@ class FrontEndUserController extends Controller
                         'If this was not you, please contact the Booking System administrator and report this issue.';
 
         $beauty_mail = app()->make(Beautymail::class);
-        $beauty_mail->send('emails.email_default',
+        $beauty_mail->send('emails.email_default_v2',
             ['body_header_title'=>$top_title_message, 'body_message' => $main_message],
             function($message) use ($user) {
                 $message
@@ -4064,7 +4087,7 @@ class FrontEndUserController extends Controller
                         '<b>Remember this link is active for the next 60 minutes.</b>';
 
         $beauty_mail = app()->make(Beautymail::class);
-        $beauty_mail->send('emails.email_default',
+        $beauty_mail->send('emails.email_default_v2',
             ['body_header_title'=>$top_title_message, 'body_message' => $main_message],
             function($message) use ($user) {
                 $message

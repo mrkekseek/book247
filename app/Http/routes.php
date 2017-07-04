@@ -109,6 +109,11 @@ if (env('FEDERATION',false)){
             'uses' => 'BackEndUserController@update_account_info',
         ]);
 
+        Route::post('admin/back_users/remove_avatar', [
+            'as' => 'admin/back_users/remove_avatar',
+            'uses' => 'BackEndUserController@remove_avatar',
+        ]);
+
         Route::post('admin/front_users/view_user/{id}/personal_info', [
             'as' => 'admin/front_users/view_user/personal_info',
             'uses' => 'FrontEndUserController@update_personal_info',
@@ -849,6 +854,13 @@ if (env('FEDERATION',false)){
         Route::post('settings/personal/avatar', [
             'as' => 'settings/personal/avatar',
             'uses' => 'FrontEndUserController@settings_personal_avatar'
+        ]);
+
+        //settings/personal/remove_avatar
+
+         Route::post('settings/personal/remove_avatar', [
+            'as' => 'settings/personal/remove_avatar',
+            'uses' => 'FrontEndUserController@settings_personal_remove_avatar'
         ]);
 
         Route::post('settings/personal/update_password', [

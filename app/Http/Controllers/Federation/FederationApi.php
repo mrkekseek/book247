@@ -13,10 +13,27 @@ class FederationApi extends Controller {
 
     public function federation_member_has_valid_license(Request $r){
         if(RequestValidator::validate($r)){
-            return json_encode(array(
-                'code' => 1,
-                'isValid' => true
-            ),JSON_FORCE_OBJECT);
+            if ( $r->get('memberSSOid') ) {
+                $user = User::where('sso_user_id', $r->get('memberSSOid'))->fisrt();
+                if (isset($user) && $user->status == 'active') {
+                    return json_encode(array(
+                        'code' => 1,
+                        'isValid' => true
+                    ), JSON_FORCE_OBJECT);
+                } else {
+                    return json_encode(array(
+                        'code' => 2,
+                        'isValid' => false
+                    ), JSON_FORCE_OBJECT);
+                }
+            } else {
+                return json_encode(array(
+                    'code' => 2,
+                    'message' => "Invalid request."
+                ), JSON_FORCE_OBJECT);
+            }
+
+
         } else {
             return json_encode(array(
                 'code' => 2,

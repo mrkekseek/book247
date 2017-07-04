@@ -16,6 +16,7 @@ use Cache;
 
 class AppSettings extends Controller
 {
+
     public function index()
     {
         $user = Auth::user();
@@ -237,7 +238,7 @@ class AppSettings extends Controller
             'constrained'           => $vars['contained'] == "true" ? 1 : 0,
             'data_type'             => $vars['data_type'],
             'min_value'             => $vars['min_value'] * 1 ? $vars['min_value'] : 0,
-            'max_value'             => $vars['min_value'] * 1 ? $vars['min_value'] : 0
+            'max_value'             => $vars['max_value'] * 1 ? $vars['max_value'] : 0
         ];
 
         $settingValidator = Validator::make($fillable, Settings::rules('UPDATE'), Settings::$validationMessages, Settings::$attributeNames);
@@ -373,7 +374,7 @@ class AppSettings extends Controller
         $value = Cache::remember($settingName, 1440, function() use ($settingName) {
             $setting = Settings::with('constraint_values')->with('application_setting')->where("system_internal_name", '=', $settingName)->first();
             if ($setting){
-                if ($setting->constrained===0){
+                if ($setting->constrained==0){
                     // free value variable so we get the value
                     if ( isset($setting->application_setting->unconstrained_value)){
                         return $setting->application_setting->unconstrained_value;

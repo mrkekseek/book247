@@ -32,6 +32,7 @@
 @endsection
 
 @section('title', $status)
+
 @section('pageBodyClass','page-container-bg-solid page-boxed login')
 
 @section('pageContentBody')
@@ -44,15 +45,18 @@
             </div>
         </div>
     </div>
-@endsection]
+@endsection
 
 
 @section('pageCustomJScripts')
     <script type="text/javascript">
         $(document).ready(function(){
-            setTimeout(function(){
-                window.location.replace('{{ $link }}');
-            },5000)
+            var link = '{{ $link }}';
+            if (link.length > 0){
+                setTimeout(function(){
+                    window.location.replace(link);
+                },5000)
+            }
         });
     </script>
 @endsection

@@ -149,7 +149,7 @@ class BookingDailyPlannerEmail extends Command
             foreach($allAdmins as $single){
                 $top_title_message = 'Dear <span>'.$single->first_name.' '.$single->middle_name.' '.$single->last_name .'</span>,';
                 $beautymail = app()->make(Beautymail::class);
-                $beautymail->send('emails.email_default',
+                $beautymail->send('emails.email_default_v2',
                     ['body_header_title'=>$top_title_message, 'body_message' => $main_message],
                     function($message) use ($single, $listOfBookings) {
                         $message

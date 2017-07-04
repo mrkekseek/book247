@@ -103,3 +103,17 @@ textarea[name=content] {
 	width: 30%;
 
 }
+
+.header-avatar {
+	width: 35px;
+	height: 35px;
+	background-position: center center;
+	background-size: cover;
+	border-radius: 50%;
+	display: inline-block;
+	margin: 11px 10px 3px 4px;
+}
+
+.page-header.navbar .top-menu .navbar-nav>li.dropdown-user .dropdown-toggle {
+    padding: 10px;
+}
