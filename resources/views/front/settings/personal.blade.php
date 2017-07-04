@@ -123,7 +123,7 @@
                                                                 <label class="control-label">Citizenship</label>
                                                                 <select name="personalCountry" id="personalCountry" class="form-control">
                                                                     @foreach ($countries as $country)
-                                                                        <option value="{{ $country->id }}" {!! ($country->id==$user->country_id ? ' selected="selected" ' : '') !!}>{{ $country->citizenship }}</option>
+                                                                        <option value="{{ $country->id }}" {!! ($country->id==$user->country_id ? ' selected="selected" ' : '') !!}>{{ $country->name }}</option>
                                                                     @endforeach
                                                                 </select></div>
                                                             <div class="form-group">
@@ -184,7 +184,7 @@
                                                                         <span class="fileinput-new"> Select image </span>
                                                                         <span class="fileinput-exists"> Change </span>
                                                                         <input type="file" name="user_avatar" class="user_avatar_select_btn1" /> </span>
-                                                                                <a href="javascript:;" class="btn red fileinput-exists" data-dismiss="fileinput"> Remove </a>
+                                                                                <a href="javascript:;" data-toggle="modal" data-target="#confirm-remove-avatar" class="btn red fileinput-exists " data-dismiss=""> Remove </a>
                                                                             </div>
                                                                         </div>
                                                                         <div class="clearfix margin-top-10">
@@ -250,6 +250,25 @@
         <!-- END PAGE CONTENT BODY -->
         <!-- END CONTENT BODY -->
     </div>
+
+    <div class="modal fade" id="confirm-remove-avatar">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Remove avatar</h4>
+                </div>
+                <div class="modal-body">
+                    <p>Do you want to remove avatar?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default " data-dismiss="modal">No</button>
+                    <button type="button" class="btn btn-danger remove-avatar">Yes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 @endsection
 
 @section('pageBelowCorePlugins')
@@ -708,6 +727,20 @@
             ComponentsDateTimePickers.init();
             FormValidation.init();
             FormDropzone.init();
+
+            $(".remove-avatar").click(function(){
+                $.ajax({
+                    url : "{{route('settings/personal/remove_avatar')}}",
+                    type : "post",
+                    success : function(response)
+                    {
+                        if (response.success)
+                        {
+                            window.location.reload();
+                        }
+                    }
+                });
+            });
         });
 
         /* Done */

@@ -61,7 +61,7 @@
                                                     <div class="item">
                                                         <div class="item-head">
                                                             <div class="item-details">
-                                                                <img class="item-pic" src="{!! $knownBooking['avatar'] !!}">
+                                                                <div class="item-avatar" style="background-image: url({!! $knownBooking['avatar'] !!});"></div>
                                                                 <a href="" class="item-name primary-link">{{ $knownBooking['breated_by'] }}</a>
                                                                 <span class="item-label">{{ $knownBooking['passed_time_since_creation'] }}</span>
                                                             </div>
@@ -92,7 +92,7 @@
 
                                         <div class="portlet-title">
                                             <div class="caption">
-                                                <span class="caption-subject bold uppercase">seamles user login</span>
+                                                <span class="caption-subject bold uppercase">seamless user login</span>
                                             </div>
                                         </div>
                                         <div class="alert alert-danger display-hide">
@@ -176,8 +176,8 @@
                                                     <i class="fa fa-angle-left"></i>
                                                 </a>
                                                 <span class="separator-header"></span>
-                                                <span class="caption-subject bold uppercase hidden-sm hidden-xs">register an unuque user on our platform</span>
-                                                <span class="caption-subject bold uppercase hidden-md hidden-lg">register an unuque user</span>
+                                                <span class="caption-subject bold uppercase hidden-sm hidden-xs">register an unique user on our platform</span>
+                                                <span class="caption-subject bold uppercase hidden-md hidden-lg">register an unique user</span>
 
                                             </div>
                                         </div>
@@ -185,10 +185,10 @@
                                             <button class="close" data-close="alert"></button> You have some errors in the form. Please check below. </div>
                                         <div class="alert alert-success display-hide">
                                             <button class="close" data-close="alert"></button> Information is valid, please wait! </div>
-                                        <p class="hint"> Enter your email address: </p>
+                                        <!--p class="hint"> Enter your email address: </p-->
                                         <div class="form-group">
                                             <label class="control-label visible-ie8 visible-ie9">Email</label>
-                                            <input class="form-control placeholder-no-fix" type="text" placeholder="Email your email address" name="email" /> </div>
+                                            <input class="form-control placeholder-no-fix" type="text" placeholder="Enter your email address:" name="email" /> </div>
                                         <div class="form-actions">
                                             <button type="submit" id="preregister-btn" class="btn grey btn-block uppercase">Next</button>
                                         </div>
@@ -287,7 +287,7 @@
                                             <select name="country" id="country" class="form-control">
                                                 <option value="">Select Citizenship</option>
                                                 @foreach ($countries as $country)
-                                                    <option value="{{ $country->id }}" {!! ($country->id==$user->country_id ? ' selected="selected" ' : '') !!}>{{ $country->citizenship }}</option>
+                                                    <option value="{{ $country->id }}" {!! ($country->id==$user->country_id ? ' selected="selected" ' : '') !!}>{{ $country->name }}</option>
                                                 @endforeach
                                             </select>
                                         </div>
@@ -707,7 +707,12 @@
                     focusInvalid: false, // do not focus the last invalid input
                     rules: {
                         username: {
-                            required: true,
+                            required: {
+                                depends:function(){
+                                    $(this).val($.trim($(this).val()));
+                                    return true;
+                                }
+                            },
                             email: true,
                         },
                         password: {
@@ -847,6 +852,8 @@
             var handlePreRegister = function() {
                 jQuery('#pre-register-btn').click(function() {
                     jQuery('.login-form').hide();
+                    jQuery('.login .alert span').html('');
+                    jQuery('.login .alert').hide();
                     jQuery('#user_preregistration_form').show();
                 });
 
@@ -944,7 +951,7 @@
                 if (jQuery().datepicker) {
                     $('.date-picker').datepicker({
                         rtl: App.isRTL(),
-                        orientation: "left",
+                        orientation: "right",
                         autoclose: true
                     });
                 }

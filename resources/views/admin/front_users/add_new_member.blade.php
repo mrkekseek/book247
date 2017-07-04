@@ -296,8 +296,8 @@
                             minlength: 1,
                         },
                         date_of_birth: {
-                            //required:false,
-                            //datePickerDate: true,
+                            required:true,
+                            datePickerDate: true,
                         },
 
                         personal_addr1: {
@@ -312,6 +312,9 @@
                         personal_addr_pcode: {
                             minlength: 2,
                         },
+                        adr_country_id: {
+                            required:true,
+                        }
                     },
 
                     messages: { // custom messages for radio buttons and checkboxes
@@ -425,7 +428,17 @@
                         },2500);
                     }
                     else{
-                        show_notification('User registration ERROR', 'Something went wrong with the registration. Try changing the email/phone number or try reloading the page', 'tangerine', 3500, 0);
+                        if (data.errors.length > 0)
+                        {
+                            var error = '';
+                            for (var i = 0; i < data.errors.length; i++){
+                                error = error+data.errors[i];
+                            }
+                            show_notification(data.title, error, 'tangerine', 3500, 0);
+                        }
+                        else{
+                            show_notification('User registration ERROR', 'Something went wrong with the registration. Try changing the email/phone number or try reloading the page', 'tangerine', 3500, 0);
+                        }
                     }
                 }
             });

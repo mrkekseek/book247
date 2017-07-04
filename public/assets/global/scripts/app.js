@@ -1044,4 +1044,17 @@ var App = function() {
 
 jQuery(document).ready(function() {    
    App.init(); // init metronic core componets
+   $(".remove-avatar").click(function(){
+                $.ajax({
+                    url : "{{route('settings/personal/remove_avatar')}}",
+                    type : "post",
+                    success : function(response)
+                    {
+                        if (response.success)
+                        {
+                            window.location.reload();
+                        }
+                    }
+                });
+            });
 });
