@@ -322,7 +322,7 @@ class BookingController extends Controller
                         $main_message.= '<br />You can view this information in your account by accessing your <strong>Bookings > Booking Archive</strong> menu.';
 
                         $beautymail = app()->make(Beautymail::class);
-                        $beautymail->send('emails.email_default',
+                        $beautymail->send('emails.email_default_v2',
                             ['body_header_title'=>$top_title_message, 'body_message' => $main_message],
                             function($message) use ($player, $booking_details) {
                             $message
@@ -1098,7 +1098,7 @@ class BookingController extends Controller
                 $main_message.= '<br />You can view this information in your account by accessing your <strong>Bookings > Booking Archive</strong> menu.';
 
                 $beautymail = app()->make(Beautymail::class);
-                $beautymail->send('emails.email_default',
+                $beautymail->send('emails.email_default_v2',
                     ['body_header_title'=>$top_title_message, 'body_message' => $main_message],
                     function ($message) use ($player, $email_title) {
                     $message
