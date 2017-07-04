@@ -14,7 +14,7 @@ class FederationApi extends Controller {
     public function federation_member_has_valid_license(Request $r){
         if(RequestValidator::validate($r)){
             if ( $r->get('memberSSOid') ) {
-                $user = User::where('sso_user_id', $r->get('memberSSOid'))->fisrt();
+                $user = User::where('sso_user_id', $r->get('memberSSOid'))->first();
                 if (isset($user) && $user->status == 'active') {
                     return json_encode(array(
                         'code' => 1,
