@@ -69,12 +69,11 @@
                                             <label class="control-label col-md-3 inline"> Invoicing Period </label>
                                             <div class="col-md-9">
                                                 <select name="membership_period" class="form-control input-inline input inline-block">
-                                                    <option value="7">once every 7 days</option>
-                                                    <option value="14">once every 14 days</option>
                                                     <option value="30">one per month</option>
                                                     <option value="90">once every three months</option>
                                                     <option value="180">once every six months</option>
                                                     <option value="360">once per year</option>
+                                                    <option value="-1">lifetime</option>
                                                 </select>
                                                 <span class="help-inline inline-block">  </span>
                                             </div>
