@@ -238,7 +238,7 @@ class AppSettings extends Controller
             'constrained'           => $vars['contained'] == "true" ? 1 : 0,
             'data_type'             => $vars['data_type'],
             'min_value'             => $vars['min_value'] * 1 ? $vars['min_value'] : 0,
-            'max_value'             => $vars['min_value'] * 1 ? $vars['min_value'] : 0
+            'max_value'             => $vars['max_value'] * 1 ? $vars['max_value'] : 0
         ];
 
         $settingValidator = Validator::make($fillable, Settings::rules('UPDATE'), Settings::$validationMessages, Settings::$attributeNames);
