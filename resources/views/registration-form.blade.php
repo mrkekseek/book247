@@ -209,7 +209,7 @@
                                                     <div class="btn-group">
                                                         <a class="btn blue dropdown-toggle" data-toggle="dropdown" href="javascript:;" aria-expanded="false">  <i class="fa fa-info"></i></a>
                                                         <p class="dropdown-menu btn-info-paragraphe">
-                                                            Tip: If you would like to see two names per booking, then we recommend to decrease the time slots in half. Example:   If you for instance operate with 60 min slots, but want see playing partner as well =, then choose 30 min slots. This way each member can add his friend to the 2nd part of the booking, so they are booked in on 30 min each, together they play for 60 min. Please see the example <br> <a href="#">'click here'</a>.
+                                                            Tip: If you would like to see two names per booking, then we recommend to decrease the time slots in half. Example:   If you for instance operate with 60 min slots, but want see playing partner as well, then choose 30 min slots. This way each member can add his friend to the 2nd part of the booking, so they are booked in on 30 min each, together they play for 60 min. Please see the example <br> <a href="#">'click here'</a>.
                                                         </p>
                                                     </div>
                                                 </div>
