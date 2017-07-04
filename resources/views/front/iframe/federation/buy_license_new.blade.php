@@ -22,180 +22,195 @@
     <![endif]-->
 </head>
 <body class="body-iframe">
-@if(!isset($membership))
-<div class="wrapper body-iframe-step-1" id="body-iframe-step-1">
-    <div class="container-iframe">
-        <div class="carusel-wraper">
-            <div class="carusel items-container simple-items">
-                @foreach ($membership_list as $key => $m)
-                    @if ($m->status == 'active')
-                        <div class="carusel-item-content carusel-item-content-{{ $m->id }}" >
-                            <div class="box-item item item-{{ $key }}" style="border-top: 8px solid {{ $m->plan_calendar_color }}"  data-match-height="memberships-options">
-                                <h2 class="h2">{{ $m->name }}</h2>
-                                <p class="after-cap">
-                                    {{ $m->short_description  }}
-                                </p>
-                                <h3 class="h3" style="color: {{ $m->plan_calendar_color }}">{{ $m->get_price()->price }},-/mo</h3>
-                                <p>First month fee {{ $m->administration_fee_amount }},-</p>
-                                <ul class="list">
-                                    <li>Billing: monthly</li>
-                                    <li>Binding: {{ $m->binding_period }} months</li>
-                                    <li>Sign out: {{ $m->sign_out_period ? $m->sign_out_period .' months' : 'none'}}</li>
-                                </ul>
-                                <p>Can not book squash</p>
-                                <a href="#" data-id="membership" data-value="{{ $m->id }}" class="form-choice carusel-button steps-button" style="background: {{ $m->plan_calendar_color }}">GET IT NOW</a>
+
+@if(isset($membership_active) || isset($membership_suspended))
+    <div class="membership-status-container">
+        @if(isset($membership_active))
+            <span class="membership-status"> You have an active membership </span>
+        @endif
+        @if(isset($membership_suspended))
+            <span class="membership-status"> Your membership is suspended </span>
+        @endif
+    </div>
+
+
+@else
+    @if(!isset($membership))
+    <div class="wrapper body-iframe-step-1" id="body-iframe-step-1">
+        <div class="container-iframe">
+            <div class="carusel-wraper">
+                <div class="carusel items-container simple-items">
+                    @foreach ($membership_list as $key => $m)
+                        @if ($m->status == 'active')
+                            <div class="carusel-item-content carusel-item-content-{{ $m->id }}" >
+                                <div class="box-item item item-{{ $key }}" style="border-top: 8px solid {{ $m->plan_calendar_color }}"  data-match-height="memberships-options">
+                                    <h2 class="h2">{{ $m->name }}</h2>
+                                    <p class="after-cap">
+                                        {{ $m->short_description  }}
+                                    </p>
+                                    <h3 class="h3" style="color: {{ $m->plan_calendar_color }}">{{ $m->get_price()->price }},-/mo</h3>
+                                    <p>First month fee {{ $m->administration_fee_amount }},-</p>
+                                    <ul class="list">
+                                        <li>Billing: monthly</li>
+                                        <li>Binding: {{ $m->binding_period }} months</li>
+                                        <li>Sign out: {{ $m->sign_out_period ? $m->sign_out_period .' months' : 'none'}}</li>
+                                    </ul>
+                                    <p>Can not book squash</p>
+                                    <a href="#" data-id="membership" data-value="{{ $m->id }}" class="form-choice carusel-button steps-button" style="background: {{ $m->plan_calendar_color }}">GET IT NOW</a>
+                                </div>
                             </div>
+                        @endif
+                    @endforeach
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
+    <!--item-2-->
+    <div class="wrapper body-iframe-step-2" id="body-iframe-step-2">
+        <div class="container-iframe">
+
+            <div class="step-box clearfix">
+                @if (isset($membership) && is_object($membership))
+                    <div class="box-item" style="border-top: 8px solid {{ $membership->plan_calendar_color }}">
+                        <h2 class="h2">{{ $membership->name }}</h2>
+                        <p class="after-cap">
+                            {{ $membership->short_description  }}
+                        </p>
+                        <h3 class="h3" style="color: {{ $membership->plan_calendar_color }}">{{ $membership->get_price()->price }},-/mo</h3>
+                        <p>First month fee {{ $membership->administration_fee_amount }},-</p>
+                        <ul class="list">
+                            <li>Billing: monthly</li>
+                            <li>Binding: {{ $membership->binding_period }} months</li>
+                            <li>Sign out: {{ $membership->sign_out_period ? $membership->sign_out_period .' months' : 'none'}}</li>
+                        </ul>
+                        <p>Can not book squash</p>
+                        <div class="button-box">
+                            <a href="#" data-id="payment_method" data-value="card" class="steps-button pay-but pay-with-card form-choice" style="background: {{ $membership->plan_calendar_color }}">PAY WITH A CARD</a>
+                            <a href="#" data-id="payment_method" data-value="paypal" class="steps-button pay-but pay-with-paypal form-choice">
+                                <span>PAY WITH</span>
+                                <img src="{{  asset('assets/iframe/img/icon-pay.png') }}" alt="PayPal">
+                            </a>
                         </div>
-                    @endif
-                @endforeach
+                    </div>
+                @else
+                    <div class="box-item membership-replacer">
+
+                        <div class="button-box">
+                            <a href="#" data-id="payment_method" data-value="card" class="steps-button pay-but pay-with-card form-choice">PAY WITH A CARD</a>
+                            <a href="#" data-id="payment_method" data-value="paypal" class="steps-button pay-but pay-with-paypal form-choice">
+                                <span>PAY WITH</span>
+                                <img src="{{  asset('assets/iframe/img/icon-pay.png') }}" alt="PayPal">
+                            </a>
+                        </div>
+                    </div>
+                @endif
+
+                <div class="picture-item">
+                    <img src="{{  asset('assets/iframe/img/picture.jpg') }}" alt="picture">
+                </div>
             </div>
         </div>
     </div>
-</div>
+    @if (isset($membership) && is_object($membership))
+        <script type="text/javascript">
+            $('#body-iframe-step-2 .container-iframe').animate({
+                opacity: 1 ,
+                zIndex: 1
+            }, 900, 'linear');
+        </script>
+    @endif
+    <!--item-3-->
+    <div class="wrapper body-iframe-step-3" id="body-iframe-step-3">
+        <div class="container-iframe">
+            <div class="order-wrapper clearfix">
+                <div class="order-summary">
+                    <h2 class="h2">ORDER SUMMARY</h2>
+                    <div class="summary-box clearfix">
+                        <div>
+                            <span>Dag/Helg - Fitness</span>
+                            <p class="summary-sample">2 months signing out period and no binding.</p>
+                            <p class="summary-sample">Monthly billing</p>
+                        </div>
+                        <div>
+                            <span>149,-</span>
+                        </div>
+                    </div>
+                    <div class="summary-total clearfix">
+                        <div class="summary-total-name"><span>Item total</span></div>
+                        <div class="summary-total-pay"><span>149,-</span></div>
+                    </div>
+                    <p class="summary-total-summ">Total 149,-</p>
+                </div>
+                <div class="order-details">
+                    <h2 class="h2">PAYMENT DETAILS</h2>
+                    <form action="1.php" method="post" class="order-form">
+                        <label for="CardNumber">
+                            <span>Card Number</span>
+                            <input type="text" id="CardNumber" name="CardNumber">
+                        </label>
+                        <div>
+                            <p>Expiration Date</p>
+                            <input type="text" placeholder="mm" class="small-input"> <span>/</span>
+                            <input type="text" placeholder="yy" class="small-input">
+                        </div>
+                        <label for="cvv">
+                            <span>CVV</span>
+                            <input type="text" class="small-input" id="cvv" name="cvv">
+                        </label>
+                        <label for="HolderName">
+                            <span>Card Holder Name (as seen on the card)</span>
+                            <input type="text" id="HolderName" name="HolderName">
+                        </label>
+                        <a href="#" class="steps-button payment-but pay-with-card-final">PAY NOW</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="wrapper body-iframe-step-4" id="body-iframe-step-4">
+        <div class="container-iframe">
+            <div class="step-box clearfix">
+                <span> Payment in progress </span>
+                <span class="dot dot-one">.</span>
+                <span class="dot dot-two">.</span>
+                <span class="dot dot-three">.</span>
+            </div>
+        </div>
+    </div>
+
+    <form id="main-form" style="display: none">
+        <input name="user_id" type="hidden" value="{{ isset($user_id) ? $user_id : '' }}"/>
+        <input name="membership" type="text" id="membership" value="{{ isset($membership) ? $membership->id : '' }}"/>
+        <input name="payment_method" type="text" id="payment_method"/>
+        <input name="redirect_url" type="text" value="{{ $redirect_url }}"/>
+    </form>
+
+    <form id="paypal-form" action="{{ env('PAYPAL_SANDBOX') }}"  target="_parent" method="post" style="display: none;">
+        <input type="hidden" name="cmd" value="_cart">
+        <input type="hidden" name="business" value="{{ env('PAYPAL_EMAIL') }}">
+        <input type="hidden" name="return" value="{{ env('MY_SERVER_URL') }}/membership/paypal_success">
+        <input type="hidden" name="cancel_url" value="{{ env('MY_SERVER_URL') }}/membership/paypal_cancel">
+        <input type="hidden" name="notify_url" value="{{ env('MY_SERVER_URL') }}/membership/ipn">
+        <input type="hidden" name="rm" value="1">
+        <input type="hidden" name="upload" value="1">
+
+        <input type="hidden" name="item_name" value="">
+        <input type="hidden" name="amount" value="">
+        <input type="hidden" name="quantity" value="1">
+        <input type="hidden" name="currency_code" value="USD">
+
+        <!-- Set variables that override the address stored with PayPal. -->
+
+        <input type="hidden" name="first_name" value="">
+        <input type="hidden" name="last_name" value="">
+        <input type="hidden" name="email" value="">
+
+        <input type="hidden" name="custom" value="">
+        <input type="hidden" name="invoice" value="">
+
+    </form>
 @endif
-<!--item-2-->
-<div class="wrapper body-iframe-step-2" id="body-iframe-step-2">
-    <div class="container-iframe">
-
-        <div class="step-box clearfix">
-            @if (isset($membership) && is_object($membership))
-                <div class="box-item" style="border-top: 8px solid {{ $membership->plan_calendar_color }}">
-                    <h2 class="h2">{{ $membership->name }}</h2>
-                    <p class="after-cap">
-                        {{ $membership->short_description  }}
-                    </p>
-                    <h3 class="h3" style="color: {{ $membership->plan_calendar_color }}">{{ $membership->get_price()->price }},-/mo</h3>
-                    <p>First month fee {{ $membership->administration_fee_amount }},-</p>
-                    <ul class="list">
-                        <li>Billing: monthly</li>
-                        <li>Binding: {{ $membership->binding_period }} months</li>
-                        <li>Sign out: {{ $membership->sign_out_period ? $membership->sign_out_period .' months' : 'none'}}</li>
-                    </ul>
-                    <p>Can not book squash</p>
-                    <div class="button-box">
-                        <a href="#" data-id="payment_method" data-value="card" class="steps-button pay-but pay-with-card form-choice" style="background: {{ $membership->plan_calendar_color }}">PAY WITH A CARD</a>
-                        <a href="#" data-id="payment_method" data-value="paypal" class="steps-button pay-but pay-with-paypal form-choice">
-                            <span>PAY WITH</span>
-                            <img src="{{  asset('assets/iframe/img/icon-pay.png') }}" alt="PayPal">
-                        </a>
-                    </div>
-                </div>
-            @else
-                <div class="box-item membership-replacer">
-
-                    <div class="button-box">
-                        <a href="#" data-id="payment_method" data-value="card" class="steps-button pay-but pay-with-card form-choice">PAY WITH A CARD</a>
-                        <a href="#" data-id="payment_method" data-value="paypal" class="steps-button pay-but pay-with-paypal form-choice">
-                            <span>PAY WITH</span>
-                            <img src="{{  asset('assets/iframe/img/icon-pay.png') }}" alt="PayPal">
-                        </a>
-                    </div>
-                </div>
-            @endif
-
-            <div class="picture-item">
-                <img src="{{  asset('assets/iframe/img/picture.jpg') }}" alt="picture">
-            </div>
-        </div>
-    </div>
-</div>
-@if (isset($membership) && is_object($membership))
-    <script type="text/javascript">
-        $('#body-iframe-step-2 .container-iframe').animate({
-            opacity: 1 ,
-            zIndex: 1
-        }, 900, 'linear');
-    </script>
-@endif
-<!--item-3-->
-<div class="wrapper body-iframe-step-3" id="body-iframe-step-3">
-    <div class="container-iframe">
-        <div class="order-wrapper clearfix">
-            <div class="order-summary">
-                <h2 class="h2">ORDER SUMMARY</h2>
-                <div class="summary-box clearfix">
-                    <div>
-                        <span>Dag/Helg - Fitness</span>
-                        <p class="summary-sample">2 months signing out period and no binding.</p>
-                        <p class="summary-sample">Monthly billing</p>
-                    </div>
-                    <div>
-                        <span>149,-</span>
-                    </div>
-                </div>
-                <div class="summary-total clearfix">
-                    <div class="summary-total-name"><span>Item total</span></div>
-                    <div class="summary-total-pay"><span>149,-</span></div>
-                </div>
-                <p class="summary-total-summ">Total 149,-</p>
-            </div>
-            <div class="order-details">
-                <h2 class="h2">PAYMENT DETAILS</h2>
-                <form action="1.php" method="post" class="order-form">
-                    <label for="CardNumber">
-                        <span>Card Number</span>
-                        <input type="text" id="CardNumber" name="CardNumber">
-                    </label>
-                    <div>
-                        <p>Expiration Date</p>
-                        <input type="text" placeholder="mm" class="small-input"> <span>/</span>
-                        <input type="text" placeholder="yy" class="small-input">
-                    </div>
-                    <label for="cvv">
-                        <span>CVV</span>
-                        <input type="text" class="small-input" id="cvv" name="cvv">
-                    </label>
-                    <label for="HolderName">
-                        <span>Card Holder Name (as seen on the card)</span>
-                        <input type="text" id="HolderName" name="HolderName">
-                    </label>
-                    <a href="#" class="steps-button payment-but pay-with-card-final">PAY NOW</a>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-<div class="wrapper body-iframe-step-4" id="body-iframe-step-4">
-    <div class="container-iframe">
-        <div class="step-box clearfix">
-            <span> Payment in progress </span>
-            <span class="dot dot-one">.</span>
-            <span class="dot dot-two">.</span>
-            <span class="dot dot-three">.</span>
-        </div>
-    </div>
-</div>
-
-<form id="main-form" style="display: none">
-    <input name="user_id" type="hidden" value="{{ isset($user_id) ? $user_id : '' }}"/>
-    <input name="membership" type="text" id="membership" value="{{ isset($membership) ? $membership->id : '' }}"/>
-    <input name="payment_method" type="text" id="payment_method"/>
-</form>
-
-<form id="paypal-form" action="{{ env('PAYPAL_SANDBOX') }}"  target="_parent" method="post" style="display: none;">
-    <input type="hidden" name="cmd" value="_cart">
-    <input type="hidden" name="business" value="{{ env('PAYPAL_EMAIL') }}">
-    <input type="hidden" name="return" value="{{ env('MY_SERVER_URL') }}/membership/paypal_success">
-    <input type="hidden" name="cancel_url" value="{{ env('MY_SERVER_URL') }}/membership/paypal_cancel">
-    <input type="hidden" name="notify_url" value="{{ env('MY_SERVER_URL') }}/membership/ipn">
-    <input type="hidden" name="rm" value="1">
-    <input type="hidden" name="upload" value="1">
-
-    <input type="hidden" name="item_name" value="">
-    <input type="hidden" name="amount" value="">
-    <input type="hidden" name="quantity" value="1">
-    <input type="hidden" name="currency_code" value="USD">
-
-    <!-- Set variables that override the address stored with PayPal. -->
-
-    <input type="hidden" name="first_name" value="">
-    <input type="hidden" name="last_name" value="">
-    <input type="hidden" name="email" value="">
-
-    <input type="hidden" name="custom" value="{{ $redirect_url }}">
-    <input type="hidden" name="invoice" value="">
-
-</form>
 <!--====END MODAL====-->
 <script src="{{ asset ('assets/iframe/libs/JQ_1-9-1/jquery.min.js') }}"></script>
 <script src="{{ asset ('assets/iframe/libs/slick/slick.min.js') }}"></script>
@@ -236,7 +251,8 @@
                     data: {
                         'user_id' : $('input[name=user_id]').val() ,
                         'membership' : $('#membership').val(),
-                        'payment_method' : $('#payment_method').val()
+                        'payment_method' : $('#payment_method').val(),
+                        'redirect_url': $('input[name=redirect_url]').val()
                     },
                     success: function(response)
                     {
@@ -265,6 +281,7 @@
                             $paypal_form.find('input[name=quantity]').val(1);
                         }
                         $paypal_form.find('input[name=invoice]').attr('value',response.data.invoices[0].invoice_id);
+                        $paypal_form.find('input[name=custom]').attr('value',response.data.custom);
                         $paypal_form.find('input[name=first_name]').attr('value',response.data.user.first_name);
                         $paypal_form.find('input[name=last_name]').attr('value',response.data.user.last_name);
                         $paypal_form.find('input[name=email]').attr('value',response.data.user.email);

@@ -15,10 +15,13 @@ use Illuminate\Http\Request;
 use App\Http\Libraries\ApiAuth;
 //use Auth;
 use App\User;
+use Illuminate\Support\Facades\Input;
 use App\Http\Requests;
 use Validator;
 use Regulus\ActivityLog\Models\Activity;
 use Illuminate\Support\Facades\Auth;
+use App\InvoiceItem;
+use App\Invoice;
 /*
  * This controller is linked to the User Membership Plan assigned to him. The actions here are linked to an active membership plan assigned to a user or a plan that will be assigned
  */
@@ -721,7 +724,216 @@ class MembershipController extends Controller
         }
     }
 
+    public function iframed($token ,$sso_id, $membership_id)
+    {
+        $permission = IframePermission::where([['user_id','=',$sso_id],['permission_token','=',$token]])->first();
+        if(!isset($permission)) {
+            return "You have no permission";
+        }
+        $permission->delete();
 
+        $synchronized = ApiAuth::synchronize($sso_id);
+        if($synchronized != true) {
+            return $synchronized;
+        }
+        $user = User::where('sso_user_id',$sso_id)->first();
+        if($user) {
+            $m = $user->get_active_membership();
+            if( $m ) {
+                if ($m->status = 'active'){
+                    return view('front/iframe/federation/buy_license_new' ,[
+                        'membership_active' => true
+                    ]);
+                } else {
+                    return view('front/iframe/federation/buy_license_new' ,[
+                        'membership_suspended' => true
+                    ]);
+                }
+            }
+        }
+        $redirect_url = Input::get('redirect_url',false);
+        $membership = null;
+        $membership_list = null;
+        if (isset($membership_id)) {
+            $membership = MembershipPlan::find($membership_id);
+        }
+        if (!$membership) {
+            $membership_id = null;
+            $membership_list = MembershipPlan::all();
+        }
+
+        return view('front/iframe/federation/buy_license_new' ,[
+            'user_id' => $sso_id ,
+            'membership' => $membership ,
+            'membership_list' => $membership_list,
+            'redirect_url' => $redirect_url
+        ]);
+    }
+
+    public function iframed_paypal_pay(Request $r)
+    {
+
+        if ($r->get('user_id')  && $r->get('payment_method') && $r->get('membership')) {
+
+            $user = User::where('sso_user_id',$r->get('user_id'))->first();
+            $status = Auth::loginUsingId($user->id);
+            if ( $status ) {
+
+                $r->request->add([
+                    'member_id' => $user->id,
+                    'selected_plan' => $r->get('membership'),
+                    'start_date' => date('Y-m-d')
+                ]);
+
+                $membership = UserMembership::where([
+                    ['user_id','=',$user->id],
+                    ['membership_id','=',$r->get('membership')]
+                ])->first();
+
+                if(!isset($membership)) {
+                    $status = $this->assign_membership_to_member($r,'pending');
+                    if($status['success'] == false ){
+                        return json_encode([
+                                'success' => false ,
+                                'message' => $status['errors']
+                            ]
+                        );
+                    }
+                }
+
+                Auth::logout();
+
+            }
+            if ($r->get('payment_method') == 'paypal') {
+                $u = User::where('sso_user_id',$r->get('user_id'))->first();
+                $userMembership = UserMembership::where([
+                    ['user_id','=',$u->id],
+                    ['membership_id','=',$r->get('membership')]
+                ])->first();
+
+                $invoicePlan = UserMembershipInvoicePlanning::where('user_membership_id', $userMembership->id)->first();
+
+                $custom = json_encode(array(
+                    'redirect_url' => $r->get('redirect_url'),
+                    'invoice_id' => $invoicePlan->invoice_id));
+                $key = env('APP_KEY') ;
+                if($key){
+                    while(strlen($key) < 16){
+                        $key .= env('APP_KEY');
+                    }
+                    $key = substr($key,0,16);
+                }
+                $iv = env('APP_KEY');
+                if($iv){
+                    while(strlen($iv) < 16){
+                        $iv .= env('APP_KEY');
+                    }
+                    $iv = substr($key,0,16);
+                }
+                $custom = base64_encode(openssl_encrypt($custom,'AES-256-CBC',$key,0 ,$iv));
+
+                $invoices = InvoiceItem::where('invoice_id',$invoicePlan->invoice_id)->get();
+
+                return json_encode([
+                        'success' => true ,
+                        'data' => [
+                            'paying' => true,
+                            'payment_method' => $r->get('payment_method'),
+                            'user' => $u,
+                            'invoices' => $invoices,
+                            'custom' => $custom
+//                        'membership_name' => $membership->name,
+//                        'price' => $membership->get_price()->price
+                        ]
+                    ]
+                );
+            } else {
+                return json_encode([
+                    'success' => true,
+                    'data' => [
+                        'paying' => true,
+                        'payment_method' => $r->get('payment_method')
+                    ]
+                ]);
+            }
+        } else {
+            return json_encode([
+                'user_id' => null ,
+                'membership' => null
+            ]);
+        }
+    }
+    public function ipn(Request $r)
+    {
+        $log = new Paypal();
+        $log->fill([
+            'invoice_id' => -1,
+            'paypal_response' => json_encode($r->all())
+        ]);
+        $log->save();
+    }
+
+    public function paypal_success(Request $r)
+    {
+        $amount = $r->get('amt');
+        $curency = $r->get('cc');
+        $transactionId = $r->get('tx');
+        $url = $r->get('cm');
+
+        $breadcrumbs = [
+            'Home'      => route('admin'),
+            'Dashboard' => '',
+        ];
+        $text_parts  = [
+            'title'     => 'Home',
+            'subtitle'  => 'users dashboard',
+            'table_head_text1' => 'Dashboard Summary'
+        ];
+        $sidebar_link= 'front-homepage';
+
+        $key = env('APP_KEY') ;
+        if($key){
+            while(strlen($key) < 16){
+                $key .= env('APP_KEY');
+            }
+            $key = substr($key,0,16);
+        }
+        $iv = env('APP_KEY');
+        if($iv){
+            while(strlen($iv) < 16){
+                $iv .= env('APP_KEY');
+            }
+            $iv = substr($key,0,16);
+        }
+        $custom = json_decode(openssl_decrypt(base64_decode($url),'AES-256-CBC',$key,0 ,$iv));
+        $invoice = Invoice::find($custom->invoice_id);
+        $invoice->status = 'completed';
+        $invoice->save();
+        $invoice_plan = UserMembershipInvoicePlanning::where('invoice_id',$custom->invoice_id)->first();
+        $user_membership = UserMembership::find($invoice_plan->user_membership_id);
+        $user_membership->status = 'active';
+        $user_membership->save();
+
+        return view('front/iframe/federation/redirect_page',[
+            'breadcrumbs' => $breadcrumbs,
+            'text_parts'  => $text_parts,
+            'in_sidebar'  => $sidebar_link,
+            'text' => 'Payment successful!',
+            'status' => 'Success',
+            'link' => $custom->redirect_url
+        ]);
+    }
+
+    public function paypal_cencel(Request $r)
+    {
+        $url = $r->get('cm');
+        return view('front/iframe/federation/redirect_page',[
+            'text' => 'Payment Canceled :(',
+            'status' => 'Failed',
+            'link' => 'http://book.net/admin/test_api_call',
+            'url' => $url
+        ]);
+    }
 
 
 }
