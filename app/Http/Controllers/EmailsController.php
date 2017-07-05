@@ -399,7 +399,11 @@ class EmailsController extends Controller
     static function build($name, $data = array())
     {
         $template = EmailTemplate::where('hook', $name)->first();
-        
+
+        if (!$template){
+            return false;
+        }
+
         $subject  = $template->title;
         $messages = $template->description;
 

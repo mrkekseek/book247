@@ -390,7 +390,7 @@
                             </li>
                         </ul>
                     </li>
-                    @if (isset($show_membership_types))
+                    @if (!isset($show_membership_types))
                     <li class="menu-dropdown mega-menu-dropdown {{$in_sidebar=="front-type_of_memberships"?"active":""}}">
                         <a href="{{ route('front/membership_types') }}"> Membership Types
                             <span class="arrow"></span>
@@ -407,7 +407,7 @@
                             <span class="arrow"></span>
                         </a>
                     </li>
-                    @if (isset($show_finance_part_top_menu))
+                    @if (!isset($show_finance_part_top_menu))
                     <li class="menu-dropdown classic-menu-dropdown {{ in_array($in_sidebar, ['front-finance_invoice_list', 'front-finance_active_membership'])?'active':'' }}">
                         <a href="javascript:;"> Financial
                             <span class="arrow"></span>
@@ -466,7 +466,7 @@
                             <i class="icon-bar-chart"></i> Squash Fitness Homepage
                         </a>
                     </li>
-                    @if (isset($show_membership_types))
+                    @if (!isset($show_membership_types))
                     <li class="menu-dropdown mega-menu-dropdown {{$in_sidebar=="front-type_of_memberships"?"active":""}}">
                         <a href="{{ route('front/membership_types') }}">
                             <i class="icon-bar-chart"></i> Membership Types

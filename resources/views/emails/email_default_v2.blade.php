@@ -401,7 +401,7 @@
                     <table class="mainwidthbox" align="center" style="background-color:#0277bd;" bgcolor="#0277bd">
                         <tr>
                             <td width="60%" align="left" class="inner" valign="middle" style="vertical-align:middle;">
-                                <div class="salutation">{!! $body_header_title !!}</div>
+                                <div class="salutation">Dear {{$user->first_name.' '.$user->middle_name.' '.$user->last_name}}</div>
                             </td>
                             <td width="40%" align="right" class="inner" valign="middle" style="vertical-align:middle;">
                                 <div class="topdate">{{ \Carbon\Carbon::now()->format('F Y') }}</div>
