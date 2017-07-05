@@ -378,13 +378,9 @@ class User extends Authenticatable
         if ( ! $avatar)
         {
             $avatar = new UserAvatars();
-            
             $avatar->file_location = 'employees/default/avatars/';
-            $avatar->file_name = 'gender_' . strtolower($this->gender) . '.png';   
+            $avatar->file_name = 'profile-photo-std-256.png';
         }
-
-        $avatarContent = "";
-        $avatarType = "";
 
         if ($this->is_back_user())
         {
@@ -401,16 +397,9 @@ class User extends Authenticatable
             }
         }
 
-        if ( ( ! isset($avatarContent) || ! isset($avatarType)) && in_array(strtolower($this->gender), ['m','f']))
-        {
-            $avatarContent      = Storage::disk('local')->get('members/default/avatars/gender_' . strtolower($this->gender) . '.png');
-            $avatarType         = Storage::disk('local')->mimeType('members/default/avatars/gender_' . strtolower($this->gender) . '.png');
-        }
-        
-        if ( ! $avatarContent)
-        {
-            $avatarContent      = Storage::disk('local')->get('members/default/avatars/gender_m.png');
-            $avatarType         = Storage::disk('local')->mimeType('members/default/avatars/gender_m.png');
+        if (!isset($avatarContent) || !isset($avatarType)){
+            $avatarContent      = Storage::disk('local')->get('members/default/avatars/profile-photo-std-256.png');
+            $avatarType         = Storage::disk('local')->mimeType('members/default/avatars/profile-photo-std-256.png');
         }
 
         if ($is_link==true)

@@ -859,7 +859,6 @@ class FrontEndUserController extends Controller
         $userCountry = Countries::find($member->country_id);
 
         $avatar = $member->get_avatar_image();
-
         $avatarArchive = [];
         $old_avatars = Storage::disk('local')->files($avatar['file_location']);
         
@@ -4099,46 +4098,36 @@ class FrontEndUserController extends Controller
         DB::insert('insert into password_resets (email, token, created_at) values (:email, :key, :now_time)', ['email'=>$user->email, 'key'=>$generateKey, 'now_time'=>Carbon::now()]);
 
         $data = [
-            'first_name' => $user->first_name,
-            'middle_name' => $user->middle_name,
-            'last_name' => $user->last_name,
-            'company_name' => '',
-            'reset_password_link' => $generateKey
+            'first_name'    => $user->first_name,
+            'middle_name'   => $user->middle_name,
+            'last_name'     => $user->last_name,
+            'company_name'          => AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title'),
+            'reset_password_link'   => '<a href="'.route('reset_password', ['token'=>$generateKey]).'" target="_blank">reset your password</a>'
         ];
 
-        $tempalte = EmailsController::build('Password reset – first step after reset password', $data);
-
-    
-        if ($tempalte)
-        {
-            $mail = app()->make(Beautymail::class);
-            $mail->send('emails.email_container', ['content' => $tempalte["message"]], function($message) use ($user, $tempalte) {
-                   
-                   $message
-                    ->from(AppSettings::get_setting_value_by_name('globalWebsite_system_email'))
-                    ->to($user->email, $user->first_name.' '.$user->middle_name.' '.$user->last_name)
-                    ->subject(AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title').' - Password reset request');
-            });
+        $template = EmailsController::build('Password reset – first step after reset password', $data);
+        if ($template) {
+            $main_message = $template["message"];
+            $subject = AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title').' - Password reset request';
         }
-
-
-        /*$top_title_message = 'Dear <span>'.$user->first_name.' '.$user->middle_name.' '.$user->last_name .'</span>';
-        $main_message = 'This is a password reset request email sent by Booking System Agent. If you did not request a password reset, ignore this email.<br /><br />'.
-                        'If this request was initiated by you, click the following link to <a href="'.route('reset_password', ['token'=>$generateKey]).'" target="_blank">reset your password</a>.'.
-                        'The link will be available for the next 60 minutes, after that you will need to request another password reset request.<br /><br />';
-        $main_message.= 'Once the password is reset you will get a new email with the outcome of your action, then you can login to the system with your newly created password.<br />'.
-                        '<b>Remember this link is active for the next 60 minutes.</b>';
-
+        else {
+            $main_message = 'This is a password reset request email sent by Booking System Agent. If you did not request a password reset, ignore this email.<br /><br />'.
+                            'If this request was initiated by you, click the following link to <a href="'.route('reset_password', ['token'=>$generateKey]).'" target="_blank">reset your password</a>.'.
+                            'The link will be available for the next 60 minutes, after that you will need to request another password reset request.<br /><br />';
+            $main_message.= 'Once the password is reset you will get a new email with the outcome of your action, then you can login to the system with your newly created password.<br />'.
+                            '<b>Remember this link is active for the next 60 minutes.</b>';
+            $subject = AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title').' - Password reset request';
+        }
         $beauty_mail = app()->make(Beautymail::class);
         $beauty_mail->send('emails.email_default_v2',
-            ['body_header_title'=>$top_title_message, 'body_message' => $main_message],
-            function($message) use ($user) {
+            ['body_message' => $main_message, 'user'=>$user],
+            function($message) use ($user, $subject) {
                 $message
                     ->from(AppSettings::get_setting_value_by_name('globalWebsite_system_email'))
                     ->to($user->email, $user->first_name.' '.$user->middle_name.' '.$user->last_name)
-                    ->subject(AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title').' - Password reset request');
+                    ->subject($subject);
             });
-       */ 
+
         return [
             'success'   => true,
             'title'     => 'Password reset action',

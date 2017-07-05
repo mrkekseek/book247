@@ -772,7 +772,6 @@ class MembershipController extends Controller
 
     public function iframed_paypal_pay(Request $r)
     {
-
         if ($r->get('user_id')  && $r->get('payment_method') && $r->get('membership')) {
 
             $user = User::where('sso_user_id',$r->get('user_id'))->first();
