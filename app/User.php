@@ -386,7 +386,6 @@ class User extends Authenticatable
         $avatarContent = "";
         $avatarType = "";
 
-
         if ($this->is_back_user())
         {
             if (Storage::disk('local')->exists($avatar->file_location . $avatar->file_name)) {
