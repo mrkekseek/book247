@@ -33,9 +33,7 @@
                     <!-- PORTLET MAIN -->
                     <div class="portlet light profile-sidebar-portlet bordered">
                         <!-- SIDEBAR USERPIC -->
-                        <div class="profile-userpic">
-                            <img src="{{ $avatar }}" class="img-responsive" alt="" />
-                        </div>
+                        <div class="profile-userpic" style="background-size: cover; background-position: center center; margin: 0 auto; width: 150px; height: 150px; border-radius: 50%;background-image: url('{{ $avatar }}');"></div>
                         <!-- END SIDEBAR USERPIC -->
                         <!-- SIDEBAR USER TITLE -->
                         <div class="profile-usertitle">

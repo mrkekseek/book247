@@ -206,6 +206,7 @@
                                             </div>
                                         </div>
                                         <p class="hint"> </p>
+                                        <input type="text" class="hidden" name="email" />                                            
                                         <div class="form-group">
                                             <label class="control-label visible-ie8 visible-ie9">Password</label>
                                             <input class="form-control placeholder-no-fix" type="password" placeholder="Enter your password for login" name="password" /> 
@@ -213,7 +214,6 @@
                                         <div class="pull-right forget-password-block">
                                             <a href="javascript:;" id="forget-password" class="forget-password">Forgot Password?</a>
                                         </div>
-                                        <input type="hidden" name="email" />                                            
                                         <input type="hidden" name="type" />
                                         <div class="form-actions">
                                             <button type="submit" id="preregister-btn" class="btn red btn-block uppercase">Login</button>
@@ -295,7 +295,7 @@
                                         <div class="form-group">
                                             <!--ie8, ie9 does not support html5 placeholder, so we just show field title for that-->
                                             <label class="control-label visible-ie8 visible-ie9">Email</label>
-                                            <input class="form-control placeholder-no-fix" type="hidden" placeholder="Email" name="reg_email" /> </div>
+                                            <input class="form-control placeholder-no-fix hidden" type="text" name="reg_email" /> </div>
                                         <div class="form-group">
                                             <label class="control-label visible-ie8 visible-ie9">Password</label>
                                             <input class="form-control placeholder-no-fix" type="password" autocomplete="off" id="rpassword" placeholder="Password - at least 8 characters" name="rpassword" /> </div>

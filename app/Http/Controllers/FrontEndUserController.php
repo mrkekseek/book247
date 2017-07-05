@@ -861,8 +861,11 @@ class FrontEndUserController extends Controller
         $avatar = $member->get_avatar_image();
         $avatarArchive = [];
         $old_avatars = Storage::disk('local')->files($avatar['file_location']);
-        if ($old_avatars){
-            foreach($old_avatars as $old_avatar){
+        
+        if ($old_avatars && $avatar['file_location'] != "employees/default/avatars/" && $avatar['file_location'] != "members/default/avatars/")
+        {
+            foreach($old_avatars as $old_avatar)
+            {
                 $avatarArchive[] = [
                     'type'  => Storage::disk('local')->mimeType($old_avatar),
                     'data'  => Storage::disk('local')->get($old_avatar)
@@ -3745,9 +3748,14 @@ class FrontEndUserController extends Controller
         {
             return redirect()->intended(route('homepage'));
         }
-    
+
         if(UserAvatars::where("user_id", Auth::user()->id)->delete())
         {
+            foreach(UserAvatars::where("user_id", Auth::user()->id)->first()->file_location as $row)
+            {
+                unlink($row);
+            }
+
             return [
                 "success" => TRUE
             ];
@@ -4762,6 +4770,8 @@ class FrontEndUserController extends Controller
                         $user->attachRole(6);
                         Auth::set_personal_details($user->id, $api_user);
                         Auth::set_cookie_session($user->sso_user_id);
+                        $searchMembers = new OptimizeSearchMembers();
+                        $searchMembers->add_missing_members([$user->id]);
                         return [
                             'success' => true,
                             'title'   => 'Autorization',

@@ -184,7 +184,7 @@
                                                                         <span class="fileinput-new"> Select image </span>
                                                                         <span class="fileinput-exists"> Change </span>
                                                                         <input type="file" name="user_avatar" class="user_avatar_select_btn1" /> </span>
-                                                                                <a href="javascript:;" data-toggle="modal" data-target="#confirm-remove-avatar" class="btn red fileinput-exists " data-dismiss=""> Remove </a>
+                                                                                <a href="javascript:;" data-toggle="modal" data-target="#confirm-remove-avatar" class="btn red fileinput-exists " data-dismiss=""> Reset to default </a>
                                                                             </div>
                                                                         </div>
                                                                         <div class="clearfix margin-top-10">
@@ -729,6 +729,7 @@
             FormDropzone.init();
 
             $(".remove-avatar").click(function(){
+                
                 $.ajax({
                     url : "{{route('settings/personal/remove_avatar')}}",
                     type : "post",
@@ -741,6 +742,7 @@
                     }
                 });
             });
+
         });
 
         /* Done */
