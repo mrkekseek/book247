@@ -10,3 +10,4 @@ config/constants.php
 composer.lock
 /api/app/Cache.php
 storage/app/members/*
+storage/app/employees/*
