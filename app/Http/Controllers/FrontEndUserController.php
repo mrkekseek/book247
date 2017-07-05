@@ -4775,6 +4775,8 @@ class FrontEndUserController extends Controller
                         $user->attachRole(6);
                         Auth::set_personal_details($user->id, $api_user);
                         Auth::set_cookie_session($user->sso_user_id);
+                        $searchMembers = new OptimizeSearchMembers();
+                        $searchMembers->add_missing_members([$user->id]);
                         return [
                             'success' => true,
                             'title'   => 'Autorization',

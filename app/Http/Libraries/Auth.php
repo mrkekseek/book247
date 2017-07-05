@@ -162,6 +162,8 @@ class Auth
         {
             $user->save();
             $user->attachRole(6);
+            $searchMembers = new OptimizeSearchMembers();
+            $searchMembers->add_missing_members([$user->id]);
             self::set_personal_details($user->id, $api_user);
             self::set_cookie_session($sso_user_id);
             return true;
@@ -213,6 +215,8 @@ class Auth
         if ($user->save())
         {
             $user->attachRole(6);
+            $searchMembers = new OptimizeSearchMembers();
+            $searchMembers->add_missing_members([$user->id]);
             self::set_personal_details($user->id, $api_user);
             return $user;
         }
