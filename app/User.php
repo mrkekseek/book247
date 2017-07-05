@@ -383,6 +383,10 @@ class User extends Authenticatable
             $avatar->file_name = 'gender_' . strtolower($this->gender) . '.png';   
         }
 
+        $avatarContent = "";
+        $avatarType = "";
+
+
         if ($this->is_back_user())
         {
             if (Storage::disk('local')->exists($avatar->file_location . $avatar->file_name)) {
@@ -403,11 +407,12 @@ class User extends Authenticatable
             $avatarContent      = Storage::disk('local')->get('members/default/avatars/gender_' . strtolower($this->gender) . '.png');
             $avatarType         = Storage::disk('local')->mimeType('members/default/avatars/gender_' . strtolower($this->gender) . '.png');
         }
-        /*else
+        
+        if ( ! $avatarContent)
         {
             $avatarContent      = Storage::disk('local')->get('members/default/avatars/gender_m.png');
             $avatarType         = Storage::disk('local')->mimeType('members/default/avatars/gender_m.png');
-        }*/
+        }
 
         if ($is_link==true)
         {
