@@ -163,7 +163,7 @@ class User extends Authenticatable
     }
 
     public function avatar(){
-        return $this->hasOne('App\UserAvatars');
+        return $this->hasOne('App\UserAvatars')->latest();
     }
 
     public function documents(){
@@ -374,7 +374,6 @@ class User extends Authenticatable
 
     public function get_avatar_image($is_link = false){
         $avatar = $this->avatar;
-       
         if ( ! $avatar)
         {
             $avatar = new UserAvatars();
@@ -397,7 +396,7 @@ class User extends Authenticatable
             }
         }
 
-        if (!isset($avatarContent) || !isset($avatarType)){
+        if (!isset($avatarContent) || !isset($avatarType)){ exit;
             $avatarContent      = Storage::disk('local')->get('members/default/avatars/profile-photo-std-256.png');
             $avatarType         = Storage::disk('local')->mimeType('members/default/avatars/profile-photo-std-256.png');
         }

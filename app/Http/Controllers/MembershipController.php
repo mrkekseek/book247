@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\InvoiceFinancialTransaction;
 use App\MembershipPlan;
 use App\MembershipPlanPrice;
 use App\Role;
@@ -786,7 +787,8 @@ class MembershipController extends Controller
 
                 $membership = UserMembership::where([
                     ['user_id','=',$user->id],
-                    ['membership_id','=',$r->get('membership')]
+                    ['membership_id','=',$r->get('membership')],
+                    ['status','=','pending']
                 ])->first();
 
                 if(!isset($membership)) {
@@ -864,18 +866,96 @@ class MembershipController extends Controller
     }
     public function ipn(Request $r)
     {
+        $d = json_decode(json_encode($r->all()),true);
+        $req = 'cmd=_notify-validate';
+        foreach ($d as $key => $value) {
+
+            $value = urlencode($value);
+
+            $req .= "&$key=$value";
+        }
+        $ch = curl_init('https://ipnpb.sandbox.paypal.com/cgi-bin/webscr');
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $req);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 1);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
+        curl_setopt($ch, CURLOPT_FORBID_REUSE, 1);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Connection: Close'));
+        if ( !($res = curl_exec($ch)) ) {
+            echo "Got " . curl_error($ch) . " when processing IPN data";
+            curl_close($ch);
+            return ;
+        }
+        curl_close($ch);
+
+        if ($res != 'VERIFIED') {
+            return ;
+        }
+
+        $invoice = Invoice::find($r->get('invoice'));
+        $transaction = InvoiceFinancialTransaction::where(
+            [
+                'invoice_id','=',$invoice->id,
+                'other_details','=',$r->get('txn_id')
+
+            ]
+        )->first();
+
         $log = new Paypal();
         $log->fill([
-            'invoice_id' => -1,
+            'invoice_id' => $invoice->id,
+            'transaction_id' => $transaction->id,
             'paypal_response' => json_encode($r->all())
-        ]);
-        $log->save();
+        ])->save();
+
+        $invoicePlan = UserMembershipInvoicePlanning::where('invoice_id',$invoice->id)->first();
+        $membership = UserMembership::find($invoicePlan->user_membership_id);
+
+
+        // fix
+        switch ($r->get('payment_status')) {
+            case 'Completed':
+                $invoice->status = 'completed';
+                $invoice->save();
+                $transaction->status = 'completed';
+                $transaction->save();
+                $membership->status = 'active';
+                $membership->save();
+                break;
+            case 'Processed' || 'Pending' :
+                $invoice->status = 'pending';
+                $invoice->save();
+                $transaction->status = 'pending';
+                $transaction->save();
+                $membership->status = 'active';
+                $membership->save();
+                break;
+             case 'Pending' :
+                $invoice->status = 'pending';
+                $invoice->save();
+                $transaction->status = 'pending';
+                $transaction->save();
+                $membership->status = 'active';
+                $membership->save();
+                break;
+            default:
+                $invoice->status = 'pending';
+                $invoice->save();
+                $transaction->status = 'cancelled';
+                $transaction->save();
+                $membership->status = 'pending';
+                $membership->save();
+        }
+
+
+
     }
 
     public function paypal_success(Request $r)
     {
         $amount = $r->get('amt');
-        $curency = $r->get('cc');
+        $currency = $r->get('cc');
         $transactionId = $r->get('tx');
         $url = $r->get('cm');
 
@@ -905,13 +985,35 @@ class MembershipController extends Controller
             $iv = substr($key,0,16);
         }
         $custom = json_decode(openssl_decrypt(base64_decode($url),'AES-256-CBC',$key,0 ,$iv));
+        if (!isset($custom->invoice_id)) {
+            return view('front/iframe/federation/redirect_page',[
+                'breadcrumbs' => $breadcrumbs,
+                'text_parts'  => $text_parts,
+                'in_sidebar'  => $sidebar_link,
+                'text' => 'Payment successful!',
+                'status' => 'Success',
+                'link' => ' '
+            ]);
+        }
         $invoice = Invoice::find($custom->invoice_id);
-        $invoice->status = 'completed';
-        $invoice->save();
-        $invoice_plan = UserMembershipInvoicePlanning::where('invoice_id',$custom->invoice_id)->first();
-        $user_membership = UserMembership::find($invoice_plan->user_membership_id);
-        $user_membership->status = 'active';
-        $user_membership->save();
+        if ($invoice) {
+            $invoice_plan = UserMembershipInvoicePlanning::where('invoice_id',$custom->invoice_id)->first();
+            $user_membership = UserMembership::find($invoice_plan->user_membership_id);
+            $transaction = new InvoiceFinancialTransaction();
+            $transaction->fill([
+                'invoice_id' => $invoice->id,
+                'user_id' => $invoice->user_id,
+                'transaction_amount' => $amount,
+                'transaction_currency' => $currency,
+                'transaction_type' => 'paypal',
+                'status' => 'pending',
+                'other_details' => $transactionId
+            ])->save();
+            $invoice->status = 'processing';
+            $invoice->save();
+            $user_membership->status = 'active';
+            $user_membership->save();
+        }
 
         return view('front/iframe/federation/redirect_page',[
             'breadcrumbs' => $breadcrumbs,
@@ -921,6 +1023,8 @@ class MembershipController extends Controller
             'status' => 'Success',
             'link' => $custom->redirect_url
         ]);
+
+
     }
 
     public function paypal_cencel(Request $r)
