@@ -137,7 +137,7 @@
                                                     <i class="fa fa-angle-left"></i>
                                                 </a>
                                                 <span class="separator-header"></span>
-                                                <span class="caption-subject bold uppercase hidden-sm hidden-xs">can't remember your password</span>
+                                                <span class="caption-subject bold uppercase hidden-sm hidden-xs">can't remember your password?</span>
                                                 <span class="caption-subject bold uppercase hidden-md hidden-lg">forgot password?</span>
                                             </div>
                                         </div>
