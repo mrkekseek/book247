@@ -396,7 +396,7 @@ class User extends Authenticatable
             }
         }
 
-        if (!isset($avatarContent) || !isset($avatarType)){ exit;
+        if (!isset($avatarContent) || !isset($avatarType)){
             $avatarContent      = Storage::disk('local')->get('members/default/avatars/profile-photo-std-256.png');
             $avatarType         = Storage::disk('local')->mimeType('members/default/avatars/profile-photo-std-256.png');
         }
