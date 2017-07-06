@@ -3822,11 +3822,6 @@ class FrontEndUserController extends Controller
 
         if(UserAvatars::where("user_id", Auth::user()->id)->delete())
         {
-            foreach(UserAvatars::where("user_id", Auth::user()->id)->first()->file_location as $row)
-            {
-                unlink($row);
-            }
-
             return [
                 "success" => TRUE
             ];
