@@ -1128,7 +1128,7 @@ class BookingController extends Controller
                         'booking_details'       => isset($booking_details['bookingDate']) ? $booking_details['bookingDate'] : ''
                 ];
 
-                $template = EmailsController::build('Booking confirmation – multiple', $data);
+                $template = EmailsController::build('Booking Confirmation – single', $data); 
 
                 if ($template)
                 {
