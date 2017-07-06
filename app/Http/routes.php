@@ -29,7 +29,7 @@ else
 {
     Route::group(['middleware' => 'web'], function () {
         // default login/register/forgot password routes
-        Route::auth();
+        //Route::auth();
 
         Route::get('/', [
             'as' => 'homepage',
@@ -41,9 +41,9 @@ else
             'uses' => 'FrontPageController@authenticate'
         ]);
 
-        Route::get('login-new', function () {
-            return view('login');
-        });
+        //Route::get('login-new', function () {
+        //    return view('login');
+        //});
 
         Route::get('registration', 'RegistrationStepsController@registrationSteps');
 

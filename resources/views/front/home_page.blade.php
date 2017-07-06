@@ -409,12 +409,18 @@
                                     </div>
                                 </div>
                                 <div class="portlet-title" style="min-height:5px; margin-bottom:5px;"> </div>
-                                @if (Auth::check() && Auth::user()->is_front_user())
+                                @if ( (Auth::check() && Auth::user()->is_front_user()) || (\App\Http\Controllers\AppSettings::get_setting_value_by_name('show_calendar_availability_rule')==1))
                                     <a href="javascript:;" class="btn default green-jungle-stripe" style="padding:5px 10px; font-size:14px; cursor:default; margin-bottom:5px;"> Many courts available </a>
                                     <a href="javascript:;" class="btn default yellow-saffron-stripe" style="padding:5px 10px; font-size:14px; cursor:default; margin-bottom:5px;"> Less courts available </a>
                                     <a href="javascript:;" class="btn default red-stripe btn-lg" style="padding:5px 10px; font-size:14px; cursor:default; margin-bottom:5px;"> All courts are booked </a>
                                     <a href="javascript:;" class="btn default purple-stripe btn-lg" style="padding:5px 10px; font-size:14px; cursor:default; margin-bottom:5px;"> Outside membership rules </a>
-                                    <a href="{{ route('front/active_membership') }}" class="btn default btn-lg" style="padding: 1px 5px 0px; cursor: pointer; margin-bottom: 5px; font-size: 21px;"><span class="item-box"><span class="item"><span aria-hidden="true" class="icon-question"></span></span></span></a>
+                                    <a href="{{ route('front/active_membership') }}" class="btn default btn-lg" style="padding: 1px 5px 0px; cursor: pointer; margin-bottom: 5px; font-size: 21px;">
+                                        <span class="item-box">
+                                            <span class="item">
+                                                <span aria-hidden="true" class="icon-question"></span>
+                                            </span>
+                                        </span>
+                                    </a>
                                 @else
                                     <a href="javascript:;" class="btn default dark-stripe btn-lg book_step book_step_link" style=""> You need to be logged in to view availability </a>
                                 @endif

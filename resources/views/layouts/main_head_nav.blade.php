@@ -390,7 +390,7 @@
                             </li>
                         </ul>
                     </li>
-                    @if (!isset($show_membership_types))
+                    @if (\App\Http\Controllers\AppSettings::get_setting_value_by_name('globalWebsite_show_memberships_on_frontend')==1)
                     <li class="menu-dropdown mega-menu-dropdown {{$in_sidebar=="front-type_of_memberships"?"active":""}}">
                         <a href="{{ route('front/membership_types') }}"> Membership Types
                             <span class="arrow"></span>
@@ -407,15 +407,17 @@
                             <span class="arrow"></span>
                         </a>
                     </li>
-                    @if (!isset($show_finance_part_top_menu))
+                    @if (\App\Http\Controllers\AppSettings::get_setting_value_by_name('globalWebsite_show_finance_on_frontend')==1 || \App\Http\Controllers\AppSettings::get_setting_value_by_name('globalWebsite_show_invoices_on_frontend')==1)
                     <li class="menu-dropdown classic-menu-dropdown {{ in_array($in_sidebar, ['front-finance_invoice_list', 'front-finance_active_membership'])?'active':'' }}">
                         <a href="javascript:;"> Financial
                             <span class="arrow"></span>
                         </a>
                         <ul class="dropdown-menu pull-left">
+                            @if (\App\Http\Controllers\AppSettings::get_setting_value_by_name('globalWebsite_show_invoices_on_frontend')==1)
                             <li class=" {{ $in_sidebar=='front-finance_invoice_list'?'active':'' }}">
                                 <a href="{{ route('front/member_invoice_list') }}" class="nav-link  "> List of Invoices </a>
                             </li>
+                            @endif
                             <li class=" {{ $in_sidebar=='front-finance_active_membership'?'active':'' }}">
                                 <a href="{{ route('front/active_membership') }}"> Active Membership </a>
                             </li>
@@ -466,7 +468,7 @@
                             <i class="icon-bar-chart"></i> Squash Fitness Homepage
                         </a>
                     </li>
-                    @if (!isset($show_membership_types))
+                    @if (\App\Http\Controllers\AppSettings::get_setting_value_by_name('globalWebsite_show_memberships_on_frontend')==1)
                     <li class="menu-dropdown mega-menu-dropdown {{$in_sidebar=="front-type_of_memberships"?"active":""}}">
                         <a href="{{ route('front/membership_types') }}">
                             <i class="icon-bar-chart"></i> Membership Types

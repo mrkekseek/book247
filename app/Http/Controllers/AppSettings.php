@@ -150,15 +150,15 @@ class AppSettings extends Controller
                 "updated_by_id" => Auth::user()->id
             );
 
-        $setting = DB::table("application_settings")->where("setting_id", $request->input("setting_id"));
-
-        if ( ! $setting->count())
+        $setting = applicationSetting::with('setting')->where("setting_id", $request->input("setting_id"))->first();
+        if ( !$setting)
         {
-            DB::table("application_settings")->insert($fillable);
+            applicationSetting::create($fillable);
         }
         else
         {
-            DB::table("application_settings")->where("id", $setting->first()->id)->update($fillable);
+            $setting->update($fillable);
+            Cache::forget($setting->setting->system_internal_name);
         }
 
         return [
