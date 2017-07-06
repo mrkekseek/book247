@@ -49,12 +49,12 @@
                                         <div class="alert alert-success display-none">
                                             <button class="close" data-dismiss="alert"></button> Your form validation is successful! </div>
                                         <!--STEP 1-->
-                                        <div class="tab-pane active" id="tab1">
+                                        <div class="tab-pane tab-pane-width active" id="tab1">
                                             <div class="form-group">
                                                 <label class="control-label col-md-3">Club name
                                                     <span class="required"> * </span>
                                                 </label>
-                                                <div class="col-md-5">
+                                                <div class="col-md-9">
                                                     <input type="text" class="form-control" name="clubname" required/ >
                                                     <span class="help-block"> Provide your Club name </span>
                                                 </div>
@@ -63,7 +63,7 @@
                                                 <label class="control-label col-md-3">Contact Email
                                                     <span class="required"> * </span>
                                                 </label>
-                                                <div class="col-md-5">
+                                                <div class="col-md-9">
                                                     <input type="text" class="form-control" name="email" required />
                                                     <span class="help-block"> Provide your email address </span>
                                                 </div>
@@ -72,7 +72,7 @@
                                                 <label class="control-label col-md-3">Phone
                                                     <span class="required"> * </span>
                                                 </label>
-                                                <div class="col-md-5">
+                                                <div class="col-md-9">
                                                     <input type="text" class="form-control" name="phone" required />
                                                     <span class="help-block"> Provide your Phone </span>
                                                 </div>
@@ -81,7 +81,7 @@
                                                 <label class="control-label col-md-3"> Fax
                                                     <span class="required"> * </span>
                                                 </label>
-                                                <div class="col-md-5">
+                                                <div class="col-md-9">
                                                     <input type="text" class="form-control" name="fax" required />
                                                     <span class="help-block"> Provide your Fax </span>
                                                 </div>
@@ -90,7 +90,7 @@
                                                 <label class="control-label col-md-3"> Address Line1
                                                     <span class="required"> * </span>
                                                 </label>
-                                                <div class="col-md-5">
+                                                <div class="col-md-9">
                                                     <input type="text" class="form-control" name="addressline1" required />
                                                     <span class="help-block"> Provide your Address Line1</span>
                                                 </div>
@@ -98,7 +98,7 @@
                                             <div class="form-group">
                                                 <label class="control-label col-md-3"> Address Line2
                                                 </label>
-                                                <div class="col-md-5">
+                                                <div class="col-md-9">
                                                     <input type="text" class="form-control" name="addressline2" />
                                                     <span class="help-block"> Provide your Address Line2</span>
                                                 </div>
@@ -107,7 +107,7 @@
                                                 <label class="control-label col-md-3"> City
                                                     <span class="required"> * </span>
                                                 </label>
-                                                <div class="col-md-5">
+                                                <div class="col-md-9">
                                                     <input type="text" class="form-control" name="city" required />
                                                     <span class="help-block"> Provide your  City</span>
                                                 </div>
@@ -116,7 +116,7 @@
                                                 <label class="control-label col-md-3"> Region
                                                     <span class="required"> * </span>
                                                 </label>
-                                                <div class="col-md-5">
+                                                <div class="col-md-9">
                                                     <input type="text" class="form-control" name="region" required />
                                                     <span class="help-block"> Provide your  Region</span>
                                                 </div>
@@ -125,7 +125,7 @@
                                                 <label class="control-label col-md-3"> Postal Code
                                                     <span class="required"> * </span>
                                                 </label>
-                                                <div class="col-md-5">
+                                                <div class="col-md-9">
                                                     <input type="text" class="form-control" name="postalcode" required />
                                                     <span class="help-block"> Provide your  Postal Code</span>
                                                 </div>
@@ -134,7 +134,7 @@
                                                 <label class="control-label col-md-3">Country
                                                     <span class="required"> * </span>
                                                 </label>
-                                                <div class="col-md-5">
+                                                <div class="col-md-9">
                                                     <select name="country" class="form-control" id="country">
                                                         <option value="">Select country from a list</option>
                                                         @foreach($countries as $country)
@@ -148,7 +148,7 @@
                                                 <label class="control-label col-md-3"> Currency
                                                     <span class="required"> * </span>
                                                 </label>
-                                                <div class="col-md-5">
+                                                <div class="col-md-9">
                                                     <select name="currency" class="form-control" id="currency">
                                                         <option value="">Select your Currency</option>
                                                         @foreach($currencies as $currency)
@@ -163,12 +163,12 @@
                                         </div>
                                         <!--END STEP 1-->
                                        <!-- STEP 2-->
-                                        <div class="tab-pane" id="tab2">
+                                        <div class="tab-pane tab-pane-width" id="tab2">
                                             <div class="form-group">
-                                                <label class="control-label col-md-3">Activity
+                                                <label class="control-label col-md-4">Activity
                                                     <span class="required"> * </span>
                                                 </label>
-                                                <div class="col-md-5">
+                                                <div class="col-md-7">
                                                     <select name="sport" id="sport" class="form-control" required>
                                                         <option value="">Select activity</option>
                                                         <option value="1">Tennis</option>
@@ -180,10 +180,10 @@
                                                 </div>
                                             </div>
                                             <div class="form-group">
-                                                <label class="control-label col-md-3">Minimum reservation time/time slot per booking
+                                                <label class="control-label col-md-4">Minimum reservation time/time slot per booking
                                                     <span class="required"> * </span>
                                                 </label>
-                                                <div class="col-md-5">
+                                                <div class="col-md-7">
                                                     <select name="time" id="time" class="form-control" required>
                                                         <option value="">Select minimum reservation time</option>
                                                         <option value="10">10 min per slot</option>
@@ -205,11 +205,11 @@
                                                         <option value="90">90 min per slot</option>
                                                     </select>
                                                 </div>
-                                                <div class="col-md-4">
+                                                <div class="col-md-1">
                                                     <div class="btn-group">
                                                         <a class="btn blue dropdown-toggle" data-toggle="dropdown" href="javascript:;" aria-expanded="false">  <i class="fa fa-info"></i></a>
                                                         <p class="dropdown-menu btn-info-paragraphe">
-                                                            Tip: If you would like to see two names per booking, then we recommend to decrease the time slots in half. Example:   If you for instance operate with 60 min slots, but want see playing partner as well =, then choose 30 min slots. This way each member can add his friend to the 2nd part of the booking, so they are booked in on 30 min each, together they play for 60 min. Please see the example <br> <a href="#">'click here'</a>.
+                                                            Tip: If you would like to see two names per booking, then we recommend to decrease the time slots in half. Example:   If you for instance operate with 60 min slots, but want see playing partner as well, then choose 30 min slots. This way each member can add his friend to the 2nd part of the booking, so they are booked in on 30 min each, together they play for 60 min. Please see the example <br> <a href="#">'click here'</a>.
                                                         </p>
                                                     </div>
                                                 </div>
@@ -217,19 +217,19 @@
                                         </div>
                                         <!--END STEP 2-->
                                         <!--STEP 3-->
-                                        <div class="tab-pane" id="tab3">
+                                        <div class="tab-pane tab-pane-width" id="tab3">
                                             <div class="form-group">
-                                                <div class="col-md-offset-3 col-md-4">
+                                                <div class="col-md-12">
                                                     <div class="well">
                                                         <strong>Note:</strong> the following settings will only count for non-members or "drop-in" customers. You can customize booking behavior, price for court and restrictions per membership/product you create in your "membership plan" or "products".
                                                     </div>
                                                 </div>
                                             </div>
                                             <div class="form-group">
-                                                <label class="control-label col-md-3"> Do you allow non-members to arrange reservations?":
+                                                <label class="control-label col-md-4"> Do you allow non-members to arrange reservations?":
                                                     <span class="required"> * </span>
                                                 </label>
-                                                <div class="col-md-5">
+                                                <div class="col-md-7">
                                                     <select name="members" id="members" class="form-control" required>
                                                         <option value="">Please select</option>
                                                         <option value="1">Yes</option>
@@ -239,10 +239,10 @@
                                                 </div>
                                             </div>
                                             <div class="form-group">
-                                                <label class="control-label col-md-3"> Do you only accept direct online payments for court reservations?
+                                                <label class="control-label col-md-4"> Do you only accept direct online payments for court reservations?
                                                     <span class="required"> * </span>
                                                 </label>
-                                                <div class="col-md-5">
+                                                <div class="col-md-7">
                                                     <select name="pay" id="pay" class="form-control" required>
                                                         <option value="">Please select</option>
                                                         <option value="1">Yes</option>
@@ -250,7 +250,7 @@
                                                     </select>
                                                     <span class="help-block"> Select "Yes" or "No"</span>
                                                 </div>
-                                                <div class="col-md-4">
+                                                <div class="col-md-1">
                                                     <div class="btn-group">
                                                         <a class="btn blue dropdown-toggle" data-toggle="dropdown" href="javascript:;" aria-expanded="false">  <i class="fa fa-info"></i></a>
                                                         <p class="dropdown-menu btn-info-paragraphe">
@@ -260,10 +260,10 @@
                                                 </div>
                                             </div>
                                             <div class="form-group">
-                                                <label class="control-label col-md-3"> Who may see your resource availability?
+                                                <label class="control-label col-md-4"> Who may see your resource availability?
                                                     <span class="required"> * </span>
                                                 </label>
-                                                <div class="col-md-5">
+                                                <div class="col-md-7">
                                                     <select name="resource" id="resource" class="form-control" required>
                                                         <option value="">Please select</option>
                                                         <option value="1">Everyone</option>
@@ -273,10 +273,10 @@
                                                 </div>
                                             </div>
                                             <div class="form-group">
-                                                <label class="control-label col-md-3"> How early do you want users to be able to create bookings?
+                                                <label class="control-label col-md-4"> How early do you want users to be able to create bookings?
                                                     <span class="required"> * </span>
                                                 </label>
-                                                <div class="col-md-5">
+                                                <div class="col-md-7">
                                                     <select name="day" id="day" class="form-control" required>
                                                         <option value="">Please select</option>
                                                         <option value="1">1 day</option>
@@ -296,7 +296,7 @@
                                                     </select>
                                                     <span class="help-block"> Select a day</span>
                                                 </div>
-                                                <div class="col-md-4">
+                                                <div class="col-md-1">
                                                     <div class="btn-group">
                                                         <a class="btn blue dropdown-toggle" data-toggle="dropdown" href="javascript:;" aria-expanded="false">  <i class="fa fa-info"></i></a>
                                                         <p class="dropdown-menu btn-info-paragraphe">
@@ -306,10 +306,10 @@
                                                 </div>
                                             </div>
                                             <div class="form-group">
-                                                <label class="control-label col-md-3"> Cancellation limit?
+                                                <label class="control-label col-md-4"> Cancellation limit?
                                                     <span class="required"> * </span>
                                                 </label>
-                                                <div class="col-md-5">
+                                                <div class="col-md-7">
                                                     <select name="limit" id="limit" class="form-control" required>
                                                         <option value="">Please select</option>
                                                         <option value="1">1 hours</option>
@@ -363,7 +363,7 @@
                                                     </select>
                                                     <span class="help-block"> Select an hours</span>
                                                 </div>
-                                                <div class="col-md-4">
+                                                <div class="col-md-1">
                                                      <div class="btn-group">
                                                         <a class="btn blue dropdown-toggle" data-toggle="dropdown" href="javascript:;" aria-expanded="false">  <i class="fa fa-info"></i></a>
                                                         <p class="dropdown-menu btn-info-paragraphe">

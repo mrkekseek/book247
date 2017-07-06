@@ -150,15 +150,15 @@ class AppSettings extends Controller
                 "updated_by_id" => Auth::user()->id
             );
 
-        $setting = DB::table("application_settings")->where("setting_id", $request->input("setting_id"));
-
-        if ( ! $setting->count())
+        $setting = applicationSetting::with('setting')->where("setting_id", $request->input("setting_id"))->first();
+        if ( !$setting)
         {
-            DB::table("application_settings")->insert($fillable);
+            applicationSetting::create($fillable);
         }
         else
         {
-            DB::table("application_settings")->where("id", $setting->first()->id)->update($fillable);
+            $setting->update($fillable);
+            Cache::forget($setting->setting->system_internal_name);
         }
 
         return [
@@ -238,7 +238,7 @@ class AppSettings extends Controller
             'constrained'           => $vars['contained'] == "true" ? 1 : 0,
             'data_type'             => $vars['data_type'],
             'min_value'             => $vars['min_value'] * 1 ? $vars['min_value'] : 0,
-            'max_value'             => $vars['min_value'] * 1 ? $vars['min_value'] : 0
+            'max_value'             => $vars['max_value'] * 1 ? $vars['max_value'] : 0
         ];
 
         $settingValidator = Validator::make($fillable, Settings::rules('UPDATE'), Settings::$validationMessages, Settings::$attributeNames);

@@ -10,6 +10,7 @@ use Validator;
 use Activity;
 use Response;
 use DB;
+use App\EmailTemplate;
 
 class EmailsController extends Controller
 {
@@ -289,7 +290,7 @@ class EmailsController extends Controller
             'table_head_text1' => 'Email'
         ];
 
-        $sidebar_link = 'admin-templates_email-edit';
+        $sidebar_link = 'admin-templates_email-list_all';
 
         return view('admin/templates_email/edit', array(
             'breadcrumbs'   => $breadcrumbs,
@@ -393,5 +394,28 @@ class EmailsController extends Controller
         {
             return Response::json(['error' => 'Booking Error'], Response::HTTP_CONFLICT);
         }
+    }
+
+    static function build($name, $data = array())
+    {
+        $template = EmailTemplate::where('hook', $name)->first();
+
+        if (!$template){
+            return false;
+        }
+
+        $subject  = $template->title;
+        $messages = $template->description;
+
+        foreach ($data as $key => $value)
+        {
+            $subject = str_replace("[[" . $key . "]]", $value, $subject);
+            $messages = str_replace("[[" . $key . "]]", $value, $messages);
+        }
+
+        return [
+            'subject' => $subject,
+            'message' => $messages
+        ];
     }
 }

@@ -256,6 +256,7 @@ class BackEndUserController extends Controller
 
         $roles = Role::all();
         $countries = Countries::orderBy('name')->get();
+       
         $userCountry = Countries::find($back_user->country_id);
 
         $avatar = $back_user->get_avatar_image();
@@ -968,6 +969,25 @@ class BackEndUserController extends Controller
         ]);
     }
 
+    public function remove_avatar()
+    {
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
+            return redirect()->intended(route('admin/login'));
+        }
+
+        if(UserAvatars::where("user_id", Auth::user()->id)->delete())
+        {
+            return [
+                "success" => TRUE
+            ];
+        }
+
+        return [
+            "success" => FALSE
+        ];
+
+    }
 
 
 

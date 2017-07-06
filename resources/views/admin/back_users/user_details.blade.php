@@ -413,7 +413,8 @@
                                                             <span class="fileinput-new"> Select image </span>
                                                             <span class="fileinput-exists"> Change </span>
                                                             <input type="file" name="user_avatar" class="user_avatar_select_btn2" /> </span>
-                                                        <a href="javascript:;" class="btn default fileinput-exists" data-dismiss="fileinput"> Remove </a>
+
+                                                        <a href="javascript:;" class="btn default fileinput-exists remove-avatar" data-dismiss="fileinput"> Remove </a>
                                                     </div>
                                                 </div>
                                                 <div class="clearfix margin-top-10">
@@ -730,13 +731,13 @@
                                                 <label class="control-label">Citizenship</label>
                                                 <select name="personalCountry" id="personalCountry" class="form-control">
                                                     @foreach ($countries as $country)
-                                                        <option value="{{ $country->id }}" {!! ($country->id==$user->country_id ? ' selected="selected" ' : '') !!}>{{ $country->citizenship }}</option>
+                                                        <option value="{{ $country->id }}" {!! ($country->id==$user->country_id ? ' selected="selected" ' : '') !!}>{{ $country->name }}</option>
                                                     @endforeach
                                                 </select></div>
                                             <div class="form-group">
                                                 <label class="control-label">Date of Birth</label>
                                                 <div class="control-label">
-                                                    <div class="input-group input-medium date date-picker" data-date="{{ @$personal->dob_format }}" data-date-format="dd-mm-yyyy" data-date-viewmode="years">
+                                                    <div class="input-group input-medium date date-picker" data-date="{{ @$personal->dob_format }}" data-date-format="dd-mm-yyyy" data-date-viewmode="years" data-date-end-date="-0d">
                                                         <input type="text" class="form-control" name="personalDOB" id="personalDOB" value="{{ @$personal->dob_format }}" readonly>
                                                         <span class="input-group-btn">
                                                             <button class="btn default" type="button">
@@ -842,7 +843,7 @@
                                                         <span class="fileinput-new"> Select image </span>
                                                         <span class="fileinput-exists"> Change </span>
                                                         <input type="file" name="user_avatar" class="user_avatar_select_btn1" /> </span>
-                                                    <a href="javascript:;" class="btn red fileinput-exists" data-dismiss="fileinput"> Remove </a>
+                                                    <a href="javascript:;" class="btn red fileinput-exists remove-avatar" data-dismiss="fileinput"> Remove </a>
                                                 </div>
                                             </div>
                                             <div class="clearfix margin-top-10">
@@ -1370,6 +1371,21 @@
             FormValidation.init();
             FormDropzone.init();
             ComponentsDateTimePickers.init();
+
+            $(".remove-avatar").click(function(){
+                console.log('test')
+                $.ajax({
+                    url : "{{route('admin/back_users/remove_avatar')}}",
+                    type : "post",
+                    success : function(response)
+                    {
+                        if (response.success)
+                        {
+                            window.location.reload();
+                        }
+                    }
+                });
+            });
         });
 
         function store_account_info(){

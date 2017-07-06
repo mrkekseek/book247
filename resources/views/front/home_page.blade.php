@@ -61,7 +61,7 @@
                                                     <div class="item">
                                                         <div class="item-head">
                                                             <div class="item-details">
-                                                                <img class="item-pic" src="{!! $knownBooking['avatar'] !!}">
+                                                                <div class="item-avatar" style="background-image: url({!! $knownBooking['avatar'] !!});"></div>
                                                                 <a href="" class="item-name primary-link">{{ $knownBooking['breated_by'] }}</a>
                                                                 <span class="item-label">{{ $knownBooking['passed_time_since_creation'] }}</span>
                                                             </div>
@@ -92,7 +92,7 @@
 
                                         <div class="portlet-title">
                                             <div class="caption">
-                                                <span class="caption-subject bold uppercase">seamles user login</span>
+                                                <span class="caption-subject bold uppercase">seamless user login</span>
                                             </div>
                                         </div>
                                         <div class="alert alert-danger display-hide">
@@ -137,7 +137,7 @@
                                                     <i class="fa fa-angle-left"></i>
                                                 </a>
                                                 <span class="separator-header"></span>
-                                                <span class="caption-subject bold uppercase hidden-sm hidden-xs">can't remember your password</span>
+                                                <span class="caption-subject bold uppercase hidden-sm hidden-xs">can't remember your password?</span>
                                                 <span class="caption-subject bold uppercase hidden-md hidden-lg">forgot password?</span>
                                             </div>
                                         </div>
@@ -176,8 +176,8 @@
                                                     <i class="fa fa-angle-left"></i>
                                                 </a>
                                                 <span class="separator-header"></span>
-                                                <span class="caption-subject bold uppercase hidden-sm hidden-xs">register an unuque user on our platform</span>
-                                                <span class="caption-subject bold uppercase hidden-md hidden-lg">register an unuque user</span>
+                                                <span class="caption-subject bold uppercase hidden-sm hidden-xs">register an unique user on our platform</span>
+                                                <span class="caption-subject bold uppercase hidden-md hidden-lg">register an unique user</span>
 
                                             </div>
                                         </div>
@@ -185,10 +185,10 @@
                                             <button class="close" data-close="alert"></button> You have some errors in the form. Please check below. </div>
                                         <div class="alert alert-success display-hide">
                                             <button class="close" data-close="alert"></button> Information is valid, please wait! </div>
-                                        <p class="hint"> Enter your email address: </p>
+                                        <!--p class="hint"> Enter your email address: </p-->
                                         <div class="form-group">
                                             <label class="control-label visible-ie8 visible-ie9">Email</label>
-                                            <input class="form-control placeholder-no-fix" type="text" placeholder="Email your email address" name="email" /> </div>
+                                            <input class="form-control placeholder-no-fix" type="text" placeholder="Enter your email address:" name="email" /> </div>
                                         <div class="form-actions">
                                             <button type="submit" id="preregister-btn" class="btn grey btn-block uppercase">Next</button>
                                         </div>
@@ -206,6 +206,7 @@
                                             </div>
                                         </div>
                                         <p class="hint"> </p>
+                                        <input type="text" class="hidden" name="email" />                                            
                                         <div class="form-group">
                                             <label class="control-label visible-ie8 visible-ie9">Password</label>
                                             <input class="form-control placeholder-no-fix" type="password" placeholder="Enter your password for login" name="password" /> 
@@ -213,7 +214,6 @@
                                         <div class="pull-right forget-password-block">
                                             <a href="javascript:;" id="forget-password" class="forget-password">Forgot Password?</a>
                                         </div>
-                                        <input type="hidden" name="email" />                                            
                                         <input type="hidden" name="type" />
                                         <div class="form-actions">
                                             <button type="submit" id="preregister-btn" class="btn red btn-block uppercase">Login</button>
@@ -266,7 +266,7 @@
                                             <input class="form-control placeholder-no-fix" type="text" placeholder="Phone Number" name="phone" /> </div>
                                         <div class="form-group">
                                             <div class="control-label">
-                                                <div class="input-group date date-picker" data-date="" data-date-format="dd-mm-yyyy" data-date-viewmode="years">
+                                                <div class="input-group date date-picker" data-date="" data-date-format="dd-mm-yyyy" data-date-viewmode="years" data-date-end-date="-0d">
                                                     <input type="text" class="form-control" name="DOB" id="DOB" placeholder="Date of Birth" value="" readonly>
                                                     <span class="input-group-btn">
                                                         <button class="btn default" type="button">
@@ -287,7 +287,7 @@
                                             <select name="country" id="country" class="form-control">
                                                 <option value="">Select Citizenship</option>
                                                 @foreach ($countries as $country)
-                                                    <option value="{{ $country->id }}" {!! ($country->id==$user->country_id ? ' selected="selected" ' : '') !!}>{{ $country->citizenship }}</option>
+                                                    <option value="{{ $country->id }}" {!! ($country->id==$user->country_id ? ' selected="selected" ' : '') !!}>{{ $country->name }}</option>
                                                 @endforeach
                                             </select>
                                         </div>
@@ -295,7 +295,7 @@
                                         <div class="form-group">
                                             <!--ie8, ie9 does not support html5 placeholder, so we just show field title for that-->
                                             <label class="control-label visible-ie8 visible-ie9">Email</label>
-                                            <input class="form-control placeholder-no-fix" type="hidden" placeholder="Email" name="reg_email" /> </div>
+                                            <input class="form-control placeholder-no-fix hidden" type="text" name="reg_email" /> </div>
                                         <div class="form-group">
                                             <label class="control-label visible-ie8 visible-ie9">Password</label>
                                             <input class="form-control placeholder-no-fix" type="password" autocomplete="off" id="rpassword" placeholder="Password - at least 8 characters" name="rpassword" /> </div>
@@ -409,12 +409,18 @@
                                     </div>
                                 </div>
                                 <div class="portlet-title" style="min-height:5px; margin-bottom:5px;"> </div>
-                                @if (Auth::check() && Auth::user()->is_front_user())
+                                @if ( (Auth::check() && Auth::user()->is_front_user()) || (\App\Http\Controllers\AppSettings::get_setting_value_by_name('show_calendar_availability_rule')==1))
                                     <a href="javascript:;" class="btn default green-jungle-stripe" style="padding:5px 10px; font-size:14px; cursor:default; margin-bottom:5px;"> Many courts available </a>
                                     <a href="javascript:;" class="btn default yellow-saffron-stripe" style="padding:5px 10px; font-size:14px; cursor:default; margin-bottom:5px;"> Less courts available </a>
                                     <a href="javascript:;" class="btn default red-stripe btn-lg" style="padding:5px 10px; font-size:14px; cursor:default; margin-bottom:5px;"> All courts are booked </a>
                                     <a href="javascript:;" class="btn default purple-stripe btn-lg" style="padding:5px 10px; font-size:14px; cursor:default; margin-bottom:5px;"> Outside membership rules </a>
-                                    <a href="{{ route('front/active_membership') }}" class="btn default btn-lg" style="padding: 1px 5px 0px; cursor: pointer; margin-bottom: 5px; font-size: 21px;"><span class="item-box"><span class="item"><span aria-hidden="true" class="icon-question"></span></span></span></a>
+                                    <a href="{{ route('front/active_membership') }}" class="btn default btn-lg" style="padding: 1px 5px 0px; cursor: pointer; margin-bottom: 5px; font-size: 21px;">
+                                        <span class="item-box">
+                                            <span class="item">
+                                                <span aria-hidden="true" class="icon-question"></span>
+                                            </span>
+                                        </span>
+                                    </a>
                                 @else
                                     <a href="javascript:;" class="btn default dark-stripe btn-lg book_step book_step_link" style=""> You need to be logged in to view availability </a>
                                 @endif
@@ -707,7 +713,12 @@
                     focusInvalid: false, // do not focus the last invalid input
                     rules: {
                         username: {
-                            required: true,
+                            required: {
+                                depends:function(){
+                                    $(this).val($.trim($(this).val()));
+                                    return true;
+                                }
+                            },
                             email: true,
                         },
                         password: {
@@ -847,6 +858,8 @@
             var handlePreRegister = function() {
                 jQuery('#pre-register-btn').click(function() {
                     jQuery('.login-form').hide();
+                    jQuery('.login .alert span').html('');
+                    jQuery('.login .alert').hide();
                     jQuery('#user_preregistration_form').show();
                 });
 
@@ -944,7 +957,7 @@
                 if (jQuery().datepicker) {
                     $('.date-picker').datepicker({
                         rtl: App.isRTL(),
-                        orientation: "left",
+                        orientation: "right",
                         autoclose: true
                     });
                 }

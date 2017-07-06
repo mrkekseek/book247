@@ -99,17 +99,29 @@ textarea[name=content] {
 	}
 }
 
-
-.btn-info-paragraphe.dropdown-menu {
-    padding: 10px;
-    min-width: 290px;
-}
-
 .table-manage tr td:last-child {
 	width: 30%;
 
 }
 
-.responsive-width-15{
-	width: 15%;
+.header-avatar {
+	width: 35px;
+	height: 35px;
+	background-position: center center;
+	background-size: cover;
+	border-radius: 50%;
+	display: inline-block;
+	margin: 11px 10px 3px 4px;
+}
+
+.page-header.navbar .top-menu .navbar-nav > li.dropdown-user .dropdown-toggle {
+    padding: 10px;
+}
+
+.page-header.navbar .top-menu .navbar-nav > li.dropdown>.dropdown-toggle:hover {
+    background-color: transparent;
+}
+
+.page-header.navbar .top-menu .navbar-nav > li.dropdown .dropdown-menu {
+	margin-top: 0;
 }

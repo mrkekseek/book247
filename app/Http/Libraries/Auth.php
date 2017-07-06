@@ -5,6 +5,7 @@ namespace App\Http\Libraries;
 use App\Http\Libraries\ApiAuth;
 use App\User;
 use App\PersonalDetail;
+use App\OptimizeSearchMembers;
 use Illuminate\Support\Facades\Session;
 use \Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Auth as AuthLocal;
@@ -164,6 +165,8 @@ class Auth
             $user->attachRole(6);
             self::set_personal_details($user->id, $api_user);
             self::set_cookie_session($sso_user_id);
+            $searchMembers = new OptimizeSearchMembers();
+            $searchMembers->add_missing_members([$user->id]);
             return true;
         }
         else
@@ -186,6 +189,10 @@ class Auth
         if (empty($api_user->phoneNumber) && empty($personalDetail->mobile_number) )
         {
             $personalDetail->mobile_number = rand(100000, 999999).rand(100000, 999999).rand(100000, 999999);
+        }
+        else
+        {
+            $personalDetail->mobile_number = $api_user->phoneNumber;
         }
         $personalDetail->date_of_birth = date('Y-m-d', strtotime($api_user->birthday));
         $personalDetail->save();
@@ -214,6 +221,8 @@ class Auth
         {
             $user->attachRole(6);
             self::set_personal_details($user->id, $api_user);
+            $searchMembers = new OptimizeSearchMembers();
+            $searchMembers->add_missing_members([$user->id]);
             return $user;
         }
         return FALSE;
