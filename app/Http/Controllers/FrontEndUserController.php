@@ -861,7 +861,7 @@ class FrontEndUserController extends Controller
         $avatar = $member->get_avatar_image();
         $avatarArchive = [];
         $old_avatars = Storage::disk('local')->files($avatar['file_location']);
-        
+
         if ($old_avatars && $avatar['file_location'] != "employees/default/avatars/" && $avatar['file_location'] != "members/default/avatars/")
         {
             foreach($old_avatars as $old_avatar)
@@ -3674,13 +3674,20 @@ class FrontEndUserController extends Controller
                     foreach ($invoiceItems as $invItem){
                         $price+=$invItem->total_price;
                         $items++;
-
                         if ($display_name=='-' && $invItem->item_type=='user_memberships'){
                             $display_name = 'Membership - '.$invItem->item_name;
                         }
+                        elseif ($display_name=='-' && $invItem->item_type=='store_credit_item'){
+                            $display_name = 'Store Credit';
+                        }
                         elseif ($display_name=='-' && $invItem->item_type=='booking_invoice_item'){
                             $bookingItem = BookingInvoiceItem::where('id','=',$invItem->item_reference_id)->get()->first();
-                            $display_name = 'Booking - '.$bookingItem->location_name;
+                            if ($bookingItem){
+                                $display_name = 'Booking - '.$bookingItem->location_name;
+                            }
+                            else{
+                                $display_name = 'Booking - Strange things';
+                            }
                         }
                     }
                 }

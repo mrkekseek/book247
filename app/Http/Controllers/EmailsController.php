@@ -290,7 +290,7 @@ class EmailsController extends Controller
             'table_head_text1' => 'Email'
         ];
 
-        $sidebar_link = 'admin-templates_email-edit';
+        $sidebar_link = 'admin-templates_email-list_all';
 
         return view('admin/templates_email/edit', array(
             'breadcrumbs'   => $breadcrumbs,
