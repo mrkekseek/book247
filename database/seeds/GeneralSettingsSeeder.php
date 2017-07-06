@@ -37,7 +37,13 @@ class GeneralSettingsSeeder extends Seeder
             [11, 'Show Calendar Availability on Frontend rule', 'show_calendar_availability_rule', 'This setting decides if customers who visits your booking calendar has to be logged in to see calendar availablity.', 1, '', 0, 0],
             [12, 'Bookings Online Payment rule', 'bookings_online_payment_rule', 'This setting decides if all customers has to pay online directly when reserving a court.', 1, '', 0, 0],
             [13, 'Bookings Court Refunds rule', 'bookings_court_refund_rule', 'This setting decides if a customer will get a refund when cancelling a court within the cancellation rule.', 1, '', 0, 0],
-            [14, 'Global Website Rankedin Integration Key', 'globalWebsite_rankedin_integration_key', 'This is the key used to integrate Book247 account to your RankedIn account.', 0, 'string', 29, 29]
+            [14, 'Global Website Rankedin Integration Key', 'globalWebsite_rankedin_integration_key', 'This is the key used to integrate Book247 account to your RankedIn account.', 0, 'string', 29, 29],
+            [15, 'Global Website Show Memberships On Frontend', 'globalWebsite_show_memberships_on_frontend', 'This setting will allow you to show or hide the list of available memberships on frontend. ', 1, '', 0, 0],
+            [16, 'Global Website Show Invoices on Frontend', 'globalWebsite_show_invoices_on_frontend', 'This setting will give you the option to show or hide the financial part on frontend.', 1, '', 0, 0],
+            [17, 'Finance Imediate payment for Online Bookings', 'finance_imediate_payment_for_online_bookings', 'This setting will give you the option to have the payment of the online booking in 5 minutes after the booking is done, otherwise the booking is cancelled.', 1, '', 0, 0],
+            [18, 'Global Website Show Finance on Frontend', 'globalWebsite_show_finance_on_frontend', 'This setting will give you the option to display or hide the \"Financial\" top menu on frontend', 1, '', 0, 0],
+            [19, 'Finance Simple PayPal Payment Account', 'finance_simple_paypal_payment_account', 'Please fill here your email address that you use to login to your paypal account. All the payment using PayPal will go straight to your account defined by the email address used for PayPal registration.', 0, 'string', 6, 255]
+
         ];
 
         // insert values into settings table
@@ -66,7 +72,15 @@ class GeneralSettingsSeeder extends Seeder
             [7, 12, 'Yes',  '1'],
             [8, 12, 'No',   '0'],
             [9, 13, 'Yes',  '1'],
-            [10, 13, 'No',  '0']
+            [10, 13, 'No',  '0'],
+            [11, 15, 'Yes', '1'],
+            [12, 15, 'No',  '0'],
+            [13, 16, 'Yes', '1'],
+            [14, 16, 'No',  '0'],
+            [15, 17, 'Yes', '1'],
+            [16, 17, 'No',  '0'],
+            [17, 18, 'Yes', '1'],
+            [18, 18, 'No',  '0']
         ];
 
         // insert values into allowed_setting_values
@@ -82,18 +96,30 @@ class GeneralSettingsSeeder extends Seeder
         }
 
         // we set up the domain for the application and some other default base settings
-        $query = "INSERT INTO application_settings (id, setting_id, allowed_setting_value_id, unconstrained_value, updated_by_id) VALUES (?,?,?,?,?)";
+        $query = "INSERT INTO application_settings (setting_id, allowed_setting_value_id, unconstrained_value, updated_by_id) VALUES (?,?,?,?)";
 
-        DB::insert($query, [1,   1, NULL, env('URL'), 1]);
-        DB::insert($query, [3,   2, NULL, '578', 1]);
-        DB::insert($query, [2,   3, NULL, env('MY_SERVER_URL'), 1]);
-        DB::insert($query, [4,   4, NULL, 'booking_agent@book247.net', 1]);
-        DB::insert($query, [8,   6, NULL, 'SQF', 1]);
-        DB::insert($query, [7,   7, NULL, 'NOK', 1]);
-        DB::insert($query, [6,   8, NULL, '6',  1]);
-        DB::insert($query, [9,   9, NULL, '6',  1]);
-        DB::insert($query, [10, 10, NULL, '1',  1]);
-        DB::insert($query, [11, 14, NULL, '',   1]);
+        // text values that needs to be inputed by the owner
+        DB::insert($query, [1,  NULL, env('URL'),   1]);
+        DB::insert($query, [2,  NULL, '578',1]);
+        DB::insert($query, [3,  NULL, env('MY_SERVER_URL'),     1]);
+        DB::insert($query, [4,  NULL, 'booking_agent@book247.net', 1]);
+        DB::insert($query, [6,  NULL, 'SQF',1]);
+        DB::insert($query, [7,  NULL, 'NOK',1]);
+        DB::insert($query, [8,  NULL, '6',  1]);
+        DB::insert($query, [9,  NULL, '6',  1]);
+        DB::insert($query, [10, NULL, '1',  1]);
+        DB::insert($query, [14, NULL, '',   1]);
+
+        // confined values
+        DB::insert($query, [5,  2,  NULL, 1]);
+        DB::insert($query, [11, 6,  NULL, 1]);
+        DB::insert($query, [12, 8,  NULL, 1]);
+        DB::insert($query, [13, 9,  NULL, 1]);
+        DB::insert($query, [15, 11, NULL, 1]);
+        DB::insert($query, [16, 13, NULL, 1]);
+        DB::insert($query, [17, 16, NULL, 1]);
+        DB::insert($query, [18, 17, NULL, 1]);
+
 
         DB::unprepared('ALTER TABLE settings AUTO_INCREMENT=10000;');
         DB::unprepared('ALTER TABLE allowed_setting_values AUTO_INCREMENT=10000;');
