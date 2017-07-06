@@ -266,7 +266,7 @@
                                             <input class="form-control placeholder-no-fix" type="text" placeholder="Phone Number" name="phone" /> </div>
                                         <div class="form-group">
                                             <div class="control-label">
-                                                <div class="input-group date date-picker" data-date="" data-date-format="dd-mm-yyyy" data-date-viewmode="years">
+                                                <div class="input-group date date-picker" data-date="" data-date-format="dd-mm-yyyy" data-date-viewmode="years" data-date-end-date="-0d">
                                                     <input type="text" class="form-control" name="DOB" id="DOB" placeholder="Date of Birth" value="" readonly>
                                                     <span class="input-group-btn">
                                                         <button class="btn default" type="button">
