@@ -1124,7 +1124,7 @@ class BookingController extends Controller
                         'first_name'            => $user->first_name,
                         'middle_name'           => $user->middle_name,
                         'last_name'             => $user->last_name,
-                        'my_booking_link'       => '',
+                        'my_booking_link'       => route("front/my_bookings"),
                         'booking_details'       => isset($booking_details['bookingDate']) ? $booking_details['bookingDate'] : ''
                 ];
 

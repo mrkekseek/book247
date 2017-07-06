@@ -2261,9 +2261,10 @@ class FrontEndUserController extends Controller
             'search_key'    => ''
         ];
 
-        if (strlen($vars['search_key'])>2){
+        if (strlen($vars['search_key']) > 2)
+        {
             $booking = Booking::where('search_key','=',$vars['search_key'])->get()->first();
-            if (!$booking){
+            if ( ! $booking){
                 return [];
             }
             else{
@@ -2274,9 +2275,10 @@ class FrontEndUserController extends Controller
                 $fillable['booking_time_start'] = $booking->booking_time_start;
             }
         }
-        else {
+        else
+        {
             $resource = ShopResource::where('id', '=', $vars['resourceID'])->get()->first();
-            if (!$resource) {
+            if ( ! $resource) {
                 return [];
             }
             else {
@@ -2402,12 +2404,12 @@ class FrontEndUserController extends Controller
                     $friend = User::where('id','=',$friends->user_id)->get()->first();
                     if ($friend_approval_status == 'pending')
                     {
-                          
+                         //mjs 
                         $data = [
                             'first_name'            => $user->first_name,
                             'middle_name'           => $user->middle_name,
                             'last_name'             => $user->last_name,
-                            'friend´s_list_link'    => ''
+                            'friend´s_list_link'    => route("front/member_friend_list")
                         ];
 
                         $template = EmailsController::build('Add friend by phone number in frontend – no approval needed', $data);
@@ -2443,7 +2445,7 @@ class FrontEndUserController extends Controller
                             'first_name'            => $user->first_name,
                             'middle_name'           => $user->middle_name,
                             'last_name'             => $user->last_name,
-                            'friend´s_list_link'    => ''
+                            'friend´s_list_link'    => route("front/member_friend_list")
                         ];
 
                         $template = EmailsController::build('Add friend by phone number in frontend – approval needed', $data);
