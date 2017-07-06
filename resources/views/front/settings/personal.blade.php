@@ -129,7 +129,7 @@
                                                             <div class="form-group">
                                                                 <label class="control-label">Date of Birth</label>
                                                                 <div class="control-label">
-                                                                    <div class="input-group input-medium date date-picker" data-date="{{ @$personal->dob_format }}" data-date-format="dd-mm-yyyy" data-date-viewmode="years">
+                                                                    <div class="input-group input-medium date date-picker" data-date="{{ @$personal->dob_format }}" data-date-format="dd-mm-yyyy" data-date-viewmode="years" data-date-end-date="-0d">
                                                                         <input type="text" class="form-control" name="personalDOB" id="personalDOB" value="{{ @$personal->dob_format }}" readonly>
                                                                         <span class="input-group-btn">
                                                                             <button class="btn default" type="button">
