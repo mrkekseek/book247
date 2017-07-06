@@ -64,10 +64,12 @@ class AnyApi {
         }
         $curl = curl_init($api_base.'/'.$api_url);
         curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $method);
+        curl_setopt($curl, CURLOPT_FRESH_CONNECT, TRUE);
         $headers = [
             'Content-Type: application/json',
             'ApiKey:'.$ApiKey,
-            'Accept: application/json'
+            'Accept: application/json',
+            'Cache-Control: no-cache'
         ];
         if (in_array($method, ['POST', 'PUT']) && is_array($data))
         {

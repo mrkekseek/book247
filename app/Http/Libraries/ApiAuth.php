@@ -348,7 +348,7 @@ class ApiAuth
             return "User not found in SSO!";
         }
         $sso_user = $account['data'];
-        $similar_user = User::where('email',$sso_user->email)->first();
+        $similar_user = User::where('username',$sso_user->username)->first();
         if (isset($similar_user)) {
             $similar_user->sso_user_id = $sso_id;
             if ($similar_user->save()){
