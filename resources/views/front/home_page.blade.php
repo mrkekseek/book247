@@ -422,7 +422,7 @@
                                         </span>
                                     </a>
                                 @else
-                                    <a href="javascript:;" class="btn default dark-stripe btn-lg book_step book_step_link" style=""> You need to be logged in to view availability </a>
+                                    <a href="javascript:;" class="btn default dark-stripe btn-lg book_step book_step_link" style="padding:5px 10px; font-size:14px; cursor:default;"> You need to be logged in to view availability </a>
                                 @endif
                             </div>
                         </div>
