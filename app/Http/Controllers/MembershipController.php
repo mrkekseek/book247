@@ -896,8 +896,8 @@ class MembershipController extends Controller
         $invoice = Invoice::find($r->get('invoice'));
         $transaction = InvoiceFinancialTransaction::where(
             [
-                'invoice_id','=',$invoice->id,
-                'other_details','=',$r->get('txn_id')
+                ['invoice_id','=',$invoice->id],
+                ['other_details','=',$r->get('txn_id')]
 
             ]
         )->first();
