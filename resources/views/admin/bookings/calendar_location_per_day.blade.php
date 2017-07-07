@@ -462,39 +462,85 @@
                                 <div class="alert alert-success display-hide">
                                     <button class="close" data-close="alert"></button> Information is valid, please wait! </div>
                                 <p class="hint" style="margin:5px 0;"> Enter personal details below: </p>
-                                <div class="form-group">
-                                    <label class="control-label visible-ie8 visible-ie9">First Name</label>
-                                    <input class="form-control placeholder-no-fix" type="text" placeholder="First Name" name="firstname" /> </div>
-                                <div class="form-group">
-                                    <label class="control-label visible-ie8 visible-ie9">Last Name</label>
-                                    <input class="form-control placeholder-no-fix" type="text" placeholder="Last Name" name="lastname" /> </div>
-                                <div class="form-group">
-                                    <label class="control-label visible-ie8 visible-ie9">Phone Number</label>
-                                    <input class="form-control placeholder-no-fix" type="text" placeholder="Phone Number" name="phone" /> </div>
-
-                                <p class="hint" style="margin:5px 0;"> Enter account details below: </p>
-                                <div class="form-group">
-                                    <!--ie8, ie9 does not support html5 placeholder, so we just show field title for that-->
-                                    <label class="control-label visible-ie8 visible-ie9">Email</label>
-                                    <input class="form-control placeholder-no-fix" type="text" placeholder="Email" name="email" /> </div>
-                                <div class="form-group">
-                                    <label class="control-label visible-ie8 visible-ie9">Password</label>
-                                    <input class="form-control placeholder-no-fix" type="password" autocomplete="off" id="register_password" placeholder="Password" name="password" /> </div>
-                                <div class="form-group">
-                                    <label class="control-label visible-ie8 visible-ie9">Re-type Your Password</label>
-                                    <input class="form-control placeholder-no-fix" type="password" autocomplete="off" placeholder="Re-type Your Password" name="rpassword" /> </div>
-
-                                <p class="hint" style="margin:5px 0;"> Enter membership plan below: </p>
-                                <div class="form-group">
-                                    <!--ie8, ie9 does not support html5 placeholder, so we just show field title for that-->
-                                    <label class="control-label visible-ie8 visible-ie9"> Available Memberships </label>
-                                    <select name="membership_plans_list" class="form-control list_all_plans">
-                                        <option value="-1"> No Membership Plan </option>
-                                        @foreach ($memberships as $membership)
-                                            <option value="{{$membership->id}}"> {{$membership->name}} </option>
-                                        @endforeach
-                                    </select> </div>
-
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="control-label visible-ie8 visible-ie9">First Name</label>
+                                            <input class="form-control placeholder-no-fix" type="text" placeholder="First Name" name="firstname" /> 
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="control-label visible-ie8 visible-ie9">Last Name</label>
+                                            <input class="form-control placeholder-no-fix" type="text" placeholder="Last Name" name="lastname" /> 
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="control-label visible-ie8 visible-ie9">Phone Number</label>
+                                            <input class="form-control placeholder-no-fix" type="text" placeholder="Phone Number" name="phone" /> 
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <div class="control-label">
+                                                <div class="input-group date date-picker" data-date="" data-date-format="dd-mm-yyyy" data-date-viewmode="years" data-date-end-date="-0d">
+                                                    <input type="text" class="form-control" name="DOB" id="DOB" placeholder="Date of Birth" value="" readonly>
+                                                    <span class="input-group-btn">
+                                                        <button class="btn default" type="button">
+                                                            <i class="fa fa-calendar"></i>
+                                                        </button>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <select name="gender" class="form-control">
+                                                <option value="">Select Gender</option>
+                                                <option value="M"> Male </option>
+                                                <option value="F"> Female </option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <select name="country" id="country" class="form-control">
+                                                <option value="">Select Citizenship</option>
+                                                @foreach ($countries as $country)
+                                                    <option value="{{ $country->id }}">{{ $country->name }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <p class="hint" style="margin:5px 0;"> Enter account details below and membership plan below: </p>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <!--ie8, ie9 does not support html5 placeholder, so we just show field title for that-->
+                                            <label class="control-label visible-ie8 visible-ie9">Email</label>
+                                            <input class="form-control placeholder-no-fix" type="text" placeholder="Email" name="email" /> 
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <!--ie8, ie9 does not support html5 placeholder, so we just show field title for that-->
+                                            <label class="control-label visible-ie8 visible-ie9"> Available Memberships </label>
+                                            <select name="membership_plans_list" class="form-control list_all_plans">
+                                                <option value="-1"> No Membership Plan </option>
+                                                @foreach ($memberships as $membership)
+                                                    <option value="{{$membership->id}}"> {{$membership->name}} </option>
+                                                @endforeach
+                                            </select> 
+                                        </div>
+                                    </div>
+                                </div>
                                 <div class="form-actions">
                                     <button type="button" data-dismiss="modal" class="btn grey-steel">Back</button>
                                     <button type="submit" id="register-submit-btn" class="btn red uppercase pull-right">Submit</button>
@@ -919,6 +965,17 @@
                                 }
                             }
                         },
+                        DOB: {
+                            required: true,
+                        },
+                        gender: {
+                            required: true,
+                            minlength:1
+                        },
+                        country: {
+                            required: true,
+                            minlength:1
+                        },
                         password: {
                             minlength: 8,
                             maxlength: 150,
@@ -1102,7 +1159,10 @@
                     'email': $('input[name="email"]').val(),
                     'phone_number': $('input[name="phone"]').val(),
                     'password': $('input[name="password"]').val(),
-                    'membership_plan': $('select[name="membership_plans_list"]').val()
+                    'membership_plan': $('select[name="membership_plans_list"]').val(),
+                    'dob': $('input[name="DOB"]').val(),
+                    'gender': $('select[name=gender]').val(),
+                    'country': $('select[name=country]').val()
                 },
                 success: function (data) {
                     if (data.success==1) {

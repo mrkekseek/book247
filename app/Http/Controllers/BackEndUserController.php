@@ -83,6 +83,7 @@ class BackEndUserController extends Controller
 
         $all_roles = Role::orderBy('name')->get();
         //xdebug_var_dump($all_roles);
+        $countries = Countries::orderBy('name', 'asc')->get();
 
         return view('admin/back_users/all_list', [
             'users' => $back_users,
@@ -90,6 +91,7 @@ class BackEndUserController extends Controller
             'text_parts'  => $text_parts,
             'in_sidebar'  => $sidebar_link,
             'all_roles'   => $all_roles,
+            'countries' => $countries,
         ]);
     }
 
@@ -112,11 +114,8 @@ class BackEndUserController extends Controller
                 'success'   => false,
                 'errors'    => 'You don\'t have permission to access this page',
                 'title'     => 'Permission Error'];
-            /*return redirect()->intended(route('admin/error/permission_denied'));*/
         }
-
-        $vars = $request->only('first_name', 'middle_name', 'last_name', 'email', 'user_type', 'username', 'password', 'user_type');
-
+        $vars = $request->only('first_name', 'middle_name', 'last_name', 'email', 'phone_number', 'dob', 'gender', 'country_id', 'user_type', 'user_type');
         if (!isset($vars['middle_name'])){
             $vars['middle_name'] = '';
         }
@@ -129,14 +128,13 @@ class BackEndUserController extends Controller
             $vars['user_type'] = Role::where('name','=','employee')->get()->first()->id;
         }
 
-        if ($vars['password']==""){
+        if (!isset($vars['password']) || $vars['password']==""){
             $vars['password'] = substr(bcrypt(str_random(12)),0,8);
         }
 
         if (!isset($vars['country_id'])){
             $vars['country_id'] = AppSettings::get_setting_value_by_name('globalWebsite_defaultCountryId');
         }
-        
         $credentials = [
             'first_name'    => $vars['first_name'],
             'middle_name'   => $vars['middle_name'],
@@ -144,7 +142,6 @@ class BackEndUserController extends Controller
             'username'      => $vars['email'],
             'email'         => $vars['email'],
             'password'      => $vars['password'],
-            'password_api'      => $vars['password'],
             'country_id'    => $vars['country_id'],
             'status'        => 'active',
             'user_type'     => $vars['user_type']
@@ -152,17 +149,32 @@ class BackEndUserController extends Controller
         $password_api = $vars['password'];
         $validator = Validator::make($credentials, User::rules('POST'), User::$messages, User::$attributeNames);
         if ($validator->fails()){
-            //return $validator->errors()->all();
             return array(
                 'success'   => false,
                 'title'     => 'Error validating',
                 'errors'    => $validator->getMessageBag()->toArray()
             );
         }
-
+        $personalData = [
+                'personal_email'=> $vars['email'],
+                'mobile_number' => $vars['phone_number'],
+                'date_of_birth' => $vars['dob'],
+                'bank_acc_no'   => 0,
+                'social_sec_no' => 0,
+                'about_info'    => '',                
+                'customer_number'   => $user->get_next_customer_number()
+            ];            
+        $validator = Validator::make($personalData, PersonalDetail::rules('POST'), PersonalDetail::$messages, PersonalDetail::$attributeNames);            
+            if ($validator->fails()){                
+                return array(
+                    'success'   => false,
+                    'title'     => 'Error validating',
+                    'errors'    => $validator->getMessageBag()->toArray()
+                );
+            }
         $credentials['password'] = bcrypt($credentials['password']);
         try {
-            $dataForApi = $credentials;
+            $dataForApi = $credentials + $personalData;
             $api_user = Auth::create_api_user($dataForApi, $password_api);
             if ( ! $api_user)
             {

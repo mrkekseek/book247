@@ -37,6 +37,8 @@ use Snowfire\Beautymail\Beautymail;
 use Cache;
 use Illuminate\Support\Facades\Config;
 use App\Http\Controllers\AppSettings;
+use Webpatser\Countries\Countries;
+
 
 class BookingController extends Controller
 {
@@ -1669,6 +1671,8 @@ class BookingController extends Controller
             'Calendar view' => route('bookings/location_calendar_day_view', ['day'=>\Carbon\Carbon::now()->format('d-m-Y')]),
         ];
         $sidebar_link= 'admin-bookings-calendar_view';
+        $countries = Countries::orderBy('name', 'asc')->get();
+        
         return view('admin/bookings/calendar_location_per_day', [
             'breadcrumbs'   => $breadcrumbs,
             'in_sidebar'    => $sidebar_link,
@@ -1684,6 +1688,7 @@ class BookingController extends Controller
             'membership_legend'   => $membership_legend,
             'membership_products' => $membership_products,
             'defaultProductColor' => $defaultProductColor,
+            'countries' => $countries,
             'jump_to'       => @$jump_to
         ]);
     }

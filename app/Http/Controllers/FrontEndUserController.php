@@ -2759,7 +2759,7 @@ class FrontEndUserController extends Controller
             $beauty_mail = app()->make(Beautymail::class);
             $beauty_mail->send('emails.email_default_v2',
                 ['body_message' => $main_message, 'user' => $user],
-                function($message) use ($user, $subject) {
+                function($message) use ($user) {
                     $message
                             ->from(AppSettings::get_setting_value_by_name('globalWebsite_system_email'))
                             ->to($user->email, $user->first_name.' '.$user->middle_name.' '.$user->last_name)
