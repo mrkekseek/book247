@@ -3004,31 +3004,31 @@
                         }
                     };
 
-                    $.plot($("#chart_1_1"),
-                        [{
-                            label: "sin(x)",
-                            data: d1,
-                            lines: {
-                                lineWidth: 1,
-                            },
-                            shadowSize: 0
-                        }, {
-                            label: "cos(x)",
-                            data: d2,
-                            lines: {
-                                lineWidth: 1,
-                            },
-                            shadowSize: 0
-                        }, {
-                            label: "tan(x)",
-                            data: d3,
-                            lines: {
-                                lineWidth: 1,
-                            },
-                            shadowSize: 0
-                        }],
-                        options
-                    );
+//                    $.plot($("#chart_1_1"),
+//                        [{
+//                            label: "sin(x)",
+//                            data: d1,
+//                            lines: {
+//                                lineWidth: 1,
+//                            },
+//                            shadowSize: 0
+//                        }, {
+//                            label: "cos(x)",
+//                            data: d2,
+//                            lines: {
+//                                lineWidth: 1,
+//                            },
+//                            shadowSize: 0
+//                        }, {
+//                            label: "tan(x)",
+//                            data: d3,
+//                            lines: {
+//                                lineWidth: 1,
+//                            },
+//                            shadowSize: 0
+//                        }],
+//                        options
+//                    );
                 }
             };
         }();

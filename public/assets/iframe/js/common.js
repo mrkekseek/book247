@@ -4,7 +4,7 @@ $(document).ready(function() {
 	$('.carusel').slick({
 	    slidesToShow: 3,
 		slidesToScroll: 1,
-		arrows: false,
+		arrows: true,
 		fade: false,
 	    autoplay:false,
 	    speed : 500,
