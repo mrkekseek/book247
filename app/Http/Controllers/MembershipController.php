@@ -23,6 +23,7 @@ use Regulus\ActivityLog\Models\Activity;
 use Illuminate\Support\Facades\Auth;
 use App\InvoiceItem;
 use App\Invoice;
+use App\Paypal;
 /*
  * This controller is linked to the User Membership Plan assigned to him. The actions here are linked to an active membership plan assigned to a user or a plan that will be assigned
  */
