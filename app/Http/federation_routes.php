@@ -46,7 +46,7 @@ Route::get('buy_license/{token}/{sso_id}/{license_id?}{request_url?}', [
 
 Route::post('membership/ipn', [
     'as'    => 'membership/ipn',
-    'uses'  => 'Federation\MembershipController@ipn'
+    'uses'  => 'IPN@membership_ipn'
 ]);
 
 Route::get('membership/paypal_success', [
