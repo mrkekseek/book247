@@ -2659,9 +2659,9 @@ class FrontEndUserController extends Controller
         if (isset($vars['sign_location'])){
             $signLocation = ShopLocations::where('id','=',$vars['sign_location'])->whereIn('visibility',['public','pending'])->get()->first();
         }
-        else{
+        /*else{
             $signLocation = ShopLocations::whereIn('visibility',['public','pending'])->orderBy('created_at','ASC')->get()->first();
-        }
+        }*/
 
         $credentials = [
             'first_name'    => trim($vars['first_name']),
@@ -2812,7 +2812,7 @@ class FrontEndUserController extends Controller
             }
 
             // preferred location + sign in location
-            if ($signLocation){
+            if (isset($signLocation)){
                 $user->set_general_setting('settings_preferred_location', $signLocation->id);
                 $user->set_general_setting('registration_signed_location', $signLocation->id);
             }
