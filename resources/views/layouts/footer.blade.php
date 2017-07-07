@@ -6,20 +6,7 @@
                 <h2>About</h2>
                 <p> Er du interessert i å jobbe med squash og trening? Da kan det hende du passer til våre jobber. </p>
             </div>
-            <!--<div class="col-md-3 col-sm-6 col-xs12 footer-block">
-                <h2>Subscribe Email</h2>
-                <div class="subscribe-form">
-                    <form action="javascript:;">
-                        <div class="input-group">
-                            <input type="text" placeholder="mail@email.com" class="form-control">
-                                    <span class="input-group-btn">
-                                        <button class="btn" type="submit">Submit</button>
-                                    </span>
-                        </div>
-                    </form>
-                </div>
-            </div>-->
-            <!--<div class="col-md-3 col-sm-6 col-xs-12 footer-block">
+            <div class="col-md-4 col-sm-6 col-xs-12 footer-block">
                 <h2>Follow Us On</h2>
                 <ul class="social-icons">
                     <li>
@@ -44,8 +31,8 @@
                         <a href="javascript:;" data-original-title="vimeo" class="vimeo"></a>
                     </li>
                 </ul>
-            </div>-->
-            <div class="col-md-3 col-sm-6 col-xs-12 footer-block">
+            </div>
+            <div class="col-md-4 col-sm-6 col-xs-12 footer-block">
                 <h2>Contacts</h2>
                 <address class="margin-bottom-40"> Phone: 22 20 70 60
                     <br> Email:
@@ -58,7 +45,7 @@
 <!-- END PRE-FOOTER -->
 <!-- BEGIN INNER FOOTER -->
 <div class="page-footer">
-    <div class="container"> 2016 &copy; BookingSystem by SQF.
+    <div class="container"> {{ \Carbon\Carbon::now()->format('Y') }} &copy; BookingSystem by SQF.
         <a href="http://www.sqf.no" title="Company Website" target="_blank">Squash Fitness!</a>
     </div>
 </div>

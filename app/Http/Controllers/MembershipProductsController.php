@@ -5,8 +5,8 @@ namespace App\Http\Controllers;
 use App\MembershipProduct;
 use Illuminate\Http\Request;
 
+use Auth;
 use App\Http\Requests;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Validator;
 use Regulus\ActivityLog\Models\Activity;
