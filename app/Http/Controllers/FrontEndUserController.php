@@ -5040,4 +5040,10 @@ class FrontEndUserController extends Controller
             'grand_total' => $total
         ]);
     }
+    
+    public function logout()
+    {
+        Auth::logout();
+        return redirect('');
+    }
 }

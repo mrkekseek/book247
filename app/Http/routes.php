@@ -40,6 +40,8 @@ else
             'as' => 'front_login',
             'uses' => 'FrontPageController@authenticate'
         ]);
+        
+        Route::get('logout', 'FrontEndUserController@logout');
 
         //Route::get('login-new', function () {
         //    return view('login');
