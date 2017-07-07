@@ -2382,7 +2382,7 @@ class FrontEndUserController extends Controller
             {
                 $friend_approval_status = $newFriend->get_general_setting('auto_approve_friends')==='0'?'pending':'active';
 
-                $friend_fill = ['user_id'=>$user_id, 'friend_id'=>$friends->user_id, 'status'=>$friend_approval_status];
+                $friend_fill = ['user_id'=>$user_id, 'friend_id'=>$friends->user_id, 'status' => $friend_approval_status];
                 $validator = Validator::make($friend_fill, UserFriends::rules('POST'), UserFriends::$message, UserFriends::$attributeNames);
 
                 if ($validator->fails())
@@ -2401,14 +2401,13 @@ class FrontEndUserController extends Controller
                     $new_friend = UserFriends::firstOrCreate($friend_fill);
                     $new_friend->save();
 
-                    $friend = User::where('id','=',$friends->user_id)->get()->first();
+                    $friend = User::where('id', '=', $friends->user_id)->get()->first();
                     if ($friend_approval_status == 'pending')
                     {
-                         //mjs 
                         $data = [
-                            'first_name'            => $user->first_name,
-                            'middle_name'           => $user->middle_name,
-                            'last_name'             => $user->last_name,
+                            'first_name'            => $friend->first_name,
+                            'middle_name'           => $friend->middle_name,
+                            'last_name'             => $friend->last_name,
                             'friend´s_list_link'    => route("front/member_friend_list")
                         ];
 
@@ -2417,34 +2416,35 @@ class FrontEndUserController extends Controller
                         if ($template)
                         {
                             $main_message = $template["message"];
-                            $subject = AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title').' - You got a new friend request that needs approval';
+                            $subject = AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title') . ' - You got a new friend request that needs approval';
                         }
                         else
                         {
                             $main_message = 'You got a friend request from '.$user->first_name.' '.$user->middle_name.' '.$user->last_name.'<br /><br />';
-                            $main_message.= 'Please go to your backend account->Friends List and answer to this friend request, by <strong>approving</strong> or <strong>rejecting</strong> it. <br /><br />'.
+                            $main_message .= 'Please go to your backend account->Friends List and answer to this friend request, by <strong>approving</strong> or <strong>rejecting</strong> it. <br /><br />'.
                                     'Sincerely,<br />Book247 Team.';
-                            $subject = AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title').' - You got a new friend request that needs approval';
+                            $subject = AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title') . ' - You got a new friend request that needs approval';
                         }
 
                         $beauty_mail = app()->make(Beautymail::class);
                         $beauty_mail->send('emails.email_default_v2',
-                            ['body_message' => $main_message, 'user'=>$user],
-                            function($message) use ($user, $subject) {
+                            ['body_message' => $main_message, 'user' => $friend],
+                            function($message) use ($friend, $subject) {
                                 $message
                                 ->from(AppSettings::get_setting_value_by_name('globalWebsite_system_email'))
-                                ->to($user->email, $user->first_name.' '.$user->middle_name.' '.$user->last_name)
+                                ->to($friend->email, $friend->first_name . ' ' . $friend->middle_name . ' ' . $friend->last_name)
                                 ->subject($subject);
                             });
-
                     }
                     else
                     {
+
+                         $friend = User::where('id', '=', $friends->user_id)->get()->first();
                        
                         $data = [
-                            'first_name'            => $user->first_name,
-                            'middle_name'           => $user->middle_name,
-                            'last_name'             => $user->last_name,
+                            'first_name'            => $friend->first_name,
+                            'middle_name'           => $friend->middle_name,
+                            'last_name'             => $friend->last_name,
                             'friend´s_list_link'    => route("front/member_friend_list")
                         ];
 
@@ -2457,20 +2457,20 @@ class FrontEndUserController extends Controller
                         }
                         else
                         {
-                            $main_message  = 'You have a new friend - '.$user->first_name.' '.$user->middle_name.' '.$user->last_name.'<br /><br />';
+                            $main_message  = 'You have a new friend - ' . $friend->first_name.' '.$friend->middle_name.' '.$friend->last_name.'<br /><br />';
                             $main_message .= 'To manage your friends, go to your Backend Account -> Friends List and see the entire list. You can remove the ones you don\'t want by clicking <strong>Remove</strong> button. <br /><br />'.
                             'Sincerely,<br />Book247 Team.';
 
-                            $subject = AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title').' - You have a new friend';
+                            $subject = AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title') . ' - You have a new friend';
                         }
 
                         $beauty_mail = app()->make(Beautymail::class);
                         $beauty_mail->send('emails.email_default_v2',
-                            ['body_message' => $main_message, 'user'=>$user],
-                            function($message) use ($user, $subject) {
+                            ['body_message' => $main_message, 'user'=>$friend],
+                            function($message) use ($friend, $subject) {
                                 $message
                                 ->from(AppSettings::get_setting_value_by_name('globalWebsite_system_email'))
-                                ->to($user->email, $user->first_name.' '.$user->middle_name.' '.$user->last_name)
+                                ->to($friend->email, $friend->first_name.' '.$friend->middle_name.' '.$friend->last_name)
                                 ->subject($subject);
                             });
                     }
@@ -2659,9 +2659,9 @@ class FrontEndUserController extends Controller
         if (isset($vars['sign_location'])){
             $signLocation = ShopLocations::where('id','=',$vars['sign_location'])->whereIn('visibility',['public','pending'])->get()->first();
         }
-        else{
+        /*else{
             $signLocation = ShopLocations::whereIn('visibility',['public','pending'])->orderBy('created_at','ASC')->get()->first();
-        }
+        }*/
 
         $credentials = [
             'first_name'    => trim($vars['first_name']),
@@ -2759,7 +2759,7 @@ class FrontEndUserController extends Controller
             $beauty_mail = app()->make(Beautymail::class);
             $beauty_mail->send('emails.email_default_v2',
                 ['body_message' => $main_message, 'user' => $user],
-                function($message) use ($user, $subject) {
+                function($message) use ($user) {
                     $message
                             ->from(AppSettings::get_setting_value_by_name('globalWebsite_system_email'))
                             ->to($user->email, $user->first_name.' '.$user->middle_name.' '.$user->last_name)
@@ -2812,7 +2812,7 @@ class FrontEndUserController extends Controller
             }
 
             // preferred location + sign in location
-            if ($signLocation){
+            if (isset($signLocation)){
                 $user->set_general_setting('settings_preferred_location', $signLocation->id);
                 $user->set_general_setting('registration_signed_location', $signLocation->id);
             }
@@ -5039,5 +5039,11 @@ class FrontEndUserController extends Controller
             'vat' => $vat,
             'grand_total' => $total
         ]);
+    }
+    
+    public function logout()
+    {
+        Auth::logout();
+        return redirect('');
     }
 }
