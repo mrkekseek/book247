@@ -6,6 +6,7 @@ use App\Http\Libraries\ApiAuth;
 use App\User;
 use App\PersonalDetail;
 use App\OptimizeSearchMembers;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Session;
 use \Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Auth as AuthLocal;
@@ -47,7 +48,7 @@ class Auth
     }
 
     public static function attempt($data = [])
-    {   
+    {
         if (AuthLocal::once(['username' => $data['email'], 'password' => $data['password'], 'sso_user_id' => NULL]) || AuthLocal::once(['email' => $data['email'], 'password' => $data['password'], 'sso_user_id' => NULL]))
         {   
             $local_id = AuthLocal::user()->id;
@@ -75,8 +76,9 @@ class Auth
                 }
             }
         }        
+
         if (ApiAuth::autorize($data)['success'])
-        {  
+        {
             $sso_user = ApiAuth::accounts_get_by_username($data['email']);            
             $sso_user_id = $sso_user['data']->id;
             self::set_local_user($sso_user_id);
@@ -186,14 +188,25 @@ class Auth
     {
         $personalDetail = PersonalDetail::firstOrNew(['user_id'=>$local_user_id]);
         $personalDetail->personal_email = $api_user->email;
-        if (empty($api_user->phoneNumber) && empty($personalDetail->mobile_number) )
+        /*if (empty($api_user->phoneNumber) && empty($personalDetail->mobile_number) )
         {
             $personalDetail->mobile_number = rand(100000, 999999).rand(100000, 999999).rand(100000, 999999);
         }
         else
         {
             $personalDetail->mobile_number = $api_user->phoneNumber;
+        }*/
+
+        if (!empty($api_user->phoneNumber)){
+            $personalDetail->mobile_number = $api_user->phoneNumber;
         }
+        elseif (!empty($personalDetail->mobile_number)){
+            //$personalDetail->mobile_number = $api_user->phon;
+        }
+        else{
+            $personalDetail->mobile_number = Carbon::now()->timestamp . rand(1000, 9999).rand(1000, 9999);
+        }
+
         $personalDetail->date_of_birth = date('Y-m-d', strtotime($api_user->birthday));
         $personalDetail->save();
     }

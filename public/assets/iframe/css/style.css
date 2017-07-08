@@ -31,9 +31,13 @@
 
 body.body-iframe{
 	font-family: "OpenSansRegular";
-	background-color: #fff;
 	font-size: 16px;
 	color:#333;
+	background: #fff;
+}
+
+.slick-prev:before, .slick-next:before {
+	 color: black;
 }
 
 .clearfix:after {
