@@ -128,11 +128,14 @@
                                         <strong>Grand Total:</strong> {{$grand_total}} </li>
                                 </ul>
                                 <br/>
-                                <a class="btn btn-lg blue hidden-print margin-bottom-5" onclick="javascript:window.print();"> Print
+                                <form id="make_payment" action="{{ env('MY_SERVER_URL') }}/front/finance/invoice" method="POST">
+                                    <input type="hidden" name="invoice_number" value="{{ $invoice->invoice_number }}">
+                                </form>
+                                <a  class="btn btn-lg blue hidden-print margin-bottom-5" onclick="javascript:window.print();"> Print
                                     <i class="fa fa-print"></i>
                                 </a>
                                 @if ($invoice->status=='pending')
-                                    <a class="btn btn-lg green hidden-print margin-bottom-5"> Make Payment
+                                    <a onclick="make_payment()" href="/front/finance/invoice/{{ $invoice->invoice_number }}" class="btn btn-lg green hidden-print margin-bottom-5"> Make Payment
                                         <i class="fa fa-check"></i>
                                     </a>
                                 @elseif ($invoice->status=='processing')
@@ -196,6 +199,10 @@
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             }
         });
+
+        function make_payment(){
+//            $('#make_payment').submit();
+        }
 
         function show_notification(title_heading, message, theme, life, sticky) {
             var settings = {

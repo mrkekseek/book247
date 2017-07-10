@@ -195,7 +195,7 @@
                                     </div>
                                     <div class="row">
                                         <div class="col-md-12 col-sm-12 text-right">
-                                            <button class="btn btn-primary">Pay with paypal</button>
+                                            <button id="pay_with_paypal" class="btn btn-primary">Pay with paypal</button>
                                             <button class="btn btn-success">Pay with strype</button>
                                         </div>
                                     </div>
@@ -209,6 +209,31 @@
             </div>
         </div>
     </div>
+    <form id="paypal-form" action="{{ env('PAYPAL_SANDBOX') }}"  target="_blank" method="post" style="display: none;">
+        <input type="hidden" name="cmd" value="_cart">
+        <input type="hidden" name="business" value="{{ env('PAYPAL_EMAIL') }}">
+        <input type="hidden" name="return" value="{{ env('MY_SERVER_URL') }}/membership/paypal_success">
+        <input type="hidden" name="cancel_url" value="{{ env('MY_SERVER_URL') }}/membership/paypal_cancel">
+        <input type="hidden" name="notify_url" value="{{ env('MY_SERVER_URL') }}/membership/ipn">
+        <input type="hidden" name="rm" value="1">
+        <input type="hidden" name="upload" value="1">
+
+        @foreach($invoice_items as $key => $item)
+            <input type="hidden" name="item_name_{{ $key+1 }}" value="{{ $item->item_name }}">
+            <input type="hidden" name="amount_{{ $key+1 }}" value="{{ $item->price - (($item->discount * $item->price) / 100) }}">
+            <input type="hidden" name="quantity_{{ $key+1 }}" value="{{ $item->quantity }}">
+        @endforeach
+        <input type="hidden" name="currency_code" value="USD">
+
+        <input type="hidden" name="first_name" value="{{ $member->first_name }}">
+        <input type="hidden" name="last_name" value="{{ $member->last_name }}">
+        <input type="hidden" name="email" value="{{ $member->email }}">
+
+        <input type="hidden" name="custom" value="{{ $custom }}">
+        <input type="hidden" name="invoice" value="{{ $invoice->id }}">
+
+    </form>
+
     <!-- END PAGE CONTENT INNER -->
 </div>
 @endsection
@@ -238,6 +263,15 @@
 
 @section('themeBelowGlobalScripts')
     <script src="{{ asset('assets/global/scripts/app.min.js') }}" type="text/javascript"></script>
+@endsection
+
+@section('pageCustomJScripts')
+    <script type="text/javascript">
+        $(document).on('click','#pay_with_paypal',function(){
+            $('#paypal-form').submit();
+        });
+
+    </script>
 @endsection
 
 @section('pageBelowLevelScripts')
