@@ -1174,6 +1174,9 @@
                         $('#register_new_user_popup').modal('hide');
                     }
                     else{
+                        $('.alert-success', '#user_registration_form').hide();
+                        $('.alert-danger', '#user_registration_form').html(data.errors);
+                        $('.alert-danger', '#user_registration_form').show();
                         show_notification('User registration ERROR', 'Something went wrong with the registration. Try changing the email/phone number or try reloading the page', 'ruby', 3500, 0);
                     }
                 }
