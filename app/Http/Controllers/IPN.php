@@ -96,5 +96,81 @@ class IPN extends Controller{
 
     }
 
+    public function membership_paypal_success(Request $r)
+    {
+        $amount = $r->get('amt');
+        $currency = $r->get('cc');
+        $transactionId = $r->get('tx');
+        $url = $r->get('cm');
+
+        $breadcrumbs = [
+            'Home'      => route('admin'),
+            'Dashboard' => '',
+        ];
+        $text_parts  = [
+            'title'     => 'Home',
+            'subtitle'  => 'users dashboard',
+            'table_head_text1' => 'Dashboard Summary'
+        ];
+        $sidebar_link= 'front-homepage';
+
+        $key = env('APP_KEY') ;
+        if($key){
+            while(strlen($key) < 16){
+                $key .= env('APP_KEY');
+            }
+            $key = substr($key,0,16);
+        }
+        $iv = env('APP_KEY');
+        if($iv){
+            while(strlen($iv) < 16){
+                $iv .= env('APP_KEY');
+            }
+            $iv = substr($key,0,16);
+        }
+        $custom = json_decode(openssl_decrypt(base64_decode($url),'AES-256-CBC',$key,0 ,$iv));
+        if (!isset($custom->invoice_id)) {
+            return view('front/iframe/federation/redirect_page',[
+                'breadcrumbs' => $breadcrumbs,
+                'text_parts'  => $text_parts,
+                'in_sidebar'  => $sidebar_link,
+                'text' => 'Payment successful!',
+                'status' => 'Success',
+                'link' => ' '
+            ]);
+        }
+        $invoice = Invoice::find($custom->invoice_id);
+        if ($invoice) {
+            $invoice_plan = UserMembershipInvoicePlanning::where('invoice_id',$custom->invoice_id)->first();
+            $user_membership = UserMembership::find($invoice_plan->user_membership_id);
+            $transaction = new InvoiceFinancialTransaction();
+            $transaction->fill([
+                'invoice_id' => $invoice->id,
+                'user_id' => $invoice->user_id,
+                'transaction_amount' => $amount,
+                'transaction_currency' => $currency,
+                'transaction_type' => 'paypal',
+                'status' => 'pending',
+                'other_details' => $transactionId
+            ])->save();
+            $invoice->status = 'processing';
+            $invoice->save();
+            $user_membership->status = 'active';
+            $user_membership->save();
+        }
+
+        return view('front/iframe/federation/redirect_page',[
+            'breadcrumbs' => $breadcrumbs,
+            'text_parts'  => $text_parts,
+            'in_sidebar'  => $sidebar_link,
+            'text' => 'Payment successful!',
+            'status' => 'Success',
+            'link' => $custom->redirect_url
+        ]);
+
+
+    }
+    
+
 
 }

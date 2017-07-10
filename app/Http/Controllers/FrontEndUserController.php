@@ -2045,6 +2045,7 @@ class FrontEndUserController extends Controller
 
         // get user membership if exists
         $active_membership = UserMembership::where('user_id','=',$fillable['for_user_id'])->where('status','=','active')->get()->first();
+
         if ($active_membership){
             $restrictions = $active_membership->get_plan_restrictions();
         }
@@ -4965,6 +4966,29 @@ class FrontEndUserController extends Controller
         }
     }
 
+    private function get_custom($invoice_id) {
+        $custom = json_encode(array(
+            'redirect_url' => env('MY_SERVER_URL'),
+            'invoice_id' => $invoice_id));
+        $key = env('APP_KEY') ;
+        if($key){
+            while(strlen($key) < 16){
+                $key .= env('APP_KEY');
+            }
+            $key = substr($key,0,16);
+        }
+        $iv = env('APP_KEY');
+        if($iv){
+            while(strlen($iv) < 16){
+                $iv .= env('APP_KEY');
+            }
+            $iv = substr($key,0,16);
+        }
+        $custom = base64_encode(openssl_encrypt($custom,'AES-256-CBC',$key,0 ,$iv));
+        return $custom;
+    }
+
+
     public function invoice_payment($id)
     {
         $user = Auth::user();
@@ -5019,6 +5043,89 @@ class FrontEndUserController extends Controller
             'All Backend Users' => '',
         ];
         
+        $text_parts  = [
+            'title'     => 'Back-End Users',
+            'subtitle'  => 'view all users',
+            'table_head_text1' => 'Backend User List'
+        ];
+
+        $sidebar_link = 'admin-backend-shops-invoices-payment';
+
+        return view('front/finance/finance_peyment', [
+            'custom' => $this->get_custom($invoice->id),
+            'breadcrumbs' => $breadcrumbs,
+            'text_parts'  => $text_parts,
+            'in_sidebar'  => $sidebar_link,
+            'invoice'   => $invoice,
+            'invoice_items' => @$items,
+            'member'    => $member,
+            'sub_total' => $subtotal,
+            'discount' => $discount,
+            'vat' => $vat,
+            'grand_total' => $total
+        ]);
+    }
+
+
+    public function post_invoice_payment(Request $r)
+    {
+
+        $user = Auth::user();
+        if ( ! $user || ! $user->is_front_user() )
+        {
+            return redirect()->intended(route('admin/login'));
+        }
+
+
+        $id = $r->get('invoice_number');
+
+
+        $invoice = Invoice::where('invoice_number', '=', $id)->get()->first();
+        if ($invoice)
+        {
+            $subtotal = 0;
+            $total = 0;
+            $discount = 0;
+            $vat = [];
+
+            $items = InvoiceItem::where('invoice_id', '=', $invoice->id)->get();
+
+            foreach($items as $item)
+            {
+                $item_one_price = $item->price - (($item->price*$item->discount)/100);
+                $item_vat = $item_one_price * ($item->vat/100);
+
+                if (isset($vat[$item->vat]))
+                {
+                    $vat[$item->vat] += $item_vat*$item->quantity;
+                }
+                else
+                {
+                    $vat[$item->vat] = $item_vat*$item->quantity;
+                }
+
+                $discount += (($item->price*$item->discount)/100)*$item->quantity;
+                $subtotal += $item->price * $item->quantity;
+
+                $total += ($item_one_price + $item_vat)*$item->quantity;
+            }
+        }
+        else
+        {
+            return redirect('/');
+        }
+
+
+        $member = User::with('ProfessionalDetail')->with('PersonalDetail')->where('id', $invoice->user_id)->get()->first();
+        $member->country = Countries::where('id', $member->country_id)->get()->first();
+
+        $breadcrumbs = [
+            'Home'              => route('admin'),
+            'Administration'    => route('admin'),
+            'Back End User'     => route('admin'),
+            'All Backend Users' => '',
+        ];
+
         $text_parts  = [
             'title'     => 'Back-End Users',
             'subtitle'  => 'view all users',

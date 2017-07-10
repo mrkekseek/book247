@@ -43,6 +43,11 @@ Route::get('buy_license/{token}/{sso_id}/{license_id?}{request_url?}', [
 
 
 //END LOCAL API ROUTES
+Route::post('membership/paypal_payment', [
+    'as'    => 'membership/paypal_payment',
+    'uses'  => 'Federation\MembershipController@iframed_paypal_pay'
+]);
+
 
 Route::post('membership/ipn', [
     'as'    => 'membership/ipn',
@@ -51,27 +56,28 @@ Route::post('membership/ipn', [
 
 Route::get('membership/paypal_success', [
     'as'    => 'membership/paypal_success',
-    'uses'  => 'Federation\MembershipController@paypal_success'
+    'uses'  => 'IPN@membership_paypal_success'
 ]);
-
-//Route::post('membership/paypal_success', [
-//    'as'    => 'membership/paypal_success',
-//    'uses'  => 'Federation\MembershipController@paypal_success'
-//]);
 
 Route::get('membership/paypal_cancel', [
     'as'    => 'membership/paypal_cancel',
-    'uses'  => 'Federation\MembershipController@paypal_cancel'
+    'uses'  => 'IPN@membership_paypal_cancel'
 ]);
 
-Route::post('membership/buy_succes', [
-    'as'    => 'membership/buy_succes',
-    'uses'  => 'Federation\MembershipController@payment_success'
+Route::post('invoice/ipn', [
+    'as'    => 'membership/ipn',
+    'uses'  => 'IPN@invoice_ipn'
 ]);
-Route::post('membership/paypal_payment', [
-    'as'    => 'membership/paypal_payment',
-    'uses'  => 'Federation\MembershipController@iframed_paypal_pay'
+
+Route::get('invoice/paypal_success', [
+    'as'    => 'membership/paypal_success',
+    'uses'  => 'IPN@invoice_paypal_success'
 ]);
+
+
+
+
+
 
 Route::group(['middleware' => 'web'], function () {
     // default login/register/forgot password routes
