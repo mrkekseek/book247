@@ -304,7 +304,7 @@ class BookingController extends Controller
                     if ($old_status == 'active')
                     {
                         // send_email_to_user
-                        $player = User::where('id','=',$booking->for_user_id)->get()->first();
+                        $player = User::where('id', '=', $booking->for_user_id)->get()->first();
                         $booking_details = $booking->get_summary_details(false);
 
                         $info = "";
@@ -319,29 +319,32 @@ class BookingController extends Controller
                         }
                         else
                         {
-                            $date = $booking_details['bookingDate'];
+                            $info = $booking_details['bookingDate'];
                         }
                         
-                         $data = [
-                            'first_name'               => $user->first_name,
-                            'last-name'              => $user->last_name,
-                            'middle-name'             => $user->middle_name,
+                        $data = [
+                            'first_name'              => $player->first_name,
+                            'last-name'               => $player->last_name,
+                            'middle-name'             => $player->middle_name,
                             'booking_date'            => $date,
                             'booking_details'         => $info,
                             'cancel_booking_details'  => $info,
-                            'my_booking_link'         => ''
+                            'my_booking_link'         => route("front/my_bookings")
                         ];
 
 
                         $template = EmailsController::build('Booking cancellation - single', $data);
+                        $subject = "";
 
                         if ($template)
                         {
                             $main_message = $template["message"];
-                            $subject = AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title').' - You have a new friend';
+                            $subject = AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title').' -  Your booking for '.$booking_details["bookingDate"].' was canceled';
                         }
                         else
                         {
+                            $subject = AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title').' -  Your booking for '.$booking_details["bookingDate"].' was canceled';
+
                             if ( ! isset($booking_details['bookingDate']))
                             {
                                 $main_message = 'The following bookings were canceled :<br />';
@@ -352,15 +355,15 @@ class BookingController extends Controller
                             }
                             else 
                             {
-                                $main_message = 'Your booking for '.$booking_details['bookingDate'].' - '.$booking_details['timeStart'].' to '.$booking_details['timeStop'].' was canceled. <br /><br />Below you can check the full booking summary :<br />';
-                                $main_message.= 'Booking Date : '.$booking_details['bookingDate'].' <br />';
-                                $main_message.= 'Time of booking : '.$booking_details['timeStart'].' - '.$booking_details['timeStop'].' <br />';
-                                $main_message.= 'Booking Location : '.$booking_details['location'].' - '.$booking_details['room'].' <br />';
-                                $main_message.= 'Activity : '.$booking_details['category'].' <br />';
-                                $main_message.= 'Player : '.$booking_details['forUserName'].' <br />';
+                                $main_message  = 'Your booking for '.$booking_details['bookingDate'].' - '.$booking_details['timeStart'].' to '.$booking_details['timeStop'].' was canceled. <br /><br />Below you can check the full booking summary :<br />';
+                                $main_message .= 'Booking Date : '.$booking_details['bookingDate'].' <br />';
+                                $main_message .= 'Time of booking : '.$booking_details['timeStart'].' - '.$booking_details['timeStop'].' <br />';
+                                $main_message .= 'Booking Location : '.$booking_details['location'].' - '.$booking_details['room'].' <br />';
+                                $main_message .= 'Activity : '.$booking_details['category'].' <br />';
+                                $main_message .= 'Player : '.$booking_details['forUserName'].' <br />';
                             }
                             
-                            $main_message.= '<br />You can view this information in your account by accessing your <strong>Bookings > Booking Archive</strong> menu.';
+                            $main_message .= '<br />You can view this information in your account by accessing your <strong>Bookings > Booking Archive</strong> menu.';
                         }
 
 
@@ -371,7 +374,7 @@ class BookingController extends Controller
                             $message
                                 ->from(AppSettings::get_setting_value_by_name('globalWebsite_system_email'))
                                 ->to($player->email, $player->first_name.' '.$player->middle_name.' '.$player->last_name)
-                                ->subject(AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title').' -  Your booking for '.$booking_details["bookingDate"].' was canceled');
+                                ->subject($subject);
                         });
                     }
 
@@ -1111,28 +1114,72 @@ class BookingController extends Controller
                 $email_confirm[$booking->for_user_id][] = $booking_details;
             }
 
-            foreach($email_confirm as $player_id=>$booking_details) {
+            foreach($email_confirm as $player_id => $booking_details)
+            {
                 // send_email_to_user
                 $player = User::where('id', '=', $player_id)->get()->first();
-                if (sizeof($booking_details)>1){
-                    $email_title = AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title').' - Several bookings were created';
+                $template = "";
+
+
+                $details = "";
+                $date = "";
+
+                if ( ! isset($booking_details['bookingDate']))
+                {
+                    foreach ($booking_details as $var)
+                    {
+                        $details .= '- ' . $var['bookingDate'] . ', from ' . $var['timeStart'] . ' to ' . $var['timeStop'] . ', location ' . $var['location'] . ' - ' . $var['room'] . '; <br />';
+                    }
                 }
-                else{
-                    $booking_details = $booking_details[0];
-                    $email_title = AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title').' - Your booking for ' . $booking_details["bookingDate"] . ' was created';
+                else
+                {
+
+                    $details .= 'Your booking for ' . $booking_details['bookingDate'] . ' - ' . $booking_details['timeStart'] . ' to ' . $booking_details['timeStop'] . ' was created. <br /><br />' .
+                            'Below you can check the full booking summary :<br />';
+                    $details .= 'Booking Date : ' . $booking_details['bookingDate'] . ' <br />';
+                    $details .= 'Time of booking : ' . $booking_details['timeStart'] . ' - ' . $booking_details['timeStop'] . ' <br />';
+                    $details .= 'Booking Location : '. $booking_details['location'] . ' - ' . $booking_details['room'] . ' <br />';
+                    $details .= 'Activity : ' . $booking_details['category'] . ' <br />';
+                    $details .='Player : ' . $booking_details['forUserName'] . ' <br />';
+
+                    $date = $booking_details['bookingDate'];
+
                 }
 
-                 $data = [
+
+
+                if (sizeof($booking_details) > 1)
+                {
+                    $email_title = AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title').' - Several bookings were created';
+
+                    $data = [
+                        'first_name'            => $user->first_name,
+                        'middle_name'           => $user->middle_name,
+                        'last_name'             => $user->last_name,
+                        'booking_details'       => $details,
+                        'my_booking_link'       => route("front/my_bookings")
+                    ];
+
+                    $template = EmailsController::build('Booking confirmation – multiple', $data); 
+                }
+                else
+                {
+                    $booking_details = $booking_details[0];
+                    $email_title = AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title').' - Your booking for ' . $booking_details["bookingDate"] . ' was created';
+
+                    $data = [
                         'first_name'            => $user->first_name,
                         'middle_name'           => $user->middle_name,
                         'last_name'             => $user->last_name,
                         'my_booking_link'       => route("front/my_bookings"),
-                        'booking_details'       => isset($booking_details['bookingDate']) ? $booking_details['bookingDate'] : ''
-                ];
+                        'booking_details'       => $details,
+                        'booking_date'          => $date
+                    ];
 
-                $template = EmailsController::build('Booking Confirmation – single', $data); 
+                    $template = EmailsController::build('Booking Confirmation – single', $data); 
+                }
 
-                if ($template)
+               if ($template)
                 {
                     $main_message = $template["message"];
                 }

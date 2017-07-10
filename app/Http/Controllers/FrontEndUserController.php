@@ -2045,6 +2045,7 @@ class FrontEndUserController extends Controller
 
         // get user membership if exists
         $active_membership = UserMembership::where('user_id','=',$fillable['for_user_id'])->where('status','=','active')->get()->first();
+
         if ($active_membership){
             $restrictions = $active_membership->get_plan_restrictions();
         }
