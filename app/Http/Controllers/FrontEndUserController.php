@@ -2380,6 +2380,7 @@ class FrontEndUserController extends Controller
             }
             else
             {
+                //mjs
                 $friend_approval_status = $newFriend->get_general_setting('auto_approve_friends')==='0'?'pending':'active';
 
                 $friend_fill = ['user_id'=>$user_id, 'friend_id'=>$friends->user_id, 'status' => $friend_approval_status];
@@ -2402,12 +2403,14 @@ class FrontEndUserController extends Controller
                     $new_friend->save();
 
                     $friend = User::where('id', '=', $friends->user_id)->get()->first();
+                    $user   = User::where('id', '=', Auth::user()->id)->get()->first();
+
                     if ($friend_approval_status == 'pending')
                     {
                         $data = [
-                            'first_name'            => $friend->first_name,
-                            'middle_name'           => $friend->middle_name,
-                            'last_name'             => $friend->last_name,
+                            'first_name'            => $user->first_name,
+                            'middle_name'           => $user->middle_name,
+                            'last_name'             => $user->last_name,
                             'friend´s_list_link'    => route("front/member_friend_list")
                         ];
 
@@ -2416,7 +2419,6 @@ class FrontEndUserController extends Controller
                         if ($template)
                         {
                             $main_message = $template["message"];
-                            $subject = AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title') . ' - You got a new friend request that needs approval';
                         }
                         else
                         {
@@ -2426,25 +2428,35 @@ class FrontEndUserController extends Controller
                             $subject = AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title') . ' - You got a new friend request that needs approval';
                         }
 
+                        $subject = "";
+                        if (AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title'))
+                        {
+                            $subject = AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title') . ' - You have a new friend';
+                        }
+                        else
+                        {
+                            $subject = "You have a new friend";
+                        }
+
+                       
+
                         $beauty_mail = app()->make(Beautymail::class);
                         $beauty_mail->send('emails.email_default_v2',
-                            ['body_message' => $main_message, 'user' => $friend],
-                            function($message) use ($friend, $subject) {
+                            ['body_message' => $main_message, 'user'=>$friend],
+                            function($message) use ($user, $subject, $friend) {
                                 $message
                                 ->from(AppSettings::get_setting_value_by_name('globalWebsite_system_email'))
-                                ->to($friend->email, $friend->first_name . ' ' . $friend->middle_name . ' ' . $friend->last_name)
+                                ->to($friend->email, $friend->first_name.' '.$friend->middle_name.' '.$friend->last_name)
                                 ->subject($subject);
                             });
                     }
                     else
                     {
 
-                         $friend = User::where('id', '=', $friends->user_id)->get()->first();
-                       
                         $data = [
-                            'first_name'            => $friend->first_name,
-                            'middle_name'           => $friend->middle_name,
-                            'last_name'             => $friend->last_name,
+                            'first_name'            => $user->first_name,
+                            'middle_name'           => $user->middle_name,
+                            'last_name'             => $user->last_name,
                             'friend´s_list_link'    => route("front/member_friend_list")
                         ];
 
@@ -2453,21 +2465,30 @@ class FrontEndUserController extends Controller
                         if ($template)
                         {
                             $main_message = $template["message"];
-                            $subject = AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title').' - You have a new friend';
                         }
                         else
                         {
-                            $main_message  = 'You have a new friend - ' . $friend->first_name.' '.$friend->middle_name.' '.$friend->last_name.'<br /><br />';
+                            $main_message  = 'You have a new friend - ' . $user->first_name.' '.$user->middle_name.' '.$user->last_name.'<br /><br />';
                             $main_message .= 'To manage your friends, go to your Backend Account -> Friends List and see the entire list. You can remove the ones you don\'t want by clicking <strong>Remove</strong> button. <br /><br />'.
                             'Sincerely,<br />Book247 Team.';
+                        }
 
+                        $subject = "";
+                        if (AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title'))
+                        {
                             $subject = AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title') . ' - You have a new friend';
                         }
+                        else
+                        {
+                            $subject = "You have a new friend";
+                        }
+
+                       
 
                         $beauty_mail = app()->make(Beautymail::class);
                         $beauty_mail->send('emails.email_default_v2',
                             ['body_message' => $main_message, 'user'=>$friend],
-                            function($message) use ($friend, $subject) {
+                            function($message) use ($user, $subject, $friend) {
                                 $message
                                 ->from(AppSettings::get_setting_value_by_name('globalWebsite_system_email'))
                                 ->to($friend->email, $friend->first_name.' '.$friend->middle_name.' '.$friend->last_name)

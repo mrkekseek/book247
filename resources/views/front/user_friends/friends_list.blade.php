@@ -91,7 +91,7 @@
                                                 <a href="javascript:;" data-id="{{$friend['ref_nr']}}" style="min-width:85px;" class="btn btn-sm red-soft reject_friend">
                                                     <i class="fa fa-edit hidden-xs"></i> Reject </a>
                                             @else
-                                                <a href="javascript:;" data-id="{{$friend['ref_nr']}}" style="min-width:85px;" class="btn btn-sm btn-outline red-haze remove_friend">
+                                                <a data-name="{{$friend['full_name']}}" data-email="{{$friend['email_address']}}" href="javascript:;" data-id="{{$friend['ref_nr']}}" style="min-width:85px;" class="btn btn-sm btn-outline red-haze remove_friend">
                                                     <i class="fa fa-edit hidden-xs"></i> Remove </a>
                                             @endif
                                         </td>
@@ -363,8 +363,8 @@
         });
 
         $(document).on('click', '.remove_friend', function(){
-            var friend_name  = $(this).parent().parent().find('td:eq(0)').html();
-            var friend_email = $(this).parent().parent().find('td:eq(1)').find('a').html();
+            var friend_name  = $(this).data("name");
+            var friend_email  = $(this).data("email");
             $('.friend_name_cancel_place').html(friend_name + ' - ' + friend_email);
 
             $('input[name="to_remove_friend"]').val($(this).attr('data-id'));
