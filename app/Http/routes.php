@@ -27,6 +27,8 @@ if (env('FEDERATION',false)){
 }
 else
 {
+    Route::any('apic/{method}/{id?}', 'ApicController@index');//->middleware('apikey');
+    
     Route::group(['middleware' => 'web'], function () {
         // default login/register/forgot password routes
         Route::auth();
