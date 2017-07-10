@@ -4975,13 +4975,13 @@ class FrontEndUserController extends Controller
                 return [
                             'success' => false,
                             'title'   => 'Api error',
-                            'errors'  => Auth::$error
+                            'errors'  => 'Incorrect password'
                         ];
             }
             return [
                         'success' => false,
                         'title'   => 'Error',
-                        'errors'  => 'Incorrect password'
+                        'errors'  => 'Incorrect password or User name'
                     ];
         }
     }
