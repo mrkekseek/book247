@@ -1111,28 +1111,44 @@ class BookingController extends Controller
                 $email_confirm[$booking->for_user_id][] = $booking_details;
             }
 
-            foreach($email_confirm as $player_id=>$booking_details) {
+            foreach($email_confirm as $player_id => $booking_details)
+            {
                 // send_email_to_user
                 $player = User::where('id', '=', $player_id)->get()->first();
-                if (sizeof($booking_details)>1){
+                $template = "";
+
+                if (sizeof($booking_details) > 1)
+                {
                     $email_title = AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title').' - Several bookings were created';
+
+                    $data = [
+                        'first_name'            => $user->first_name,
+                        'middle_name'           => $user->middle_name,
+                        'last_name'             => $user->last_name,
+                        'booking_details'       => isset($booking_details['bookingDate']) ? $booking_details['bookingDate'] : '',
+                        'my_booking_link'       => route("front/my_bookings")
+                    ];
+
+                    $template = EmailsController::build('Booking confirmation – multiple', $data); 
                 }
-                else{
+                else
+                {
                     $booking_details = $booking_details[0];
                     $email_title = AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title').' - Your booking for ' . $booking_details["bookingDate"] . ' was created';
-                }
 
-                 $data = [
+                    $data = [
                         'first_name'            => $user->first_name,
                         'middle_name'           => $user->middle_name,
                         'last_name'             => $user->last_name,
                         'my_booking_link'       => route("front/my_bookings"),
-                        'booking_details'       => isset($booking_details['bookingDate']) ? $booking_details['bookingDate'] : ''
-                ];
+                        'booking_details'       => isset($booking_details['bookingDate']) ? $booking_details['bookingDate'] : '',
+                        'booking_date'          => isset($booking_details['bookingDate']) ? $booking_details['bookingDate'] : ''
+                    ];
 
-                $template = EmailsController::build('Booking Confirmation – single', $data); 
+                    $template = EmailsController::build('Booking Confirmation – single', $data); 
+                }
 
-                if ($template)
+               if ($template)
                 {
                     $main_message = $template["message"];
                 }
