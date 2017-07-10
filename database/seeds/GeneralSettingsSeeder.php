@@ -42,7 +42,13 @@ class GeneralSettingsSeeder extends Seeder
             [16, 'Global Website Show Invoices on Frontend', 'globalWebsite_show_invoices_on_frontend', 'This setting will give you the option to show or hide the financial part on frontend.', 1, '', 0, 0],
             [17, 'Finance Imediate payment for Online Bookings', 'finance_imediate_payment_for_online_bookings', 'This setting will give you the option to have the payment of the online booking in 5 minutes after the booking is done, otherwise the booking is cancelled.', 1, '', 0, 0],
             [18, 'Global Website Show Finance on Frontend', 'globalWebsite_show_finance_on_frontend', 'This setting will give you the option to display or hide the \"Financial\" top menu on frontend', 1, '', 0, 0],
-            [19, 'Finance Simple PayPal Payment Account', 'finance_simple_paypal_payment_account', 'Please fill here your email address that you use to login to your paypal account. All the payment using PayPal will go straight to your account defined by the email address used for PayPal registration.', 0, 'string', 6, 255]
+            [19, 'Finance Simple PayPal Payment Account', 'finance_simple_paypal_payment_account', 'Please fill here your email address that you use to login to your paypal account. All the payment using PayPal will go straight to your account defined by the email address used for PayPal registration.', 0, 'string', 6, 255],
+            [20, 'Global Website Frontend About Text', 'globalWebsite_front_about_text', 'This is the text shown on frontend of your subdomain, un the footer area under the About text', 0, 'string', 30, 200],
+            [21, 'Global Website Frontend Phone Number', 'globalWebsite_front_phone_number', 'This is the phone number shown on homepage in the footer are under contacts.', 0, 'string', 3, 25],
+            [22, 'Global Website Frontend Contact Email', 'globalWebsite_front_contact_email', 'This is the contact email shown on homepage in the footer area under contacts.', 0, 'string', 6, 150],
+            [23, 'Social Media Frontend Footer RSS', 'social_media_frontend_footer_rss', 'If a link is present here then this link will be shown on frontend footer part - RSS icon. Please use http/https when entering the link and test if after you set it up here.', 0, 'string', 5, 255],
+            [24, 'Social Media Frontend Footer Facebook', 'social_media_frontend_footer_facebook', 'If a link is present here then this link will be shown on frontend footer part - Facebook icon. Please use http/https when entering the link and test if after you set it up here.', 0, 'string', 5, 255],
+            [25, 'Social Media Frontend Footer Twitter', 'social_media_frontend_footer_twitter', 'If a link is present here then this link will be shown on frontend footer part - Twitter icon. Please use http/https when entering the link and test if after you set it up here.', 0, 'string', 5, 255]
 
         ];
 
@@ -109,6 +115,9 @@ class GeneralSettingsSeeder extends Seeder
         DB::insert($query, [9,  NULL, '6',  1]);
         DB::insert($query, [10, NULL, '1',  1]);
         DB::insert($query, [14, NULL, '',   1]);
+        DB::insert($query, [20, NULL, 'Er du interessert i å jobbe med squash og trening? Da kan det hende du passer til våre jobber.', 1]);
+        DB::insert($query, [21, NULL, '22 20 70 60', 1]);
+        DB::insert($query, [22, NULL, 'drammen@sqf.no', 1]);
 
         // confined values
         DB::insert($query, [5,  2,  NULL, 1]);

@@ -362,6 +362,7 @@ else
             'as' => 'admin/shops/shop_system_option_update',
             'uses' => 'ShopController@system_option_update'
         ]);
+
         /** Stop Routes for Shops/Locations */
 
         /** Start Routes for Products Management */
@@ -1154,20 +1155,29 @@ else
         ]);
 
         Route::post('auth_autorize', [
-            'as' => 'ajax/auth_autorize',
-            'uses' => 'FrontEndUserController@auth_autorize'
+            'as'    => 'ajax/auth_autorize',
+            'uses'  => 'FrontEndUserController@auth_autorize'
         ]);
 
         Route::post('save_setting_application', [
-            'as' => 'ajax/save_setting_application',
-            'uses' => 'AppSettings@save_setting_application'
+            'as'    => 'ajax/save_setting_application',
+            'uses'  => 'AppSettings@save_setting_application'
         ]);
 
         Route::post('save_allowed_setting', [
-            'as' => 'ajax/save_allowed_setting',
-            'uses' => 'AppSettings@save_allowed_setting'
+            'as'    => 'ajax/save_allowed_setting',
+            'uses'  => 'AppSettings@save_allowed_setting'
         ]);
 
+        Route::post('location_set_activity_book_interval', [
+            'as'    => 'ajax/location_set_activity_book_interval',
+            'uses'  => 'ShopController@set_activity_time_interval'
+        ]);
+
+        Route::post('location_get_activity_book_interval', [
+            'as'    => 'ajax/location_get_activity_book_interval',
+            'uses'  => 'ShopController@get_activity_time_interval'
+        ]);
     });
 
     Route::group(['middleware' => 'web', 'prefix' => 'optimize'], function () {

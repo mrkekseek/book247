@@ -399,4 +399,17 @@ class ApiAuth
         }
 
     }
+
+    public static function getActivities(){
+        $get = '';
+        $response = self::send_curl($get, 'api/Enums/GetActivities', 'GET');
+        if ($response) {
+            $result['success'] = true;
+            $result['activities'] = $response;
+        } else {
+            $result['success'] = false;
+            $result['message'] = self::$error;
+        }
+        return $result;
+    }
 }

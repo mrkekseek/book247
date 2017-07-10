@@ -190,6 +190,48 @@
                 <div class="portlet box red border-grey-silver">
                     <div class="portlet-title bg-grey-silver bg-font-grey-silver">
                         <div class="caption">
+                            <i class="fa fa-cogs"></i>Shop/Store Activities Interval Duration </div>
+                        <div class="tools">
+                            <a class="collapse" href="javascript:;" data-original-title="" title=""> </a>
+                        </div>
+                    </div>
+                    <div class="portlet-body flip-scroll">
+                        @if (sizeof($storeCategories)>0)
+                            <table class="table table-bordered table-striped table-condensed flip-content">
+                                <tbody>
+                                <tr>
+                                    <th>Available Activity/Resource Category</th>
+                                    <th>Location time interval </th>
+                                </tr>
+                            @foreach($storeCategories as $key=>$single)
+                                <tr>
+                                    <td> &nbsp;{{$single}} </td>
+                                    <td> <select name="option_value" class="form-control input-inline input-medium input-sm" aria-invalid="false">
+                                            <option value="-1" {!! 1==-1?'selected="selected"':'' !!}>Default</option>
+                                            @for($i=5; $i<=120; $i++)
+                                                <option value="{{$i}}" {!! $i==$key?'selected':'' !!}> {{$i}} minutes </option>
+                                            @endfor
+                                        </select>
+                                        <input type="hidden" name="option_key" value="shop_finance_profile" />
+                                        <a class="btn blue btn-sm update_system_option" >Update</a>
+                                    </td>
+                                </tr>
+                            @endforeach
+                                </tbody>
+                            </table>
+                        @else
+
+                        @endif
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="portlet box red border-grey-silver">
+                    <div class="portlet-title bg-grey-silver bg-font-grey-silver">
+                        <div class="caption">
                             <i class="fa fa-cogs"></i>Shop/Store System Options </div>
                         <div class="tools">
                             <a class="collapse" href="javascript:;" data-original-title="" title=""> </a>
@@ -202,9 +244,9 @@
                                 <td> &nbsp; <b>Location financial profile</b> </td>
                                 <td> <select name="option_value" class="form-control input-inline input-medium input-sm" aria-invalid="false">
                                         <option value="-1" {!! $shopFinancialProfile==-1?'selected="selected"':'' !!}>Default</option>
-                                    @foreach ($financialProfiles as $singleProfile)
-                                        <option value="{{ $singleProfile->id }}" {!! $shopFinancialProfile==$singleProfile->id?'selected':'' !!}> {{ $singleProfile->profile_name }} </option>
-                                    @endforeach
+                                        @foreach ($financialProfiles as $singleProfile)
+                                            <option value="{{ $singleProfile->id }}" {!! $shopFinancialProfile==$singleProfile->id?'selected':'' !!}> {{ $singleProfile->profile_name }} </option>
+                                        @endforeach
                                     </select>
                                     <input type="hidden" name="option_key" value="shop_finance_profile" />
                                     <a class="btn blue btn-sm update_system_option" >Update</a> </td>

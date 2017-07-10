@@ -3,6 +3,7 @@
 namespace App;
 
 use App\Http\Controllers\BookingController;
+use App\Http\Requests\Request;
 use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
 
@@ -223,5 +224,19 @@ class ShopLocations extends Model
         $hours_interval = BookingController::make_hours_interval($date_selected, $open_at, $close_at, 30, $fullHours, false);
 
         return $hours_interval;
+    }
+
+    public function get_activity_time_interval($activityID){
+        $activityTimeInterval = ShopLocationCategoryIntervals::where('category_id','=',$activityID)->where('location_id','=',$this::$id)->first();
+        if ($activityTimeInterval){
+            return $activityTimeInterval->time_interval;
+        }
+        else{
+            return false;
+        }
+    }
+
+    public function set_activity_time_interval($activityID){
+
     }
 }
