@@ -775,6 +775,21 @@ else
         /** Stop  - Membership Management */
     });
 
+    Route::post('membership/ipn', [
+        'as'    => 'membership/ipn',
+        'uses'  => 'IPN@membership_ipn'
+    ]);
+
+    Route::get('membership/paypal_success', [
+        'as'    => 'membership/paypal_success',
+        'uses'  => 'IPN@membership_paypal_success'
+    ]);
+
+    Route::get('membership/paypal_cancel', [
+        'as'    => 'membership/paypal_cancel',
+        'uses'  => 'IPN@membership_paypal_cancel'
+    ]);
+
     /** Start Routes for front end */
     Route::group(['middleware' => 'web', 'prefix' => 'front'], function () {
         Route::get('my_bookings', [
@@ -785,6 +800,12 @@ else
         Route::get('finance/invoice/{id}', [
             'as' => 'front/finance/invoice/{id}',
             'uses' => 'FrontEndUserController@invoice_payment'
+        ]);
+
+
+        Route::post('finance/invoice', [
+            'as' => 'front/finance/invoice',
+            'uses' => 'FrontEndUserController@post_invoice_payment'
         ]);
 
         Route::get('bookings_archive', [
