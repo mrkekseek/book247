@@ -2414,7 +2414,7 @@ class FrontEndUserController extends Controller
                             'friend´s_list_link'    => route("front/member_friend_list")
                         ];
 
-                        $template = EmailsController::build('Add friend by phone number in frontend – no approval needed', $data);
+                        $template = EmailsController::build('Add friend by phone number in frontend – approval needed', $data);
 
                         if ($template)
                         {
@@ -2460,7 +2460,7 @@ class FrontEndUserController extends Controller
                             'friend´s_list_link'    => route("front/member_friend_list")
                         ];
 
-                        $template = EmailsController::build('Add friend by phone number in frontend – approval needed', $data);
+                        $template = EmailsController::build('Add friend by phone number in frontend – no approval needed', $data);
 
                         if ($template)
                         {
