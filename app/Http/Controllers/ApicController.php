@@ -8,6 +8,8 @@ use Webpatser\Countries\Countries;
 use App\Http\Libraries\ApiAuth;
 use App\User;
 use App\PersonalDetail;
+use App\Address;
+use App\ShopLocations;
 
 class ApicController extends Controller
 {
@@ -64,7 +66,7 @@ class ApicController extends Controller
             'email_address' =>  'required|email|unique:users,username|unique_api_username',
             'dob' =>  'required|date',
             'phone_number'  =>  'required|unique:personal_details,mobile_number|unique_api_phonenumber',
-            'gender'        =>  'in:M,F',
+            'gender'        =>  'required|in:M,F',
             'country'        =>  'required|size:2|exists_county',
         ];
         
@@ -105,12 +107,13 @@ class ApicController extends Controller
             $country = Countries::where('iso_3166_2',$data['country'])->first();
             $ownerData = [
                 'first_name'    => $data['first_name'],
-                'middle_name'   => $data['middle_name'],
+                'middle_name'   => (isset($data['middle_name']) && ! empty($data['middle_name'])) ? $data['middle_name'] : '',
                 'last_name'     => $data['last_name'],
                 'username'      => $data['email_address'],
                 'email'         => $data['email_address'],
                 'password'      => bcrypt($password),
                 'country_id'    => $country->id,
+                'gender'        => $data['gender'],
                 'status'        => 'active',
             ];
             $owner = new User;
@@ -153,13 +156,87 @@ class ApicController extends Controller
     private function assign_subdomain_settingsPost($data)
     {
         $data = array_only($data, ['account_key', 'club_details', 'club_address']);
-        dd($data);
+        //$key = AppSettings::get_setting_value_by_name('globalWebsite_rankedin_integration_key');
+        $rules = [
+            'club_details.club_name'    =>  'required|min:2|max:150',
+            'club_address.address1' => 'required|min:2|max:150',
+            'club_address.country' => 'size:2|exists_county',
+        ];
+        $mesagges = [
+            'club_address.country.exists_county' => 'Country not valid.',
+        ];
+        $countries = Countries::get();
+        Validator::extend('exists_county', function($attribute, $value, $parameters, $validator) use($countries) {
+            foreach ($countries as $item)
+            {
+                if (strtolower($item->iso_3166_2) == strtolower($value))
+                {
+                    return TRUE;
+                    
+                }
+            }
+            return FALSE;
+        });
+        
+        if ( ! $this->validate_request($data , $rules, $mesagges) )
+        {
+            $response = [
+                'code' => self::$code,
+                'message' => self::$message,
+            ];
+        }
+        else
+        {
+            if (isset($data['club_address']['country']) && !empty($data['club_address']['country']))
+            {
+                $country = Countries::where('iso_3166_2',$data['club_address']['country'])->first();
+                $country_id = $country->id;
+            }
+            else
+            {
+                $country_id = AppSettings::get_setting_value_by_name('globalWebsite_defaultCountryId');
+            }
+            $addressData = [
+                'address1' => ! empty($data['club_address']['address1']) ? $data['club_address']['address1'] : '',
+                'address2' => ! empty($data['club_address']['address2']) ? $data['club_address']['address2'] : '',
+                'city' => ! empty($data['club_address']['city']) ? $data['club_address']['city'] :'',
+                'region' => ! empty($data['club_address']['region']) ? $data['club_address']['region'] : '',
+                'postal_code' => ! empty($data['club_address']['zip_code']) ? $data['club_address']['zip_code'] : '',
+                'country_id'    => $country_id,
+            ];
+            $shopAddress = new Address();
+            $shopAddress->fill($addressData);
+            if ($shopAddress->save())
+            {
+                $shopLocationData = [
+                    'address_id' => $shopAddress->id,
+                    'name' =>  $data['club_details']['club_name'],
+                    'visibility' =>  'public'
+                ];
+                $shopLocation = new ShopLocations();
+                $shopLocation->fill($shopLocationData);
+                $shopLocation->save();
+                if ($shopLocation->save())
+                {
+                    $response = [
+                        'code' => 1,
+                        'message' => 'Shop location created.',
+                    ];
+                }
+            }
+            else
+            {
+                $response = [
+                    'code' => 4,
+                    'message' => 'Something went wrong.',
+                ];
+            }
+        }
+        return $response;
     }
     
-    
-    
-    
-    
+        
+      
     private function validate_request($data, $rules, $mesagges)
     {
         $validator = Validator::make($data, $rules, $mesagges);
