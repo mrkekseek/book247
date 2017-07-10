@@ -755,7 +755,7 @@
                        
                     },
                     errorPlacement: function(error, element) {
-                        $('.alert-danger span').html(error);
+                        $('.alert-danger span').append(error);
                     },
                     submitHandler: function(form) {
                         var data = {
