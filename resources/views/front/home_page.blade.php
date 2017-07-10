@@ -727,12 +727,12 @@
                     },
                     messages: {
                         username: {
-                            required: "Email is required.",
-                            email: "Email not valid.",
+                            required: " Email is required. ",
+                            email: " Email not valid. ",
                         },
                         password: {
-                            required: "Password is required.",
-                            minlength : "Min 8 symbol."
+                            required: " Password is required. ",
+                            minlength : " Min 8 symbol. "
                         }
                     },
                     showErrors: function(errorMap, errorList) {

@@ -4975,7 +4975,7 @@ class FrontEndUserController extends Controller
                 return [
                             'success' => false,
                             'title'   => 'Api error',
-                            'errors'  => 'Incorrect password'
+                            'errors'  => 'Incorrect password. '
                         ];
             }
             return [
