@@ -15,7 +15,7 @@ $(document).ready(function() {
             console.log(membership_id);
             var clone = $('.carusel-item-content-'+membership_id).find('.box-item').clone();
             var color = clone.find('a').attr('style');
-            clone.find('a').remove();
+            clone.find('.carousel-button-wrap').remove();
             clone.css({"min-height":"516px","border":"none"});
             $('.membership-replacer').attr('style',clone.attr('style')).prepend(clone.html()).find('.pay-with-card').attr('style',color);
             $('.pay-with-card-final').attr('style',color);

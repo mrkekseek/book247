@@ -98,9 +98,13 @@ body.body-iframe{
 	line-height: 24px;
 	color:#fff;
 	padding: 30px;
-	padding-bottom: 80px;
 	background-color: #fff;
 	margin: 0 auto;
+}
+
+.box-item h2 {
+	height: 55px;
+	overflow: hidden;
 }
 
 .carusel-item-content-1 .box-item{
@@ -119,6 +123,9 @@ body.body-iframe{
 .checkbox-chek {
 	text-align: center;
 	padding-top: 35px;
+}
+.checkbox-chek p {
+	margin-bottom: 0;
 }
 
 .checkbox-chek-mobile {
@@ -192,9 +199,12 @@ p,
 
 .carusel-button {
 	max-width: 240px;
-	margin: 27px auto 0;
-	position: absolute;
-	bottom: 25px;
+	margin-top: 25px;
+}
+
+.carousel-button-wrap {
+	position: relative;
+	width: 100%;
 }
 
 .carusel-button:hover {
@@ -512,6 +522,10 @@ p,
 	display: block;
 	text-align: center;
 	padding: 30px 40px;
+}
+
+br {
+	display: none;
 }
 
 
