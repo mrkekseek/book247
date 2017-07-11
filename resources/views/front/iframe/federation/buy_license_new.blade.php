@@ -10,6 +10,7 @@
     <title>{{ env('MY_SERVER_URL') }}</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <link rel="stylesheet" href="{{ asset ('assets/iframe/css/fonts.css') }}">
     <link rel="stylesheet" href="{{ asset ('assets/iframe/libs/slick/slick.css') }}">
     <link rel="stylesheet" href="{{ asset ('assets/iframe/libs/slick/slick-theme.css') }}">
@@ -38,6 +39,7 @@
     @if(!isset($membership))
     <div class="wrapper body-iframe-step-1" id="body-iframe-step-1">
         <div class="container-iframe">
+            <h3 class="slider-caption">To join the event you need to get  License (Membership) from "XXXXX". You can do it right away here:</h3>
             <div class="carusel-wraper">
                 <div class="carusel items-container simple-items">
                     @foreach ($membership_list as $key => $m)
@@ -62,6 +64,10 @@
                         @endif
                     @endforeach
                 </div>
+            </div>
+            <div class="checkbox-chek checkbox-chek-desktop">
+                <input type="checkbox" class="chek-page">
+                <p class="desktop-accept">You need to accept our <a href="#">Terms & Conditions </a> before you do any purchases.</p>
             </div>
         </div>
     </div>
@@ -211,6 +217,14 @@
 
     </form>
 @endif
+<div class="alert-box-container">
+    <div class="alert-box">
+        <span>You have to accept Terms & Conditions</span>
+        <button class="btn btn-primary" id="close_alert">OK</button>
+    </div>
+
+</div>
+
 <!--====END MODAL====-->
 <script src="{{ asset ('assets/iframe/libs/JQ_1-9-1/jquery.min.js') }}"></script>
 <script src="{{ asset ('assets/iframe/libs/slick/slick.min.js') }}"></script>
@@ -232,13 +246,15 @@
 //                $('body').text('accessed only in iframe!');
             }
             $('.form-choice').click(function(){
-                var $input = $form.find('#'+$(this).data('id'));
-                if($input.length) {
-                    $input.attr('value',$(this).data('value'));
-                    console.log('form updated');
-                } else {
-                    if($(this).data('id') && $(this).data('id') !== 'user_id') {
-                        $form.append('<input type="text" name="' + $(this).data('id') + '" id="' + $(this).data('id') + '" value="' + $(this).data('value') + '">');
+                if($('.chek-page').is(':checked')) {
+                    var $input = $form.find('#' + $(this).data('id'));
+                    if ($input.length) {
+                        $input.attr('value', $(this).data('value'));
+                        console.log('form updated');
+                    } else {
+                        if ($(this).data('id') && $(this).data('id') !== 'user_id') {
+                            $form.append('<input type="text" name="' + $(this).data('id') + '" id="' + $(this).data('id') + '" value="' + $(this).data('value') + '">');
+                        }
                     }
                 }
             });
@@ -295,6 +311,29 @@
 //                $form.attr('action','/membership/payment');
 //                $form.attr('method','POST');
 //                $form.submit();
+            });
+            $('.carusel').slick({
+                slidesToShow: 3,
+                slidesToScroll: 1,
+                arrows: true,
+                prevArrow:"<button type='button' class='prev'><img src='{{asset('assets/iframe/img/left.png')}}'></button>",
+                nextArrow:"<button type='button' class='next'><img src='{{asset('assets/iframe/img/right.png')}}'></button>",
+                fade: false,
+                autoplay:false,
+                speed : 500,
+                autoplaySpeed: 10000,
+                infinite:false,
+                dots: false,
+                responsive: [
+                    {
+                        breakpoint: 769,
+                        settings: {
+                            slidesToShow: 1,
+                            infinite:true,
+                            dots: true,
+                        }
+                    }
+                ]
             });
         });
     } )(jQuery);
