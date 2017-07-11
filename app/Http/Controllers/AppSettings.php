@@ -371,7 +371,7 @@ class AppSettings extends Controller
     }
 
     public static function get_setting_value_by_name($settingName) {
-        $value = Cache::remember($settingName, 1, function() use ($settingName) {
+        $value = Cache::remember($settingName, 1440, function() use ($settingName) {
             $setting = Settings::with('constraint_values')->with('application_setting')->where("system_internal_name", '=', $settingName)->first();
             if ($setting){
                 if ($setting->constrained==0){
@@ -386,7 +386,7 @@ class AppSettings extends Controller
                 else{
                     // constrained value variable so we get the selected allowed value
                     foreach ($setting->constraint_values as $single){
-                        if ($setting->application_setting->allowed_setting_value_id === $single->id){
+                        if ($setting->application_setting->allowed_setting_value_id == $single->id){
                             return $single->caption;
                         }
                     }
