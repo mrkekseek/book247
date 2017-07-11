@@ -65,7 +65,9 @@ class Auth
             }
             else
             {                
-                $new_sso_id = self::create_api_user($user, $data['password']);                                    
+                $personalDetail = PersonalDetail::where('user_id', $local_id)->first()->toArray();
+                $dataApiUser = $user + $personalDetail;
+                $new_sso_id = self::create_api_user($dataApiUser, $data['password']);                                    
                 if ($new_sso_id)
                 {
                     $update_user = User::find($local_id);

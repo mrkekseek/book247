@@ -386,7 +386,7 @@ class AppSettings extends Controller
                 else{
                     // constrained value variable so we get the selected allowed value
                     foreach ($setting->constraint_values as $single){
-                        if ($setting->application_setting->allowed_setting_value_id === $single->id){
+                        if ($setting->application_setting->allowed_setting_value_id == $single->id){
                             return $single->caption;
                         }
                     }

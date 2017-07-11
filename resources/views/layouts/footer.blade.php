@@ -6,6 +6,14 @@
                 <h2>About</h2>
                 <p> {{\App\Http\Controllers\AppSettings::get_setting_value_by_name('globalWebsite_front_about_text')!=false ? \App\Http\Controllers\AppSettings::get_setting_value_by_name('globalWebsite_front_about_text'):''}} </p>
             </div>
+            @if (\App\Http\Controllers\AppSettings::get_setting_value_by_name('social_media_frontend_footer_rss')       ||
+                 \App\Http\Controllers\AppSettings::get_setting_value_by_name('social_media_frontend_footer_facebook')  ||
+                 \App\Http\Controllers\AppSettings::get_setting_value_by_name('social_media_frontend_footer_twitter')   ||
+                 \App\Http\Controllers\AppSettings::get_setting_value_by_name('social_media_frontend_footer_google+')   ||
+                 \App\Http\Controllers\AppSettings::get_setting_value_by_name('social_media_frontend_footer_linkedin')  ||
+                 \App\Http\Controllers\AppSettings::get_setting_value_by_name('social_media_frontend_footer_youtube')   ||
+                 \App\Http\Controllers\AppSettings::get_setting_value_by_name('social_media_frontend_footer_vimeo')
+            )
             <div class="col-md-4 col-sm-6 col-xs-12 footer-block">
                 <h2>Follow Us On</h2>
                 <ul class="social-icons">
@@ -46,6 +54,7 @@
                     @endif
                 </ul>
             </div>
+            @endif
             <div class="col-md-4 col-sm-6 col-xs-12 footer-block">
                 <h2>Contacts</h2>
                 <address class="margin-bottom-40"> Phone: {{ \App\Http\Controllers\AppSettings::get_setting_value_by_name('globalWebsite_front_phone_number')!=false ? \App\Http\Controllers\AppSettings::get_setting_value_by_name('globalWebsite_front_phone_number'):'-' }}

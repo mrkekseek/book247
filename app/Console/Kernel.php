@@ -22,7 +22,8 @@ class Kernel extends ConsoleKernel
         Commands\OptimizedMembersSearchRebuild::class,
         Commands\Patch_1_1::class,
         Commands\Patch_1_2::class,
-        Commands\addMinimumPendingInvoices::class
+        Commands\addMinimumPendingInvoices::class,
+        Commands\SyncronizeActivitiesWithSSO::class
     ];
 
     /**

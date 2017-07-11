@@ -705,7 +705,6 @@
 
         var Login = function() {
             var handleLogin = function() {
-
                 $('.login-form').validate({
                     //errorElement: 'span', //default input error message container
                     //errorClass: 'help-block', // default input error message class
@@ -728,12 +727,12 @@
                     },
                     messages: {
                         username: {
-                            required: "Email is required.",
-                            email: "Email not valid.",
+                            required: " Email is required. ",
+                            email: " Email not valid. ",
                         },
                         password: {
-                            required: "Password is required.",
-                            minlength : "Min 8 symbol"
+                            required: " Password is required. ",
+                            minlength : " Min 8 symbol. "
                         }
                     },
                     showErrors: function(errorMap, errorList) {
@@ -783,7 +782,7 @@
                     errorClass: 'help-block', // default input error message class
                     focusInvalid: false, // do not focus the last invalid input
                     ignore: "",
-                    rules: {
+                    rules: {    
                         email: {
                             required: true,
                             email: true,
@@ -1330,6 +1329,7 @@
                    else{
                        $('.alert-danger').show();
                        $('.alert-danger span').html(data.errors);
+                       console.log(data.errors);
                     }
                 }
             });

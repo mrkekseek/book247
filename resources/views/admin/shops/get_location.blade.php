@@ -190,6 +190,52 @@
                 <div class="portlet box red border-grey-silver">
                     <div class="portlet-title bg-grey-silver bg-font-grey-silver">
                         <div class="caption">
+                            <i class="fa fa-cogs"></i>Shop/Store Activities Interval Duration </div>
+                        <div class="tools">
+                            <a class="collapse" href="javascript:;" data-original-title="" title=""> </a>
+                        </div>
+                        <div class="actions">
+                            <a class="btn green-jungle" data-toggle="modal" href="#addCategoryTime">
+                                <i class="fa fa-plus"></i> Add Activity Booking Time </a>
+                        </div>
+                    </div>
+                    <div class="portlet-body flip-scroll">
+                        @if (sizeof($storeCategories)>0)
+                            <table class="table table-bordered table-striped table-condensed flip-content">
+                                <tbody>
+                                <tr>
+                                    <th>Available Activity to Location</th>
+                                    <th>Location time interval </th>
+                                </tr>
+                            @foreach($storeCategories as $key=>$single)
+                                <tr>
+                                    <td> &nbsp;{{$single}} </td>
+                                    <td> <select name="option_value" class="form-control input-inline input-medium input-sm" aria-invalid="false">
+                                            <option value="-1" {!! 1==-1?'selected="selected"':'' !!}>Default</option>
+                                            @for($i=5; $i<=120; $i++)
+                                                <option value="{{$i}}" {!! $i==$key?'selected':'' !!}> {{$i}} minutes </option>
+                                            @endfor
+                                        </select>
+                                        <input type="hidden" name="option_key" value="shop_finance_profile" />
+                                        <a class="btn blue btn-sm update_system_option" >Update</a>
+                                    </td>
+                                </tr>
+                            @endforeach
+                                </tbody>
+                            </table>
+                        @else
+
+                        @endif
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="portlet box red border-grey-silver">
+                    <div class="portlet-title bg-grey-silver bg-font-grey-silver">
+                        <div class="caption">
                             <i class="fa fa-cogs"></i>Shop/Store System Options </div>
                         <div class="tools">
                             <a class="collapse" href="javascript:;" data-original-title="" title=""> </a>
@@ -202,9 +248,9 @@
                                 <td> &nbsp; <b>Location financial profile</b> </td>
                                 <td> <select name="option_value" class="form-control input-inline input-medium input-sm" aria-invalid="false">
                                         <option value="-1" {!! $shopFinancialProfile==-1?'selected="selected"':'' !!}>Default</option>
-                                    @foreach ($financialProfiles as $singleProfile)
-                                        <option value="{{ $singleProfile->id }}" {!! $shopFinancialProfile==$singleProfile->id?'selected':'' !!}> {{ $singleProfile->profile_name }} </option>
-                                    @endforeach
+                                        @foreach ($financialProfiles as $singleProfile)
+                                            <option value="{{ $singleProfile->id }}" {!! $shopFinancialProfile==$singleProfile->id?'selected':'' !!}> {{ $singleProfile->profile_name }} </option>
+                                        @endforeach
                                     </select>
                                     <input type="hidden" name="option_key" value="shop_finance_profile" />
                                     <a class="btn blue btn-sm update_system_option" >Update</a> </td>
@@ -632,8 +678,8 @@
                                     <div class="col-md-7">
                                         <select class="form-control input-sm" name="resource_category" id="resource_category">
                                             <option value="-1">Select Category...</option>
-                                            @foreach ($resourceCategory as $category)
-                                                <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                            @foreach($storeCategories as $key=>$single)
+                                                <option value="{{ $key }}">{{ $single }}</option>
                                             @endforeach
                                         </select>
                                     </div>
@@ -682,6 +728,58 @@
                     <div class="modal-footer">
                         <button type="button" class="btn dark btn-outline" data-dismiss="modal">Close</button>
                         <button type="button" class="btn green submit_form_2" onclick="javascript: $('#new_resource').submit();">Save changes</button>
+                    </div>
+                </div>
+                <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+        </div>
+        <!-- END Add new shop resource -->
+
+        <!-- BEGIN Add new shop resource -->
+        <div class="modal fade draggable-modal" id="addCategoryTime" tabindex="-1" role="basic" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                        <h4 class="modal-title">Add an activity to this location</h4>
+                    </div>
+                    <div class="modal-body">
+                        <form action="#" id="new_location_activity" name="new_location_activity" class="form-horizontal">
+                            <div class="form-body">
+                                <div class="alert alert-danger display-hide">
+                                    <button class="close" data-close="alert"></button> You have some form errors. Please check below. </div>
+                                <div class="alert alert-success display-hide">
+                                    <button class="close" data-close="alert"></button> Your form validation is successful! </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-4">Activity</label>
+                                    <div class="col-md-7">
+                                        <select class="form-control input-sm" name="location_resource_category" id="location_resource_category">
+                                            <option>Select Activity...</option>
+                                            @foreach ($resourceCategory as $category)
+                                                <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-4">Booking Slot Time</label>
+                                    <div class="col-md-7">
+                                        <select name="resource_time_slot" class="form-control input-sm">
+                                            <option>Select time in minutes</option>
+                                            @for($i=5; $i<=120; $i++)
+                                                <option value="{{$i}}" {!! $i==$key?'selected':'' !!}> {{$i}} minutes </option>
+                                            @endfor
+                                        </select>
+                                        <span class="help-block"> time per single reservation for this activity </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn dark btn-outline" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn green submit_form_2" onclick="javascript: $('#new_location_activity').submit();">Add</button>
                     </div>
                 </div>
                 <!-- /.modal-content -->
@@ -1334,6 +1432,62 @@
                 });
             }
 
+            var handleValidation7 = function() {
+                var form7 = $('#new_location_activity');
+                var error7 = $('.alert-danger', form7);
+                var success7 = $('.alert-success', form7);
+
+                form7.validate({
+                    errorElement: 'span', //default input error message container
+                    errorClass: 'help-block help-block-error', // default input error message class
+                    focusInvalid: false, // do not focus the last invalid input
+                    ignore: "",  // validate all fields including form hidden input
+                    rules: {
+                        location_resource_category: {
+                            min:1,
+                            required: true
+                        },
+                        resource_time_slot: {
+                            min:1,
+                            required: true,
+                        },
+                    },
+
+                    invalidHandler: function (event, validator) { //display error alert on form submit
+                        success7.hide();
+                        error7.show();
+                        App.scrollTo(error7, -200);
+                    },
+
+                    errorPlacement: function (error, element) { // render error placement for each input type
+                        var icon = $(element).parent('.input-icon').children('i');
+                        icon.removeClass('fa-check').addClass("fa-warning");
+                        icon.attr("data-original-title", error.text()).tooltip({'container': 'body'});
+                    },
+
+                    highlight: function (element) { // hightlight error inputs
+                        $(element)
+                            .closest('.form-group').removeClass("has-success").addClass('has-error'); // set error class to the control group
+                    },
+
+                    unhighlight: function (element) { // revert the change done by hightlight
+
+                    },
+
+                    success: function (label, element) {
+                        var icon = $(element).parent('.input-icon').children('i');
+                        $(element).closest('.form-group').removeClass('has-error').addClass('has-success'); // set success class to the control group
+                        icon.removeClass("fa-warning").addClass("fa-check");
+                    },
+
+                    submitHandler: function (form) {
+                        success7.show();
+                        error7.hide();
+                        add_new_resource(); // submit the form
+                    }
+                });
+            }
+
             return {
                 //main function to initiate the module
                 init: function () {
@@ -1343,6 +1497,7 @@
                     handleValidation4();
                     handleValidation5();
                     handleValidation6();
+                    handleValidation7();
                 }
             };
         }();

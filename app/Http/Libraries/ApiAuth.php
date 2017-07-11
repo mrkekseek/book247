@@ -247,6 +247,23 @@ class ApiAuth
         }
         return $result;
     }
+    
+    public static function account_get_by_phone_number($phone_number)
+    {
+        $get = '?phoneNumber='.$phone_number;
+        $response = self::send_curl($get, 'api/Accounts/GetByPhoneNumber', 'GET');
+        if ($response) 
+        {
+            $result['success'] = true;
+            $result['data'] = $response;
+        } 
+        else 
+        {
+            $result['success'] = false;
+            $result['message'] = self::$error;
+        }
+        return $result;
+    }
 
     private static function generateApiKey($data)
     {
@@ -398,5 +415,18 @@ class ApiAuth
             return true;
         }
 
+    }
+
+    public static function getActivities(){
+        $get = '';
+        $response = self::send_curl($get, 'api/Enums/GetActivities', 'GET');
+        if ($response) {
+            $result['success'] = true;
+            $result['activities'] = $response;
+        } else {
+            $result['success'] = false;
+            $result['message'] = self::$error;
+        }
+        return $result;
     }
 }

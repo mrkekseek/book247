@@ -8,6 +8,7 @@ use App\CashTerminal;
 use App\FinancialProfile;
 use App\Product;
 use App\ProductCategories;
+use App\ShopLocationCategoryIntervals;
 use App\ShopLocations;
 use App\ShopOpeningHour;
 use App\ShopResource;
@@ -161,6 +162,14 @@ class ShopController extends Controller
         $shopResources = ShopResource::with('category')->where('location_id','=',$shopDetails->id)->orderBy('category_id')->get();
         $vatRates = VatRate::all();
 
+        // get unique categories to set up the time intervals
+        $uniqueCategories = [];
+        foreach ($shopResources as $single){
+            if (!isset($uniqueCategories[$single->category_id])){
+                $uniqueCategories[$single->category_id] = $single->category->name;
+            }
+        }
+
         $shopHours = [];
         $types = ['open_hours' => 'Open Time', 'close_hours' => 'Closed Time'];
         if (sizeof($shopDetails->opening_hours)>0){
@@ -199,6 +208,9 @@ class ShopController extends Controller
             }
         }
 
+        $shop_category_intervals = ShopLocationCategoryIntervals::where('location_id','=',$id)->get();
+        xdebug_var_dump($shop_category_intervals);
+
         $financialProfiles = FinancialProfile::orderBy('profile_name','asc')->get();
         $shopFinancialProfile = $shopDetails->get_financial_profile();
 
@@ -227,7 +239,8 @@ class ShopController extends Controller
             'vatRates'      => $vatRates,
             'system_options'=> $shop_system_options,
             'financialProfiles'     => $financialProfiles,
-            'shopFinancialProfile'  => $shopFinancialProfile
+            'shopFinancialProfile'  => $shopFinancialProfile,
+            'storeCategories'       => $uniqueCategories
         ]);
     }
 
@@ -1284,4 +1297,48 @@ class ShopController extends Controller
         }
     }
 
+    public function set_activity_time_interval(Request $request){
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
+            return [
+                'success' => false,
+                'errors'  => 'You need to be logged in to access this function',
+                'title'   => 'Error authentication'
+            ];
+        }
+        $vars = $request->only('location_id','activity_id','value');
+
+        // check if activity exists in the shop/location
+
+        // validate input data
+
+        // check if there is no setting yet in the system
+
+    }
+
+    public function get_activity_time_interval(Request $request){
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
+            return [
+                'success' => false,
+                'errors'  => 'You need to be logged in to access this function',
+                'title'   => 'Error authentication'
+            ];
+        }
+        $vars = $request->only('location_id','activity_id');
+        // check if location is a valid one
+        $shopLocation = ShopLocations::where('id','=',$vars['location_id'])->first();
+        if ($shopLocation){
+            return [
+                'success' => true,
+                'message' => 'Store/Location option successfully update',
+                'title'   => 'System Option Updated'];
+        }
+        else{
+            return [
+                'success' => false,
+                'errors'  => 'Something went wrong with the update',
+                'title'   => 'Update Error'];
+        }
+    }
 }
