@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Http\Libraries\ApiAuth;
+use App\ShopResourceCategory;
 use Illuminate\Console\Command;
 
 class SyncronizeActivitiesWithSSO extends Command
@@ -39,13 +40,28 @@ class SyncronizeActivitiesWithSSO extends Command
     public function handle()
     {
         $activities = ApiAuth::getActivities();
-        if ($activities){
-            foreach ($activities as $single){
+        if ($activities['success'] == true){
+            $allActivities =$activities['activities'];
+            foreach ($allActivities as $single){
+                $fillable = ['name' => $single->value, 'url' => urlencode(strtolower($single->value)), 'default_time_interval' => isset($single->timeInterval)?$single->timeInterval:5];
 
+                $isLocalActivity = ShopResourceCategory::where('name','=',$single->value)->get();
+                if (sizeof($isLocalActivity)>1){
+                    // we found more than one insert ... will skip this and report
+                }
+                elseif(sizeof($isLocalActivity)==1){
+                    // we found it and we'll check the default time interval value
+                    $isLocalActivity = $isLocalActivity[0];
+                    $isLocalActivity->update($fillable);
+                }
+                else{
+                    // new insert
+                    ShopResourceCategory::create($fillable);
+                }
             }
         }
         else{
-
+            // error getting activities
         }
     }
 }
