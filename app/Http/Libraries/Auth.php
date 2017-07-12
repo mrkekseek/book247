@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Session;
 use \Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Auth as AuthLocal;
 use App\Http\Controllers\AppSettings;
+use Webpatser\Countries\Countries;
 
 class Auth
 {
