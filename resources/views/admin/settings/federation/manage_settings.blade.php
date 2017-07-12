@@ -50,6 +50,10 @@
                                 <div class="caption">
                                     <i class="fa fa-cogs"></i>Manage Settings
                                 </div>
+                                <div class="tools">
+                                    <a href="javascript:;" class="reload" data-original-title="" title="Reset Application Cache"> </a>
+                                    <a href="javascript:;" class="collapse" data-original-title="" title=""> </a>
+                                </div>
                             </div>
                             <div class="portlet-body">
                                 <div class="table-scrollable">
