@@ -370,6 +370,13 @@ class AppSettings extends Controller
         return Settings::where("id", $request->input('settings_id'))->get()->first();
     }
 
+    public function reset_application_cache_settings(Request $request){
+        $vars = $request->only('ids');
+        $this->reset_cached_settings($vars['ids']);
+
+        return[];
+    }
+
     public static function get_setting_value_by_name($settingName) {
         $value = Cache::remember($settingName, 1440, function() use ($settingName) {
             $setting = Settings::with('constraint_values')->with('application_setting')->where("system_internal_name", '=', $settingName)->first();
@@ -427,5 +434,20 @@ class AppSettings extends Controller
             'in_sidebar'  => $sidebar_link,
             'application_key'   => $app_key
         ]);
+    }
+
+    public function reset_cached_settings($ids=false){
+        // remove cache here
+        if (isset($ids)){
+            if (is_array($ids)){
+                // make foreach and reset
+            }
+            else{
+                // reset single value by id
+            }
+        }
+        else{
+            // we reset all
+        }
     }
 }

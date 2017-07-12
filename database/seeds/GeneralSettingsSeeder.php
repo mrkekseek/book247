@@ -48,8 +48,11 @@ class GeneralSettingsSeeder extends Seeder
             [22, 'Global Website Frontend Contact Email', 'globalWebsite_front_contact_email', 'This is the contact email shown on homepage in the footer area under contacts.', 0, 'string', 6, 150],
             [23, 'Social Media Frontend Footer RSS', 'social_media_frontend_footer_rss', 'If a link is present here then this link will be shown on frontend footer part - RSS icon. Please use http/https when entering the link and test if after you set it up here.', 0, 'string', 5, 255],
             [24, 'Social Media Frontend Footer Facebook', 'social_media_frontend_footer_facebook', 'If a link is present here then this link will be shown on frontend footer part - Facebook icon. Please use http/https when entering the link and test if after you set it up here.', 0, 'string', 5, 255],
-            [25, 'Social Media Frontend Footer Twitter', 'social_media_frontend_footer_twitter', 'If a link is present here then this link will be shown on frontend footer part - Twitter icon. Please use http/https when entering the link and test if after you set it up here.', 0, 'string', 5, 255]
-
+            [25, 'Social Media Frontend Footer Twitter', 'social_media_frontend_footer_twitter', 'If a link is present here then this link will be shown on frontend footer part - Twitter icon. Please use http/https when entering the link and test if after you set it up here.', 0, 'string', 5, 255],
+            [26, 'Social Media Frontend Footer Google+', 'social_media_frontend_footer_google+', 'If a link is present here then this link will be shown on frontend footer part - Google+ icon. Please use http/https when entering the link and test if after you set it up here.', 0, 'string', 5, 255],
+            [27, 'Social Media Frontend Footer LinkedIn', 'social_media_frontend_footer_linkedin', 'If a link is present here then this link will be shown on frontend footer part - LinkedIn icon. Please use http/https when entering the link and test if after you set it up here.', 0, 'string', 5, 255],
+            [28, 'Social Media Frontend Footer YpuTube', 'social_media_frontend_footer_youtube', 'If a link is present here then this link will be shown on frontend footer part - YouTube icon. Please use http/https when entering the link and test if after you set it up here.', 0, 'string', 5, 255],
+            [29, 'Social Media Frontend Footer Vimeo', 'social_media_frontend_footer_vimeo', 'If a link is present here then this link will be shown on frontend footer part - Vimeo icon. Please use http/https when entering the link and test if after you set it up here.', 0, 'string', 5, 255]
         ];
 
         // insert values into settings table

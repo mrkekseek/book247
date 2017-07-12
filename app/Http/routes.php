@@ -1192,6 +1192,11 @@ else
             'uses'  => 'AppSettings@save_allowed_setting'
         ]);
 
+        Route::post('settings_clear_cached', [
+            'as'    => 'ajax/settings_clear_cached',
+            'uses'  => 'AppSettings@reset_application_cache_settings'
+        ]);
+
         Route::post('location_set_activity_book_interval', [
             'as'    => 'ajax/location_set_activity_book_interval',
             'uses'  => 'ShopController@set_activity_time_interval'
