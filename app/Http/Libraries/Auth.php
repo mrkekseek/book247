@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Session;
 use \Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Auth as AuthLocal;
 use App\Http\Controllers\AppSettings;
+use Webpatser\Countries\Countries;
 
 class Auth
 {
@@ -161,6 +162,10 @@ class Auth
         
         $user = User::firstOrNew(['username'=>$api_user->username]);
         $user = ( ! $user->exists) ? User::firstOrNew(['email'=>$api_user->username]): $user;
+        $country = Countries::find( $user->country_id);
+        if (!$country) {
+            $user->country_id = AppSettings::get_setting_value_by_name('globalWebsite_defaultCountryId');
+        }
         $local_user['country_id'] = ! $user->exists ? AppSettings::get_setting_value_by_name('globalWebsite_defaultCountryId') : $user->country_id;
         $user->fill($local_user);        
         if (!$user->exists)

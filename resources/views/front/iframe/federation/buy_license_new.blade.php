@@ -39,7 +39,7 @@
     @if(!isset($membership))
     <div class="wrapper body-iframe-step-1" id="body-iframe-step-1">
         <div class="container-iframe">
-            <h3 class="slider-caption">To join the event you need to get  License (Membership) from "XXXXX". You can do it right away here:</h3>
+            <h3 class="slider-caption">To join the event you need to get <br>  License (Membership) from "XXXXX".  <br>You can do it right away here:</h3>
             <div class="carusel-wraper">
                 <div class="carusel items-container simple-items">
                     @foreach ($membership_list as $key => $m)
@@ -47,9 +47,9 @@
                             <div class="carusel-item-content carusel-item-content-{{ $m->id }}" >
                                 <div class="box-item item item-{{ $key }}" style="border-top: 8px solid {{ $m->plan_calendar_color }}"  data-match-height="memberships-options">
                                     <h2 class="h2">{{ $m->name }}</h2>
-                                    <p class="after-cap">
-                                        {{ $m->short_description  }}
-                                    </p>
+                                    {{--<p style="height:96px" class="after-cap">--}}
+                                        {{--{{ $m->short_description  }}--}}
+                                    {{--</p>--}}
                                     <h3 class="h3" style="color: {{ $m->plan_calendar_color }}">{{ $m->get_price()->price }},-/mo</h3>
                                     <p>First month fee {{ $m->administration_fee_amount }},-</p>
                                     <ul class="list">
@@ -58,7 +58,14 @@
                                         <li>Sign out: {{ $m->sign_out_period ? $m->sign_out_period .' months' : 'none'}}</li>
                                     </ul>
                                     <p>Can not book squash</p>
-                                    <a href="#" data-id="membership" data-value="{{ $m->id }}" class="form-choice carusel-button steps-button" style="background: {{ $m->plan_calendar_color }}">GET IT NOW</a>
+                                    <div class="carousel-button-wrap">
+                                        <a href="#" data-id="membership" data-value="{{ $m->id }}" class="form-choice carusel-button steps-button" style="background: {{ $m->plan_calendar_color }}">GET IT NOW</a>
+                                        <div class="checkbox-chek checkbox-chek-mobile">
+                                            <input type="checkbox" class="chek-page">
+                                            <p class="mobile-accept">Accept our <a href="#">Terms & Conditions </a> </p>
+                                        </div>
+                                    </div>
+
                                 </div>
                             </div>
                         @endif
@@ -80,9 +87,9 @@
                 @if (isset($membership) && is_object($membership))
                     <div class="box-item" style="border-top: 8px solid {{ $membership->plan_calendar_color }}">
                         <h2 class="h2">{{ $membership->name }}</h2>
-                        <p class="after-cap">
-                            {{ $membership->short_description  }}
-                        </p>
+                        {{--<p style="height:96px" class="after-cap">--}}
+                            {{--{{ $membership->short_description  }}--}}
+                        {{--</p>--}}
                         <h3 class="h3" style="color: {{ $membership->plan_calendar_color }}">{{ $membership->get_price()->price }},-/mo</h3>
                         <p>First month fee {{ $membership->administration_fee_amount }},-</p>
                         <ul class="list">
@@ -258,6 +265,14 @@
                     }
                 }
             });
+            $('.chek-page').click(function(){
+                if ($(this).is(':checked')){
+                    $('input[type=checkbox]').attr('checked', true);
+                } else {
+                    $('input[type=checkbox]').attr('checked', false);
+                }
+
+            });
             $('.pay-with-paypal').click(function(){
 
                 $.ajax({
@@ -335,6 +350,20 @@
                     }
                 ]
             });
+//            if (window.innerWidth < 700) {
+//                $('.box-item').find('p').css({"height":"auto"});
+//                $('.box-item').find('h2').css({"height":"auto"});
+//            }
+//            $(window).resize(function(){
+//                if (window.innerWidth < 700) {
+//                    $('.box-item').find('p').css({"height":"auto"});
+//                    $('.box-item').find('h2').css({"height":"auto"});
+//                } else {
+//                    $('.box-item').find('p').css({"height":96});
+//                    $('.box-item').find('h2').css({"height":52});
+//                }
+//            });
+
         });
     } )(jQuery);
 </script>
