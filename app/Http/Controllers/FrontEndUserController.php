@@ -5062,7 +5062,8 @@ class FrontEndUserController extends Controller
             'sub_total' => $subtotal,
             'discount' => $discount,
             'vat' => $vat,
-            'grand_total' => $total
+            'grand_total' => $total,
+            'paypal_email' => AppSettings::get_setting_value_by_name('finance_simple_paypal_payment_account')
         ]);
     }
 

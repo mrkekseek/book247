@@ -768,7 +768,8 @@ class MembershipController extends Controller
             'user_id' => $sso_id ,
             'membership' => $membership ,
             'membership_list' => $membership_list,
-            'redirect_url' => $redirect_url
+            'redirect_url' => $redirect_url,
+            'paypal_email' => AppSettings::get_setting_value_by_name('finance_simple_paypal_payment_account')
         ]);
     }
 
