@@ -36,7 +36,7 @@ class ShopLocationCategoryIntervals extends Model
                 return [
                     'location_id'   => 'required|exists:shop_locations,id',
                     'category_id'   => 'required|exists:shop_resource_categories,id',
-                    'time_interval' => 'required|min:5|max:120',
+                    'time_interval' => 'required|integer|min:5|max:180',
                     'added_by'      => 'required|exists:users,id',
                 ];
             }
@@ -46,8 +46,8 @@ class ShopLocationCategoryIntervals extends Model
                 return [
                     'location_id'   => 'required|exists:shop_locations,id',
                     'category_id'   => 'required|exists:shop_resource_categories,id',
-                    'time_interval' => 'required|min:5|max:120',
-                    'added_by'      => 'required|exists:users,id',
+                    'time_interval' => 'required|integer|min:5|max:180',
+                    'added_by'      => 'exists:users,id',
                 ];
             }
             default:break;
@@ -59,6 +59,6 @@ class ShopLocationCategoryIntervals extends Model
     }
 
     public function activity(){
-        return $this->hasOne('App\ShopResourceCategiry','id','category_id');
+        return $this->hasOne('App\ShopResourceCategory','id','category_id');
     }
 }

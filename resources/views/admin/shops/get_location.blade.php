@@ -19,7 +19,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}" />
 @endsection
 
-@section('title', 'Back-end shops - View Shop Details')
+@section('title', 'Back-end Clubs - View Club Details')
 @section('pageBodyClass','page-container-bg-solid page-header-fixed page-sidebar-closed-hide-logo')
 
 @section('pageContentBody')
@@ -58,20 +58,20 @@
                     <div class="portlet-title">
                         <div class="caption">
                             <i class="icon-settings font-dark"></i>
-                            <span class="caption-subject font-dark sbold uppercase">Shop/Store Details</span>
+                            <span class="caption-subject font-dark sbold uppercase">Club Details</span>
                         </div>
                     </div>
                     <div class="portlet-body form">
                         <form class="form-horizontal" role="form" name="store_details" id="store_details">
                             <div class="form-body">
                                 <div class="form-group">
-                                    <label class="col-md-3 control-label">Shop Name</label>
+                                    <label class="col-md-3 control-label">Club Name</label>
                                     <div class="col-md-9">
                                         <div class="input-group">
                                             <span class="input-group-addon">
                                                 <i class="fa fa-envelope"></i>
                                             </span>
-                                            <input type="text" name="shop_name" class="form-control" placeholder="Shop Name" value="{{ $shopDetails->name }}" /> </div>
+                                            <input type="text" name="shop_name" class="form-control" placeholder="Club Name" value="{{ $shopDetails->name }}" /> </div>
                                     </div>
                                 </div>
                                 <div class="form-group">
@@ -128,7 +128,7 @@
                     <div class="portlet-title">
                         <div class="caption">
                             <i class="icon-settings font-dark"></i>
-                            <span class="caption-subject font-dark sbold uppercase">Shop/Store Address</span>
+                            <span class="caption-subject font-dark sbold uppercase">Club Address</span>
                         </div>
                     </div>
                     <div class="portlet-body form">
@@ -190,7 +190,7 @@
                 <div class="portlet box red border-grey-silver">
                     <div class="portlet-title bg-grey-silver bg-font-grey-silver">
                         <div class="caption">
-                            <i class="fa fa-cogs"></i>Shop/Store Activities Interval Duration </div>
+                            <i class="fa fa-cogs"></i>Club Activities - single booking time interval </div>
                         <div class="tools">
                             <a class="collapse" href="javascript:;" data-original-title="" title=""> </a>
                         </div>
@@ -200,24 +200,22 @@
                         </div>
                     </div>
                     <div class="portlet-body flip-scroll">
-                        @if (sizeof($storeCategories)>0)
+                        @if (sizeof($shop_category_interval)>0)
                             <table class="table table-bordered table-striped table-condensed flip-content">
                                 <tbody>
                                 <tr>
-                                    <th>Available Activity to Location</th>
-                                    <th>Location time interval </th>
+                                    <th>Available Activity in Club</th>
+                                    <th>Booking time interval </th>
                                 </tr>
-                            @foreach($storeCategories as $key=>$single)
+                            @foreach($shop_category_interval as $single)
                                 <tr>
-                                    <td> &nbsp;{{$single}} </td>
-                                    <td> <select name="option_value" class="form-control input-inline input-medium input-sm" aria-invalid="false">
-                                            <option value="-1" {!! 1==-1?'selected="selected"':'' !!}>Default</option>
-                                            @for($i=5; $i<=120; $i++)
-                                                <option value="{{$i}}" {!! $i==$key?'selected':'' !!}> {{$i}} minutes </option>
+                                    <td class="text-center"> &nbsp;{{$single->activity->name}} </td>
+                                    <td> <select name="option_value" class="form-control input-inline input-medium input-sm" aria-invalid="false" readonly="readonly" disabled="disabled">
+                                            @for($i=5; $i<=180; $i++)
+                                                <option value="{{$i}}" {!! $i==$single->time_interval?'selected':'' !!}> {{$i}} minutes </option>
                                             @endfor
                                         </select>
-                                        <input type="hidden" name="option_key" value="shop_finance_profile" />
-                                        <a class="btn blue btn-sm update_system_option" >Update</a>
+                                        <!--<a class="btn blue btn-sm update_system_option" >Update</a>-->
                                     </td>
                                 </tr>
                             @endforeach
@@ -236,7 +234,7 @@
                 <div class="portlet box red border-grey-silver">
                     <div class="portlet-title bg-grey-silver bg-font-grey-silver">
                         <div class="caption">
-                            <i class="fa fa-cogs"></i>Shop/Store System Options </div>
+                            <i class="fa fa-cogs"></i>Club System Options </div>
                         <div class="tools">
                             <a class="collapse" href="javascript:;" data-original-title="" title=""> </a>
                         </div>
@@ -277,7 +275,7 @@
                 <div class="portlet box red border-grey-silver">
                     <div class="portlet-title bg-grey-silver bg-font-grey-silver">
                         <div class="caption">
-                            <i class="fa fa-cogs"></i>Shop Resources </div>
+                            <i class="fa fa-cogs"></i>Club Resources </div>
                         <div class="tools">
                             <a class="collapse" href="javascript:;" data-original-title="" title=""> </a>
                         </div>
@@ -646,7 +644,7 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
-                        <h4 class="modal-title">Add New Shop Resource</h4>
+                        <h4 class="modal-title">Add New Club Resource</h4>
                     </div>
                     <div class="modal-body">
                         <form action="#" id="new_resource" name="new_resource" class="form-horizontal">
@@ -666,7 +664,7 @@
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label class="control-label col-md-4">Shop Location</label>
+                                    <label class="control-label col-md-4">Club Location</label>
                                     <div class="col-md-7">
                                         <div class="input-icon right">
                                             <i class="fa"></i>
@@ -678,8 +676,8 @@
                                     <div class="col-md-7">
                                         <select class="form-control input-sm" name="resource_category" id="resource_category">
                                             <option value="-1">Select Category...</option>
-                                            @foreach($storeCategories as $key=>$single)
-                                                <option value="{{ $key }}">{{ $single }}</option>
+                                            @foreach($shop_category_interval as $single)
+                                                <option value="{{ $single->activity->id }}">{{ $single->activity->name }}</option>
                                             @endforeach
                                         </select>
                                     </div>
@@ -1480,10 +1478,10 @@
                         icon.removeClass("fa-warning").addClass("fa-check");
                     },
 
-                    submitHandler: function (form) {
+                    submitHandler: function (form7) {
                         success7.show();
                         error7.hide();
-                        add_new_resource(); // submit the form
+                        add_new_activity_to_location(); // submit the form
                     }
                 });
             }
@@ -1732,6 +1730,29 @@
 
             FormValidation.init();
         });
+
+        function add_new_activity_to_location(){
+            $.ajax({
+                url: '{{route('ajax/location_set_activity_book_interval')}}',
+                type: "post",
+                data: {
+                    'location_id':  '{{$shopDetails->id}}',
+                    'activity_id':  $('select[name=location_resource_category]').val(),
+                    'value':        $('select[name=resource_time_slot]').val(),
+                },
+                success: function(data){
+                    if(data.success){
+                        show_notification(data.title, data.message, 'lime', 3500, 0);
+                        setTimeout(function(){
+                            location.reload();
+                        },1500);
+                    }
+                    else{
+                        show_notification(data.title, data.errors, 'ruby', 3500, 0);
+                    }
+                }
+            });
+        }
 
         function add_new_resource(){
             $.ajax({
