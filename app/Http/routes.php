@@ -595,6 +595,11 @@ else
             'uses' => 'AppSettings@manage_settings'
         ]);
 
+        Route::post('admin/settings/manage_settings/clear_cache', [
+            'as' => 'admin/settings/manage_settings/clear_cache',
+            'uses' => 'AppSettings@clear_cache'
+        ]);
+
         Route::get('admin/settings/account_key', [
             'as'    => 'admin/settings/account_key',
             'uses'  => 'AppSettings@rankedin_app_key_integration'
