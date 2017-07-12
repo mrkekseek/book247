@@ -209,6 +209,7 @@ p,
 
 .carusel-button:hover {
 	opacity: 0.8;
+	text-decoration: none;
 }
 
 .carusel-item-content-1  .carusel-button,
@@ -499,32 +500,42 @@ p,
 .alert-box-container {
 	display: none;
 	position: absolute;
+	height: 100%;
+	width: 100%;
 	top: 0;
 	left: 0;
-	bottom: 0;
-	right: 0;
-	background: rgba(0,0,0,0.3);
+	background: transparent;
 	z-index: 5;
 }
 
 .alert-box {
 	display: inline-block;
 	position: relative;
+	color: #fff;
 	top: 50%;
 	left: 50%;
 	transform: translateX(-50%) translateY(-50%);
-	height: 20%;
-	background: #fff;
-	border-radius: 5px;
+	background: #d55a5a;
 	text-align: center;
 }
 .alert-box span {
 	display: block;
 	text-align: center;
-	padding: 30px 40px;
+	padding: 40px 40px 50px 40px;
+	font-weight: 200;
+	line-height: 35px;
 }
 
-br {
+.alert-box i {
+	position: absolute;
+	top: 1px;
+	color: #fff;
+	font-size: 20px;
+	right: 7px;
+	font-style: normal;
+	cursor: pointer;
+}
+.container-iframe br {
 	display: none;
 }
 
@@ -536,7 +547,7 @@ br {
 		padding: 15px 30px;
 	}
 
-	br {
+	.container-iframe br {
 		display: none;
 	}
 
@@ -592,6 +603,12 @@ br {
 	.next {
 		right: 50px;
 	}
+	.alert-box {
+		width: 100%;
+		top: 0;
+		transform: translateX(-50%);
+	}
+
 }
 
 @media only screen and (max-width :620px) {

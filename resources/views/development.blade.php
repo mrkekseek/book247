@@ -5,6 +5,6 @@
 
     </head>
     <body>
-        <iframe src="{{ $link }}" height="650" width="1000" style="border: none"></iframe>
+        <iframe src="{{ $link }}" height="650" width="500" style="border: none"></iframe>
     </body>
 </html>
