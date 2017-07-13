@@ -4961,7 +4961,7 @@ class FrontEndUserController extends Controller
             return [
                         'success' => false,
                         'title'   => 'Error',
-                        'errors'  => 'Incorrect password'
+                        'errors'  => 'Incorrect username or/and password'
                     ];
         }
     }
