@@ -981,8 +981,6 @@
                     invalidHandler: function (event, validator) { //display error alert on form submit
                         success1.hide();
 
-                        console.log(validator.errorList);
-
                         var errors_list = "";
                         for(var i in validator.errorList)
                         {

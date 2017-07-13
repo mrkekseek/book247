@@ -99,6 +99,8 @@
                                                     <!-- PERSONAL INFO TAB -->
                                                     <div class="tab-pane active" id="tab_1_1">
                                                         <form role="form" id="form_acc_personal" action="#">
+                                                            <div id="errors_list">
+                                                            </div>
                                                             <div class="alert alert-danger display-hide">
                                                                 <button class="close" data-close="alert"></button> You have some form errors. Please check below. </div>
                                                             <div class="alert alert-success display-hide">
@@ -379,7 +381,17 @@
 
                     invalidHandler: function (event, validator) { //display error alert on form submit
                         success1.hide();
-                        error1.show();
+
+                        var errors_list = "";
+                        for(var i in validator.errorList)
+                        {
+                            errors_list  += "<div class='alert alert-danger'>";
+                            errors_list  += $(validator.errorList[i].element).parent().find("label").text() + ": ";
+                            errors_list  += validator.errorList[i].message + "</div>";
+                        }
+
+                        $("#errors_list").html(errors_list);
+                        
                         App.scrollTo(error1, -200);
                     },
 
@@ -405,8 +417,8 @@
                     },
 
                     submitHandler: function (form) {
+                       $("#errors_list").empty();
                         success1.show();
-                        error1.hide();
                         store_account_personal(); // submit the form
                     }
                 });
