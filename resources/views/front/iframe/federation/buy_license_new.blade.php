@@ -11,6 +11,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="{{ asset ('assets/iframe/css/fonts.css') }}">
     <link rel="stylesheet" href="{{ asset ('assets/iframe/libs/slick/slick.css') }}">
     <link rel="stylesheet" href="{{ asset ('assets/iframe/libs/slick/slick-theme.css') }}">
@@ -74,7 +75,7 @@
             </div>
             <div class="checkbox-chek checkbox-chek-desktop">
                 <input type="checkbox" class="chek-page">
-                <p class="desktop-accept">You need to accept our <a href="#">Terms & Conditions </a> before you do any purchases.</p>
+                <p class="desktop-accept">Accept our <a href="#">Terms & Conditions </a> </p>
             </div>
         </div>
     </div>
@@ -201,7 +202,7 @@
 
     <form id="paypal-form" action="{{ env('PAYPAL_SANDBOX') }}"  target="_parent" method="post" style="display: none;">
         <input type="hidden" name="cmd" value="_cart">
-        <input type="hidden" name="business" value="{{ env('PAYPAL_EMAIL') }}">
+        <input type="hidden" name="business" value="{{ $paypal_email }}">
         <input type="hidden" name="return" value="{{ env('MY_SERVER_URL') }}/membership/paypal_success">
         <input type="hidden" name="cancel_url" value="{{ env('MY_SERVER_URL') }}/membership/paypal_cancel">
         <input type="hidden" name="notify_url" value="{{ env('MY_SERVER_URL') }}/membership/ipn">
@@ -226,8 +227,8 @@
 @endif
 <div class="alert-box-container">
     <div class="alert-box">
-        <span>You have to accept Terms & Conditions</span>
-        <button class="btn btn-primary" id="close_alert">OK</button>
+        <i id="close_alert">&#10006;</i>
+        <span>You need to accept our terms and conditions <br/> before you do any purchases.</span>
     </div>
 
 </div>

@@ -450,4 +450,30 @@ class AppSettings extends Controller
             // we reset all
         }
     }
+
+    public function clear_cache() {
+        $user = Auth::user();
+        if ( ! $user || ! $user->is_back_user()) {
+            return json_encode(array(
+                'success' => false ,
+                'message' => 'you are not logged in'
+            ));
+        }
+        $settings = Settings::all();
+        $status_array = [];
+        foreach ($settings as $setting) {
+            $status = Cache::forget($setting->system_internal_name);
+            if ($status) {
+                $status_array[$setting->system_internal_name] = "cache cleared";
+            } else {
+                $status_array[$setting->system_internal_name] = "cache not available";
+            }
+
+        }
+        return json_encode(array(
+            'success' => true ,
+            'message' => 'cache cleared',
+            'status' => $status_array
+        ));
+    }
 }
