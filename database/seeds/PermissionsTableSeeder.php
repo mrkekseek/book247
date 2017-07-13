@@ -246,6 +246,7 @@ class PermissionsTableSeeder extends Seeder
             ['permission_id'=>18,'role_id'=>1],
             ['permission_id'=>19,'role_id'=>1],
             ['permission_id'=>20,'role_id'=>1],
+            ['permission_id'=>21,'role_id'=>1],
 
             // manager role
             ['permission_id'=>5,'role_id'=>2],
@@ -264,6 +265,7 @@ class PermissionsTableSeeder extends Seeder
             ['permission_id'=>18,'role_id'=>2],
             ['permission_id'=>19,'role_id'=>2],
             ['permission_id'=>20,'role_id'=>2],
+            ['permission_id'=>21,'role_id'=>1],
 
             // financial manager
             ['permission_id'=>1,'role_id'=>3],
