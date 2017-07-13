@@ -249,8 +249,8 @@
                                                 <span class="caption-subject bold uppercase">account details</span>
                                             </div>
                                         </div>
-
-                                        <div class="alert alert-warning display-hide terms_and_conditions">
+       
+                                        <div class="alert alert-condition display-hide terms_and_conditions">
                                             <button class="close" data-close="alert"></button> 
                                             Please accept the terms and conditions
                                         </div>

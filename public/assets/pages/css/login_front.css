@@ -340,6 +340,12 @@ Login page
     vertical-align: middle;
 }
 
+.alert-condition {
+    background-color: #fbe1e3;
+    border-color: #fbe1e3;
+    color: #e73d4a;
+}
+
 @media (min-width: 441px) and (max-width: 767px) {
     .login .content{
         margin-top: 25px !important;
