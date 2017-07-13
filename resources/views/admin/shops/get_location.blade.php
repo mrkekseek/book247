@@ -210,12 +210,17 @@
                             @foreach($shop_category_interval as $single)
                                 <tr>
                                     <td class="text-center"> &nbsp;{{$single->activity->name}} </td>
-                                    <td> <select name="option_value" class="form-control input-inline input-medium input-sm" aria-invalid="false" readonly="readonly" disabled="disabled">
-                                            @for($i=5; $i<=180; $i++)
-                                                <option value="{{$i}}" {!! $i==$single->time_interval?'selected':'' !!}> {{$i}} minutes </option>
-                                            @endfor
-                                        </select>
-                                        <!--<a class="btn blue btn-sm update_system_option" >Update</a>-->
+                                    <td>
+                                        @if ($single->is_locked==1)
+                                            <input value="{{$single->time_interval}} minutes" class="form-control input-inline input-medium input-sm" type="text" readonly="readonly" disabled="disabled">
+                                        @else
+                                            <select name="option_value_{{$single->id}}" class="form-control input-inline input-medium input-sm" aria-invalid="false">
+                                                @for($i=5; $i<=180; $i++)
+                                                    <option value="{{$i}}" {!! $i==$single->time_interval?'selected':'' !!}> {{$i}} minutes </option>
+                                                @endfor
+                                            </select>
+                                            <a class="btn blue btn-sm update_system_option" >Update</a>
+                                        @endif
                                     </td>
                                 </tr>
                             @endforeach
@@ -279,12 +284,15 @@
                         <div class="tools">
                             <a class="collapse" href="javascript:;" data-original-title="" title=""> </a>
                         </div>
+                        @if (sizeof($shop_category_interval)>0)
                         <div class="actions">
                             <a class="btn green-jungle" data-toggle="modal" href="#draggable">
                                 <i class="fa fa-plus"></i> Add Resource </a>
                         </div>
+                        @endif
                     </div>
                     <div class="portlet-body flip-scroll">
+                        @if (sizeof($shop_category_interval)>0)
                         <table class="table table-bordered table-striped table-condensed flip-content">
                             <thead class="flip-content">
                             <tr>
@@ -306,6 +314,14 @@
                             @endforeach
                             </tbody>
                         </table>
+                        @else
+                            <div class="note note-warning">
+                                <h4 class="block">No Activities defined for this location</h4>
+                                <p> Before adding resources to your location, you need to define the activities that can be found in your location.
+                                    Based on the activities you will add, you can define resources for them, resources that will be able to be booked
+                                    by your customers.</p>
+                            </div>
+                        @endif
                     </div>
                 </div>
             </div>
