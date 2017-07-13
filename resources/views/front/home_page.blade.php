@@ -237,6 +237,8 @@
                                     </form>
                                     <!-- END RESULT REGISTRATION FORM -->
                                     <!-- BEGIN REGISTRATION FORM -->
+
+                                   
                                     <form class="register-form portlet light " method="post" name="user_registration_form" id="user_registration_form">
                                         <div class="portlet-title">
                                             <div class="caption">
@@ -247,6 +249,12 @@
                                                 <span class="caption-subject bold uppercase">account details</span>
                                             </div>
                                         </div>
+
+                                        <div class="alert alert-warning display-hide terms_and_conditions">
+                                            <button class="close" data-close="alert"></button> 
+                                            Please accept the terms and conditions
+                                        </div>
+                            
                                         <div class="alert alert-danger display-hide">
                                             <button class="close" data-close="alert"></button> You have some errors in the form. Please check below. </div>
                                         <div class="alert alert-success display-hide">
@@ -1059,6 +1067,11 @@
                 });
             }
 
+            $.validator.addMethod("terms_and_conditions", function(value, element) {
+                var check = $(element).prop("checked");
+                return check;
+            }, "Please accept the terms and conditions");
+
             var handleValidation2 = function() {
                 var form2 = $('#user_registration_form');
                 var error2 = $('.alert-danger', form2);
@@ -1133,7 +1146,7 @@
                             equalTo:"#rpassword"
                         },
                         tnc: {
-                            required: true
+                            terms_and_conditions: true
                         }
                     },
 
@@ -1144,8 +1157,33 @@
                     },
 
                     invalidHandler: function (event, validator) { //display error alert on form submit
+                        
                         success2.hide();
-                        error2.show();
+                        error2.hide();
+                        $(".terms_and_conditions").hide();
+                        var check = true,
+                            count = 0;
+
+                        console.log(validator.invalid);
+
+                        for(var i in validator.invalid)
+                        {
+                            if ('tnc' == i)
+                            {
+                                check = false;
+                            }
+                            count ++;
+                        }
+
+                        if ( ! check && count == 1)
+                        {
+                            $(".terms_and_conditions").show();
+                        }
+                        else
+                        {
+                            error2.show();
+                        }
+
                         App.scrollTo(error2, -200);
                     },
 
@@ -1171,6 +1209,7 @@
                     },
 
                     submitHandler: function (form) {
+                        $(".terms_and_conditions").hide();
                         success2.show();
                         error2.hide();
                         register_member(); // submit the form
