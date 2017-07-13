@@ -1381,8 +1381,6 @@ class ShopController extends Controller
             ];
         }
         else{
-
-            $shopActivityInterval = new ShopLocationCategoryIntervals();
             $shopActivityInterval->fill($fillable);
             $shopActivityInterval->save();
 
