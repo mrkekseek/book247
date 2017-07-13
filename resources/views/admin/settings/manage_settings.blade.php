@@ -280,6 +280,11 @@
                     invalidHandler: function (event, validator) {
                         success.hide();
                         error.show();
+
+                        for(var i in validator.errorList)
+                        {
+                            show_notification('Settings update', validator.errorList[i].message, 'ruby', 3500, 0);
+                        }
                     },
 
                     errorPlacement: function (error, element) {
