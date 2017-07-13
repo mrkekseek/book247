@@ -555,6 +555,7 @@
             // put your own logic here, this is just a (crappy) example
             return value.match(/^\d\d?-\d\d?-\d\d\d\d$/);
         },"Please enter a date in the format dd/mm/yyyy.");
+
         $.validator.addMethod('filesize',function(value, element, param) {
             // param = size (in bytes)
             // element = element to validate (<input>)
@@ -803,6 +804,12 @@
                 });
             }
 
+            $.validator.addMethod("terms_conditions", function(value, element) {
+                console.log(value);
+                console.log(element);
+                return false;
+            }, "Please accept the terms and conditions");
+
             var handleValidation2 = function() {
                 var form2 = $('#user_registration_form');
                 var error2 = $('.alert-danger', form2);
@@ -865,7 +872,8 @@
                             equalTo:"#rpassword"
                         },
                         tnc: {
-                            required: true
+                            //terms_conditions: true
+                            //required: true,
                         }
                     },
 
@@ -922,7 +930,6 @@
         jQuery(document).ready(function() {
             // initialize login/register/forgot password part
             Login.init();
-
             // initialize the date pagination part
 //            UIDatepaginator.init();
 
