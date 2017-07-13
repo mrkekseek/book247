@@ -465,18 +465,16 @@
                                         <form action="#">
                                             <table class="table table-bordered table-striped">
                                                 @foreach ($permissions as $permission)
-                                                    @if ($user->can($permission->name))
                                                     <tr>
                                                         <td> {{ $permission->display_name }}
                                                             <span class="help-block"> {{ $permission->description }} </span></td>
                                                         <td>
                                                             <label class="uniform-inline">
-                                                                <input type="radio" name="optionsRadios{{rand(10,1000)}}" value="option1" checked disabled /> Yes </label>
+                                                                <input type="radio" name="optionsRadios{{rand(10,1000)}}" value="option1" {{ $user->can($permission->name) ? 'checked' :''}} disabled /> Yes </label>
                                                             <label class="uniform-inline">
-                                                                <input type="radio" name="optionsRadios{{rand(10,1000)}}" value="option2" disabled /> No </label>
+                                                                <input type="radio" name="optionsRadios{{rand(10,1000)}}" value="option2" {{ ! $user->can($permission->name) ? 'checked' :''}} disabled /> No </label>
                                                         </td>
                                                     </tr>
-                                                    @endif
                                                 @endforeach
                                             </table>
                                             <!--end profile-settings-->
