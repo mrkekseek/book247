@@ -4160,18 +4160,11 @@ class FrontEndUserController extends Controller
         $user = User::where('username','=',$vars['email'])->get()->first();
         if (empty($user))
         {
-            if (Auth::check_exist_api_user($vars['email']))
-            {
-                $user = Auth::create_local_user(FALSE, $vars['email']);
-            }
-            else
-            {
-                return [
-                    'success'   => false,
-                    'errors'    => 'User not found.',
-                    'title'     => 'Error'
-                ];
-            }
+            return [
+                'success'   => false,
+                'errors'    => 'User not found.',
+                'title'     => 'Error'
+            ];
         }
         
         $generateKey = $this->createNewToken();
