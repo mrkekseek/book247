@@ -130,7 +130,7 @@ class IPN extends Controller{
         }
         $custom = json_decode(openssl_decrypt(base64_decode($url),'AES-256-CBC',$key,0 ,$iv));
         if (!isset($custom->invoice_id)) {
-            return view('front/iframe/federation/redirect_page',[
+            return view('front/iframe/federation/success',[
                 'breadcrumbs' => $breadcrumbs,
                 'text_parts'  => $text_parts,
                 'in_sidebar'  => $sidebar_link,
@@ -159,11 +159,10 @@ class IPN extends Controller{
             $user_membership->save();
         }
 
-        return view('front/iframe/federation/redirect_page',[
+        return view('front/iframe/federation/success.php',[
             'breadcrumbs' => $breadcrumbs,
             'text_parts'  => $text_parts,
             'in_sidebar'  => $sidebar_link,
-            'text' => 'Payment successful!',
             'status' => 'Success',
             'link' => $custom->redirect_url
         ]);
