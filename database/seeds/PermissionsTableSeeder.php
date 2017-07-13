@@ -223,6 +223,26 @@ class PermissionsTableSeeder extends Seeder
             ]);
         }
 
+        if (!\App\Permission::where('name','=','create-financial-profile')->get()->first()){
+            DB::table('permissions')->insert([
+                'id'            => 22,
+                'name'          => 'create-financial-profile',
+                'display_name'  => 'Create Financial Profiles',
+                'description'   => 'This restrictions grants access to create financial profile function.',
+                'created_at'    => Carbon::now()->format('Y-m-d H:i:s')
+            ]);
+        }
+
+        if (!\App\Permission::where('name','=','general-permission-overwrite')->get()->first()){
+            DB::table('permissions')->insert([
+                'id'            => 23,
+                'name'          => 'general-permission-overwrite',
+                'display_name'  => 'Allow overwrite permissions',
+                'description'   => 'This will show overwrite permission for cancellation, upgrade/downgrade memberships.',
+                'created_at'    => Carbon::now()->format('Y-m-d H:i:s')
+            ]);
+        }
+
         // now we add permissions to existing roles
         $permission_role = [
             // owner role
@@ -247,6 +267,8 @@ class PermissionsTableSeeder extends Seeder
             ['permission_id'=>19,'role_id'=>1],
             ['permission_id'=>20,'role_id'=>1],
             ['permission_id'=>21,'role_id'=>1],
+            ['permission_id'=>22,'role_id'=>1],
+            ['permission_id'=>23,'role_id'=>1],
 
             // manager role
             ['permission_id'=>5,'role_id'=>2],
