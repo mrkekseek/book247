@@ -52,7 +52,8 @@ class GeneralSettingsSeeder extends Seeder
             [26, 'Social Media Frontend Footer Google+', 'social_media_frontend_footer_google+', 'If a link is present here then this link will be shown on frontend footer part - Google+ icon. Please use http/https when entering the link and test if after you set it up here.', 0, 'string', 5, 255],
             [27, 'Social Media Frontend Footer LinkedIn', 'social_media_frontend_footer_linkedin', 'If a link is present here then this link will be shown on frontend footer part - LinkedIn icon. Please use http/https when entering the link and test if after you set it up here.', 0, 'string', 5, 255],
             [28, 'Social Media Frontend Footer YpuTube', 'social_media_frontend_footer_youtube', 'If a link is present here then this link will be shown on frontend footer part - YouTube icon. Please use http/https when entering the link and test if after you set it up here.', 0, 'string', 5, 255],
-            [29, 'Social Media Frontend Footer Vimeo', 'social_media_frontend_footer_vimeo', 'If a link is present here then this link will be shown on frontend footer part - Vimeo icon. Please use http/https when entering the link and test if after you set it up here.', 0, 'string', 5, 255]
+            [29, 'Social Media Frontend Footer Vimeo', 'social_media_frontend_footer_vimeo', 'If a link is present here then this link will be shown on frontend footer part - Vimeo icon. Please use http/https when entering the link and test if after you set it up here.', 0, 'string', 5, 255],
+            [30, 'Show start form', 'globalWebsite_registration_finished', 'Show start form', 1, '', 0, 0]
         ];
 
         // insert values into settings table
@@ -89,7 +90,9 @@ class GeneralSettingsSeeder extends Seeder
             [15, 17, 'Yes', '1'],
             [16, 17, 'No',  '0'],
             [17, 18, 'Yes', '1'],
-            [18, 18, 'No',  '0']
+            [18, 18, 'No',  '0'],
+            [19, 30, 'Yes',  '1'],
+            [20, 30, 'No',  '0']
         ];
 
         // insert values into allowed_setting_values
@@ -131,6 +134,7 @@ class GeneralSettingsSeeder extends Seeder
         DB::insert($query, [16, 13, NULL, 1]);
         DB::insert($query, [17, 16, NULL, 1]);
         DB::insert($query, [18, 17, NULL, 1]);
+        DB::insert($query, [30, 19, NULL, 1]);
 
 
         DB::unprepared('ALTER TABLE settings AUTO_INCREMENT=10000;');

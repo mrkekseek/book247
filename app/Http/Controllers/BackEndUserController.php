@@ -415,7 +415,7 @@ class BackEndUserController extends Controller
 
         $updateRules = [
             'first_name'=> 'required|min:4|max:150',
-            'last_name' => 'required|min:4|max:150',
+            'last_name' => 'required|msin:4|max:150',
             'gender'    => 'in:M,F'
         ];
         $validator = Validator::make($userVars, $updateRules, User::$messages, User::$attributeNames);
