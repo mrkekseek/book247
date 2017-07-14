@@ -10,6 +10,8 @@ use App\User;
 use App\PersonalDetail;
 use App\Address;
 use App\ShopLocations;
+use App\applicationSetting as ApplicationSettings;
+use App\Settings;
 
 class ApicController extends Controller
 {
@@ -218,10 +220,21 @@ class ApicController extends Controller
                 $shopLocation->save();
                 if ($shopLocation->save())
                 {
-                    $response = [
-                        'code' => 1,
-                        'message' => 'Shop location created.',
-                    ];
+                    $setting = Settings::where('system_internal_name','globalWebsite_rankedin_integration_key')->first();
+                    $setting_value= ApplicationSettings::where('setting_id',$setting->id)->first();
+                    $setting_value->unconstrained_value = $data['account_key'];
+                    if($setting_value->save()){
+                        $response = [
+                            'code' => 1,
+                            'message' => 'Shop location created.',
+                        ];
+                    } else {
+                        $response = [
+                            'code' => 4,
+                            'message' => 'Something went wrong(account_key).',
+                        ];
+                    }
+
                 }
             }
             else

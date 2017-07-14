@@ -1,4 +1,4 @@
-@extends('layouts.main')
+@extends('layouts.federation.main')
 
 @section('globalMandatoryStyle')
     <link href="//fonts.googleapis.com/css?family=Open+Sans:400,300,600,700&subset=all" rel="stylesheet" type="text/css" />

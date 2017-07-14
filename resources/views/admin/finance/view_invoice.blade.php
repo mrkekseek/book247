@@ -164,7 +164,7 @@
                 <!-- End: life time stats -->
             </div>
             <div class="col-md-12">
-                <div class="portlet light portlet-fit bordered">
+                <div class="portlet light portlet-fit">
                     <div class="portlet-title">
                         <div class="caption">
                             <i class="icon-bubble font-dark"></i>
@@ -189,7 +189,7 @@
                                 @if (sizeof($financialTransactions)>0)
                                     @foreach($financialTransactions as $single)
                                         <tr>
-                                            <td> 2 </td>
+                                            <td> {{ $key }} </td>
                                             <td>@foreach ($single->names as $itemNames)
                                                     {{$itemNames}}<br />
                                                 @endforeach
@@ -218,7 +218,7 @@
                                 @else
                                     <tr>
                                         <td></td>
-                                        <td colspan="5">There are no financial transactions associated with this invoice</td>
+                                        <td colspan="6">There are no financial transactions associated with this invoice</td>
                                     </tr>
                                 @endif
                                 </tbody>
