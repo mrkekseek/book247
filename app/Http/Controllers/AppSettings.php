@@ -370,13 +370,6 @@ class AppSettings extends Controller
         return Settings::where("id", $request->input('settings_id'))->get()->first();
     }
 
-    public function reset_application_cache_settings(Request $request){
-        $vars = $request->only('ids');
-        $this->reset_cached_settings($vars['ids']);
-
-        return[];
-    }
-
     public static function get_setting_value_by_name($settingName) {
         $value = Cache::remember($settingName, 1440, function() use ($settingName) {
             $setting = Settings::with('constraint_values')->with('application_setting')->where("system_internal_name", '=', $settingName)->first();
@@ -436,22 +429,7 @@ class AppSettings extends Controller
         ]);
     }
 
-    public function reset_cached_settings($ids=false){
-        // remove cache here
-        if (isset($ids)){
-            if (is_array($ids)){
-                // make foreach and reset
-            }
-            else{
-                // reset single value by id
-            }
-        }
-        else{
-            // we reset all
-        }
-    }
-
-    public function clear_cache() {
+    public function reset_application_cache_settings(Request $request){
         $user = Auth::user();
         if ( ! $user || ! $user->is_back_user()) {
             return json_encode(array(
@@ -459,21 +437,27 @@ class AppSettings extends Controller
                 'message' => 'you are not logged in'
             ));
         }
-        $settings = Settings::all();
-        $status_array = [];
-        foreach ($settings as $setting) {
-            $status = Cache::forget($setting->system_internal_name);
-            if ($status) {
-                $status_array[$setting->system_internal_name] = "cache cleared";
-            } else {
-                $status_array[$setting->system_internal_name] = "cache not available";
-            }
 
+        $vars = $request->only('ids');
+        return self::clear_cache($vars['ids']);
+    }
+
+    private function clear_cache($ids=false) {
+        if ($ids==false){
+            $settings = Settings::all();
         }
+        else{
+            $settings = Settings::whereIn('id',$ids)->get();
+        }
+
+        foreach ($settings as $setting) {
+            Cache::forget($setting->system_internal_name);
+        }
+
         return json_encode(array(
-            'success' => true ,
-            'message' => 'cache cleared',
-            'status' => $status_array
+            'success'   => true ,
+            'message'   => 'Cache cleared - everything went well',
+            'title'     => 'Cache cleared'
         ));
     }
 }

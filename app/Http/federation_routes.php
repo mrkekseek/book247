@@ -649,7 +649,7 @@ Route::group(['middleware' => 'web'], function () {
 
     Route::post('admin/settings/manage_settings/clear_cache', [
         'as' => 'admin/settings/manage_settings/clear_cache',
-        'uses' => 'Federation\AppSettings@clear_cache'
+        'uses' => 'Federation\AppSettings@reset_application_cache_settings'
     ]);
 
     Route::get('admin/settings/account_key', [
@@ -910,6 +910,11 @@ Route::group(['prefix'=>'ajax', 'middleware' => 'web'], function(){
     Route::post('get_rooms_for_activity', [
         'as'    => 'ajax/get_rooms_for_activity',
         'uses'  => 'ShopResourceController@get_rooms_for_activity'
+    ]);
+
+    Route::post('make_default_profile', [
+        'as'    => 'ajax/make_default_profile',
+        'uses'  => 'FinancialProfiles@make_default_profile'
     ]);
 
     Route::post('book_resource',[

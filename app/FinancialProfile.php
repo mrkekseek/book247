@@ -21,7 +21,8 @@ class FinancialProfile extends Model
         'city'          => 'City',
         'postal_code'   => 'Postal_code',
         'region'        => 'Region',
-        'country_id'    => 'Country'
+        'country_id'    => 'Country',
+        'is_default'    => 'Is Default'
     );
 
     protected $fillable = array(
@@ -36,6 +37,7 @@ class FinancialProfile extends Model
         'postal_code',
         'region',
         'country_id',
+        'is_default'
     );
 
     public static function rules($method, $id=0){
@@ -59,6 +61,7 @@ class FinancialProfile extends Model
                     'postal_code'   => 'required|min:2',
                     'region'        => 'required|min:2',
                     'country_id'    => 'required|exists:countries,id',
+                    'is_default'    => 'required|in:0,1'
                 ];
             }
             case 'PUT':
@@ -76,6 +79,7 @@ class FinancialProfile extends Model
                     'postal_code'   => 'required|min:2',
                     'region'        => 'required|min:2',
                     'country_id'    => 'required|exists:countries,id',
+                    'is_default'    => 'in:0,1'
                 ];
             }
             default:break;
