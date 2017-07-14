@@ -1007,6 +1007,11 @@ else
             'uses' => 'BookingController@not_show_status_change'
         ]);
 
+        Route::post('make_default_profile', [
+            'as'    => 'ajax/make_default_profile',
+            'uses'  => 'FinancialProfiles@make_default_profile'
+        ]);
+
         Route::post('add_friend_by_phone', [
             'as' => 'ajax/add_friend_by_phone',
             'uses' => 'FrontEndUserController@add_friend_by_phone'

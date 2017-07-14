@@ -30,3 +30,7 @@ Invoice page
 .invoice .invoice-block .amounts {
   margin-top: 20px;
   font-size: 14px; }
+
+.padding-top-30 {
+  padding-top: 30px;
+}

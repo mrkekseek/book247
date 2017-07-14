@@ -297,4 +297,39 @@ class FinancialProfiles extends Controller
         }
     }
 
+    public function make_default_profile(Request $r){
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
+            return json_encode([
+                'success' => false,
+                'message' => "you don't have permission"
+            ]);
+        }
+
+        $p = FinancialProfile::find($r->get('id'));
+        if (!$p) {
+            return json_encode([
+                'success' => false,
+                'message' => "not a valid profile"
+            ]);
+        }
+
+        $profiles = FinancialProfile::all();
+        foreach ($profiles as $profile) {
+            if ($profile->id != $p->id) {
+                $profile->is_default = 0;
+                $profile->save();
+            } else {
+                $profile->is_default = 1;
+                $profile->save();
+            }
+        }
+        return json_encode([
+            'success' => true,
+            'message' => "Changed the default profile.",
+            'sub_message' => "This is the default profile."
+        ]);
+
+    }
+
 }

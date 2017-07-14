@@ -566,6 +566,67 @@
                                                 </div>
                                             </div>
                                             @endif
+                                            <div class="col-md-12">
+                                                <div class="portlet light bordered">
+                                                    <div class="portlet-title">
+                                                        <div class="caption">
+                                                            <i class="icon-equalizer font-blue-steel"></i>
+                                                            <span class="caption-subject font-blue-steel bold uppercase"> Membership history </span>
+                                                        </div>
+                                                        <div class="tools">
+                                                            <a class="expand" href="" data-original-title="" title=""> </a>
+                                                        </div>
+                                                    </div>
+                                                    <div class="portlet-body row" style="display:none;">
+                                                        <div class="table-scrollable">
+                                                            <table class="table table-bordered table-hover">
+                                                                <thead>
+                                                                <tr>
+                                                                    <th> # </th>
+                                                                    <th> Membership </th>
+                                                                    <th> Start date </th>
+                                                                    <th> End date </th>
+                                                                    <th> Number of invoices </th>
+                                                                    <th> Status </th>
+                                                                </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                @if( sizeof($old_memberships)>0)
+                                                                    @foreach($old_memberships as $key => $membership)
+                                                                        <tr>
+                                                                            <td> {{ $key + 1 }} </td>
+                                                                            <td> {{ $membership['membership_name'] }}</td>
+                                                                            <td> {{ $membership['start_day'] }} </td>
+                                                                            <td> {{ $membership['stop_day'] }} </td>
+                                                                            <td> {{ $membership['number_of_invoices'] }} </td>
+                                                                            <td>
+                                                                                @if ($membership['status']=='pending')
+                                                                                    <span class="label label-sm label-info "> Pending </span>
+                                                                                @elseif ($membership['status']=='active')
+                                                                                    <span class="label label-sm label-success"> Active </span>
+                                                                                @elseif($membership['status']=='suspended')
+                                                                                    <span class="label label-sm label-warning"> Suspended </span>
+                                                                                @elseif($membership['status']=='canceled')
+                                                                                    <span class="label label-sm label-warning"> Cancelled </span>
+                                                                                @elseif($membership['status']=='expired')
+                                                                                    <span class="label label-sm label-danger"> Expired </span>
+                                                                                @endif
+                                                                            </td>
+                                                                        </tr>
+                                                                    @endforeach
+                                                                @else
+                                                                    <tr>
+                                                                        <td></td>
+                                                                        <td colspan="5">There are no old memberships associated with this user</td>
+                                                                    </tr>
+                                                                @endif
+
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                         <!-- END Membership Plan TAB -->
                                         <!-- DOCUMENTS TAB -->

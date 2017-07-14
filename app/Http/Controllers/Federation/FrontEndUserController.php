@@ -484,6 +484,7 @@ class FrontEndUserController extends Base
             'restrictions'          => @$restrictions,
             'plan_details'          => @$plan_details,
             'memberships'           => $membership_plans,
+            'old_memberships'      => $this->get_old_memberships($id),
             'update_memberships'    => $membership_plans_update,
             'plannedInvoices'       => @$plannedInvoices,
             'invoiceCancellation'   => $invoiceCancellation,
@@ -494,6 +495,32 @@ class FrontEndUserController extends Base
             'accessCardNo'      => @$accessCardNo,
             'InvoicesActionsPlanned'=> $plannedInvoicesAndActions,
             'storeCreditNotes'  => $storeCredit
+        ]);
+    }
+
+    public function front_invoice_list()
+    {
+        $user = Auth::user();
+        if (!$user || !$user->is_front_user()) {
+            return redirect()->intended(route('homepage'));
+        }
+
+        $breadcrumbs = [
+            'Home' => route('admin'),
+            'Dashboard' => '',
+        ];
+        $text_parts = [
+            'title' => 'Home',
+            'subtitle' => 'users dashboard',
+            'table_head_text1' => 'Dashboard Summary'
+        ];
+        $sidebar_link = 'front-finance_invoice_list';
+
+        return view('front/finance/federation/invoice_list', [
+            'breadcrumbs' => $breadcrumbs,
+            'text_parts' => $text_parts,
+            'in_sidebar' => $sidebar_link,
+            'user' => $user,
         ]);
     }
 
@@ -1668,6 +1695,91 @@ class FrontEndUserController extends Base
         ]);
     }
 
+    public function front_show_invoice($id)
+    {
+        $user = Auth::user();
+        if (!$user || !$user->is_front_user()) {
+            return redirect()->intended(route('homepage'));
+        }
+
+        $invoice = Invoice::where('invoice_number', '=', $id)->where('user_id', '=', $user->id)->get()->first();
+        if ($invoice) {
+            $subtotal = 0;
+            $total = 0;
+            $discount = 0;
+            $vat = [];
+
+            $items = InvoiceItem::where('invoice_id', '=', $invoice->id)->get();
+            foreach ($items as $item) {
+                // base price minus the discount
+                $item_one_price = $item->price - (($item->price * $item->discount) / 100);
+                // apply the vat to the price
+                $item_vat = $item_one_price * ($item->vat / 100);
+
+                if (isset($vat[$item->vat])) {
+                    $vat[$item->vat] += $item_vat * $item->quantity;
+                } else {
+                    $vat[$item->vat] = $item_vat * $item->quantity;
+                }
+
+                $discount += (($item->price * $item->discount) / 100) * $item->quantity;
+                $subtotal += $item->price * $item->quantity;
+
+                $total += ($item_one_price + $item_vat) * $item->quantity;
+            }
+
+            $member = User::with('ProfessionalDetail')->with('PersonalDetail')->where('id', '=', $invoice->user_id)->get()->first();
+            $member_professional = $member->ProfessionalDetail;
+            $member_personal = $member->PersonalDetail;
+            //xdebug_var_dump($member_professional);
+            //xdebug_var_dump($member_personal);
+            //xdebug_var_dump($member);
+
+            if ($member->country_id == 0) {
+                $country = '-';
+            } else {
+                $get_country = Countries::where('id', '=', $member->country_id)->get()->first();
+                $country = $get_country->name;
+            }
+
+            $invoice_user = [
+                'full_name' => $member->first_name . ' ' . $member->middle_name . ' ' . $member->last_name,
+                'email_address' => $member->email,
+                'date_of_birth' => $member_personal->date_of_birth,
+                'country' => $country,
+            ];
+        }
+
+        $breadcrumbs = [
+            'Home' => route('admin'),
+            'Administration' => route('admin'),
+            'Back End User' => route('admin'),
+            'All Backend Users' => '',
+        ];
+        $text_parts = [
+            'title' => 'Back-End Users',
+            'subtitle' => 'view all users',
+            'table_head_text1' => 'Backend User List'
+        ];
+        $sidebar_link = 'admin-backend-shop-new_order';
+
+        $invoice = Invoice::with('transactions')->with('items')->where('invoice_number','=',$id)->get()->first();
+
+
+        return view('front/finance/federation/show_invoice', [
+            'breadcrumbs' => $breadcrumbs,
+            'text_parts' => $text_parts,
+            'in_sidebar' => $sidebar_link,
+            'invoice' => $invoice,
+            'invoice_items' => @$items,
+            'member' => @$invoice_user,
+            'sub_total' => $subtotal,
+            'discount' => $discount,
+            'financialTransactions' => $invoice->transactions,
+            'vat' => $vat,
+            'grand_total' => $total
+        ]);
+    }
 
     // Stop - Store credit add - backend add store credit to member
 }

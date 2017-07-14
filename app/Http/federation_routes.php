@@ -627,12 +627,12 @@ Route::group(['middleware' => 'web'], function () {
     /** Start Finance Part */
     Route::get('admin/invoices', [
         'as'    => 'admin/invoices',
-        'uses'  => 'InvoiceController@list_all_invoices'
+        'uses'  => 'Federation\InvoiceController@list_all_invoices'
     ]);
 
     Route::get('admin/invoices/{id}/view', [
         'as'    => 'admin/invoices/view',
-        'uses'  => 'InvoiceController@view_invoice'
+        'uses'  => 'Federation\InvoiceController@view_invoice'
     ]);
     /** Stop Finance Part */
 
@@ -912,9 +912,19 @@ Route::group(['prefix'=>'ajax', 'middleware' => 'web'], function(){
         'uses'  => 'ShopResourceController@get_rooms_for_activity'
     ]);
 
+    Route::post('make_default_profile', [
+        'as'    => 'ajax/make_default_profile',
+        'uses'  => 'FinancialProfiles@make_default_profile'
+    ]);
+
     Route::post('book_resource',[
         'as'    => 'ajax/book_resource',
         'uses'  => 'Federation\FrontPageController@book_resource'
+    ]);
+
+    Route::post('ajax/finance_action_invoice_paid', [
+        'as' => 'ajax/finance_action_invoice_paid',
+        'uses' => 'InvoiceController@mark_as_paid'
     ]);
 
     Route::post('resources_available_for_date_time',[

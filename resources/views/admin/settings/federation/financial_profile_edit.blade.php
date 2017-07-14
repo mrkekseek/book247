@@ -122,6 +122,9 @@
                                             <div class="col-md-offset-3 col-md-9">
                                                 <button type="submit" class="btn green">Update Financial Profile</button>
                                                 <button type="button" class="btn default">Cancel</button>
+                                                @if(!$profile->is_default)
+                                                    <button type="button" id="make-default" class="btn btn-primary">Make Default</button>
+                                                @endif
                                             </div>
                                         </div>
                                     </div>
@@ -154,6 +157,30 @@
 
 @section('pageCustomJScripts')
     <script type="text/javascript">
+        $(document).ready(function(){
+            $('#make-default').on('click',function(){
+                console.log('works');
+                $.ajax({
+                    url: '{{ route('ajax/make_default_profile') }}',
+                    method: 'POST',
+                    dataType: 'json',
+                    data: {id : '{{ $profile->id }}'},
+                    success: function(response) {
+                        if (response.success == true) {
+                            $('#make-default').fadeOut().remove();
+                            show_notification(response.message, response.sub_message, 'lime', 3500, 0);
+                            setTimeout(function(){
+                                location.reload();
+                            },2000);
+                        }
+                    } ,
+                    error: function() {
+
+                    }
+
+                });
+            });
+        });
         var FormValidation = function () {
             var handleValidation1 = function() {
                 var form1 = $('#new_financial_profile');
