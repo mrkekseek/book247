@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Http\Controllers\AppSettings;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Validator;

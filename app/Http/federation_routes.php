@@ -649,7 +649,7 @@ Route::group(['middleware' => 'web'], function () {
 
     Route::post('admin/settings/manage_settings/clear_cache', [
         'as' => 'admin/settings/manage_settings/clear_cache',
-        'uses' => 'Federation\AppSettings@clear_cache'
+        'uses' => 'Federation\AppSettings@reset_application_cache_settings'
     ]);
 
     Route::get('admin/settings/account_key', [
