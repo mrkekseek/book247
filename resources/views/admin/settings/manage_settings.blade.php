@@ -182,22 +182,21 @@
     <script type="text/javascript">
         function clearCache (){
             $.ajax({
-                url: '/admin/settings/manage_settings/clear_cache' ,
+                url: "{{route('ajax/settings_clear_cached')}}" ,
                 method: 'POST',
                 dataType: 'json',
-                success: function(r) {
-//                    you can handle the status
-//                    console.log(r);
-                },
-                error: function(){
-//                    you can handle the status
-//                    console.log(r);
+                success: function(data){
+                    if(data.success){
+                        show_notification(data.title, data.message, 'lime', 3500, 0);
+                    }
+                    else{
+                        show_notification(data.title, data.errors,  'ruby', 3500, 0);
+                    }
                 }
-
             });
         }
 
-         var FormValidationUnconstrained = function () {
+        var FormValidationUnconstrained = function () {
             var handleValidation = function(elm) {
 
                 var form = $(elm);
@@ -262,7 +261,6 @@
             value = value * 1;
             return (value >= $(element).data("min")) && (value <= $(element).data("max"));
         },"Enter value from min to max");
-
 
         var FormValidation = function () {
             var handleValidation = function(elm) {
@@ -340,7 +338,6 @@
                 }
             };
         }();
-
 
         $(document).ready(function(){
             FormValidation.init();

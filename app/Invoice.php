@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Http\Controllers\AppSettings;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Validator;
@@ -19,7 +20,9 @@ class Invoice extends Model
         'invoice_reference_id'  => 'Reference ID',
         'invoice_number'=> 'Invoice Number',
         'other_details' => 'Invoice Details',
-        'status'        => 'Invoice Status'
+        'status'        => 'Invoice Status',
+        'payer_info'    => 'Payer Information',
+        'payee_info'    => 'Payee Information',
     );
 
     public static $message = array();
@@ -30,6 +33,8 @@ class Invoice extends Model
         'invoice_type',
         'invoice_reference_id',
         'invoice_number',
+        'payer_info',
+        'payee_info',
         'other_details',
         'status'
     ];

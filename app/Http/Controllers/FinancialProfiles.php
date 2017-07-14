@@ -109,6 +109,8 @@ class FinancialProfiles extends Controller
 
         $vars = $request->only('profile_name', 'company_name', 'bank_name', 'bank_account', 'organisation_number', 'address1', 'address2', 'city', 'postal_code', 'region', 'country');
 
+        $defaultProfile = FinancialProfile::where('is_default','=','1')->first();
+
         $fillable = [
             'profile_name'  => $vars['profile_name'],
             'company_name'  => $vars['company_name'],
@@ -121,6 +123,7 @@ class FinancialProfiles extends Controller
             'postal_code'   => $vars['postal_code'],
             'region'        => $vars['region'],
             'country_id'    => $vars['country'],
+            'is_default'    => isset($defaultProfile)?'0':'1'
         ];
         $validator = Validator::make($fillable, FinancialProfile::rules('POST'), FinancialProfile::$message, FinancialProfile::$attributeNames);
         if ($validator->fails()){

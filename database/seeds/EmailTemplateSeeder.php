@@ -128,7 +128,6 @@ If this was not done by you, please contact the Booking System administrator and
         		'created_at'      => Carbon::now()->format('Y-m-d H:i:s'),
         	]
         ];
-        
 
         DB::table('email_templates')->truncate();
 
