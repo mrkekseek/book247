@@ -77,16 +77,19 @@
                                                         <td>
                                                             <form role="form" class="setting_unconstrained" data-id="{{ $s->id }}">
                                                                 <div class="col-sm-10">
-                                                                    <select class="form-control" name="field_unconstrained">
+                                                                    <select class="form-control" name="field_unconstrained" {{ $s->is_protected && env('DebugSettings',1)==0?'readonly disabled':'' }}>
                                                                         @if ($s->allowed) @foreach($s->allowed as $row)
                                                                             <option value="{{ $row->id }}" @if($s->value == $row->id) selected="selected" @endif>{{ $row->item_value }}</option>
                                                                         @endforeach @endif
                                                                     </select>
                                                                 </div>
                                                                 <div class="col-sm-2 form-group text-center">
-                                                                     <button type="submit" class="btn btn-primary edit-settings btn-sm">
-                                                                        <i class="fa fa-save"></i>
-                                                                    </button>
+                                                                    @if ($s->is_protected && env('DebugSettings',1)==0)
+                                                                    @else
+                                                                        <button type="submit" class="btn btn-primary edit-settings btn-sm">
+                                                                            <i class="fa fa-save"></i>
+                                                                        </button>
+                                                                    @endif
                                                                 </div>
                                                             </form>
                                                         </td>
@@ -95,30 +98,33 @@
                                                             <form role="form" class="setting_values" data-min="{{ $s->min_value }}" data-max="{{ $s->max_value }}" data-id="{{ $s->id }}" data-type="{{ $s->data_type }}">
                                                                 @if ($s->data_type == 'numeric')
                                                                     <div class="col-sm-10 form-group">
-                                                                        <input data-min="{{ $s->min_value }}" data-max="{{ $s->max_value }}" type="text" class="form-control" name="field_numeric" value="{{ $s->value }}" placeholder="{{ $s->min_value }} ... {{ $s->max_value }}"  />
+                                                                        <input {{ $s->is_protected && env('DebugSettings',1)==0?'readonly disabled':'' }} data-min="{{ $s->min_value }}" data-max="{{ $s->max_value }}" type="text" class="form-control" name="field_numeric" value="{{ $s->value }}" placeholder="{{ $s->min_value }} ... {{ $s->max_value }}"  />
                                                                     </div>
                                                                 @elseif ($s->data_type == 'string')
                                                                
                                                                     <div class="col-sm-10 form-group">
-                                                                        <input type="text" class="form-control" value="{{ $s->value }}" name="field_string" placeholder="String"  />
+                                                                        <input {{ $s->is_protected && env('DebugSettings',1)==0?'readonly disabled':'' }} type="text" class="form-control" value="{{ $s->value }}" name="field_string" placeholder="String"  />
                                                                     </div>
                                                                
                                                                 @elseif ($s->data_type == 'text')
                                                                 
                                                                     <div class="col-sm-10 form-group">
-                                                                        <textarea type="text" class="form-control" name="field_text" placeholder="Text">{{ $s->value }}</textarea>
+                                                                        <textarea {{ $s->is_protected && env('DebugSettings',1)==0?'readonly disabled':'' }} type="text" class="form-control" name="field_text" placeholder="Text">{{ $s->value }}</textarea>
                                                                     </div>
                                                                 
                                                                  @elseif ($s->data_type == 'date')
                                                                
                                                                     <div class="col-sm-10 form-group">
-                                                                        <input type="text" class="form-control" value="{{ $s->value }}" name="field_date" placeholder="Date"  />
+                                                                        <input {{ $s->is_protected && env('DebugSettings',1)==0?'readonly disabled':'' }} type="text" class="form-control" value="{{ $s->value }}" name="field_date" placeholder="Date"  />
                                                                     </div>
                                                                  @endif
                                                                 <div class="col-sm-2 form-group text-center">
-                                                                     <button type="submit" class="btn btn-primary edit-settings btn-sm" >
-                                                                        <i class="fa fa-save"></i>
-                                                                    </button>
+                                                                    @if ($s->is_protected && env('DebugSettings',1)==0)
+                                                                    @else
+                                                                        <button type="submit" class="btn btn-primary edit-settings btn-sm">
+                                                                            <i class="fa fa-save"></i>
+                                                                        </button>
+                                                                    @endif
                                                                 </div>
                                                             </form>
                                                         </td>
@@ -357,15 +363,12 @@
                     setting_id : id,
                     value :  $(inputs).val()
                 },
-                success : function(data){
-                   if (data.success)
-                    {
-                        show_notification('Settings update', 'The details entered were correct', 'lime', 3500, 0);
-                       
+                success: function(data){
+                    if(data.success){
+                        show_notification(data.title, data.message, 'lime', 3500, 0);
                     }
-                    else
-                    {
-                        show_notification('Settings update ERROR', 'Something went wrong.', 'tangerine', 3500, 0);
+                    else{
+                        show_notification(data.title, data.errors,  'ruby', 3500, 0);
                     }
                 }
             });
@@ -381,15 +384,12 @@
                     setting_id : $(form).data("id"),
                     allowed_id :  $(form).find(".form-control").val()
                 },
-                success : function(data){
-                   if (data.success)
-                    {
-                        show_notification('Settings update', 'The details entered were correct', 'lime', 3500, 0);
-                       
+                success: function(data){
+                    if(data.success){
+                        show_notification(data.title, data.message, 'lime', 3500, 0);
                     }
-                    else
-                    {
-                        show_notification('Settings update ERROR', 'Something went wrong.', 'tangerine', 3500, 0);
+                    else{
+                        show_notification(data.title, data.errors,  'ruby', 3500, 0);
                     }
                 }
             });
