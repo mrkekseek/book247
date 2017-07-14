@@ -460,7 +460,7 @@ class AppSettings extends Controller
         return self::clear_cache($vars['ids']);
     }
 
-    private function clear_cache($ids=false) {
+    public static function clear_cache($ids=false) {
         if ($ids==false){
             $settings = Settings::all();
         }
@@ -477,5 +477,23 @@ class AppSettings extends Controller
             'message'   => 'Cache cleared - everything went well',
             'title'     => 'Cache cleared'
         ));
+    }
+    
+    public static function update_settings_value_by_name($settingName, $settingValue)
+    {
+        $setting = Settings::with('constraint_values')->with('application_setting')->where("system_internal_name", '=', $settingName)->first();
+        if ( ! empty ($setting))
+        {
+            switch ($setting->constrained)
+            {
+                case(0):
+                    return $setting->application_setting()->update(['unconstrained_value'=>$settingValue]) ? TRUE : FALSE;
+                    break;
+                case(1):
+                    return $setting->application_setting()->update(['allowed_setting_value_id'=>$settingValue]) ? TRUE : FALSE;
+                    break;
+            }
+        }
+        return FALSE;
     }
 }

@@ -2045,7 +2045,6 @@ class FrontEndUserController extends Controller
 
         // get user membership if exists
         $active_membership = UserMembership::where('user_id','=',$fillable['for_user_id'])->where('status','=','active')->get()->first();
-
         if ($active_membership){
             $restrictions = $active_membership->get_plan_restrictions();
         }
@@ -2381,6 +2380,7 @@ class FrontEndUserController extends Controller
             }
             else
             {
+                //mjs
                 $friend_approval_status = $newFriend->get_general_setting('auto_approve_friends')==='0'?'pending':'active';
 
                 $friend_fill = ['user_id'=>$user_id, 'friend_id'=>$friends->user_id, 'status' => $friend_approval_status];
@@ -2403,12 +2403,14 @@ class FrontEndUserController extends Controller
                     $new_friend->save();
 
                     $friend = User::where('id', '=', $friends->user_id)->get()->first();
+                    $user   = User::where('id', '=', Auth::user()->id)->get()->first();
+
                     if ($friend_approval_status == 'pending')
                     {
                         $data = [
-                            'first_name'            => $friend->first_name,
-                            'middle_name'           => $friend->middle_name,
-                            'last_name'             => $friend->last_name,
+                            'first_name'            => $user->first_name,
+                            'middle_name'           => $user->middle_name,
+                            'last_name'             => $user->last_name,
                             'friend´s_list_link'    => route("front/member_friend_list")
                         ];
 
@@ -2417,7 +2419,6 @@ class FrontEndUserController extends Controller
                         if ($template)
                         {
                             $main_message = $template["message"];
-                            $subject = AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title') . ' - You got a new friend request that needs approval';
                         }
                         else
                         {
@@ -2427,25 +2428,35 @@ class FrontEndUserController extends Controller
                             $subject = AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title') . ' - You got a new friend request that needs approval';
                         }
 
+                        $subject = "";
+                        if (AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title'))
+                        {
+                            $subject = AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title') . ' - You have a new friend';
+                        }
+                        else
+                        {
+                            $subject = "You have a new friend";
+                        }
+
+                       
+
                         $beauty_mail = app()->make(Beautymail::class);
                         $beauty_mail->send('emails.email_default_v2',
-                            ['body_message' => $main_message, 'user' => $friend],
-                            function($message) use ($friend, $subject) {
+                            ['body_message' => $main_message, 'user'=>$friend],
+                            function($message) use ($user, $subject, $friend) {
                                 $message
                                 ->from(AppSettings::get_setting_value_by_name('globalWebsite_system_email'))
-                                ->to($friend->email, $friend->first_name . ' ' . $friend->middle_name . ' ' . $friend->last_name)
+                                ->to($friend->email, $friend->first_name.' '.$friend->middle_name.' '.$friend->last_name)
                                 ->subject($subject);
                             });
                     }
                     else
                     {
 
-                         $friend = User::where('id', '=', $friends->user_id)->get()->first();
-                       
                         $data = [
-                            'first_name'            => $friend->first_name,
-                            'middle_name'           => $friend->middle_name,
-                            'last_name'             => $friend->last_name,
+                            'first_name'            => $user->first_name,
+                            'middle_name'           => $user->middle_name,
+                            'last_name'             => $user->last_name,
                             'friend´s_list_link'    => route("front/member_friend_list")
                         ];
 
@@ -2454,21 +2465,30 @@ class FrontEndUserController extends Controller
                         if ($template)
                         {
                             $main_message = $template["message"];
-                            $subject = AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title').' - You have a new friend';
                         }
                         else
                         {
-                            $main_message  = 'You have a new friend - ' . $friend->first_name.' '.$friend->middle_name.' '.$friend->last_name.'<br /><br />';
+                            $main_message  = 'You have a new friend - ' . $user->first_name.' '.$user->middle_name.' '.$user->last_name.'<br /><br />';
                             $main_message .= 'To manage your friends, go to your Backend Account -> Friends List and see the entire list. You can remove the ones you don\'t want by clicking <strong>Remove</strong> button. <br /><br />'.
                             'Sincerely,<br />Book247 Team.';
+                        }
 
+                        $subject = "";
+                        if (AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title'))
+                        {
                             $subject = AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title') . ' - You have a new friend';
                         }
+                        else
+                        {
+                            $subject = "You have a new friend";
+                        }
+
+                       
 
                         $beauty_mail = app()->make(Beautymail::class);
                         $beauty_mail->send('emails.email_default_v2',
                             ['body_message' => $main_message, 'user'=>$friend],
-                            function($message) use ($friend, $subject) {
+                            function($message) use ($user, $subject, $friend) {
                                 $message
                                 ->from(AppSettings::get_setting_value_by_name('globalWebsite_system_email'))
                                 ->to($friend->email, $friend->first_name.' '.$friend->middle_name.' '.$friend->last_name)
@@ -4160,11 +4180,18 @@ class FrontEndUserController extends Controller
         $user = User::where('username','=',$vars['email'])->get()->first();
         if (empty($user))
         {
-            return [
-                'success'   => false,
-                'errors'    => 'User not found.',
-                'title'     => 'Error'
-            ];
+            if (Auth::check_exist_api_user($vars['email']))
+            {
+                $user = Auth::create_local_user(FALSE, $vars['email']);
+            }
+            else
+            {
+                return [
+                    'success'   => false,
+                    'errors'    => 'User not found.',
+                    'title'     => 'Error'
+                ];
+            }
         }
         
         $generateKey = $this->createNewToken();
@@ -4939,8 +4966,11 @@ class FrontEndUserController extends Controller
                 'details'       => 'User Email : '.$user->email,
                 'updated'       => false,
             ]);
+            $status = AppSettings::get_setting_value_by_name('globalWebsite_registration_finished');
+            $start_form = ! empty($status) ? TRUE : FALSE;
             return [
                         'success' => true,
+                        'start_form' => $start_form
                     ];
         }
         else {
@@ -4948,39 +4978,16 @@ class FrontEndUserController extends Controller
                 return [
                             'success' => false,
                             'title'   => 'Api error',
-                            'errors'  => Auth::$error
+                            'errors'  => 'Incorrect password. ' // api error, no Cyrillic
                         ];
             }
             return [
                         'success' => false,
                         'title'   => 'Error',
-                        'errors'  => 'Incorrect username or/and password'
+                        'errors'  => 'Incorrect password or Username. '
                     ];
         }
     }
-
-    private function get_custom($invoice_id) {
-        $custom = json_encode(array(
-            'redirect_url' => env('MY_SERVER_URL'),
-            'invoice_id' => $invoice_id));
-        $key = env('APP_KEY') ;
-        if($key){
-            while(strlen($key) < 16){
-                $key .= env('APP_KEY');
-            }
-            $key = substr($key,0,16);
-        }
-        $iv = env('APP_KEY');
-        if($iv){
-            while(strlen($iv) < 16){
-                $iv .= env('APP_KEY');
-            }
-            $iv = substr($key,0,16);
-        }
-        $custom = base64_encode(openssl_encrypt($custom,'AES-256-CBC',$key,0 ,$iv));
-        return $custom;
-    }
-
 
     public function invoice_payment($id)
     {
@@ -5036,90 +5043,6 @@ class FrontEndUserController extends Controller
             'All Backend Users' => '',
         ];
         
-        $text_parts  = [
-            'title'     => 'Back-End Users',
-            'subtitle'  => 'view all users',
-            'table_head_text1' => 'Backend User List'
-        ];
-
-        $sidebar_link = 'admin-backend-shops-invoices-payment';
-
-        return view('front/finance/finance_peyment', [
-            'custom' => $this->get_custom($invoice->id),
-            'breadcrumbs' => $breadcrumbs,
-            'text_parts'  => $text_parts,
-            'in_sidebar'  => $sidebar_link,
-            'invoice'   => $invoice,
-            'invoice_items' => @$items,
-            'member'    => $member,
-            'sub_total' => $subtotal,
-            'discount' => $discount,
-            'vat' => $vat,
-            'grand_total' => $total,
-            'paypal_email' => AppSettings::get_setting_value_by_name('finance_simple_paypal_payment_account')
-        ]);
-    }
-
-
-    public function post_invoice_payment(Request $r)
-    {
-
-        $user = Auth::user();
-        if ( ! $user || ! $user->is_front_user() )
-        {
-            return redirect()->intended(route('admin/login'));
-        }
-
-
-        $id = $r->get('invoice_number');
-
-
-        $invoice = Invoice::where('invoice_number', '=', $id)->get()->first();
-        if ($invoice)
-        {
-            $subtotal = 0;
-            $total = 0;
-            $discount = 0;
-            $vat = [];
-
-            $items = InvoiceItem::where('invoice_id', '=', $invoice->id)->get();
-
-            foreach($items as $item)
-            {
-                $item_one_price = $item->price - (($item->price*$item->discount)/100);
-                $item_vat = $item_one_price * ($item->vat/100);
-
-                if (isset($vat[$item->vat]))
-                {
-                    $vat[$item->vat] += $item_vat*$item->quantity;
-                }
-                else
-                {
-                    $vat[$item->vat] = $item_vat*$item->quantity;
-                }
-
-                $discount += (($item->price*$item->discount)/100)*$item->quantity;
-                $subtotal += $item->price * $item->quantity;
-
-                $total += ($item_one_price + $item_vat)*$item->quantity;
-            }
-        }
-        else
-        {
-            return redirect('/');
-        }
-
-
-        $member = User::with('ProfessionalDetail')->with('PersonalDetail')->where('id', $invoice->user_id)->get()->first();
-        $member->country = Countries::where('id', $member->country_id)->get()->first();
-
-        $breadcrumbs = [
-            'Home'              => route('admin'),
-            'Administration'    => route('admin'),
-            'Back End User'     => route('admin'),
-            'All Backend Users' => '',
-        ];
-
         $text_parts  = [
             'title'     => 'Back-End Users',
             'subtitle'  => 'view all users',
