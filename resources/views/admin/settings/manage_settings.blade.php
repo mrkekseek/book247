@@ -50,6 +50,10 @@
                                 <div class="caption">
                                     <i class="fa fa-cogs"></i>Manage Settings
                                 </div>
+                                <div class="tools">
+                                    <a href="javascript:;" onclick="clearCache()" class="reload" data-original-title="" title="Reset Application Cache"> </a>
+                                    <a href="javascript:;" class="collapse" data-original-title="" title=""> </a>
+                                </div>
                             </div>
                             <div class="portlet-body">
                                 <div class="table-scrollable">
@@ -176,6 +180,22 @@
 
 @section('pageCustomJScripts')
     <script type="text/javascript">
+        function clearCache (){
+            $.ajax({
+                url: '/admin/settings/manage_settings/clear_cache' ,
+                method: 'POST',
+                dataType: 'json',
+                success: function(r) {
+//                    you can handle the status
+//                    console.log(r);
+                },
+                error: function(){
+//                    you can handle the status
+//                    console.log(r);
+                }
+
+            });
+        }
 
          var FormValidationUnconstrained = function () {
             var handleValidation = function(elm) {
@@ -276,6 +296,11 @@
                     invalidHandler: function (event, validator) {
                         success.hide();
                         error.show();
+
+                        for(var i in validator.errorList)
+                        {
+                            show_notification('Settings update', validator.errorList[i].message, 'ruby', 3500, 0);
+                        }
                     },
 
                     errorPlacement: function (error, element) {

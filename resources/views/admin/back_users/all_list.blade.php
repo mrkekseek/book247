@@ -388,6 +388,9 @@
                         },2000);
                     }
                     else{
+                        $('.alert-success', '#form_sample_2').hide();
+                        $('.alert-danger', '#form_sample_2').html(data.errors);
+                        $('.alert-danger', '#form_sample_2').show();
                         show_notification(data.title, data.errors, 'ruby', 3500, 0);
                     }
                 }

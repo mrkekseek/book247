@@ -82,7 +82,7 @@
                                         @foreach($settings as $s)
                                             <tr>
                                                 <td> {{ $s->id }} </td>
-                                                <td> {{ $s->name }} </td>
+                                                <td> {{ $s->system_internal_name }} </td>
                                                 <td> {{ $s->description }} </td>
                                                 @if ( ! $s->constrained)
                                                     @if ( isset($data_types[$s->data_type]))

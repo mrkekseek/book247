@@ -10,6 +10,8 @@
     <title>{{ env('MY_SERVER_URL') }}</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="{{ asset ('assets/iframe/css/fonts.css') }}">
     <link rel="stylesheet" href="{{ asset ('assets/iframe/libs/slick/slick.css') }}">
     <link rel="stylesheet" href="{{ asset ('assets/iframe/libs/slick/slick-theme.css') }}">
@@ -38,6 +40,7 @@
     @if(!isset($membership))
     <div class="wrapper body-iframe-step-1" id="body-iframe-step-1">
         <div class="container-iframe">
+            <h3 class="slider-caption">To join the event you need to get <br>  License (Membership) from "XXXXX".  <br>You can do it right away here:</h3>
             <div class="carusel-wraper">
                 <div class="carusel items-container simple-items">
                     @foreach ($membership_list as $key => $m)
@@ -45,9 +48,9 @@
                             <div class="carusel-item-content carusel-item-content-{{ $m->id }}" >
                                 <div class="box-item item item-{{ $key }}" style="border-top: 8px solid {{ $m->plan_calendar_color }}"  data-match-height="memberships-options">
                                     <h2 class="h2">{{ $m->name }}</h2>
-                                    <p class="after-cap">
-                                        {{ $m->short_description  }}
-                                    </p>
+                                    {{--<p style="height:96px" class="after-cap">--}}
+                                        {{--{{ $m->short_description  }}--}}
+                                    {{--</p>--}}
                                     <h3 class="h3" style="color: {{ $m->plan_calendar_color }}">{{ $m->get_price()->price }},-/mo</h3>
                                     <p>First month fee {{ $m->administration_fee_amount }},-</p>
                                     <ul class="list">
@@ -56,12 +59,23 @@
                                         <li>Sign out: {{ $m->sign_out_period ? $m->sign_out_period .' months' : 'none'}}</li>
                                     </ul>
                                     <p>Can not book squash</p>
-                                    <a href="#" data-id="membership" data-value="{{ $m->id }}" class="form-choice carusel-button steps-button" style="background: {{ $m->plan_calendar_color }}">GET IT NOW</a>
+                                    <div class="carousel-button-wrap">
+                                        <a href="#" data-id="membership" data-value="{{ $m->id }}" class="form-choice carusel-button steps-button" style="background: {{ $m->plan_calendar_color }}">GET IT NOW</a>
+                                        <div class="checkbox-chek checkbox-chek-mobile">
+                                            <input type="checkbox" class="chek-page">
+                                            <p class="mobile-accept">Accept our <a href="#">Terms & Conditions </a> </p>
+                                        </div>
+                                    </div>
+
                                 </div>
                             </div>
                         @endif
                     @endforeach
                 </div>
+            </div>
+            <div class="checkbox-chek checkbox-chek-desktop">
+                <input type="checkbox" class="chek-page">
+                <p class="desktop-accept">Accept our <a href="#">Terms & Conditions </a> </p>
             </div>
         </div>
     </div>
@@ -74,9 +88,9 @@
                 @if (isset($membership) && is_object($membership))
                     <div class="box-item" style="border-top: 8px solid {{ $membership->plan_calendar_color }}">
                         <h2 class="h2">{{ $membership->name }}</h2>
-                        <p class="after-cap">
-                            {{ $membership->short_description  }}
-                        </p>
+                        {{--<p style="height:96px" class="after-cap">--}}
+                            {{--{{ $membership->short_description  }}--}}
+                        {{--</p>--}}
                         <h3 class="h3" style="color: {{ $membership->plan_calendar_color }}">{{ $membership->get_price()->price }},-/mo</h3>
                         <p>First month fee {{ $membership->administration_fee_amount }},-</p>
                         <ul class="list">
@@ -188,7 +202,7 @@
 
     <form id="paypal-form" action="{{ env('PAYPAL_SANDBOX') }}"  target="_parent" method="post" style="display: none;">
         <input type="hidden" name="cmd" value="_cart">
-        <input type="hidden" name="business" value="{{ env('PAYPAL_EMAIL') }}">
+        <input type="hidden" name="business" value="{{ $paypal_email }}">
         <input type="hidden" name="return" value="{{ env('MY_SERVER_URL') }}/membership/paypal_success">
         <input type="hidden" name="cancel_url" value="{{ env('MY_SERVER_URL') }}/membership/paypal_cancel">
         <input type="hidden" name="notify_url" value="{{ env('MY_SERVER_URL') }}/membership/ipn">
@@ -211,6 +225,14 @@
 
     </form>
 @endif
+<div class="alert-box-container">
+    <div class="alert-box">
+        <i id="close_alert">&#10006;</i>
+        <span>You need to accept our terms and conditions <br/> before you do any purchases.</span>
+    </div>
+
+</div>
+
 <!--====END MODAL====-->
 <script src="{{ asset ('assets/iframe/libs/JQ_1-9-1/jquery.min.js') }}"></script>
 <script src="{{ asset ('assets/iframe/libs/slick/slick.min.js') }}"></script>
@@ -232,15 +254,25 @@
 //                $('body').text('accessed only in iframe!');
             }
             $('.form-choice').click(function(){
-                var $input = $form.find('#'+$(this).data('id'));
-                if($input.length) {
-                    $input.attr('value',$(this).data('value'));
-                    console.log('form updated');
-                } else {
-                    if($(this).data('id') && $(this).data('id') !== 'user_id') {
-                        $form.append('<input type="text" name="' + $(this).data('id') + '" id="' + $(this).data('id') + '" value="' + $(this).data('value') + '">');
+                if($('.chek-page').is(':checked')) {
+                    var $input = $form.find('#' + $(this).data('id'));
+                    if ($input.length) {
+                        $input.attr('value', $(this).data('value'));
+                        console.log('form updated');
+                    } else {
+                        if ($(this).data('id') && $(this).data('id') !== 'user_id') {
+                            $form.append('<input type="text" name="' + $(this).data('id') + '" id="' + $(this).data('id') + '" value="' + $(this).data('value') + '">');
+                        }
                     }
                 }
+            });
+            $('.chek-page').click(function(){
+                if ($(this).is(':checked')){
+                    $('input[type=checkbox]').attr('checked', true);
+                } else {
+                    $('input[type=checkbox]').attr('checked', false);
+                }
+
             });
             $('.pay-with-paypal').click(function(){
 
@@ -296,6 +328,43 @@
 //                $form.attr('method','POST');
 //                $form.submit();
             });
+            $('.carusel').slick({
+                slidesToShow: 3,
+                slidesToScroll: 1,
+                arrows: true,
+                prevArrow:"<button type='button' class='prev'><img src='{{asset('assets/iframe/img/left.png')}}'></button>",
+                nextArrow:"<button type='button' class='next'><img src='{{asset('assets/iframe/img/right.png')}}'></button>",
+                fade: false,
+                autoplay:false,
+                speed : 500,
+                autoplaySpeed: 10000,
+                infinite:false,
+                dots: false,
+                responsive: [
+                    {
+                        breakpoint: 769,
+                        settings: {
+                            slidesToShow: 1,
+                            infinite:true,
+                            dots: true,
+                        }
+                    }
+                ]
+            });
+//            if (window.innerWidth < 700) {
+//                $('.box-item').find('p').css({"height":"auto"});
+//                $('.box-item').find('h2').css({"height":"auto"});
+//            }
+//            $(window).resize(function(){
+//                if (window.innerWidth < 700) {
+//                    $('.box-item').find('p').css({"height":"auto"});
+//                    $('.box-item').find('h2').css({"height":"auto"});
+//                } else {
+//                    $('.box-item').find('p').css({"height":96});
+//                    $('.box-item').find('h2').css({"height":52});
+//                }
+//            });
+
         });
     } )(jQuery);
 </script>

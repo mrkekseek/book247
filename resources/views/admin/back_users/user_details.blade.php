@@ -318,6 +318,7 @@
                                 <div class="tab-content">
                                     <div id="tab_1-1" class="tab-pane active">
                                         <form role="form" action="#" id="form_acc_info">
+                                            
                                             <div class="alert alert-danger display-hide">
                                                 <button class="close" data-close="alert"></button> You have some form errors. Please check below. </div>
                                             <div class="alert alert-success display-hide">
@@ -465,18 +466,16 @@
                                         <form action="#">
                                             <table class="table table-bordered table-striped">
                                                 @foreach ($permissions as $permission)
-                                                    @if ($user->can($permission->name))
                                                     <tr>
                                                         <td> {{ $permission->display_name }}
                                                             <span class="help-block"> {{ $permission->description }} </span></td>
                                                         <td>
                                                             <label class="uniform-inline">
-                                                                <input type="radio" name="optionsRadios{{rand(10,1000)}}" value="option1" checked disabled /> Yes </label>
+                                                                <input type="radio" name="optionsRadios{{rand(10,1000)}}" value="option1" {{ $user->can($permission->name) ? 'checked' :''}} disabled /> Yes </label>
                                                             <label class="uniform-inline">
-                                                                <input type="radio" name="optionsRadios{{rand(10,1000)}}" value="option2" disabled /> No </label>
+                                                                <input type="radio" name="optionsRadios{{rand(10,1000)}}" value="option2" {{ ! $user->can($permission->name) ? 'checked' :''}} disabled /> No </label>
                                                         </td>
                                                     </tr>
-                                                    @endif
                                                 @endforeach
                                             </table>
                                             <!--end profile-settings-->
@@ -706,6 +705,10 @@
                                 <div class="tab-content">
                                     <div id="tab_5-5" class="tab-pane active">
                                         <form role="form" action="#" name="form_acc_personal" id="form_acc_personal">
+                                           
+                                            <div id="errors_list">
+                                            </div>
+
                                             <div class="alert alert-danger display-hide">
                                                 <button class="close" data-close="alert"></button> You have some form errors. Please check below. </div>
                                             <div class="alert alert-success display-hide">
@@ -977,7 +980,17 @@
 
                     invalidHandler: function (event, validator) { //display error alert on form submit
                         success1.hide();
-                        error1.show();
+
+                        var errors_list = "";
+                        for(var i in validator.errorList)
+                        {
+                            errors_list  += "<div class='alert alert-danger'>";
+                            errors_list  += $(validator.errorList[i].element).parent().find("label").text() + ": ";
+                            errors_list  += validator.errorList[i].message + "</div>";
+                        }
+
+                        $("#errors_list").html(errors_list);
+                        
                         App.scrollTo(error1, -200);
                     },
 
@@ -1003,8 +1016,8 @@
                     },
 
                     submitHandler: function (form) {
+                        $("#errors_list").empty();
                         success1.show();
-                        error1.hide();
                         store_account_personal(); // submit the form
                     }
                 });

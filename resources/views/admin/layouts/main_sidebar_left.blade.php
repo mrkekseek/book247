@@ -170,26 +170,26 @@
         <li class="nav-item {{ in_array($in_sidebar, ['admin-backend-inventory-and-transfers','admin-backend-shop-locations-list','admin-backend-shop-products-list','admin-backend-shop-products-inventory', 'admin-backend-shop-locations-details-view', 'admin-backend-product-details-view', 'admin-backend-all-products-inventory', 'admin-backend-shops-employees-work-plan', 'admin-backend-shops-add-invoice', 'admin-backend-shop-new_order', 'admin-backend-shop-all_orders', 'admin-backend-shops-cash_terminals', 'admin-backend-locations-resource-details-view', 'admin-backend-shop-new_order'])?'active open':'' }} ">
             <a href="javascript:;" class="nav-link nav-toggle">
                 <i class="icon-settings"></i>
-                <span class="title">Shops</span>
+                <span class="title">Clubs</span>
                 <span class="arrow"></span>
             </a>
             <ul class="sub-menu">
                 <li class="nav-item {{ $in_sidebar=='admin-backend-shop-locations-list'?'active open':'' }} ">
                     <a href="{{ route("admin/shops/locations/all") }}" class="nav-link ">
-                        <span class="title"> List All Locations </span>
+                        <span class="title"> List All Clubs </span>
                     </a>
                 </li>
                 @if ( $in_sidebar == "admin-backend-shop-locations-details-view")
                     <li class="nav-item {{ $in_sidebar=='admin-backend-shop-locations-details-view'?'active open':'' }}">
                         <a class="nav-link ">
-                            <span class="title">Location Details</span>
+                            <span class="title">Club Details</span>
                         </a>
                     </li>
                 @endif
                 @if ( $in_sidebar == "admin-backend-locations-resource-details-view")
                     <li class="nav-item {{ $in_sidebar=='admin-backend-locations-resource-details-view'?'active open':'' }}">
                         <a class="nav-link ">
-                            <span class="title">Location Details</span>
+                            <span class="title">Club Details</span>
                         </a>
                     </li>
                 @endif

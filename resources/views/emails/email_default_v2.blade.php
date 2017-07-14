@@ -140,6 +140,15 @@
             Margin-bottom: 12px;
         }
 
+
+
+        .logo-top img {
+            width: 100%;
+            max-width: 190px;
+            height: auto;
+        }
+
+
         .full-width-logo img {
             width: 100%;
             max-width: 245px;
@@ -227,8 +236,8 @@
 
 
         .topdate {
-            font-size: 14px;
-            line-height: 20px;
+            font-size: 13px;
+            line-height: 19px;
             font-weight:normal;
             color: #FFFFFF;
             font-family:"Helvetica Neue", "Helvetica Neue LT",Helvetica,Arial,sans-serif;
@@ -247,23 +256,25 @@
 
 
         .salutation {
-            font-size: 21px;
+            font-size: 22px;
             line-height: 30px;
-            font-weight:400;
-            color: #ffffff;
-            font-family:'Open Sans',Arial,Helvetica,Verdana,sans-serif;
+            font-weight:normal;
+            color: #383737;
+            font-family:"Helvetica Neue", "Helvetica Neue LT",Helvetica,Arial,sans-serif;
             text-align:left;
             text-decoration:none;
             text-transform:none;
-            letter-spacing:0.20px;
+            letter-spacing:0.50px;
         }
 
         .salutation a:link,  .salutation a:visited, .salutation a .yshortcuts, .salutation a:hover,
         .salutation div a:link, .salutation div a:hover,  .salutation div a:visited, .salutation div a .yshortcuts {
-            color:#ffffff;
-            font-weight: 400;
+            color:#009fdd;
+            font-weight: normal;
             text-decoration:none;
         }
+
+        .salutation span { color:#009fdd; }
 
 
         .boxcontents {
@@ -372,7 +383,7 @@
                                 </div>
                             </td>
                             <td width="35%" align="right" class="innerthree" style="min-width:80px;">
-                                <div class="viewwebsite"><a href="#" class="viewwebsite"><span style="font-size:12px;">▸</span>&nbsp;View website</a></div>
+                                <div class="viewwebsite"><a href="https://www.book247.net/" class="viewwebsite"><span style="font-size:12px;">▸</span>&nbsp;View website</a></div>
                             </td>
                         </tr>
                     </table>
@@ -387,7 +398,7 @@
         </tr>
 
         <tr>
-            <td height="40" style="font-size:1px; line-height:40px; height:40px; max-height:40px; min-height:40px;">&nbsp;</td>
+            <td height="30" style="font-size:1px; line-height:30px; height:30px; max-height:30px; min-height:30px;">&nbsp;</td>
         </tr>
 
         <tr>
@@ -400,8 +411,7 @@
                     <![endif]-->
                     <table class="mainwidthbox" align="center" style="background-color:#0277bd;" bgcolor="#0277bd">
                         <tr>
-                            <td width="60%" align="left" class="inner" valign="middle" style="vertical-align:middle;">
-                                <div class="salutation">Dear {{$user->first_name.' '.$user->middle_name.' '.$user->last_name}}</div>
+                            <td width="60%" align="left" class="logo-top inner" valign="middle" style="vertical-align:middle;"><a href="https://www.book247.net/"><img src="{{ asset('assets/emails/images/top-logo.jpg') }}" width="190" alt="" style="max-width:190px;" /></a>
                             </td>
                             <td width="40%" align="right" class="inner" valign="middle" style="vertical-align:middle;">
                                 <div class="topdate">{{ \Carbon\Carbon::now()->format('F Y') }}</div>
@@ -418,7 +428,7 @@
         </tr>
 
         <tr>
-            <td height="30" style="font-size:1px; line-height:30px; height:30px; max-height:30px; min-height:30px;">&nbsp;</td>
+            <td height="20" style="font-size:1px; line-height:20px; height:20px; max-height:20px; min-height:20px;">&nbsp;</td>
         </tr>
 
         <tr>
@@ -432,6 +442,8 @@
                     <table class="mainwidthbox" align="center" style="background-color:#ffffff; border-bottom:4px solid #015384;" bgcolor="#ffffff">
                         <tr>
                             <td class="innerfive" align="center" valign="top">
+                                <div class="salutation">Dear <span>{{$user->first_name.' '.$user->middle_name.' '.$user->last_name}}</span></div>
+                                <div><img src="{{ asset('assets/emails/images/spacer.gif')}}" width="1" height="20" style="max-height:20px; min-height:20px;" /></div>
                                 <div class="boxcontents">
                                     {!! $body_message !!}
                                 </div>
@@ -448,7 +460,7 @@
         </tr>
 
         <tr>
-            <td height="40" style="font-size:1px; line-height:40px; height:40px; max-height:40px; min-height:40px;">&nbsp;</td>
+            <td height="30" style="font-size:1px; line-height:30px; height:30px; max-height:30px; min-height:30px;">&nbsp;</td>
         </tr>
 
     </table>
@@ -475,11 +487,9 @@
                                 <table class="mainwidthbox" align="center">
                                     <tr>
                                         <td width="50%" class="inner full-width-logo" align="center" valign="middle"
-                                            style="vertical-align:middle; border-right:1px solid #c8c8c8;">
-                                            <img src="{{ asset('assets/emails/images/book_logo.jpg') }}" width="245" alt="" style="max-width:245px;" />
+                                            style="vertical-align:middle; border-right:1px solid #c8c8c8;"><a href="https://www.book247.net/"><img src="{{ asset('assets/emails/images/book_logo.jpg') }}" width="245" alt="" style="max-width:245px;" /></a>
                                         </td>
-                                        <td width="50%" class="inner full-width-logo" align="center" valign="middle" style="vertical-align:middle;">
-                                            <img src="{{ asset('assets/emails/images/ranked_logo.jpg') }}" width="245" alt="" style="max-width:245px;" editable />
+                                        <td width="50%" class="inner full-width-logo" align="center" valign="middle" style="vertical-align:middle;"><a href="https://www.rankedin.com/"><img src="{{ asset('assets/emails/images/ranked_logo.jpg') }}" width="245" alt="" style="max-width:245px;" editable /></a>
                                         </td>
                                     </tr>
                                 </table>

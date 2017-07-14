@@ -37,6 +37,12 @@ class DatabaseSeeder extends Seeder
         $this->call(UserTableSeeder::class);
         $this->command->info('Seeded : User admin + role');
 
+        $this->call(GeneralSettingsSeeder::class);
+        $this->command->info('Seeded : Application Settings');
+
+        $this->call(EmailTemplateSeeder::class);
+        $this->command->info('Seeded : Email Templates');
+
         DB::statement('SET FOREIGN_KEY_CHECKS=1');
     }
 }

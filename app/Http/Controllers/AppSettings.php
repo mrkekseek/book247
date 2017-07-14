@@ -370,6 +370,13 @@ class AppSettings extends Controller
         return Settings::where("id", $request->input('settings_id'))->get()->first();
     }
 
+    public function reset_application_cache_settings(Request $request){
+        $vars = $request->only('ids');
+        $this->reset_cached_settings($vars['ids']);
+
+        return[];
+    }
+
     public static function get_setting_value_by_name($settingName) {
         $value = Cache::remember($settingName, 1440, function() use ($settingName) {
             $setting = Settings::with('constraint_values')->with('application_setting')->where("system_internal_name", '=', $settingName)->first();
@@ -386,7 +393,7 @@ class AppSettings extends Controller
                 else{
                     // constrained value variable so we get the selected allowed value
                     foreach ($setting->constraint_values as $single){
-                        if ($setting->application_setting->allowed_setting_value_id === $single->id){
+                        if ($setting->application_setting->allowed_setting_value_id == $single->id){
                             return $single->caption;
                         }
                     }
@@ -427,5 +434,46 @@ class AppSettings extends Controller
             'in_sidebar'  => $sidebar_link,
             'application_key'   => $app_key
         ]);
+    }
+
+    public function reset_cached_settings($ids=false){
+        // remove cache here
+        if (isset($ids)){
+            if (is_array($ids)){
+                // make foreach and reset
+            }
+            else{
+                // reset single value by id
+            }
+        }
+        else{
+            // we reset all
+        }
+    }
+
+    public function clear_cache() {
+        $user = Auth::user();
+        if ( ! $user || ! $user->is_back_user()) {
+            return json_encode(array(
+                'success' => false ,
+                'message' => 'you are not logged in'
+            ));
+        }
+        $settings = Settings::all();
+        $status_array = [];
+        foreach ($settings as $setting) {
+            $status = Cache::forget($setting->system_internal_name);
+            if ($status) {
+                $status_array[$setting->system_internal_name] = "cache cleared";
+            } else {
+                $status_array[$setting->system_internal_name] = "cache not available";
+            }
+
+        }
+        return json_encode(array(
+            'success' => true ,
+            'message' => 'cache cleared',
+            'status' => $status_array
+        ));
     }
 }

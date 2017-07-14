@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Session;
 use \Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Auth as AuthLocal;
 use App\Http\Controllers\AppSettings;
+use Webpatser\Countries\Countries;
 
 class Auth
 {
@@ -83,8 +84,13 @@ class Auth
         {
             $sso_user = ApiAuth::accounts_get_by_username($data['email']);            
             $sso_user_id = $sso_user['data']->id;
-            self::set_local_user($sso_user_id);
-            return true;
+            $exist = User::where('sso_user_id',$sso_user_id)->first();
+            if ( ! empty($exist))
+            {
+                self::set_local_user($sso_user_id);
+                return true;
+            }
+            return false;
         }
         else
         {            
@@ -124,16 +130,13 @@ class Auth
             if ($api_user['success'])
             {
                 $exist = User::where([
-                    'username'=>$api_user['data']->username,
-                    'sso_user_id'=>NULL
+                    'sso_user_id'=>$api_user['data']->id,
                 ])->first();
-                if (!empty($exist))
-                {                    
-                    $exist->sso_user_id = $api_user['data']->id;
-                    $exist->save();
+                if ( ! empty($exist))
+                {
+                    Session::put('sso_user_id',$api_user['data']->id);
+                    self::set_local_user($api_user['data']->id);
                 }
-                Session::put('sso_user_id',$api_user['data']->id);
-                self::set_local_user($api_user['data']->id);
             }
         }
         elseif (empty($cookie_sso) && !empty($session_sso))
@@ -161,6 +164,10 @@ class Auth
         
         $user = User::firstOrNew(['username'=>$api_user->username]);
         $user = ( ! $user->exists) ? User::firstOrNew(['email'=>$api_user->username]): $user;
+        $country = Countries::find( $user->country_id);
+        if (!$country) {
+            $user->country_id = AppSettings::get_setting_value_by_name('globalWebsite_defaultCountryId');
+        }
         $local_user['country_id'] = ! $user->exists ? AppSettings::get_setting_value_by_name('globalWebsite_defaultCountryId') : $user->country_id;
         $user->fill($local_user);        
         if (!$user->exists)
