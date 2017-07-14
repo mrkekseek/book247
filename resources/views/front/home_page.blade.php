@@ -1362,13 +1362,18 @@
                     'data': data,
                 },
                 success: function (data) {
+                    //console.log(data);
                     if (data.success == true){
-                        window.location.reload(true);
+                        if (data.start_form == true){
+                            window.location.href = 'registration';
+                        }
+                        else{
+                            window.location.reload();
+                        }
                    }
                    else{
                        $('.alert-danger').show();
                        $('.alert-danger span').html(data.errors);
-                       console.log(data.errors);
                     }
                 }
             });

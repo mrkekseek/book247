@@ -4966,8 +4966,11 @@ class FrontEndUserController extends Controller
                 'details'       => 'User Email : '.$user->email,
                 'updated'       => false,
             ]);
+            $status = AppSettings::get_setting_value_by_name('globalWebsite_registration_finished');
+            $start_form = ! empty($status) ? TRUE : FALSE;
             return [
                         'success' => true,
+                        'start_form' => $start_form
                     ];
         }
         else {
