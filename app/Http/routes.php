@@ -49,7 +49,8 @@ else
         //    return view('login');
         //});
 
-        Route::get('registration', 'RegistrationStepsController@registrationSteps');
+        Route::get('registration', 'RegistrationStepsController@index');
+        Route::post('registration', 'RegistrationStepsController@save');
 
         Route::get('admin/login', [
             'as' => 'admin/login',

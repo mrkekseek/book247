@@ -55,7 +55,7 @@
                                                     <span class="required"> * </span>
                                                 </label>
                                                 <div class="col-md-9">
-                                                    <input type="text" class="form-control" name="clubname" required/ >
+                                                    <input type="text" class="form-control" name="clubname" value = "{{ ! empty($shopLocation) ? $shopLocation->name : ''}}" required/ >
                                                     <span class="help-block"> Provide your Club name </span>
                                                 </div>
                                             </div>
@@ -64,7 +64,7 @@
                                                     <span class="required"> * </span>
                                                 </label>
                                                 <div class="col-md-9">
-                                                    <input type="text" class="form-control" name="email" required />
+                                                    <input type="text" class="form-control" name="email" value = "{{ ! empty($user) ? $user->username : '' }}" required />
                                                     <span class="help-block"> Provide your email address </span>
                                                 </div>
                                             </div>
@@ -171,10 +171,9 @@
                                                 <div class="col-md-7">
                                                     <select name="sport" id="sport" class="form-control" required>
                                                         <option value="">Select activity</option>
-                                                        <option value="1">Tennis</option>
-                                                        <option value="2">Squash</option>
-                                                        <option value="3">Volley</option>
-                                                        <option value="4">Badminton</option>
+                                                        @foreach($shopResourceCategories as $item)
+                                                            <option value="{{$item->id}}"> {{$item->name}} </option>
+                                                        @endforeach
                                                     </select>
                                                     <span class="help-block"> Provide your Activity</span>
                                                 </div>
@@ -186,23 +185,9 @@
                                                 <div class="col-md-7">
                                                     <select name="time" id="time" class="form-control" required>
                                                         <option value="">Select minimum reservation time</option>
-                                                        <option value="10">10 min per slot</option>
-                                                        <option value="15">15 min per slot</option>
-                                                        <option value="20">20 min per slot</option>
-                                                        <option value="25">25 min per slot</option>
-                                                        <option value="30">30 min per slot</option>
-                                                        <option value="35">35 min per slot</option>
-                                                        <option value="40">40 min per slot</option>
-                                                        <option value="45">45 min per slot</option>
-                                                        <option value="50">50 min per slot</option>
-                                                        <option value="55">55 min per slot</option>
-                                                        <option value="60">60 min per slot</option>
-                                                        <option value="65">65 min per slot</option>
-                                                        <option value="70">70 min per slot</option>
-                                                        <option value="75">75 min per slot</option>
-                                                        <option value="80">80 min per slot</option>
-                                                        <option value="85">85 min per slot</option>
-                                                        <option value="90">90 min per slot</option>
+                                                        @for($i = 5; $i<=180; $i=$i+5)
+                                                            <option value="{{$i}}">{{$i}} min per slot</option>
+                                                        @endfor
                                                     </select>
                                                 </div>
                                                 <div class="col-md-1">
@@ -233,7 +218,7 @@
                                                     <select name="members" id="members" class="form-control" required>
                                                         <option value="">Please select</option>
                                                         <option value="1">Yes</option>
-                                                        <option value="2">No</option>
+                                                        <option value="0">No</option>
                                                     </select>
                                                     <span class="help-block"> Select "Yes" or "No"</span>
                                                 </div>
@@ -246,7 +231,7 @@
                                                     <select name="pay" id="pay" class="form-control" required>
                                                         <option value="">Please select</option>
                                                         <option value="1">Yes</option>
-                                                        <option value="2">No</option>
+                                                        <option value="0">No</option>
                                                     </select>
                                                     <span class="help-block"> Select "Yes" or "No"</span>
                                                 </div>
@@ -267,7 +252,7 @@
                                                     <select name="resource" id="resource" class="form-control" required>
                                                         <option value="">Please select</option>
                                                         <option value="1">Everyone</option>
-                                                        <option value="2">Only profiles who are logged in</option>
+                                                        <option value="0">Only profiles who are logged in</option>
                                                     </select>
                                                     <span class="help-block"> Select "Everyone" or "Only profiles who are logged in"</span>
                                                 </div>
@@ -386,6 +371,7 @@
                                         <!--END STEP 4-->
                                     </div>
                                 </div>
+                                <input type="hidden" name="_token" value="{{ csrf_token() }}">
                                 <div class="form-actions">
                                     <div class="row">
                                         <div class="col-md-12 text-center">
@@ -431,7 +417,8 @@
 <script src="{{ asset('assets/global/plugins/bootstrap-wizard/jquery.bootstrap.wizard.min.js') }}" type="text/javascript"></script>
 <script src="{{ asset('assets/global/plugins/select2/js/select2.full.min.js') }}" type="text/javascript"></script>
 <script src="{{ asset('assets/global/plugins/backstretch/jquery.backstretch.min.js') }}" type="text/javascript"></script>
-<script src="{{ asset('assets/pages/scripts/form-wizard.min.js') }}" type="text/javascript"></script>
+<!--script src="{{ asset('assets/pages/scripts/form-wizard.min.js') }}" type="text/javascript"></script-->
+<script src="{{ asset('assets/pages/scripts/form-wizard.js') }}" type="text/javascript"></script>
 <!-- END PAGE LEVEL PLUGINS -->
 <!-- BEGIN THEME GLOBAL SCRIPTS -->
 <script src="{{ asset('assets/global/scripts/app.min.js') }}" type="text/javascript"></script>

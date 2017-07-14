@@ -143,7 +143,7 @@
                                         </div>
                                         <div class="alert alert-danger display-hide">
                                             <button class="close" data-close="alert"></button> You have some errors in the form. Please check below. </div>
-                                        <div class="alert alert-success display-hide">
+                                        <div class="alert alert-successs display-hide">
                                             <button class="close" data-close="alert"></button> Information is valid, please wait! </div>
                                         <div class="form-group">
                                             <input class="form-control placeholder-no-fix" type="text" autocomplete="off" placeholder="Enter you email adress" name="email" /> </div>
@@ -169,7 +169,7 @@
                                     <!-- END RESULT FORGOT PASSWORD FORM -->
                                     
                                     <!-- BEGIN PREREGISTRATION FORM -->
-                                    <form class="pre-register-form portlet light " method="post" name="user_pregistration_form" id="user_preregistration_form">
+                                    <form class="pre-register-form portlet light" method="post" name="user_pregistration_form" id="user_preregistration_form">
                                         <div class="portlet-title">
                                             <div class="caption">
                                                 <a href="javascript::void()" id="pre-back-btn" >
@@ -1362,13 +1362,18 @@
                     'data': data,
                 },
                 success: function (data) {
+                    //console.log(data);
                     if (data.success == true){
-                        window.location.reload(true);
+                        if (data.start_form == true){
+                            window.location.href = 'registration';
+                        }
+                        else{
+                            window.location.reload();
+                        }
                    }
                    else{
                        $('.alert-danger').show();
                        $('.alert-danger span').html(data.errors);
-                       console.log(data.errors);
                     }
                 }
             });
