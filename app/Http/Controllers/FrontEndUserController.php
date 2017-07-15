@@ -4955,7 +4955,6 @@ class FrontEndUserController extends Controller
     
     public function auth_autorize(Request $request){
         $data = $request->input('data');
-        //dd(ApiAuth::accounts_get_by_username('tk59'));
         if (Auth::attempt(['email' => $data['username'], 'password' => $request->data['password']])) {
             $user = Auth::user();
             Activity::log([
@@ -4966,6 +4965,7 @@ class FrontEndUserController extends Controller
                 'details'       => 'User Email : '.$user->email,
                 'updated'       => false,
             ]);
+            AppSettings::clear_cache();
             $status = AppSettings::get_setting_value_by_name('globalWebsite_registration_finished');
             $start_form = ! empty($status) ? TRUE : FALSE;
             return [

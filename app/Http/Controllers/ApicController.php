@@ -60,7 +60,8 @@ class ApicController extends Controller
     public function register_ownerPOST($data)
     {
         $data = array_only($data, ['first_name', 'middle_name', 'last_name', 'email_address', 'phone_number', 'dob', 'gender', 'country']);
-        $password = substr(bcrypt(str_random(12)),0,8);
+        //$password = substr(bcrypt(str_random(12)),0,8);
+        $password = '111111111';
         $rules = [
             'first_name'    =>  'required|min:2|max:150',
             'middle_name'   =>  'min:2|max:150',
