@@ -243,17 +243,17 @@ var FormWizard = function () {
             
             var sendData = function (data){
                 $.ajax({
-                    url: 'registration',
+                    url: '/admin/registration',
                     type: "post",
                     data: data,
                     success: function (data) {
-                            if (data.success==true) {
-                                window.location.href = 'admin';
-                            }
-                            else{
-                                window.location.href = '/';
-                            }
+                        if (data.success == true) {
+                            window.location.href = '/admin';
                         }
+                        else{
+                            window.location.href = '/';
+                        }
+                    }
                 });
             }
             

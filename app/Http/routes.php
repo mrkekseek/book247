@@ -49,9 +49,16 @@ else
         //    return view('login');
         //});
 
-        Route::get('registration', 'RegistrationStepsController@index');
-        Route::post('registration', 'RegistrationStepsController@save');
-
+        Route::get('admin/registration', [
+            'as' => 'admin/registration',
+            'uses' => 'BackEndUserController@registrationStepsIndex']
+        );
+        
+        Route::post('admin/registration', [
+            'as' => 'admin/registration',
+            'uses' => 'BackEndUserController@registrationStepsSave']
+        );
+        
         Route::get('admin/login', [
             'as' => 'admin/login',
             function () {

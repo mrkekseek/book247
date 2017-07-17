@@ -1372,7 +1372,7 @@
                     //console.log(data);
                     if (data.success == true){
                         if (data.start_form == true){
-                            window.location.href = 'registration';
+                            window.location.href = '/admin/registration';
                         }
                         else{
                             window.location.reload();
