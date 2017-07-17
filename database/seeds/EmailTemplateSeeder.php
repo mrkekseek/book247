@@ -126,7 +126,28 @@ If this was not done by you, please contact the Booking System administrator and
         		'is_default'      => 0,
         		'country_id'      => 578,
         		'created_at'      => Carbon::now()->format('Y-m-d H:i:s'),
-        	]
+        	],
+            [
+                'title' => 'Hello [[first_name]] [[last_name]]!',
+                'content'      => 'Template when registering a new owner',
+                'variables'      => '["club_name","email","password","first_name","last_name"]',
+                'description'      => "<p><span>You have succesfully registered at book247.net.</span><br>Your club's name is [[club_name]].<br><span>Now you have your own subdomain for your club:&nbsp;</span>[[club_name]]<span>.book247.net</span><br><span>Your data for login:</span><br>Username: [[email]]<br>Password&nbsp;[[password]]<br></p><p><span>Sincerely,&nbsp;</span><span>Team book247!</span></p>",
+                'hook'      => 'Registration of new owner',
+                'is_default'      => 0,
+                'country_id'      => 578,
+                'created_at'      => Carbon::now()->format('Y-m-d H:i:s'),
+            ],
+            [
+                'title' => 'Hello [[first_name]] [[last_name]]!',
+                'content'      => 'Template when registering an existing owner',
+                'variables'      => '["club_name","email","first_name","last_name"]',
+                'description'      => "<p><span>You have succesfully registered at book247.net.</span><br>Your club's name is [[club_name]].<br><span>Now you have your own subdomain for your club:&nbsp;</span>[[club_name]]<span>.book247.net</span><br><span>Your data for login:</span><br>Username: [[email]]<br>Password: use password you have created before.<br></p><p><span>Sincerely,&nbsp;</span><span>Team book247!</span></p>",
+                'hook'      => 'Registering an existing owner',
+                'is_default'      => 0,
+                'country_id'      => 578,
+                'created_at'      => Carbon::now()->format('Y-m-d H:i:s'),
+            ]
+
         ];
 
         DB::table('email_templates')->truncate();
