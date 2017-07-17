@@ -317,7 +317,7 @@ class Auth
     }
     
     public static function check_exist_api_user($username)
-    {        
+    {
         $exist = ApiAuth::checkExist($username);
         return $exist['success'];
     }

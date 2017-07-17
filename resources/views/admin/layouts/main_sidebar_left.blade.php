@@ -129,25 +129,25 @@
         <li class="nav-item {{ in_array($in_sidebar, array('admin-backend-user_roles', 'admin-backend-all_users', 'admin-backend-roles_permission', 'admin-backend-user_details_view', 'admin-backend-permission_details_view'))?'active open':'' }} ">
             <a href="javascript:;" class="nav-link nav-toggle">
                 <i class="icon-calculator"></i>
-                <span class="title"> Employees </span>
+                <span class="title"> Back-end users </span>
                 <span class="arrow"></span>
             </a>
             <ul class="sub-menu">
                 <li class="nav-item {{ $in_sidebar=='admin-backend-all_users'?'active open':'' }}">
                     <a href="{{route('admin/back_users')}}" class="nav-link ">
-                        <span class="title"> List All Employees </span>
+                        <span class="title"> List All Back-end users </span>
                     </a>
                 </li>
                 @if ($in_sidebar=="admin-backend-user_details_view")
                 <li class="nav-item {{ $in_sidebar=='admin-backend-user_details_view'?'active open':'' }}">
                     <a class="nav-link ">
-                        <span class="title"> Employee Details </span>
+                        <span class="title"> Back-end user Details </span>
                     </a>
                 </li>
                 @endif
                 <li class="nav-item {{ $in_sidebar=='admin-backend-user_roles'?'active open':'' }}">
                     <a href="{{ route('admin/back_users/user_roles') }}" class="nav-link ">
-                        <span class="title"> Employees Roles </span>
+                        <span class="title"> Back-end users Roles </span>
                     </a>
                 </li>
                 <li class="nav-item {{ $in_sidebar=='admin-backend-roles_permission'?'active open':'' }}">

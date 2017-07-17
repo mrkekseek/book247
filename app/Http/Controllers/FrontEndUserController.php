@@ -2689,7 +2689,7 @@ class FrontEndUserController extends Controller
             'middle_name'   => trim($vars['middle_name']),
             'last_name'     => trim($vars['last_name']),
             'gender'        => $vars['gender'],
-            'username'      => trim($vars['email']),
+            'username'      => trim($vars['username']),
             'email'         => trim($vars['email']),
             'password'      => $vars['password'],
             'country_id'    => $vars['country_id'],
