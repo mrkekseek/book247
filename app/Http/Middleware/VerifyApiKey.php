@@ -21,6 +21,7 @@ class VerifyApiKey
         }
         else
         {
+            \Debugbar::disable();
             $result = [
                 'code' => 2,
                 'message' => [self::$message],
