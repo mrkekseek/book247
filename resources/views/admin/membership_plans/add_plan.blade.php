@@ -228,7 +228,7 @@
                     ignore: "",  // validate all fields including form hidden input
                     rules: {
                         membership_name: {
-                            minlength: 5,
+                            minlength: 3,
                             required: true
                         },
                         membership_price: {

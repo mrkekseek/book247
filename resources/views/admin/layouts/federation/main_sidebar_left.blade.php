@@ -31,38 +31,38 @@
             {{--</ul>--}}
         {{--</li>--}}
         <li class="heading">
-            <h3 class="uppercase"> Registered Clients </h3>
+            <h3 class="uppercase"> Registered Members </h3>
         </li>
         <li class="nav-item {{ in_array($in_sidebar, array('admin-frontend-all_members','admin-frontend-user_details_view', 'admin-frontend-add_member','admin-frontend-import_members'))?'active open':'' }}">
             <a href="javascript:;" class="nav-link nav-toggle">
                 <i class="icon-users"></i>
-                <span class="title"> Clients </span>
+                <span class="title"> Members </span>
                 <span class="arrow"></span>
             </a>
             <ul class="sub-menu">
                 <li class="nav-item {{ $in_sidebar=='admin-frontend-add_member'?'active open':'' }} ">
                     <a href="{{ route('admin/front_users/register_new') }}" class="nav-link ">
-                        <span class="title"> Add New Client </span>
+                        <span class="title"> Add New Member </span>
                     </a>
                 </li>
                 @if (Auth::user()->can('view-clients-import-list'))
                     <li class="nav-item {{ $in_sidebar=='admin-frontend-import_members'?'active open':'' }} ">
                         <a href="{{ route('admin/front_users/import_members') }}" class="nav-link ">
-                            <span class="title"> Import Clients </span>
+                            <span class="title"> Import Members </span>
                         </a>
                     </li>
                 @endif
                 @if (Auth::user()->can('view-clients-list-all-clients'))
                     <li class="nav-item {{ $in_sidebar=='admin-frontend-all_members'?'active open':'' }} ">
                         <a href="{{ route('admin/front_users/view_all_members') }}" class="nav-link ">
-                            <span class="title"> List All Clients </span>
+                            <span class="title"> List All Members </span>
                         </a>
                     </li>
                 @endif
                 @if ($in_sidebar=='admin-frontend-user_details_view')
                     <li class="nav-item {{ $in_sidebar=='admin-frontend-user_details_view'?'active open':'' }} ">
                         <a class="nav-link ">
-                            <span class="title"> Client Overview </span>
+                            <span class="title"> Member Overview </span>
                         </a>
                     </li>
                 @endif
@@ -129,19 +129,19 @@
             <li class="nav-item {{ in_array($in_sidebar, array('admin-backend-user_roles', 'admin-backend-all_users', 'admin-backend-roles_permission', 'admin-backend-user_details_view', 'admin-backend-permission_details_view'))?'active open':'' }} ">
                 <a href="javascript:;" class="nav-link nav-toggle">
                     <i class="icon-calculator"></i>
-                    <span class="title"> Employees </span>
+                    <span class="title"> Back-end users </span>
                     <span class="arrow"></span>
                 </a>
                 <ul class="sub-menu">
                     <li class="nav-item {{ $in_sidebar=='admin-backend-all_users'?'active open':'' }}">
                         <a href="{{route('admin/back_users')}}" class="nav-link ">
-                            <span class="title"> List All Employees </span>
+                            <span class="title"> List All Back-end users </span>
                         </a>
                     </li>
                     @if ($in_sidebar=="admin-backend-user_details_view")
                         <li class="nav-item {{ $in_sidebar=='admin-backend-user_details_view'?'active open':'' }}">
                             <a class="nav-link ">
-                                <span class="title"> Employee Details </span>
+                                <span class="title"> Back-end user Details </span>
                             </a>
                         </li>
                     @endif
