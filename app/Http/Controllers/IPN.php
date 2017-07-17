@@ -141,8 +141,6 @@ class IPN extends Controller{
         }
         $invoice = Invoice::find($custom->invoice_id);
         if ($invoice) {
-            $invoice_plan = UserMembershipInvoicePlanning::where('invoice_id',$custom->invoice_id)->first();
-            $user_membership = UserMembership::find($invoice_plan->user_membership_id);
             $transaction = new InvoiceFinancialTransaction();
             $transaction->fill([
                 'invoice_id' => $invoice->id,
@@ -153,10 +151,37 @@ class IPN extends Controller{
                 'status' => 'pending',
                 'other_details' => $transactionId
             ])->save();
-            $invoice->status = 'processing';
-            $invoice->save();
-            $user_membership->status = 'active';
-            $user_membership->save();
+
+            switch ($invoice->invoice_type){
+                case 'booking_invoice' :
+                    $invoice->status = 'processing';
+                    $invoice->save();
+                    break;
+                case 'membership_plan_assignment_invoice' :
+                case 'membership_plan_invoice' :
+                    $invoice_plan = UserMembershipInvoicePlanning::where('invoice_id',$custom->invoice_id)->first();
+                    $user_membership = UserMembership::find($invoice_plan->user_membership_id);
+
+                    $invoice->status = 'processing';
+                    $invoice->save();
+                    $user_membership->status = 'active';
+                    $user_membership->save();
+                    break;
+                case 'store_credit' :
+                    // this is the result of a cancellation where store credit is returned
+                    $invoice->status = 'processing';
+                    $invoice->save();
+                    break;
+                case 'store_credit_invoice' :
+                    // this is the result of buying store credit from frontend or backend, added by the admin/employees
+                    $invoice->status = 'processing';
+                    $invoice->save();
+                    break;
+                default:
+                    $invoice->status = 'processing';
+                    $invoice->save();
+                    break;
+            }
         }
 
         return view('front/iframe/federation/success.php',[
