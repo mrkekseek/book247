@@ -66,8 +66,8 @@ class MembershipPlansController extends Controller
             'Permissions'        => '',
         ];
         $text_parts  = [
-            'title'     => 'All Cash Terminals',
-            'subtitle'  => 'add/edit/view terminals',
+            'title'     => 'All Membership Plans',
+            'subtitle'  => 'add/edit/view plans',
             'table_head_text1' => 'Backend Roles Permissions List'
         ];
         $sidebar_link= 'admin-backend-memberships-all_plans';
@@ -146,7 +146,7 @@ class MembershipPlansController extends Controller
 
         $vars = $request->only('name', 'price', 'plan_period', 'binding_period', 'sign_out_period', 'administration_fee_name', 'administration_fee_amount', 'plan_calendar_color', 'membership_short_description', 'membership_long_description');
 
-        if (!in_array($vars['plan_period'], ['7','14','30','90','180','360'])){
+        if (!in_array($vars['plan_period'], ['7','14','30','90','180','360','-1'])){
             return [
                 'success' => false,
                 'errors'  => 'Error validating time for invoicing period',

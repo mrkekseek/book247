@@ -413,7 +413,7 @@
                 },
                 success: function (data) {
                     if (data.success) {
-                        show_notification('New user registered', 'The details entered were correct so the user is now registered.', 'lime', 3500, 0);
+                        show_notification(data.title, data.message, 'lime', 3500, 0);
                         setTimeout(function(){
                             window.location.reload(true);
                         },2500);

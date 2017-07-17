@@ -72,10 +72,8 @@
                                                 <label class="control-label col-md-3 inline"> Invoicing Period </label>
                                                 <div class="col-md-9">
                                                     <p class="form-control-static form-control border-blue-steel input-large">
-                                                        @if ($membership_plan->plan_period==7)
-                                                            once every 7 days
-                                                        @elseif($membership_plan->plan_period==14)
-                                                            once every 14 days
+                                                        @if ($membership_plan->plan_period==-1)
+                                                            lifetime
                                                         @elseif($membership_plan->plan_period==30)
                                                             one per month
                                                         @elseif($membership_plan->plan_period==90)

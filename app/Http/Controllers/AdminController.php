@@ -236,6 +236,12 @@ class AdminController extends Controller
         if (Auth::attempt(['email' => $request->input('email'), 'password' => $request->input('password')])) {
             // Authentication passed...
             $user = Auth::user();
+            \Cache::forget('globalWebsite_registration_finished');
+            $status = AppSettings::get_setting_value_by_name('globalWebsite_registration_finished');
+            if ( ! empty($status))
+            {
+                return redirect('admin/registration');
+            }
             if ($user->hasRole(['manager','employee'])){
                 return redirect()->route('bookings/location_calendar_day_view',['day'=>\Carbon\Carbon::now()->format('d-m-Y')]);
             }

@@ -94,6 +94,9 @@ class ApiAuth
                 case 'mobile_number':
                     $apiData['PhoneNumber'] = $value;
                     break;
+                case 'country_iso_3166_2':
+                    $apiData['CountryCode'] = $value;
+                    break;
             }
         }
         foreach ($sortingArray as $key => $value) {

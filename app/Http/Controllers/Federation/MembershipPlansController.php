@@ -67,8 +67,8 @@ class MembershipPlansController extends Base
             'Permissions'        => '',
         ];
         $text_parts  = [
-            'title'     => 'All Cash Terminals',
-            'subtitle'  => 'add/edit/view terminals',
+            'title'     => 'All Membership Plans',
+            'subtitle'  => 'add/edit/view plans',
             'table_head_text1' => 'Backend Roles Permissions List'
         ];
         $sidebar_link= 'admin-backend-memberships-all_plans';
@@ -237,4 +237,5 @@ class MembershipPlansController extends Base
             'restrictions'  => $restrictions
         ]);
     }
+
 }
