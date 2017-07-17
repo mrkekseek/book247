@@ -34,6 +34,7 @@
 @section('pageBodyClass','page-container-bg-solid page-boxed login')
 
 @section('pageContentBody')
+
     <div class="page-content-wrapper">
         <!-- BEGIN CONTENT BODY -->
         <!-- BEGIN PAGE CONTENT BODY -->
@@ -311,6 +312,7 @@
                                             <label class="control-label visible-ie8 visible-ie9">Re-type Your Password</label>
                                             <input class="form-control placeholder-no-fix" type="password" autocomplete="off" placeholder="Retype your password" name="re_rpassword" /> </div>
                                         <div class="form-group margin-top-20 margin-bottom-20">
+                                            <p class="text-danger display-hide terms_and_conditions">Please accept the terms and conditions</p>
                                             <label class="check center-block center-align">
                                                 <input type="checkbox" name="tnc" />
                                                 <span class="loginblue-font">I agree to the</span>
@@ -1161,10 +1163,9 @@
                         success2.hide();
                         error2.hide();
                         $(".terms_and_conditions").hide();
+                        $(".checker").removeClass("check_terms");
                         var check = true,
                             count = 0;
-
-                        console.log(validator.invalid);
 
                         for(var i in validator.invalid)
                         {
@@ -1178,6 +1179,7 @@
                         if ( ! check && count == 1)
                         {
                             $(".terms_and_conditions").show();
+                            $(".checker").addClass("check_terms");
                         }
                         else
                         {
@@ -1235,6 +1237,11 @@
 
             // initialize the forms validation part
             FormValidation.init();
+
+            $("input[name='tnc']").click(function(){
+                $(".checker").toggleClass("check_terms");            
+            });
+
         });
 
         function register_member(){
