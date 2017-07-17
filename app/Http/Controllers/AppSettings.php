@@ -122,11 +122,20 @@ class AppSettings extends Controller
             $success_message = 'Saved value will be used in the system';
         }
         else {
-            $setting->update($fillable);
-            Cache::forget($setting->setting->system_internal_name);
+            if ($setting->setting->is_protected && env('DebugSettings',1)==0){
+                return [
+                    'success'   => false,
+                    'title'     => 'Protected Setting',
+                    'errors'    => 'This setting can\'t be changed from back panel admin'
+                ];
+            }
+            else{
+                $setting->update($fillable);
+                Cache::forget($setting->setting->system_internal_name);
 
-            $success_title = 'Application setting updated';
-            $success_message = 'Updated value will be used in the system';
+                $success_title = 'Application setting updated';
+                $success_message = 'Updated value will be used in the system';
+            }
         }
 
         return [
@@ -157,8 +166,17 @@ class AppSettings extends Controller
         }
         else
         {
-            $setting->update($fillable);
-            Cache::forget($setting->setting->system_internal_name);
+            if ($setting->setting->is_protected && env('DebugSettings',1)==0){
+                return [
+                    'success'   => false,
+                    'title'     => 'Protected Setting',
+                    'errors'    => 'This setting can\'t be changed from back panel admin'
+                ];
+            }
+            else{
+                $setting->update($fillable);
+                Cache::forget($setting->setting->system_internal_name);
+            }
         }
 
         return [

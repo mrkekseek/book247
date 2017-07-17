@@ -332,10 +332,7 @@ class BookingController extends Controller
                             'my_booking_link'         => route("front/my_bookings")
                         ];
 
-
                         $template = EmailsController::build('Booking cancellation - single', $data);
-                        $subject = "";
-
                         if ($template)
                         {
                             $main_message = $template["message"];
@@ -1734,7 +1731,7 @@ class BookingController extends Controller
             'memberships'   => $membership_plans,
             'membership_legend'   => $membership_legend,
             'membership_products' => $membership_products,
-            'defaultProductColor' => $defaultProductColor,
+            'defaultProductColor' => @$defaultProductColor,
             'countries' => $countries,
             'jump_to'       => @$jump_to
         ]);

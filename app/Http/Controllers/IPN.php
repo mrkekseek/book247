@@ -170,6 +170,8 @@ class IPN extends Controller{
 
     }
     
+    public function membership_paypal_cancel(Request $request){
 
+    }
 
 }
