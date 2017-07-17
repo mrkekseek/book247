@@ -12,6 +12,8 @@ use App\Address;
 use App\ShopLocations;
 use App\applicationSetting as ApplicationSettings;
 use App\Settings;
+use Auth;
+use Snowfire\Beautymail\Beautymail;
 
 class ApicController extends Controller
 {
@@ -60,15 +62,14 @@ class ApicController extends Controller
     public function register_ownerPOST($data)
     {
         $data = array_only($data, ['first_name', 'middle_name', 'last_name', 'email_address', 'phone_number', 'dob', 'gender', 'country']);
-        //$password = substr(bcrypt(str_random(12)),0,8);
-        $password = '111111111';
+
         $rules = [
             'first_name'    =>  'required|min:2|max:150',
             'middle_name'   =>  'min:2|max:150',
             'last_name'     =>  'required|min:2|max:150',
-            'email_address' =>  'required|email|unique:users,username|unique_api_username',
+            'email_address' =>  'required|email|unique:users,username',
             'dob' =>  'required|date',
-            'phone_number'  =>  'required|unique:personal_details,mobile_number|unique_api_phonenumber',
+            'phone_number'  =>  'required|unique:personal_details,mobile_number',
             'gender'        =>  'required|in:M,F',
             'country'        =>  'required|size:2|exists_county',
         ];
@@ -85,18 +86,14 @@ class ApicController extends Controller
             }
             return FALSE;
         });
-        
-        Validator::extend('unique_api_username', function($attribute, $value, $parameters, $validator) use($countries) {
-            return ! ApiAuth::checkExist($value)['success'];
-        });
+        /*
         Validator::extend('unique_api_phonenumber', function($attribute, $value, $parameters, $validator) use($countries) {
             return ! ApiAuth::account_get_by_phone_number($value)['success'];
         });
-        
+        */
         $mesagges = [
             'country.exists_county' => 'Country not valid.',
-            'email_address.unique_api_username' => 'User with this email allready registered on API SSO.',
-            'phone_number.unique_api_phonenumber' => 'User with this phone number allready registered on API SSO.'
+            //'phone_number.unique_api_phonenumber' => 'User with this phone number allready registered on API SSO.'
         ];
         if ( ! $this->validate_request($data , $rules, $mesagges) )
         {
@@ -108,6 +105,7 @@ class ApicController extends Controller
         else
         {
             $country = Countries::where('iso_3166_2',$data['country'])->first();
+            $password = substr(bcrypt(str_random(12)),0,8);
             $ownerData = [
                 'first_name'    => $data['first_name'],
                 'middle_name'   => (isset($data['middle_name']) && ! empty($data['middle_name'])) ? $data['middle_name'] : '',
@@ -119,26 +117,57 @@ class ApicController extends Controller
                 'gender'        => $data['gender'],
                 'status'        => 'active',
             ];
+            
+            $personalData = [
+                'personal_email'=> $data['email_address'],
+                'mobile_number' => $data['phone_number'],
+                'date_of_birth' => Carbon::parse($data['dob'])->format('Y-m-d'),
+                'bank_acc_no'   => 0,
+                'social_sec_no' => 0,
+                'about_info'    => '',                
+            ];
+            if (ApiAuth::checkExist($data['email_address'])['success'])
+            {
+                $apiUser = ApiAuth::accounts_get_by_username($data['email_address'])['data'];
+                $dataForApi = $ownerData;
+                $dataForApi['sso_user_id'] = $apiUser->id;
+                $dataForApi['country_iso_3166_2'] = $country->iso_3166_2;
+                $dataForApi['date_of_birth'] = $personalData['date_of_birth'];
+                $dataForApi['mobile_number'] = $personalData['mobile_number'];
+                unset($dataForApi['password']);
+                if (Auth::update_api_user($dataForApi))
+                {
+                    $ownerData['sso_user_id'] = $apiUser->id;
+                }
+                else
+                {
+                    return [
+                        'code' => 3,
+                        'message' => 'Can not update user on API SSO. API SSO return: '. Auth::$error,
+                    ];
+                }
+            }
+            
             $owner = new User;
             $owner->fill($ownerData);
-            
             if ($owner->save())
             {
                 $owner->attachRole(1);
-                $personalData = [
-                    'personal_email'=> $data['email_address'],
-                    'mobile_number' => $data['phone_number'],
-                    'date_of_birth' => Carbon::parse($data['dob'])->format('Y-m-d'),
-                    'bank_acc_no'   => 0,
-                    'social_sec_no' => 0,
-                    'about_info'    => '',                
-                    'customer_number'   => $owner->get_next_customer_number(),
-                    'user_id'   => $owner->id
-                ];
+                $personalData['customer_number'] = $owner->get_next_customer_number();
+                $personalData['user_id'] = $owner->id;
                 $personalDetail = new PersonalDetail;
                 $personalDetail->fill($personalData);
                 if ($personalDetail->save())
                 {
+                    if (empty($owner->sso_user_id))
+                    {
+                        $this->send_mail_new_owner($owner, $password);
+                    }
+                    else
+                    {
+                        $this->send_mail_exist_owner($owner);
+                    }
+                    
                     $response = [
                         'code' => 1,
                         'message' => 'User created.',
@@ -249,8 +278,62 @@ class ApicController extends Controller
         return $response;
     }
     
-        
-      
+    private function send_mail_exist_owner($owner)
+    {
+        $shop_location = ShopLocations::first();
+        $data = [
+            'first_name' => $owner->first_name,
+            'last_name' => $owner->last_name,
+            'email' => $owner->email,
+            'club_name' => $shop_location->name,
+        ];
+
+        $template = EmailsController::build('Registering an existing owner', $data);
+        if ($template)
+        {
+            $main_message = $template["message"];
+            $subject = AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title') . ' - Online Booking System - You are registered!';
+            $beauty_mail = app()->make(Beautymail::class);
+            $beauty_mail->send('emails.email_default_v2',
+                ['body_message' => $main_message, 'user' => $owner],
+                function($message) use ($owner) {
+                    $message
+                            ->from(AppSettings::get_setting_value_by_name('globalWebsite_system_email'))
+                            ->to($owner->email, $owner->first_name.' '.$owner->middle_name.' '.$owner->last_name)
+                            ->subject(AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title').' - Online Booking System - You are registered!');
+                });
+        }
+    }
+    
+    private function send_mail_new_owner($owner, $password)
+    {
+        $shop_location = ShopLocations::first();
+        $data = [
+            'first_name' => $owner->first_name,
+            'last_name' => $owner->last_name,
+            'email' => $owner->email,
+            'club_name' => $shop_location->name,
+            'password' => $password
+        ];
+
+        $template = EmailsController::build('Registration of new owner', $data);
+        if ($template)
+        {
+            $main_message = $template["message"];
+            $subject = AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title') . ' - Online Booking System - You are registered!';
+            $beauty_mail = app()->make(Beautymail::class);
+            $beauty_mail->send('emails.email_default_v2',
+                ['body_message' => $main_message, 'user' => $owner],
+                function($message) use ($owner) {
+                    $message
+                            ->from(AppSettings::get_setting_value_by_name('globalWebsite_system_email'))
+                            ->to($owner->email, $owner->first_name.' '.$owner->middle_name.' '.$owner->last_name)
+                            ->subject(AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title').' - Online Booking System - You are registered!');
+                });
+        }
+    }
+
+
     private function validate_request($data, $rules, $mesagges)
     {
         $validator = Validator::make($data, $rules, $mesagges);

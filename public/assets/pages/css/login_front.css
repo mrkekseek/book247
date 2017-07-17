@@ -345,6 +345,10 @@ Login page
     color: #e73d4a;
 }
 
+ .check_terms {
+    box-shadow: inset 0 0 0 1px #e73d4a;
+}
+
 @media (min-width: 441px) and (max-width: 767px) {
     .login .content{
         margin-top: 25px !important;

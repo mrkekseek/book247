@@ -220,7 +220,7 @@ class Auth
         $personalDetail->save();
     }
     
-    public static function create_local_user($sso_user_id = FALSE, $sso_username = FALSE)
+    public static function create_local_user($sso_user_id = FALSE, $sso_username = FALSE, $role = 6)
     {
         $api_user = ! empty($sso_username) ? ApiAuth::accounts_get_by_username($sso_username)['data'] : ApiAuth::accounts_get($sso_user_id)['data'];
         $local_user = [
@@ -241,7 +241,7 @@ class Auth
         $user->fill($local_user);
         if ($user->save())
         {
-            $user->attachRole(6);
+            $user->attachRole($role);
             self::set_personal_details($user->id, $api_user);
             $searchMembers = new OptimizeSearchMembers();
             $searchMembers->add_missing_members([$user->id]);
