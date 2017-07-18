@@ -243,8 +243,10 @@
                             required: true
                         },
                         phone: {
-                            number: true,
                             required: true,
+                            digits: true,
+                            minlength: 8,
+                            maxlength: 20,
                             remote: {
                                 url: "{{ route('ajax/check_phone_for_member_registration') }}",
                                 type: "post",

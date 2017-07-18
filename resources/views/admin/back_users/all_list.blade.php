@@ -277,15 +277,17 @@
                             minlength: 2,
                             required: true
                         },
-                        phone: {
-                            number: true,
+                        phone_number: {
                             required: true,
+                            digits: true,
+                            minlength: 8,
+                            maxlength: 20,
                             remote: {
                                 url: "{{ route('ajax/check_phone_for_member_registration') }}",
                                 type: "post",
                                 data: {
-                                    phone: function() {
-                                        return $( "input[name='phone']" ).val();
+                                    phone_number: function() {
+                                        return $( "input[name='phone_number']" ).val();
                                     }
                                 }
                             }

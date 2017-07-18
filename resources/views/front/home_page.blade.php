@@ -1098,8 +1098,8 @@
                         phone: {
                             number: true,
                             required: true,
-                            minlength:8,
-                            maxlength:13,
+                            minlength: 8,
+                            maxlength: 20,
                             remote: {
                                 url: "{{ route('ajax/check_phone_for_member_registration') }}",
                                 type: "post",
@@ -1160,6 +1160,8 @@
 
                     invalidHandler: function (event, validator) { //display error alert on form submit
                         
+
+
                         success2.hide();
                         error2.hide();
                         $(".terms_and_conditions").hide();
@@ -1185,6 +1187,13 @@
                         {
                             error2.show();
                         }
+
+                        $("input[name='tnc']").click(function(){
+                            if ( $(".checker").hasClass("check_terms"))
+                            {
+                                $(".checker").removeClass("check_terms");
+                            }
+                        });
 
                         App.scrollTo(error2, -200);
                     },
@@ -1237,11 +1246,6 @@
 
             // initialize the forms validation part
             FormValidation.init();
-
-            $("input[name='tnc']").click(function(){
-                $(".checker").toggleClass("check_terms");            
-            });
-
         });
 
         function register_member(){
