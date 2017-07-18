@@ -62,9 +62,9 @@
                                     <li>
                                         <strong>V.A.T Reg #:</strong> 542554(DEMO)78 </li>
                                     <li>
-                                        <strong>Account Name:</strong> FoodMaster Ltd </li>
+                                        <strong>Account Name:</strong> {{ $financial_profile->profile_name }} </li>
                                     <li>
-                                        <strong>SWIFT code:</strong> 45454DEMO545DEMO </li>
+                                        <strong>SWIFT code:</strong> {{ $financial_profile->organisation_number }} </li>
                                 </ul>
                             </div>
                         </div>

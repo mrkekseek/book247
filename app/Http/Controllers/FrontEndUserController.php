@@ -57,6 +57,8 @@ use Illuminate\Auth\Passwords\TokenRepositoryInterface;
 use App\Http\Controllers\AppSettings;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Controllers\EmailsController;
+use App\FinancialProfile;
+use App\ShopFinancialProfile;
 
 class FrontEndUserController extends Controller
 {
@@ -3612,6 +3614,20 @@ class FrontEndUserController extends Controller
         ];
         $sidebar_link= 'admin-backend-shop-new_order';
 
+        $location_id = $user->get_general_setting('settings_preferred_location');
+        $financial_profile = null;
+        if ($location_id) {
+            $shop_financial_profile = ShopFinancialProfile::where('shop_location_id',$location_id)->first();
+            if ($shop_financial_profile) {
+                $financial_profile = FinancialProfile::find($shop_financial_profile->financial_profile_id);
+            } else {
+                $financial_profile = FinancialProfile::where('is_default',1)->first();
+            }
+
+        } else {
+            $financial_profile = FinancialProfile::where('is_default',1)->first();
+        }
+
         return view('front/finance/show_invoice', [
             'breadcrumbs'   => $breadcrumbs,
             'text_parts'    => $text_parts,
@@ -3621,8 +3637,10 @@ class FrontEndUserController extends Controller
             'member'    => @$invoice_user,
             'sub_total' => $subtotal,
             'discount'  => $discount,
+            'financialTransactions' => $invoice->transactions,
             'vat'       => $vat,
-            'grand_total'   => $total
+            'grand_total'   => $total,
+            'financial_profile' => $financial_profile
         ]);
     }
 
