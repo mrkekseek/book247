@@ -14,6 +14,7 @@ use App\applicationSetting as ApplicationSettings;
 use App\Settings;
 use Auth;
 use Snowfire\Beautymail\Beautymail;
+use Illuminate\Http\Request;
 
 class ApicController extends Controller
 {
@@ -27,31 +28,7 @@ class ApicController extends Controller
         
     }
 
-    public function index($method, $id = FALSE)
-    {
-        \Debugbar::disable();
-        $response = [];
-        $request_method = strtolower(request()->method());
-        $func = strtolower($method).(ucfirst($request_method));
-        $data = request()->all();
-        if (method_exists($this, $func))
-        {
-            //$response = $this->callAction($func, ['data' => $data]);
-            $response = $this->$func($data);
-        }
-        else
-        {
-            $response = [
-                'code' => 5,
-                'message' => ['Method not fount.'],
-            ];
-            
-        }
-        $response = json_encode($response, JSON_NUMERIC_CHECK);
-        return response($response);
-    }
-    
-    private function statusGet(){
+    public function status(){
         return [
             'code' => 1,
             'version' => self::VERSION,
@@ -59,9 +36,9 @@ class ApicController extends Controller
         ];
     }
     
-    public function register_ownerPOST($data)
+    public function register_owner(Request $request)
     {
-        $data = array_only($data, ['first_name', 'middle_name', 'last_name', 'email_address', 'phone_number', 'dob', 'gender', 'country']);
+        $data = $request->only('first_name', 'middle_name', 'last_name', 'email_address', 'phone_number', 'dob', 'gender', 'country');
 
         $rules = [
             'first_name'    =>  'required|min:2|max:150',
@@ -185,9 +162,9 @@ class ApicController extends Controller
         return $response;
     }
     
-    private function assign_subdomain_settingsPost($data)
+    public function assign_subdomain_settings(Request $request)
     {
-        $data = array_only($data, ['account_key', 'club_details', 'club_address']);
+        $data = $request->only('account_key', 'club_details', 'club_address');
         //$key = AppSettings::get_setting_value_by_name('globalWebsite_rankedin_integration_key');
         $rules = [
             'club_details.club_name'    =>  'required|min:2|max:150',

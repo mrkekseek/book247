@@ -27,7 +27,20 @@ if (env('FEDERATION',false)){
 }
 else
 {
-    Route::any('apic/{method}/{id?}', 'ApicController@index')->middleware('apikey');
+    Route::group(['middleware' => 'apikey', 'prefix' => 'apic'], function () {
+        Route::get('status', [
+            'as' => 'status',
+            'uses' => 'ApicController@status'
+        ]);
+        Route::post('register_owner', [
+            'as' => 'register_owner',
+            'uses' => 'ApicController@register_owner'
+        ]);
+        Route::post('assign_subdomain_settings', [
+            'as' => 'assign_subdomain_settings',
+            'uses' => 'ApicController@assign_subdomain_settings'
+        ]);
+    });
     
     Route::group(['middleware' => 'web'], function () {
         // default login/register/forgot password routes
