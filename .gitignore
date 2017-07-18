@@ -1,0 +1,13 @@
+/vendor
+/node_modules
+Homestead.yaml
+Homestead.json
+.env
+storage/app/members/
+.idea/
+sh.exe.stackdump
+config/constants.php
+composer.lock
+/api/app/Cache.php
+storage/app/members/*
+storage/app/employees/*
