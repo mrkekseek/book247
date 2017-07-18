@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Federation;
 
+use App\FinancialProfile;
 use App\Http\Controllers\FrontEndUserController as Base;
 use App\BookingInvoice;
 use App\BookingInvoiceItem;
@@ -9,6 +10,7 @@ use App\BookingNote;
 use App\GeneralNote;
 use App\Invoice;
 use App\InvoiceItem;
+use App\ShopFinancialProfile;
 use App\UserAccessCard;
 use App\UserFriends;
 use App\UserMembership;
@@ -1765,6 +1767,19 @@ class FrontEndUserController extends Base
 
         $invoice = Invoice::with('transactions')->with('items')->where('invoice_number','=',$id)->get()->first();
 
+        $location_id = $user->get_general_setting('settings_preferred_location');
+        $financial_profile = null;
+        if ($location_id) {
+            $shop_financial_profile = ShopFinancialProfile::where('shop_location_id',$location_id)->first();
+            if ($shop_financial_profile) {
+                $financial_profile = FinancialProfile::find($shop_financial_profile->financial_profile_id);
+            } else {
+                $financial_profile = FinancialProfile::where('is_default',1)->first();
+            }
+
+        } else {
+            $financial_profile = FinancialProfile::where('is_default',1)->first();
+        }
 
         return view('front/finance/federation/show_invoice', [
             'breadcrumbs' => $breadcrumbs,
@@ -1777,7 +1792,8 @@ class FrontEndUserController extends Base
             'discount' => $discount,
             'financialTransactions' => $invoice->transactions,
             'vat' => $vat,
-            'grand_total' => $total
+            'grand_total' => $total,
+            'financial_profile' => $financial_profile
         ]);
     }
 
