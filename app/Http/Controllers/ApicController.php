@@ -14,6 +14,7 @@ use App\applicationSetting as ApplicationSettings;
 use App\Settings;
 use Auth;
 use Snowfire\Beautymail\Beautymail;
+use Illuminate\Http\Request;
 
 class ApicController extends Controller
 {
@@ -27,31 +28,7 @@ class ApicController extends Controller
         
     }
 
-    public function index($method, $id = FALSE)
-    {
-        \Debugbar::disable();
-        $response = [];
-        $request_method = strtolower(request()->method());
-        $func = strtolower($method).(ucfirst($request_method));
-        $data = request()->all();
-        if (method_exists($this, $func))
-        {
-            //$response = $this->callAction($func, ['data' => $data]);
-            $response = $this->$func($data);
-        }
-        else
-        {
-            $response = [
-                'code' => 5,
-                'message' => ['Method not fount.'],
-            ];
-            
-        }
-        $response = json_encode($response, JSON_NUMERIC_CHECK);
-        return response($response);
-    }
-    
-    private function statusGet(){
+    public function status(){
         return [
             'code' => 1,
             'version' => self::VERSION,
@@ -59,9 +36,9 @@ class ApicController extends Controller
         ];
     }
     
-    public function register_ownerPOST($data)
+    public function register_owner(Request $request)
     {
-        $data = array_only($data, ['first_name', 'middle_name', 'last_name', 'email_address', 'phone_number', 'dob', 'gender', 'country']);
+        $data = $request->only('first_name', 'middle_name', 'last_name', 'email_address', 'phone_number', 'dob', 'gender', 'country');
 
         $rules = [
             'first_name'    =>  'required|min:2|max:150',
@@ -185,9 +162,9 @@ class ApicController extends Controller
         return $response;
     }
     
-    private function assign_subdomain_settingsPost($data)
+    public function assign_subdomain_settings(Request $request)
     {
-        $data = array_only($data, ['account_key', 'club_details', 'club_address']);
+        $data = $request->only('account_key', 'club_details', 'club_address');
         //$key = AppSettings::get_setting_value_by_name('globalWebsite_rankedin_integration_key');
         $rules = [
             'club_details.club_name'    =>  'required|min:2|max:150',
@@ -278,6 +255,50 @@ class ApicController extends Controller
         return $response;
     }
     
+    public function get_all_locations_and_resources(Request $request)
+    {
+        $data = $request->only('account_key');
+        $local_account_key = AppSettings::get_setting_value_by_name('globalWebsite_rankedin_integration_key');
+        $rules = [
+            'account_key'    =>  'required|in:'.$local_account_key,
+        ];
+        if ( ! $this->validate_request($data , $rules) )
+        {
+            $response = [
+                'code' => self::$code,
+                'message' => self::$message,
+            ];
+        }
+        else
+        {
+            $locations = ShopLocations::with('address', 'resources', 'resources.category')->get();
+            $response['locations'] = [];
+            foreach ($locations as $item)
+            {
+                $location['name'] = $item->name;
+                if ( ! empty($item->address))
+                {
+                    $country = Countries::find($item->address->country_id);
+                    $location['full_address'] = $item->address->address1.' '.$item->address->address2.' '.$item->address->city.' '.$item->address->region.' '.$country->name;
+                }
+                else
+                {
+                    $location['full_address'] = '';
+                }
+                $location['resources'] = [];
+                foreach ($item->resources as $res)
+                {
+                    $resorce['resource_name'] = $res->name;
+                    $resorce['resource_type'] = $res->category->name;
+                    $location['resources'][] = $resorce;
+                }
+                
+                $response['locations'][] = $location;
+            }
+        }
+        return $response;
+    }
+    
     private function send_mail_exist_owner($owner)
     {
         $shop_location = ShopLocations::first();
@@ -334,7 +355,7 @@ class ApicController extends Controller
     }
 
 
-    private function validate_request($data, $rules, $mesagges)
+    private function validate_request($data, $rules, $mesagges = [])
     {
         $validator = Validator::make($data, $rules, $mesagges);
         if ($validator->fails())
