@@ -40,6 +40,10 @@ else
             'as' => 'assign_subdomain_settings',
             'uses' => 'ApicController@assign_subdomain_settings'
         ]);
+        Route::post('get_all_locations_and_resources', [
+            'as' => 'get_all_locations_and_resources',
+            'uses' => 'ApicController@get_all_locations_and_resources'
+        ]);
     });
     
     Route::group(['middleware' => 'web'], function () {

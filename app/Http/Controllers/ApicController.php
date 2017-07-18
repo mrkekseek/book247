@@ -255,6 +255,50 @@ class ApicController extends Controller
         return $response;
     }
     
+    public function get_all_locations_and_resources(Request $request)
+    {
+        $data = $request->only('account_key');
+        $local_account_key = AppSettings::get_setting_value_by_name('globalWebsite_rankedin_integration_key');
+        $rules = [
+            'account_key'    =>  'required|in:'.$local_account_key,
+        ];
+        if ( ! $this->validate_request($data , $rules) )
+        {
+            $response = [
+                'code' => self::$code,
+                'message' => self::$message,
+            ];
+        }
+        else
+        {
+            $locations = ShopLocations::with('address', 'resources', 'resources.category')->get();
+            $response['locations'] = [];
+            foreach ($locations as $item)
+            {
+                $location['name'] = $item->name;
+                if ( ! empty($item->address))
+                {
+                    $country = Countries::find($item->address->country_id);
+                    $location['full_address'] = $item->address->address1.' '.$item->address->address2.' '.$item->address->city.' '.$item->address->region.' '.$country->name;
+                }
+                else
+                {
+                    $location['full_address'] = '';
+                }
+                $location['resources'] = [];
+                foreach ($item->resources as $res)
+                {
+                    $resorce['resource_name'] = $res->name;
+                    $resorce['resource_type'] = $res->category->name;
+                    $location['resources'][] = $resorce;
+                }
+                
+                $response['locations'][] = $location;
+            }
+        }
+        return $response;
+    }
+    
     private function send_mail_exist_owner($owner)
     {
         $shop_location = ShopLocations::first();
@@ -311,7 +355,7 @@ class ApicController extends Controller
     }
 
 
-    private function validate_request($data, $rules, $mesagges)
+    private function validate_request($data, $rules, $mesagges = [])
     {
         $validator = Validator::make($data, $rules, $mesagges);
         if ($validator->fails())
