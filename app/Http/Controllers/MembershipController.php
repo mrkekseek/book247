@@ -20,7 +20,7 @@ use Illuminate\Support\Facades\Input;
 use App\Http\Requests;
 use Validator;
 use Regulus\ActivityLog\Models\Activity;
-use Illuminate\Support\Facades\Auth;
+use App\Http\Libraries\Auth;
 use App\InvoiceItem;
 use App\Invoice;
 use App\Paypal;
@@ -34,6 +34,7 @@ class MembershipController extends Controller
     public static $PAYMENT_DONE = "done";
 
     public function assign_membership_to_member(Request $request, $status = 'active'){
+
         if (!Auth::check()) {
             return [
                 'success'   => false,
@@ -105,6 +106,8 @@ class MembershipController extends Controller
             if ($member->hasRole('front-member')===false) {
                 $member->attachRole($memberRole);
             }
+
+            User::set_general_setting_to_user($member->id,'registration_signed_location',$request->get('selected_location'));
 
             return [
                 'success'   => true,
