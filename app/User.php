@@ -641,6 +641,24 @@ class User extends Authenticatable
         }
     }
 
+    public static function set_general_setting_to_user($user_id, $key, $value){
+        try {
+            $fillable = [
+                'user_id'   => $user_id,
+                'var_name'  => $key,
+            ];
+            $generalSetting = UserSettings::firstOrNew($fillable);
+            $generalSetting->var_value = $value;
+            $generalSetting->save();
+
+            return true;
+        }
+        catch (\Exception $ex){
+            return false;
+        }
+    }
+
+
     public function get_general_setting($key){
         $setting = UserSettings::where('user_id','=',$this->id)->where('var_name','=',$key)->get()->first();
         if ($setting){

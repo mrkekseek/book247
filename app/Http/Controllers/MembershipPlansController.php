@@ -708,12 +708,7 @@ class MembershipPlansController extends Controller
     }
 
     public function ajax_get_plan_details(Request $request, $status='active'){
-        $vars = $request->only(['selected_plan','selected_locations']);
-        $user = Auth::user();
-        if($user && $user->is_back_user()) {
-            $user->set_general_setting('registration_signed_location',$vars['selected_location']);
-        }
-
+        $vars = $request->only(['selected_plan','selected_location']);
 
         $the_plan = MembershipPlan::with('price')->where('id','=',$vars['selected_plan'])->where('status','=',$status)->get()->first();
         if ($the_plan){
