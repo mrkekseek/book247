@@ -68,7 +68,7 @@
                                                 </select>
                                             </div>
                                             <div class="form-group">
-                                                <div class="input-group  date date-picker" data-date="{{ \Carbon\Carbon::today()->format('d-m-Y') }}" data-date-end-date="-0d" data-date-format="dd-mm-yyyy" data-date-viewmode="years" style="display:inline-flex; margin-top:2px; margin-right:40px;">
+                                                <div class="input-group  date date-picker" data-date="{{ \Carbon\Carbon::today()->format('Y-m-d') }}" data-date-format="yyyy-mm-dd" data-date-end-date="-0d" data-date-start-view="decades" style="display:inline-flex; margin-top:2px; margin-right:40px;">
                                                     <input type="text" class="form-control" name="date_of_birth" readonly style="background-color:#ffffff;" placeholder="Date of Birth">
                                                     <span class="input-group-btn">
                                                         <button class="btn default" type="button">
@@ -202,8 +202,8 @@
     <script type="text/javascript">
         $.validator.addMethod("datePickerDate",function(value, element) {
             // put your own logic here, this is just a (crappy) example
-            return value.match(/^\d\d?-\d\d?-\d\d\d\d$/);
-        },"Please enter a date in the format dd/mm/yyyy.");
+            return value.match(/^\d\d\d\d-\d\d?-\d\d?$/);
+        },"Please enter a date in the format yyyy/mm/dd.");
         $.validator.addMethod('filesize',function(value, element, param) {
             // param = size (in bytes)
             // element = element to validate (<input>)

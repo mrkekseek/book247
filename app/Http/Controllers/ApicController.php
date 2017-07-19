@@ -12,6 +12,8 @@ use App\Address;
 use App\ShopLocations;
 use App\applicationSetting as ApplicationSettings;
 use App\Settings;
+use App\ShopResourceCategory;
+use App\UserBookedActivity;
 use Auth;
 use Snowfire\Beautymail\Beautymail;
 use Illuminate\Http\Request;
@@ -295,6 +297,62 @@ class ApicController extends Controller
                 
                 $response['locations'][] = $location;
             }
+        }
+        return $response;
+    }
+    
+    public function players_statistics_activity_gender_age(Request $request)
+    {
+        $data = $request->only('account_key', 'activity');
+        //\Cache::forget('globalWebsite_rankedin_integration_key');
+        $local_account_key = AppSettings::get_setting_value_by_name('globalWebsite_rankedin_integration_key');
+        $rules = [
+            'account_key'    =>  'required|in:'.$local_account_key,
+            'activity'    =>  'integer|activity_check'
+        ];
+        
+        Validator::extend('activity_check', function($attribute, $value, $parameters, $validator){
+            $activities = ShopResourceCategory::select('id')->get();
+            if ($value == -1) return TRUE;
+            foreach($activities as $item)
+            {
+                if ($item->id == $value) return TRUE;
+            }
+            return FALSE;
+        });
+        $mesagges = [
+            'activity.activity_check' => 'Activity not valid.',
+        ];
+        if ( ! $this->validate_request($data , $rules, $mesagges) )
+        {
+            $response = [
+                'code' => self::$code,
+                'message' => self::$message,
+            ];
+        }
+        else
+        {
+            $query = UserBookedActivity::query();
+            if ($data['activity'] != -1)
+            {
+                $query->where('activity_id', $data['activity']);
+            }
+            $userBookedActivity = $query->with(['activities','users', 'users.PersonalDetail'])->get();
+            $age_array = [];
+            foreach ($userBookedActivity as $item)
+            {
+                $dob = new Carbon($item->users->PersonalDetail->date_of_birth);
+                $age =  $dob->diffInYears(Carbon::now());
+                if ( ! isset($age_array[$item->activity_id][$item->users->gender][$age]))
+                {
+                    $age_array[$item->activity_id][$item->users->gender][$age] = 0;
+                }
+                $age_array[$item->activity_id][$item->users->gender][$age]++;
+            }
+            $response = [
+                'code' => 1,
+                'players' => $age_array
+            ];
         }
         return $response;
     }
