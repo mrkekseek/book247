@@ -154,8 +154,6 @@ class BookingController extends Controller
         try {
             if ($vars['book_key']==""){
                 $the_booking = Booking::create($fillable);
-                // add the activity to the player list of activities
-                self::link_user_to_activity($the_booking);
 
                 Activity::log([
                     'contentId'     => $fillable['for_user_id'],
@@ -857,6 +855,7 @@ class BookingController extends Controller
         foreach($bookings as $booking){
             $booking->status = 'active';
             $booking->save();
+            self::link_user_to_activity($booking);
         }
 
         // check for today bookings that passed, with active or pending status
@@ -1109,6 +1108,7 @@ class BookingController extends Controller
 
                 $booking->status = 'active';
                 $booking->save();
+                self::link_user_to_activity($booking);
 
                 $booking_details = $booking->get_summary_details(false);
                 $email_confirm[$booking->for_user_id][] = $booking_details;
@@ -2685,6 +2685,7 @@ class BookingController extends Controller
 
         $booking->status = 'active';
         $booking->save();
+        self::link_user_to_activity($booking);
     }
 
     /**
@@ -3289,8 +3290,6 @@ class BookingController extends Controller
 
         try {
             $the_booking = Booking::create($fillable);
-            // add the activity to the player list of activities
-            self::link_user_to_activity($the_booking);
 
             return [
                 'success' => true,
@@ -3347,6 +3346,7 @@ class BookingController extends Controller
             else {
                 $booking->status = 'active';
                 $booking->save();
+                self::link_user_to_activity($booking);
 
                 return ['success' => true,
                         'title'   => 'Booking status changed',
@@ -3645,7 +3645,7 @@ class BookingController extends Controller
 
         $fillable = [
             'user_id'       => $booking->for_user_id,
-            'activity_id'   => $activity->id
+            'activity_id'   => $activity->category_id
         ];
 
         $validator = Validator::make($fillable, UserBookedActivity::rules('POST'), UserBookedActivity::$message, UserBookedActivity::$attributeNames);

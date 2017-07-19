@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class UserBookedActivity extends Model
 {
-    protected $table = 'user_booked_activities';
+    protected $table = 'users_booked_activities';
 
     public static $attributeNames = array(
         'user_id'       => 'Player ID',
