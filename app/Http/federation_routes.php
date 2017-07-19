@@ -35,6 +35,27 @@ Route::post('api/federation_buy_license', [
     'uses'  => 'Federation\FederationApi@federation_buy_license'
 ]);
 
+
+
+
+Route::post('api/register_owner', [
+    'as'    => 'api/register_owner',
+    'uses'  => 'Federation\FederationApi@register_owner'
+]);
+
+Route::post('api/assign_subdomain_settings', [
+    'as' => 'api/assign_subdomain_settings',
+    'uses' => 'Federation\FederationApi@assign_subdomain_settings'
+]);
+
+Route::get('api/status', [
+    'as'    => 'api/status',
+    'uses'  => 'Federation\FederationApi@status'
+]);
+
+
+
+
 Route::get('buy_license/{token}/{sso_id}/{license_id?}{request_url?}', [
     'as'    => 'buy_license',
     'uses'  => 'Federation\MembershipController@iframed'
@@ -112,6 +133,16 @@ Route::group(['middleware' => 'web'], function () {
         'as'    => 'admin/logout',
         'uses'  => 'AdminController@logout'
     ]);
+
+    Route::get('admin/registration', [
+            'as' => 'admin/registration',
+            'uses' => 'Federation\BackEndUserController@registrationStepsIndex']
+    );
+
+    Route::post('admin/registration', [
+            'as' => 'admin/registration',
+            'uses' => 'Federation\BackEndUserController@registrationStepsSave']
+    );
 
     //Route::get('/admin/text-auth', 'HomeController@index');
 
@@ -647,10 +678,10 @@ Route::group(['middleware' => 'web'], function () {
         'uses' => 'Federation\AppSettings@manage_settings'
     ]);
 
-    Route::post('admin/settings/manage_settings/clear_cache', [
-        'as' => 'admin/settings/manage_settings/clear_cache',
-        'uses' => 'Federation\AppSettings@reset_application_cache_settings'
-    ]);
+//    Route::post('admin/settings/manage_settings/clear_cache', [
+//        'as' => 'admin/settings/manage_settings/clear_cache',
+//        'uses' => 'Federation\AppSettings@reset_application_cache_settings'
+//    ]);
 
     Route::get('admin/settings/account_key', [
         'as'    => 'admin/settings/account_key',
@@ -901,6 +932,12 @@ Route::group(['prefix'=>'front', 'middleware'=>'web'], function(){
 /** Stop Routes for front end */
 
 Route::group(['prefix'=>'ajax', 'middleware' => 'web'], function(){
+
+    Route::post('ajax/app_settings/clear_cache', [
+        'as' => 'ajax/app_settings/clear_cache',
+        'uses' => 'Federation\AppSettings@clear_cache'
+    ]);
+
 
     Route::post('get_booking_hours',[
         'as'    => 'ajax/get_booking_hours',

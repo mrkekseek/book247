@@ -15,6 +15,7 @@ use App\PersonalDetail;
 use App\ShopLocations;
 use App\ShopResource;
 use App\ShopResourceCategory;
+use App\UserBookedActivity;
 use App\UserFriends;
 use App\UserMembership;
 use App\UserSettings;
@@ -854,6 +855,7 @@ class BookingController extends Controller
         foreach($bookings as $booking){
             $booking->status = 'active';
             $booking->save();
+            self::link_user_to_activity($booking);
         }
 
         // check for today bookings that passed, with active or pending status
@@ -1106,6 +1108,7 @@ class BookingController extends Controller
 
                 $booking->status = 'active';
                 $booking->save();
+                self::link_user_to_activity($booking);
 
                 $booking_details = $booking->get_summary_details(false);
                 $email_confirm[$booking->for_user_id][] = $booking_details;
@@ -2682,6 +2685,7 @@ class BookingController extends Controller
 
         $booking->status = 'active';
         $booking->save();
+        self::link_user_to_activity($booking);
     }
 
     /**
@@ -3342,6 +3346,7 @@ class BookingController extends Controller
             else {
                 $booking->status = 'active';
                 $booking->save();
+                self::link_user_to_activity($booking);
 
                 return ['success' => true,
                         'title'   => 'Booking status changed',
@@ -3628,6 +3633,27 @@ class BookingController extends Controller
                 'success' => false,
                 'title'   => 'Error changing product',
                 'errors'  => 'Could not change product option. Try reloading the page.'];
+        }
+    }
+
+    private function link_user_to_activity($booking){
+        // get the resource activity/category
+        $activity = ShopResource::where('id','=',$booking->resource_id)->first();
+        if (!$activity){
+            return false;
+        }
+
+        $fillable = [
+            'user_id'       => $booking->for_user_id,
+            'activity_id'   => $activity->category_id
+        ];
+
+        $validator = Validator::make($fillable, UserBookedActivity::rules('POST'), UserBookedActivity::$message, UserBookedActivity::$attributeNames);
+        if ($validator->fails()){
+            return false;
+        }
+        else{
+            UserBookedActivity::firstOrCreate($fillable);
         }
     }
     /* Single Booking - quick actions END */

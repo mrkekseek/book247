@@ -13,12 +13,12 @@ class IPN extends Controller{
     public function membership_ipn(Request $r){
         $d = json_decode(json_encode($r->all()),true);
         $req = 'cmd=_notify-validate';
+
         foreach ($d as $key => $value) {
-
             $value = urlencode($value);
-
             $req .= "&$key=$value";
         }
+
         $ch = curl_init('https://ipnpb.sandbox.paypal.com/cgi-bin/webscr');
         curl_setopt($ch, CURLOPT_POST, 1);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
@@ -27,6 +27,7 @@ class IPN extends Controller{
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
         curl_setopt($ch, CURLOPT_FORBID_REUSE, 1);
         curl_setopt($ch, CURLOPT_HTTPHEADER, array('Connection: Close'));
+
         if ( !($res = curl_exec($ch)) ) {
             echo "Got " . curl_error($ch) . " when processing IPN data";
             curl_close($ch);
@@ -39,13 +40,21 @@ class IPN extends Controller{
         }
 
         $invoice = Invoice::find($r->get('invoice'));
+        if (!$invoice){
+            // log this error with all post/get variables
+            exit;
+        }
+
         $transaction = InvoiceFinancialTransaction::where(
             [
                 ['invoice_id','=',$invoice->id],
                 ['other_details','=',$r->get('txn_id')]
-
             ]
         )->first();
+        if (!$transaction){
+            // log error and return
+            exit;
+        }
 
         $log = new Paypal();
         $log->fill([
@@ -54,46 +63,62 @@ class IPN extends Controller{
             'paypal_response' => json_encode($r->all())
         ])->save();
 
-        $invoicePlan = UserMembershipInvoicePlanning::where('invoice_id',$invoice->id)->first();
-        $membership = UserMembership::find($invoicePlan->user_membership_id);
+        switch ($invoice->invoice_type){
+            case 'booking_invoice' :
 
+                break;
+            case 'membership_plan_assignment_invoice' :
+            case 'membership_plan_invoice' :
+                $invoicePlan = UserMembershipInvoicePlanning::where('invoice_id',$invoice->id)->first();
+                $membership = UserMembership::find($invoicePlan->user_membership_id);
 
-        // fix
-        switch ($r->get('payment_status')) {
-            case 'Completed':
-                $invoice->status = 'completed';
-                $invoice->save();
-                $transaction->status = 'completed';
-                $transaction->save();
-                $membership->status = 'active';
-                $membership->save();
+                // fix
+                switch ($r->get('payment_status')) {
+                    case 'Completed':
+                        $invoice->status = 'completed';
+                        $invoice->save();
+                        $transaction->status = 'completed';
+                        $transaction->save();
+                        $membership->status = 'active';
+                        $membership->save();
+                        break;
+                    case 'Processed' || 'Pending' :
+                        $invoice->status = 'pending';
+                        $invoice->save();
+                        $transaction->status = 'pending';
+                        $transaction->save();
+                        $membership->status = 'active';
+                        $membership->save();
+                        break;
+                    case 'Pending' :
+                        $invoice->status = 'pending';
+                        $invoice->save();
+                        $transaction->status = 'pending';
+                        $transaction->save();
+                        $membership->status = 'active';
+                        $membership->save();
+                        break;
+                    default:
+                        $invoice->status = 'pending';
+                        $invoice->save();
+                        $transaction->status = 'cancelled';
+                        $transaction->save();
+                        $membership->status = 'pending';
+                        $membership->save();
+                }
                 break;
-            case 'Processed' || 'Pending' :
-                $invoice->status = 'pending';
-                $invoice->save();
-                $transaction->status = 'pending';
-                $transaction->save();
-                $membership->status = 'active';
-                $membership->save();
+            case 'store_credit' :
+                // this is the result of a cancellation where store credit is returned
+
                 break;
-            case 'Pending' :
-                $invoice->status = 'pending';
-                $invoice->save();
-                $transaction->status = 'pending';
-                $transaction->save();
-                $membership->status = 'active';
-                $membership->save();
+            case 'store_credit_invoice' :
+                // this is the result of buying store credit from frontend or backend, added by the admin/employees
+
                 break;
             default:
-                $invoice->status = 'pending';
-                $invoice->save();
-                $transaction->status = 'cancelled';
-                $transaction->save();
-                $membership->status = 'pending';
-                $membership->save();
+
+                break;
         }
-
-
     }
 
     public function membership_paypal_success(Request $r)
@@ -141,8 +166,6 @@ class IPN extends Controller{
         }
         $invoice = Invoice::find($custom->invoice_id);
         if ($invoice) {
-            $invoice_plan = UserMembershipInvoicePlanning::where('invoice_id',$custom->invoice_id)->first();
-            $user_membership = UserMembership::find($invoice_plan->user_membership_id);
             $transaction = new InvoiceFinancialTransaction();
             $transaction->fill([
                 'invoice_id' => $invoice->id,
@@ -153,10 +176,37 @@ class IPN extends Controller{
                 'status' => 'pending',
                 'other_details' => $transactionId
             ])->save();
-            $invoice->status = 'processing';
-            $invoice->save();
-            $user_membership->status = 'active';
-            $user_membership->save();
+
+            switch ($invoice->invoice_type){
+                case 'booking_invoice' :
+                    $invoice->status = 'processing';
+                    $invoice->save();
+                    break;
+                case 'membership_plan_assignment_invoice' :
+                case 'membership_plan_invoice' :
+                    $invoice_plan = UserMembershipInvoicePlanning::where('invoice_id',$custom->invoice_id)->first();
+                    $user_membership = UserMembership::find($invoice_plan->user_membership_id);
+
+                    $invoice->status = 'processing';
+                    $invoice->save();
+                    $user_membership->status = 'active';
+                    $user_membership->save();
+                    break;
+                case 'store_credit' :
+                    // this is the result of a cancellation where store credit is returned
+                    $invoice->status = 'processing';
+                    $invoice->save();
+                    break;
+                case 'store_credit_invoice' :
+                    // this is the result of buying store credit from frontend or backend, added by the admin/employees
+                    $invoice->status = 'processing';
+                    $invoice->save();
+                    break;
+                default:
+                    $invoice->status = 'processing';
+                    $invoice->save();
+                    break;
+            }
         }
 
         return view('front/iframe/federation/success.php',[
@@ -166,8 +216,6 @@ class IPN extends Controller{
             'status' => 'Success',
             'link' => $custom->redirect_url
         ]);
-
-
     }
     
     public function membership_paypal_cancel(Request $request){

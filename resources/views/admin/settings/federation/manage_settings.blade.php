@@ -324,7 +324,7 @@
 
         function clearCache (){
             $.ajax({
-                url: "{{route('ajax/settings_clear_cached')}}" ,
+                url: "{{route('ajax/app_settings/clear_cache')}}" ,
                 method: 'POST',
                 dataType: 'json',
                 success: function(data){
