@@ -59,6 +59,7 @@ use Illuminate\Support\Facades\Mail;
 use App\Http\Controllers\EmailsController;
 use App\FinancialProfile;
 use App\ShopFinancialProfile;
+use App\UserMembershipAction;
 
 class FrontEndUserController extends Controller
 {
@@ -553,6 +554,31 @@ class FrontEndUserController extends Controller
         //
     }
 
+    protected function get_old_memberships($id)
+    {
+        $data = [];
+        $memberships = UserMembership::where('user_id',$id)->get();
+        foreach($memberships as $membership) {
+            $invoices_plan = UserMembershipInvoicePlanning::where([
+                ['user_membership_id','=',$membership->id],
+               ['status','=','old']
+            ])->get();
+            $action = UserMembershipAction::where([
+                ['user_membership_id','=',$membership->id],
+                ['action_type','=','cancel'],
+                ['status','=','old']
+          ])->first();
+           $data[] = [
+                'membership_name' => $membership->membership_name,
+                'start_day' => $membership->day_start,
+                'stop_day' => isset($action) ? $action->end_date : ' - ',
+                'number_of_invoices' => count($invoices_plan),
+                'status' => $membership->status
+            ];
+        }
+        return $data;
+    }
+
     /**
      * Display the specified resource.
      *
@@ -791,6 +817,7 @@ class FrontEndUserController extends Controller
             'restrictions'          => @$restrictions,
             'plan_details'          => @$plan_details,
             'memberships'           => $membership_plans,
+            'old_memberships'      => $this->get_old_memberships($id),
             'update_memberships'    => $membership_plans_update,
             'plannedInvoices'       => @$plannedInvoices,
             'invoiceCancellation'   => $invoiceCancellation,

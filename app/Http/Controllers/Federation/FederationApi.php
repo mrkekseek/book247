@@ -182,7 +182,7 @@ class FederationApi extends Controller {
         }
     }
 
-    private function assign_subdomain_settings (Request $r)
+    public function assign_subdomain_settings (Request $r)
     {
         if (RequestValidator::validate($r)) {
             $data = $r->only(['account_key', 'club_details', 'club_address']);
@@ -213,6 +213,7 @@ class FederationApi extends Controller {
             } else {
                 $country_id = AppSettings::get_setting_value_by_name('globalWebsite_defaultCountryId');
             }
+
             $addressData = [
                 'address1' => ! empty($data['club_address']['address1']) ? $data['club_address']['address1'] : '',
                 'address2' => ! empty($data['club_address']['address2']) ? $data['club_address']['address2'] : '',
@@ -221,6 +222,7 @@ class FederationApi extends Controller {
                 'postal_code' => ! empty($data['club_address']['zip_code']) ? $data['club_address']['zip_code'] : '',
                 'country_id'    => $country_id,
             ];
+
             $shopAddress = new Address();
             $shopAddress->fill($addressData);
             if ($shopAddress->save())
