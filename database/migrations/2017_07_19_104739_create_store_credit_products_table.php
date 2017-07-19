@@ -38,6 +38,6 @@ class CreateStoreCreditProductsTable extends Migration
      */
     public function down()
     {
-        //
+        Schema::drop('store_credit_products');
     }
 }

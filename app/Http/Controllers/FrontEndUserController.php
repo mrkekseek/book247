@@ -60,6 +60,7 @@ use App\Http\Controllers\EmailsController;
 use App\FinancialProfile;
 use App\ShopFinancialProfile;
 use App\UserMembershipAction;
+use App\StoreCreditProducts;
 
 class FrontEndUserController extends Controller
 {
@@ -3795,6 +3796,26 @@ class FrontEndUserController extends Controller
             'text_parts'  => $text_parts,
             'in_sidebar'  => $sidebar_link,
             'plans'       => DB::table("membership_plans")->join("membership_plan_prices", "membership_plans.price_id", "=", "membership_plan_prices.id")->get()
+        ]);
+    }
+
+    public function type_of_store_credit(){
+        $breadcrumbs = [
+            'Home'      => route('admin'),
+            'Dashboard' => '',
+        ];
+        $text_parts  = [
+            'title'     => 'Home',
+            'subtitle'  => 'users dashboard',
+            'table_head_text1' => 'Dashboard Summary'
+        ];
+        $sidebar_link= 'front-type_of_store_credit';
+
+        return view('front/type_of_store_credit',[
+            'breadcrumbs'            => $breadcrumbs,
+            'text_parts'             => $text_parts,
+            'in_sidebar'             => $sidebar_link,
+            'store_credit_purchases' => StoreCreditProducts::all()
         ]);
     }
 

@@ -884,6 +884,11 @@ else
             'uses' => 'FrontEndUserController@type_of_memberships'
         ]);
 
+        Route::get('list_of_store_credit', [
+            'as' => 'front/store_credit',
+            'uses' => 'FrontEndUserController@type_of_store_credit'
+        ]);
+
         Route::get('contact', [
             'as' => 'front/contact_locations',
             'uses' => 'FrontEndUserController@contact_locations'
