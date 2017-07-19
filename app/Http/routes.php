@@ -718,6 +718,16 @@ else
         //PUT/PATCH 	/membership_plan/{id} 	    update 	    admin.membership_plan.update
         //DELETE 	    /membership_plan/{id} 	    destroy 	admin.membership_plan.destroy
 
+        Route::resource('store_credit_products', 'StoreCreditProductsController');
+         //GET          /store_credit_products            index       admin.store_credit_products.index
+        //GET           /store_credit_products/create     create      admin.store_credit_products.create
+        //POST          /store_credit_products            store       admin.store_credit_products.store
+        //GET           /store_credit_products/{id}       show        admin.store_credit_products.show
+        //GET           /store_credit_products/{id}/edit  edit        admin.store_credit_products.edit
+        //PUT/PATCH     /store_credit_products/{id}       update      admin.store_credit_products.update
+        //DELETE        /store_credit_products/{id}       destroy     admin.membership_plan.destroy
+
+
         Route::post('membership_plan/add_restriction', [
             'as' => 'membership_plan-add_restriction',
             'uses' => 'MembershipPlansController@add_plan_restriction'
