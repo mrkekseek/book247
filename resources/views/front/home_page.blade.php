@@ -275,7 +275,7 @@
                                             <input class="form-control placeholder-no-fix" type="text" placeholder="Phone Number" name="phone" /> </div>
                                         <div class="form-group">
                                             <div class="control-label">
-                                                <div class="input-group date date-picker" data-date="" data-date-format="dd-mm-yyyy" data-date-viewmode="years" data-date-end-date="-0d">
+                                                <div class="input-group date date-picker" data-date="" data-date-format="yyyy-mm-dd" data-date-end-date="-0d" data-date-start-view="decades">
                                                     <input type="text" class="form-control" name="DOB" id="DOB" placeholder="Date of Birth" value="" readonly>
                                                     <span class="input-group-btn">
                                                         <button class="btn default" type="button">
@@ -389,7 +389,7 @@
                                 <div class="portlet-body">
                                     <div id="datepaginator_sample_4"> </div>
                                 </div>
-                                <input type="hidden" name="selected_date" value="{{ \Carbon\Carbon::now()->format("Y-m-d") }}" />
+                                <input type="hidden" name="selected_date" value="{{ \Carbon\Carbon::now()->format('Y-m-d') }}" />
                             </div>
 
                             @if (Auth::check() && Auth::user()->is_front_user())
@@ -696,8 +696,8 @@
 
         $.validator.addMethod("datePickerDate",function(value, element) {
             // put your own logic here, this is just a (crappy) example
-            return value.match(/^\d\d?-\d\d?-\d\d\d\d$/);
-        },"Please enter a date in the format dd/mm/yyyy.");
+            return value.match(/^\d\d\d\d-\d\d?-\d\d?$/);
+        },"Please enter a date in the format yyyy/mm/dd.");
         $.validator.addMethod('filesize',function(value, element, param) {
             // param = size (in bytes)
             // element = element to validate (<input>)

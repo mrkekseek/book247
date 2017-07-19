@@ -257,7 +257,7 @@ class BackEndUserController extends Controller
 
         $userPersonal = $back_user->PersonalDetail;
         if (isset($userPersonal)) {
-            $userPersonal->dob_format = Carbon::createFromFormat('Y-m-d', $userPersonal->date_of_birth)->format('d-m-Y');
+            $userPersonal->dob_format = Carbon::createFromFormat('Y-m-d', $userPersonal->date_of_birth)->format('Y-m-d');
             $userPersonal->dob_to_show = Carbon::createFromFormat('Y-m-d', $userPersonal->date_of_birth)->format('d M Y');
         }
         else{

@@ -1567,7 +1567,7 @@ class FrontEndUserController extends Controller
         $personalData = [
             'personal_email'=> trim($vars['personal_email']),
             'mobile_number' => trim($vars['mobile_number']),
-            'date_of_birth' => Carbon::createFromFormat('d-m-Y', $vars['date_of_birth'])->toDateString(),
+            'date_of_birth' => Carbon::createFromFormat('Y-m-d', $vars['date_of_birth'])->toDateString(),
             'about_info'    => trim($vars['about_info']),
             'user_id'       => $user->id
         ];
@@ -2695,7 +2695,7 @@ class FrontEndUserController extends Controller
             $vars['date_of_birth'] = Carbon::today()->toDateString();
         }
         else{
-            $vars['date_of_birth'] = Carbon::createFromFormat('d-m-Y',$vars['dob'])->toDateString();
+            $vars['date_of_birth'] = Carbon::createFromFormat('Y-m-d',$vars['dob'])->toDateString();
         }
 
         if (!isset($userType)){
@@ -3921,7 +3921,7 @@ class FrontEndUserController extends Controller
 
         $userPersonal = $user->PersonalDetail;
         if (isset($userPersonal)) {
-            $userPersonal->dob_format = Carbon::createFromFormat('Y-m-d', $userPersonal->date_of_birth)->format('d-m-Y');
+            $userPersonal->dob_format = Carbon::createFromFormat('Y-m-d', $userPersonal->date_of_birth)->format('Y-m-d');
             $userPersonal->dob_to_show = Carbon::createFromFormat('Y-m-d', $userPersonal->date_of_birth)->format('d M Y');
         }
         else{
