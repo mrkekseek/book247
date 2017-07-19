@@ -43,6 +43,11 @@ Route::post('api/register_owner', [
     'uses'  => 'Federation\FederationApi@register_owner'
 ]);
 
+Route::post('api/assign_subdomain_settings', [
+    'as' => 'api/assign_subdomain_settings',
+    'uses' => 'Federation\FederationApi@assign_subdomain_settings'
+]);
+
 Route::get('api/status', [
     'as'    => 'api/status',
     'uses'  => 'Federation\FederationApi@status'
