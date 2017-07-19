@@ -44,6 +44,10 @@ else
             'as' => 'get_all_locations_and_resources',
             'uses' => 'ApicController@get_all_locations_and_resources'
         ]);
+        Route::post('players_statistics_activity_gender_age', [
+            'as' => 'players_statistics_activity_gender_age',
+            'uses' => 'ApicController@players_statistics_activity_gender_age'
+        ]);
     });
     
     Route::group(['middleware' => 'web'], function () {
