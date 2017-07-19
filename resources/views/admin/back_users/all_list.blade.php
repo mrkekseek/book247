@@ -317,6 +317,9 @@
                             required: true,
                             minlength:1
                         },
+                        user_type : {
+                            required: true
+                        }
                         
                     },
 
