@@ -15,6 +15,7 @@ use App\PersonalDetail;
 use App\ShopLocations;
 use App\ShopResource;
 use App\ShopResourceCategory;
+use App\UserBookedActivity;
 use App\UserFriends;
 use App\UserMembership;
 use App\UserSettings;
@@ -153,6 +154,8 @@ class BookingController extends Controller
         try {
             if ($vars['book_key']==""){
                 $the_booking = Booking::create($fillable);
+                // add the activity to the player list of activities
+                self::link_user_to_activity($the_booking);
 
                 Activity::log([
                     'contentId'     => $fillable['for_user_id'],
@@ -3286,6 +3289,8 @@ class BookingController extends Controller
 
         try {
             $the_booking = Booking::create($fillable);
+            // add the activity to the player list of activities
+            self::link_user_to_activity($the_booking);
 
             return [
                 'success' => true,
@@ -3628,6 +3633,27 @@ class BookingController extends Controller
                 'success' => false,
                 'title'   => 'Error changing product',
                 'errors'  => 'Could not change product option. Try reloading the page.'];
+        }
+    }
+
+    private function link_user_to_activity($booking){
+        // get the resource activity/category
+        $activity = ShopResource::where('id','=',$booking->resource_id)->first();
+        if (!$activity){
+            return false;
+        }
+
+        $fillable = [
+            'user_id'       => $booking->for_user_id,
+            'activity_id'   => $activity->id
+        ];
+
+        $validator = Validator::make($fillable, UserBookedActivity::rules('POST'), UserBookedActivity::$message, UserBookedActivity::$attributeNames);
+        if ($validator->fails()){
+            return false;
+        }
+        else{
+            UserBookedActivity::firstOrCreate($fillable);
         }
     }
     /* Single Booking - quick actions END */
