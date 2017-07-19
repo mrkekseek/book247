@@ -1275,7 +1275,12 @@
                         },2500);
                     }
                     else{
-                        show_notification('User registration ERROR', 'Something went wrong with the registration. Try changing the email/phone number or try reloading the page', 'lemon', 3500, 0);
+                        if (data.errors.length > 0){
+                            show_notification(data.title, data.errors, 'lemon', 3500, 0);
+                        }
+                        else{
+                            show_notification('User registration ERROR', 'Something went wrong with the registration. Try changing the email/phone number or try reloading the page', 'lemon', 3500, 0);
+                        }
                     }
                 }
             });
