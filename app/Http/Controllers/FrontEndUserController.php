@@ -60,6 +60,7 @@ use App\Http\Controllers\EmailsController;
 use App\FinancialProfile;
 use App\ShopFinancialProfile;
 use App\UserMembershipAction;
+use App\StoreCreditProducts;
 
 class FrontEndUserController extends Controller
 {
@@ -804,6 +805,9 @@ class FrontEndUserController extends Controller
         ];
         $sidebar_link= 'admin-frontend-user_details_view';
 
+        $locations = ShopLocations::all();
+
+
         return view('admin/front_users/view_member_account_settings', [
             'user'              => $member,
             'personalAddress'   => $personalAddress,
@@ -827,7 +831,8 @@ class FrontEndUserController extends Controller
             'canUpdate'         => $canUpdate,
             'accessCardNo'      => @$accessCardNo,
             'InvoicesActionsPlanned'=> $plannedInvoicesAndActions,
-            'storeCreditNotes'  => $storeCredit
+            'storeCreditNotes'  => $storeCredit,
+            'locations' => $locations
         ]);
     }
 
@@ -3641,19 +3646,56 @@ class FrontEndUserController extends Controller
         ];
         $sidebar_link= 'admin-backend-shop-new_order';
 
-        $location_id = $user->get_general_setting('settings_preferred_location');
         $financial_profile = null;
-        if ($location_id) {
-            $shop_financial_profile = ShopFinancialProfile::where('shop_location_id',$location_id)->first();
-            if ($shop_financial_profile) {
-                $financial_profile = FinancialProfile::find($shop_financial_profile->financial_profile_id);
-            } else {
-                $financial_profile = FinancialProfile::where('is_default',1)->first();
-            }
+        if (isset($invoice)) {
+            switch ($invoice->invoice_type) {
+                case 'booking_invoice':
+                    $booking_invoice = BookingInvoice::find($invoice->invoice_reference_id);
+                    $booking = Booking::find($booking_invoice->booking_id);
+                    $location_id = $booking->location_id;
+                    if ($location_id) {
+                        $shop_financial_profile = ShopFinancialProfile::where('shop_location_id',$location_id)->first();
+                        if ($shop_financial_profile) {
+                            $financial_profile = FinancialProfile::find($shop_financial_profile->financial_profile_id);
+                        } else {
+                            $financial_profile = FinancialProfile::where('is_default',1)->first();
+                        }
 
-        } else {
-            $financial_profile = FinancialProfile::where('is_default',1)->first();
+                    } else {
+                        $financial_profile = FinancialProfile::where('is_default',1)->first();
+                    }
+                    break;
+
+                case 'membership_plan_assignment_invoice' || 'membership_plan_invoice' :
+                    $location_id = $user->get_general_setting('registration_signed_location');
+
+                    if ($location_id) {
+                        $shop_financial_profile = ShopFinancialProfile::where('shop_location_id',$location_id)->first();
+                        if ($shop_financial_profile) {
+                            $financial_profile = FinancialProfile::find($shop_financial_profile->financial_profile_id);
+                        } else {
+                            $financial_profile = FinancialProfile::where('is_default',1)->first();
+                        }
+
+                    } else {
+                        $financial_profile = FinancialProfile::where('is_default',1)->first();
+                    }
+                    break;
+
+                case 'store_credit':
+                    $financial_profile = FinancialProfile::where('is_default',1)->first();
+                    break;
+
+                case 'store_credit_invoice':
+                    $financial_profile = FinancialProfile::where('is_default',1)->first();
+                    break;
+
+                default :
+                    $financial_profile = null;
+            }
         }
+
+        $financial_profile = !$financial_profile ? FinancialProfile::where('is_default',1)->first() : $financial_profile;
 
         return view('front/finance/show_invoice', [
             'breadcrumbs'   => $breadcrumbs,
@@ -3795,6 +3837,26 @@ class FrontEndUserController extends Controller
             'text_parts'  => $text_parts,
             'in_sidebar'  => $sidebar_link,
             'plans'       => DB::table("membership_plans")->join("membership_plan_prices", "membership_plans.price_id", "=", "membership_plan_prices.id")->get()
+        ]);
+    }
+
+    public function type_of_store_credit(){
+        $breadcrumbs = [
+            'Home'      => route('admin'),
+            'Dashboard' => '',
+        ];
+        $text_parts  = [
+            'title'     => 'Home',
+            'subtitle'  => 'users dashboard',
+            'table_head_text1' => 'Dashboard Summary'
+        ];
+        $sidebar_link= 'front-type_of_store_credit';
+
+        return view('front/type_of_store_credit',[
+            'breadcrumbs'            => $breadcrumbs,
+            'text_parts'             => $text_parts,
+            'in_sidebar'             => $sidebar_link,
+            'store_credit_purchases' => StoreCreditProducts::all()
         ]);
     }
 

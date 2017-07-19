@@ -49,4 +49,8 @@ class UserBookedActivity extends Model
     public function activities(){
         return $this->hasOne('App\ShopResourceCategory','id','activity_id');
     }
+    
+    public function users(){
+        return $this->hasOne('App\User','id','user_id');
+    }
 }

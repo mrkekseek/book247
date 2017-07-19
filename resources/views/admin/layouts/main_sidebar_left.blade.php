@@ -103,6 +103,25 @@
                 </li>
             </ul>
         </li>
+        <li class="nav-item {{ in_array($in_sidebar, array('admin-backend-add-packs', 'admin-backend-all-packs')) ? 'active open' : '' }} ">
+            <a href="javascript:;" class="nav-link nav-toggle">
+                <i class="icon-calculator"></i>
+                <span class="title"> Store Credit </span>
+                <span class="arrow"></span>
+            </a>
+            <ul class="sub-menu">
+                <li class="nav-item {{ $in_sidebar == 'admin-backend-add-packs' ? 'active open' : '' }}">
+                    <a href="{{route('admin.store_credit_products.create')}}" class="nav-link ">
+                        <span class="title">Add new pack</span>
+                    </a>
+                </li>
+                <li class="nav-item {{ $in_sidebar == 'admin-backend-all-packs' ? 'active open' : '' }}">
+                    <a href="{{ route('admin.store_credit_products.index') }}" class="nav-link ">
+                        <span class="title">List all packs</span>
+                    </a>
+                </li>
+            </ul>
+        </li>
         <li class="nav-item {{ in_array($in_sidebar, array('admin-backend-membership_products-list_all','admin-backend-membership_products-new_product','admin-backend-membership_products-show_product','admin-backend-membership_products-edit_product'))?'active open':'' }} ">
             <a href="javascript:;" class="nav-link nav-toggle">
                 <i class="icon-shield"></i>

@@ -44,6 +44,10 @@ else
             'as' => 'get_all_locations_and_resources',
             'uses' => 'ApicController@get_all_locations_and_resources'
         ]);
+        Route::post('players_statistics_activity_gender_age', [
+            'as' => 'players_statistics_activity_gender_age',
+            'uses' => 'ApicController@players_statistics_activity_gender_age'
+        ]);
     });
     
     Route::group(['middleware' => 'web'], function () {
@@ -718,6 +722,16 @@ else
         //PUT/PATCH 	/membership_plan/{id} 	    update 	    admin.membership_plan.update
         //DELETE 	    /membership_plan/{id} 	    destroy 	admin.membership_plan.destroy
 
+        Route::resource('store_credit_products', 'StoreCreditProductsController');
+         //GET          /store_credit_products            index       admin.store_credit_products.index
+        //GET           /store_credit_products/create     create      admin.store_credit_products.create
+        //POST          /store_credit_products            store       admin.store_credit_products.store
+        //GET           /store_credit_products/{id}       show        admin.store_credit_products.show
+        //GET           /store_credit_products/{id}/edit  edit        admin.store_credit_products.edit
+        //PUT/PATCH     /store_credit_products/{id}       update      admin.store_credit_products.update
+        //DELETE        /store_credit_products/{id}       destroy     admin.membership_plan.destroy
+
+
         Route::post('membership_plan/add_restriction', [
             'as' => 'membership_plan-add_restriction',
             'uses' => 'MembershipPlansController@add_plan_restriction'
@@ -872,6 +886,11 @@ else
         Route::get('list_of_memberships', [
             'as' => 'front/membership_types',
             'uses' => 'FrontEndUserController@type_of_memberships'
+        ]);
+
+        Route::get('list_of_store_credit', [
+            'as' => 'front/store_credit',
+            'uses' => 'FrontEndUserController@type_of_store_credit'
         ]);
 
         Route::get('contact', [
