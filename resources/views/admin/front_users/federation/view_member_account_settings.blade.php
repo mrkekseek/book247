@@ -318,6 +318,17 @@
                                                                     </div>
                                                                 </div>
                                                                 <div class="form-group">
+                                                                    <label class="control-label col-md-3 inline"> Signing location </label>
+                                                                    <div class="col-md-8">
+                                                                        <select name="locations_list" class="form-control input-inline input-large  inline-block list_all_plans">
+                                                                            <option value="-1"> Select signing location  </option>
+                                                                            @foreach ($locations as $location)
+                                                                                <option value="{{$location->id}}"> {{$location->name}} </option>
+                                                                            @endforeach
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="form-group">
                                                                     <label class="control-label col-md-3 inline"> Membership Start Date </label>
                                                                     <div class="col-md-8">
                                                                         <div class="input-group input date date-picker" data-date="{{ \Carbon\Carbon::today()->format('d-m-Y') }}" data-date-format="dd-mm-yyyy" data-date-viewmode="years" style="display:inline-flex; margin-top:2px; margin-right:40px;">
@@ -1373,6 +1384,7 @@
                 type: "post",
                 data: {
                     'selected_plan': $('select[name=membership_plans_list]').val(),
+                    'selected_location': $('select[name=locations_list]').val()
                 },
                 success: function(data){
                     if (data.success) {
@@ -1383,7 +1395,6 @@
                         $('input[name="membership_invoice_period"]').val(data.invoice_time);
                         $('textarea[name="membership_description"]').html(data.description);
                         $('input[name="selected_plan_number"]').val(data.plan_order_id);
-
                         $('#changeIt').modal('show');
                     }
                     else{

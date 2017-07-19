@@ -305,12 +305,23 @@
 
                                                                 @if (sizeof($memberships)>0 && !isset($membership_plan->membership_id))
                                                                 <div class="form-group">
-                                                                    <label class="control-label col-md-3 inline"> Change Plan To </label>
+                                                                        <label class="control-label col-md-3 inline"> Change Plan To </label>
+                                                                        <div class="col-md-8">
+                                                                            <select name="membership_plans_list" class="form-control input-inline input-large  inline-block list_all_plans">
+                                                                                <option value="-1"> Select membership plan </option>
+                                                                                @foreach ($memberships as $membership)
+                                                                                    <option value="{{$membership->id}}"> {{$membership->name}} </option>
+                                                                                @endforeach
+                                                                            </select>
+                                                                        </div>
+                                                                </div>
+                                                                <div class="form-group">
+                                                                    <label class="control-label col-md-3 inline"> Signing location </label>
                                                                     <div class="col-md-8">
-                                                                        <select name="membership_plans_list" class="form-control input-inline input-large  inline-block list_all_plans">
-                                                                            <option value="-1"> Select membership plan </option>
-                                                                            @foreach ($memberships as $membership)
-                                                                                <option value="{{$membership->id}}"> {{$membership->name}} </option>
+                                                                        <select name="locations_list" class="form-control input-inline input-large  inline-block list_all_plans">
+                                                                            <option value="-1"> Select signing location  </option>
+                                                                            @foreach ($locations as $location)
+                                                                                <option value="{{$location->id}}"> {{$location->name}} </option>
                                                                             @endforeach
                                                                         </select>
                                                                     </div>
@@ -1370,6 +1381,7 @@
                 type: "post",
                 data: {
                     'selected_plan': $('select[name=membership_plans_list]').val(),
+                    'selected_location': $('select[name=locations_list]').val()
                 },
                 success: function(data){
                     if (data.success) {

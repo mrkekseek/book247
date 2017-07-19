@@ -23,7 +23,8 @@ class Kernel extends ConsoleKernel
         Commands\Patch_1_1::class,
         Commands\Patch_1_2::class,
         Commands\addMinimumPendingInvoices::class,
-        Commands\SyncronizeActivitiesWithSSO::class
+        Commands\SyncronizeActivitiesWithSSO::class,
+        Commands\ClearMemberships::class
     ];
 
     /**
@@ -80,5 +81,11 @@ class Kernel extends ConsoleKernel
             ->appendOutputTo('storage/logs/Optimize_rebuild_search_members_output.log');
 
         /* Optimizations tasks - Stop */
+
+        /* Clear pending memberships */
+        $schedule->command('memberships:clear_pending')
+            ->hourly()
+            ->timezone('Europe/Oslo')
+            ->appendOutputTo('storage/logs/cleared_pending_memberships.log');
     }
 }
