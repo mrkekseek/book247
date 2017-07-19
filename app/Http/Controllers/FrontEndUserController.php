@@ -59,7 +59,7 @@ use Illuminate\Support\Facades\Mail;
 use App\Http\Controllers\EmailsController;
 use App\FinancialProfile;
 use App\ShopFinancialProfile;
-use app\UserMembershipAction;
+use App\UserMembershipAction;
 
 class FrontEndUserController extends Controller
 {
