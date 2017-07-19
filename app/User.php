@@ -267,7 +267,7 @@ class User extends Authenticatable
                 'action_type'   => 'cancel',
                 'start_date'    => $cancel_date->format('Y-m-d'),
                 'end_date'      => $last_date->format('Y-m-d'),
-                'added_by'      => Auth::user()->id,
+                'added_by'      => $old_plan->user_id,
                 'notes'         => json_encode([]),
                 'processed'     => 0,
                 'status'        => 'active'

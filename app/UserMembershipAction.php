@@ -89,7 +89,7 @@ class UserMembershipAction extends Model
         $to_date    = Carbon::createFromFormat('Y-m-d H:i:s',$this->end_date.' 00:00:00')->addDay(); // we need next day
 
         // get user active/suspended membership
-        $userMembership = UserMembership::where('id','=',$this->user_membership_id)->whereIn('status',['active','suspended'])->first();
+        $userMembership = UserMembership::where('id','=',$this->user_membership_id)->whereIn('status',['active','suspended','pending'])->first();
         switch ($this->action_type) {
             case 'freeze' : {
                 if ($this->processed == 0) {
