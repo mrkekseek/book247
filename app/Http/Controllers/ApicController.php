@@ -512,8 +512,8 @@ class ApicController extends Controller
             if ($data['activity'] != -1)
             {
                 $category_id = $data['activity'];
-                $query->whereHas('resource', function ($q) use ($category) {
-                    $q->where('category_id', $category);
+                $query->whereHas('resource', function ($q) use ($category_id) {
+                    $q->where('category_id', $category_id);
                 });
             }
             $query->whereDate('created_at', '>=', $minDate);
