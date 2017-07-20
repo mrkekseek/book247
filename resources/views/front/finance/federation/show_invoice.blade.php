@@ -102,7 +102,7 @@
                             <div class="col-xs-4">
                                 <div class="well">
                                     <address>
-                                        <strong>{{ !isset($financial_profile->address1) ? $financial_profile->address2 : $financial_profile->address1 }}</strong>
+                                        <strong>{{ !isset($financial_profile->address1) ? (isset($financial_profile->address2) ? $financial_profile->address2 : 'Not available') : $financial_profile->address1 }}</strong>
                                         <br/> {{ isset($financial_profile->region) ? isset($financial_profile->region) : 'None available'}}
                                         <br/> {{ isset($financial_profile->city) ? $financial_profile->city : '' . '   ' . $country}}
                                         <br/>
