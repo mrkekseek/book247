@@ -62,9 +62,9 @@
                                     <li>
                                         <strong>V.A.T Reg #:</strong> 542554(DEMO)78 </li>
                                     <li>
-                                        <strong>Account Name:</strong> {{ $financial_profile->profile_name }} </li>
+                                        <strong>Account Name:</strong> {{ isset($financial_profile->profile_name) ? $financial_profile->profile_name : 'None available'}} </li>
                                     <li>
-                                        <strong>SWIFT code:</strong> {{ $financial_profile->organisation_number }} </li>
+                                        <strong>SWIFT code:</strong> {{ isset($financial_profile->organisation_number) ? $financial_profile->organisation_number : 'None available' }} </li>
                                 </ul>
                             </div>
                         </div>
@@ -103,10 +103,10 @@
                                 <div class="well">
                                     <address>
                                         <strong>{{ !isset($financial_profile->address1) ? $financial_profile->address2 : $financial_profile->address1 }}</strong>
-                                        <br/> {{ $financial_profile->region }}
-                                        <br/> {{ $financial_profile->city . '   ' . $country}}
+                                        <br/> {{ isset($financial_profile->region) ? isset($financial_profile->region) : 'None available'}}
+                                        <br/> {{ isset($financial_profile->city) ? $financial_profile->city : '' . '   ' . $country}}
                                         <br/>
-                                        <abbr title="Postal Code">Postal Code:</abbr> {{ $financial_profile->postal_code }}
+                                        <abbr title="Postal Code">Postal Code:</abbr> {{ isset($financial_profile->postal_code) ? $financial_profile->postal_code : 'None available' }}
                                     </address>
                                     <address>
                                         <strong>{{ $member['full_name'] }}</strong>
