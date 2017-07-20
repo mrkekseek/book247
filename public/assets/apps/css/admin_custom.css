@@ -115,7 +115,7 @@ textarea[name=content] {
 }
 
 .page-header.navbar .top-menu .navbar-nav > li.dropdown-user .dropdown-toggle {
-    padding: 10px;
+    /*padding: 10px;*/
 }
 
 .page-header.navbar .top-menu .navbar-nav > li.dropdown>.dropdown-toggle:hover {
