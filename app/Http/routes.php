@@ -48,6 +48,18 @@ else
             'as' => 'players_statistics_activity_gender_age',
             'uses' => 'ApicController@players_statistics_activity_gender_age'
         ]);
+        Route::post('get_latest_registered_players', [
+            'as' => 'get_latest_registered_players',
+            'uses' => 'ApicController@get_latest_registered_players'
+        ]);
+        Route::post('get_members_growth', [
+            'as' => 'get_members_growth',
+            'uses' => 'ApicController@get_members_growth'
+        ]);
+        Route::post('get_bookings_per_parts_of_day', [
+            'as' => 'get_bookings_per_parts_of_day',
+            'uses' => 'ApicController@get_bookings_per_parts_of_day'
+        ]);
     });
     
     Route::group(['middleware' => 'web'], function () {
