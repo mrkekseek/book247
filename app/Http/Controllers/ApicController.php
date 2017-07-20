@@ -20,7 +20,7 @@ use Illuminate\Http\Request;
 
 class ApicController extends Controller
 {
-    const VERSION = '0.6.0';
+    const VERSION = '0.7.0';
 
     private static $message = [];
     private static $code;
@@ -308,7 +308,7 @@ class ApicController extends Controller
         $local_account_key = AppSettings::get_setting_value_by_name('globalWebsite_rankedin_integration_key');
         $rules = [
             'account_key'    =>  'required|in:'.$local_account_key,
-            'activity'    =>  'integer|activity_check'
+            'activity'    =>  'required|integer|activity_check'
         ];
         
         Validator::extend('activity_check', function($attribute, $value, $parameters, $validator){
@@ -356,6 +356,139 @@ class ApicController extends Controller
         }
         return $response;
     }
+    
+    public function get_latest_registered_players(Request $request)
+    {
+        $data = $request->only('account_key', 'activity', 'time_interval');
+        //\Cache::forget('globalWebsite_rankedin_integration_key');
+        $local_account_key = AppSettings::get_setting_value_by_name('globalWebsite_rankedin_integration_key');
+        $rules = [
+            'account_key'    =>  'required|in:'.$local_account_key,
+            'activity'    =>  'required|integer|activity_check',
+            'time_interval' => 'integer|in:7,14,30'
+        ];
+        
+        Validator::extend('activity_check', function($attribute, $value, $parameters, $validator){
+            $activities = ShopResourceCategory::select('id')->get();
+            if ($value == -1) return TRUE;
+            foreach($activities as $item)
+            {
+                if ($item->id == $value) return TRUE;
+            }
+            return FALSE;
+        });
+        $mesagges = [
+            'activity.activity_check' => 'Activity not valid.',
+        ];
+        if ( ! $this->validate_request($data , $rules, $mesagges) )
+        {
+            $response = [
+                'code' => self::$code,
+                'message' => self::$message,
+            ];
+        }
+        else
+        {
+            $time_interval = isset($data['time_interval']) ? $data['time_interval'] : 7; 
+            $query = UserBookedActivity::query();
+            if ($data['activity'] != -1)
+            {
+                $query->where('activity_id', $data['activity']);
+            }
+            $minDate = Carbon::now()->subDay($data['time_interval']);
+            $query->whereDate('created_at', '>=', $minDate);
+            $countPlayers = $query->count();
+            $response = [
+                'code' => 1,
+                'players' => $countPlayers,
+            ];
+        }
+        return $response;
+    }
+    
+    public function get_members_growth(Request $request)
+    {
+        $data = $request->only('account_key', 'activity', 'time_interval', 'intervals');
+        //\Cache::forget('globalWebsite_rankedin_integration_key');
+        $local_account_key = AppSettings::get_setting_value_by_name('globalWebsite_rankedin_integration_key');
+        $rules = [
+            'account_key'    =>  'required|in:'.$local_account_key,
+            'activity'    =>  'required|integer|activity_check',
+            'time_interval' => 'integer|in:7,14,30',
+            'intervals' => 'integer'
+        ];
+        
+        Validator::extend('activity_check', function($attribute, $value, $parameters, $validator){
+            $activities = ShopResourceCategory::select('id')->get();
+            if ($value == -1) return TRUE;
+            foreach($activities as $item)
+            {
+                if ($item->id == $value) return TRUE;
+            }
+            return FALSE;
+        });
+        $mesagges = [
+            'activity.activity_check' => 'Activity not valid.',
+        ];
+        if ( ! $this->validate_request($data , $rules, $mesagges) )
+        {
+            $response = [
+                'code' => self::$code,
+                'message' => self::$message,
+            ];
+        }
+        else
+        {
+            $time_interval = isset($data['time_interval']) ? $data['time_interval'] : 7; 
+            $intervals = isset($data['intervals']) ? $data['intervals'] : 30; 
+            dd('stop');
+            
+            
+        }
+        return $response;
+    }
+    
+    public function get_bookings_per_parts_of_day (Request $request)
+    {
+        $data = $request->only('account_key', 'activity', 'time_interval', 'intervals');
+        //\Cache::forget('globalWebsite_rankedin_integration_key');
+        $local_account_key = AppSettings::get_setting_value_by_name('globalWebsite_rankedin_integration_key');
+        $rules = [
+            'account_key'    =>  'required|in:'.$local_account_key,
+            'activity'    =>  'required|integer|activity_check',
+            'time_interval' => 'integer|in:1,7,30,90,180,360',
+        ];
+        
+        Validator::extend('activity_check', function($attribute, $value, $parameters, $validator){
+            $activities = ShopResourceCategory::select('id')->get();
+            if ($value == -1) return TRUE;
+            foreach($activities as $item)
+            {
+                if ($item->id == $value) return TRUE;
+            }
+            return FALSE;
+        });
+        $mesagges = [
+            'activity.activity_check' => 'Activity not valid.',
+        ];
+        if ( ! $this->validate_request($data , $rules, $mesagges) )
+        {
+            $response = [
+                'code' => self::$code,
+                'message' => self::$message,
+            ];
+        }
+        else
+        {
+            $time_interval = isset($data['time_interval']) ? $data['time_interval'] : 180; 
+            
+            
+            
+            dd('stop');
+        }
+        return $response;
+    }
+
     
     private function send_mail_exist_owner($owner)
     {
