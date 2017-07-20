@@ -209,7 +209,7 @@ class IPN extends Controller{
             }
         }
 
-        return view('front/iframe/federation/success.php',[
+        return view('front/iframe/federation/success',[
             'breadcrumbs' => $breadcrumbs,
             'text_parts'  => $text_parts,
             'in_sidebar'  => $sidebar_link,

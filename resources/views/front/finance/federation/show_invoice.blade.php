@@ -102,11 +102,12 @@
                             <div class="col-xs-4">
                                 <div class="well">
                                     <address>
-                                        <strong>Rud Squash AS</strong>
-                                        <br/> Postbox 60
-                                        <br/> N-1309 Rud
+                                        <strong>{{ !isset($financial_profile->address1) ? $financial_profile->address2 : $financial_profile->address1 }}</strong>
+                                        <br/> {{ $financial_profile->region }}
+                                        <br/> {{ $financial_profile->city . '   ' . $country}}
                                         <br/>
-                                        <abbr title="Phone">P:</abbr> (234) 145-1810 </address>
+                                        <abbr title="Postal Code">Postal Code:</abbr> {{ $financial_profile->postal_code }}
+                                    </address>
                                     <address>
                                         <strong>{{ $member['full_name'] }}</strong>
                                         <br/>
@@ -186,7 +187,7 @@
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    @if (sizeof($financialTransactions)>0)
+                                    @if (sizeof($financialTransactions)>0 && is_array($financialTransactions))
                                         @foreach($financialTransactions as $key => $single)
                                             <tr>
                                                 <td> {{ $key }} </td>
