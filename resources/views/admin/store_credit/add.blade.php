@@ -107,7 +107,7 @@
                                         <div class="form-group">
                                             <label class="control-label col-md-3">How many days is active</label>
                                             <div class="col-md-9">
-                                                <input type="text" class="form-control" name="validity_days" placeholder="The relevance of the offer on certain days" value="0">
+                                                <input type="text" class="form-control" name="validity_days" placeholder="How many days is active" value="0">
                                             </div>
                                         </div>
 
@@ -210,11 +210,24 @@
                             required : true,
                         },
                         store_credit_value : {
-                            required : true
+                            required : true,
+                            number : true
                         },
                         store_credit_price : {
                             required : true,
                             number: true
+                        },
+                        store_credit_discount_fixed : {
+                            number : true  
+                        },
+                        store_credit_discount_percentage : {
+                            number : true
+                        },
+                        validity_days : {
+                            digits : true
+                        },
+                        packages_per_user : {
+                            number : true
                         },
                         status : {
                             required : true
