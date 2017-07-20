@@ -27,8 +27,7 @@ if (env('FEDERATION',false)){
 }
 else
 {
-    //Route::group(['middleware' => 'apikey', 'prefix' => 'apic'], function () {
-    Route::group(['prefix' => 'apic'], function () {
+    Route::group(['middleware' => 'apikey', 'prefix' => 'apic'], function () {
         Route::get('status', [
             'as' => 'status',
             'uses' => 'ApicController@status'
