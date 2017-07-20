@@ -834,6 +834,11 @@ Route::group(['prefix'=>'front', 'middleware'=>'web'], function(){
 //        'uses'  => 'BookingController@get_user_booking_archive'
 //    ]);
 
+    Route::get('finance/invoice/{id}', [
+        'as' => 'front/finance/invoice/{id}',
+        'uses' => 'Federation\FrontEndUserController@invoice_payment'
+    ]);
+
     Route::get('friends_list', [
         'as'    => 'front/member_friend_list',
         'uses'  => 'Federation\FrontEndUserController@member_friends_list'

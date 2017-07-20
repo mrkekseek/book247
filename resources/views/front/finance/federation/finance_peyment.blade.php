@@ -79,7 +79,7 @@
                                                             Country
                                                         </div>
                                                         <div class="col-md-7 value">
-                                                            -
+                                                            {{ $country }}
                                                         </div>
                                                     </div>
                                                 </div>
@@ -95,7 +95,7 @@
                                                 <div class="portlet-body">
                                                     <div class="row static-info">
                                                         <div class="col-md-5 name"> Customer Name: </div>
-                                                        <div class="col-md-7 value"> - </div>
+                                                        <div class="col-md-7 value"> {{ $customer->profile_name }} </div>
                                                     </div>
                                                     <div class="row static-info">
                                                         <div class="col-md-5 name"> Email: </div>
@@ -103,7 +103,7 @@
                                                     </div>
                                                     <div class="row static-info">
                                                         <div class="col-md-5 name"> State: </div>
-                                                        <div class="col-md-7 value"> - </div>
+                                                        <div class="col-md-7 value"> {{ $payee_country }} </div>
                                                     </div>
                                                     <div class="row static-info">
                                                         <div class="col-md-5 name"> Phone Number: </div>

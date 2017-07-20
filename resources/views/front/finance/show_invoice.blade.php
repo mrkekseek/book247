@@ -62,9 +62,9 @@
                                     <li>
                                         <strong>V.A.T Reg #:</strong> 542554(DEMO)78 </li>
                                     <li>
-                                        <strong>Account Name:</strong> {{ $financial_profile->profile_name }} </li>
+                                        <strong>Account Name:</strong> {{ isset($financial_profile->profile_name) ? $financial_profile->profile_name : 'None available'}} </li>
                                     <li>
-                                        <strong>SWIFT code:</strong> {{ $financial_profile->organisation_number }} </li>
+                                        <strong>SWIFT code:</strong> {{ isset($financial_profile->organisation_number) ? $financial_profile->organisation_number : 'None available' }} </li>
                                 </ul>
                             </div>
                         </div>
@@ -102,11 +102,12 @@
                             <div class="col-xs-4">
                                 <div class="well">
                                     <address>
-                                        <strong>Rud Squash AS</strong>
-                                        <br/> Postbox 60
-                                        <br/> N-1309 Rud
+                                        <strong>{{ !isset($financial_profile->address1) ? (isset($financial_profile->address2) ? $financial_profile->address2 : 'Not available') : $financial_profile->address1 }}</strong>
+                                        <br/> {{ isset($financial_profile->region) ? isset($financial_profile->region) : 'None available'}}
+                                        <br/> {{ isset($financial_profile->city) ? $financial_profile->city : '' . '   ' . $country}}
                                         <br/>
-                                        <abbr title="Phone">P:</abbr> (234) 145-1810 </address>
+                                        <abbr title="Postal Code">Postal Code:</abbr> {{ isset($financial_profile->postal_code) ? $financial_profile->postal_code : 'None available' }}
+                                    </address>
                                     <address>
                                         <strong>{{ $member['full_name'] }}</strong>
                                         <br/>
@@ -186,7 +187,7 @@
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    @if (sizeof($financialTransactions)>0)
+                                    @if (sizeof($financialTransactions)>0 && is_array($financialTransactions))
                                         @foreach($financialTransactions as $key => $single)
                                             <tr>
                                                 <td> {{ $key }} </td>
