@@ -1078,7 +1078,7 @@ class BackEndUserController extends Controller
                 $membershipRestriction = new MembershipRestriction;
                 $membershipRestriction->membership_id = 1;
                 $membershipRestriction->restriction_id = 5;
-                $membershipRestriction->value = json_encode(['activity'=>$activity->name]);
+                $membershipRestriction->value = json_encode([$activity->id]);
                 $membershipRestriction->save();
             }
             $membershipRestriction = new MembershipRestriction;
