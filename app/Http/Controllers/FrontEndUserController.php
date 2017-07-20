@@ -3610,9 +3610,9 @@ class FrontEndUserController extends Controller
                 $total+= ($item_one_price + $item_vat)*$item->quantity;
             }
 
-            $member = User::with('ProfessionalDetail')->with('PersonalDetail')->where('id','=',$invoice->user_id)->get()->first();
-            $member_professional = $member->ProfessionalDetail;
-            $member_personal = $member->PersonalDetail;
+            $member = json_decode($invoice->payer_info);
+            $member_professional = $member->professional_detail;
+            $member_personal = $member->personal_detail;
             //xdebug_var_dump($member_professional);
             //xdebug_var_dump($member_personal);
             //xdebug_var_dump($member);
@@ -3646,56 +3646,6 @@ class FrontEndUserController extends Controller
         ];
         $sidebar_link= 'admin-backend-shop-new_order';
 
-        $financial_profile = null;
-        if (isset($invoice)) {
-            switch ($invoice->invoice_type) {
-                case 'booking_invoice':
-                    $booking_invoice = BookingInvoice::find($invoice->invoice_reference_id);
-                    $booking = Booking::find($booking_invoice->booking_id);
-                    $location_id = $booking->location_id;
-                    if ($location_id) {
-                        $shop_financial_profile = ShopFinancialProfile::where('shop_location_id',$location_id)->first();
-                        if ($shop_financial_profile) {
-                            $financial_profile = FinancialProfile::find($shop_financial_profile->financial_profile_id);
-                        } else {
-                            $financial_profile = FinancialProfile::where('is_default',1)->first();
-                        }
-
-                    } else {
-                        $financial_profile = FinancialProfile::where('is_default',1)->first();
-                    }
-                    break;
-
-                case 'membership_plan_assignment_invoice' || 'membership_plan_invoice' :
-                    $location_id = $user->get_general_setting('registration_signed_location');
-
-                    if ($location_id) {
-                        $shop_financial_profile = ShopFinancialProfile::where('shop_location_id',$location_id)->first();
-                        if ($shop_financial_profile) {
-                            $financial_profile = FinancialProfile::find($shop_financial_profile->financial_profile_id);
-                        } else {
-                            $financial_profile = FinancialProfile::where('is_default',1)->first();
-                        }
-
-                    } else {
-                        $financial_profile = FinancialProfile::where('is_default',1)->first();
-                    }
-                    break;
-
-                case 'store_credit':
-                    $financial_profile = FinancialProfile::where('is_default',1)->first();
-                    break;
-
-                case 'store_credit_invoice':
-                    $financial_profile = FinancialProfile::where('is_default',1)->first();
-                    break;
-
-                default :
-                    $financial_profile = null;
-            }
-        }
-
-        $financial_profile = !$financial_profile ? FinancialProfile::where('is_default',1)->first() : $financial_profile;
 
         return view('front/finance/show_invoice', [
             'breadcrumbs'   => $breadcrumbs,
@@ -3709,7 +3659,8 @@ class FrontEndUserController extends Controller
             'financialTransactions' => $invoice->transactions,
             'vat'       => $vat,
             'grand_total'   => $total,
-            'financial_profile' => $financial_profile
+            'financial_profile' => json_decode($invoice->payee_info),
+            'country' => $country
         ]);
     }
 
@@ -5095,18 +5046,38 @@ class FrontEndUserController extends Controller
                     ];
         }
     }
+    protected function get_custom($invoice_id)
+    {
+        $custom = json_encode(array(
+            'redirect_url' => env('MY_SERVER_URL'),
+            'invoice_id' => $invoice_id));
+        $key = env('APP_KEY');
+        if ($key) {
+            while (strlen($key) < 16) {
+                $key .= env('APP_KEY');
+            }
+            $key = substr($key, 0, 16);
+        }
+        $iv = env('APP_KEY');
+        if ($iv) {
+            while (strlen($iv) < 16) {
+                $iv .= env('APP_KEY');
+            }
+            $iv = substr($key, 0, 16);
+        }
+        $custom = base64_encode(openssl_encrypt($custom, 'AES-256-CBC', $key, 0, $iv));
+        return $custom;
+    }
 
     public function invoice_payment($id)
     {
         $user = Auth::user();
-        if ( ! $user || ! $user->is_front_user())
-        {
+        if (!$user || !$user->is_front_user()) {
             return redirect()->intended(route('admin/login'));
         }
 
         $invoice = Invoice::where('invoice_number', '=', $id)->get()->first();
-        if ($invoice)
-        {
+        if ($invoice) {
             $subtotal = 0;
             $total = 0;
             $discount = 0;
@@ -5114,61 +5085,79 @@ class FrontEndUserController extends Controller
 
             $items = InvoiceItem::where('invoice_id', '=', $invoice->id)->get();
 
-            foreach($items as $item)
-            { 
-                $item_one_price = $item->price - (($item->price*$item->discount)/100);
-                $item_vat = $item_one_price * ($item->vat/100);
+            foreach ($items as $item) {
+                $item_one_price = $item->price - (($item->price * $item->discount) / 100);
+                $item_vat = $item_one_price * ($item->vat / 100);
 
-                if (isset($vat[$item->vat]))
-                {
-                    $vat[$item->vat] += $item_vat*$item->quantity;
-                }
-                else
-                {
-                    $vat[$item->vat] = $item_vat*$item->quantity;
+                if (isset($vat[$item->vat])) {
+                    $vat[$item->vat] += $item_vat * $item->quantity;
+                } else {
+                    $vat[$item->vat] = $item_vat * $item->quantity;
                 }
 
-                $discount += (($item->price*$item->discount)/100)*$item->quantity;
+                $discount += (($item->price * $item->discount) / 100) * $item->quantity;
                 $subtotal += $item->price * $item->quantity;
 
-                $total += ($item_one_price + $item_vat)*$item->quantity;
+                $total += ($item_one_price + $item_vat) * $item->quantity;
             }
-        }
-        else
-        {
+        } else {
             return redirect('/');
         }
-        
 
-        $member = User::with('ProfessionalDetail')->with('PersonalDetail')->where('id', $invoice->user_id)->get()->first();
+
+        $member = json_decode($invoice->payer_info);
         $member->country = Countries::where('id', $member->country_id)->get()->first();
 
+        if ($member->country_id==0){
+            $country = '-';
+        }
+        else{
+            $get_country = Countries::where('id','=',$member->country_id)->get()->first();
+            $country = $get_country->name;
+        }
+
         $breadcrumbs = [
-            'Home'              => route('admin'),
-            'Administration'    => route('admin'),
-            'Back End User'     => route('admin'),
+            'Home' => route('admin'),
+            'Administration' => route('admin'),
+            'Back End User' => route('admin'),
             'All Backend Users' => '',
         ];
-        
-        $text_parts  = [
-            'title'     => 'Back-End Users',
-            'subtitle'  => 'view all users',
+
+        $text_parts = [
+            'title' => 'Back-End Users',
+            'subtitle' => 'view all users',
             'table_head_text1' => 'Backend User List'
         ];
 
-        $sidebar_link = 'admin-backend-shops-invoices-payment';
+        $payee = json_decode($invoice->payee_info);
 
+        if ($payee) {
+            if ($payee->country_id == 0) {
+                $payee_country = '-';
+            } else {
+                $get_country = Countries::where('id', '=', $payee->country_id)->get()->first();
+                $payee_country = $get_country->name;
+            }
+        } else {
+            $payee_country = '-';
+        }
+        $sidebar_link = 'admin-backend-shops-invoices-payment';
         return view('front/finance/finance_peyment', [
+            'custom' => $this->get_custom($invoice->id),
             'breadcrumbs' => $breadcrumbs,
-            'text_parts'  => $text_parts,
-            'in_sidebar'  => $sidebar_link,
-            'invoice'   => $invoice,
+            'text_parts' => $text_parts,
+            'in_sidebar' => $sidebar_link,
+            'invoice' => $invoice,
             'invoice_items' => @$items,
-            'member'    => $member,
+            'member' => $member,
             'sub_total' => $subtotal,
             'discount' => $discount,
             'vat' => $vat,
-            'grand_total' => $total
+            'grand_total' => $total,
+            'customer' => $payee,
+            'paypal_email' => AppSettings::get_setting_value_by_name('finance_simple_paypal_payment_account'),
+            'country' => $country,
+            'payee_country' => $payee_country
         ]);
     }
     

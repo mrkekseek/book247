@@ -91,6 +91,70 @@ class Invoice extends Model
         }
     }
 
+    public function update_payee_payer_information()
+    {
+        if (isset($this->user_id) && isset($this->invoice_type) && isset($this->invoice_reference_id)) {
+            $user = User::with('ProfessionalDetail')->with('PersonalDetail')->where('id','=',$this->user_id)->get()->first();
+            $this->payer_info = json_encode($user);
+            switch ($this->invoice_type) {
+                case 'booking_invoice':
+                    $booking_invoice = BookingInvoice::find($this->invoice_reference_id);
+                    $booking = Booking::find($booking_invoice->booking_id);
+                    $location_id = $booking->location_id;
+                    if ($location_id) {
+                        $shop_financial_profile = ShopFinancialProfile::where('shop_location_id',$location_id)->first();
+                        if ($shop_financial_profile) {
+                            $financial_profile = FinancialProfile::find($shop_financial_profile->financial_profile_id);
+                        } else {
+                            $financial_profile = FinancialProfile::where('is_default',1)->first();
+                        }
+
+                    } else {
+                        $financial_profile = FinancialProfile::where('is_default',1)->first();
+                    }
+                    break;
+
+                case 'membership_plan_assignment_invoice' || 'membership_plan_invoice' :
+                    $location_id = $user->get_general_setting('registration_signed_location');
+
+                    if ($location_id) {
+                        $shop_financial_profile = ShopFinancialProfile::where('shop_location_id',$location_id)->first();
+                        if ($shop_financial_profile) {
+                            $financial_profile = FinancialProfile::find($shop_financial_profile->financial_profile_id);
+                        } else {
+                            $financial_profile = FinancialProfile::where('is_default',1)->first();
+                        }
+
+                    } else {
+                        $financial_profile = FinancialProfile::where('is_default',1)->first();
+                    }
+                    break;
+
+                case 'store_credit':
+                    $financial_profile = FinancialProfile::where('is_default',1)->first();
+                    break;
+
+                case 'store_credit_invoice':
+                    $financial_profile = FinancialProfile::where('is_default',1)->first();
+                    break;
+
+                default :
+                    $financial_profile = null;
+            }
+            $this->payee_info = json_encode($financial_profile);
+            return true;
+        }
+        return false;
+    }
+
+
+    public function save(array $options = []) {
+        if (!isset($this->payee_info) && !isset($this->payer_info)) {
+            $this->update_payee_payer_information();
+        }
+        parent::save($options);
+    }
+
     /**
      * @param $fillable [
      *      item_name : item name that will be shown on the invoice items list
