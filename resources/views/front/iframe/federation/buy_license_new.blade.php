@@ -40,7 +40,7 @@
     @if(!isset($membership))
     <div class="wrapper body-iframe-step-1" id="body-iframe-step-1">
         <div class="container-iframe">
-            <h3 class="slider-caption">To join the event you need to get <br>  License (Membership) from "XXXXX".  <br>You can do it right away here:</h3>
+            {{--<h3 class="slider-caption">To join the event you need to get <br>  License (Membership) from "XXXXX".  <br>You can do it right away here:</h3>--}}
             <div class="carusel-wraper">
                 <div class="carusel items-container simple-items">
                     @foreach ($membership_list as $key => $m)
