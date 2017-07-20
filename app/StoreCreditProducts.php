@@ -50,8 +50,8 @@ class StoreCreditProducts extends Model
             case 'POST':
             {
                 return [
-                    'name'                  		        => 'required|min:3|max:150',
-                    'description'   				        => 'required|min:50|max:250',
+                    'name'                  		        => 'required',
+                    'description'   				        => 'required',
                     'store_credit_value'    		        => 'required|numeric',
                     'store_credit_price'              		=> 'required|numeric',
                     'store_credit_discount_fixed'           => 'required|numeric',
@@ -68,8 +68,8 @@ class StoreCreditProducts extends Model
             case 'PATCH':
             {
                 return [
-                    'name'                  		        => 'required|min:3|max:150',
-                    'description'   				        => 'required|min:50|max:250',
+                    'name'                  		        => 'required',
+                    'description'   				        => 'required',
                     'store_credit_value'    		        => 'required|numeric',
                     'store_credit_price'              		=> 'required|numeric',
                     'store_credit_discount_fixed'           => 'required|numeric',

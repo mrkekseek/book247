@@ -96,7 +96,7 @@ class StoreCreditProductsController extends Controller
             'store_credit_value' => $vars['store_credit_value'],
             'store_credit_price' => $vars['store_credit_price'],
             'store_credit_discount_fixed' => $vars['store_credit_discount_fixed'],
-            'store_credit_discount_percentage' => $vars['store_credit_discount_percentage'],
+            'store_credit_discount_percentage' => empty($vars['store_credit_discount_fixed']) ? $vars['store_credit_discount_percentage'] : 0,
             'validity_days' => $vars['validity_days'],
             'valid_from' => $vars['valid_from'],
             'valid_to' => $vars['valid_to'],

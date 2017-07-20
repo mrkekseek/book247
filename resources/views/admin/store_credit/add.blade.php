@@ -1,6 +1,7 @@
 @extends('admin.layouts.main')
 
 @section('pageLevelPlugins')
+    <link href="{{ asset('assets/global/plugins/bootstrap-daterangepicker/daterangepicker.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('assets/global/plugins/datatables/datatables.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('assets/global/plugins/datatables/plugins/bootstrap/datatables.bootstrap.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('assets/global/plugins/bootstrap-colorpicker/css/colorpicker.css') }}" rel="stylesheet" type="text/css" />
@@ -79,37 +80,55 @@
                                         <div class="form-group">
                                             <label class="control-label col-md-3"> Fixed price discount </label>
                                             <div class="col-md-9">
-                                                <input type="text" class="form-control" name="store_credit_discount_fixed" placeholder="Fixed price discount">
+                                                <input type="text" class="form-control" name="store_credit_discount_fixed" placeholder="Fixed price discount" value="0">
                                             </div>
                                         </div>
                                         <div class="form-group">
                                             <label class="control-label col-md-3"> Discount from price in % </label>
                                             <div class="col-md-9">
-                                                <input type="text" class="form-control" name="store_credit_discount_percentage" placeholder="Discount from price in %">
+                                                <input type="text" class="form-control" name="store_credit_discount_percentage" placeholder="Discount from price in %" value="0">
                                             </div>
                                         </div>
-                                        <div class="form-group">
-                                            <label class="control-label col-md-3"> The relevance of the offer on certain days</label>
-                                            <div class="col-md-9">
-                                                <input type="text" class="form-control" name="validity_days" placeholder="The relevance of the offer on certain days">
-                                            </div>
-                                        </div>
+                                        
                                         <div class="form-group">
                                             <label class="control-label col-md-3"> Date the package begins to operate </label>
                                             <div class="col-md-9">
-                                                <input type="text" class="form-control" name="valid_from" placeholder="Date the package begins to operate">
+                                                <div class="input-group date date-picker" data-date="" data-date-format="yyyy-mm-dd"  data-date-start-view="years">
+                                                    <input type="text" class="form-control" readonly="readonly" name="valid_from"  placeholder="Date the package begins to operate" >
+                                                    <span class="input-group-btn">
+                                                        <button class="btn default" type="button">
+                                                            <i class="fa fa-calendar"></i>
+                                                        </button>
+                                                    </span>
+                                                </div>
                                             </div>
                                         </div>
+
+                                        <div class="form-group">
+                                            <label class="control-label col-md-3">How many days is active</label>
+                                            <div class="col-md-9">
+                                                <input type="text" class="form-control" name="validity_days" placeholder="The relevance of the offer on certain days" value="0">
+                                            </div>
+                                        </div>
+
                                         <div class="form-group">
                                             <label class="control-label col-md-3"> The date the package expires </label>
                                             <div class="col-md-9">
-                                                <input type="text" class="form-control" name="valid_to" placeholder="The date the package expires">
+                                                <div class="input-group date date-picker" data-date="" data-date-format="yyyy-mm-dd"  data-date-start-view="years">
+                                                    <input type="text" class="form-control" readonly="readonly" name="valid_to"  placeholder="The date the package expires" >
+                                                    <span class="input-group-btn">
+                                                        <button class="btn default" type="button">
+                                                            <i class="fa fa-calendar"></i>
+                                                        </button>
+                                                    </span>
+                                                </div>
+
                                             </div>
                                         </div>
                                         <div class="form-group">
                                             <label class="control-label col-md-3"> Count of packages that a user can purchase </label>
                                             <div class="col-md-9">
-                                                <input type="text" class="form-control" name="packages_per_user" placeholder="Count of packages that a user can purchase">
+                                                <input type="text" class="form-control" name="packages_per_user" placeholder="Count of packages that a user can purchase" value="1" />
                                             </div>
                                         </div>
                                         <div class="form-group">
@@ -117,7 +136,7 @@
                                             <div class="col-md-9">
                                                <select name="status" class="form-control">
                                                     @foreach($status as $s)
-                                                        <option>{{ $s }}</option>
+                                                        <option @if($s == 'pending') selected="selected" @endif >{{ $s }}</option>
                                                     @endforeach
                                                </select>
                                             </div>
@@ -150,6 +169,9 @@
 @endsection
 
 @section('pageBelowLevelPlugins')
+    <script src="{{ asset('assets/global/plugins/moment.min.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('assets/global/plugins/bootstrap-daterangepicker/daterangepicker.min.js') }}" type="text/javascript"></script>
+    
     <script src="{{ asset('assets/global/scripts/datatable.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/global/plugins/datatables/datatables.min.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/global/plugins/datatables/plugins/bootstrap/datatables.bootstrap.js') }}" type="text/javascript"></script>
@@ -183,41 +205,14 @@
                     rules: {
                         name : {
                             required : true,
-                            minlength : 3,
-                            maxlength : 150
                         },
                         description : {
                             required : true,
-                            minlength : 50,
-                            maxlength : 250
                         },
                         store_credit_value : {
-                            required : true,
-                            number: true
+                            required : true
                         },
                         store_credit_price : {
-                            required : true,
-                            number: true
-                        },
-                        store_credit_discount_fixed : {
-                            required : true,
-                            number: true
-                        },
-                        store_credit_discount_percentage : {
-                            required : true,
-                            number: true
-                        },
-                        validity_days : {
-                            required : true,
-                            number: true
-                        },
-                        valid_from : {
-                            required : true
-                        },
-                        valid_to : {
-                            required : true
-                        },
-                        packages_per_user : {
                             required : true,
                             number: true
                         },
@@ -269,7 +264,22 @@
         }();
 
         $(document).ready(function(){
-            FormValidation.init();            
+            FormValidation.init();
+
+            $("[name='valid_from']").val(moment().format('YYYY-MM-DD'));
+            $("[name='valid_to']").val(moment().format('YYYY-MM-DD'));
+
+            $("[data-date]").daterangepicker({
+                "singleDatePicker": true,
+                "linkedCalendars": false,
+                "autoUpdateInput": false,
+                "showCustomRangeLabel": false,
+                "startDate": moment(),
+                "opens": "left"
+                }, function(date) {
+                    $("[name='valid_from']").val(date.format('YYYY-MM-DD'));
+            });
+
         });
 
         function add_new_store_credit(){
