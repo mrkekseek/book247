@@ -1447,6 +1447,7 @@
                 url: '{{route('admin/membership_plans/assign_to_member')}}',
                 type: "post",
                 data: {
+                    'selected_location': $('select[name=locations_list]').val(),
                     'selected_plan':    $('select[name=membership_plans_list]').val(),
                     'start_date':       $('input[name="start_date"]').val(),
                     'member_id':        userID
