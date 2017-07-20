@@ -50,16 +50,16 @@ class StoreCreditProducts extends Model
             case 'POST':
             {
                 return [
-                    'name'                  		        => 'required|min:3|max:150',
-                    'description'   				        => 'required|min:50|max:250',
+                    'name'                  		        => 'required',
+                    'description'   				        => 'required',
                     'store_credit_value'    		        => 'required|numeric',
                     'store_credit_price'              		=> 'required|numeric',
-                    'store_credit_discount_fixed'           => 'required|numeric',
-                    'store_credit_discount_percentage'      => 'required|numeric',
-                    'validity_days'       					=> 'required|numeric',
+                    'store_credit_discount_fixed'           => 'numeric',
+                    'store_credit_discount_percentage'      => 'numeric',
+                    'validity_days'       					=> 'numeric',
                     'valid_from'   							=> 'required',
                     'valid_to' 								=> 'required',
-                    'packages_per_user'     				=> 'required|numeric',
+                    'packages_per_user'     				=> 'numeric',
                     'status'      							=> 'required|in:active,pending,suspended,deleted',
                     'added_by'      						=> 'required|numeric'
                 ];
@@ -68,8 +68,8 @@ class StoreCreditProducts extends Model
             case 'PATCH':
             {
                 return [
-                    'name'                  		        => 'required|min:3|max:150',
-                    'description'   				        => 'required|min:50|max:250',
+                    'name'                  		        => 'required',
+                    'description'   				        => 'required',
                     'store_credit_value'    		        => 'required|numeric',
                     'store_credit_price'              		=> 'required|numeric',
                     'store_credit_discount_fixed'           => 'required|numeric',

@@ -25,6 +25,7 @@ class Kernel extends ConsoleKernel
         Commands\addMinimumPendingInvoices::class,
         Commands\SyncronizeActivitiesWithSSO::class,
         Commands\ClearMemberships::class,
+        Commands\Patch_1_3::class,
         Commands\Patch_1_4::class
     ];
 
