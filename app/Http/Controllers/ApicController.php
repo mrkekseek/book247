@@ -418,8 +418,8 @@ class ApicController extends Controller
         $rules = [
             'account_key'    =>  'required|in:'.$local_account_key,
             'activity'    =>  'required|integer|activity_check',
-            'time_interval' => 'integer|in:7,14,30',
-            'intervals' => 'integer|'
+            'time_interval' => 'integer|in:1,7,30',
+            'intervals' => 'integer'
         ];
         
         Validator::extend('activity_check', function($attribute, $value, $parameters, $validator){
