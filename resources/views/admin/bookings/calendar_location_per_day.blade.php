@@ -942,6 +942,7 @@
                         phone: {
                             number: true,
                             required: true,
+                            minlength: 8,
                             remote: {
                                 url: "{{ route('ajax/check_phone_for_member_registration') }}",
                                 type: "post",
