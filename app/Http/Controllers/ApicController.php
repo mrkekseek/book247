@@ -342,13 +342,17 @@ class ApicController extends Controller
             $age_array = [];
             foreach ($userBookedActivity as $item)
             {
-                $dob = new Carbon($item->users->PersonalDetail->date_of_birth);
-                $age =  $dob->diffInYears(Carbon::now());
-                if ( ! isset($age_array[$item->activity_id][$item->users->gender][$age]))
+                if ( ! empty ($item->users->PersonalDetail->date_of_birth))
                 {
-                    $age_array[$item->activity_id][$item->users->gender][$age] = 0;
+                    $text_gender = $item->users->gender == 'F' ? 'female' : 'male'; 
+                    $dob = new Carbon($item->users->PersonalDetail->date_of_birth);
+                    $age =  $dob->diffInYears(Carbon::now());
+                    if ( ! isset($age_array[$item->activity_id][$text_gender][$age]))
+                    {
+                        $age_array[$item->activity_id][$text_gender][$age] = 0;
+                    }
+                    $age_array[$item->activity_id][$text_gender][$age]++;
                 }
-                $age_array[$item->activity_id][$item->users->gender][$age]++;
             }
             $response = [
                 'code' => 1,
