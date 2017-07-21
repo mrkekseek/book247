@@ -300,6 +300,7 @@ class ApicController extends Controller
             $response = [
                 'code' => 1,
                 'locations' => $arr_location,
+                'message' => ''
             ];
         }
         return $response;
@@ -359,7 +360,8 @@ class ApicController extends Controller
             }
             $response = [
                 'code' => 1,
-                'players' => $age_array
+                'players' => $age_array,
+                'message' => ''
             ];
         }
         return $response;
@@ -409,6 +411,7 @@ class ApicController extends Controller
             $response = [
                 'code' => 1,
                 'players' => $countPlayers,
+                'message' => ''
             ];
         }
         return $response;
@@ -477,6 +480,7 @@ class ApicController extends Controller
             $response = [
                 'code' => 1,
                 'players' => $players,
+                'message' => ''
             ];
         }
         return $response;
@@ -562,6 +566,7 @@ class ApicController extends Controller
             $response = [
                 'code' => 1,
                 'bookings' => $result,
+                'message' => ''
             ];
         }
         return $response;
