@@ -67,7 +67,7 @@ class UserMembership extends Model
                     'sign_out_period'   => 'required|numeric',
                     'price'     => 'required|numeric',
                     'discount'  => 'numeric',
-                    'membership_restrictions'   => 'required|min:3',
+                    'membership_restrictions'   => '',
                     'signed_by' => 'required|exists:users,id',
                     'status'    => 'required|in:active,suspended,canceled,expired,pending',
                     'contract_number'   => 'required|numeric|unique:user_memberships,contract_number|min:3'
@@ -87,7 +87,7 @@ class UserMembership extends Model
                     'sign_out_period'   => 'required|numeric',
                     'price'     => 'required|numeric',
                     'discount'  => 'numeric',
-                    'membership_restrictions'   => 'required|min:3',
+                    'membership_restrictions'   => '',
                     'signed_by' => 'required|exists:users,id',
                     'status'    => 'required|in:active,suspended,canceled,expired,pending',
                     'contract_number'   => 'required|numeric|min:3|unique:user_memberships,contract_number'.($id ? ",$id,id" : '')
