@@ -308,9 +308,9 @@
                             $paypal_form.find('input[name=amount]').remove();
                             $paypal_form.find('input[name=quantity]').remove();
                         } else {
-                            $paypal_form.find('input[name=item_name]').val(response.data.invoices[0].item_name);
-                            $paypal_form.find('input[name=amount]').val(response.data.invoices[0].price);
-                            $paypal_form.find('input[name=quantity]').val(1);
+                            $paypal_form.find('input[name=item_name]').attr('name',$paypal_form.find('input[name=item_name]').attr('name') + '_1').val(response.data.invoices[0].item_name);
+                            $paypal_form.find('input[name=amount]').attr('name',$paypal_form.find('input[name=amount]').attr('name') + '_1').val(response.data.invoices[0].price);
+                            $paypal_form.find('input[name=quantity]').attr('name',$paypal_form.find('input[name=quantity]').attr('name') + '_1').val(1);
                         }
                         $paypal_form.find('input[name=invoice]').attr('value',response.data.invoices[0].invoice_id);
                         $paypal_form.find('input[name=custom]').attr('value',response.data.custom);
