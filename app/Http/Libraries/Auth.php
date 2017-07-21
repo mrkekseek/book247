@@ -114,6 +114,22 @@ class Auth
         Cookie::queue(Cookie::forever('sso_user_id', $sso_user_id, '/', $domain));
     }
 
+    public static function loginUsingId($id)
+    {
+        $user = User::find($id);
+        if ($user) {
+            if (self::check_exist_api_user($user['username'])) {
+                $sso_user = ApiAuth::accounts_get_by_username($user['email']);
+                if (isset($sso_user['data'])) {
+                    self::set_cookie_session($sso_user['data']->id);
+                    return true;
+                }
+                return false;
+            }
+        }
+        return false;
+    }
+
     private static function set_session()
     {
         $cookie_sso = Cookie::get('sso_user_id');                
