@@ -383,8 +383,11 @@ class BackEndUserController extends Controller
         $storeSetting = UserSettings::firstOrNew($fillable);
         $storeSetting->var_value = $vars['settings_preferred_activity'];
         $storeSetting->save();
-
-        return "bine";
+        return [
+            'success' => true,
+            'title'   => 'Information Updated',
+            'message' => 'Backend user information successfully updated'
+        ];
     }
 
     public function update_account_avatar(Request $request, $id)
@@ -439,7 +442,7 @@ class BackEndUserController extends Controller
 
         $personalData = array(  'personal_email'=> $vars['personal_email'],
                                 'mobile_number' => $vars['mobile_number'],
-                                'date_of_birth' => Carbon::createFromFormat('d-m-Y', $vars['date_of_birth'])->toDateString(),
+                                'date_of_birth' => Carbon::createFromFormat('Y-m-d', $vars['date_of_birth'])->toDateString(),
                                 'bank_acc_no'   => $vars['bank_acc_no'],
                                 'social_sec_no' => $vars['social_sec_no'],
                                 'about_info'    => $vars['about_info'],

@@ -69,7 +69,7 @@ class MembershipPlan extends Model
                     'plan_calendar_color'   => 'required|min:7|max:7',
                     'status'                => 'required|in:active,pending,suspended,deleted',
                     'price_id'              => 'required|exists:membership_plan_prices,id',
-                    'plan_period'           => 'required|in:7,14,30,90,180,360',
+                    'plan_period'           => 'required|in:7,14,30,90,180,360,-1',
                     'binding_period'        => 'required|numeric',
                     'sign_out_period'       => 'required|numeric',
                     'administration_fee_name'   => 'required|min:3',

@@ -267,7 +267,7 @@ class Auth
     }
 
     public static function create_api_user($user, $password = FALSE)
-    {   
+    {
         if ($password)
         {
             $user['password_api'] = $password;
