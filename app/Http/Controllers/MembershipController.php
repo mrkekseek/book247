@@ -782,7 +782,7 @@ class MembershipController extends Controller
         if ($r->get('user_id')  && $r->get('payment_method') && $r->get('membership')) {
 
             $user = User::where('sso_user_id',$r->get('user_id'))->first();
-            $status = AuthLocal::loginUsingId($user->id);
+            $status = Auth::loginUsingId($user->id);
             if ( $status ) {
 
                 $r->request->add([
@@ -808,7 +808,7 @@ class MembershipController extends Controller
                     }
                 }
 
-                AuthLocal::logout();
+                Auth::logout();
 
             }
             if ($r->get('payment_method') == 'paypal') {
