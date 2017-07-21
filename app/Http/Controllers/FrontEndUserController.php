@@ -3803,11 +3803,27 @@ class FrontEndUserController extends Controller
         ];
         $sidebar_link= 'front-type_of_store_credit';
 
+        $products = [];
+        foreach(StoreCreditProducts::all() as $row)
+        {
+
+            if ( ! empty($row->store_credit_discount_fixed))
+            {
+                $row['store_credit_value'] = $row->store_credit_value - $row->store_credit_discount_fixed;
+            }
+            elseif ($row->store_credit_discount_percentage)
+            {
+                $row['store_credit_value'] = $row['store_credit_value'] - ($row->store_credit_discount_percentage / 100 * $row['store_credit_value']);
+            }
+
+            $products[] = $row;
+        }
+
         return view('front/type_of_store_credit',[
             'breadcrumbs'            => $breadcrumbs,
             'text_parts'             => $text_parts,
             'in_sidebar'             => $sidebar_link,
-            'store_credit_purchases' => StoreCreditProducts::all()
+            'store_credit_purchases' => $products
         ]);
     }
 

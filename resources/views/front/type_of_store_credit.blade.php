@@ -48,7 +48,7 @@
                                             <div class="arrow-down" style="border-top-color: #48a838;"></div>
                                             <div class="price-table-pricing">
                                                 <h3>
-                                                    <span class="price-sign"></span>{{ number_format($p->store_credit_price, 2) }}
+                                                    <span class="price-sign"></span>{{ number_format($p->store_credit_value, 2) }}
                                                 </h3>
                                                 <!-- <p>per month</p>-->
                                                 <div class="price-ribbon">{{ $p->status }}</div>
@@ -81,6 +81,7 @@
                                                     </div>
                                                     <div class="col-xs-5 text-left mobile-padding">{{ $p->store_credit_price }}</div>
                                                 </div>
+
                                                 <div class="row mobile-padding">
                                                     <div class="col-xs-6 col-xs-offset-1 text-left mobile-padding">
                                                         <span class="col-xs-2 text-left">
@@ -92,17 +93,20 @@
                                                     </div>
                                                     <div class="col-xs-5 text-left mobile-padding">{{ $p->store_credit_discount_fixed }}</div>
                                                 </div>
+
                                                 <div class="row mobile-padding">
                                                     <div class="col-xs-6 col-xs-offset-1 text-left mobile-padding">
                                                         <span class="col-xs-2 text-left">
                                                             <i class="icon-calculator"></i>
                                                         </span>
                                                         <span class="col-xs-10">
-                                                            Date the package begins to operate
+                                                            Discount percentage
                                                         </span>
                                                     </div>
-                                                    <div class="col-xs-5 text-left mobile-padding">{{ $p->valid_from }}</div>
+                                                    <div class="col-xs-5 text-left mobile-padding">{{ $p->store_credit_discount_percentage }} %</div>
                                                 </div>
+
+
                                                 <div class="row mobile-padding">
                                                     <div class="col-xs-6 col-xs-offset-1 text-left mobile-padding">
                                                         <span class="col-xs-2 text-left">
@@ -112,14 +116,20 @@
                                                             The date the package expires
                                                         </span>
                                                     </div>
-                                                    <div class="col-xs-5 text-left mobile-padding">{{ $p->valid_to }}</div>
+                                                    <div class="col-xs-5 text-left mobile-padding">
+                                                        @if($p->valid_to != '0000-00-00')
+                                                            {{ $p->valid_to }}
+                                                        @else
+                                                            never expires
+                                                        @endif
+                                                    </div>
                                                 </div>
 
 
                                             </div>
                                             <div class="arrow-down arrow-grey"></div>
                                             <div class="price-table-footer">
-                                                <a href="{{ url('/') }}" type="button" class="btn price-button sbold uppercase" style="background-color: #f29407; color: #fff;">Sign Up</a>
+                                                <a href="javascript:;" type="button" class="btn price-button sbold uppercase" style="background-color: #f29407; color: #fff;">Buy</a>
                                             </div>
                                         </div>
                                     </div>
