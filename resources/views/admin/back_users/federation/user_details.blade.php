@@ -464,18 +464,16 @@
                                         <form action="#">
                                             <table class="table table-bordered table-striped">
                                                 @foreach ($permissions as $permission)
-                                                    @if ($user->can($permission->name))
                                                     <tr>
                                                         <td> {{ $permission->display_name }}
                                                             <span class="help-block"> {{ $permission->description }} </span></td>
                                                         <td>
                                                             <label class="uniform-inline">
-                                                                <input type="radio" name="optionsRadios{{rand(10,1000)}}" value="option1" checked disabled /> Yes </label>
+                                                                <input type="radio" name="optionsRadios{{rand(10,1000)}}" value="option1" {{ $user->can($permission->name) ? 'checked' :''}} disabled /> Yes </label>
                                                             <label class="uniform-inline">
-                                                                <input type="radio" name="optionsRadios{{rand(10,1000)}}" value="option2" disabled /> No </label>
+                                                                <input type="radio" name="optionsRadios{{rand(10,1000)}}" value="option2" {{ ! $user->can($permission->name) ? 'checked' :''}} disabled /> No </label>
                                                         </td>
                                                     </tr>
-                                                    @endif
                                                 @endforeach
                                             </table>
                                             <!--end profile-settings-->
@@ -721,7 +719,7 @@
                                             <div class="form-group">
                                                 <label class="control-label">Gender</label>
                                                 <select name="gender" class="form-control">
-                                                    <option>Select Gender</option>
+                                                    <option value="">Select Gender</option>
                                                     <option {!! $user->gender=='F'?'selected="selected"':'' !!} value="F"> Female </option>
                                                     <option {!! $user->gender=='M'?'selected="selected"':'' !!} value="M"> Male </option>
                                                 </select>
@@ -736,7 +734,7 @@
                                             <div class="form-group">
                                                 <label class="control-label">Date of Birth</label>
                                                 <div class="control-label">
-                                                    <div class="input-group input-medium date date-picker" data-date="{{ @$personal->dob_format }}" data-date-format="dd-mm-yyyy" data-date-viewmode="years">
+                                                    <div class="input-group input-medium date date-picker" data-date="{{ @$personal->dob_format }}" data-date-format="yyyy-mm-dd" data-date-end-date="-0d" data-date-start-view="decades">
                                                         <input type="text" class="form-control" name="personalDOB" id="personalDOB" value="{{ @$personal->dob_format }}" readonly>
                                                         <span class="input-group-btn">
                                                             <button class="btn default" type="button">
@@ -921,8 +919,8 @@
 
         $.validator.addMethod("datePickerDate",function(value, element) {
             // put your own logic here, this is just a (crappy) example
-            return value.match(/^\d\d?-\d\d?-\d\d\d\d$/);
-        },"Please enter a date in the format dd/mm/yyyy.");
+            return value.match(/^\d\d\d\d-\d\d?-\d\d?$/);
+        },"Please enter a date in the format yyyy/mm/dd.");
         $.validator.addMethod('filesize',function(value, element, param) {
             // param = size (in bytes)
             // element = element to validate (<input>)
@@ -963,15 +961,20 @@
                             required: true,
                             datePickerDate:true
                         },
+                        gender: {
+                            required:true
+                        },
                         personalEmail: {
                             required: true,
                             email: true,
-                            validate_email:true
+                            validate_email: true
                         },
-                        gender: {
-                            required:true,
-                            minlength:1,
-                        }
+                        personalPhone: {
+                            required: true,
+                            digits: true,
+                            minlength:4,
+                            maxlength:12
+                        },
                     },
 
                     invalidHandler: function (event, validator) { //display error alert on form submit

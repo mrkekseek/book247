@@ -2700,7 +2700,7 @@ class FrontEndUserController extends Controller
             $vars['date_of_birth'] = Carbon::today()->toDateString();
         }
         else{
-            $vars['date_of_birth'] = Carbon::createFromFormat('d-m-Y',$vars['dob'])->toDateString();
+            $vars['date_of_birth'] = Carbon::createFromFormat('Y-m-d',$vars['dob'])->toDateString();
         }
 
         if (!isset($userType)){

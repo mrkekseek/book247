@@ -102,6 +102,9 @@ class UserMembership extends Model
     }
 
     public function get_plan_restrictions(){
+        if (strlen($this->membership_restrictions)<3) {
+            return [];
+        }
         $my_restrictions = json_decode($this->membership_restrictions);
         foreach($my_restrictions as $rest){
             $restrictions[] = [
@@ -129,7 +132,8 @@ class UserMembership extends Model
             '30'  => 'one per month',
             '90'  => 'once every three months',
             '180' => 'once every six months',
-            '360' => 'once per year'
+            '360' => 'once per year',
+            '-1'  => 'lifetime'
         ];
 
         if ($this->user_id==$this->signed_by){
