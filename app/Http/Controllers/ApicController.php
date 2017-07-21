@@ -275,7 +275,7 @@ class ApicController extends Controller
         else
         {
             $locations = ShopLocations::with('address', 'resources', 'resources.category')->get();
-            $response['locations'] = [];
+            $arr_location = [];
             foreach ($locations as $item)
             {
                 $location['name'] = $item->name;
@@ -295,9 +295,13 @@ class ApicController extends Controller
                     $resorce['resource_type'] = $res->category->name;
                     $location['resources'][] = $resorce;
                 }
-                
-                $response['locations'][] = $location;
+                $arr_location[] = $location;
             }
+            $response = [
+                'code' => 1,
+                'locations' => $arr_location,
+                'message' => ''
+            ];
         }
         return $response;
     }
@@ -356,7 +360,8 @@ class ApicController extends Controller
             }
             $response = [
                 'code' => 1,
-                'players' => $age_array
+                'players' => $age_array,
+                'message' => ''
             ];
         }
         return $response;
@@ -406,6 +411,7 @@ class ApicController extends Controller
             $response = [
                 'code' => 1,
                 'players' => $countPlayers,
+                'message' => ''
             ];
         }
         return $response;
@@ -474,6 +480,7 @@ class ApicController extends Controller
             $response = [
                 'code' => 1,
                 'players' => $players,
+                'message' => ''
             ];
         }
         return $response;
@@ -542,16 +549,16 @@ class ApicController extends Controller
                 $booking_time_stop = new Carbon($item->booking_time_stop);
                 switch (TRUE)
                 {
-                    case ($booking_time_start->between($m_start, $m_end) && $booking_time_stop->between($m_start, $m_end)):
+                    case ($booking_time_start->between($m_start, $m_end)):
                         $result['morning']++; 
                         break;
-                    case ($booking_time_start->between($a_start, $a_end) && $booking_time_stop->between($a_start, $a_end)):
+                    case ($booking_time_start->between($a_start, $a_end)):
                         $result['afternoon']++; 
                         break;
-                    case ($booking_time_start->between($e_start, $e_end) && $booking_time_stop->between($e_start, $e_end)):
+                    case ($booking_time_start->between($e_start, $e_end)):
                         $result['evening']++; 
                         break;
-                    case ($booking_time_start->between($n_start, $n_end) && $booking_time_stop->between($n_start, $n_end)):
+                    case ($booking_time_start->between($n_start, $n_end)):
                         $result['night']++; 
                         break;
                 }
@@ -559,6 +566,7 @@ class ApicController extends Controller
             $response = [
                 'code' => 1,
                 'bookings' => $result,
+                'message' => ''
             ];
         }
         return $response;
