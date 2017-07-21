@@ -369,7 +369,7 @@ class MembershipPlansController extends Controller
 
         $vars = $request->only('name','price','plan_period','binding_period','sign_out_period','administration_fee_name','administration_fee_amount','plan_calendar_color','membership_short_description','membership_long_description','status');
 
-        if (!in_array($vars['plan_period'], [7,14,30,90,180,360])){
+        if (!in_array($vars['plan_period'], [7,14,30,90,180,360,-1])){
             return [
                 'success' => false,
                 'errors'  => 'Plan period not in the correct form. Try again!',

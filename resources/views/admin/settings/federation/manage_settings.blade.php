@@ -59,79 +59,85 @@
                                 <div class="table-scrollable">
                                     <table class="table table-striped table-hover table-manage">
                                         <thead>
-                                            <tr>
-                                                <th> # </th>
-                                                <th> Name </th>
-                                                <th> Description </th>
-                                                <th>  </th>
-                                            </tr>
+                                        <tr>
+                                            <th> # </th>
+                                            <th> Name </th>
+                                            <th> Description </th>
+                                            <th>  </th>
+                                        </tr>
                                         </thead>
                                         <tbody>
-                                            @foreach($settings as $s)
-                                                <tr>
-                                                    <td> {{ $s->id }} </td>
-                                                    <td> {{ $s->name }} </td>
-                                                    <td> {{ $s->description }}</td>
-                                                    
-                                                    @if ($s->constrained)
-                                                        <td>
-                                                            <form role="form" class="setting_unconstrained" data-id="{{ $s->id }}">
-                                                                <div class="col-sm-10">
-                                                                    <select class="form-control" name="field_unconstrained">
-                                                                        @if ($s->allowed) @foreach($s->allowed as $row)
-                                                                            <option value="{{ $row->id }}" @if($s->value == $row->id) selected="selected" @endif>{{ $row->item_value }}</option>
-                                                                        @endforeach @endif
-                                                                    </select>
-                                                                </div>
-                                                                <div class="col-sm-2 form-group text-center">
-                                                                     <button type="submit" class="btn btn-primary edit-settings btn-sm">
+                                        @foreach($settings as $s)
+                                            <tr>
+                                                <td> {{ $s->id }} </td>
+                                                <td> {{ $s->name }} </td>
+                                                <td> {{ $s->description }}</td>
+
+                                                @if ($s->constrained)
+                                                    <td>
+                                                        <form role="form" class="setting_unconstrained" data-id="{{ $s->id }}">
+                                                            <div class="col-sm-10">
+                                                                <select class="form-control" name="field_unconstrained" {{ $s->is_protected && env('DebugSettings',1)==0?'readonly disabled':'' }}>
+                                                                    @if ($s->allowed) @foreach($s->allowed as $row)
+                                                                        <option value="{{ $row->id }}" @if($s->value == $row->id) selected="selected" @endif>{{ $row->item_value }}</option>
+                                                                    @endforeach @endif
+                                                                </select>
+                                                            </div>
+                                                            <div class="col-sm-2 form-group text-center">
+                                                                @if ($s->is_protected && env('DebugSettings',1)==0)
+                                                                @else
+                                                                    <button type="submit" class="btn btn-primary edit-settings btn-sm">
                                                                         <i class="fa fa-save"></i>
                                                                     </button>
-                                                                </div>
-                                                            </form>
-                                                        </td>
-                                                    @else
-                                                        <td>
-                                                            <form role="form" class="setting_values" data-min="{{ $s->min_value }}" data-max="{{ $s->max_value }}" data-id="{{ $s->id }}" data-type="{{ $s->data_type }}">
-                                                                @if ($s->data_type == 'numeric')
-                                                                    <div class="col-sm-10 form-group">
-                                                                        <input data-min="{{ $s->min_value }}" data-max="{{ $s->max_value }}" type="text" class="form-control" name="field_numeric" value="{{ $s->value }}" placeholder="{{ $s->min_value }} ... {{ $s->max_value }}"  />
-                                                                    </div>
-                                                                @elseif ($s->data_type == 'string')
-                                                               
-                                                                    <div class="col-sm-10 form-group">
-                                                                        <input type="text" class="form-control" value="{{ $s->value }}" name="field_string" placeholder="String"  />
-                                                                    </div>
-                                                               
-                                                                @elseif ($s->data_type == 'text')
-                                                                
-                                                                    <div class="col-sm-10 form-group">
-                                                                        <textarea type="text" class="form-control" name="field_text" placeholder="Text">{{ $s->value }}</textarea>
-                                                                    </div>
-                                                                
-                                                                 @elseif ($s->data_type == 'date')
-                                                               
-                                                                    <div class="col-sm-10 form-group">
-                                                                        <input type="text" class="form-control" value="{{ $s->value }}" name="field_date" placeholder="Date"  />
-                                                                    </div>
-                                                                 @endif
-                                                                <div class="col-sm-2 form-group text-center">
-                                                                     <button type="submit" class="btn btn-primary edit-settings btn-sm" >
-                                                                        <i class="fa fa-save"></i>
-                                                                    </button>
-                                                                </div>
-                                                            </form>
-                                                        </td>
-                                                    @endif
-                                                </tr>
-                                            @endforeach
-                                            @if( ! count($settings))
-                                                <tr>
-                                                    <td class="text-center" colspan="8">
-                                                        Empty list
+                                                                @endif
+                                                            </div>
+                                                        </form>
                                                     </td>
-                                                </tr>
-                                            @endif
+                                                @else
+                                                    <td>
+                                                        <form role="form" class="setting_values" data-min="{{ $s->min_value }}" data-max="{{ $s->max_value }}" data-id="{{ $s->id }}" data-type="{{ $s->data_type }}">
+                                                            @if ($s->data_type == 'numeric')
+                                                                <div class="col-sm-10 form-group">
+                                                                    <input {{ $s->is_protected && env('DebugSettings',1)==0?'readonly disabled':'' }} data-min="{{ $s->min_value }}" data-max="{{ $s->max_value }}" type="text" class="form-control" name="field_numeric" value="{{ $s->value }}" placeholder="{{ $s->min_value }} ... {{ $s->max_value }}"  />
+                                                                </div>
+                                                            @elseif ($s->data_type == 'string')
+
+                                                                <div class="col-sm-10 form-group">
+                                                                    <input {{ $s->is_protected && env('DebugSettings',1)==0?'readonly disabled':'' }} type="text" class="form-control" value="{{ $s->value }}" name="field_string" placeholder="String"  />
+                                                                </div>
+
+                                                            @elseif ($s->data_type == 'text')
+
+                                                                <div class="col-sm-10 form-group">
+                                                                    <textarea {{ $s->is_protected && env('DebugSettings',1)==0?'readonly disabled':'' }} type="text" class="form-control" name="field_text" placeholder="Text">{{ $s->value }}</textarea>
+                                                                </div>
+
+                                                            @elseif ($s->data_type == 'date')
+
+                                                                <div class="col-sm-10 form-group">
+                                                                    <input {{ $s->is_protected && env('DebugSettings',1)==0?'readonly disabled':'' }} type="text" class="form-control" value="{{ $s->value }}" name="field_date" placeholder="Date"  />
+                                                                </div>
+                                                            @endif
+                                                            <div class="col-sm-2 form-group text-center">
+                                                                @if ($s->is_protected && env('DebugSettings',1)==0)
+                                                                @else
+                                                                    <button type="submit" class="btn btn-primary edit-settings btn-sm">
+                                                                        <i class="fa fa-save"></i>
+                                                                    </button>
+                                                                @endif
+                                                            </div>
+                                                        </form>
+                                                    </td>
+                                                @endif
+                                            </tr>
+                                        @endforeach
+                                        @if( ! count($settings))
+                                            <tr>
+                                                <td class="text-center" colspan="8">
+                                                    Empty list
+                                                </td>
+                                            </tr>
+                                        @endif
                                         </tbody>
                                     </table>
                                 </div>

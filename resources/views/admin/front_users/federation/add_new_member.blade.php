@@ -69,7 +69,7 @@
                                             </div>
                                             <div class="form-group">
                                                 <span class="help-inline">Date of Birth</span>
-                                                <div class="input-group input-medium date date-picker" data-date="{{ \Carbon\Carbon::today()->format('d-m-Y') }}" data-date-format="dd-mm-yyyy" data-date-viewmode="years" style="display:inline-flex; margin-top:2px; margin-right:40px;">
+                                                <div class="input-group input-medium date date-picker" data-date="{{ \Carbon\Carbon::today()->format('Y-m-d') }}" data-date-format="yyyy-mm-dd" data-date-viewmode="years" data-date-end-date="-0d" data-date-start-view="decades" style="display:inline-flex; margin-top:2px; margin-right:40px;">
                                                     <input type="text" class="form-control" name="date_of_birth" readonly style="background-color:#ffffff;">
                                                     <span class="input-group-btn">
                                                         <button class="btn default" type="button">
