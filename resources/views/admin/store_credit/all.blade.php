@@ -44,14 +44,10 @@
                             <thead>
                                 <tr>
                                     <th> #id </th>
-                                    <th> Name </th>
-                                    <th> Description </th>
+                                    <th> Name </th>                                    
                                     <th> Value </th>
                                     <th> Price </th>
                                     <th> Discount </th>
-                                    <th> Fixed discount </th>
-                                    <th> Discount Percentage </th>
-                                    <th> Added by </th>
                                     <th> Status </th>
                                 </tr>
                             </thead>
@@ -59,14 +55,16 @@
                                 @foreach($all_store_credit as $row)
                                     <tr class="odd gradeX">
                                         <td>{{ $row->id }}</td>
-                                        <td>{{ $row->name }}</td>
-                                        <td>{{ $row->description }}</td>
+                                        <td>
+                                            @if($row->status == 'active')
+                                                <a href="{{ route('admin.store_credit_products.show',['id' => $row->id]) }}">{{ $row->name }}</a>
+                                            @else
+                                                <a href="{{ route('admin.store_credit_products.edit',['id' => $row->id]) }}">{{ $row->name }}</a>
+                                            @endif
+                                        </td>
                                         <td>{{ $row->store_credit_value }}</td>
                                         <td>{{ $row->store_credit_price }}</td>
-                                        <td>{{ $row->store_credit_discount_fixed }}</td>
-                                        <td>{{ $row->store_credit_discount_percentage }}</td>
-                                        <td>{{ $row->validity_days }}</td>
-                                        <td>{{ $row->users->first_name }} {{ $row->users->last_name }}</td>
+                                        <td>{{ $row->discount }}</td>
                                         <td>{{ $row->status }}</td>
                                     </tr>
                                 @endforeach
