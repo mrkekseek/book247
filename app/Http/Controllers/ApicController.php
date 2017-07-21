@@ -549,16 +549,16 @@ class ApicController extends Controller
                 $booking_time_stop = new Carbon($item->booking_time_stop);
                 switch (TRUE)
                 {
-                    case ($booking_time_start->between($m_start, $m_end) && $booking_time_stop->between($m_start, $m_end)):
+                    case ($booking_time_start->between($m_start, $m_end)):
                         $result['morning']++; 
                         break;
-                    case ($booking_time_start->between($a_start, $a_end) && $booking_time_stop->between($a_start, $a_end)):
+                    case ($booking_time_start->between($a_start, $a_end)):
                         $result['afternoon']++; 
                         break;
-                    case ($booking_time_start->between($e_start, $e_end) && $booking_time_stop->between($e_start, $e_end)):
+                    case ($booking_time_start->between($e_start, $e_end)):
                         $result['evening']++; 
                         break;
-                    case ($booking_time_start->between($n_start, $n_end) && $booking_time_stop->between($n_start, $n_end)):
+                    case ($booking_time_start->between($n_start, $n_end)):
                         $result['night']++; 
                         break;
                 }
