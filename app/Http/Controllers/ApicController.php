@@ -275,7 +275,7 @@ class ApicController extends Controller
         else
         {
             $locations = ShopLocations::with('address', 'resources', 'resources.category')->get();
-            $response['locations'] = [];
+            $arr_location = [];
             foreach ($locations as $item)
             {
                 $location['name'] = $item->name;
@@ -295,9 +295,12 @@ class ApicController extends Controller
                     $resorce['resource_type'] = $res->category->name;
                     $location['resources'][] = $resorce;
                 }
-                
-                $response['locations'][] = $location;
+                $arr_location[] = $location;
             }
+            $response = [
+                'code' => 1,
+                'locations' => $arr_location,
+            ];
         }
         return $response;
     }
