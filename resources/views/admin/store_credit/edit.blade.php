@@ -29,8 +29,8 @@
         <div class="page-head">
             <!-- BEGIN PAGE TITLE -->
             <div class="page-title">
-                <h1>{!!$text_parts['title']!!}
-                    <small>{!!$text_parts['subtitle']!!}</small>
+                <h1>{!! $text_parts['title'] !!}
+                    <small>{!! $text_parts['subtitle'] !!}</small>
                 </h1>
             </div>
             <!-- END PAGE TITLE -->
@@ -38,18 +38,25 @@
         <!-- END PAGE HEAD-->
         <!-- BEGIN PAGE BASE CONTENT -->
         <div class="row">
+        @if ($product)
             <div class="col-md-12">
                 <div class="portlet light bordered">
                     <div class="portlet-title">
                         <div class="caption">
-                            <i class="icon-equalizer font-red-sunglo"></i>
-                            <span class="caption-subject font-red-sunglo bold uppercase">Create new store credit plans</span>
-                            <span class="caption-helper">add basic details...</span>
+                             <i class="icon-equalizer {{ $product->status == 'active' ? 'font-green-jungle' : 'font-red-thunderbird' }}"></i>
+                            <span class="caption-subject {{ $product->status == 'active' ? 'font-green-jungle' : 'font-red-thunderbird' }} bold uppercase"> Store Credit Product details</span>
+                            <span class="caption-helper {{ $product->status == 'active' ? 'font-green-jungle' : 'font-red-thunderbird' }}">
+                                @if ($product->status == 'active')
+                                    - active and in use
+                                @else
+                                    - status "{{ $product->status }}" - switch to "active" when you want this to be available
+                                @endif
+                            </span>
                         </div>
                     </div>
-                    <div class="portlet-body form">
+                    <div class="portlet-body form" >
                         <!-- BEGIN FORM-->
-                        <form action="#" method="post" id="add_new_store_credit" class="form-horizontal">
+                        <form action="#" id="new_store_credit_product" class="form-horizontal">
                             <div class="form-body">
                                 <div class="row">
                                     <div class="col-md-12">
@@ -64,66 +71,82 @@
                                         <div class="form-group">
                                             <label class="control-label col-md-3"> Name </label>
                                             <div class="col-md-9">
-                                                <input type="text" class="form-control" name="name" placeholder="Name">
+                                                <input type="text" class="form-control" name="name" placeholder="Name" value="{{ $product->name }}">
                                             </div>
                                         </div>
+                                    </div>
+                                    <div class="col-md-12">
                                         <div class="form-group">
                                             <label class="control-label col-md-3"> Description </label>
                                             <div class="col-md-9">
-                                                <textarea type="text" class="form-control" name="description" placeholder="Short description"></textarea>
+                                                <textarea type="text" class="form-control" name="description" placeholder="Description">{{ $product->description }}</textarea>
                                             </div>
                                         </div>
+                                    </div>
+                                    <div class="col-md-12">
                                         <div class="form-group">
-                                            <label class="control-label col-md-3"> Cost of store credit </label>
+                                            <label class="control-label col-md-3">Cost of store credit</label>
                                             <div class="col-md-9">
-                                                <input type="text" class="form-control" name="store_credit_value" placeholder="Cost of store credit">
+                                                <input type="text" class="form-control" name="store_credit_value" placeholder="Cost of store credit" value="{{ $product->store_credit_value }}" />
                                             </div>
                                         </div>
+                                    </div>
+                                    <div class="col-md-12">
                                         <div class="form-group">
-                                            <label class="control-label col-md-3"> The cost of the package without a discount </label>
+                                            <label class="control-label col-md-3">The cost of the package without a discount</label>
                                             <div class="col-md-9">
-                                                <input type="text" class="form-control" name="store_credit_price" placeholder="The cost of the package without a discount">
+                                                <input type="text" class="form-control" name="store_credit_price" placeholder="The cost of the package without a discount" value="{{ $product->store_credit_price }}" />
                                             </div>
                                         </div>
+                                    </div>
+                                    <div class="col-md-12">
                                         <div class="form-group">
-                                            <label class="control-label col-md-3"> Fixed price discount </label>
+                                            <label class="control-label col-md-3">Fixed price discount</label>
                                             <div class="col-md-9">
-                                                <input type="text" class="form-control" name="store_credit_discount_fixed" placeholder="Fixed price discount" value="0">
+                                                <input type="text" class="form-control" name="store_credit_discount_fixed" placeholder="Fixed price discount" value="{{ $product->store_credit_discount_fixed }}">
                                             </div>
                                         </div>
+                                    </div>
+                                    <div class="col-md-12">
                                         <div class="form-group">
-                                            <label class="control-label col-md-3"> Discount from price in % </label>
+                                            <label class="control-label col-md-3">Discount from price in %</label>
                                             <div class="col-md-9">
-                                                <input type="text" class="form-control" name="store_credit_discount_percentage" placeholder="Discount from price in %" value="0">
+                                                <input type="text" class="form-control" name="store_credit_discount_percentage" placeholder="Discount from price in % " value="{{ $product->store_credit_discount_percentage }}" />
                                             </div>
                                         </div>
-                                        
+                                    </div>
+                                    <div class="col-md-12">
                                         <div class="form-group">
-                                            <label class="control-label col-md-3"> Date the package begins to operate </label>
+                                            <label class="control-label col-md-3">Date the package begins to operate</label>
                                             <div class="col-md-9">
+                                
                                                 <div class="input-group date date-picker" data-date-autoclose="true" data-date-orientation="bottom right" data-date="" data-date-format="yyyy-mm-dd"  data-date-start-view="days">
-                                                    <input type="text" class="form-control" readonly="readonly" name="valid_from"  placeholder="Date the package begins to operate" >
+                                                    <input type="text" class="form-control" value="{{ $product->valid_from }}" readonly="readonly" name="valid_from"   placeholder="Date the package begins to operate" >
                                                     <span class="input-group-btn">
                                                         <button class="btn default" type="button">
                                                             <i class="fa fa-calendar"></i>
                                                         </button>
                                                     </span>
                                                 </div>
+
                                             </div>
                                         </div>
-
+                                    </div>
+                                    <div class="col-md-12">
                                         <div class="form-group">
                                             <label class="control-label col-md-3">How many days is active</label>
                                             <div class="col-md-9">
-                                                <input type="text" class="form-control" name="validity_days" placeholder="How many days is active" value="0">
+                                                <input type="text" class="form-control" name="validity_days" placeholder="How many days is active" value="{{ $product->validity_days }}" />
                                             </div>
                                         </div>
-
+                                    </div>
+                                    <div class="col-md-12">
                                         <div class="form-group">
-                                            <label class="control-label col-md-3"> The date the package expires </label>
+                                            <label class="control-label col-md-3">The date the package expires</label>
                                             <div class="col-md-9">
-                                                <div class="input-group date date-picker" data-date-autoclose="true" data-date-orientation="bottom right" data-date="" data-date-format="yyyy-mm-dd"  data-date-start-view="days">
-                                                    <input type="text" class="form-control" readonly="readonly" name="valid_to"  placeholder="The date the package expires" >
+                        
+                                                <div class="input-group date date-picker" data-date-autoclose="true" data-date="" data-date-format="yyyy-mm-dd"  data-date-start-view="days" data-date-orientation="bottom right">
+                                                    <input type="text" class="form-control" value="{{ $product->valid_to }}" readonly="readonly" name="valid_to"  placeholder="The date the package expires" >
                                                     <span class="input-group-btn">
                                                         <button class="btn default" type="button">
                                                             <i class="fa fa-calendar"></i>
@@ -133,33 +156,37 @@
 
                                             </div>
                                         </div>
-                                        <div class="form-group">
-                                            <label class="control-label col-md-3"> Count of packages that a user can purchase </label>
-                                            <div class="col-md-9">
-                                                <input type="text" class="form-control" name="packages_per_user" placeholder="Count of packages that a user can purchase" value="1" />
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="control-label col-md-3"> Status </label>
-                                            <div class="col-md-9">
-                                               <select name="status" class="form-control">
-                                                    @foreach($status as $s)
-                                                        <option @if($s == 'pending') selected="selected" @endif >{{ $s }}</option>
-                                                    @endforeach
-                                               </select>
-                                            </div>
-                                        </div>
-
                                     </div>
-                                </div>
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label class="control-label col-md-3">Count of packages that a user can purchase</label>
+                                            <div class="col-md-9">
+                                                <input type="text" class="form-control" name="packages_per_user" placeholder="Count of packages that a user can purchase" value="{{ $product->packages_per_user }}" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label class="control-label col-md-3">Status</label>
+                                            <div class="col-md-9">
+                                                <select class="form-control" name="status">
+                                                    @foreach($status as $s)
+                                                        <option @if($s == $product->status) selected="selected" @endif>{{ $s }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>  
+                                <!--/row-->
                             </div>
                             <div class="form-actions">
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="row">
                                             <div class="col-md-offset-3 col-md-9">
-                                                <button type="submit" class="btn green">Add</button>
-                                                <button type="button" class="btn default">Cancel</button>
+                                                <button type="submit" class="btn green">Save Product</button>
+                                                <a href="{{ route('admin.store_credit_products.index') }}"  class="btn default">Cancel</a>
                                             </div>
                                         </div>
                                     </div>
@@ -171,15 +198,14 @@
                     </div>
                 </div>
             </div>
-        </div>
-        <!-- END PAGE BASE CONTENT -->
+        @endif  
     </div>
 @endsection
 
 @section('pageBelowLevelPlugins')
     <script src="{{ asset('assets/global/plugins/moment.min.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/global/plugins/bootstrap-daterangepicker/daterangepicker.min.js') }}" type="text/javascript"></script>
-    
+
     <script src="{{ asset('assets/global/scripts/datatable.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/global/plugins/datatables/datatables.min.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/global/plugins/datatables/plugins/bootstrap/datatables.bootstrap.js') }}" type="text/javascript"></script>
@@ -187,8 +213,11 @@
     <script src="{{ asset('assets/global/plugins/bootstrap-colorpicker/js/bootstrap-colorpicker.js') }}" type="text/javascript"></script>
 @endsection
 
+
 @section('pageBelowLevelScripts')
     <script src="{{ asset('assets/global/plugins/jquery-notific8/jquery.notific8.min.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('assets/global/scripts/jquery.matchHeight.js') }}" type="text/javascript"></script>
+    {{--get match height--}}
 @endsection
 
 @section('themeBelowLayoutScripts')
@@ -199,9 +228,12 @@
 
 @section('pageCustomJScripts')
     <script type="text/javascript">
+
+
         var FormValidation = function () {
+
             var handleValidation = function() {
-                var form = $('#add_new_store_credit');
+                var form = $('#new_store_credit_product');
                 var error = $('.alert-danger', form);
                 var success = $('.alert-success', form);
 
@@ -247,7 +279,6 @@
                     invalidHandler: function (event, validator) {
                         success.hide();
                         error.show();
-                        App.scrollTo(error, -200);
                     },
 
                     errorPlacement: function (error, element) {
@@ -274,7 +305,7 @@
                     submitHandler: function (form) {
                         success.show();
                         error.hide();
-                        add_new_store_credit();
+                        update_store_credit_details();
                     }
                 });
             }
@@ -288,18 +319,13 @@
 
         $(document).ready(function(){
             FormValidation.init();
-
-            $("[name='valid_from']").val(moment().format('YYYY-MM-DD'));
-            $("[name='valid_to']").val(moment().format('YYYY-MM-DD'));
-
             $("[data-date]").datepicker({});
-
         });
 
-        function add_new_store_credit(){
+        function update_store_credit_details(){
             $.ajax({
-                url: '{{ route('admin.store_credit_products.store') }}',
-                type: "post",
+                url: '{{ route('admin.store_credit_products.update', ['id' => $product->id ]) }}',
+                type: "patch",
                 data: {
                     "name" : $("input[name='name']").val(),
                     "description" : $("textarea[name='description']").val(),
@@ -311,7 +337,7 @@
                     "valid_from" : $("input[name='valid_from']").val(),
                     "valid_to" : $("input[name='valid_to']").val(),
                     "packages_per_user" : $("input[name='packages_per_user']").val(),
-                    "status" : $("select[name='status']").val(),
+                    "status" : $("select[name='status']").val()
                 },
                 success: function(data){
                     if(data.success){
@@ -329,5 +355,6 @@
                 }
             });
         }
+
     </script>
 @endsection
