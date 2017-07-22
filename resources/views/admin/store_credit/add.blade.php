@@ -101,7 +101,7 @@
                                         <div class="form-group">
                                             <label class="control-label col-md-3"> Date the package begins to operate </label>
                                             <div class="col-md-9">
-                                                <div class="input-group date date-picker" data-date-autoclose="true" data-date-orientation="bottom right" data-date="" data-date-format="yyyy-mm-dd"  data-date-start-view="days">
+                                                <div class="input-group date date-picker from" data-date-autoclose="true" data-date-orientation="bottom right" data-date="" data-date-format="yyyy-mm-dd"  data-date-start-view="days" >
                                                     <input type="text" class="form-control" readonly="readonly" name="valid_from"  placeholder="Date the package begins to operate" >
                                                     <span class="input-group-btn">
                                                         <button class="btn default" type="button">
@@ -122,7 +122,7 @@
                                         <div class="form-group">
                                             <label class="control-label col-md-3"> The date the package expires </label>
                                             <div class="col-md-9">
-                                                <div class="input-group date date-picker" data-date-autoclose="true" data-date-orientation="bottom right" data-date="" data-date-format="yyyy-mm-dd"  data-date-start-view="days">
+                                                <div class="input-group date date-picker to" data-date-autoclose="true" data-date-orientation="bottom right" data-date="" data-date-format="yyyy-mm-dd"  data-date-start-view="days">
                                                     <input type="text" class="form-control" readonly="readonly" name="valid_to"  placeholder="The date the package expires" >
                                                     <span class="input-group-btn">
                                                         <button class="btn default" type="button">
@@ -290,9 +290,15 @@
             FormValidation.init();
 
             $("[name='valid_from']").val(moment().format('YYYY-MM-DD'));
-            $("[name='valid_to']").val(moment().format('YYYY-MM-DD'));
+            $("[name='valid_to']").val(moment(new Date()).add(1, 'days').format('YYYY-MM-DD'));
 
-            $("[data-date]").datepicker({});
+            $(".from").datepicker({
+                startDate: new Date()
+            });
+
+             $(".to").datepicker({
+                startDate: "+1d"
+            });
 
         });
 

@@ -103,7 +103,7 @@
                 </li>
             </ul>
         </li>
-        <li class="nav-item {{ in_array($in_sidebar, array('admin-backend-add-packs', 'admin-backend-all-packs')) ? 'active open' : '' }} ">
+        <li class="nav-item {{ in_array($in_sidebar, array('admin-backend-add-packs', 'admin-backend-all-packs', 'admin-backend-store_credit_product-edit_product', 'admin-backend-store_credit_product-view_product')) ? 'active open' : '' }} ">
             <a href="javascript:;" class="nav-link nav-toggle">
                 <i class="icon-calculator"></i>
                 <span class="title"> Store Credit </span>
@@ -115,7 +115,7 @@
                         <span class="title">Add new pack</span>
                     </a>
                 </li>
-                <li class="nav-item {{ $in_sidebar == 'admin-backend-all-packs' ? 'active open' : '' }}">
+                <li class="nav-item {{ in_array($in_sidebar, ['admin-backend-all-packs', 'admin-backend-store_credit_product-view_product', 'admin-backend-store_credit_product-edit_product']) ? 'active open' : '' }}">
                     <a href="{{ route('admin.store_credit_products.index') }}" class="nav-link ">
                         <span class="title">List all packs</span>
                     </a>
