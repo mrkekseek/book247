@@ -189,7 +189,7 @@ class StoreCreditProductsController extends Controller
             'text_parts'    => $text_parts,
             'in_sidebar'    => $sidebar_link,
             'product'       => $product,
-            'status'        => ['active', 'pending', 'suspended', 'deleted']
+            'status'        => ['active', 'suspended', 'deleted']
         ]);
     }
 
