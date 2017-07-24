@@ -103,7 +103,7 @@
                                                             Paying Price
                                                         </span>
                                                     </div>
-                                                    <div class="col-xs-4 text-left mobile-padding">{{ $p->store_credit_value }} {{ \App\Http\Controllers\AppSettings::get_setting_value_by_name('finance_currency') }}</div>
+                                                    <div class="col-xs-4 text-left mobile-padding">{{ $p->final_price }} {{ \App\Http\Controllers\AppSettings::get_setting_value_by_name('finance_currency') }}</div>
                                                 </div>
 
                                                 <div class="row mobile-padding">
