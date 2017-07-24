@@ -207,12 +207,13 @@ class StoreCreditProductsController extends Controller
             return redirect()->intended(route('admin/login'));
         }
 
-
         $product = StoreCreditProducts::where('id', '=', $id)->get()->first();
         if ( ! $product)
         {
             $product = false;
         }
+
+        StoreCreditProducts::where('id', '=', $id)->update(['status' => 'pending']);
 
         $breadcrumbs = [
             'Home'              => route('admin'),
@@ -309,7 +310,7 @@ class StoreCreditProductsController extends Controller
                 'success' => true,
                 'message' => 'Page will reload so you can add all the other details for this plan...',
                 'title'   => 'Store Credit Updated',
-                'redirect_link' => route('admin.store_credit_products.edit', ['id' => $product->id])
+                'redirect_link' => route('admin.store_credit_products.index')
             ];
         }
 
@@ -338,5 +339,67 @@ class StoreCreditProductsController extends Controller
     public function destroy($id)
     {
 
+    }
+
+    public function store_credit_change_status(Request $request)
+    {
+         $user = Auth::user();
+        if ( ! $user || ! $user->is_back_user())
+        {
+            return [
+                'success'   => false,
+                'errors'    => 'Error while trying to authenticate. Login first then use this function.',
+                'title'     => 'Not logged in'];
+        }
+
+        $vars = $request->only('id', 'status');
+
+        $product = StoreCreditProducts::where('id', '=', $vars["id"])->get()->first();
+
+        if ( ! $product)
+        {
+            return [
+                'success' => false,
+                'errors'  => 'Store credit product not found in the database',
+                'title'   => 'Error updating store credit product'
+            ];
+        }
+
+        $fillable = [
+            'status' => $vars['status']
+        ];
+
+        if($product->update($fillable))
+        {
+            Activity::log([
+                'contentId'     => $user->id,
+                'contentType'   => 'store_credit_products',
+                'action'        => 'Store Credit Change Status',
+                'description'   => 'Store Credit Change Status, plan ID : '.$product->id,
+                'details'       => 'Store Credit by user : '.$user->id,
+                'updated'       => false,
+            ]);
+
+            return [
+                'success' => true,
+                'message' => 'Page will reload so you can add all the other details for this plan...',
+                'title'   => 'Store Credit Change Status'
+            ];
+        }
+
+        Activity::log([
+            'contentId'     => $user->id,
+            'contentType'   => 'store_credit_products',
+            'action'        => 'Store Credit Not Change Status',
+            'description'   => 'Store Credit Not Change Status, plan ID : '.$product->id,
+            'details'       => 'Store Credit by user : '.$user->id,
+            'updated'       => false,
+        ]);
+
+        return [
+            'success' => false,
+            'message' => 'Page will reload so you can add all the other details for this plan...',
+            'title'   => 'Store Credit Error Change Status'
+        ];
     }
 }

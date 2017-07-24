@@ -120,7 +120,7 @@
                                             <label class="control-label col-md-3">Date the package begins to operate</label>
                                             <div class="col-md-9">
                                 
-                                                <div class="input-group date date-picker" data-date-autoclose="true" data-date-orientation="bottom right" data-date="" data-date-format="yyyy-mm-dd"  data-date-start-view="days">
+                                                <div class="input-group date date-picker from" data-date-autoclose="true" data-date-orientation="bottom right" data-date="" data-date-format="yyyy-mm-dd"  data-date-start-view="days">
                                                     <input type="text" class="form-control" value="{{ $product->valid_from }}" readonly="readonly" name="valid_from"   placeholder="Date the package begins to operate" >
                                                     <span class="input-group-btn">
                                                         <button class="btn default" type="button">
@@ -145,7 +145,7 @@
                                             <label class="control-label col-md-3">The date the package expires</label>
                                             <div class="col-md-9">
                         
-                                                <div class="input-group date date-picker" data-date-autoclose="true" data-date="" data-date-format="yyyy-mm-dd"  data-date-start-view="days" data-date-orientation="bottom right">
+                                                <div class="input-group date date-picker to" data-date-autoclose="true" data-date="" data-date-format="yyyy-mm-dd"  data-date-start-view="days" data-date-orientation="bottom right">
                                                     <input type="text" class="form-control" value="{{ $product->valid_to }}" readonly="readonly" name="valid_to"  placeholder="The date the package expires" >
                                                     <span class="input-group-btn">
                                                         <button class="btn default" type="button">
@@ -343,7 +343,7 @@
                     if(data.success){
                         show_notification(data.title, data.message, 'lime', 3500, 0);
                         setTimeout(function(){
-                            window.location.reload();
+                            window.location.href = data.redirect_link;
                         }, 2000);
                     }
                     else{

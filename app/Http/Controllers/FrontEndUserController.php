@@ -3772,14 +3772,8 @@ class FrontEndUserController extends Controller
     }
 
     public function type_of_memberships(){
-        if (AppSettings::get_setting_value_by_name('globalWebsite_show_memberships_on_frontend')!=1){
-            return redirect()->intended(route('homepage'));
-        }
-
-        $membership_plans = MembershipPlan::with('price')->where('name','!=','Drop-in')->where('status','=','active')->orderBy('name')->get();
-
         $breadcrumbs = [
-            'Home'      => route('homepage'),
+            'Home'      => route('admin'),
             'Dashboard' => '',
         ];
         $text_parts  = [
@@ -3793,7 +3787,7 @@ class FrontEndUserController extends Controller
             'breadcrumbs' => $breadcrumbs,
             'text_parts'  => $text_parts,
             'in_sidebar'  => $sidebar_link,
-            'plans'       => $membership_plans
+            'plans'       => DB::table("membership_plans")->join("membership_plan_prices", "membership_plans.price_id", "=", "membership_plan_prices.id")->get()
         ]);
     }
 
@@ -3809,19 +3803,17 @@ class FrontEndUserController extends Controller
         ];
         $sidebar_link= 'front-type_of_store_credit';
 
-        $products = StoreCreditProducts::where('status','=','active')->orderBy('name')->get();
-        foreach($products as $key=>$row)
+        $products = [];
+        foreach(StoreCreditProducts::where('status', '!=', 'pending')->where('status', '!=', 'deleted')->get() as $row)
         {
+
             if ( ! empty($row->store_credit_discount_fixed))
             {
-                $products[$key]->final_price = $row->store_credit_value - $row->store_credit_discount_fixed;
+                $row['store_credit_value'] = $row->store_credit_value - $row->store_credit_discount_fixed;
             }
             elseif ($row->store_credit_discount_percentage)
             {
-                $products[$key]->final_price = $row['store_credit_value'] - ($row->store_credit_discount_percentage / 100 * $row['store_credit_value']);
-            }
-            else{
-                $products[$key]->final_price = $row->pay
+                $row['store_credit_value'] = $row['store_credit_value'] - ($row->store_credit_discount_percentage / 100 * $row['store_credit_value']);
             }
 
             $products[] = $row;

@@ -743,6 +743,11 @@ else
         //PUT/PATCH     /store_credit_products/{id}       update      admin.store_credit_products.update
         //DELETE        /store_credit_products/{id}       destroy     admin.membership_plan.destroy
 
+        Route::post('store_credit_products/change_status', [
+            'as' => 'store_credit_products-change_status',
+            'uses' => 'StoreCreditProductsController@store_credit_change_status'
+        ]);
+
 
         Route::post('membership_plan/add_restriction', [
             'as' => 'membership_plan-add_restriction',
