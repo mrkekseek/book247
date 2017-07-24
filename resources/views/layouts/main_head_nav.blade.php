@@ -397,7 +397,7 @@
                         </a>
                     </li>
                     @endif
-                    @if (\App\Http\Controllers\AppSettings::get_setting_value_by_name('globalWebsite_show_memberships_on_frontend') == 1)
+                    @if (\App\Http\Controllers\AppSettings::get_setting_value_by_name('globalWebsite_show_store_credit_packs_on_frontend') == 1)
                     <li class="menu-dropdown mega-menu-dropdown {{ $in_sidebar == "front-type_of_store_credit" ? "active" : ""}}">
                         <a href="{{ route('front/store_credit') }}"> Store Credits
                             <span class="arrow"></span>

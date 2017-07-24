@@ -25,8 +25,6 @@
             <div class="container">
                 <!-- BEGIN PAGE CONTENT INNER -->
                 <div class="page-content-inner">
-
-                   
                     <div class="portlet light portlet-fit ">
                         <div class="portlet-title">
                             <div class="caption">
@@ -48,7 +46,7 @@
                                             <div class="arrow-down" style="border-top-color: {{ $p->plan_calendar_color }}"></div>
                                             <div class="price-table-pricing">
                                                 <h3>
-                                                    <span class="price-sign"></span>{{ $p->price }}
+                                                    <span class="price-sign"></span>{{ $p->price->price }}
                                                 </h3>
                                                 <!-- <p>per month</p>-->
                                                 <!-- <div class="price-ribbon">{{ $p->status }}</div> -->
@@ -68,7 +66,17 @@
                                                             Plan period
                                                         </span>
                                                     </div>
-                                                    <div class="col-xs-5 text-left mobile-padding">{{ $p->plan_period }}</div>
+                                                    <div class="col-xs-5 text-left mobile-padding">
+                                                        @if ($p->plan_period==7 || $p->plan_period==14)
+                                                            {{ $p->plan_period }} Days
+                                                        @elseif( in_array($p->plan_period,[30, 90, 180]))
+                                                            {{ $p->plan_period/30 }} Month(s)
+                                                        @elseif( in_array($p->plan_period, 360) )
+                                                            one year
+                                                        @else
+                                                            lifetime
+                                                        @endif
+                                                    </div>
                                                 </div>
                                                 <div class="row mobile-padding">
                                                     <div class="col-xs-6 col-xs-offset-1 text-left mobile-padding">
@@ -108,12 +116,9 @@
                             </div>
                         </div>
                     </div>
-                   
-                    
                 </div>
                 <!-- END PAGE CONTENT INNER -->
             </div>
-
         </div>
         <!-- END PAGE CONTENT BODY -->
         <!-- END CONTENT BODY -->
@@ -134,7 +139,7 @@
 @section('pageBelowLevelPlugins')
     <script src="{{ asset('assets/global/plugins/jquery-validation/js/jquery.validate.min.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/global/plugins/jquery-validation/js/additional-methods.min.js') }}" type="text/javascript"></script>
-
+    <script src="{{ asset('assets/global/scripts/jquery.matchHeight.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/global/plugins/jquery-notific8/jquery.notific8.min.js') }}" type="text/javascript"></script>
 @endsection
 
@@ -157,6 +162,11 @@
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             }
+        });
+
+        var options = { byRow: true, property: 'height', target: null, remove: false};
+        $(function() {
+            $('.price-table-content').matchHeight(options);
         });
 
         function show_notification(title_heading, message, theme, life, sticky) {

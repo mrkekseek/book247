@@ -42,4 +42,8 @@ class MembershipPlanPrice extends Model
             default:break;
         }
     }
+
+    public function membership_plan(){
+        return $this->belongsTo('App\MembershipPlan', 'id', 'membership_id');
+    }
 }

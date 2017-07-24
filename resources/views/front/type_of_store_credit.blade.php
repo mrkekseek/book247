@@ -25,8 +25,6 @@
             <div class="container">
                 <!-- BEGIN PAGE CONTENT INNER -->
                 <div class="page-content-inner">
-
-                   
                     <div class="portlet light portlet-fit ">
                         <div class="portlet-title">
                             <div class="caption">
@@ -48,75 +46,76 @@
                                             <div class="arrow-down" style="border-top-color: #48a838;"></div>
                                             <div class="price-table-pricing">
                                                 <h3>
-                                                    <span class="price-sign"></span>{{ number_format($p->store_credit_value, 2) }}
+                                                    <span class="price-sign"></span>{{ $p->store_credit_value }} {{ \App\Http\Controllers\AppSettings::get_setting_value_by_name('finance_currency') }}
                                                 </h3>
                                                 <!-- <p>per month</p>-->
-                                                <div class="price-ribbon">{{ $p->status }}</div>
+                                                <div class="price-ribbon"> Credit Value </div>
                                             </div>
                                             <div class="price-table-content">
                                                 <div class="row mobile-padding">
-                                                    <div class="col-xs-11 col-xs-offset-1 text-left mobile-padding">
+                                                    <div class="col-xs-11 col-xs-offset-1 text-left mobile-padding is_pack_description">
                                                         <p>{{ $p->description }}</p>
                                                     </div>
                                                 </div>
                                                 <div class="row mobile-padding">
-                                                    <div class="col-xs-6 col-xs-offset-1 text-left mobile-padding">
+                                                    <div class="col-xs-7 col-xs-offset-1 text-left mobile-padding">
                                                         <span class="col-xs-2 text-left">
                                                             <i class="icon-calculator"></i>
                                                         </span>
                                                         <span class="col-xs-10">
-                                                            Cost of store credit
+                                                            Price without a discount
                                                         </span>
                                                     </div>
-                                                    <div class="col-xs-5 text-left mobile-padding">{{ $p->store_credit_value }}</div>
+                                                    <div class="col-xs-4 text-left mobile-padding">{{ $p->store_credit_price }} {{ \App\Http\Controllers\AppSettings::get_setting_value_by_name('finance_currency') }}</div>
                                                 </div>
+
+                                                @if ($p->store_credit_discount_fixed==0 && $p->store_credit_discount_percentage!=0)
+                                                    <div class="row mobile-padding">
+                                                        <div class="col-xs-7 col-xs-offset-1 text-left mobile-padding">
+                                                            <span class="col-xs-2 text-left">
+                                                                <i class="icon-calculator"></i>
+                                                            </span>
+                                                            <span class="col-xs-10">
+                                                                Discount
+                                                            </span>
+                                                        </div>
+                                                        <div class="col-xs-4 text-left mobile-padding">{{ $p->store_credit_discount_percentage }} %</div>
+                                                    </div>
+                                                @elseif ($p->store_credit_discount_fixed!=0)
+                                                    <div class="row mobile-padding">
+                                                        <div class="col-xs-7 col-xs-offset-1 text-left mobile-padding">
+                                                        <span class="col-xs-2 text-left">
+                                                            <i class="icon-calculator"></i>
+                                                        </span>
+                                                            <span class="col-xs-10">
+                                                            Discount
+                                                        </span>
+                                                        </div>
+                                                        <div class="col-xs-4 text-left mobile-padding">{{ $p->store_credit_discount_fixed }} {{ \App\Http\Controllers\AppSettings::get_setting_value_by_name('finance_currency') }}</div>
+                                                    </div>
+                                                @endif
                                                 <div class="row mobile-padding">
-                                                    <div class="col-xs-6 col-xs-offset-1 text-left mobile-padding">
+                                                    <div class="col-xs-7 col-xs-offset-1 text-left mobile-padding">
                                                         <span class="col-xs-2 text-left">
                                                             <i class="icon-calculator"></i>
                                                         </span>
                                                         <span class="col-xs-10">
-                                                            The cost of the package without a discount
+                                                            Paying Price
                                                         </span>
                                                     </div>
-                                                    <div class="col-xs-5 text-left mobile-padding">{{ $p->store_credit_price }}</div>
+                                                    <div class="col-xs-4 text-left mobile-padding">{{ $p->store_credit_value }} {{ \App\Http\Controllers\AppSettings::get_setting_value_by_name('finance_currency') }}</div>
                                                 </div>
 
                                                 <div class="row mobile-padding">
-                                                    <div class="col-xs-6 col-xs-offset-1 text-left mobile-padding">
+                                                    <div class="col-xs-7 col-xs-offset-1 text-left mobile-padding">
                                                         <span class="col-xs-2 text-left">
                                                             <i class="icon-calculator"></i>
                                                         </span>
                                                         <span class="col-xs-10">
-                                                            Fixed price discount
+                                                            Available until
                                                         </span>
                                                     </div>
-                                                    <div class="col-xs-5 text-left mobile-padding">{{ $p->store_credit_discount_fixed }}</div>
-                                                </div>
-
-                                                <div class="row mobile-padding">
-                                                    <div class="col-xs-6 col-xs-offset-1 text-left mobile-padding">
-                                                        <span class="col-xs-2 text-left">
-                                                            <i class="icon-calculator"></i>
-                                                        </span>
-                                                        <span class="col-xs-10">
-                                                            Discount percentage
-                                                        </span>
-                                                    </div>
-                                                    <div class="col-xs-5 text-left mobile-padding">{{ $p->store_credit_discount_percentage }} %</div>
-                                                </div>
-
-
-                                                <div class="row mobile-padding">
-                                                    <div class="col-xs-6 col-xs-offset-1 text-left mobile-padding">
-                                                        <span class="col-xs-2 text-left">
-                                                            <i class="icon-calculator"></i>
-                                                        </span>
-                                                        <span class="col-xs-10">
-                                                            The date the package expires
-                                                        </span>
-                                                    </div>
-                                                    <div class="col-xs-5 text-left mobile-padding">
+                                                    <div class="col-xs-4 text-left mobile-padding">
                                                         @if($p->valid_to != '0000-00-00')
                                                             {{ $p->valid_to }}
                                                         @else
@@ -124,12 +123,10 @@
                                                         @endif
                                                     </div>
                                                 </div>
-
-
                                             </div>
                                             <div class="arrow-down arrow-grey"></div>
                                             <div class="price-table-footer">
-                                                <a href="javascript:;" type="button" class="btn price-button sbold uppercase" style="background-color: #f29407; color: #fff;">Buy</a>
+                                                <a href="javascript:;" type="button" class="btn price-button sbold uppercase" style="background-color: #f29407; color: #fff;">Buy {{ $p->name }}</a>
                                             </div>
                                         </div>
                                     </div>
@@ -143,8 +140,6 @@
                             </div>
                         </div>
                     </div>
-                   
-                    
                 </div>
                 <!-- END PAGE CONTENT INNER -->
             </div>
@@ -169,7 +164,7 @@
 @section('pageBelowLevelPlugins')
     <script src="{{ asset('assets/global/plugins/jquery-validation/js/jquery.validate.min.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/global/plugins/jquery-validation/js/additional-methods.min.js') }}" type="text/javascript"></script>
-
+    <script src="{{ asset('assets/global/scripts/jquery.matchHeight.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/global/plugins/jquery-notific8/jquery.notific8.min.js') }}" type="text/javascript"></script>
 @endsection
 
@@ -192,6 +187,12 @@
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             }
+        });
+
+        var options = { byRow: true, property: 'height', target: null, remove: false};
+        $(function() {
+            $('.price-table-content').matchHeight(options);
+            $('.is_pack_description').matchHeight(options);
         });
 
         function show_notification(title_heading, message, theme, life, sticky) {

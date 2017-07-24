@@ -25,7 +25,10 @@ class AppSettings extends Controller
             return redirect()->intended(route('admin/login'));
         }
 
-        $allSettings = Settings::get_formatted();
+        //$allSettings = Settings::get_formatted();
+        if (env('DebugSettings',0)==0){
+            return redirect()->intended(route('admin/settings/manage_settings'));
+        }
 
         $breadcrumbs = [
             'Home'              => route('admin'),
@@ -186,7 +189,7 @@ class AppSettings extends Controller
         ];
     }
 
-    public function manage_settings(Request $request)
+    public function manage_settings()
     {
         $user = Auth::user();
         if ( ! $user || ! $user->is_back_user())
@@ -207,7 +210,13 @@ class AppSettings extends Controller
         }
 
         $settings = array();
-        foreach (Settings::all() as $row) 
+        if (env('DebugSettings',0)==0){
+            $allSettings = Settings::where('is_protected','=',0)->get();
+        }
+        else{
+            $allSettings = Settings::all();
+        }
+        foreach ($allSettings as $row)
         {
             $row['value'] = isset($app_settings[$row->id]) ? $app_settings[$row->id] : "";
             $row['allowed'] = isset($allowed[$row->id]) ? $allowed[$row->id] : FALSE;

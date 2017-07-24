@@ -268,11 +268,13 @@
                 <span class="arrow"></span>
             </a>
             <ul class="sub-menu">
+                @if (env('DebugSettings',0)==1)
                 <li class="nav-item {{ $in_sidebar == 'admin-settings-all_list' ? 'active open' : '' }}">
                     <a href="{{route('admin/settings/list_all')}}" class="nav-link ">
                         <span class="title">Define and mentain</span>
                     </a>
                 </li>
+                @endif
                 <li class="nav-item {{ $in_sidebar == 'admin-settings-manage_settings' ? 'active open' : '' }}">
                     <a href="{{route('admin/settings/manage_settings')}}" class="nav-link ">
                         <span class="title">Manage settings</span>
@@ -293,18 +295,18 @@
                         <span class="title">All Financial Profiles</span>
                     </a>
                 </li>
+                @if ($in_sidebar=='admin-settings-financial_profiles-view_edit')
+                    <li class="nav-item {{ $in_sidebar=='admin-settings-financial_profiles-view_edit'?'active open':'' }}">
+                        <a href="" class="nav-link ">
+                            <span class="title">Financial Profile Details</span>
+                        </a>
+                    </li>
+                @endif
                <li class="nav-item {{ $in_sidebar == 'admin-templates_email-list_all' ? 'active open': '' }}">
                     <a href="{{ route('admin/templates_email/list_all') }}" class="nav-link ">
                         <span class="title">Email templates</span>
                     </a>
                 </li>
-                @if ($in_sidebar=='admin-settings-financial_profiles-view_edit')
-                <li class="nav-item {{ $in_sidebar=='admin-settings-financial_profiles-view_edit'?'active open':'' }}">
-                    <a href="" class="nav-link ">
-                        <span class="title">Financial Profile Details</span>
-                    </a>
-                </li>
-                @endif
             </ul>
         </li>
         @endif

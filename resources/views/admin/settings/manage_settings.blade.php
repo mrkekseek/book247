@@ -67,9 +67,9 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            @foreach($settings as $s)
+                                            @foreach($settings as $key=>$s)
                                                 <tr>
-                                                    <td> {{ $s->id }} </td>
+                                                    <td> {{ $key+1 }} </td>
                                                     <td> {{ $s->name }} </td>
                                                     <td> {{ $s->description }}</td>
                                                     

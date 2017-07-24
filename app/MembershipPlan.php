@@ -93,7 +93,7 @@ class MembershipPlan extends Model
     }
 
     public function price(){
-        return $this->hasMany('App\MembershipPlanPrice', 'id', 'price_id')->orderBy('created_at','DESC');
+        return $this->hasOne('App\MembershipPlanPrice', 'id', 'price_id')->orderBy('created_at','DESC');
     }
 
     public function restrictions(){
