@@ -165,14 +165,20 @@
                                             </div>
                                         </div>
                                     </div>
+
                                     <div class="col-md-12">
                                         <div class="form-group">
                                             <label class="control-label col-md-3">Status</label>
                                             <div class="col-md-9">
-                                                <span class="form-control-static form-control border-blue-steel" >{{ $product->status }}</span>
+                                                <select id="status" class="form-control border-blue-steel">
+                                                    @foreach($status as $s)
+                                                        <option @if($s == $product->status) selected="selected" @endif name="{{ $s }}">{{ $s }}</option>
+                                                    @endforeach
+                                                </select>
                                             </div>
                                         </div>
                                     </div>
+
                                 </div>  
                                 <!--/row-->
                             </div>
@@ -224,5 +230,36 @@
 
 @section('pageCustomJScripts')
     <script type="text/javascript">
+        
+        $(document).ready(function(){
+            $("#status").change(function(){
+                var current = $(this).val();
+                
+                $.ajax({
+                    url: '{{ route('store_credit_products-change_status') }}',
+                    type: "post",
+                    data: {
+                        "id"     : {{ $product->id }},
+                        "status" : current
+                    },
+                    success: function(data){
+                        if(data.success){
+                            show_notification(data.title, data.message, 'lime', 3500, 0);
+                            setTimeout(function(){
+                                window.location.reload();
+                            }, 2000);
+                        }
+                        else{
+                            for(var i in data.errors)
+                            {
+                                show_notification(data.title, data.errors[i], 'ruby', 3500, 0);    
+                            }
+                        }
+                    }
+                });
+
+            });
+        });
+
     </script>
 @endsection

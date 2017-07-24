@@ -3804,7 +3804,7 @@ class FrontEndUserController extends Controller
         $sidebar_link= 'front-type_of_store_credit';
 
         $products = [];
-        foreach(StoreCreditProducts::all() as $row)
+        foreach(StoreCreditProducts::where('status', '!=', 'pending')->where('status', '!=', 'deleted')->get() as $row)
         {
 
             if ( ! empty($row->store_credit_discount_fixed))
