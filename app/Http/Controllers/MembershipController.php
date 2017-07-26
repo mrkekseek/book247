@@ -56,8 +56,8 @@ class MembershipController extends Controller
         }
         else{
             $user = Auth::user();
-            $is_backend_employee = $user->can('members-management');
         }
+        $is_backend_employee = $user->can('members-management');
 
         $vars = $request->only('member_id', 'selected_plan', 'start_date');
         if ($is_backend_employee==false && $user->id!=$vars['member_id']){
