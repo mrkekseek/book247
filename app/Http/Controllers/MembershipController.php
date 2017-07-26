@@ -34,7 +34,7 @@ class MembershipController extends Controller
 
     public static $PAYMENT_DONE = "done";
 
-    public function assign_membership_to_member(Request $request, $status = 'active'){
+    public function assign_membership_to_member(Request $request, $status = 'active', $federationMemberId = false){
 
         if (!Auth::check()) {
             return [
@@ -46,6 +46,18 @@ class MembershipController extends Controller
         else{
             $user = Auth::user();
             $is_backend_employee = $user->can('members-management');
+        }
+
+        if (env('FEDERATION',false) && $federationMemberId!=false && $user==false){
+            // we have a federation member trying to buy using the iframe
+            $user = User::where('id','=',$federationMemberId)->first();
+            if (!$user){
+                return [
+                    'success'   => false,
+                    'errors'    => 'Could not find the requested member',
+                    'title'     => 'An error occurred'
+                ];
+            }
         }
 
         $vars = $request->only('member_id', 'selected_plan', 'start_date');
@@ -781,9 +793,7 @@ class MembershipController extends Controller
     {
         if ($r->get('user_id')  && $r->get('payment_method') && $r->get('membership')) {
             $user = User::where('sso_user_id',$r->get('user_id'))->first();
-            $status = Auth::loginUsingId($user->id);
-            if ( $status ) {
-
+            if ( $user ) {
                 $r->request->add([
                     'member_id' => $user->id,
                     'selected_plan' => $r->get('membership'),
@@ -797,7 +807,7 @@ class MembershipController extends Controller
                 ])->first();
 
                 if(!isset($membership)) {
-                    $status = $this->assign_membership_to_member($r,'pending');
+                    $status = $this->assign_membership_to_member($r,'pending', $user->id);
                     if($status['success'] == false ){
                         return json_encode([
                                 'success' => false ,
@@ -806,9 +816,6 @@ class MembershipController extends Controller
                         );
                     }
                 }
-
-                Auth::logout();
-
             }
             else{
                 // we could not login user
