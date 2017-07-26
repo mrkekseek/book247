@@ -273,7 +273,6 @@ class FederationApi extends Controller {
 
     }
 
-
     private function send_mail_exist_owner($owner)
     {
         $shop_location = ShopLocations::first();
@@ -346,28 +345,29 @@ class FederationApi extends Controller {
                         'code' => 1,
                         'isValid' => true
                     ), JSON_FORCE_OBJECT);
-                } else {
+                }
+                else {
+                    // user not found, so he does not have a license
                     return json_encode(array(
-                        'code' => 2,
+                        'code' => 1,
                         'isValid' => false
                     ), JSON_FORCE_OBJECT);
                 }
-            } else {
+            }
+            else {
                 return json_encode(array(
                     'code' => 2,
                     'message' => "Invalid request."
                 ), JSON_FORCE_OBJECT);
             }
-
-
-        } else {
+        }
+        else {
             return json_encode(array(
                 'code' => 2,
                 'message' => 'Permission denied.'
             ),JSON_FORCE_OBJECT);
         }
     }
-
 
     public function federation_list_of_licenses(Request $r)
     {
@@ -393,7 +393,4 @@ class FederationApi extends Controller {
             ),JSON_FORCE_OBJECT);
         }
     }
-
-
-
 }
