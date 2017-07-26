@@ -41,8 +41,7 @@ class AppSettings extends  Base{
         ]);
     }
 
-
-    public function manage_settings(Request $request)
+    public function manage_settings()
     {
         $user = Auth::user();
         if ( ! $user || ! $user->is_back_user())

@@ -35,7 +35,6 @@ class AdminController extends Controller
     public function index()
     {
         $user = Auth::user();
-        //dd($user);
         if (!$user || !$user->is_back_user()) {
             return redirect()->intended(route('admin/login'));
         }
