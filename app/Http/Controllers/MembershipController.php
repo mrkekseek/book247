@@ -36,19 +36,14 @@ class MembershipController extends Controller
 
     public function assign_membership_to_member(Request $request, $status = 'active', $federationMemberId = false){
 
-        if (!Auth::check()) {
+        if (!Auth::check() && $federationMemberId==false) {
             return [
                 'success'   => false,
                 'title'     => 'An error occurred',
                 'errors'    => 'You need to be logged in to have access to this function'
             ];
         }
-        else{
-            $user = Auth::user();
-            $is_backend_employee = $user->can('members-management');
-        }
-
-        if (env('FEDERATION',false) && $federationMemberId!=false && $user==false){
+        elseif (env('FEDERATION',false) && $federationMemberId!=false){
             // we have a federation member trying to buy using the iframe
             $user = User::where('id','=',$federationMemberId)->first();
             if (!$user){
@@ -58,6 +53,10 @@ class MembershipController extends Controller
                     'title'     => 'An error occurred'
                 ];
             }
+        }
+        else{
+            $user = Auth::user();
+            $is_backend_employee = $user->can('members-management');
         }
 
         $vars = $request->only('member_id', 'selected_plan', 'start_date');
