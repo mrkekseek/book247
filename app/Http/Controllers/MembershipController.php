@@ -811,6 +811,17 @@ class MembershipController extends Controller
                 Auth::logout();
 
             }
+            else{
+                // we could not login user
+                return json_encode([
+                    'success' => false,
+                    'data' => [
+                        'error' => 'could not assign membership to member',
+                        'payment_method' => $r->get('payment_method')
+                    ]
+                ]);
+            }
+
             if ($r->get('payment_method') == 'paypal') {
                 $u = User::where('sso_user_id',$r->get('user_id'))->first();
                 $userMembership = UserMembership::where([
