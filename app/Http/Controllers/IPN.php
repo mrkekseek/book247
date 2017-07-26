@@ -154,7 +154,7 @@ class IPN extends Controller{
             $iv = substr($key,0,16);
         }
         $custom = json_decode(openssl_decrypt(base64_decode($url),'AES-256-CBC',$key,0 ,$iv));
-        xdebug_var_dump($custom);
+        dd($custom);
         if (!isset($custom->invoice_id)) {
             return view('front/iframe/federation/success',[
                 'breadcrumbs' => $breadcrumbs,
