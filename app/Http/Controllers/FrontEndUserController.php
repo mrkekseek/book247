@@ -5155,7 +5155,7 @@ class FrontEndUserController extends Controller
             $payee_country = '-';
         }
         $sidebar_link = 'admin-backend-shops-invoices-payment';
-        return view('front/finance/finance_peyment', [
+        return view('front/finance/finance_payment', [
             'custom' => $this->get_custom($invoice->id),
             'breadcrumbs' => $breadcrumbs,
             'text_parts' => $text_parts,
