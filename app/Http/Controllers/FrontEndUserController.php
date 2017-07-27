@@ -1528,18 +1528,9 @@ class FrontEndUserController extends Controller
             'gender'        => $vars['gender'],
             'country_id'    => $vars["country_id"],
             'date_of_birth' => $vars["date_of_birth"],
-            'email'         => trim($vars['personal_email']),
-            'username'      => trim($vars['personal_email'])
+            'email'         => trim($vars['personal_email'])
         ];
-        $validator = Validator::make($userVars, [
-            'first_name'    => 'required|min:2|max:150',
-            'last_name'     => 'required|min:2|max:150',
-            'date_of_birth' => 'required|date',
-            'country_id'    => 'required|exists:countries,id',
-            'gender'        => 'required|in:M,F',
-            'email'         => 'required|email|unique:users,email,'.$id.',id',
-            'username'      => 'required|email|unique:users,username,'.$id.',id'
-        ]);
+        $validator = Validator::make($userVars, User::rules('PUT', $user->id), User::$messages, User::$attributeNames);
         
         if ($validator->fails()){
             return [
@@ -2715,7 +2706,7 @@ class FrontEndUserController extends Controller
             $signLocation = ShopLocations::where('id','=',$vars['sign_location'])->whereIn('visibility',['public','pending'])->get()->first();
         }
         /*else{
-            $signLocation = ShopLocations::whereIn('visibility',['public','pending'])->orderBy('created_at','ASC')->get()->first();
+            $signLocation = ShopLocations::whereIn('visibility',['public','pending'])->orderBy('created_at','ASC')->first();
         }*/
 
         $credentials = [

@@ -5,6 +5,7 @@ namespace App\Http\Libraries;
 use App\PersonalDetail;
 use App\User;
 use App\Http\Libraries\Auth;
+use Validator;
 use Webpatser\Countries\Countries;
 use App\Http\Controllers\AppSettings;
 
@@ -377,8 +378,9 @@ class ApiAuth
             return "User found locally! Cannot save this SSO!";
         } else {
             $country = Countries::where('iso_3166_2',$sso_user->countryCode)->first();
-            $user = new User();
-            $user->fill([
+            $userType = Role::where('name','=','front-user')->first();
+
+            $credentials = [
                 'sso_user_id' => $sso_user->id,
                 'first_name' => $sso_user->firstName,
                 'middle_name' => $sso_user->middleName,
@@ -387,11 +389,23 @@ class ApiAuth
                 'email' => $sso_user->email,
                 'country_id' => isset($country) ? $country->id : AppSettings::get_setting_value_by_name('globalWebsite_defaultCountryId') ,
                 'status' => 'active',
-                'gender' => $sso_user->gender == 2 ? 'F' : 'M'
-            ]);
-            if (!$user->save()){
-                return "User cannot be saved locally!";
+                'gender' => $sso_user->gender == 2 ? 'F' : 'M',
+                'user_type' => @$userType->id
+            ];
+
+            $validator = Validator::make($credentials, User::rules('POST'), User::$messages, User::$attributeNames);
+
+            if ($validator->fails()){
+                //return $validator->errors()->all();
+                return array(
+                    'success'   => false,
+                    'title'     => 'Error validating',
+                    'errors'    => $validator->getMessageBag()->toArray()
+                );
             }
+            $user = User::create($credentials);
+            $user->attachRole($userType);
+
             $user = User::where('sso_user_id',$sso_id)->first();
             $user_info = new PersonalDetail();
             $i = 0;
@@ -410,11 +424,6 @@ class ApiAuth
                 return "User info cannot be saved locally!";
             }
 
-//            $status = Auth::create_local_user($sso_id);
-//
-//            if (!isset($status)){
-//                return "User info cannot be saved locally!";
-//            }
             return true;
         }
 

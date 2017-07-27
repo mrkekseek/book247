@@ -77,7 +77,7 @@ class User extends Authenticatable
                     'last_name'     => 'required|min:2|max:150',
                     'username'      => 'required|min:6|max:150|unique:users,username',
                     'password'      => 'required|min:8',
-                    'email'         => 'required|email|unique:users',
+                    'email'         => 'required|email',
                     'user_type'     => 'required|exists:roles,id',
                     'gender'        => 'in:M,F',
                     'status'        => 'in:active,suspended,deleted,pending'
@@ -89,10 +89,10 @@ class User extends Authenticatable
                 return [
                     'first_name'=> 'required|min:2|max:150',
                     'last_name' => 'required|min:2|max:150',
-                    'username'  => 'required|min:6|max:150|unique:users,username'.($id ? ",$id,id" : ''),
-                    'password'  => 'required|min:8',
-                    'email'     => 'required|email|unique:users,email'.($id ? ",$id,id" : ''),
-                    'user_type' => 'required|exists:roles,id',
+                    'username'  => 'min:6|max:150|unique:users,username'.($id ? ",$id,id" : ''),
+                    'password'  => 'min:8',
+                    'email'     => 'required|email',
+                    'user_type' => 'exists:roles,id',
                     'gender'    => 'in:M,F',
                     'status'    => 'in:active,suspended,deleted,pending'
                 ];
