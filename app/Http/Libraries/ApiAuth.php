@@ -8,6 +8,7 @@ use App\Http\Libraries\Auth;
 use Validator;
 use Webpatser\Countries\Countries;
 use App\Http\Controllers\AppSettings;
+use Zizaco\Entrust\Traits\EntrustUserTrait;
 
 class ApiAuth
 {
