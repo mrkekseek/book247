@@ -65,7 +65,7 @@
                                             <div class="form-group">
                                                 <label class="control-label col-md-3 inline"> Membership Price </label>
                                                 <div class="col-md-9">
-                                                    <p class="form-control-static form-control border-blue-steel input-small">{{$membership_plan->price[0]->price}}</p>
+                                                    <p class="form-control-static form-control border-blue-steel input-small">{{$membership_plan->price->price}}</p>
                                                 </div>
                                             </div>
                                             <div class="form-group">

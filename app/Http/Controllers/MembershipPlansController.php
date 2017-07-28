@@ -295,7 +295,6 @@ class MembershipPlansController extends Controller
         if (!$the_plan){
             $the_plan = false;
         }
-
         $activities = ShopResourceCategory::all()->sortBy('name');
         $restrictions = array();
         $plan_restrictions = MembershipRestriction::with('restriction_title')->where('membership_id','=',$the_plan->id)->orderBy('restriction_id','asc')->get();

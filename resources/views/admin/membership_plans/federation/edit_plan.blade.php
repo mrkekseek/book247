@@ -71,7 +71,7 @@
                                         <div class="form-group">
                                             <label class="control-label col-md-3 inline"> Membership Price </label>
                                             <div class="col-md-4">
-                                                <input type="text" class="form-control input-inline input-small" name="membership_price" placeholder="{{\App\Http\Controllers\AppSettings::get_setting_value_by_name('finance_currency')}}" value="{{$membership_plan->price[0]->price}}">
+                                                <input type="text" class="form-control input-inline input-small" name="membership_price" placeholder="{{\App\Http\Controllers\AppSettings::get_setting_value_by_name('finance_currency')}}" value="{{$membership_plan->price->price}}">
                                             </div>
                                         </div>
                                         <div class="form-group">
