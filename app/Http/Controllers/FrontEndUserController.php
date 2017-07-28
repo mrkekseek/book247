@@ -5172,7 +5172,6 @@ class FrontEndUserController extends Controller
         ];
 
         $payee = json_decode($invoice->payee_info);
-
         if ($payee) {
             if ($payee->country_id == 0) {
                 $payee_country = '-';

@@ -125,10 +125,20 @@ class IPN extends Controller{
     {
         $vars = $r->all();
 
-        $amount = $vars['mc_gross'];
-        $currency = $vars['mc_currency'];
-        $transactionId = $vars['txn_id'];
-        $url = $vars['custom'];
+        if (isset($vars['mc_gross'])){
+            // we're on POST method
+            $amount = $vars['mc_gross'];
+            $currency = $vars['mc_currency'];
+            $transactionId = $vars['txn_id'];
+            $url = $vars['custom'];
+        }
+        else{
+            // we're on GET method
+            $amount = $vars['amt'];
+            $currency = $vars['cc'];
+            $transactionId = $vars['tx'];
+            $url = $vars['cm'];
+        }
 
         if (env('FEDERATION',false)){
             $blade = 'front/iframe/federation/success';
