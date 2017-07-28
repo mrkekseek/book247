@@ -117,7 +117,7 @@
                 settings.heading = title_heading;
             }
 
-            $.notific8('zindex', 11500);
+            $.notific8('zindex', 5000);
             $.notific8($.trim(message), settings);
         }
     </script>

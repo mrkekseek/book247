@@ -54,7 +54,7 @@
             if (link.length > 0){
                 setTimeout(function(){
                     window.location.replace(link);
-                },15000)
+                },5000)
             }
         });
     </script>
