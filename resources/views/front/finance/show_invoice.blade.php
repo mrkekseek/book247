@@ -30,8 +30,8 @@
     <div class="page-content-wrapper">
         <!-- BEGIN CONTENT BODY -->
         <!-- BEGIN PAGE CONTENT BODY -->
-        <div class="page-content bordered">
-            <div class="container bg-white bg-font-white ">
+        <div class="page-content ">
+            <div class="container bg-white bg-font-white bordered">
                 <!-- BEGIN PAGE CONTENT INNER -->
                 <div class="page-content-inner margin-top-10">
                     <div class="invoice">
@@ -187,8 +187,8 @@
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    @if (sizeof($financialTransactions)>0 && is_array($financialTransactions))
-                                        @foreach($financialTransactions as $key => $single)
+                                    @if (sizeof($financialTransactions)>0)
+                                        @foreach($financialTransactions as $single)
                                             <tr>
                                                 <td> {{ $key }} </td>
                                                 <td>@foreach ($single->names as $itemNames)
@@ -316,9 +316,7 @@
 
                  }
                  });*/
-
             });
-
         });
     </script>
 @endsection

@@ -70,7 +70,7 @@
                                                         @if ($p->plan_period==7 || $p->plan_period==14)
                                                             {{ $p->plan_period }} Days
                                                         @elseif( in_array($p->plan_period,[30, 90, 180]))
-                                                            {{ $p->plan_period/30 }} Month(s)
+                                                            {{ $p->plan_period/30 }} Month{{$p->plan_period==30?'':'s'}}
                                                         @elseif( in_array($p->plan_period, 360) )
                                                             one year
                                                         @else
@@ -87,7 +87,7 @@
                                                             Binding Period
                                                         </span>
                                                     </div>
-                                                     <div class="col-xs-5 text-left mobile-padding">{{ $p->binding_period }}</div>
+                                                     <div class="col-xs-5 text-left mobile-padding">{{ $p->binding_period }} Month{{$p->binding_period==1?'':'s'}}</div>
                                                 </div>
                                                  <div class="row mobile-padding">
                                                     <div class="col-xs-6 col-xs-offset-1 text-left mobile-padding">
@@ -98,7 +98,7 @@
                                                             SignOut period
                                                         </span>
                                                     </div>
-                                                    <div class="col-xs-5 text-left mobile-padding">{{ $p->sign_out_period }}</div>
+                                                    <div class="col-xs-5 text-left mobile-padding">{{ $p->sign_out_period }} Month{{$p->sign_out_period==1?'':'s'}}</div>
                                                 </div>
                                                
                                                

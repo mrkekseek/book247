@@ -214,8 +214,8 @@
         <input type="hidden" name="business" value="{{ $paypal_email }}">
         <input type="hidden" name="return" value="{{ env('MY_SERVER_URL') }}/membership/paypal_success">
         <input type="hidden" name="cancel_url" value="{{ env('MY_SERVER_URL') }}/membership/paypal_cancel">
-        <input type="hidden" name="notify_url" value="{{ env('MY_SERVER_URL') }}/membership/ipn">
-        <input type="hidden" name="rm" value="1">
+        <input type="hidden" name="notify_url" value="{{ route('payment/paypal-ipn) }}">
+        <input type="hidden" name="rm" value="2">
         <input type="hidden" name="upload" value="1">
 
         @foreach($invoice_items as $key => $item)

@@ -212,10 +212,10 @@
     <form id="paypal-form" action="{{ env('PAYPAL_SANDBOX') }}"  target="_blank" method="post" style="display: none;">
         <input type="hidden" name="cmd" value="_cart">
         <input type="hidden" name="business" value="{{ $paypal_email }}">
-        <input type="hidden" name="return" value="{{\App\Http\Controllers\AppSettings::get_setting_value_by_name('globalWebsite_url')}}/membership/paypal_success">
-        <input type="hidden" name="cancel_url" value="{{\App\Http\Controllers\AppSettings::get_setting_value_by_name('globalWebsite_url')}}/membership/paypal_cancel">
-        <input type="hidden" name="notify_url" value="{{\App\Http\Controllers\AppSettings::get_setting_value_by_name('globalWebsite_url')}}/membership/ipn">
-        <input type="hidden" name="rm" value="1">
+        <input type="hidden" name="return" value="{{ route('membership/paypal_success') }}">
+        <input type="hidden" name="cancel_url" value="{{ route('membership/paypal_cancel') }}">
+        <input type="hidden" name="notify_url" value="{{ route('payment/paypal-ipn') }}">
+        <input type="hidden" name="rm" value="2">
         <input type="hidden" name="upload" value="1">
 
         @foreach($invoice_items as $key => $item)

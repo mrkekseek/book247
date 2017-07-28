@@ -74,13 +74,13 @@
                                             </div>
                                         </div>
                                         <div class="form-group">
-                                            <label class="control-label col-md-3"> Cost of store credit </label>
+                                            <label class="control-label col-md-3"> Amount of store credit </label>
                                             <div class="col-md-9">
                                                 <input type="text" class="form-control" name="store_credit_value" placeholder="Cost of store credit">
                                             </div>
                                         </div>
                                         <div class="form-group">
-                                            <label class="control-label col-md-3"> The cost of the package without a discount </label>
+                                            <label class="control-label col-md-3"> Price without a discount </label>
                                             <div class="col-md-9">
                                                 <input type="text" class="form-control" name="store_credit_price" placeholder="The cost of the package without a discount">
                                             </div>
@@ -92,14 +92,14 @@
                                             </div>
                                         </div>
                                         <div class="form-group">
-                                            <label class="control-label col-md-3"> Discount from price in % </label>
+                                            <label class="control-label col-md-3"> Percentage price discount % </label>
                                             <div class="col-md-9">
                                                 <input type="text" class="form-control" name="store_credit_discount_percentage" placeholder="Discount from price in %" value="0">
                                             </div>
                                         </div>
                                         
                                         <div class="form-group">
-                                            <label class="control-label col-md-3"> Date the package begins to operate </label>
+                                            <label class="control-label col-md-3"> Becomes active on </label>
                                             <div class="col-md-9">
                                                 <div class="input-group date date-picker from" data-date-autoclose="true" data-date-orientation="bottom right" data-date="" data-date-format="yyyy-mm-dd"  data-date-start-view="days" >
                                                     <input type="text" class="form-control" readonly="readonly" name="valid_from"  placeholder="Date the package begins to operate" >
@@ -120,7 +120,7 @@
                                         </div>
 
                                         <div class="form-group">
-                                            <label class="control-label col-md-3"> The date the package expires </label>
+                                            <label class="control-label col-md-3"> Becomes inactive on </label>
                                             <div class="col-md-9">
                                                 <div class="input-group date date-picker to" data-date-autoclose="true" data-date-orientation="bottom right" data-date="" data-date-format="yyyy-mm-dd"  data-date-start-view="days">
                                                     <input type="text" class="form-control" readonly="readonly" name="valid_to"  placeholder="The date the package expires" >
@@ -134,7 +134,7 @@
                                             </div>
                                         </div>
                                         <div class="form-group">
-                                            <label class="control-label col-md-3"> Count of packages that a user can purchase </label>
+                                            <label class="control-label col-md-3"> Limit of packages per member </label>
                                             <div class="col-md-9">
                                                 <input type="text" class="form-control" name="packages_per_user" placeholder="Count of packages that a user can purchase" value="1" />
                                             </div>

@@ -70,12 +70,17 @@ Route::post('membership/paypal_payment', [
 ]);
 
 
-Route::post('membership/ipn', [
-    'as'    => 'membership/ipn',
+Route::post('payment/paypal-ipn', [
+    'as'    => 'payment/paypal-ipn',
     'uses'  => 'IPN@membership_ipn'
 ]);
 
 Route::get('membership/paypal_success', [
+    'as'    => 'membership/paypal_success',
+    'uses'  => 'IPN@membership_paypal_success'
+]);
+
+Route::post('membership/paypal_success', [
     'as'    => 'membership/paypal_success',
     'uses'  => 'IPN@membership_paypal_success'
 ]);
@@ -85,17 +90,20 @@ Route::get('membership/paypal_cancel', [
     'uses'  => 'IPN@membership_paypal_cancel'
 ]);
 
-Route::post('invoice/ipn', [
+/*Route::post('invoice/ipn', [
     'as'    => 'membership/ipn',
     'uses'  => 'IPN@invoice_ipn'
-]);
+]);*/
 
 Route::get('invoice/paypal_success', [
     'as'    => 'membership/paypal_success',
     'uses'  => 'IPN@invoice_paypal_success'
 ]);
 
-
+Route::post('invoice/paypal_success', [
+    'as'    => 'membership/paypal_success',
+    'uses'  => 'IPN@invoice_paypal_success'
+]);
 
 
 

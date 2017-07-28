@@ -3574,12 +3574,44 @@ class FrontEndUserController extends Controller
             return redirect()->intended(route('homepage'));
         }
 
-        $invoice = Invoice::where('invoice_number','=',$id)->where('user_id','=',$user->id)->get()->first();
+        $invoice = Invoice::with('transactions')->with('items')->where('invoice_number','=',$id)->where('user_id','=',$user->id)->get()->first();
         if ($invoice){
             $subtotal = 0;
             $total = 0;
             $discount = 0;
             $vat = [];
+
+            $itemNames = [];
+            foreach($invoice->items as $item){
+                // base price minus the discount
+                $item_one_price = $item->price - (($item->price*$item->discount)/100);
+                // apply the vat to the price
+                $item_vat = $item_one_price * ($item->vat/100);
+
+                if (isset($vat[$item->vat])){
+                    $vat[$item->vat]+= $item_vat*$item->quantity;
+                }
+                else{
+                    $vat[$item->vat] = $item_vat*$item->quantity;
+                }
+
+                $discount+= (($item->price*$item->discount)/100)*$item->quantity;
+                $subtotal+= $item->price * $item->quantity;
+                $total+= ($item_one_price + $item_vat)*$item->quantity;
+
+                $itemNames[$item->id] = $item->item_name;
+            }
+
+            foreach($invoice->transactions as &$transaction){
+                $innerItems = json_decode($transaction->invoice_items);
+                $transactionItemNames = [];
+                foreach($innerItems as $single){
+                    $transactionItemNames[] = $itemNames[$single];
+                }
+
+                $transaction->names = $transactionItemNames;
+            }
+            $transactions = $invoice->transactions;
 
             $items = InvoiceItem::where('invoice_id','=',$invoice->id)->get();
             foreach($items as $item){
@@ -3604,9 +3636,6 @@ class FrontEndUserController extends Controller
             $member = json_decode($invoice->payer_info);
             $member_professional = $member->professional_detail;
             $member_personal = $member->personal_detail;
-            //xdebug_var_dump($member_professional);
-            //xdebug_var_dump($member_personal);
-            //xdebug_var_dump($member);
 
             if ($member->country_id==0){
                 $country = '-';
@@ -3647,7 +3676,7 @@ class FrontEndUserController extends Controller
             'member'    => @$invoice_user,
             'sub_total' => $subtotal,
             'discount'  => $discount,
-            'financialTransactions' => $invoice->transactions,
+            'financialTransactions' => $transactions,
             'vat'       => $vat,
             'grand_total'   => $total,
             'financial_profile' => json_decode($invoice->payee_info),

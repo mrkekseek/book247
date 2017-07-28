@@ -837,12 +837,17 @@ else
         /** Stop  - Membership Management */
     });
 
-    Route::post('membership/ipn', [
-        'as'    => 'membership/ipn',
+    Route::post('payment/paypal-ipn', [
+        'as'    => 'payment/paypal-ipn',
         'uses'  => 'IPN@membership_ipn'
     ]);
 
     Route::get('membership/paypal_success', [
+        'as'    => 'membership/paypal_success',
+        'uses'  => 'IPN@membership_paypal_success'
+    ]);
+
+    Route::post('membership/paypal_success', [
         'as'    => 'membership/paypal_success',
         'uses'  => 'IPN@membership_paypal_success'
     ]);

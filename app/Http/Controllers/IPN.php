@@ -123,10 +123,19 @@ class IPN extends Controller{
 
     public function membership_paypal_success(Request $r)
     {
-        $amount = $r->get('amt');
-        $currency = $r->get('cc');
-        $transactionId = $r->get('tx');
-        $url = $r->get('cm');
+        $vars = $r->all();
+
+        $amount = $vars['mc_gross'];
+        $currency = $vars['mc_currency'];
+        $transactionId = $vars['txn_id'];
+        $url = $vars['custom'];
+
+        if (env('FEDERATION',false)){
+            $blade = 'front/iframe/federation/success';
+        }
+        else{
+            $blade = 'front/iframe/success';
+        }
 
         $breadcrumbs = [
             'Home'      => route('admin'),
@@ -155,7 +164,7 @@ class IPN extends Controller{
         }
         $custom = json_decode(openssl_decrypt(base64_decode($url),'AES-256-CBC',$key,0 ,$iv));
         if (!isset($custom->invoice_id)) {
-            return view('front/iframe/federation/success',[
+            return view($blade,[
                 'breadcrumbs' => $breadcrumbs,
                 'text_parts'  => $text_parts,
                 'in_sidebar'  => $sidebar_link,
@@ -164,15 +173,35 @@ class IPN extends Controller{
                 'link' => ' '
             ]);
         }
+
         $invoice = Invoice::find($custom->invoice_id);
         if ($invoice) {
             $transaction = new InvoiceFinancialTransaction();
+
+            $outstandingAmount = $invoice->get_outstanding_amount();
+            $unpaidItems = $invoice->get_unpaid_invoice_items();
+            if (number_format($outstandingAmount,2) == number_format($amount,2) && isset($vars['quantity'.sizeof($unpaidItems)])){
+                // invoice items and amount are correct
+            }
+            else{
+                return view($blade,[
+                    'breadcrumbs' => $breadcrumbs,
+                    'text_parts'  => $text_parts,
+                    'in_sidebar'  => $sidebar_link,
+                    'text' => 'Payment successful!',
+                    'status' => 'Success',
+                    'link' => ' '
+                ]);
+            }
+
             $transaction->fill([
                 'invoice_id' => $invoice->id,
                 'user_id' => $invoice->user_id,
+                'invoice_items' => json_encode($unpaidItems),
                 'transaction_amount' => $amount,
                 'transaction_currency' => $currency,
                 'transaction_type' => 'paypal',
+                'transaction_date' => $vars['payment_date'],
                 'status' => 'pending',
                 'other_details' => $transactionId
             ])->save();
@@ -207,9 +236,16 @@ class IPN extends Controller{
                     $invoice->save();
                     break;
             }
+
+            $log = new Paypal();
+            $log->fill([
+                'invoice_id' => $invoice->id,
+                'transaction_id' => $transaction->id,
+                'paypal_response' => json_encode($r->all())
+            ])->save();
         }
 
-        return view('front/iframe/federation/success',[
+        return view($blade,[
             'breadcrumbs' => $breadcrumbs,
             'text_parts'  => $text_parts,
             'in_sidebar'  => $sidebar_link,
