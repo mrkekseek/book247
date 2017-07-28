@@ -391,7 +391,8 @@ class ApiAuth
                 'country_id' => isset($country) ? $country->id : AppSettings::get_setting_value_by_name('globalWebsite_defaultCountryId') ,
                 'status' => 'active',
                 'gender' => $sso_user->gender == 2 ? 'F' : 'M',
-                'user_type' => @$userType->id
+                'user_type' => @$userType->id,
+                'password'  => substr(bcrypt(str_random(12)),0,8)
             ];
 
             $validator = Validator::make($credentials, User::rules('POST'), User::$messages, User::$attributeNames);
