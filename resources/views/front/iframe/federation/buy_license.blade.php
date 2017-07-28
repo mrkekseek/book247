@@ -227,6 +227,8 @@
                     url: '/membership/payment',
                     type: 'POST',
                     dataType: 'json',
+                    async:false,
+                    cache:false,
                     data: {
                         'user_id' : $('input[name=user_id]').val() ,
                         'membership' : $('#membership').val(),
