@@ -46,6 +46,7 @@ class AdminController extends Base
             return json_encode($r->all());
         }
         $result =  Api::send_curl(['memberSSOid' => 78 ,'membership_id' => null, 'account_key' => AppSettings::get_setting_value_by_name('globalWebsite_rankedin_integration_key'), 'return_url' => "https://rankedin.com/Tournament/Index/408" ],'federation_buy_license','POST');
+
         if(isset($result->iFrameUrl)) {
             return view('development',['link' => $result->iFrameUrl]);
         } else {
