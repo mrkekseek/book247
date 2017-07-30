@@ -129,7 +129,7 @@
                                         <strong>Grand Total:</strong> {{$grand_total}} </li>
                                 </ul>
                                 <br/>
-                                <form id="make_payment" action="{{ env('MY_SERVER_URL') }}/front/finance/invoice" method="POST">
+                                <form id="make_payment" action="{{ route('front/finance/invoice') }}" method="POST">
                                     <input type="hidden" name="invoice_number" value="{{ $invoice->invoice_number }}">
                                 </form>
                                 <a class="btn btn blue hidden-print margin-bottom-5 download" hidden >
@@ -140,7 +140,7 @@
                                     {{--<i class="fa fa-print"></i>--}}
                                 {{--</a>--}}
                                 @if ($invoice->status=='pending')
-                                    <a id="make_payment" onclick="make_payment()" href="/front/finance/invoice/{{ $invoice->invoice_number }}" hidden class="btn green hidden-print margin-bottom-5"> Make Payment
+                                    <a id="make_payment" onclick="make_payment()" href="{{ route('front/finance/invoice/id', ['id'=>$invoice->invoice_number]) }}" hidden class="btn green hidden-print margin-bottom-5"> Make Payment
                                         <i class="fa fa-check"></i>
                                     </a>
                                 @elseif ($invoice->status=='processing')

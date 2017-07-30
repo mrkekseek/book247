@@ -392,7 +392,7 @@ class ApiAuth
                 'status' => 'active',
                 'gender' => $sso_user->gender == 2 ? 'F' : 'M',
                 'user_type' => @$userType->id,
-                'password'  => substr(bcrypt(str_random(12)),0,8)
+                'password'  => '1122334455'
             ];
 
             $validator = Validator::make($credentials, User::rules('POST'), User::$messages, User::$attributeNames);

@@ -6,10 +6,9 @@ use App\InvoiceFinancialTransaction;
 use App\Paypal;
 use App\UserMembership;
 use App\UserMembershipInvoicePlanning;
+use Auth;
 
 class IPN extends Controller{
-
-
     public function membership_ipn(Request $r){
         $d = json_decode(json_encode($r->all()),true);
         $req = 'cmd=_notify-validate';
@@ -123,6 +122,7 @@ class IPN extends Controller{
 
     public function membership_paypal_success(Request $r)
     {
+        session_start();
         $vars = $r->all();
 
         if (isset($vars['mc_gross'])){
@@ -132,7 +132,7 @@ class IPN extends Controller{
             $transactionId = $vars['txn_id'];
             $url = $vars['custom'];
         }
-        else{
+        else if(isset($vars['amt'])){
             // we're on GET method
             $amount = $vars['amt'];
             $currency = $vars['cc'];
@@ -142,9 +142,117 @@ class IPN extends Controller{
 
         if (env('FEDERATION',false)){
             $blade = 'front/iframe/federation/success';
+            $link = route('homepage');
         }
         else{
             $blade = 'front/iframe/success';
+            $link = route('homepage');
+        }
+
+        if (isset($amount) && isset($currency) && isset($transactionId) && isset($url)){
+            $key = env('APP_KEY') ;
+            if($key){
+                while(strlen($key) < 16){
+                    $key .= env('APP_KEY');
+                }
+                $key = substr($key,0,16);
+            }
+            $iv = env('APP_KEY');
+            if($iv){
+                while(strlen($iv) < 16){
+                    $iv .= env('APP_KEY');
+                }
+                $iv = substr($key,0,16);
+            }
+            $custom = json_decode(openssl_decrypt(base64_decode($url),'AES-256-CBC',$key,0 ,$iv));
+            if (!isset($custom->invoice_id)) {
+                return view($blade,[
+                    'breadcrumbs' => $breadcrumbs,
+                    'text_parts'  => $text_parts,
+                    'in_sidebar'  => $sidebar_link,
+                    'text' => 'Payment successful!',
+                    'status' => 'Success',
+                    'link' => ' '
+                ]);
+            }
+
+            $invoice = Invoice::find($custom->invoice_id);
+            if ($invoice) {
+                $transaction = new InvoiceFinancialTransaction();
+
+                $outstandingAmount = $invoice->get_outstanding_amount();
+                $unpaidItems = $invoice->get_unpaid_invoice_items();
+                if (number_format($outstandingAmount,2) == number_format($amount,2) && isset($vars['quantity'.sizeof($unpaidItems)])){
+                    // invoice items and amount are correct
+                }
+                else{
+                    return view($blade,[
+                        'breadcrumbs' => $breadcrumbs,
+                        'text_parts'  => $text_parts,
+                        'in_sidebar'  => $sidebar_link,
+                        'text' => 'Payment successful!',
+                        'status' => 'Success',
+                        'link' => ' '
+                    ]);
+                }
+
+                $transaction->fill([
+                    'invoice_id' => $invoice->id,
+                    'user_id' => $invoice->user_id,
+                    'invoice_items' => json_encode($unpaidItems),
+                    'transaction_amount' => $amount,
+                    'transaction_currency' => $currency,
+                    'transaction_type' => 'paypal',
+                    'transaction_date' => $vars['payment_date'],
+                    'status' => 'pending',
+                    'other_details' => $transactionId
+                ])->save();
+
+                switch ($invoice->invoice_type){
+                    case 'booking_invoice' :
+                        $invoice->status = 'processing';
+                        $invoice->save();
+                        break;
+                    case 'membership_plan_assignment_invoice' :
+                    case 'membership_plan_invoice' :
+                        $invoice_plan = UserMembershipInvoicePlanning::where('invoice_id',$custom->invoice_id)->first();
+                        $user_membership = UserMembership::find($invoice_plan->user_membership_id);
+
+                        $invoice->status = 'processing';
+                        $invoice->save();
+                        $user_membership->status = 'active';
+                        $user_membership->save();
+                        break;
+                    case 'store_credit' :
+                        // this is the result of a cancellation where store credit is returned
+                        $invoice->status = 'processing';
+                        $invoice->save();
+                        break;
+                    case 'store_credit_invoice' :
+                        // this is the result of buying store credit from frontend or backend, added by the admin/employees
+                        $invoice->status = 'processing';
+                        $invoice->save();
+                        break;
+                    default:
+                        $invoice->status = 'processing';
+                        $invoice->save();
+                        break;
+                }
+
+                $log = new Paypal();
+                $log->fill([
+                    'invoice_id' => $invoice->id,
+                    'transaction_id' => $transaction->id,
+                    'paypal_response' => json_encode($r->all())
+                ])->save();
+            }
+
+            $status = "Success";
+        }
+        else{
+            // we got a direct access to the page
+            $status = "Unknown";
+
         }
 
         $breadcrumbs = [
@@ -158,109 +266,12 @@ class IPN extends Controller{
         ];
         $sidebar_link= 'front-homepage';
 
-        $key = env('APP_KEY') ;
-        if($key){
-            while(strlen($key) < 16){
-                $key .= env('APP_KEY');
-            }
-            $key = substr($key,0,16);
-        }
-        $iv = env('APP_KEY');
-        if($iv){
-            while(strlen($iv) < 16){
-                $iv .= env('APP_KEY');
-            }
-            $iv = substr($key,0,16);
-        }
-        $custom = json_decode(openssl_decrypt(base64_decode($url),'AES-256-CBC',$key,0 ,$iv));
-        if (!isset($custom->invoice_id)) {
-            return view($blade,[
-                'breadcrumbs' => $breadcrumbs,
-                'text_parts'  => $text_parts,
-                'in_sidebar'  => $sidebar_link,
-                'text' => 'Payment successful!',
-                'status' => 'Success',
-                'link' => ' '
-            ]);
-        }
-
-        $invoice = Invoice::find($custom->invoice_id);
-        if ($invoice) {
-            $transaction = new InvoiceFinancialTransaction();
-
-            $outstandingAmount = $invoice->get_outstanding_amount();
-            $unpaidItems = $invoice->get_unpaid_invoice_items();
-            if (number_format($outstandingAmount,2) == number_format($amount,2) && isset($vars['quantity'.sizeof($unpaidItems)])){
-                // invoice items and amount are correct
-            }
-            else{
-                return view($blade,[
-                    'breadcrumbs' => $breadcrumbs,
-                    'text_parts'  => $text_parts,
-                    'in_sidebar'  => $sidebar_link,
-                    'text' => 'Payment successful!',
-                    'status' => 'Success',
-                    'link' => ' '
-                ]);
-            }
-
-            $transaction->fill([
-                'invoice_id' => $invoice->id,
-                'user_id' => $invoice->user_id,
-                'invoice_items' => json_encode($unpaidItems),
-                'transaction_amount' => $amount,
-                'transaction_currency' => $currency,
-                'transaction_type' => 'paypal',
-                'transaction_date' => $vars['payment_date'],
-                'status' => 'pending',
-                'other_details' => $transactionId
-            ])->save();
-
-            switch ($invoice->invoice_type){
-                case 'booking_invoice' :
-                    $invoice->status = 'processing';
-                    $invoice->save();
-                    break;
-                case 'membership_plan_assignment_invoice' :
-                case 'membership_plan_invoice' :
-                    $invoice_plan = UserMembershipInvoicePlanning::where('invoice_id',$custom->invoice_id)->first();
-                    $user_membership = UserMembership::find($invoice_plan->user_membership_id);
-
-                    $invoice->status = 'processing';
-                    $invoice->save();
-                    $user_membership->status = 'active';
-                    $user_membership->save();
-                    break;
-                case 'store_credit' :
-                    // this is the result of a cancellation where store credit is returned
-                    $invoice->status = 'processing';
-                    $invoice->save();
-                    break;
-                case 'store_credit_invoice' :
-                    // this is the result of buying store credit from frontend or backend, added by the admin/employees
-                    $invoice->status = 'processing';
-                    $invoice->save();
-                    break;
-                default:
-                    $invoice->status = 'processing';
-                    $invoice->save();
-                    break;
-            }
-
-            $log = new Paypal();
-            $log->fill([
-                'invoice_id' => $invoice->id,
-                'transaction_id' => $transaction->id,
-                'paypal_response' => json_encode($r->all())
-            ])->save();
-        }
-
         return view($blade,[
             'breadcrumbs' => $breadcrumbs,
             'text_parts'  => $text_parts,
             'in_sidebar'  => $sidebar_link,
-            'status' => 'Success',
-            'link' => $custom->redirect_url
+            'status'    => $status,
+            'link'      => isset($custom->redirect_url)?$custom->redirect_url:$link
         ]);
     }
     

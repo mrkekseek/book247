@@ -209,7 +209,7 @@
             </div>
         </div>
     </div>
-    <form id="paypal-form" action="{{ env('PAYPAL_SANDBOX') }}"  target="_blank" method="post" style="display: none;">
+    <form id="paypal-form" action="{{ App::environment('production')?env('PAYPAL_LINK'):env('PAYPAL_SANDBOX') }}"  target="_blank" method="post" style="display: none;">
         <input type="hidden" name="cmd" value="_cart">
         <input type="hidden" name="business" value="{{ $paypal_email }}">
         <input type="hidden" name="return" value="{{ env('MY_SERVER_URL') }}/membership/paypal_success">
@@ -223,7 +223,7 @@
             <input type="hidden" name="amount_{{ $key+1 }}" value="{{ $item->price - (($item->discount * $item->price) / 100) }}">
             <input type="hidden" name="quantity_{{ $key+1 }}" value="{{ $item->quantity }}">
         @endforeach
-        <input type="hidden" name="currency_code" value="USD">
+        <input type="hidden" name="currency_code" value="{{\App\Http\Controllers\AppSettings::get_setting_value_by_name('finance_currency')}}">
 
         <input type="hidden" name="first_name" value="{{ $member->first_name }}">
         <input type="hidden" name="last_name" value="{{ $member->last_name }}">

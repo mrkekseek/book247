@@ -200,7 +200,7 @@
         <input name="redirect_url" type="text" value="{{ $redirect_url }}"/>
     </form>
 
-    <form id="paypal-form" action="{{ env('PAYPAL_SANDBOX') }}"  target="_parent" method="post" style="display: none;">
+    <form id="paypal-form" action="{{ App::environment('production')?env('PAYPAL_LINK'):env('PAYPAL_SANDBOX') }}"  target="_parent" method="post" style="display: none;">
         <input type="hidden" name="cmd" value="_cart">
         <input type="hidden" name="business" value="{{ $paypal_email }}">
         <input type="hidden" name="return" value="{{ env('MY_SERVER_URL') }}/membership/paypal_success">
@@ -212,7 +212,7 @@
         <input type="hidden" name="item_name" value="">
         <input type="hidden" name="amount" value="">
         <input type="hidden" name="quantity" value="1">
-        <input type="hidden" name="currency_code" value="USD">
+        <input type="hidden" name="currency_code" value="{{\App\Http\Controllers\AppSettings::get_setting_value_by_name('finance_currency')}}">
 
         <!-- Set variables that override the address stored with PayPal. -->
 

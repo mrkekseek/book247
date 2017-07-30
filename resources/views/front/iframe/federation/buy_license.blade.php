@@ -180,7 +180,7 @@
     <input type="hidden" name="item_name" value="">
     <input type="hidden" name="amount" value="">
     <input type="hidden" name="quantity" value="1">
-    <input type="hidden" name="currency_code" value="USD">
+    <input type="hidden" name="currency_code" value="{{\App\Http\Controllers\AppSettings::get_setting_value_by_name('finance_currency')}}">
 
     <!-- Set variables that override the address stored with PayPal. -->
 

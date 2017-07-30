@@ -38,15 +38,24 @@
                             <div class="success-box-container">
                                 <div class="success-box">
                                     <div class="success-box-top-wrap">
-                                        <div class="success-box-mark">
-                                            <img src="{{ asset('assets/success/img/success-mark.png') }}">
-                                        </div>
-                                        <div class="success-box-text">
-                                            <span>PAYMENT APPROVED</span><br/>
-                                            <span>Thank you for purchasing a plan.</span>
-                                            <span>Rankedin has received your payment.</span><br/>
-                                            <span>If you are not automatically redirected, click the button bellow.</span>
-                                        </div>
+                                        @if ($status=="Unknown")
+                                            <div class="success-box-text">
+                                                <span> UNKNOWN PAYMENT STATUS </span><br/>
+                                                <span>You arrived on this page directly, without making any payment</span>
+                                                <span>If that was the case, the page will redirect you to homepage in a few seconds.</span><br/>
+                                                <span>If you are not automatically redirected, click the button bellow.</span>
+                                            </div>
+                                        @else
+                                            <div class="success-box-mark">
+                                                <img src="{{ asset('assets/success/img/success-mark.png') }}">
+                                            </div>
+                                            <div class="success-box-text">
+                                                <span>PAYMENT APPROVED</span><br/>
+                                                <span>Thank you for your purchase.</span>
+                                                <span>We received your payment and the services bought are active and can be used.</span><br/>
+                                                <span>If you are not automatically redirected, click the button bellow.</span>
+                                            </div>
+                                        @endif
                                     </div>
                                     <a class="success-box-redirect" href="{{ $link }}">Done</a>
                                     <div class="success-box-powered-by">
@@ -101,6 +110,15 @@
         $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+
+        $(document).ready(function() {
+            var link = '{{ $link }}';
+            if (link.length > 0) {
+                setTimeout(function () {
+                    window.location.replace(link);
+                }, 5000)
             }
         });
 

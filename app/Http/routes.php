@@ -842,18 +842,18 @@ else
         'uses'  => 'IPN@membership_ipn'
     ]);
 
-    Route::get('membership/paypal_success', [
-        'as'    => 'membership/paypal_success',
+    Route::get('payment/paypal_success', [
+        'as'    => 'payment/paypal_success',
         'uses'  => 'IPN@membership_paypal_success'
     ]);
 
-    Route::post('membership/paypal_success', [
-        'as'    => 'membership/paypal_success',
+    Route::post('payment/paypal_success', [
+        'as'    => 'payment/paypal_success',
         'uses'  => 'IPN@membership_paypal_success'
     ]);
 
-    Route::get('membership/paypal_cancel', [
-        'as'    => 'membership/paypal_cancel',
+    Route::get('payment/paypal_cancel', [
+        'as'    => 'payment/paypal_cancel',
         'uses'  => 'IPN@membership_paypal_cancel'
     ]);
 
@@ -865,7 +865,7 @@ else
         ]);
 
         Route::get('finance/invoice/{id}', [
-            'as' => 'front/finance/invoice/{id}',
+            'as' => 'front/finance/invoice/id',
             'uses' => 'FrontEndUserController@invoice_payment'
         ]);
 

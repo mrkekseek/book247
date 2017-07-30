@@ -887,10 +887,7 @@ class MembershipController extends Controller
         }
     }
 
-
-
-
-    public function paypal_cencel(Request $r)
+    public function paypal_cancel(Request $r)
     {
         $url = $r->get('cm');
         return view('front/iframe/federation/redirect_page',[
@@ -900,6 +897,4 @@ class MembershipController extends Controller
             'url' => $url
         ]);
     }
-
-
 }

@@ -843,8 +843,13 @@ Route::group(['prefix'=>'front', 'middleware'=>'web'], function(){
 //    ]);
 
     Route::get('finance/invoice/{id}', [
-        'as' => 'front/finance/invoice/{id}',
+        'as' => 'front/finance/invoice/id',
         'uses' => 'Federation\FrontEndUserController@invoice_payment'
+    ]);
+
+    Route::post('finance/invoice', [
+        'as' => 'front/finance/invoice',
+        'uses' => 'Federation\FrontEndUserController@post_invoice_payment'
     ]);
 
     Route::get('friends_list', [

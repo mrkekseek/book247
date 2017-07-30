@@ -40,7 +40,7 @@
                         <div class="portlet-title">
                             <div class="caption">
                                 <i class="icon-settings font-dark"></i>
-                                <span class="caption-subject font-dark sbold uppercase"> order #{{ $invoice->invoice_number }} / {{ \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $invoice->created_at)->format('d M Y') }}
+                                <span class="caption-subject font-dark sbold uppercase"> invoice #{{ $invoice->invoice_number }} / {{ \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $invoice->created_at)->format('d M Y') }}
                                     <span class="hidden-xs">| {{ $invoice->invoice_type }} </span>
                                 </span>
                             </div>
@@ -56,14 +56,13 @@
                                                         <i class="fa fa-cogs"></i>Payer Information
                                                     </div>
                                                 </div>
-                                                <div class="portlet-body">
+                                                <div class="portlet-body payer_payee_boxes">
                                                     <div class="row static-info">
                                                         <div class="col-md-5 name">
                                                             Name
                                                         </div>
                                                         <div class="col-md-7 value">
-                                                            {{ $member->first_name }}
-                                                            {{ $member->last_name }}
+                                                            {{ $member->first_name.' '.$member->middle_name.' '.$member->last_name }}
                                                         </div>
                                                     </div>
                                                     <div class="row static-info">
@@ -92,22 +91,22 @@
                                                         <i class="fa fa-cogs"></i>Company Information 
                                                     </div>
                                                 </div>
-                                                <div class="portlet-body">
+                                                <div class="portlet-body payer_payee_boxes">
                                                     <div class="row static-info">
-                                                        <div class="col-md-5 name"> Customer Name: </div>
-                                                        <div class="col-md-7 value"> {{ $customer->profile_name }} </div>
+                                                        <div class="col-md-5 name"> Name: </div>
+                                                        <div class="col-md-7 value"> {{ $customer->company_name }} </div>
                                                     </div>
                                                     <div class="row static-info">
-                                                        <div class="col-md-5 name"> Email: </div>
-                                                        <div class="col-md-7 value"> - </div>
+                                                        <div class="col-md-5 name"> Address: </div>
+                                                        <div class="col-md-7 value"> {{ $customer->address1.' '.$customer->address2 }} </div>
                                                     </div>
                                                     <div class="row static-info">
-                                                        <div class="col-md-5 name"> State: </div>
-                                                        <div class="col-md-7 value"> {{ $payee_country }} </div>
+                                                        <div class="col-md-5 name"> City: </div>
+                                                        <div class="col-md-7 value"> {{ $customer->city.", ".$customer->region }} </div>
                                                     </div>
                                                     <div class="row static-info">
-                                                        <div class="col-md-5 name"> Phone Number: </div>
-                                                        <div class="col-md-7 value"> - </div>
+                                                        <div class="col-md-5 name"> Postal Code: </div>
+                                                        <div class="col-md-7 value"> {{ $customer->postal_code }} </div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -180,23 +179,28 @@
                                             <div class="well">
                                                 <div class="row static-info align-reverse">
                                                     <div class="col-md-8 name"> Sub - Total: </div>
-                                                    <div class="col-md-3 value"> $ {{ $sub_total }} </div>
+                                                    <div class="col-md-3 value"> {{ $sub_total }} {{\App\Http\Controllers\AppSettings::get_setting_value_by_name('finance_currency')}} </div>
                                                 </div>
                                                 <div class="row static-info align-reverse">
                                                     <div class="col-md-8 name"> Discount: </div>
-                                                    <div class="col-md-3 value"> {{ $discount }}</div>
+                                                    <div class="col-md-3 value"> {{ $discount }} {{\App\Http\Controllers\AppSettings::get_setting_value_by_name('finance_currency')}}</div>
                                                 </div>
                                                 <div class="row static-info align-reverse">
                                                     <div class="col-md-8 name"> Grand Total: </div>
-                                                    <div class="col-md-3 value"> $ {{ $grand_total }} </div>
+                                                    <div class="col-md-3 value"> {{ $grand_total }} {{\App\Http\Controllers\AppSettings::get_setting_value_by_name('finance_currency')}} </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="col-md-12 col-sm-12 text-right">
+                                            @if (strlen($paypal_email)>=6)
                                             <button id="pay_with_paypal" class="btn btn-primary">Pay with paypal</button>
+                                            @endif
+                                            @if (isset($stripe_account))
                                             <button class="btn btn-success">Pay with strype</button>
+                                            @endif
+                                            <a href="{{ route('homepage') }}" class="btn btn-success">Return Home</a>
                                         </div>
                                     </div>
                                 </div>
@@ -209,11 +213,12 @@
             </div>
         </div>
     </div>
-    <form id="paypal-form" action="{{ env('PAYPAL_SANDBOX') }}"  target="_blank" method="post" style="display: none;">
+    @if (strlen($paypal_email)>=6)
+    <form id="paypal-form" action="{{ App::environment('production')?env('PAYPAL_LINK'):env('PAYPAL_SANDBOX') }}"  target="_blank" method="post" style="display: none;">
         <input type="hidden" name="cmd" value="_cart">
         <input type="hidden" name="business" value="{{ $paypal_email }}">
-        <input type="hidden" name="return" value="{{ route('membership/paypal_success') }}">
-        <input type="hidden" name="cancel_url" value="{{ route('membership/paypal_cancel') }}">
+        <input type="hidden" name="return" value="{{ route('payment/paypal_success') }}">
+        <input type="hidden" name="cancel_url" value="{{ route('payment/paypal_cancel') }}">
         <input type="hidden" name="notify_url" value="{{ route('payment/paypal-ipn') }}">
         <input type="hidden" name="rm" value="2">
         <input type="hidden" name="upload" value="1">
@@ -223,7 +228,7 @@
             <input type="hidden" name="amount_{{ $key+1 }}" value="{{ $item->price - (($item->discount * $item->price) / 100) }}">
             <input type="hidden" name="quantity_{{ $key+1 }}" value="{{ $item->quantity }}">
         @endforeach
-        <input type="hidden" name="currency_code" value="USD">
+        <input type="hidden" name="currency_code" value="{{\App\Http\Controllers\AppSettings::get_setting_value_by_name('finance_currency')}}">
 
         <input type="hidden" name="first_name" value="{{ $member->first_name }}">
         <input type="hidden" name="last_name" value="{{ $member->last_name }}">
@@ -233,7 +238,7 @@
         <input type="hidden" name="invoice" value="{{ $invoice->id }}">
 
     </form>
-
+    @endif
     <!-- END PAGE CONTENT INNER -->
 </div>
 @endsection
@@ -257,7 +262,7 @@
     <script src="{{ asset('assets/global/scripts/datatable.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/global/plugins/datatables/datatables.min.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/global/plugins/datatables/plugins/bootstrap/datatables.bootstrap.js') }}" type="text/javascript"></script>
-
+    <script src="{{ asset('assets/global/scripts/jquery.matchHeight.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/global/plugins/jquery-notific8/jquery.notific8.min.js') }}" type="text/javascript"></script>
 @endsection
 
@@ -271,6 +276,10 @@
             $('#paypal-form').submit();
         });
 
+        var options = { byRow: true, property: 'height', target: null, remove: false};
+        $(function() {
+            $('.payer_payee_boxes').matchHeight(options);
+        });
     </script>
 @endsection
 
