@@ -149,6 +149,17 @@ class IPN extends Controller{
             $link = route('homepage');
         }
 
+        $breadcrumbs = [
+            'Home'      => route('admin'),
+            'Dashboard' => '',
+        ];
+        $text_parts  = [
+            'title'     => 'Home',
+            'subtitle'  => 'users dashboard',
+            'table_head_text1' => 'Dashboard Summary'
+        ];
+        $sidebar_link= 'front-homepage';
+
         if (isset($amount) && isset($currency) && isset($transactionId) && isset($url)){
             $key = env('APP_KEY') ;
             if($key){
@@ -255,16 +266,7 @@ class IPN extends Controller{
 
         }
 
-        $breadcrumbs = [
-            'Home'      => route('admin'),
-            'Dashboard' => '',
-        ];
-        $text_parts  = [
-            'title'     => 'Home',
-            'subtitle'  => 'users dashboard',
-            'table_head_text1' => 'Dashboard Summary'
-        ];
-        $sidebar_link= 'front-homepage';
+
 
         return view($blade,[
             'breadcrumbs' => $breadcrumbs,
@@ -277,6 +279,55 @@ class IPN extends Controller{
     
     public function membership_paypal_cancel(Request $request){
 
+        if (env('FEDERATION',false)){
+            $blade = 'front/iframe/federation/success';
+            $link = route('homepage');
+        }
+        else{
+            $blade = 'front/iframe/success';
+            $link = route('homepage');
+        }
+        $link = '';
+        $breadcrumbs = [
+            'Home'      => route('admin'),
+            'Dashboard' => '',
+        ];
+        $text_parts  = [
+            'title'     => 'Home',
+            'subtitle'  => 'users dashboard',
+            'table_head_text1' => 'Dashboard Summary'
+        ];
+        $sidebar_link= 'front-homepage';
+        $vars = $request->all();
+        if (isset($vars['custom'])) $url = $vars['custom'];
+
+        $status = 'Canceled';
+
+        if(isset($url)) {
+            $key = env('APP_KEY') ;
+            if($key){
+                while(strlen($key) < 16){
+                    $key .= env('APP_KEY');
+                }
+                $key = substr($key,0,16);
+            }
+            $iv = env('APP_KEY');
+            if($iv){
+                while(strlen($iv) < 16){
+                    $iv .= env('APP_KEY');
+                }
+                $iv = substr($key,0,16);
+            }
+            $custom = json_decode(openssl_decrypt(base64_decode($url),'AES-256-CBC',$key,0 ,$iv));
+        }
+
+        return view($blade,[
+            'breadcrumbs' => $breadcrumbs,
+            'text_parts'  => $text_parts,
+            'in_sidebar'  => $sidebar_link,
+            'status'    => $status,
+            'link'      => isset($custom->redirect_url)?$custom->redirect_url:$link
+        ]);
     }
 
 }

@@ -90,6 +90,11 @@ Route::get('membership/paypal_cancel', [
     'uses'  => 'IPN@membership_paypal_cancel'
 ]);
 
+Route::post('membership/paypal_cancel', [
+    'as'    => 'membership/paypal_cancel',
+    'uses'  => 'IPN@membership_paypal_cancel'
+]);
+
 /*Route::post('invoice/ipn', [
     'as'    => 'membership/ipn',
     'uses'  => 'IPN@invoice_ipn'

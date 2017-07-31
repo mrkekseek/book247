@@ -28,57 +28,115 @@
 @if(isset($membership_active) || isset($membership_suspended))
     <div class="membership-status-container">
         @if(isset($membership_active))
-            <span class="membership-status"> You have an active membership </span>
+            <div class="membership-status">
+                <div class="container" style="background:white">
+                    <div class="row">
+                        <div class="col-md-6 col-sm-6">
+                            <div class="first-half-wrapper">
+                                <span>ALREADY A MEMBER</span></br>
+                                <span>You already have an active membership.</br>Thank you.</span>
+                                <a href="{{ $redirect_url }}" data-id="payment_method" data-value="card" target="_parent" class="steps-button" style="background:#009fdd">CONTINUE</a>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-sm-6 hidden-xs">
+                            <img src="{{  asset('assets/iframe/img/picture.jpg') }}" alt="picture">
+                        </div>
+                    </div>
+                </div>
+            </div>
         @endif
         @if(isset($membership_suspended))
             <span class="membership-status"> Your membership is suspended </span>
         @endif
     </div>
-
-
 @else
     @if(!isset($membership))
-    <div class="wrapper body-iframe-step-1" id="body-iframe-step-1">
-        <div class="container-iframe">
-            {{--<h3 class="slider-caption">To join the event you need to get <br>  License (Membership) from "XXXXX".  <br>You can do it right away here:</h3>--}}
-            <div class="carusel-wraper">
-                <div class="carusel items-container simple-items">
-                    @foreach ($membership_list as $key => $m)
-                        @if ($m->status == 'active')
-                            <div class="carusel-item-content carusel-item-content-{{ $m->id }}" >
-                                <div class="box-item item item-{{ $key }}" style="border-top: 8px solid {{ $m->plan_calendar_color }}"  data-match-height="memberships-options">
-                                    <h2 class="h2">{{ $m->name }}</h2>
-                                    {{--<p style="height:96px" class="after-cap">--}}
-                                        {{--{{ $m->short_description  }}--}}
-                                    {{--</p>--}}
-                                    <h3 class="h3" style="color: {{ $m->plan_calendar_color }}">{{ $m->get_price()->price }},-/mo</h3>
-                                    <p>First month fee {{ $m->administration_fee_amount }},-</p>
-                                    <ul class="list">
-                                        <li>Billing: monthly</li>
-                                        <li>Binding: {{ $m->binding_period }} months</li>
-                                        <li>Sign out: {{ $m->sign_out_period ? $m->sign_out_period .' months' : 'none'}}</li>
-                                    </ul>
-                                    <p>Can not book squash</p>
-                                    <div class="carousel-button-wrap">
-                                        <a href="#" data-id="membership" data-value="{{ $m->id }}" class="form-choice carusel-button steps-button" style="background: {{ $m->plan_calendar_color }}">GET IT NOW</a>
-                                        <div class="checkbox-chek checkbox-chek-mobile">
-                                            <input type="checkbox" class="chek-page">
-                                            <p class="mobile-accept">Accept our <a href="#">Terms & Conditions </a> </p>
+        @if(sizeof($membership_list))
+            <div class="wrapper body-iframe-step-1" id="body-iframe-step-1">
+                <div class="container-iframe">
+                    {{--<h3 class="slider-caption">To join the event you need to get <br>  License (Membership) from "XXXXX".  <br>You can do it right away here:</h3>--}}
+                    <div class="carusel-wraper">
+                        <div class="carusel items-container simple-items">
+                            @foreach ($membership_list as $key => $m)
+                                @if ($m->status == 'active')
+                                    <div class="carusel-item-content carusel-item-content-{{ $m->id }}" >
+                                        <div class="box-item item item-{{ $key }}" style="border-top: 8px solid {{ $m->plan_calendar_color }}"  data-match-height="memberships-options">
+                                            <h2 class="h2">{{ $m->name }}</h2>
+                                            {{--<p style="height:96px" class="after-cap">--}}
+                                                {{--{{ $m->short_description  }}--}}
+                                            {{--</p>--}}
+                                            <h3 class="h3" style="color: {{ $m->plan_calendar_color }}">{{ $m->get_price()->price }},-/mo</h3>
+                                            <p>First month fee {{ $m->administration_fee_amount }},-</p>
+                                            <ul class="list">
+                                                <li>Billing: monthly</li>
+                                                <li>Binding: {{ $m->binding_period }} months</li>
+                                                <li>Sign out: {{ $m->sign_out_period ? $m->sign_out_period .' months' : 'none'}}</li>
+                                            </ul>
+                                            <p>Can not book squash</p>
+                                            <div class="carousel-button-wrap">
+                                                <a href="#" data-id="membership" data-value="{{ $m->id }}" class="form-choice carusel-button steps-button" style="background: {{ $m->plan_calendar_color }}">GET IT NOW</a>
+                                                <div class="checkbox-chek checkbox-chek-mobile">
+                                                    <input type="checkbox" class="chek-page">
+                                                    <p class="mobile-accept">Accept our <a href="#">Terms & Conditions </a> </p>
+                                                </div>
+                                            </div>
+
                                         </div>
                                     </div>
-
-                                </div>
-                            </div>
-                        @endif
-                    @endforeach
+                                @endif
+                            @endforeach
+                        </div>
+                    </div>
+                    <div class="checkbox-chek checkbox-chek-desktop">
+                        <input type="checkbox" class="chek-page">
+                        <p class="desktop-accept">Accept our <a href="#">Terms & Conditions </a> </p>
+                    </div>
                 </div>
             </div>
-            <div class="checkbox-chek checkbox-chek-desktop">
-                <input type="checkbox" class="chek-page">
-                <p class="desktop-accept">Accept our <a href="#">Terms & Conditions </a> </p>
+        @else
+            <div class="membership-status-container">
+                @if(isset($membership_active))
+                    <div class="membership-status">
+                        <div class="container" style="background:white">
+                            <div class="row">
+                                <div class="col-md-6 col-sm-6">
+                                    <div class="first-half-wrapper">
+                                        <span>ALREADY A MEMBER</span></br>
+                                        <span>You already have an active membership.</br>Thank you.</span>
+                                        <a href="#" data-id="payment_method" data-value="card" class="steps-button" style="background:#009fdd">CONTINUE</a>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 col-sm-6 hidden-xs">
+                                    <img src="{{  asset('assets/iframe/img/picture.jpg') }}" alt="picture">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @endif
+                @if(isset($membership_suspended))
+                    <span class="membership-status"> Your membership is suspended </span>
+                @endif
             </div>
-        </div>
-    </div>
+            <div class="membership-status-container">
+                <div class="membership-status">
+                    <div class="container" style="background:white">
+                        <div class="row">
+                            <div class="col-md-6 col-sm-6">
+                                <div class="no-memberships-first-half-wrapper">
+                                    <span>NO MEMBERSHIP PLANS</span></br>
+                                    <span>The federation has no membership plans you can buy at this point. Please try again later.</br>Thank you.</span>
+                                    <a href="{{ $redirect_url }}" data-id="payment_method" data-value="card" target="_parent" class="steps-button" style="background:#009fdd">CONTINUE</a>
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-sm-6 hidden-xs">
+                                <img src="{{  asset('assets/iframe/img/picture.jpg') }}" alt="picture">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        @endif
     @endif
     <!--item-2-->
     <div class="wrapper body-iframe-step-2" id="body-iframe-step-2">
