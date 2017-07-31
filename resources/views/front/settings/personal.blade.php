@@ -13,6 +13,7 @@
     <link href="{{ asset('assets/global/css/plugins.min.css') }}" rel="stylesheet" type="text/css" />
 
     <link href="{{ asset('assets/pages/css/profile.min.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/layouts/layout/css/custom.css') }}" rel="stylesheet" type="text/css" />
 @endsection
 
 @section('themeLayoutStyle')
@@ -37,8 +38,8 @@
                                 <!-- PORTLET MAIN -->
                                 <div class="portlet light profile-sidebar-portlet ">
                                     <!-- SIDEBAR USERPIC -->
-                                    <div class="profile-userpic">
-                                        <img src="{{ $avatar }}" class="img-responsive" alt="" />
+                                    <div class="profile-userpic" style="background-image: url('{{ $avatar }}'); ">
+                                       <!-- <img src="{{ $avatar }}" class="img-responsive" alt="" /> -->
                                     </div>
                                     <!-- END SIDEBAR USERPIC -->
                                     <!-- SIDEBAR USER TITLE -->
@@ -98,6 +99,8 @@
                                                     <!-- PERSONAL INFO TAB -->
                                                     <div class="tab-pane active" id="tab_1_1">
                                                         <form role="form" id="form_acc_personal" action="#">
+                                                            <div id="errors_list">
+                                                            </div>
                                                             <div class="alert alert-danger display-hide">
                                                                 <button class="close" data-close="alert"></button> You have some form errors. Please check below. </div>
                                                             <div class="alert alert-success display-hide">
@@ -122,13 +125,13 @@
                                                                 <label class="control-label">Citizenship</label>
                                                                 <select name="personalCountry" id="personalCountry" class="form-control">
                                                                     @foreach ($countries as $country)
-                                                                        <option value="{{ $country->id }}" {!! ($country->id==$user->country_id ? ' selected="selected" ' : '') !!}>{{ $country->citizenship }}</option>
+                                                                        <option value="{{ $country->id }}" {!! ($country->id==$user->country_id ? ' selected="selected" ' : '') !!}>{{ $country->name }}</option>
                                                                     @endforeach
                                                                 </select></div>
                                                             <div class="form-group">
                                                                 <label class="control-label">Date of Birth</label>
                                                                 <div class="control-label">
-                                                                    <div class="input-group input-medium date date-picker" data-date="{{ @$personal->dob_format }}" data-date-format="dd-mm-yyyy" data-date-viewmode="years">
+                                                                    <div class="input-group input-medium date date-picker" data-date="{{ @$personal->dob_format }}" data-date-format="yyyy-mm-dd" data-date-end-date="-0d" data-date-start-view="decades">
                                                                         <input type="text" class="form-control" name="personalDOB" id="personalDOB" value="{{ @$personal->dob_format }}" readonly>
                                                                         <span class="input-group-btn">
                                                                             <button class="btn default" type="button">
@@ -143,7 +146,7 @@
                                                                 <input type="text" name="personalEmail" id="personalEmail" placeholder="Personal Email Address" class="form-control" value="{{@$personal->personal_email}}" /> </div>
                                                             <div class="form-group">
                                                                 <label class="control-label">Mobile Phone Number</label>
-                                                                <input type="text" name="personalPhone" id="personalPhone" placeholder="+1 234 567 8910 (6284)" class="form-control" value="{{@$personal->mobile_number}}" /> </div>
+                                                                <input type="text" name="personalPhone" id="personalPhone" placeholder="123456789" class="form-control" value="{{@$personal->mobile_number}}" /> </div>
                                                             <div class="form-group">
                                                                 <label class="control-label">Preferred Location</label>
                                                                 <select name="preferredLocation" id="preferredLocation" class="form-control">
@@ -183,7 +186,7 @@
                                                                         <span class="fileinput-new"> Select image </span>
                                                                         <span class="fileinput-exists"> Change </span>
                                                                         <input type="file" name="user_avatar" class="user_avatar_select_btn1" /> </span>
-                                                                                <a href="javascript:;" class="btn red fileinput-exists" data-dismiss="fileinput"> Remove </a>
+                                                                                <a href="javascript:;" data-toggle="modal" data-target="#confirm-remove-avatar" class="btn red fileinput-exists " data-dismiss=""> Reset to default </a>
                                                                             </div>
                                                                         </div>
                                                                         <div class="clearfix margin-top-10">
@@ -249,6 +252,25 @@
         <!-- END PAGE CONTENT BODY -->
         <!-- END CONTENT BODY -->
     </div>
+
+    <div class="modal fade" id="confirm-remove-avatar">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Remove avatar</h4>
+                </div>
+                <div class="modal-body">
+                    <p>Do you want to remove avatar?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default " data-dismiss="modal">No</button>
+                    <button type="button" class="btn btn-danger remove-avatar">Yes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 @endsection
 
 @section('pageBelowCorePlugins')
@@ -298,8 +320,8 @@
 
         $.validator.addMethod("datePickerDate",function(value, element) {
             // put your own logic here, this is just a (crappy) example
-            return value.match(/^\d\d?-\d\d?-\d\d\d\d$/);
-        },"Please enter a date in the format dd/mm/yyyy.");
+            return value.match(/^\d\d\d\d-\d\d?-\d\d?$/);
+        },"Please enter a date in the format yyyy/mm/dd.");
         $.validator.addMethod('filesize',function(value, element, param) {
             // param = size (in bytes)
             // element = element to validate (<input>)
@@ -329,11 +351,11 @@
                     ignore: "",  // validate all fields including form hidden input
                     rules: {
                         personalFirstName: {
-                            minlength: 3,
+                            minlength: 2,
                             required: true
                         },
                         personalLastName: {
-                            minlength: 3,
+                            minlength: 2,
                             required: true
                         },
                         personalDOB: {
@@ -348,8 +370,17 @@
                         personalPhone: {
                             required: true,
                             digits: true,
-                            minlength:4,
-                            maxlength:12
+                            minlength: 8,
+                            maxlength: 20,
+                            remote: {
+                                url: "{{ route('ajax/check_phone_for_member_registration') }}",
+                                type: "post",
+                                data: {
+                                    phone: function() {
+                                        return $( "input[name='personalPhone']" ).val();
+                                    }
+                                }
+                            }
                         },
                         gender: {
                             required: true,
@@ -359,7 +390,17 @@
 
                     invalidHandler: function (event, validator) { //display error alert on form submit
                         success1.hide();
-                        error1.show();
+
+                        var errors_list = "";
+                        for(var i in validator.errorList)
+                        {
+                            errors_list  += "<div class='alert alert-danger'>";
+                            errors_list  += $(validator.errorList[i].element).parent().find("label").text() + ": ";
+                            errors_list  += validator.errorList[i].message + "</div>";
+                        }
+
+                        $("#errors_list").html(errors_list);
+                        
                         App.scrollTo(error1, -200);
                     },
 
@@ -385,8 +426,8 @@
                     },
 
                     submitHandler: function (form) {
+                       $("#errors_list").empty();
                         success1.show();
-                        error1.hide();
                         store_account_personal(); // submit the form
                     }
                 });
@@ -707,6 +748,22 @@
             ComponentsDateTimePickers.init();
             FormValidation.init();
             FormDropzone.init();
+
+            $(".remove-avatar").click(function(){
+                
+                $.ajax({
+                    url : "{{route('settings/personal/remove_avatar')}}",
+                    type : "post",
+                    success : function(response)
+                    {
+                        if (response.success)
+                        {
+                            window.location.reload();
+                        }
+                    }
+                });
+            });
+
         });
 
         /* Done */

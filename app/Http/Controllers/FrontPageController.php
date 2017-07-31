@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\applicationSetting;
 use App\Booking;
 use App\GeneralNote;
 use App\ShopLocations;
@@ -23,6 +24,8 @@ use DatePeriod;
 use Carbon\CarbonInterval;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\MessageBag;
+use Webpatser\Countries\Countries;
+use App\Http\Controllers\AppSettings;
 
 class FrontPageController extends Controller
 {
@@ -61,6 +64,14 @@ class FrontPageController extends Controller
                 'header' => ['Invalid Login Attempt'],
                 'message_body' => ['Username and/or password invalid.'],
             ]);
+            if (!empty(Auth::$error)){
+                $errors = new MessageBag([                
+                    'password' => ['Username and/or password invalid.'],
+                    'username' => ['Username and/or password invalid.'],
+                    'header' => ['Invalid Login Attempt'],
+                    'message_body' => [Auth::$error],
+                ]);
+            }
 
             return  redirect()->intended()
                 ->withInput()
@@ -124,6 +135,7 @@ class FrontPageController extends Controller
             'table_head_text1' => 'Dashboard Summary'
         ];
         $sidebar_link= 'front-homepage';
+        $countries = Countries::orderBy('name', 'asc')->get();
 
         return view('front/home_page',[
             'breadcrumbs' => $breadcrumbs,
@@ -131,6 +143,7 @@ class FrontPageController extends Controller
             'in_sidebar'  => $sidebar_link,
             'user'  => $user,
             'shops' => $shopLocations,
+            'countries' => $countries,
             'resourceCategories' => $resourceCategories,
             'meAndFriendsBookings' => @$own_friends_bookings,
             'settings'  => @$settings,
@@ -247,7 +260,8 @@ class FrontPageController extends Controller
             5=>'green-jungle-stripe',
             6=>'yellow-saffron-stripe',
             7=>"dark-stripe"];
-        if (isset($user)){
+
+        if (isset($user) || AppSettings::get_setting_value_by_name('show_calendar_availability_rule')==1){
             foreach($hours as $key=>$hour){
                 $colorStripe = $occupancy_status[rand(1,6)];
                 $hours[$key]['color_stripe'] = $colorStripe;
@@ -268,9 +282,11 @@ class FrontPageController extends Controller
         }
 
         if (!isset($user)){
-            foreach($hours as $key=>$val){
-                $hours[$key]['color_stripe'] = 'dark-stripe';
-                $hours[$key]['percent'] = 100;
+            if (AppSettings::get_setting_value_by_name('show_calendar_availability_rule')!=1) {
+                foreach ($hours as $key => $val) {
+                    $hours[$key]['color_stripe'] = 'dark-stripe';
+                    $hours[$key]['percent'] = 100;
+                }
             }
         }
         else{

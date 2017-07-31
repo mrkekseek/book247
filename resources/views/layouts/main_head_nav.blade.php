@@ -310,8 +310,10 @@
                 <!-- END INBOX DROPDOWN -->
                 <!-- BEGIN USER LOGIN DROPDOWN -->
                 <li class="dropdown dropdown-user dropdown-dark">
-                    <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true">
-                        <img alt="" class="img-circle" src="{{ Auth::user()->get_avatar_image(true) }}">
+                    <a href="javascript:;" class="dropdown-toggle " data-toggle="dropdown" data-hover="dropdown" data-close-others="true" >
+                        
+                        <div class="menu-user-avatar pull-left" style="width: 35px; height: 35px; background-size: cover; background-position: center center; border-radius: 50%;margin-right: 10px;background-image: url('{{ Auth::user()->get_avatar_image(true) }}')"></div>
+
                         <span class="username username-hide-mobile">{{Auth::user()->first_name.' '.Auth::user()->middle_name.' '.Auth::user()->last_name}}</span>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-default">
@@ -369,115 +371,124 @@
         <div class="hor-menu ">
             <ul class="nav navbar-nav">
                 @if (Auth::check() && Auth::user()->is_front_user())
-                <li class="menu-dropdown classic-menu-dropdown {{in_array($in_sidebar, ['front-homepage','front-calendar_view'])?"active":""}}">
-                    <a href="javascript:;"> Squash Fitness
-                        <span class="arrow"></span>
-                    </a>
-                    <ul class="dropdown-menu pull-left">
-                        <li class=" {{$in_sidebar=="front-homepage"?"active":""}}">
-                            <a href="{{ route('homepage') }}" class="nav-link  ">
-                                <i class="icon-bar-chart"></i> Booking Homepage
-                                <!--<span class="badge badge-success">1</span>-->
-                            </a>
-                        </li>
-                        <li class=" {{$in_sidebar=="front-calendar_view"?"active":""}}">
-                            <a href="{{ route('front_calendar_booking',['day'=>\Carbon\Carbon::now()->format('d-m-Y')]) }}" class="nav-link  ">
-                                <i class="icon-bar-chart"></i> Booking Calendar
-                                <!--<span class="badge badge-success">1</span>-->
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-                @if (isset($show_membership_types))
-                <li class="menu-dropdown mega-menu-dropdown {{$in_sidebar=="front-type_of_memberships"?"active":""}}">
-                    <a href="{{ route('front/membership_types') }}"> Membership Types
-                        <span class="arrow"></span>
-                    </a>
-                </li>
-                @endif
-                <li class="menu-dropdown mega-menu-dropdown {{$in_sidebar=="front-bookings_list"?"active":""}}">
-                    <a href="{{ route('front/my_bookings') }}"> My Bookings
-                        <span class="arrow"></span>
-                    </a>
-                </li>
-                <li class="menu-dropdown mega-menu-dropdown {{$in_sidebar=="front-friends_list"?"active":""}}">
-                    <a href="{{route('front/member_friend_list')}}"> Friends List
-                        <span class="arrow"></span>
-                    </a>
-                </li>
-                @if (isset($show_finance_part_top_menu))
-                <li class="menu-dropdown classic-menu-dropdown {{ in_array($in_sidebar, ['front-finance_invoice_list', 'front-finance_active_membership'])?'active':'' }}">
-                    <a href="javascript:;"> Financial
-                        <span class="arrow"></span>
-                    </a>
-                    <ul class="dropdown-menu pull-left">
-                        <li class=" {{ $in_sidebar=='front-finance_invoice_list'?'active':'' }}">
-                            <a href="{{ route('front/member_invoice_list') }}" class="nav-link  "> List of Invoices </a>
-                        </li>
-                        <li class=" {{ $in_sidebar=='front-finance_active_membership'?'active':'' }}">
-                            <a href="{{ route('front/active_membership') }}"> Active Membership </a>
-                        </li>
-                    </ul>
-                </li>
-                @endif
-                <li class="menu-dropdown mega-menu-dropdown {{ in_array($in_sidebar, ['front-settings_account', 'front-settings_personal', 'front-settings_finance'])?'active':'' }}">
-                    <a href="javascript:;"> Settings
-                        <span class="arrow"></span>
-                    </a>
-                    <ul class="dropdown-menu" style="min-width: 310px;">
-                        <li>
-                            <div class="mega-menu-content">
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <ul class="mega-menu-submenu">
-                                            @if(isset($show_account_settings))
-                                            <li class=" {{ $in_sidebar=='front-settings_account'?'active':'' }}">
-                                                <a href="{{ route('settings/account') }}"> Account Settings [not finished] </a>
-                                            </li>
-                                            @endif
-                                            <li class=" {{ $in_sidebar=='front-settings_personal'?'active':'' }}">
-                                                <a href="{{ route('settings/personal') }}"> Personal Settings </a>
-                                            </li>
-                                            @if (isset($show_account_finance_settings))
-                                            <li class=" {{ $in_sidebar=='front-settings_finance'?'active':'' }}">
-                                                <a href="#" class="nav-link  "> Financial Settings [not finished] </a>
-                                            </li>
-                                            @endif
-                                            <li class=" {{ $in_sidebar=='front-settings_finance'?'active':'' }}">
-                                                <a href="{{ route('my_messages') }}" class="nav-link  "> Messages & Notes </a>
-                                            </li>
-                                        </ul>
+                    <li class="menu-dropdown classic-menu-dropdown {{in_array($in_sidebar, ['front-homepage','front-calendar_view'])?"active":""}}">
+                        <a href="javascript:;"> Squash Fitness
+                            <span class="arrow"></span>
+                        </a>
+                        <ul class="dropdown-menu pull-left">
+                            <li class=" {{$in_sidebar=="front-homepage"?"active":""}}">
+                                <a href="{{ route('homepage') }}" class="nav-link  ">
+                                    <i class="icon-bar-chart"></i> Booking Homepage
+                                    <!--<span class="badge badge-success">1</span>-->
+                                </a>
+                            </li>
+                            <li class=" {{$in_sidebar=="front-calendar_view"?"active":""}}">
+                                <a href="{{ route('front_calendar_booking',['day'=>\Carbon\Carbon::now()->format('d-m-Y')]) }}" class="nav-link  ">
+                                    <i class="icon-bar-chart"></i> Booking Calendar
+                                    <!--<span class="badge badge-success">1</span>-->
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    @if (\App\Http\Controllers\AppSettings::get_setting_value_by_name('globalWebsite_show_memberships_on_frontend')==1)
+                    <li class="menu-dropdown mega-menu-dropdown {{$in_sidebar=="front-type_of_memberships"?"active":""}}">
+                        <a href="{{ route('front/membership_types') }}"> Membership Types
+                            <span class="arrow"></span>
+                        </a>
+                    </li>
+                    @endif
+                    @if (\App\Http\Controllers\AppSettings::get_setting_value_by_name('globalWebsite_show_store_credit_packs_on_frontend') == 1)
+                    <li class="menu-dropdown mega-menu-dropdown {{ $in_sidebar == "front-type_of_store_credit" ? "active" : ""}}">
+                        <a href="{{ route('front/store_credit') }}"> Store Credits
+                            <span class="arrow"></span>
+                        </a>
+                    </li>
+                    @endif
+                    <li class="menu-dropdown mega-menu-dropdown {{$in_sidebar=="front-bookings_list"?"active":""}}">
+                        <a href="{{ route('front/my_bookings') }}"> My Bookings
+                            <span class="arrow"></span>
+                        </a>
+                    </li>
+                    <li class="menu-dropdown mega-menu-dropdown {{$in_sidebar=="front-friends_list"?"active":""}}">
+                        <a href="{{route('front/member_friend_list')}}"> Friends List
+                            <span class="arrow"></span>
+                        </a>
+                    </li>
+                    @if (\App\Http\Controllers\AppSettings::get_setting_value_by_name('globalWebsite_show_finance_on_frontend')==1 || \App\Http\Controllers\AppSettings::get_setting_value_by_name('globalWebsite_show_invoices_on_frontend')==1)
+                    <li class="menu-dropdown classic-menu-dropdown {{ in_array($in_sidebar, ['front-finance_invoice_list', 'front-finance_active_membership'])?'active':'' }}">
+                        <a href="javascript:;"> Financial
+                            <span class="arrow"></span>
+                        </a>
+                        <ul class="dropdown-menu pull-left">
+                            @if (\App\Http\Controllers\AppSettings::get_setting_value_by_name('globalWebsite_show_invoices_on_frontend')==1)
+                            <li class=" {{ $in_sidebar=='front-finance_invoice_list'?'active':'' }}">
+                                <a href="{{ route('front/member_invoice_list') }}" class="nav-link  "> List of Invoices </a>
+                            </li>
+                            @endif
+                            <li class=" {{ $in_sidebar=='front-finance_active_membership'?'active':'' }}">
+                                <a href="{{ route('front/active_membership') }}"> Active Membership </a>
+                            </li>
+                        </ul>
+                    </li>
+                    @endif
+                    <li class="menu-dropdown mega-menu-dropdown {{ in_array($in_sidebar, ['front-settings_account', 'front-settings_personal', 'front-settings_finance'])?'active':'' }}">
+                        <a href="javascript:;"> Settings
+                            <span class="arrow"></span>
+                        </a>
+                        <ul class="dropdown-menu" style="min-width: 310px;">
+                            <li>
+                                <div class="mega-menu-content">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <ul class="mega-menu-submenu">
+                                                @if(isset($show_account_settings))
+                                                <li class=" {{ $in_sidebar=='front-settings_account'?'active':'' }}">
+                                                    <a href="{{ route('settings/account') }}"> Account Settings [not finished] </a>
+                                                </li>
+                                                @endif
+                                                <li class=" {{ $in_sidebar=='front-settings_personal'?'active':'' }}">
+                                                    <a href="{{ route('settings/personal') }}"> Personal Settings </a>
+                                                </li>
+                                                @if (isset($show_account_finance_settings))
+                                                <li class=" {{ $in_sidebar=='front-settings_finance'?'active':'' }}">
+                                                    <a href="#" class="nav-link  "> Financial Settings [not finished] </a>
+                                                </li>
+                                                @endif
+                                                <li class=" {{ $in_sidebar=='front-settings_finance'?'active':'' }}">
+                                                    <a href="{{ route('my_messages') }}" class="nav-link  "> Messages & Notes </a>
+                                                </li>
+                                            </ul>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        </li>
-                    </ul>
-                </li>
-                <li class="menu-dropdown mega-menu-dropdown ">
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="menu-dropdown mega-menu-dropdown ">
                     <a href="{{'/logout' }}"> Logout
                         <span class="icon-logout"></span>
                     </a>
                 </li>
                 @else
-                <li class="menu-dropdown classic-menu-dropdown ">
-                    <a href="{{ route('homepage') }}" class="nav-link  ">
-                        <i class="icon-bar-chart"></i> Squash Fitness Homepage
-                    </a>
-                </li>
-                @if (isset($show_membership_types))
-                <li class="menu-dropdown mega-menu-dropdown {{$in_sidebar=="front-type_of_memberships"?"active":""}}">
-                    <a href="{{ route('front/membership_types') }}">
-                        <i class="icon-bar-chart"></i> Membership Types
-                        <!--<span class="badge badge-success">New</span>-->
-                    </a>
-                </li>
-                @endif
-                <li class="menu-dropdown mega-menu-dropdown {{$in_sidebar=="front-contact_or_locations"?"active":""}}">
-                    <a href="{{ route('front/contact_locations') }}">
-                        <i class="icon-bar-chart"></i> Contact/Locations
-                        <!--<span class="badge badge-success">1 New</span>-->
-                    </a>
-                </li>
+                    <li class="menu-dropdown classic-menu-dropdown ">
+                        <a href="{{ route('homepage') }}" class="nav-link  ">
+                            <i class="icon-bar-chart"></i> Squash Fitness Homepage
+                        </a>
+                    </li>
+                    @if (\App\Http\Controllers\AppSettings::get_setting_value_by_name('globalWebsite_show_memberships_on_frontend')==1)
+                    <li class="menu-dropdown mega-menu-dropdown {{$in_sidebar=="front-type_of_memberships"?"active":""}}">
+                        <a href="{{ route('front/membership_types') }}">
+                            <i class="icon-bar-chart"></i> Membership Types
+                            <!--<span class="badge badge-success">New</span>-->
+                        </a>
+                    </li>
+                    @endif
+                    <li class="menu-dropdown mega-menu-dropdown {{$in_sidebar=="front-contact_or_locations"?"active":""}}">
+                        <a href="{{ route('front/contact_locations') }}">
+                            <i class="icon-bar-chart"></i> Contact/Locations
+                            <!--<span class="badge badge-success">1 New</span>-->
+                        </a>
+                    </li>
                 @endif
             </ul>
         </div>

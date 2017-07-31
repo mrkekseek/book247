@@ -19,7 +19,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}" />
 @endsection
 
-@section('title', 'Back-end shops - View Shop Details')
+@section('title', 'Back-end Clubs - View Club Details')
 @section('pageBodyClass','page-container-bg-solid page-header-fixed page-sidebar-closed-hide-logo')
 
 @section('pageContentBody')
@@ -58,20 +58,20 @@
                     <div class="portlet-title">
                         <div class="caption">
                             <i class="icon-settings font-dark"></i>
-                            <span class="caption-subject font-dark sbold uppercase">Shop/Store Details</span>
+                            <span class="caption-subject font-dark sbold uppercase">Club Details</span>
                         </div>
                     </div>
                     <div class="portlet-body form">
                         <form class="form-horizontal" role="form" name="store_details" id="store_details">
                             <div class="form-body">
                                 <div class="form-group">
-                                    <label class="col-md-3 control-label">Shop Name</label>
+                                    <label class="col-md-3 control-label">Club Name</label>
                                     <div class="col-md-9">
                                         <div class="input-group">
                                             <span class="input-group-addon">
                                                 <i class="fa fa-envelope"></i>
                                             </span>
-                                            <input type="text" name="shop_name" class="form-control" placeholder="Shop Name" value="{{ $shopDetails->name }}" /> </div>
+                                            <input type="text" name="shop_name" class="form-control" placeholder="Club Name" value="{{ $shopDetails->name }}" /> </div>
                                     </div>
                                 </div>
                                 <div class="form-group">
@@ -128,7 +128,7 @@
                     <div class="portlet-title">
                         <div class="caption">
                             <i class="icon-settings font-dark"></i>
-                            <span class="caption-subject font-dark sbold uppercase">Shop/Store Address</span>
+                            <span class="caption-subject font-dark sbold uppercase">Club Address</span>
                         </div>
                     </div>
                     <div class="portlet-body form">
@@ -190,7 +190,56 @@
                 <div class="portlet box red border-grey-silver">
                     <div class="portlet-title bg-grey-silver bg-font-grey-silver">
                         <div class="caption">
-                            <i class="fa fa-cogs"></i>Shop/Store System Options </div>
+                            <i class="fa fa-cogs"></i>Club Activities - single booking time interval </div>
+                        <div class="tools">
+                            <a class="collapse" href="javascript:;" data-original-title="" title=""> </a>
+                        </div>
+                        <div class="actions">
+                            <a class="btn green-jungle" data-toggle="modal" href="#addCategoryTime">
+                                <i class="fa fa-plus"></i> Add Activity Booking Time </a>
+                        </div>
+                    </div>
+                    <div class="portlet-body flip-scroll">
+                        @if (sizeof($shop_category_interval)>0)
+                            <table class="table table-bordered table-striped table-condensed flip-content">
+                                <tbody>
+                                <tr>
+                                    <th>Available Activity in Club</th>
+                                    <th>Booking time interval </th>
+                                </tr>
+                            @foreach($shop_category_interval as $single)
+                                <tr>
+                                    <td class="text-center"> &nbsp;{{$single->activity->name}} </td>
+                                    <td>
+                                        @if ($single->is_locked==1)
+                                            <input value="{{$single->time_interval}} minutes" class="form-control input-inline input-medium input-sm" type="text" readonly="readonly" disabled="disabled">
+                                        @else
+                                            <select name="option_value_{{$single->id}}" class="form-control input-inline input-medium input-sm" aria-invalid="false">
+                                                @for($i=5; $i<=180; $i++)
+                                                    <option value="{{$i}}" {!! $i==$single->time_interval?'selected':'' !!}> {{$i}} minutes </option>
+                                                @endfor
+                                            </select>
+                                            <a class="btn blue btn-sm update_system_option" >Update</a>
+                                        @endif
+                                    </td>
+                                </tr>
+                            @endforeach
+                                </tbody>
+                            </table>
+                        @else
+
+                        @endif
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="portlet box red border-grey-silver">
+                    <div class="portlet-title bg-grey-silver bg-font-grey-silver">
+                        <div class="caption">
+                            <i class="fa fa-cogs"></i>Club System Options </div>
                         <div class="tools">
                             <a class="collapse" href="javascript:;" data-original-title="" title=""> </a>
                         </div>
@@ -202,9 +251,9 @@
                                 <td> &nbsp; <b>Location financial profile</b> </td>
                                 <td> <select name="option_value" class="form-control input-inline input-medium input-sm" aria-invalid="false">
                                         <option value="-1" {!! $shopFinancialProfile==-1?'selected="selected"':'' !!}>Default</option>
-                                    @foreach ($financialProfiles as $singleProfile)
-                                        <option value="{{ $singleProfile->id }}" {!! $shopFinancialProfile==$singleProfile->id?'selected':'' !!}> {{ $singleProfile->profile_name }} </option>
-                                    @endforeach
+                                        @foreach ($financialProfiles as $singleProfile)
+                                            <option value="{{ $singleProfile->id }}" {!! $shopFinancialProfile==$singleProfile->id?'selected':'' !!}> {{ $singleProfile->profile_name }} </option>
+                                        @endforeach
                                     </select>
                                     <input type="hidden" name="option_key" value="shop_finance_profile" />
                                     <a class="btn blue btn-sm update_system_option" >Update</a> </td>
@@ -231,16 +280,19 @@
                 <div class="portlet box red border-grey-silver">
                     <div class="portlet-title bg-grey-silver bg-font-grey-silver">
                         <div class="caption">
-                            <i class="fa fa-cogs"></i>Shop Resources </div>
+                            <i class="fa fa-cogs"></i>Club Resources </div>
                         <div class="tools">
                             <a class="collapse" href="javascript:;" data-original-title="" title=""> </a>
                         </div>
+                        @if (sizeof($shop_category_interval)>0)
                         <div class="actions">
                             <a class="btn green-jungle" data-toggle="modal" href="#draggable">
                                 <i class="fa fa-plus"></i> Add Resource </a>
                         </div>
+                        @endif
                     </div>
                     <div class="portlet-body flip-scroll">
+                        @if (sizeof($shop_category_interval)>0)
                         <table class="table table-bordered table-striped table-condensed flip-content">
                             <thead class="flip-content">
                             <tr>
@@ -262,6 +314,14 @@
                             @endforeach
                             </tbody>
                         </table>
+                        @else
+                            <div class="note note-warning">
+                                <h4 class="block">No Activities defined for this location</h4>
+                                <p> Before adding resources to your location, you need to define the activities that can be found in your location.
+                                    Based on the activities you will add, you can define resources for them, resources that will be able to be booked
+                                    by your customers.</p>
+                            </div>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -600,7 +660,7 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
-                        <h4 class="modal-title">Add New Shop Resource</h4>
+                        <h4 class="modal-title">Add New Club Resource</h4>
                     </div>
                     <div class="modal-body">
                         <form action="#" id="new_resource" name="new_resource" class="form-horizontal">
@@ -620,7 +680,7 @@
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label class="control-label col-md-4">Shop Location</label>
+                                    <label class="control-label col-md-4">Club Location</label>
                                     <div class="col-md-7">
                                         <div class="input-icon right">
                                             <i class="fa"></i>
@@ -632,8 +692,8 @@
                                     <div class="col-md-7">
                                         <select class="form-control input-sm" name="resource_category" id="resource_category">
                                             <option value="-1">Select Category...</option>
-                                            @foreach ($resourceCategory as $category)
-                                                <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                            @foreach($shop_category_interval as $single)
+                                                <option value="{{ $single->activity->id }}">{{ $single->activity->name }}</option>
                                             @endforeach
                                         </select>
                                     </div>
@@ -682,6 +742,58 @@
                     <div class="modal-footer">
                         <button type="button" class="btn dark btn-outline" data-dismiss="modal">Close</button>
                         <button type="button" class="btn green submit_form_2" onclick="javascript: $('#new_resource').submit();">Save changes</button>
+                    </div>
+                </div>
+                <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+        </div>
+        <!-- END Add new shop resource -->
+
+        <!-- BEGIN Add new shop resource -->
+        <div class="modal fade draggable-modal" id="addCategoryTime" tabindex="-1" role="basic" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                        <h4 class="modal-title">Add an activity to this location</h4>
+                    </div>
+                    <div class="modal-body">
+                        <form action="#" id="new_location_activity" name="new_location_activity" class="form-horizontal">
+                            <div class="form-body">
+                                <div class="alert alert-danger display-hide">
+                                    <button class="close" data-close="alert"></button> You have some form errors. Please check below. </div>
+                                <div class="alert alert-success display-hide">
+                                    <button class="close" data-close="alert"></button> Your form validation is successful! </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-4">Activity</label>
+                                    <div class="col-md-7">
+                                        <select class="form-control input-sm" name="location_resource_category" id="location_resource_category">
+                                            <option>Select Activity...</option>
+                                            @foreach ($resourceCategory as $category)
+                                                <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-4">Booking Slot Time</label>
+                                    <div class="col-md-7">
+                                        <select name="resource_time_slot" class="form-control input-sm">
+                                            <option>Select time in minutes</option>
+                                            @for($i=5; $i<=120; $i++)
+                                                <option value="{{$i}}" {!! $i==$key?'selected':'' !!}> {{$i}} minutes </option>
+                                            @endfor
+                                        </select>
+                                        <span class="help-block"> time per single reservation for this activity </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn dark btn-outline" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn green submit_form_2" onclick="javascript: $('#new_location_activity').submit();">Add</button>
                     </div>
                 </div>
                 <!-- /.modal-content -->
@@ -1334,6 +1446,62 @@
                 });
             }
 
+            var handleValidation7 = function() {
+                var form7 = $('#new_location_activity');
+                var error7 = $('.alert-danger', form7);
+                var success7 = $('.alert-success', form7);
+
+                form7.validate({
+                    errorElement: 'span', //default input error message container
+                    errorClass: 'help-block help-block-error', // default input error message class
+                    focusInvalid: false, // do not focus the last invalid input
+                    ignore: "",  // validate all fields including form hidden input
+                    rules: {
+                        location_resource_category: {
+                            min:1,
+                            required: true
+                        },
+                        resource_time_slot: {
+                            min:1,
+                            required: true,
+                        },
+                    },
+
+                    invalidHandler: function (event, validator) { //display error alert on form submit
+                        success7.hide();
+                        error7.show();
+                        App.scrollTo(error7, -200);
+                    },
+
+                    errorPlacement: function (error, element) { // render error placement for each input type
+                        var icon = $(element).parent('.input-icon').children('i');
+                        icon.removeClass('fa-check').addClass("fa-warning");
+                        icon.attr("data-original-title", error.text()).tooltip({'container': 'body'});
+                    },
+
+                    highlight: function (element) { // hightlight error inputs
+                        $(element)
+                            .closest('.form-group').removeClass("has-success").addClass('has-error'); // set error class to the control group
+                    },
+
+                    unhighlight: function (element) { // revert the change done by hightlight
+
+                    },
+
+                    success: function (label, element) {
+                        var icon = $(element).parent('.input-icon').children('i');
+                        $(element).closest('.form-group').removeClass('has-error').addClass('has-success'); // set success class to the control group
+                        icon.removeClass("fa-warning").addClass("fa-check");
+                    },
+
+                    submitHandler: function (form7) {
+                        success7.show();
+                        error7.hide();
+                        add_new_activity_to_location(); // submit the form
+                    }
+                });
+            }
+
             return {
                 //main function to initiate the module
                 init: function () {
@@ -1343,6 +1511,7 @@
                     handleValidation4();
                     handleValidation5();
                     handleValidation6();
+                    handleValidation7();
                 }
             };
         }();
@@ -1577,6 +1746,29 @@
 
             FormValidation.init();
         });
+
+        function add_new_activity_to_location(){
+            $.ajax({
+                url: '{{route('ajax/location_set_activity_book_interval')}}',
+                type: "post",
+                data: {
+                    'location_id':  '{{$shopDetails->id}}',
+                    'activity_id':  $('select[name=location_resource_category]').val(),
+                    'value':        $('select[name=resource_time_slot]').val(),
+                },
+                success: function(data){
+                    if(data.success){
+                        show_notification(data.title, data.message, 'lime', 3500, 0);
+                        setTimeout(function(){
+                            location.reload();
+                        },1500);
+                    }
+                    else{
+                        show_notification(data.title, data.errors, 'ruby', 3500, 0);
+                    }
+                }
+            });
+        }
 
         function add_new_resource(){
             $.ajax({

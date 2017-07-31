@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Federation;
 
+use App\Http\Controllers\AdminController as Base;
 use App\Booking;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
@@ -16,28 +17,47 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\MessageBag;
 use Carbon\Carbon;
 use App\Http\Controllers\Api;
+use App\Http\Controllers\Federation\AnyApi;
+use App\Http\Libraries\ApiAuth;
+use App\User;
 
-class AdminController extends Controller
+class AdminController extends Base
 {
-    /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        //$this->middleware('auth');
-    }
 
     /**
      * Show the application dashboard.
      *
-     * @return \Illuminate\Http\Response
+     * @param Request $r
+     * @return String
      */
 
-    public function testRoute(){
+    public function testRoute(Request $r){
+//        $user = User::find(112);
+//        dd($user->get_active_membership());
+//        return json_encode(Api::send_curl(['memberSSOid'=>5 , 'country'=> 'NO' ,'activity' => 1],'federation_member_has_valid_license','GET'));
+//        return json_encode(Api::send_curl(['account_key' => '11381-46565-30640-84804-20809'],'validate_account_key','POST'));
+//        return json_encode(Api::send_curl(['memberSSOid' => 115 ,'account_key'=>'45788-52757-20554-64471-70259'],'federation_member_has_valid_license','POST'));
+//        return ApiAuth::accounts_get(124);
+//        $x = ApiAuth::send('','http://rankedinbookingsso-test.azurewebsites.net/api/Accounts/136','GET');
+//        $x = AnyApi::send_curl('http://rankedinbookingsso-test.azurewebsites.net',[],'/api/Accounts/28','GET');
 
+
+        if($r->method() == "POST"){
+            return json_encode($r->all());
+        }
+        $result =  Api::send_curl(['memberSSOid' => 78 ,'membership_id' => null, 'account_key' => AppSettings::get_setting_value_by_name('globalWebsite_rankedin_integration_key'), 'return_url' => "https://rankedin.com/Tournament/Index/408" ],'federation_buy_license','POST');
+
+        if(isset($result->iFrameUrl)) {
+            return view('development',['link' => $result->iFrameUrl]);
+        } else {
+            if(is_string($result)){
+                return $result;
+            } else {
+                return json_encode($result);
+            }
+        }
     }
+
 
     public function index()
     {
@@ -65,39 +85,6 @@ class AdminController extends Controller
 
     }
 
-
-    public function authenticate(Request $request)
-    {
-        if (Auth::attempt(['email' => $request->input('username'), 'password' => $request->input('password')])) {
-            // Authentication passed...
-            $user = Auth::user();
-            if ($user->hasRole(['manager','employee'])){
-                return redirect()->route('bookings/location_calendar_day_view',['day'=>\Carbon\Carbon::now()->format('d-m-Y')]);
-            }
-            else{
-                return redirect()->intended('admin');
-            }
-        }
-        else {
-            $errors = new MessageBag([
-                'password' => ['Username and/or password invalid.'],
-                'username' => ['Username and/or password invalid.'],
-                'header' => ['Invalid Login Attempt'],
-                'message_body' => ['Username and/or password invalid.'],
-            ]);
-
-            return  redirect()->intended(route('admin/login'))
-                    ->withInput()
-                    ->withErrors($errors)
-                    ->with('message', 'Login Failed');
-        }
-    }
-
-    public function logout(){
-        Auth::logout();
-        return redirect()->intended(route('admin/login'));
-    }
-
     public function permission_denied(){
         $user = Auth::user();
         if (!$user || !$user->is_back_user()) {
@@ -117,7 +104,7 @@ class AdminController extends Controller
         ];
         $sidebar_link = 'error_permission_denied';
 
-        return view('admin/errors/permission_denied', [
+        return view('admin/errors/federation/permission_denied', [
             'breadcrumbs' => $breadcrumbs,
             'text_parts'  => $text_parts,
             'in_sidebar'  => $sidebar_link,
@@ -143,33 +130,7 @@ class AdminController extends Controller
         ];
         $sidebar_link = 'error_not_found';
 
-        return view('admin/errors/not_found', [
-            'breadcrumbs' => $breadcrumbs,
-            'text_parts'  => $text_parts,
-            'in_sidebar'  => $sidebar_link,
-        ]);
-    }
-
-    public function error_404(){
-        $user = Auth::user();
-        if (!$user || !$user->is_back_user()) {
-            return redirect()->intended(route('admin/login'));
-        }
-
-        $breadcrumbs = [
-            'Home'              => route('admin'),
-            'Administration'    => route('admin'),
-            'Back End User'     => route('admin'),
-            'Permissions'        => '',
-        ];
-        $text_parts  = [
-            'title'     => 'Add new membership plan',
-            'subtitle'  => '',
-            'table_head_text1' => 'Membership Plans - Create New'
-        ];
-        $sidebar_link = 'error_not_found';
-
-        return view('admin/errors/not_found', [
+        return view('admin/errors/federation.not_found', [
             'breadcrumbs' => $breadcrumbs,
             'text_parts'  => $text_parts,
             'in_sidebar'  => $sidebar_link,
@@ -180,11 +141,8 @@ class AdminController extends Controller
         $method = $r->get('method');
         if ($method) {
             $data = $r->all();
-            if ($r->method() == 'POST') {
-                $data[] = ['site_id' => env('MY_API_ID',"")];
-            }
+            unset($data['method']);
             $response = Api::send_curl($data, $method, $r->method());
-//            dd($response);
             if ($response->code == 1) {
                 return json_encode(array(
                         'success' => true ,
@@ -199,7 +157,8 @@ class AdminController extends Controller
                 );
             } else {
                 return json_encode(array(
-                        'error' => Api::$error
+                        'error' => Api::$error,
+                        'data' => json_encode($response)
                     )
                 );
             }

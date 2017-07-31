@@ -19,10 +19,6 @@ Login page
   padding: 30px;
   padding-top: 20px;
   padding-bottom: 15px;
-  -webkit-border-radius: 7px;
-  -moz-border-radius: 7px;
-  -ms-border-radius: 7px;
-  -o-border-radius: 7px;
   border-radius: 7px; }
 
 .login .content h3 {
@@ -137,3 +133,24 @@ Login page
     font-size: 22px; }
   .login .checkbox {
     font-size: 13px; } }
+
+
+.btn-info-paragraphe.dropdown-menu {
+    padding: 10px;
+    min-width: 290px;
+}
+
+.tab-pane-width {
+  max-width: 700px;
+  width:100%;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.tab-pane-width .well {
+  
+  width: 100%;
+  display: block;
+  margin-right:auto;
+  margin-left:auto;
+}

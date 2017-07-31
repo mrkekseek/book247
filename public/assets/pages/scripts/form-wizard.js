@@ -143,7 +143,8 @@ var FormWizard = function () {
                 submitHandler: function (form) {
                     success.show();
                     error.hide();
-                    //add here some ajax code to submit your form or just call form.submit() if you want to submit the form without ajax
+                    var data = $(form).serialize();
+                    sendData(data);
                 }
 
             });
@@ -239,10 +240,27 @@ var FormWizard = function () {
                     });
                 }
             });
+            
+            var sendData = function (data){
+                $.ajax({
+                    url: '/admin/registration',
+                    type: "post",
+                    data: data,
+                    success: function (data) {
+                        if (data.success == true) {
+                            window.location.href = '/admin';
+                        }
+                        else{
+                            window.location.href = '/';
+                        }
+                    }
+                });
+            }
+            
 
             $('#form_wizard_1').find('.button-previous').hide();
             $('#form_wizard_1 .button-submit').click(function () {
-                alert('Finished! Hope you like it :)');
+                $('#submit_form').submit();
             }).hide();
 
             //apply validation on select2 dropdown value change, this only needed for chosen dropdown integration.

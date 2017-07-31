@@ -13,6 +13,9 @@ use App\UserMembership;
 use App\UserSettings;
 use App\UserAvatars;
 use App\UserDocuments;
+use App\ShopLocationCategoryIntervals;
+use App\MembershipRestriction;
+use App\MembershipPlan;
 use Illuminate\Http\Response;
 use Illuminate\Http\Request;
 use App\Http\Requests;
@@ -28,6 +31,7 @@ use \App\Role;
 use Webpatser\Countries\Countries;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Config;
+use App\Http\Controllers\AppSettings;
 
 class BackEndUserController extends Controller
 {
@@ -82,6 +86,7 @@ class BackEndUserController extends Controller
 
         $all_roles = Role::orderBy('name')->get();
         //xdebug_var_dump($all_roles);
+        $countries = Countries::orderBy('name', 'asc')->get();
 
         return view('admin/back_users/all_list', [
             'users' => $back_users,
@@ -89,6 +94,7 @@ class BackEndUserController extends Controller
             'text_parts'  => $text_parts,
             'in_sidebar'  => $sidebar_link,
             'all_roles'   => $all_roles,
+            'countries' => $countries,
         ]);
     }
 
@@ -111,11 +117,8 @@ class BackEndUserController extends Controller
                 'success'   => false,
                 'errors'    => 'You don\'t have permission to access this page',
                 'title'     => 'Permission Error'];
-            /*return redirect()->intended(route('admin/error/permission_denied'));*/
         }
-
-        $vars = $request->only('first_name', 'middle_name', 'last_name', 'email', 'user_type', 'username', 'password', 'user_type');
-
+        $vars = $request->only('first_name', 'middle_name', 'last_name', 'email', 'phone_number', 'dob', 'gender', 'country_id', 'user_type', 'user_type');
         if (!isset($vars['middle_name'])){
             $vars['middle_name'] = '';
         }
@@ -128,37 +131,63 @@ class BackEndUserController extends Controller
             $vars['user_type'] = Role::where('name','=','employee')->get()->first()->id;
         }
 
-        if ($vars['password']==""){
+        if (!isset($vars['password']) || $vars['password']==""){
             $vars['password'] = substr(bcrypt(str_random(12)),0,8);
         }
 
         if (!isset($vars['country_id'])){
-            $vars['country_id'] = Config::get('constants.globalWebsite.defaultCountryId');
+            $vars['country_id'] = AppSettings::get_setting_value_by_name('globalWebsite_defaultCountryId');
         }
-
         $credentials = [
             'first_name'    => $vars['first_name'],
             'middle_name'   => $vars['middle_name'],
             'last_name'     => $vars['last_name'],
-            'username'      => $vars['username'],
+            'username'      => $vars['email'],
             'email'         => $vars['email'],
             'password'      => $vars['password'],
             'country_id'    => $vars['country_id'],
             'status'        => 'active',
             'user_type'     => $vars['user_type']
         ];
+        $password_api = $vars['password'];
         $validator = Validator::make($credentials, User::rules('POST'), User::$messages, User::$attributeNames);
         if ($validator->fails()){
-            //return $validator->errors()->all();
             return array(
                 'success'   => false,
                 'title'     => 'Error validating',
                 'errors'    => $validator->getMessageBag()->toArray()
             );
         }
-
+        $personalData = [
+                'personal_email'=> $vars['email'],
+                'mobile_number' => $vars['phone_number'],
+                'date_of_birth' => $vars['dob'],
+                'bank_acc_no'   => 0,
+                'social_sec_no' => 0,
+                'about_info'    => '',                
+                'customer_number'   => $user->get_next_customer_number()
+            ];            
+        $validator = Validator::make($personalData, PersonalDetail::rules('POST'), PersonalDetail::$messages, PersonalDetail::$attributeNames);            
+            if ($validator->fails()){                
+                return array(
+                    'success'   => false,
+                    'title'     => 'Error validating',
+                    'errors'    => $validator->getMessageBag()->toArray()
+                );
+            }
         $credentials['password'] = bcrypt($credentials['password']);
         try {
+            $dataForApi = $credentials + $personalData;
+            $api_user = Auth::create_api_user($dataForApi, $password_api);
+            if ( ! $api_user)
+            {
+                return [
+                    'success'   => false,
+                    'title'     => 'Api error',
+                    'errors'    => Auth::$error
+                ];
+            }
+            $credentials['sso_user_id'] = $api_user;
             $user = User::create($credentials);
             // attach the roles to the new created user
             $user->attachRole($vars['user_type']);
@@ -228,7 +257,7 @@ class BackEndUserController extends Controller
 
         $userPersonal = $back_user->PersonalDetail;
         if (isset($userPersonal)) {
-            $userPersonal->dob_format = Carbon::createFromFormat('Y-m-d', $userPersonal->date_of_birth)->format('d-m-Y');
+            $userPersonal->dob_format = Carbon::createFromFormat('Y-m-d', $userPersonal->date_of_birth)->format('Y-m-d');
             $userPersonal->dob_to_show = Carbon::createFromFormat('Y-m-d', $userPersonal->date_of_birth)->format('d M Y');
         }
         else{
@@ -242,6 +271,7 @@ class BackEndUserController extends Controller
 
         $roles = Role::all();
         $countries = Countries::orderBy('name')->get();
+       
         $userCountry = Countries::find($back_user->country_id);
 
         $avatar = $back_user->get_avatar_image();
@@ -353,8 +383,11 @@ class BackEndUserController extends Controller
         $storeSetting = UserSettings::firstOrNew($fillable);
         $storeSetting->var_value = $vars['settings_preferred_activity'];
         $storeSetting->save();
-
-        return "bine";
+        return [
+            'success' => true,
+            'title'   => 'Information Updated',
+            'message' => 'Backend user information successfully updated'
+        ];
     }
 
     public function update_account_avatar(Request $request, $id)
@@ -409,7 +442,7 @@ class BackEndUserController extends Controller
 
         $personalData = array(  'personal_email'=> $vars['personal_email'],
                                 'mobile_number' => $vars['mobile_number'],
-                                'date_of_birth' => Carbon::createFromFormat('d-m-Y', $vars['date_of_birth'])->toDateString(),
+                                'date_of_birth' => Carbon::createFromFormat('Y-m-d', $vars['date_of_birth'])->toDateString(),
                                 'bank_acc_no'   => $vars['bank_acc_no'],
                                 'social_sec_no' => $vars['social_sec_no'],
                                 'about_info'    => $vars['about_info'],
@@ -879,4 +912,220 @@ class BackEndUserController extends Controller
         return $user_address;
     }
 
+    public function invoice_payment($id)
+    {
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
+            return redirect()->intended(route('admin/login'));
+        }
+
+        $invoice = DB::table("invoices")->where('invoice_number', $id)->first();
+        if ($invoice)
+        {
+            $subtotal = 0;
+            $total = 0;
+            $discount = 0;
+            $vat = [];
+
+            $items = DB::table("invoice_items")->where('invoice_id', $invoice->id)->get();
+
+            foreach($items as $item)
+            { 
+                $item_one_price = $item->price - (($item->price*$item->discount)/100);
+                $item_vat = $item_one_price * ($item->vat/100);
+
+                if (isset($vat[$item->vat]))
+                {
+                    $vat[$item->vat] += $item_vat*$item->quantity;
+                }
+                else
+                {
+                    $vat[$item->vat] = $item_vat*$item->quantity;
+                }
+
+                $discount += (($item->price*$item->discount)/100)*$item->quantity;
+                $subtotal += $item->price * $item->quantity;
+
+                $total += ($item_one_price + $item_vat)*$item->quantity;
+            }
+        }
+        else
+        {
+            return redirect('/');
+        }
+        
+
+        $member = User::with('ProfessionalDetail')->with('PersonalDetail')->where('id', $invoice->user_id)->get()->first();
+        $member->country = Countries::where('id', $member->country_id)->get()->first();
+
+        $breadcrumbs = [
+            'Home'              => route('admin'),
+            'Administration'    => route('admin'),
+            'Back End User'     => route('admin'),
+            'All Backend Users' => '',
+        ];
+        
+        $text_parts  = [
+            'title'     => 'Back-End Users',
+            'subtitle'  => 'view all users',
+            'table_head_text1' => 'Backend User List'
+        ];
+
+        $sidebar_link = 'admin-backend-shops-invoices-payment';
+
+        return view('admin/finance/invoice/finance_peyment', [
+            'breadcrumbs' => $breadcrumbs,
+            'text_parts'  => $text_parts,
+            'in_sidebar'  => $sidebar_link,
+            'invoice'   => $invoice,
+            'invoice_items' => @$items,
+            'member'    => $member,
+            'sub_total' => $subtotal,
+            'discount' => $discount,
+            'vat' => $vat,
+            'grand_total' => $total
+        ]);
+    }
+
+    public function remove_avatar()
+    {
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
+            return redirect()->intended(route('admin/login'));
+        }
+
+        if(UserAvatars::where("user_id", Auth::user()->id)->delete())
+        {
+            return [
+                "success" => TRUE
+            ];
+        }
+
+        return [
+            "success" => FALSE
+        ];
+
+    }
+    
+    public function registrationStepsIndex()
+   	{
+        $status = AppSettings::get_setting_value_by_name('globalWebsite_registration_finished');
+        if ( $status == 0 )
+        {
+            return redirect('');
+        }
+        $countries = Countries::orderBy('name', 'asc')->get();
+		$currencies = Countries::groupBy('currency_code')->get();
+        $shopLocation = ShopLocations::first();
+        $shopResourceCategories = ShopResourceCategory::get();
+        $user = Auth::user();
+		return view('registration-form', [
+            'countries'=>$countries, 
+            'currencies'=>$currencies, 
+            'shopLocation'=>$shopLocation,
+            'shopResourceCategories'=>$shopResourceCategories,
+            'user'=>$user,
+        ]);
+   	}
+    
+    public function registrationStepsSave(Request $request)
+    {
+        $status = AppSettings::get_setting_value_by_name('globalWebsite_registration_finished');
+        if ( $status == 0 )
+        {
+            $response = [
+                'success' => FALSE,
+            ];
+        }
+        else
+        {
+            $user = Auth::user();    
+            $data = $request->only('clubname','email','phone','fax','addressline1','addressline2','city','region','postalcode','country','currency','sport','time','members','pay','resource','day','limit');
+            $shopLocation = ShopLocations::first();
+            $shopLocation->phone = $data['phone'];
+            $shopLocation->fax = $data['fax'];
+            $shopLocation->email = $data['email'];
+            $shopLocation->save();
+            
+            $address = Address::find($shopLocation->address_id);
+            $address->user_id = $user->id;
+            $address->address1 = $data['addressline1'];
+            $address->address2 = $data['addressline2'];
+            $address->city = $data['city'];
+            $address->region = $data['region'];
+            $address->postal_code = $data['postalcode'];
+            $address->country_id = $data['country'];
+            $address->save();
+            
+            AppSettings::update_settings_value_by_name('finance_currency', $data['currency']);
+            
+            $shopLocationCategoryIntervals = new ShopLocationCategoryIntervals;
+            $shopLocationCategoryIntervals->location_id = $shopLocation->id;
+            $shopLocationCategoryIntervals->category_id = $data['sport'];
+            $shopLocationCategoryIntervals->time_interval = $data['time'];
+            $shopLocationCategoryIntervals->is_locked = 0;
+            $shopLocationCategoryIntervals->added_by = $user->id;
+            $shopLocationCategoryIntervals->save();
+            
+            $membershipPlan = MembershipPlan::first();
+            if ( empty ($membershipPlan))
+            {
+                $membershipPlan = new MembershipPlan();
+                $membershipPlan->name = $data['clubname'];
+                $membershipPlan->save();
+            }
+            
+            $activity = ShopResourceCategory::find($shopLocationCategoryIntervals->category_id);
+            if ( ! empty($data['members']))
+            {
+                $membershipRestriction = new MembershipRestriction;
+                $membershipRestriction->membership_id = 1;
+                $membershipRestriction->restriction_id = 5;
+                $membershipRestriction->value = json_encode([$activity->id]);
+                $membershipRestriction->save();
+            }
+            $membershipRestriction = new MembershipRestriction;
+            $membershipRestriction->membership_id = 1;
+            $membershipRestriction->restriction_id = 6;
+            $membershipRestriction->max_value = $data['day']*24;
+            $membershipRestriction->save();
+            AppSettings::update_settings_value_by_name('bookings_upfront_reservation_rule', $data['day']);
+            
+            $membershipRestriction = new MembershipRestriction;
+            $membershipRestriction->membership_id = 1;
+            $membershipRestriction->restriction_id = 3;
+            $membershipRestriction->value = $data['limit'];
+            $membershipRestriction->save();
+            AppSettings::update_settings_value_by_name('bookings_cancellation_before_time_rule', $data['limit']);
+            switch ($data['pay'])
+            {
+                case (0):
+                    $allowed_settings_id = 8;
+                    break;
+                case (1):
+                    $allowed_settings_id = 7;
+                    break;
+            }
+            AppSettings::update_settings_value_by_name('bookings_online_payment_rule', $allowed_settings_id);
+            
+            switch ($data['resource'])
+            {
+                case (0):
+                    $allowed_settings_id = 6;
+                    break;
+                case (1):
+                    $allowed_settings_id = 5;
+                    break;
+            }
+            AppSettings::update_settings_value_by_name('show_calendar_availability_rule', $allowed_settings_id);
+            $response = [
+                'success' => TRUE,
+            ];
+            
+            AppSettings::update_settings_value_by_name('globalWebsite_registration_finished', 20);
+            
+            AppSettings::clear_cache();
+        }
+        return $response;
+    }
 }

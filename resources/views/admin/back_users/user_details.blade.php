@@ -318,6 +318,7 @@
                                 <div class="tab-content">
                                     <div id="tab_1-1" class="tab-pane active">
                                         <form role="form" action="#" id="form_acc_info">
+                                            
                                             <div class="alert alert-danger display-hide">
                                                 <button class="close" data-close="alert"></button> You have some form errors. Please check below. </div>
                                             <div class="alert alert-success display-hide">
@@ -413,7 +414,8 @@
                                                             <span class="fileinput-new"> Select image </span>
                                                             <span class="fileinput-exists"> Change </span>
                                                             <input type="file" name="user_avatar" class="user_avatar_select_btn2" /> </span>
-                                                        <a href="javascript:;" class="btn default fileinput-exists" data-dismiss="fileinput"> Remove </a>
+
+                                                        <a href="javascript:;" class="btn default fileinput-exists remove-avatar" data-dismiss="fileinput"> Remove </a>
                                                     </div>
                                                 </div>
                                                 <div class="clearfix margin-top-10">
@@ -464,18 +466,16 @@
                                         <form action="#">
                                             <table class="table table-bordered table-striped">
                                                 @foreach ($permissions as $permission)
-                                                    @if ($user->can($permission->name))
                                                     <tr>
                                                         <td> {{ $permission->display_name }}
                                                             <span class="help-block"> {{ $permission->description }} </span></td>
                                                         <td>
                                                             <label class="uniform-inline">
-                                                                <input type="radio" name="optionsRadios{{rand(10,1000)}}" value="option1" checked disabled /> Yes </label>
+                                                                <input type="radio" name="optionsRadios{{rand(10,1000)}}" value="option1" {{ $user->can($permission->name) ? 'checked' :''}} disabled /> Yes </label>
                                                             <label class="uniform-inline">
-                                                                <input type="radio" name="optionsRadios{{rand(10,1000)}}" value="option2" disabled /> No </label>
+                                                                <input type="radio" name="optionsRadios{{rand(10,1000)}}" value="option2" {{ ! $user->can($permission->name) ? 'checked' :''}} disabled /> No </label>
                                                         </td>
                                                     </tr>
-                                                    @endif
                                                 @endforeach
                                             </table>
                                             <!--end profile-settings-->
@@ -705,6 +705,10 @@
                                 <div class="tab-content">
                                     <div id="tab_5-5" class="tab-pane active">
                                         <form role="form" action="#" name="form_acc_personal" id="form_acc_personal">
+                                           
+                                            <div id="errors_list">
+                                            </div>
+
                                             <div class="alert alert-danger display-hide">
                                                 <button class="close" data-close="alert"></button> You have some form errors. Please check below. </div>
                                             <div class="alert alert-success display-hide">
@@ -730,13 +734,13 @@
                                                 <label class="control-label">Citizenship</label>
                                                 <select name="personalCountry" id="personalCountry" class="form-control">
                                                     @foreach ($countries as $country)
-                                                        <option value="{{ $country->id }}" {!! ($country->id==$user->country_id ? ' selected="selected" ' : '') !!}>{{ $country->citizenship }}</option>
+                                                        <option value="{{ $country->id }}" {!! ($country->id==$user->country_id ? ' selected="selected" ' : '') !!}>{{ $country->name }}</option>
                                                     @endforeach
                                                 </select></div>
                                             <div class="form-group">
                                                 <label class="control-label">Date of Birth</label>
                                                 <div class="control-label">
-                                                    <div class="input-group input-medium date date-picker" data-date="{{ @$personal->dob_format }}" data-date-format="dd-mm-yyyy" data-date-viewmode="years">
+                                                    <div class="input-group input-medium date date-picker" data-date="{{ @$personal->dob_format }}" data-date-format="yyyy-mm-dd" data-date-end-date="-0d" data-date-start-view="decades">
                                                         <input type="text" class="form-control" name="personalDOB" id="personalDOB" value="{{ @$personal->dob_format }}" readonly>
                                                         <span class="input-group-btn">
                                                             <button class="btn default" type="button">
@@ -842,7 +846,7 @@
                                                         <span class="fileinput-new"> Select image </span>
                                                         <span class="fileinput-exists"> Change </span>
                                                         <input type="file" name="user_avatar" class="user_avatar_select_btn1" /> </span>
-                                                    <a href="javascript:;" class="btn red fileinput-exists" data-dismiss="fileinput"> Remove </a>
+                                                    <a href="javascript:;" class="btn red fileinput-exists remove-avatar" data-dismiss="fileinput"> Remove </a>
                                                 </div>
                                             </div>
                                             <div class="clearfix margin-top-10">
@@ -921,8 +925,8 @@
 
         $.validator.addMethod("datePickerDate",function(value, element) {
             // put your own logic here, this is just a (crappy) example
-            return value.match(/^\d\d?-\d\d?-\d\d\d\d$/);
-        },"Please enter a date in the format dd/mm/yyyy.");
+            return value.match(/^\d\d\d\d-\d\d?-\d\d?$/);
+        },"Please enter a date in the format yyyy/mm/dd.");
         $.validator.addMethod('filesize',function(value, element, param) {
             // param = size (in bytes)
             // element = element to validate (<input>)
@@ -971,12 +975,37 @@
                         gender: {
                             required:true,
                             minlength:1,
+                        },
+                        personalPhone : {
+                            required: true,
+                            digits: true,
+                            minlength: 8,
+                            maxlength: 20,
+                            remote: {
+                                url: "{{ route('ajax/check_phone_for_member_registration') }}",
+                                type: "post",
+                                data: {
+                                    phone: function() {
+                                        return $( "input[name='personalPhone']" ).val();
+                                    }
+                                }
+                            }
                         }
                     },
 
                     invalidHandler: function (event, validator) { //display error alert on form submit
                         success1.hide();
-                        error1.show();
+
+                        var errors_list = "";
+                        for(var i in validator.errorList)
+                        {
+                            errors_list  += "<div class='alert alert-danger'>";
+                            errors_list  += $(validator.errorList[i].element).parent().find("label").text() + ": ";
+                            errors_list  += validator.errorList[i].message + "</div>";
+                        }
+
+                        $("#errors_list").html(errors_list);
+                        
                         App.scrollTo(error1, -200);
                     },
 
@@ -1002,8 +1031,8 @@
                     },
 
                     submitHandler: function (form) {
+                        $("#errors_list").empty();
                         success1.show();
-                        error1.hide();
                         store_account_personal(); // submit the form
                     }
                 });
@@ -1370,6 +1399,21 @@
             FormValidation.init();
             FormDropzone.init();
             ComponentsDateTimePickers.init();
+
+            $(".remove-avatar").click(function(){
+                console.log('test')
+                $.ajax({
+                    url : "{{route('admin/back_users/remove_avatar')}}",
+                    type : "post",
+                    success : function(response)
+                    {
+                        if (response.success)
+                        {
+                            window.location.reload();
+                        }
+                    }
+                });
+            });
         });
 
         function store_account_info(){

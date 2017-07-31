@@ -30,8 +30,8 @@
     <div class="page-content-wrapper">
         <!-- BEGIN CONTENT BODY -->
         <!-- BEGIN PAGE CONTENT BODY -->
-        <div class="page-content">
-            <div class="container bg-white bg-font-white">
+        <div class="page-content ">
+            <div class="container bg-white bg-font-white bordered">
                 <!-- BEGIN PAGE CONTENT INNER -->
                 <div class="page-content-inner margin-top-10">
                     <div class="invoice">
@@ -62,9 +62,9 @@
                                     <li>
                                         <strong>V.A.T Reg #:</strong> 542554(DEMO)78 </li>
                                     <li>
-                                        <strong>Account Name:</strong> FoodMaster Ltd </li>
+                                        <strong>Account Name:</strong> {{ isset($financial_profile->profile_name) ? $financial_profile->profile_name : 'None available'}} </li>
                                     <li>
-                                        <strong>SWIFT code:</strong> 45454DEMO545DEMO </li>
+                                        <strong>SWIFT code:</strong> {{ isset($financial_profile->organisation_number) ? $financial_profile->organisation_number : 'None available' }} </li>
                                 </ul>
                             </div>
                         </div>
@@ -102,11 +102,12 @@
                             <div class="col-xs-4">
                                 <div class="well">
                                     <address>
-                                        <strong>Rud Squash AS</strong>
-                                        <br/> Postbox 60
-                                        <br/> N-1309 Rud
+                                        <strong>{{ !isset($financial_profile->address1) ? (isset($financial_profile->address2) ? $financial_profile->address2 : 'Not available') : $financial_profile->address1 }}</strong>
+                                        <br/> {{ isset($financial_profile->region) ? isset($financial_profile->region) : 'None available'}}
+                                        <br/> {{ isset($financial_profile->city) ? $financial_profile->city : '' . '   ' . $country}}
                                         <br/>
-                                        <abbr title="Phone">P:</abbr> (234) 145-1810 </address>
+                                        <abbr title="Postal Code">Postal Code:</abbr> {{ isset($financial_profile->postal_code) ? $financial_profile->postal_code : 'None available' }}
+                                    </address>
                                     <address>
                                         <strong>{{ $member['full_name'] }}</strong>
                                         <br/>
@@ -128,23 +129,30 @@
                                         <strong>Grand Total:</strong> {{$grand_total}} </li>
                                 </ul>
                                 <br/>
-                                <a class="btn btn-lg blue hidden-print margin-bottom-5" onclick="javascript:window.print();"> Print
-                                    <i class="fa fa-print"></i>
+                                <form id="make_payment" action="{{ route('front/finance/invoice') }}" method="POST">
+                                    <input type="hidden" name="invoice_number" value="{{ $invoice->invoice_number }}">
+                                </form>
+                                <a class="btn btn blue hidden-print margin-bottom-5 download" hidden >
+                                    Download PDF
+                                    <i class="fa fa-download"></i>
                                 </a>
+                                {{--<a  class="btn btn-lg blue hidden-print margin-bottom-5" onclick="javascript:window.print();"> Print--}}
+                                    {{--<i class="fa fa-print"></i>--}}
+                                {{--</a>--}}
                                 @if ($invoice->status=='pending')
-                                    <a class="btn btn-lg green hidden-print margin-bottom-5"> Make Payment
+                                    <a id="make_payment" onclick="make_payment()" href="{{ route('front/finance/invoice/id', ['id'=>$invoice->invoice_number]) }}" hidden class="btn green hidden-print margin-bottom-5"> Make Payment
                                         <i class="fa fa-check"></i>
                                     </a>
                                 @elseif ($invoice->status=='processing')
-                                    <a class="btn btn-lg green hidden-print margin-bottom-5"> Payment is processing
+                                    <a class="btn green hidden-print margin-bottom-5"> Payment is processing
                                         <i class="fa fa-check"></i>
                                     </a>
                                 @elseif ($invoice->status=='cancelled')
-                                    <a class="btn btn-lg green hidden-print margin-bottom-5"> Invoice Cancelled
+                                    <a class="btn green hidden-print margin-bottom-5"> Invoice Cancelled
                                         <i class="fa fa-check"></i>
                                     </a>
                                 @elseif ($invoice->status=='declined')
-                                    <a class="btn btn-lg green hidden-print margin-bottom-5"> Payment is declined
+                                    <a class="btn green hidden-print margin-bottom-5"> Payment is declined
                                         <i class="fa fa-check"></i>
                                     </a>
                                 @endif
@@ -154,6 +162,74 @@
                 </div>
                 <!-- END PAGE CONTENT INNER -->
             </div>
+            <br/>
+            <div class="container bg-white bg-font-white ">
+                <div class="col-md-12">
+                    <div class="portlet light portlet-fit padding-top-30">
+                        <div class="portlet-title">
+                            <div class="caption">
+                                <i class="icon-bubble font-dark"></i>
+                                <span class="caption-subject font-dark bold uppercase">Financial Transactions</span>
+                            </div>
+                        </div>
+                        <div class="portlet-body">
+                            <div class="table-scrollable">
+                                <table class="table table-bordered table-hover">
+                                    <thead>
+                                    <tr>
+                                        <th> # </th>
+                                        <th> Invoice Item </th>
+                                        <th> Amount </th>
+                                        <th> Transaction Type </th>
+                                        <th> Transaction Date </th>
+                                        <th> other details </th>
+                                        <th> Status </th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    @if (sizeof($financialTransactions)>0)
+                                        @foreach($financialTransactions as $single)
+                                            <tr>
+                                                <td> {{ $key }} </td>
+                                                <td>@foreach ($single->names as $itemNames)
+                                                        {{$itemNames}}<br />
+                                                    @endforeach
+                                                </td>
+                                                <td> {{$single->transaction_amount}} {{$single->transaction_currency}} </td>
+                                                <td> {{$single->transaction_type}} </td>
+                                                <td> {{$single->transaction_date}} </td>
+                                                <td> {{$single->other_details}} </td>
+                                                <td>
+                                                    @if ($single->status=='pending')
+                                                        <span class="label label-sm label-info"> Pending </span>
+                                                    @elseif ($single->status=='processing')
+                                                        <span class="label label-sm label-info"> Processing </span>
+                                                    @elseif($single->status=='completed')
+                                                        <span class="label label-sm label-success"> Completed </span>
+                                                    @elseif($single->status=='cancelled')
+                                                        <span class="label label-sm label-warning"> Cancelled </span>
+                                                    @elseif($single->status=='declined')
+                                                        <span class="label label-sm label-danger"> Declined </span>
+                                                    @elseif($single->status=='incomplete')
+                                                        <span class="label label-sm label-warning"> Incomplete </span>
+                                                    @endif
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    @else
+                                        <tr>
+                                            <td></td>
+                                            <td colspan="6">There are no financial transactions associated with this invoice</td>
+                                        </tr>
+                                    @endif
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
         <!-- END PAGE CONTENT BODY -->
         <!-- END CONTENT BODY -->
@@ -182,6 +258,7 @@
 
 @section('pageBelowLevelScripts')
     <script src="{{ asset('assets/pages/scripts/ui-notific8.min.js') }}" type="text/javascript"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.4/jspdf.min.js"></script>
 @endsection
 
 @section('themeBelowLayoutScripts')
@@ -196,6 +273,10 @@
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             }
         });
+
+        function make_payment(){
+//            $('#make_payment').submit();
+        }
 
         function show_notification(title_heading, message, theme, life, sticky) {
             var settings = {
@@ -213,5 +294,29 @@
             $.notific8('zindex', 11500);
             $.notific8($.trim(message), settings);
         }
+
+        $(document).ready(function(){
+
+            $(".download").click(function(){
+                $(".bordered").find("[hidden]").hide();
+                var doc = new jsPDF();
+                doc.addHTML($('.bordered').first(), function(){
+                    $(".bordered").find("[hidden]").show();
+                    doc.save("test.pdf");
+                })
+                /*html2canvas($('.bordered')[0], {
+                 onrendered: function(canvas) {
+                 $(".bordered").find("[hidden]").show();
+
+                 var doc = new jsPDF("p", "mm", "a4");
+                 var image = canvas.toDataURL("image/png");
+
+                 doc.addImage(image, 'PNG', 10, 10, 190, 160 );
+                 doc.save('export.pdf');
+
+                 }
+                 });*/
+            });
+        });
     </script>
 @endsection

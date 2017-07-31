@@ -33,9 +33,7 @@
                     <!-- PORTLET MAIN -->
                     <div class="portlet light profile-sidebar-portlet bordered">
                         <!-- SIDEBAR USERPIC -->
-                        <div class="profile-userpic">
-                            <img src="{{ $avatar }}" class="img-responsive" alt="" />
-                        </div>
+                         <div class="profile-userpic" style="background-size: cover; background-position: center center; margin: 0 auto; width: 150px; height: 150px; border-radius: 50%;background-image: url('{{ $avatar }}');"></div>
                         <!-- END SIDEBAR USERPIC -->
                         <!-- SIDEBAR USER TITLE -->
                         <div class="profile-usertitle">
@@ -140,7 +138,7 @@
                                                 <div class="form-group">
                                                     <label class="control-label">Date of Birth</label>
                                                     <div class="control-label">
-                                                        <div class="input-group input-medium date date-picker" data-date="{{ @$personal->dob_format }}" data-date-format="dd-mm-yyyy" data-date-viewmode="years">
+                                                        <div class="input-group input-medium date date-picker" data-date="{{ @$personal->dob_format }}" data-date-format="yyyy-mm-dd" data-date-end-date="-0d" data-date-start-view="decades">
                                                             <input type="text" class="form-control" name="personalDOB" id="personalDOB" value="{{ @$personal->dob_format }}" readonly>
                                                         <span class="input-group-btn">
                                                             <button class="btn default" type="button">
@@ -407,8 +405,8 @@
     <script type="text/javascript">
         $.validator.addMethod("datePickerDate",function(value, element) {
             // put your own logic here, this is just a (crappy) example
-            return value.match(/^\d\d?-\d\d?-\d\d\d\d$/);
-        },"Please enter a date in the format dd/mm/yyyy.");
+            return value.match(/^\d\d\d\d-\d\d?-\d\d?$/);
+        },"Please enter a date in the format yyyy/mm/dd.");
         $.validator.addMethod('filesize',function(value, element, param) {
             // param = size (in bytes)
             // element = element to validate (<input>)

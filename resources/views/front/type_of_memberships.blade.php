@@ -29,7 +29,7 @@
                         <div class="portlet-title">
                             <div class="caption">
                                 <i class="icon-share font-grey-mint"></i>
-                                <span class="caption-subject font-grey-mint bold uppercase"> Squash medlemskap </span>
+                                <span class="caption-subject font-grey-mint bold uppercase"> Squash plans </span>
                             </div>
                             <div class="actions">
                             </div>
@@ -37,299 +37,81 @@
                         <div class="portlet-body">
                             <div class="pricing-content-1">
                                 <div class="row">
-                                    <div class="col-md-6">
+                                    @foreach($plans as $p)
+                                    <div class="col-md-6 form-group">
                                         <div class="price-column-container border-active">
-                                            <div class="price-table-head bg-green">
-                                                <h3 class="no-margin">Dag/helg: før kl 16:00 man-tors og hele fre-søn</h3>
+                                            <div class="price-table-head" style="background-color: {{ $p->plan_calendar_color }}">
+                                                <h3 class="no-margin">{{ $p->name }}</h3>
                                             </div>
-                                            <div class="arrow-down border-top-green"></div>
+                                            <div class="arrow-down" style="border-top-color: {{ $p->plan_calendar_color }}"></div>
                                             <div class="price-table-pricing">
                                                 <h3>
-                                                    <span class="price-sign"></span>149</h3>
-                                                <p>per month</p>
-                                                <div class="price-ribbon">Popular</div>
+                                                    <span class="price-sign"></span>{{ $p->price->price }}
+                                                </h3>
+                                                <!-- <p>per month</p>-->
+                                                <!-- <div class="price-ribbon">{{ $p->status }}</div> -->
                                             </div>
                                             <div class="price-table-content">
                                                 <div class="row mobile-padding">
-                                                    <div class="col-xs-2 text-right mobile-padding">
-                                                        <i class="icon-user-follow"></i>
+                                                    <div class="col-xs-11 col-xs-offset-1 text-left mobile-padding">
+                                                        <p>{{ $p->short_description }}</p>
                                                     </div>
-                                                    <div class="col-xs-9 text-left mobile-padding">20 Members</div>
                                                 </div>
                                                 <div class="row mobile-padding">
-                                                    <div class="col-xs-2 text-right mobile-padding">
-                                                        <i class="icon-drawer"></i>
+                                                    <div class="col-xs-6 col-xs-offset-1 text-left mobile-padding">
+                                                        <span class="col-xs-2 text-left">
+                                                            <i class="icon-calendar"></i>
+                                                        </span>
+                                                        <span class="col-xs-10">
+                                                            Plan period
+                                                        </span>
                                                     </div>
-                                                    <div class="col-xs-9 text-left mobile-padding">500GB Storage</div>
+                                                    <div class="col-xs-5 text-left mobile-padding">
+                                                        @if ($p->plan_period==7 || $p->plan_period==14)
+                                                            {{ $p->plan_period }} Days
+                                                        @elseif( in_array($p->plan_period,[30, 90, 180]))
+                                                            {{ $p->plan_period/30 }} Month{{$p->plan_period==30?'':'s'}}
+                                                        @elseif( in_array($p->plan_period, 360) )
+                                                            one year
+                                                        @else
+                                                            lifetime
+                                                        @endif
+                                                    </div>
                                                 </div>
                                                 <div class="row mobile-padding">
-                                                    <div class="col-xs-2 text-right mobile-padding">
-                                                        <i class="icon-cloud-download"></i>
+                                                    <div class="col-xs-6 col-xs-offset-1 text-left mobile-padding">
+                                                        <span class="col-xs-2 text-left">
+                                                            <i class="icon-calendar"></i>
+                                                        </span>
+                                                        <span class="col-xs-10">
+                                                            Binding Period
+                                                        </span>
                                                     </div>
-                                                    <div class="col-xs-9 text-left mobile-padding">Cloud Syncing</div>
+                                                     <div class="col-xs-5 text-left mobile-padding">{{ $p->binding_period }} Month{{$p->binding_period==1?'':'s'}}</div>
                                                 </div>
-                                                <div class="row mobile-padding">
-                                                    <div class="col-xs-2 text-right mobile-padding">
-                                                        <i class="icon-refresh"></i>
+                                                 <div class="row mobile-padding">
+                                                    <div class="col-xs-6 col-xs-offset-1 text-left mobile-padding">
+                                                        <span class="col-xs-2 text-left">
+                                                            <i class="icon-calendar"></i>
+                                                        </span>
+                                                        <span class="col-xs-10">
+                                                            SignOut period
+                                                        </span>
                                                     </div>
-                                                    <div class="col-xs-9 text-left mobile-padding">Daily Backups</div>
+                                                    <div class="col-xs-5 text-left mobile-padding">{{ $p->sign_out_period }} Month{{$p->sign_out_period==1?'':'s'}}</div>
                                                 </div>
+                                               
+                                               
+
+
                                             </div>
                                             <div class="arrow-down arrow-grey"></div>
                                             <div class="price-table-footer">
-                                                <button type="button" class="btn green price-button sbold uppercase">Sign Up</button>
+                                                <a href="{{ url('/') }}" type="button" class="btn price-button sbold uppercase" style="background-color: {{ $p->plan_calendar_color }}; color: #fff">Sign Up</a>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-md-6">
-                                        <div class="price-column-container border-active">
-                                            <div class="price-table-head bg-purple">
-                                                <h3 class="no-margin">Fullt medlemskap i hele åpningstiden</h3>
-                                            </div>
-                                            <div class="arrow-down border-top-purple"></div>
-                                            <div class="price-table-pricing">
-                                                <h3>
-                                                    <span class="price-sign"></span>299</h3>
-                                                <p>per month</p>
-                                            </div>
-                                            <div class="price-table-content">
-                                                <div class="row mobile-padding">
-                                                    <div class="col-xs-2 text-right mobile-padding">
-                                                        <i class="icon-users"></i>
-                                                    </div>
-                                                    <div class="col-xs-9 text-left mobile-padding">100 Members</div>
-                                                </div>
-                                                <div class="row mobile-padding">
-                                                    <div class="col-xs-2 text-right mobile-padding">
-                                                        <i class="icon-drawer"></i>
-                                                    </div>
-                                                    <div class="col-xs-9 text-left mobile-padding">2TB Storage</div>
-                                                </div>
-                                                <div class="row mobile-padding">
-                                                    <div class="col-xs-2 text-right mobile-padding">
-                                                        <i class="icon-cloud-download"></i>
-                                                    </div>
-                                                    <div class="col-xs-9 text-left mobile-padding">Cloud Syncing</div>
-                                                </div>
-                                                <div class="row mobile-padding">
-                                                    <div class="col-xs-2 text-right mobile-padding">
-                                                        <i class="icon-refresh"></i>
-                                                    </div>
-                                                    <div class="col-xs-9 text-left mobile-padding">Weekly Backups</div>
-                                                </div>
-                                            </div>
-                                            <div class="arrow-down arrow-grey"></div>
-                                            <div class="price-table-footer">
-                                                <button type="button" class="btn grey-salsa btn-outline price-button sbold uppercase">Sign Up</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="portlet light portlet-fit ">
-                        <div class="portlet-title">
-                            <div class="caption">
-                                <i class="icon-share font-grey-mint"></i>
-                                <span class="caption-subject font-grey-mint bold uppercase"> Fitness medlemskap </span>
-                            </div>
-                            <div class="actions">
-                            </div>
-                        </div>
-                        <div class="portlet-body">
-                            <div class="pricing-content-1">
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="price-column-container border-active">
-                                            <div class="price-table-head bg-blue">
-                                                <h3 class="no-margin">Dag/helg: før kl 16:00 man-tors og hele fre-søn</h3>
-                                            </div>
-                                            <div class="arrow-down border-top-blue"></div>
-                                            <div class="price-table-pricing">
-                                                <h3>
-                                                    <span class="price-sign"></span>149</h3>
-                                                <p>per month</p>
-                                                <div class="price-ribbon">Popular</div>
-                                            </div>
-                                            <div class="price-table-content">
-                                                <div class="row mobile-padding">
-                                                    <div class="col-xs-2 text-right mobile-padding">
-                                                        <i class="icon-user-follow"></i>
-                                                    </div>
-                                                    <div class="col-xs-9 text-left mobile-padding">20 Members</div>
-                                                </div>
-                                                <div class="row mobile-padding">
-                                                    <div class="col-xs-2 text-right mobile-padding">
-                                                        <i class="icon-drawer"></i>
-                                                    </div>
-                                                    <div class="col-xs-9 text-left mobile-padding">500GB Storage</div>
-                                                </div>
-                                                <div class="row mobile-padding">
-                                                    <div class="col-xs-2 text-right mobile-padding">
-                                                        <i class="icon-cloud-download"></i>
-                                                    </div>
-                                                    <div class="col-xs-9 text-left mobile-padding">Cloud Syncing</div>
-                                                </div>
-                                                <div class="row mobile-padding">
-                                                    <div class="col-xs-2 text-right mobile-padding">
-                                                        <i class="icon-refresh"></i>
-                                                    </div>
-                                                    <div class="col-xs-9 text-left mobile-padding">Daily Backups</div>
-                                                </div>
-                                            </div>
-                                            <div class="arrow-down arrow-grey"></div>
-                                            <div class="price-table-footer">
-                                                <button type="button" class="btn blue price-button sbold uppercase">Sign Up</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="price-column-container border-active">
-                                            <div class="price-table-head bg-yellow bg-font-yellow">
-                                                <h3 class="no-margin">Fullt medlemskap i hele åpningstiden</h3>
-                                            </div>
-                                            <div class="arrow-down border-top-yellow"></div>
-                                            <div class="price-table-pricing">
-                                                <h3>
-                                                    <span class="price-sign"></span>299</h3>
-                                                <p>per month</p>
-                                            </div>
-                                            <div class="price-table-content">
-                                                <div class="row mobile-padding">
-                                                    <div class="col-xs-2 text-right mobile-padding">
-                                                        <i class="icon-users"></i>
-                                                    </div>
-                                                    <div class="col-xs-9 text-left mobile-padding">100 Members</div>
-                                                </div>
-                                                <div class="row mobile-padding">
-                                                    <div class="col-xs-2 text-right mobile-padding">
-                                                        <i class="icon-drawer"></i>
-                                                    </div>
-                                                    <div class="col-xs-9 text-left mobile-padding">2TB Storage</div>
-                                                </div>
-                                                <div class="row mobile-padding">
-                                                    <div class="col-xs-2 text-right mobile-padding">
-                                                        <i class="icon-cloud-download"></i>
-                                                    </div>
-                                                    <div class="col-xs-9 text-left mobile-padding">Cloud Syncing</div>
-                                                </div>
-                                                <div class="row mobile-padding">
-                                                    <div class="col-xs-2 text-right mobile-padding">
-                                                        <i class="icon-refresh"></i>
-                                                    </div>
-                                                    <div class="col-xs-9 text-left mobile-padding">Weekly Backups</div>
-                                                </div>
-                                            </div>
-                                            <div class="arrow-down arrow-grey"></div>
-                                            <div class="price-table-footer">
-                                                <button type="button" class="btn grey-salsa btn-outline price-button sbold uppercase">Sign Up</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="portlet light portlet-fit ">
-                        <div class="portlet-title">
-                            <div class="caption">
-                                <i class="icon-share font-grey-mint"></i>
-                                <span class="caption-subject font-grey-mint bold uppercase"> Kombi medlemskap squash og fitness </span>
-                            </div>
-                            <div class="actions">
-                            </div>
-                        </div>
-                        <div class="portlet-body">
-                            <div class="pricing-content-1">
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="price-column-container border-active">
-                                            <div class="price-table-head bg-green">
-                                                <h3 class="no-margin">Dag/helg: før kl 16:00 man-tors og hele fre-søn</h3>
-                                            </div>
-                                            <div class="arrow-down border-top-green"></div>
-                                            <div class="price-table-pricing">
-                                                <h3>
-                                                    <span class="price-sign"></span>249</h3>
-                                                <p>per month</p>
-                                                <div class="price-ribbon">Popular</div>
-                                            </div>
-                                            <div class="price-table-content">
-                                                <div class="row mobile-padding">
-                                                    <div class="col-xs-2 text-right mobile-padding">
-                                                        <i class="icon-user-follow"></i>
-                                                    </div>
-                                                    <div class="col-xs-9 text-left mobile-padding">20 Members</div>
-                                                </div>
-                                                <div class="row mobile-padding">
-                                                    <div class="col-xs-2 text-right mobile-padding">
-                                                        <i class="icon-drawer"></i>
-                                                    </div>
-                                                    <div class="col-xs-9 text-left mobile-padding">500GB Storage</div>
-                                                </div>
-                                                <div class="row mobile-padding">
-                                                    <div class="col-xs-2 text-right mobile-padding">
-                                                        <i class="icon-cloud-download"></i>
-                                                    </div>
-                                                    <div class="col-xs-9 text-left mobile-padding">Cloud Syncing</div>
-                                                </div>
-                                                <div class="row mobile-padding">
-                                                    <div class="col-xs-2 text-right mobile-padding">
-                                                        <i class="icon-refresh"></i>
-                                                    </div>
-                                                    <div class="col-xs-9 text-left mobile-padding">Daily Backups</div>
-                                                </div>
-                                            </div>
-                                            <div class="arrow-down arrow-grey"></div>
-                                            <div class="price-table-footer">
-                                                <button type="button" class="btn green price-button sbold uppercase">Sign Up</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="price-column-container border-active">
-                                            <div class="price-table-head bg-purple">
-                                                <h3 class="no-margin">Fullt medlemskap i hele åpningstiden</h3>
-                                            </div>
-                                            <div class="arrow-down border-top-purple"></div>
-                                            <div class="price-table-pricing">
-                                                <h3>
-                                                    <span class="price-sign"></span>399</h3>
-                                                <p>per month</p>
-                                            </div>
-                                            <div class="price-table-content">
-                                                <div class="row mobile-padding">
-                                                    <div class="col-xs-2 text-right mobile-padding">
-                                                        <i class="icon-users"></i>
-                                                    </div>
-                                                    <div class="col-xs-9 text-left mobile-padding">100 Members</div>
-                                                </div>
-                                                <div class="row mobile-padding">
-                                                    <div class="col-xs-2 text-right mobile-padding">
-                                                        <i class="icon-drawer"></i>
-                                                    </div>
-                                                    <div class="col-xs-9 text-left mobile-padding">2TB Storage</div>
-                                                </div>
-                                                <div class="row mobile-padding">
-                                                    <div class="col-xs-2 text-right mobile-padding">
-                                                        <i class="icon-cloud-download"></i>
-                                                    </div>
-                                                    <div class="col-xs-9 text-left mobile-padding">Cloud Syncing</div>
-                                                </div>
-                                                <div class="row mobile-padding">
-                                                    <div class="col-xs-2 text-right mobile-padding">
-                                                        <i class="icon-refresh"></i>
-                                                    </div>
-                                                    <div class="col-xs-9 text-left mobile-padding">Weekly Backups</div>
-                                                </div>
-                                            </div>
-                                            <div class="arrow-down arrow-grey"></div>
-                                            <div class="price-table-footer">
-                                                <button type="button" class="btn grey-salsa btn-outline price-button sbold uppercase">Sign Up</button>
-                                            </div>
-                                        </div>
-                                    </div>
+                                    @endforeach
                                 </div>
                             </div>
                         </div>
@@ -337,7 +119,6 @@
                 </div>
                 <!-- END PAGE CONTENT INNER -->
             </div>
-
         </div>
         <!-- END PAGE CONTENT BODY -->
         <!-- END CONTENT BODY -->
@@ -358,7 +139,7 @@
 @section('pageBelowLevelPlugins')
     <script src="{{ asset('assets/global/plugins/jquery-validation/js/jquery.validate.min.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/global/plugins/jquery-validation/js/additional-methods.min.js') }}" type="text/javascript"></script>
-
+    <script src="{{ asset('assets/global/scripts/jquery.matchHeight.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/global/plugins/jquery-notific8/jquery.notific8.min.js') }}" type="text/javascript"></script>
 @endsection
 
@@ -381,6 +162,11 @@
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             }
+        });
+
+        var options = { byRow: true, property: 'height', target: null, remove: false};
+        $(function() {
+            $('.price-table-content').matchHeight(options);
         });
 
         function show_notification(title_heading, message, theme, life, sticky) {

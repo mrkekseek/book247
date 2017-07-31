@@ -103,6 +103,25 @@
                 </li>
             </ul>
         </li>
+        <li class="nav-item {{ in_array($in_sidebar, array('admin-backend-add-packs', 'admin-backend-all-packs', 'admin-backend-store_credit_product-edit_product', 'admin-backend-store_credit_product-view_product')) ? 'active open' : '' }} ">
+            <a href="javascript:;" class="nav-link nav-toggle">
+                <i class="icon-calculator"></i>
+                <span class="title"> Store Credit </span>
+                <span class="arrow"></span>
+            </a>
+            <ul class="sub-menu">
+                <li class="nav-item {{ $in_sidebar == 'admin-backend-add-packs' ? 'active open' : '' }}">
+                    <a href="{{route('admin.store_credit_products.create')}}" class="nav-link ">
+                        <span class="title">Add new pack</span>
+                    </a>
+                </li>
+                <li class="nav-item {{ in_array($in_sidebar, ['admin-backend-all-packs', 'admin-backend-store_credit_product-view_product', 'admin-backend-store_credit_product-edit_product']) ? 'active open' : '' }}">
+                    <a href="{{ route('admin.store_credit_products.index') }}" class="nav-link ">
+                        <span class="title">List all packs</span>
+                    </a>
+                </li>
+            </ul>
+        </li>
         <li class="nav-item {{ in_array($in_sidebar, array('admin-backend-membership_products-list_all','admin-backend-membership_products-new_product','admin-backend-membership_products-show_product','admin-backend-membership_products-edit_product'))?'active open':'' }} ">
             <a href="javascript:;" class="nav-link nav-toggle">
                 <i class="icon-shield"></i>
@@ -129,25 +148,25 @@
         <li class="nav-item {{ in_array($in_sidebar, array('admin-backend-user_roles', 'admin-backend-all_users', 'admin-backend-roles_permission', 'admin-backend-user_details_view', 'admin-backend-permission_details_view'))?'active open':'' }} ">
             <a href="javascript:;" class="nav-link nav-toggle">
                 <i class="icon-calculator"></i>
-                <span class="title"> Employees </span>
+                <span class="title"> Back-end users </span>
                 <span class="arrow"></span>
             </a>
             <ul class="sub-menu">
                 <li class="nav-item {{ $in_sidebar=='admin-backend-all_users'?'active open':'' }}">
                     <a href="{{route('admin/back_users')}}" class="nav-link ">
-                        <span class="title"> List All Employees </span>
+                        <span class="title"> List All Back-end users </span>
                     </a>
                 </li>
                 @if ($in_sidebar=="admin-backend-user_details_view")
                 <li class="nav-item {{ $in_sidebar=='admin-backend-user_details_view'?'active open':'' }}">
                     <a class="nav-link ">
-                        <span class="title"> Employee Details </span>
+                        <span class="title"> Back-end user Details </span>
                     </a>
                 </li>
                 @endif
                 <li class="nav-item {{ $in_sidebar=='admin-backend-user_roles'?'active open':'' }}">
                     <a href="{{ route('admin/back_users/user_roles') }}" class="nav-link ">
-                        <span class="title"> Employees Roles </span>
+                        <span class="title"> Back-end users Roles </span>
                     </a>
                 </li>
                 <li class="nav-item {{ $in_sidebar=='admin-backend-roles_permission'?'active open':'' }}">
@@ -167,29 +186,29 @@
         @endif
 
         @if (Auth::user()->can('view-shop-menu'))
-        <li class="nav-item {{ in_array($in_sidebar, ['admin-backend-inventory-and-transfers','admin-backend-shop-locations-list','admin-backend-shop-products-list','admin-backend-shop-products-inventory', 'admin-backend-shop-locations-details-view', 'admin-backend-product-details-view', 'admin-backend-all-products-inventory', 'admin-backend-shops-employees-work-plan', 'admin-backend-shops-add-invoice', 'admin-backend-shop-new_order', 'admin-backend-shop-all_orders', 'admin-backend-shops-cash_terminals', 'admin-backend-locations-resource-details-view'])?'active open':'' }} ">
+        <li class="nav-item {{ in_array($in_sidebar, ['admin-backend-inventory-and-transfers','admin-backend-shop-locations-list','admin-backend-shop-products-list','admin-backend-shop-products-inventory', 'admin-backend-shop-locations-details-view', 'admin-backend-product-details-view', 'admin-backend-all-products-inventory', 'admin-backend-shops-employees-work-plan', 'admin-backend-shops-add-invoice', 'admin-backend-shop-new_order', 'admin-backend-shop-all_orders', 'admin-backend-shops-cash_terminals', 'admin-backend-locations-resource-details-view', 'admin-backend-shop-new_order'])?'active open':'' }} ">
             <a href="javascript:;" class="nav-link nav-toggle">
                 <i class="icon-settings"></i>
-                <span class="title">Shops</span>
+                <span class="title">Clubs</span>
                 <span class="arrow"></span>
             </a>
             <ul class="sub-menu">
                 <li class="nav-item {{ $in_sidebar=='admin-backend-shop-locations-list'?'active open':'' }} ">
                     <a href="{{ route("admin/shops/locations/all") }}" class="nav-link ">
-                        <span class="title"> List All Locations </span>
+                        <span class="title"> List All Clubs </span>
                     </a>
                 </li>
-                @if ($in_sidebar=="admin-backend-shop-locations-details-view")
+                @if ( $in_sidebar == "admin-backend-shop-locations-details-view")
                     <li class="nav-item {{ $in_sidebar=='admin-backend-shop-locations-details-view'?'active open':'' }}">
                         <a class="nav-link ">
-                            <span class="title">Location Details</span>
+                            <span class="title">Club Details</span>
                         </a>
                     </li>
                 @endif
-                @if ($in_sidebar=="admin-backend-locations-resource-details-view")
+                @if ( $in_sidebar == "admin-backend-locations-resource-details-view")
                     <li class="nav-item {{ $in_sidebar=='admin-backend-locations-resource-details-view'?'active open':'' }}">
                         <a class="nav-link ">
-                            <span class="title">Location Details</span>
+                            <span class="title">Club Details</span>
                         </a>
                     </li>
                 @endif
@@ -242,16 +261,28 @@
         @endif
 
         @if (Auth::user()->can('view-general-settings-menu'))
-        <li class="nav-item {{ in_array($in_sidebar, ['admin-settings-all_list','admin-settings-financial_profiles-add_new','admin-settings-financial_profiles-list_all','admin-settings-financial_profiles-view_edit'])?'active open':'' }} ">
+        <li class="nav-item {{ in_array($in_sidebar, ['admin-settings-all_list','admin-settings-financial_profiles-add_new','admin-settings-financial_profiles-list_all','admin-settings-financial_profiles-view_edit', 'admin-templates_email-list_all', 'admin-settings-manage_settings', 'admin-settings-rankedin_integration_app_key'])?'active open':'' }} ">
             <a href="javascript:;" class="nav-link nav-toggle">
                 <i class="icon-shield"></i>
                 <span class="title"> General Settings </span>
                 <span class="arrow"></span>
             </a>
             <ul class="sub-menu">
-                <li class="nav-item {{ $in_sidebar=='admin-settings-all_list'?'active open':'' }}">
+                @if (env('DebugSettings',0)==1)
+                <li class="nav-item {{ $in_sidebar == 'admin-settings-all_list' ? 'active open' : '' }}">
                     <a href="{{route('admin/settings/list_all')}}" class="nav-link ">
-                        <span class="title">List all settings</span>
+                        <span class="title">Define and mentain</span>
+                    </a>
+                </li>
+                @endif
+                <li class="nav-item {{ $in_sidebar == 'admin-settings-manage_settings' ? 'active open' : '' }}">
+                    <a href="{{route('admin/settings/manage_settings')}}" class="nav-link ">
+                        <span class="title">Manage settings</span>
+                    </a>
+                </li>
+                <li class="nav-item {{ $in_sidebar == 'admin-settings-rankedin_integration_app_key' ? 'active open' : '' }}">
+                    <a href="{{route('admin/settings/account_key')}}" class="nav-link ">
+                        <span class="title">RankedIn Integration</span>
                     </a>
                 </li>
                 <li class="nav-item {{ $in_sidebar=='admin-settings-financial_profiles-add_new'?'active open':'' }}">
@@ -265,12 +296,17 @@
                     </a>
                 </li>
                 @if ($in_sidebar=='admin-settings-financial_profiles-view_edit')
-                <li class="nav-item {{ $in_sidebar=='admin-settings-financial_profiles-view_edit'?'active open':'' }}">
-                    <a href="" class="nav-link ">
-                        <span class="title">Financial Profile Details</span>
+                    <li class="nav-item {{ $in_sidebar=='admin-settings-financial_profiles-view_edit'?'active open':'' }}">
+                        <a href="" class="nav-link ">
+                            <span class="title">Financial Profile Details</span>
+                        </a>
+                    </li>
+                @endif
+               <li class="nav-item {{ $in_sidebar == 'admin-templates_email-list_all' ? 'active open': '' }}">
+                    <a href="{{ route('admin/templates_email/list_all') }}" class="nav-link ">
+                        <span class="title">Email templates</span>
                     </a>
                 </li>
-                @endif
             </ul>
         </li>
         @endif

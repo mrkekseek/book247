@@ -53,10 +53,10 @@
                             </span>
                         </div>
                         <div class="tools">
-                            <a class="expand" href="" data-original-title="" title=""> </a>
+                            <a class="collapse" href="" data-original-title="" title=""> </a>
                         </div>
                     </div>
-                    <div class="portlet-body form" style="display:none;">
+                    <div class="portlet-body form" style="display:block">
                         <!-- BEGIN FORM-->
                         <form action="#" id="new_membership_plan" class="form-horizontal">
                             <div class="form-body">
@@ -71,19 +71,18 @@
                                         <div class="form-group">
                                             <label class="control-label col-md-3 inline"> Membership Price </label>
                                             <div class="col-md-4">
-                                                <input type="text" class="form-control input-inline input-small" name="membership_price" placeholder="{{Config::get('constants.finance.currency')}}" value="{{$membership_plan->price[0]->price}}">
+                                                <input type="text" class="form-control input-inline input-small" name="membership_price" placeholder="{{\App\Http\Controllers\AppSettings::get_setting_value_by_name('finance_currency')}}" value="{{$membership_plan->price->price}}">
                                             </div>
                                         </div>
                                         <div class="form-group">
                                             <label class="control-label col-md-3 inline"> Invoicing Period </label>
                                             <div class="col-md-9">
                                                 <select name="membership_period" class="form-control input-inline input inline-block">
-                                                    <option {!!$membership_plan->plan_period==7?'selected="selected"':''!!} value="7">once every 7 days</option>
-                                                    <option {!!$membership_plan->plan_period==14?'selected="selected"':''!!} value="14">once every 14 days</option>
                                                     <option {!!$membership_plan->plan_period==30?'selected="selected"':''!!} value="30">one per month</option>
                                                     <option {!!$membership_plan->plan_period==90?'selected="selected"':''!!} value="90">once every three months</option>
                                                     <option {!!$membership_plan->plan_period==180?'selected="selected"':''!!} value="180">once every six months</option>
                                                     <option {!!$membership_plan->plan_period==360?'selected="selected"':''!!} value="360">once per year</option>
+                                                    <option {!!$membership_plan->plan_period==-1?'selected="selected"':''!!} value="-1">lifetime</option>
                                                 </select>
                                                 <span class="help-inline inline-block"> </span>
                                             </div>
@@ -186,372 +185,372 @@
                 </div>
             </div>
 
-            @if ($membership_plan->status != 'active')
-            <div class="col-md-12">
-                <div class="portlet light bordered">
-                    <div class="portlet-title">
-                        <div class="caption">
-                            <i class="icon-equalizer font-purple-studio"></i>
-                            <span class="caption-subject font-purple-studio bold uppercase"> Add Membership Attributes </span>
-                            <span class="caption-helper">set the membership properties like activities included and much more</span>
-                        </div>
-                        <div class="tools">
-                            <a class="collapse" href="" data-original-title="" title=""> </a>
-                        </div>
-                    </div>
-                    <div class="portlet-body form tabbable-line boxless tabbable-reversed">
-                        <!-- BEGIN FORM-->
-                        <ul class="nav nav-tabs">
-                            <li class="active">
-                                <a href="#tab_0" data-toggle="tab"> Include Activity </a>
-                            </li>
-                            <li>
-                                <a href="#tab_1" data-toggle="tab"> Booking Time Period </a>
-                            </li>
-                            <li>
-                                <a href="#tab_2" data-toggle="tab"> Booking Time of Day </a>
-                            </li>
-                            <li>
-                                <a href="#tab_3" data-toggle="tab"> Open Bookings </a>
-                            </li>
-                            <li>
-                                <a href="#tab_4" data-toggle="tab"> Cancellation </a>
-                            </li>
-                        </ul>
+            {{--@if ($membership_plan->status != 'active')--}}
+            {{--<div class="col-md-12">--}}
+                {{--<div class="portlet light bordered">--}}
+                    {{--<div class="portlet-title">--}}
+                        {{--<div class="caption">--}}
+                            {{--<i class="icon-equalizer font-purple-studio"></i>--}}
+                            {{--<span class="caption-subject font-purple-studio bold uppercase"> Add Membership Attributes </span>--}}
+                            {{--<span class="caption-helper">set the membership properties like activities included and much more</span>--}}
+                        {{--</div>--}}
+                        {{--<div class="tools">--}}
+                            {{--<a class="collapse" href="" data-original-title="" title=""> </a>--}}
+                        {{--</div>--}}
+                    {{--</div>--}}
+                    {{--<div class="portlet-body form tabbable-line boxless tabbable-reversed">--}}
+                        {{--<!-- BEGIN FORM-->--}}
+                        {{--<ul class="nav nav-tabs">--}}
+                            {{--<li class="active">--}}
+                                {{--<a href="#tab_0" data-toggle="tab"> Include Activity </a>--}}
+                            {{--</li>--}}
+                            {{--<li>--}}
+                                {{--<a href="#tab_1" data-toggle="tab"> Booking Time Period </a>--}}
+                            {{--</li>--}}
+                            {{--<li>--}}
+                                {{--<a href="#tab_2" data-toggle="tab"> Booking Time of Day </a>--}}
+                            {{--</li>--}}
+                            {{--<li>--}}
+                                {{--<a href="#tab_3" data-toggle="tab"> Open Bookings </a>--}}
+                            {{--</li>--}}
+                            {{--<li>--}}
+                                {{--<a href="#tab_4" data-toggle="tab"> Cancellation </a>--}}
+                            {{--</li>--}}
+                        {{--</ul>--}}
 
-                        <div class="tab-content">
-                            <div class="tab-pane active" id="tab_0">
-                                <div class="portlet light bordered form-fit">
-                                    <div class="portlet-title">
-                                        <div class="caption">
-                                            <i class="icon-equalizer font-green-haze"></i>
-                                            <span class="caption-subject font-green-haze bold uppercase">Activities</span>
-                                            <span class="caption-helper">select witch ones are included in membership plan...</span>
-                                        </div>
-                                        <div class="actions">  </div>
-                                    </div>
-                                    <div class="portlet-body form">
-                                        <!-- BEGIN FORM-->
-                                        <form action="#" class="form-horizontal form-row-seperated">
-                                            <div class="form-body">
-                                                <div class="form-group">
-                                                    <label class="control-label col-md-3">Select Included Activities</label>
-                                                    <div class="col-md-9">
-                                                        <select class="form-control input-large" name="plan_included_activity" multiple style="height:120px;">
-                                                            @foreach ($activities as $activity)
-                                                                <option value="{{$activity->id}}"> {{$activity->name}} </option>
-                                                            @endforeach
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="form-actions">
-                                                <div class="row">
-                                                    <div class="col-md-offset-3 col-md-9">
-                                                        <button type="submit" class="btn green add_included_activity">
-                                                            <i class="fa fa-pencil"></i> Add Activities </button>
-                                                        <button type="button" class="btn default">Cancel</button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </form>
-                                        <!-- END FORM-->
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="tab-pane" id="tab_1">
-                                <div class="portlet light bordered form-fit">
-                                    <div class="portlet-title">
-                                        <div class="caption">
-                                            <i class="icon-equalizer font-green-haze"></i>
-                                            <span class="caption-subject font-green-haze bold uppercase">Form Sample</span>
-                                            <span class="caption-helper">some info...</span>
-                                        </div>
-                                        <div class="actions">  </div>
-                                    </div>
-                                    <div class="portlet-body form">
-                                        <!-- BEGIN FORM-->
-                                        <form action="#" class="form-horizontal form-row-seperated">
-                                            <div class="form-body" style="padding-left:15px; padding-right:15px; border-bottom:none;">
-                                                <div class="form-group" style="border-bottom:none;">
-                                                    <span class="help-block inline-block"> Player cannot book more than </span>
-                                                    <select name="hours_until_booking" class="form-control form-inline input-small inline-block">
-                                                        <option value="1">1 hour</option>
-                                                        <option value="2">2 hours</option>
-                                                        <option value="3">3 hours</option>
-                                                        <option value="4">4 hours</option>
-                                                        <option value="5">5 hours</option>
-                                                        <option value="6">6 hours</option>
-                                                        <option value="9">9 hours</option>
-                                                        <option value="12">12 hours</option>
-                                                        <option value="24">1 day</option>
-                                                        <option value="48">2 days</option>
-                                                        <option value="72">3 days</option>
-                                                        <option value="96">4 days</option>
-                                                        <option value="120">5 days</option>
-                                                        <option value="144">6 days</option>
-                                                        <option value="168">7 days</option>
-                                                        <option value="336">14 days</option>
-                                                    </select>
-                                                    <span class="help-block inline-block"> up front </span>
-                                                </div>
-                                            </div>
-                                            <div class="form-actions">
-                                                <div class="row">
-                                                    <div class="col-md-offset-3 col-md-9">
-                                                        <button type="submit" class="btn green add_booking_allowed_interval">
-                                                            <i class="fa fa-pencil"></i> Add Booking Allowed Interval </button>
-                                                        <button type="button" class="btn default">Cancel</button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </form>
-                                        <!-- END FORM-->
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="tab-pane" id="tab_2">
-                                <div class="portlet light bordered form-fit">
-                                    <div class="portlet-title">
-                                        <div class="caption">
-                                            <i class="icon-equalizer font-green-haze"></i>
-                                            <span class="caption-subject font-green-haze bold uppercase">Form Sample</span>
-                                            <span class="caption-helper">some info...</span>
-                                        </div>
-                                        <div class="actions">  </div>
-                                    </div>
-                                    <div class="portlet-body form">
-                                        <!-- BEGIN FORM-->
-                                        <form action="#" class="form-horizontal form-row-seperated">
-                                            <div class="form-body">
-                                                <div class="form-group">
-                                                    <label class="control-label col-md-3">Day of the week</label>
-                                                    <div class="col-md-9">
-                                                        <select name="booking_day_selection" class="form-control input-large booking_day_selection" style="height:150px;" multiple>
-                                                            <option value="1">Monday</option>
-                                                            <option value="2">Tuesday</option>
-                                                            <option value="3">Wednesday</option>
-                                                            <option value="4">Thursday</option>
-                                                            <option value="5">Friday</option>
-                                                            <option value="6">Saturday</option>
-                                                            <option value="0">Sunday</option>
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                                <div class="form-group">
-                                                    <label class="control-label col-md-3">Time of day</label>
-                                                    <div class="col-md-9">
-                                                        <div class="col-md-6">
-                                                            <input type="text" class="form-control form-inline input-xsmall inline-block" placeholder="hour" name="booking_hour_start">
-                                                            <input type="text" class="form-control form-inline input-xsmall inline-block" placeholder="minutes" name="booking_minute_start">
-                                                            <span class="help-block inline-block"> Start Time </span>
-                                                        </div>
-                                                        <div class="col-md-6">
-                                                            <input type="text" class="form-control inline-block input-xsmall" placeholder="hour" name="booking_hour_stop">
-                                                            <input type="text" class="form-control inline-block input-xsmall" placeholder="minutes" name="booking_minute_stop">
-                                                            <span class="help-block inline-block"> End Time </span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="form-group" style="border-bottom:none;">
-                                                    <label class="col-md-3 control-label"> Use Special Permission </label>
-                                                    <div class="col-md-9">
-                                                        <div class="radio-list">
-                                                            <label class="radio-inline">
-                                                                <input type="radio" name="useSpecialPermissions" value="1" checked> Yes </label>
-                                                            <label class="radio-inline">
-                                                                <input type="radio" name="useSpecialPermissions" value="0" checked> No </label>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <!--<div class="special_permission_option form-group" style="border-bottom:none; padding-top:0; display:none;">
-                                                    <label class="col-md-3 control-label"> Book Current Day </label>
-                                                    <div class="col-md-9">
-                                                        <div class="radio-list">
-                                                            <label class="radio-inline">
-                                                                <input type="radio" name="specialCurrentDay" value="1" checked> Yes </label>
-                                                            <label class="radio-inline">
-                                                                <input type="radio" name="specialCurrentDay" value="0" checked> No </label>
-                                                        </div>
-                                                    </div>
-                                                </div>-->
-                                                <input type="hidden" name="specialCurrentDay" value="1" />
-                                                <div class=" special_permission_option form-group" style="border-bottom:none; padding-top:0; display:none;">
-                                                    <label class="col-md-3 control-label"> Book Next Day/Days </label>
-                                                    <div class="col-md-9">
-                                                        <select class="form-control input-large" name="specialDaysAhead">
-                                                            <option value="-1">Select Number Of Days</option>
-                                                            <option value="1">1 Day Ahead</option>
-                                                            <option value="2">2 Days Ahead</option>
-                                                            <option value="3">3 Days Ahead</option>
-                                                            <option value="4">4 Days Ahead</option>
-                                                            <option value="5">5 Days Ahead</option>
-                                                            <option value="6">6 Days Ahead</option>
-                                                            <option value="7">7 Days Ahead</option>
-                                                            <option value="8">8 Days Ahead</option>
-                                                            <option value="9">9 Days Ahead</option>
-                                                            <option value="10">10 Days Ahead</option>
-                                                            <option value="11">11 Days Ahead</option>
-                                                            <option value="12">12 Days Ahead</option>
-                                                            <option value="13">13 Days Ahead</option>
-                                                            <option value="14">14 Days Ahead</option>
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="form-actions">
-                                                <div class="row">
-                                                    <div class="col-md-offset-3 col-md-9">
-                                                        <button type="submit" class="btn green add_booking_time_of_day">
-                                                            <i class="fa fa-pencil"></i> Add Day/Time Values </button>
-                                                        <button type="button" class="btn default">Cancel</button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </form>
-                                        <!-- END FORM-->
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="tab-pane" id="tab_3">
-                                <div class="portlet light bordered form-fit">
-                                    <div class="portlet-title">
-                                        <div class="caption">
-                                            <i class="icon-equalizer font-green-haze"></i>
-                                            <span class="caption-subject font-green-haze bold uppercase">Form Sample</span>
-                                            <span class="caption-helper">some info...</span>
-                                        </div>
-                                        <div class="actions">  </div>
-                                    </div>
-                                    <div class="portlet-body form">
-                                        <!-- BEGIN FORM-->
-                                        <form action="#" class="form-horizontal form-row-seperated">
-                                            <div class="form-body">
-                                                <div class="form-group">
-                                                    <label class="control-label col-md-3">Membership Open Bookings</label>
-                                                    <div class="col-md-9">
-                                                        <input type="text" placeholder="number of bookings" class="block-inline input-large form-control" name="nr_of_open_bookings" />
-                                                        <span class="help-block"> after these free bookings, the member needs to pay for any other open bookings he is doing </span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="form-actions">
-                                                <div class="row">
-                                                    <div class="col-md-offset-3 col-md-9">
-                                                        <button type="submit" class="btn green add_nr_open_bookings">
-                                                            <i class="fa fa-pencil"></i> Add "Open Bookings" Limit </button>
-                                                        <button type="button" class="btn default">Cancel</button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </form>
-                                        <!-- END FORM-->
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="tab-pane" id="tab_4">
-                                <div class="portlet light bordered form-fit">
-                                    <div class="portlet-title">
-                                        <div class="caption">
-                                            <i class="icon-equalizer font-green-haze"></i>
-                                            <span class="caption-subject font-green-haze bold uppercase">Cancellation</span>
-                                            <span class="caption-helper">some info...</span>
-                                        </div>
-                                        <div class="actions">  </div>
-                                    </div>
-                                    <div class="portlet-body form">
-                                        <!-- BEGIN FORM-->
-                                        <form action="#" class="form-horizontal form-row-seperated">
-                                            <div class="form-body">
-                                                <div class="form-group">
-                                                    <label class="control-label col-md-3"> Can cancel </label>
-                                                    <div class="col-md-9">
-                                                        <input type="text" placeholder="" class="input-small form-control inline-block" name="nr_of_hours_before_cancellation" />
-                                                        <span class="help-block inline-block"> hours before </span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="form-actions">
-                                                <div class="row">
-                                                    <div class="col-md-offset-3 col-md-9">
-                                                        <button type="submit" class="btn green add_cancellation_hours">
-                                                            <i class="fa fa-pencil"></i> Add "Cancellation" Limits </button>
-                                                        <button type="button" class="btn default">Cancel</button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </form>
-                                        <!-- END FORM-->
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- END FORM-->
-                    </div>
-                </div>
-            </div>
-            @endif
+                        {{--<div class="tab-content">--}}
+                            {{--<div class="tab-pane active" id="tab_0">--}}
+                                {{--<div class="portlet light bordered form-fit">--}}
+                                    {{--<div class="portlet-title">--}}
+                                        {{--<div class="caption">--}}
+                                            {{--<i class="icon-equalizer font-green-haze"></i>--}}
+                                            {{--<span class="caption-subject font-green-haze bold uppercase">Activities</span>--}}
+                                            {{--<span class="caption-helper">select witch ones are included in membership plan...</span>--}}
+                                        {{--</div>--}}
+                                        {{--<div class="actions">  </div>--}}
+                                    {{--</div>--}}
+                                    {{--<div class="portlet-body form">--}}
+                                        {{--<!-- BEGIN FORM-->--}}
+                                        {{--<form action="#" class="form-horizontal form-row-seperated">--}}
+                                            {{--<div class="form-body">--}}
+                                                {{--<div class="form-group">--}}
+                                                    {{--<label class="control-label col-md-3">Select Included Activities</label>--}}
+                                                    {{--<div class="col-md-9">--}}
+                                                        {{--<select class="form-control input-large" name="plan_included_activity" multiple style="height:120px;">--}}
+                                                            {{--@foreach ($activities as $activity)--}}
+                                                                {{--<option value="{{$activity->id}}"> {{$activity->name}} </option>--}}
+                                                            {{--@endforeach--}}
+                                                        {{--</select>--}}
+                                                    {{--</div>--}}
+                                                {{--</div>--}}
+                                            {{--</div>--}}
+                                            {{--<div class="form-actions">--}}
+                                                {{--<div class="row">--}}
+                                                    {{--<div class="col-md-offset-3 col-md-9">--}}
+                                                        {{--<button type="submit" class="btn green add_included_activity">--}}
+                                                            {{--<i class="fa fa-pencil"></i> Add Activities </button>--}}
+                                                        {{--<button type="button" class="btn default">Cancel</button>--}}
+                                                    {{--</div>--}}
+                                                {{--</div>--}}
+                                            {{--</div>--}}
+                                        {{--</form>--}}
+                                        {{--<!-- END FORM-->--}}
+                                    {{--</div>--}}
+                                {{--</div>--}}
+                            {{--</div>--}}
+                            {{--<div class="tab-pane" id="tab_1">--}}
+                                {{--<div class="portlet light bordered form-fit">--}}
+                                    {{--<div class="portlet-title">--}}
+                                        {{--<div class="caption">--}}
+                                            {{--<i class="icon-equalizer font-green-haze"></i>--}}
+                                            {{--<span class="caption-subject font-green-haze bold uppercase">Form Sample</span>--}}
+                                            {{--<span class="caption-helper">some info...</span>--}}
+                                        {{--</div>--}}
+                                        {{--<div class="actions">  </div>--}}
+                                    {{--</div>--}}
+                                    {{--<div class="portlet-body form">--}}
+                                        {{--<!-- BEGIN FORM-->--}}
+                                        {{--<form action="#" class="form-horizontal form-row-seperated">--}}
+                                            {{--<div class="form-body" style="padding-left:15px; padding-right:15px; border-bottom:none;">--}}
+                                                {{--<div class="form-group" style="border-bottom:none;">--}}
+                                                    {{--<span class="help-block inline-block"> Player cannot book more than </span>--}}
+                                                    {{--<select name="hours_until_booking" class="form-control form-inline input-small inline-block">--}}
+                                                        {{--<option value="1">1 hour</option>--}}
+                                                        {{--<option value="2">2 hours</option>--}}
+                                                        {{--<option value="3">3 hours</option>--}}
+                                                        {{--<option value="4">4 hours</option>--}}
+                                                        {{--<option value="5">5 hours</option>--}}
+                                                        {{--<option value="6">6 hours</option>--}}
+                                                        {{--<option value="9">9 hours</option>--}}
+                                                        {{--<option value="12">12 hours</option>--}}
+                                                        {{--<option value="24">1 day</option>--}}
+                                                        {{--<option value="48">2 days</option>--}}
+                                                        {{--<option value="72">3 days</option>--}}
+                                                        {{--<option value="96">4 days</option>--}}
+                                                        {{--<option value="120">5 days</option>--}}
+                                                        {{--<option value="144">6 days</option>--}}
+                                                        {{--<option value="168">7 days</option>--}}
+                                                        {{--<option value="336">14 days</option>--}}
+                                                    {{--</select>--}}
+                                                    {{--<span class="help-block inline-block"> up front </span>--}}
+                                                {{--</div>--}}
+                                            {{--</div>--}}
+                                            {{--<div class="form-actions">--}}
+                                                {{--<div class="row">--}}
+                                                    {{--<div class="col-md-offset-3 col-md-9">--}}
+                                                        {{--<button type="submit" class="btn green add_booking_allowed_interval">--}}
+                                                            {{--<i class="fa fa-pencil"></i> Add Booking Allowed Interval </button>--}}
+                                                        {{--<button type="button" class="btn default">Cancel</button>--}}
+                                                    {{--</div>--}}
+                                                {{--</div>--}}
+                                            {{--</div>--}}
+                                        {{--</form>--}}
+                                        {{--<!-- END FORM-->--}}
+                                    {{--</div>--}}
+                                {{--</div>--}}
+                            {{--</div>--}}
+                            {{--<div class="tab-pane" id="tab_2">--}}
+                                {{--<div class="portlet light bordered form-fit">--}}
+                                    {{--<div class="portlet-title">--}}
+                                        {{--<div class="caption">--}}
+                                            {{--<i class="icon-equalizer font-green-haze"></i>--}}
+                                            {{--<span class="caption-subject font-green-haze bold uppercase">Form Sample</span>--}}
+                                            {{--<span class="caption-helper">some info...</span>--}}
+                                        {{--</div>--}}
+                                        {{--<div class="actions">  </div>--}}
+                                    {{--</div>--}}
+                                    {{--<div class="portlet-body form">--}}
+                                        {{--<!-- BEGIN FORM-->--}}
+                                        {{--<form action="#" class="form-horizontal form-row-seperated">--}}
+                                            {{--<div class="form-body">--}}
+                                                {{--<div class="form-group">--}}
+                                                    {{--<label class="control-label col-md-3">Day of the week</label>--}}
+                                                    {{--<div class="col-md-9">--}}
+                                                        {{--<select name="booking_day_selection" class="form-control input-large booking_day_selection" style="height:150px;" multiple>--}}
+                                                            {{--<option value="1">Monday</option>--}}
+                                                            {{--<option value="2">Tuesday</option>--}}
+                                                            {{--<option value="3">Wednesday</option>--}}
+                                                            {{--<option value="4">Thursday</option>--}}
+                                                            {{--<option value="5">Friday</option>--}}
+                                                            {{--<option value="6">Saturday</option>--}}
+                                                            {{--<option value="0">Sunday</option>--}}
+                                                        {{--</select>--}}
+                                                    {{--</div>--}}
+                                                {{--</div>--}}
+                                                {{--<div class="form-group">--}}
+                                                    {{--<label class="control-label col-md-3">Time of day</label>--}}
+                                                    {{--<div class="col-md-9">--}}
+                                                        {{--<div class="col-md-6">--}}
+                                                            {{--<input type="text" class="form-control form-inline input-xsmall inline-block" placeholder="hour" name="booking_hour_start">--}}
+                                                            {{--<input type="text" class="form-control form-inline input-xsmall inline-block" placeholder="minutes" name="booking_minute_start">--}}
+                                                            {{--<span class="help-block inline-block"> Start Time </span>--}}
+                                                        {{--</div>--}}
+                                                        {{--<div class="col-md-6">--}}
+                                                            {{--<input type="text" class="form-control inline-block input-xsmall" placeholder="hour" name="booking_hour_stop">--}}
+                                                            {{--<input type="text" class="form-control inline-block input-xsmall" placeholder="minutes" name="booking_minute_stop">--}}
+                                                            {{--<span class="help-block inline-block"> End Time </span>--}}
+                                                        {{--</div>--}}
+                                                    {{--</div>--}}
+                                                {{--</div>--}}
+                                                {{--<div class="form-group" style="border-bottom:none;">--}}
+                                                    {{--<label class="col-md-3 control-label"> Use Special Permission </label>--}}
+                                                    {{--<div class="col-md-9">--}}
+                                                        {{--<div class="radio-list">--}}
+                                                            {{--<label class="radio-inline">--}}
+                                                                {{--<input type="radio" name="useSpecialPermissions" value="1" checked> Yes </label>--}}
+                                                            {{--<label class="radio-inline">--}}
+                                                                {{--<input type="radio" name="useSpecialPermissions" value="0" checked> No </label>--}}
+                                                        {{--</div>--}}
+                                                    {{--</div>--}}
+                                                {{--</div>--}}
+                                                {{--<!--<div class="special_permission_option form-group" style="border-bottom:none; padding-top:0; display:none;">--}}
+                                                    {{--<label class="col-md-3 control-label"> Book Current Day </label>--}}
+                                                    {{--<div class="col-md-9">--}}
+                                                        {{--<div class="radio-list">--}}
+                                                            {{--<label class="radio-inline">--}}
+                                                                {{--<input type="radio" name="specialCurrentDay" value="1" checked> Yes </label>--}}
+                                                            {{--<label class="radio-inline">--}}
+                                                                {{--<input type="radio" name="specialCurrentDay" value="0" checked> No </label>--}}
+                                                        {{--</div>--}}
+                                                    {{--</div>--}}
+                                                {{--</div>-->--}}
+                                                {{--<input type="hidden" name="specialCurrentDay" value="1" />--}}
+                                                {{--<div class=" special_permission_option form-group" style="border-bottom:none; padding-top:0; display:none;">--}}
+                                                    {{--<label class="col-md-3 control-label"> Book Next Day/Days </label>--}}
+                                                    {{--<div class="col-md-9">--}}
+                                                        {{--<select class="form-control input-large" name="specialDaysAhead">--}}
+                                                            {{--<option value="-1">Select Number Of Days</option>--}}
+                                                            {{--<option value="1">1 Day Ahead</option>--}}
+                                                            {{--<option value="2">2 Days Ahead</option>--}}
+                                                            {{--<option value="3">3 Days Ahead</option>--}}
+                                                            {{--<option value="4">4 Days Ahead</option>--}}
+                                                            {{--<option value="5">5 Days Ahead</option>--}}
+                                                            {{--<option value="6">6 Days Ahead</option>--}}
+                                                            {{--<option value="7">7 Days Ahead</option>--}}
+                                                            {{--<option value="8">8 Days Ahead</option>--}}
+                                                            {{--<option value="9">9 Days Ahead</option>--}}
+                                                            {{--<option value="10">10 Days Ahead</option>--}}
+                                                            {{--<option value="11">11 Days Ahead</option>--}}
+                                                            {{--<option value="12">12 Days Ahead</option>--}}
+                                                            {{--<option value="13">13 Days Ahead</option>--}}
+                                                            {{--<option value="14">14 Days Ahead</option>--}}
+                                                        {{--</select>--}}
+                                                    {{--</div>--}}
+                                                {{--</div>--}}
+                                            {{--</div>--}}
+                                            {{--<div class="form-actions">--}}
+                                                {{--<div class="row">--}}
+                                                    {{--<div class="col-md-offset-3 col-md-9">--}}
+                                                        {{--<button type="submit" class="btn green add_booking_time_of_day">--}}
+                                                            {{--<i class="fa fa-pencil"></i> Add Day/Time Values </button>--}}
+                                                        {{--<button type="button" class="btn default">Cancel</button>--}}
+                                                    {{--</div>--}}
+                                                {{--</div>--}}
+                                            {{--</div>--}}
+                                        {{--</form>--}}
+                                        {{--<!-- END FORM-->--}}
+                                    {{--</div>--}}
+                                {{--</div>--}}
+                            {{--</div>--}}
+                            {{--<div class="tab-pane" id="tab_3">--}}
+                                {{--<div class="portlet light bordered form-fit">--}}
+                                    {{--<div class="portlet-title">--}}
+                                        {{--<div class="caption">--}}
+                                            {{--<i class="icon-equalizer font-green-haze"></i>--}}
+                                            {{--<span class="caption-subject font-green-haze bold uppercase">Form Sample</span>--}}
+                                            {{--<span class="caption-helper">some info...</span>--}}
+                                        {{--</div>--}}
+                                        {{--<div class="actions">  </div>--}}
+                                    {{--</div>--}}
+                                    {{--<div class="portlet-body form">--}}
+                                        {{--<!-- BEGIN FORM-->--}}
+                                        {{--<form action="#" class="form-horizontal form-row-seperated">--}}
+                                            {{--<div class="form-body">--}}
+                                                {{--<div class="form-group">--}}
+                                                    {{--<label class="control-label col-md-3">Membership Open Bookings</label>--}}
+                                                    {{--<div class="col-md-9">--}}
+                                                        {{--<input type="text" placeholder="number of bookings" class="block-inline input-large form-control" name="nr_of_open_bookings" />--}}
+                                                        {{--<span class="help-block"> after these free bookings, the member needs to pay for any other open bookings he is doing </span>--}}
+                                                    {{--</div>--}}
+                                                {{--</div>--}}
+                                            {{--</div>--}}
+                                            {{--<div class="form-actions">--}}
+                                                {{--<div class="row">--}}
+                                                    {{--<div class="col-md-offset-3 col-md-9">--}}
+                                                        {{--<button type="submit" class="btn green add_nr_open_bookings">--}}
+                                                            {{--<i class="fa fa-pencil"></i> Add "Open Bookings" Limit </button>--}}
+                                                        {{--<button type="button" class="btn default">Cancel</button>--}}
+                                                    {{--</div>--}}
+                                                {{--</div>--}}
+                                            {{--</div>--}}
+                                        {{--</form>--}}
+                                        {{--<!-- END FORM-->--}}
+                                    {{--</div>--}}
+                                {{--</div>--}}
+                            {{--</div>--}}
+                            {{--<div class="tab-pane" id="tab_4">--}}
+                                {{--<div class="portlet light bordered form-fit">--}}
+                                    {{--<div class="portlet-title">--}}
+                                        {{--<div class="caption">--}}
+                                            {{--<i class="icon-equalizer font-green-haze"></i>--}}
+                                            {{--<span class="caption-subject font-green-haze bold uppercase">Cancellation</span>--}}
+                                            {{--<span class="caption-helper">some info...</span>--}}
+                                        {{--</div>--}}
+                                        {{--<div class="actions">  </div>--}}
+                                    {{--</div>--}}
+                                    {{--<div class="portlet-body form">--}}
+                                        {{--<!-- BEGIN FORM-->--}}
+                                        {{--<form action="#" class="form-horizontal form-row-seperated">--}}
+                                            {{--<div class="form-body">--}}
+                                                {{--<div class="form-group">--}}
+                                                    {{--<label class="control-label col-md-3"> Can cancel </label>--}}
+                                                    {{--<div class="col-md-9">--}}
+                                                        {{--<input type="text" placeholder="" class="input-small form-control inline-block" name="nr_of_hours_before_cancellation" />--}}
+                                                        {{--<span class="help-block inline-block"> hours before </span>--}}
+                                                    {{--</div>--}}
+                                                {{--</div>--}}
+                                            {{--</div>--}}
+                                            {{--<div class="form-actions">--}}
+                                                {{--<div class="row">--}}
+                                                    {{--<div class="col-md-offset-3 col-md-9">--}}
+                                                        {{--<button type="submit" class="btn green add_cancellation_hours">--}}
+                                                            {{--<i class="fa fa-pencil"></i> Add "Cancellation" Limits </button>--}}
+                                                        {{--<button type="button" class="btn default">Cancel</button>--}}
+                                                    {{--</div>--}}
+                                                {{--</div>--}}
+                                            {{--</div>--}}
+                                        {{--</form>--}}
+                                        {{--<!-- END FORM-->--}}
+                                    {{--</div>--}}
+                                {{--</div>--}}
+                            {{--</div>--}}
+                        {{--</div>--}}
+                        {{--<!-- END FORM-->--}}
+                    {{--</div>--}}
+                {{--</div>--}}
+            {{--</div>--}}
+            {{--@endif--}}
 
-            <div class="col-md-12">
-                <div class="portlet light bordered">
-                    <div class="portlet-title">
-                        <div class="caption">
-                            <i class="icon-equalizer font-blue-steel"></i>
-                            <span class="caption-subject font-blue-steel bold uppercase"> Active Attributes & Restrictions </span>
-                            <span class="caption-helper">for the selected membership plan</span>
-                        </div>
-                        <div class="tools">
-                            <a class="collapse" href="" data-original-title="" title=""> </a>
-                        </div>
-                    </div>
-                    <div class="portlet-body row">
-                        <!-- BEGIN FORM-->
-                        @if($restrictions)
-                            @foreach ($restrictions as $restriction)
-                                <div class="col-md-4">
-                                    <div class="note {{ $restriction['color'] }} membership_rules">
-                                        @if ($membership_plan->status != 'active')
-                                        <button class="close remove_restriction" data-id="{{$restriction['id']}}" type="button"></button>
-                                        @endif
+            {{--<div class="col-md-12">--}}
+                {{--<div class="portlet light bordered">--}}
+                    {{--<div class="portlet-title">--}}
+                        {{--<div class="caption">--}}
+                            {{--<i class="icon-equalizer font-blue-steel"></i>--}}
+                            {{--<span class="caption-subject font-blue-steel bold uppercase"> Active Attributes & Restrictions </span>--}}
+                            {{--<span class="caption-helper">for the selected membership plan</span>--}}
+                        {{--</div>--}}
+                        {{--<div class="tools">--}}
+                            {{--<a class="collapse" href="" data-original-title="" title=""> </a>--}}
+                        {{--</div>--}}
+                    {{--</div>--}}
+                    {{--<div class="portlet-body row">--}}
+                        {{--<!-- BEGIN FORM-->--}}
+                        {{--@if($restrictions)--}}
+                            {{--@foreach ($restrictions as $restriction)--}}
+                                {{--<div class="col-md-4">--}}
+                                    {{--<div class="note {{ $restriction['color'] }} membership_rules">--}}
+                                        {{--@if ($membership_plan->status != 'active')--}}
+                                        {{--<button class="close remove_restriction" data-id="{{$restriction['id']}}" type="button"></button>--}}
+                                        {{--@endif--}}
 
-                                        <h4 class="block"> {{ $restriction['title'] }} Rule </h4>
-                                        <p> {!! $restriction['description'] !!} </p>
-                                    </div>
-                                </div>
-                            @endforeach
-                        @else
-                            <div class="note note-warning" style="margin-left:15px; margin-right:15px;">
-                                <h4 class="block">You have no attributes added to this plan</h4>
-                                <p> Please use the "Add Membership Attributes" to customize and configure the membership plan so you create the perfect plan for your business. </p>
-                            </div>
-                        @endif
-                        <!-- END FORM-->
-                    </div>
-                </div>
-            </div>
+                                        {{--<h4 class="block"> {{ $restriction['title'] }} Rule </h4>--}}
+                                        {{--<p> {!! $restriction['description'] !!} </p>--}}
+                                    {{--</div>--}}
+                                {{--</div>--}}
+                            {{--@endforeach--}}
+                        {{--@else--}}
+                            {{--<div class="note note-warning" style="margin-left:15px; margin-right:15px;">--}}
+                                {{--<h4 class="block">You have no attributes added to this plan</h4>--}}
+                                {{--<p> Please use the "Add Membership Attributes" to customize and configure the membership plan so you create the perfect plan for your business. </p>--}}
+                            {{--</div>--}}
+                        {{--@endif--}}
+                        {{--<!-- END FORM-->--}}
+                    {{--</div>--}}
+                {{--</div>--}}
+            {{--</div>--}}
 
-            <div class="col-md-12">
-                <div class="portlet light bordered">
-                    <div class="portlet-title">
-                        <div class="caption">
-                            <i class="icon-equalizer font-green-sharp"></i>
-                            <span class="caption-subject font-green-sharp bold uppercase"> All active memberships actions </span>
-                            <span class="caption-helper">update/sync membership attributes</span>
-                        </div>
-                        <div class="tools">
-                            <a class="expand" href="" data-original-title="" title=""> </a>
-                        </div>
-                    </div>
-                    <div class="portlet-body row" style="display:none;">
-                        <!-- BEGIN FORM-->
-                        <div class="note note-danger" style="margin-left:15px; margin-right:15px;">
-                            <h4 class="block">Clicking this button will update all active membership plans with the current attributes and restrictions</h4>
-                            <p> <button class="btn red-soft re_sync_restriction" data-id="{{$restriction['id']}}" type="button">Update/Sync Memberships</button> </p>
-                        </div>
-                    <!-- END FORM-->
-                    </div>
-                </div>
-            </div>
+            {{--<div class="col-md-12">--}}
+                {{--<div class="portlet light bordered">--}}
+                    {{--<div class="portlet-title">--}}
+                        {{--<div class="caption">--}}
+                            {{--<i class="icon-equalizer font-green-sharp"></i>--}}
+                            {{--<span class="caption-subject font-green-sharp bold uppercase"> All active memberships actions </span>--}}
+                            {{--<span class="caption-helper">update/sync membership attributes</span>--}}
+                        {{--</div>--}}
+                        {{--<div class="tools">--}}
+                            {{--<a class="expand" href="" data-original-title="" title=""> </a>--}}
+                        {{--</div>--}}
+                    {{--</div>--}}
+                    {{--<div class="portlet-body row" style="display:none;">--}}
+                        {{--<!-- BEGIN FORM-->--}}
+                        {{--<div class="note note-danger" style="margin-left:15px; margin-right:15px;">--}}
+                            {{--<h4 class="block">Clicking this button will update all active membership plans with the current attributes and restrictions</h4>--}}
+                            {{--<p> <button class="btn red-soft re_sync_restriction" data-id="{{$restriction['id']}}" type="button">Update/Sync Memberships</button> </p>--}}
+                        {{--</div>--}}
+                    {{--<!-- END FORM-->--}}
+                    {{--</div>--}}
+                {{--</div>--}}
+            {{--</div>--}}
 
             <div class="modal fade bs-modal-sm" id="cancel_confirm_box" tabindex="-1" role="dialog" aria-hidden="true">
                 <div class="modal-dialog">
@@ -662,7 +661,7 @@
                     ignore: "",  // validate all fields including form hidden input
                     rules: {
                         membership_name: {
-                            minlength: 5,
+                            minlength: 3,
                             required: true
                         },
                         membership_price: {

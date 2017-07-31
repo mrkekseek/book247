@@ -8,6 +8,7 @@ use App\CashTerminal;
 use App\FinancialProfile;
 use App\Product;
 use App\ProductCategories;
+use App\ShopLocationCategoryIntervals;
 use App\ShopLocations;
 use App\ShopOpeningHour;
 use App\ShopResource;
@@ -161,6 +162,14 @@ class ShopController extends Controller
         $shopResources = ShopResource::with('category')->where('location_id','=',$shopDetails->id)->orderBy('category_id')->get();
         $vatRates = VatRate::all();
 
+        // get unique categories to set up the time intervals
+        $uniqueCategories = [];
+        foreach ($shopResources as $single){
+            if (!isset($uniqueCategories[$single->category_id])){
+                $uniqueCategories[$single->category_id] = $single->category->name;
+            }
+        }
+
         $shopHours = [];
         $types = ['open_hours' => 'Open Time', 'close_hours' => 'Closed Time'];
         if (sizeof($shopDetails->opening_hours)>0){
@@ -199,18 +208,20 @@ class ShopController extends Controller
             }
         }
 
+        $shop_category_intervals = ShopLocationCategoryIntervals::with('activity')->where('location_id','=',$id)->get();
+
         $financialProfiles = FinancialProfile::orderBy('profile_name','asc')->get();
         $shopFinancialProfile = $shopDetails->get_financial_profile();
 
         $breadcrumbs = [
             'Home'                => route('admin'),
-            'All Shops/Locations' => route('admin/shops/locations/all'),
+            'All Clubs' => route('admin/shops/locations/all'),
             $shopDetails->name    => '',
         ];
         $text_parts  = [
-            'title'     => 'Shop Locations',
-            'subtitle'  => 'view location details',
-            'table_head_text1' => 'Backend Shop Location Details'
+            'title'     => 'Club Locations',
+            'subtitle'  => 'view club details',
+            'table_head_text1' => 'Backend Club Details'
         ];
         $sidebar_link= 'admin-backend-shop-locations-details-view';
 
@@ -227,7 +238,9 @@ class ShopController extends Controller
             'vatRates'      => $vatRates,
             'system_options'=> $shop_system_options,
             'financialProfiles'     => $financialProfiles,
-            'shopFinancialProfile'  => $shopFinancialProfile
+            'shopFinancialProfile'  => $shopFinancialProfile,
+            'storeCategories'       => $uniqueCategories,
+            'shop_category_interval'=> $shop_category_intervals
         ]);
     }
 
@@ -1284,4 +1297,102 @@ class ShopController extends Controller
         }
     }
 
+    public function set_activity_time_interval(Request $request){
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
+            return [
+                'success' => false,
+                'errors'  => 'You need to be logged in to access this function',
+                'title'   => 'Error authentication'
+            ];
+        }
+        $vars = $request->only('location_id','activity_id','value');
+
+        // validate input data : activityID, locationID, value
+        $fillable = [
+            'location_id'   => $vars['location_id'],
+            'category_id'   => $vars['activity_id'],
+            'time_interval' => $vars['value'],
+            'added_by'      => $user->id
+        ];
+
+        $timeIntervalForActivity = Validator::make($fillable, ShopLocationCategoryIntervals::rules('POST'), ShopLocationCategoryIntervals::$validationMessages, ShopLocationCategoryIntervals::$attributeNames);
+        if ($timeIntervalForActivity->fails()){
+            return [
+                'success' => false,
+                'title'   => 'There is an error',
+                'errors'  => $timeIntervalForActivity->getMessageBag()->toArray()
+            ];
+        }
+        else{
+            $shopActivityInterval = ShopLocationCategoryIntervals::where('location_id','=',$fillable['location_id'])->where('category_id','=',$fillable['category_id'])->first();
+            if ($shopActivityInterval){
+                return [
+                    'success' => false,
+                    'title'   => 'Activity already assigned',
+                    'errors'  => 'The selected activity is already available in this location'
+                ];
+            }
+            $shopActivityInterval = new ShopLocationCategoryIntervals();
+            $shopActivityInterval->fill($fillable);
+            $shopActivityInterval->save();
+
+            return [
+                'success' => true,
+                'title'   => 'Activity Added',
+                'message' => 'The selected activity will be available from now on on this location'
+            ];
+        }
+    }
+
+    public function update_activity_time_interval(Request $request){
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
+            return [
+                'success' => false,
+                'errors'  => 'You need to be logged in to access this function',
+                'title'   => 'Error authentication'
+            ];
+        }
+
+        $vars = $request->only('location_id','activity_id','value');
+        $shopActivityInterval = ShopLocationCategoryIntervals::where('location_id','=',$vars['location_id'])->where('category_id','=',$vars['activity_id'])->first();
+        if (!$shopActivityInterval){
+            return [
+                'success' => false,
+                'title'   => 'Activity not defined',
+                'errors'  => 'The selected activity is not available in this location'
+            ];
+        }
+
+        // validate input data : activityID, locationID, value
+        $fillable = [
+            'location_id'   => $vars['location_id'],
+            'category_id'   => $vars['activity_id'],
+            'time_interval' => $vars['value']
+        ];
+
+        $timeIntervalForActivity = Validator::make($fillable, ShopLocationCategoryIntervals::rules('PUT',$shopActivityInterval->id), ShopLocationCategoryIntervals::$validationMessages, ShopLocationCategoryIntervals::$attributeNames);
+        if ($timeIntervalForActivity->fails()){
+            return [
+                'success' => false,
+                'title'   => 'There is an error',
+                'errors'  => $timeIntervalForActivity->getMessageBag()->toArray()
+            ];
+        }
+        else{
+            $shopActivityInterval->fill($fillable);
+            $shopActivityInterval->save();
+
+            return [
+                'success' => true,
+                'title'   => 'Activity Added',
+                'message' => 'The selected activity will be available from now on on this location'
+            ];
+        }
+    }
+
+    public function delete_activity_time_interval(Request $request){
+
+    }
 }

@@ -232,9 +232,15 @@ class AdminController extends Controller
 
     public function authenticate(Request $request)
     {
-        if (Auth::attempt(['email' => $request->input('username'), 'password' => $request->input('password')])) {
+        if (Auth::attempt(['email' => $request->input('email'), 'password' => $request->input('password')])) {
             // Authentication passed...
             $user = Auth::user();
+            \Cache::forget('globalWebsite_registration_finished');
+            $status = AppSettings::get_setting_value_by_name('globalWebsite_registration_finished');
+            if ( ! empty($status))
+            {
+                return redirect('admin/registration');
+            }
             if ($user->hasRole(['manager','employee'])){
                 return redirect()->route('bookings/location_calendar_day_view',['day'=>\Carbon\Carbon::now()->format('d-m-Y')]);
             }
@@ -248,8 +254,15 @@ class AdminController extends Controller
                 'username' => ['Username and/or password invalid.'],
                 'header' => ['Invalid Login Attempt'],
                 'message_body' => ['Username and/or password invalid.'],
-            ]);
-
+            ]);            
+            if (!empty(Auth::$error)){
+                $errors = new MessageBag([                
+                    'password' => ['Username and/or password invalid.'],
+                    'username' => ['Username and/or password invalid.'],
+                    'header' => ['Invalid Login Attempt'],
+                    'message_body' => [Auth::$error],
+                ]);
+            }
             return  redirect()->intended(route('admin/login'))
                     ->withInput()
                     ->withErrors($errors)

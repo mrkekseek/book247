@@ -18,6 +18,7 @@ class InvoiceFinancialTransaction extends Model
         'transaction_date'      => 'Transaction Date',
         'other_details'         => 'Invoice Details',
         'status'                => 'Invoice Status',
+        //        'transaction_details',
     );
 
     public static $message = array();
@@ -31,6 +32,7 @@ class InvoiceFinancialTransaction extends Model
         'transaction_type',
         'transaction_date',
         'other_details',
+//        'transaction_details',
         'status'
     ];
 

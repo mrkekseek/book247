@@ -96,83 +96,84 @@
                             <h4 class="modal-title">Start Dragging Here</h4>
                         </div>
                         <div class="modal-body">
-                            <form action="#" id="form_sample_2" class="form-horizontal">
+                            <form action="#" id="form_sample_2">
                                 <div class="form-body">
                                     <div class="alert alert-danger display-hide">
                                         <button class="close" data-close="alert"></button> You have some form errors. Please check below. </div>
                                     <div class="alert alert-success display-hide">
                                         <button class="close" data-close="alert"></button> Your form validation is successful! </div>
-                                    <div class="form-group  margin-top-20">
-                                        <label class="control-label col-md-4">First Name
-                                            <span class="required"> * </span>
-                                        </label>
-                                        <div class="col-md-7">
-                                            <div class="input-icon right">
-                                                <i class="fa"></i>
-                                                <input type="text" class="form-control" name="first_name" /> </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="control-label visible-ie8 visible-ie9">First Name</label>
+                                                <input class="form-control placeholder-no-fix" type="text" placeholder="First Name" name="first_name" /> 
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="control-label visible-ie8 visible-ie9">Last Name</label>
+                                                <input class="form-control placeholder-no-fix" type="text" placeholder="Last Name" name="last_name" /> 
+                                            </div>
                                         </div>
                                     </div>
-                                    <div class="form-group">
-                                        <label class="control-label col-md-4">Middle Name
-                                        </label>
-                                        <div class="col-md-7">
-                                            <div class="input-icon right">
-                                                <i class="fa"></i>
-                                                <input type="text" class="form-control" name="middle_name" /> </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="control-label visible-ie8 visible-ie9">Phone Number</label>
+                                                <input class="form-control placeholder-no-fix" type="text" placeholder="Phone Number" name="phone_number" /> 
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <div class="input-group date date-picker" data-date-format="yyyy-mm-dd" data-date-end-date="-0d" data-date-start-view="decades">
+                                                    <input type="text" class="form-control" name="DOB" id="DOB" placeholder="Date of Birth" value="" readonly>
+                                                    <span class="input-group-btn">
+                                                        <button class="btn default" type="button">
+                                                            <i class="fa fa-calendar"></i>
+                                                        </button>
+                                                    </span>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
-                                    <div class="form-group">
-                                        <label class="control-label col-md-4">Last Name
-                                            <span class="required"> * </span>
-                                        </label>
-                                        <div class="col-md-7">
-                                            <div class="input-icon right">
-                                                <i class="fa"></i>
-                                                <input type="text" class="form-control" name="last_name" /> </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <select name="gender" class="form-control">
+                                                    <option value="">Select Gender</option>
+                                                    <option value="M"> Male </option>
+                                                    <option value="F"> Female </option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <select name="country" id="country" class="form-control">
+                                                    <option value="">Select Citizenship</option>
+                                                    @foreach ($countries as $country)
+                                                        <option value="{{ $country->id }}">{{ $country->name }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
                                         </div>
                                     </div>
-                                    <div class="form-group">
-                                        <label class="control-label col-md-4">Username
-                                            <span class="required"> * </span>
-                                        </label>
-                                        <div class="col-md-7">
-                                            <div class="input-icon right">
-                                                <i class="fa"></i>
-                                                <input type="text" class="form-control" name="username" /> </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <!--ie8, ie9 does not support html5 placeholder, so we just show field title for that-->
+                                                <label class="control-label visible-ie8 visible-ie9">Email</label>
+                                                <input class="form-control placeholder-no-fix" type="text" placeholder="Email" name="email" /> 
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="control-label col-md-4">Password
-                                            <span class="required"> * </span>
-                                        </label>
-                                        <div class="col-md-7">
-                                            <div class="input-icon right">
-                                                <i class="fa"></i>
-                                                <input type="text" class="form-control" name="password" /> </div>
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="control-label col-md-4">Email Address
-                                            <span class="required"> * </span>
-                                        </label>
-                                        <div class="col-md-7">
-                                            <div class="input-icon right">
-                                                <i class="fa"></i>
-                                                <input type="text" class="form-control" name="email" /> </div>
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="control-label col-md-4">User Type
-                                            <span class="required"> * </span>
-                                        </label>
-                                        <div class="col-md-4">
-                                            <div class="input-icon right">
-                                                <i class="fa"></i>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
                                                 <select class="form-control" name="user_type">
-                                                @foreach($all_roles as $role)
-                                                    <option value="{{$role->id}}">{{$role->name}}</option>
-                                                @endforeach
-                                                </select> </div>
+                                                    <option value = ''>User type</option>
+                                                    @foreach($all_roles as $role)
+                                                        <option value="{{$role->id}}">{{$role->name}}</option>
+                                                    @endforeach
+                                                </select> 
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -268,14 +269,6 @@
                     focusInvalid: false, // do not focus the last invalid input
                     ignore: "",  // validate all fields including form hidden input
                     rules: {
-                        name: {
-                            minlength: 2,
-                            required: true
-                        },
-                        username: {
-                            minlength: 3,
-                            required: true
-                        },
                         first_name: {
                             minlength: 2,
                             required: true
@@ -284,27 +277,50 @@
                             minlength: 2,
                             required: true
                         },
-                        password: {
+                        phone_number: {
+                            required: true,
+                            digits: true,
                             minlength: 8,
-                            required: true
+                            maxlength: 20,
+                            remote: {
+                                url: "{{ route('ajax/check_phone_for_member_registration') }}",
+                                type: "post",
+                                data: {
+                                    phone_number: function() {
+                                        return $( "input[name='phone_number']" ).val();
+                                    }
+                                }
+                            }
                         },
                         email: {
-                            required: true,
                             email: true,
-                            validate_email:true
-                        },
-                        url: {
+                            validate_email:true,
                             required: true,
-                            url: true
+                            remote: {
+                                url: "{{ route('ajax/check_email_for_member_registration') }}",
+                                type: "post",
+                                data: {
+                                    email: function() {
+                                        return $( "input[name='email']" ).val();
+                                    }
+                                }
+                            }
                         },
-                        number: {
+                        DOB: {
                             required: true,
-                            number: true
                         },
-                        digits: {
+                        gender: {
                             required: true,
-                            digits: true
+                            minlength:1
                         },
+                        country: {
+                            required: true,
+                            minlength:1
+                        },
+                        user_type : {
+                            required: true
+                        }
+                        
                     },
 
                     invalidHandler: function (event, validator) { //display error alert on form submit
@@ -360,11 +376,12 @@
                 url: '{{route('admin/back_users/add_user')}}',
                 type: "post",
                 data: { 'first_name':   $('input[name=first_name]').val(),
-                        'middle_name':  $('input[name=middle_name]').val(),
                         'last_name':    $('input[name=last_name]').val(),
-                        'username':     $('input[name=username]').val(),
-                        'password':     $('input[name=password]').val(),
                         'email':        $('input[name=email]').val(),
+                        'phone_number':        $('input[name=phone_number]').val(),
+                        'dob':        $('input[name=DOB]').val(),
+                        'gender':        $('select[name=gender]').val(),
+                        'country_id':        $('select[name=country]').val(),
                         'user_type':    $('select[name=user_type]').val(),
                         '_method':      $('input[name=_method]').val(),
                         '_token':       $('input[name=_token]').val()},
@@ -376,14 +393,45 @@
                         },2000);
                     }
                     else{
+                        $('.alert-success', '#form_sample_2').hide();
+                        $('.alert-danger', '#form_sample_2').html(data.errors);
+                        $('.alert-danger', '#form_sample_2').show();
                         show_notification(data.title, data.errors, 'ruby', 3500, 0);
                     }
                 }
             });
         }
+        
+        var ComponentsDateTimePickers = function () {
+
+            var handleDatePickers = function () {
+
+                if (jQuery().datepicker) {
+                    $('.date-picker').datepicker({
+                        rtl: App.isRTL(),
+                        orientation: "left",
+                        autoclose: true,
+                        daysOfWeekHighlighted: "0",
+                        weekStart:1,
+                    });
+                    //$('body').removeClass("modal-open"); // fix bug when inline picker is used in modal
+                }
+
+                /* Workaround to restrict daterange past date select: http://stackoverflow.com/questions/11933173/how-to-restrict-the-selectable-date-ranges-in-bootstrap-datepicker */
+            }
+
+            return {
+                //main function to initiate the module
+                init: function () {
+                    handleDatePickers();
+                }
+            };
+
+        }();
 
         $(document).ready(function(){
             FormValidation.init();
+            ComponentsDateTimePickers.init();
         });
     </script>
 @endsection

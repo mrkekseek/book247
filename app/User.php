@@ -14,6 +14,7 @@ use App\UserAvatars;
 use Storage;
 use Validator;
 use Illuminate\Support\Facades\Config;
+use App\Http\Controllers\AppSettings;
 
 class User extends Authenticatable
 {
@@ -33,7 +34,8 @@ class User extends Authenticatable
         'email',
         'password',
         'country_id',
-        'status'
+        'status',
+        'sso_user_id',
     ];
 
     public static $messages = [
@@ -75,7 +77,7 @@ class User extends Authenticatable
                     'last_name'     => 'required|min:2|max:150',
                     'username'      => 'required|min:6|max:150|unique:users,username',
                     'password'      => 'required|min:8',
-                    'email'         => 'required|email|unique:users',
+                    'email'         => 'required|email',
                     'user_type'     => 'required|exists:roles,id',
                     'gender'        => 'in:M,F',
                     'status'        => 'in:active,suspended,deleted,pending'
@@ -87,10 +89,10 @@ class User extends Authenticatable
                 return [
                     'first_name'=> 'required|min:2|max:150',
                     'last_name' => 'required|min:2|max:150',
-                    'username'  => 'required|min:6|max:150|unique:users,username'.($id ? ",$id,id" : ''),
-                    'password'  => 'required|min:8',
-                    'email'     => 'required|email|unique:users,email'.($id ? ",$id,id" : ''),
-                    'user_type' => 'required|exists:roles,id',
+                    'username'  => 'min:6|max:150|unique:users,username'.($id ? ",$id,id" : ''),
+                    'password'  => 'min:8',
+                    'email'     => 'required|email',
+                    'user_type' => 'exists:roles,id',
                     'gender'    => 'in:M,F',
                     'status'    => 'in:active,suspended,deleted,pending'
                 ];
@@ -98,8 +100,8 @@ class User extends Authenticatable
             default:break;
         }
     }
-
-    public function is_back_user() {
+    
+    public function is_back_user() {        
         if ( $this->hasRole('front-user') || $this->hasRole('front-member') || $this->status != "active") {
             return false;
         }
@@ -108,7 +110,7 @@ class User extends Authenticatable
         }
     }
 
-    public function is_front_user($all = true) {
+    public function is_front_user($all = true) {        
         if ( ($this->hasRole('front-user') || $this->hasRole('front-member')) && ($this->status == "active" || $all )) {
             return true;
         }
@@ -161,7 +163,7 @@ class User extends Authenticatable
     }
 
     public function avatar(){
-        return $this->hasOne('App\UserAvatars');
+        return $this->hasOne('App\UserAvatars')->latest();
     }
 
     public function documents(){
@@ -177,14 +179,14 @@ class User extends Authenticatable
         return $membership;
     }
 
-    public function attach_membership_plan(MembershipPlan $the_plan, User $signed_by, $day_start = false, $contract_number = 0){
+    public function attach_membership_plan(MembershipPlan $the_plan, User $signed_by, $day_start = false, $contract_number = 0, $status = 'active'){
         if ($this->is_back_user()){
             return false;
         }
 
         $user_plan = new UserMembership();
         //$user_plan->assign_plan($this, $the_plan, $signed_by);
-        if ( $user_plan->create_new($this, $the_plan, $signed_by, $day_start, $contract_number) ){
+        if ( $user_plan->create_new($this, $the_plan, $signed_by, $day_start, $contract_number,$status) ){
             return true;
         }
         else{
@@ -265,7 +267,7 @@ class User extends Authenticatable
                 'action_type'   => 'cancel',
                 'start_date'    => $cancel_date->format('Y-m-d'),
                 'end_date'      => $last_date->format('Y-m-d'),
-                'added_by'      => Auth::user()->id,
+                'added_by'      => $old_plan->user_id,
                 'notes'         => json_encode([]),
                 'processed'     => 0,
                 'status'        => 'active'
@@ -372,19 +374,22 @@ class User extends Authenticatable
 
     public function get_avatar_image($is_link = false){
         $avatar = $this->avatar;
-        if (!$avatar) {
+        if ( ! $avatar)
+        {
             $avatar = new UserAvatars();
             $avatar->file_location = 'employees/default/avatars/';
-            $avatar->file_name = 'default.jpg';
+            $avatar->file_name = 'profile-photo-std-256.png';
         }
 
-        if ($this->is_back_user()){
+        if ($this->is_back_user())
+        {
             if (Storage::disk('local')->exists($avatar->file_location . $avatar->file_name)) {
                 $avatarContent  = Storage::disk('local')->get($avatar->file_location . $avatar->file_name);
                 $avatarType     = Storage::disk('local')->mimeType($avatar->file_location . $avatar->file_name);
             }
         }
-        elseif($this->is_front_user()){
+        elseif($this->is_front_user())
+        {
             if (Storage::disk('local')->exists($avatar->file_location . $avatar->file_name)) {
                 $avatarContent  = Storage::disk('local')->get($avatar->file_location . $avatar->file_name);
                 $avatarType     = Storage::disk('local')->mimeType($avatar->file_location . $avatar->file_name);
@@ -392,14 +397,16 @@ class User extends Authenticatable
         }
 
         if (!isset($avatarContent) || !isset($avatarType)){
-            $avatarContent      = Storage::disk('local')->get('members/default/avatars/default.jpg');
-            $avatarType         = Storage::disk('local')->mimeType('members/default/avatars/default.jpg');
+            $avatarContent      = Storage::disk('local')->get('members/default/avatars/profile-photo-std-256.png');
+            $avatarType         = Storage::disk('local')->mimeType('members/default/avatars/profile-photo-std-256.png');
         }
 
-        if ($is_link==true){
+        if ($is_link==true)
+        {
             return 'data:'.$avatarType.';base64,'.base64_encode($avatarContent);
         }
-        else{
+        else
+        {
             return [
                 'file_location'     => $avatar->file_location,
                 'avatar_content'    => $avatarContent,
@@ -634,6 +641,24 @@ class User extends Authenticatable
         }
     }
 
+    public static function set_general_setting_to_user($user_id, $key, $value){
+        try {
+            $fillable = [
+                'user_id'   => $user_id,
+                'var_name'  => $key,
+            ];
+            $generalSetting = UserSettings::firstOrNew($fillable);
+            $generalSetting->var_value = $value;
+            $generalSetting->save();
+
+            return true;
+        }
+        catch (\Exception $ex){
+            return false;
+        }
+    }
+
+
     public function get_general_setting($key){
         $setting = UserSettings::where('user_id','=',$this->id)->where('var_name','=',$key)->get()->first();
         if ($setting){
@@ -781,7 +806,7 @@ class User extends Authenticatable
                 'errors'  => 'This function is available to logged users only'];
         }
 
-        $credit_validity = Config::get('constants.finance.store_credit_validity');
+        $credit_validity = AppSettings::get_setting_value_by_name('finance_store_credit_validity');
         if ($store_credit_fill['value']>=0){
             $store_credit_fill['expiration_date'] = Carbon::today()->addMonthsNoOverflow($credit_validity)->format('Y-m-d');
         }

@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Http\Controllers\AppSettings;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Validator;
@@ -19,7 +20,9 @@ class Invoice extends Model
         'invoice_reference_id'  => 'Reference ID',
         'invoice_number'=> 'Invoice Number',
         'other_details' => 'Invoice Details',
-        'status'        => 'Invoice Status'
+        'status'        => 'Invoice Status',
+        'payer_info'    => 'Payer Information',
+        'payee_info'    => 'Payee Information',
     );
 
     public static $message = array();
@@ -30,6 +33,8 @@ class Invoice extends Model
         'invoice_type',
         'invoice_reference_id',
         'invoice_number',
+        'payer_info',
+        'payee_info',
         'other_details',
         'status'
     ];
@@ -84,6 +89,70 @@ class Invoice extends Model
         else{
             return 1100;
         }
+    }
+
+    public function update_payee_payer_information()
+    {
+        if (isset($this->user_id) && isset($this->invoice_type) && isset($this->invoice_reference_id)) {
+            $user = User::with('ProfessionalDetail')->with('PersonalDetail')->where('id','=',$this->user_id)->get()->first();
+            $this->payer_info = json_encode($user);
+            switch ($this->invoice_type) {
+                case 'booking_invoice':
+                    $booking_invoice = BookingInvoice::find($this->invoice_reference_id);
+                    $booking = Booking::find($booking_invoice->booking_id);
+                    $location_id = $booking->location_id;
+                    if ($location_id) {
+                        $shop_financial_profile = ShopFinancialProfile::where('shop_location_id',$location_id)->first();
+                        if ($shop_financial_profile) {
+                            $financial_profile = FinancialProfile::find($shop_financial_profile->financial_profile_id);
+                        } else {
+                            $financial_profile = FinancialProfile::where('is_default',1)->first();
+                        }
+
+                    } else {
+                        $financial_profile = FinancialProfile::where('is_default',1)->first();
+                    }
+                    break;
+
+                case 'membership_plan_assignment_invoice' || 'membership_plan_invoice' :
+                    $location_id = $user->get_general_setting('registration_signed_location');
+
+                    if ($location_id) {
+                        $shop_financial_profile = ShopFinancialProfile::where('shop_location_id',$location_id)->first();
+                        if ($shop_financial_profile) {
+                            $financial_profile = FinancialProfile::find($shop_financial_profile->financial_profile_id);
+                        } else {
+                            $financial_profile = FinancialProfile::where('is_default',1)->first();
+                        }
+
+                    } else {
+                        $financial_profile = FinancialProfile::where('is_default',1)->first();
+                    }
+                    break;
+
+                case 'store_credit':
+                    $financial_profile = FinancialProfile::where('is_default',1)->first();
+                    break;
+
+                case 'store_credit_invoice':
+                    $financial_profile = FinancialProfile::where('is_default',1)->first();
+                    break;
+
+                default :
+                    $financial_profile = null;
+            }
+            $this->payee_info = json_encode($financial_profile);
+            return true;
+        }
+        return false;
+    }
+
+
+    public function save(array $options = []) {
+        if (!isset($this->payee_info) && !isset($this->payer_info)) {
+            $this->update_payee_payer_information();
+        }
+        parent::save($options);
     }
 
     /**
@@ -250,7 +319,7 @@ class Invoice extends Model
             'invoice_id'            => $this->id,
             'invoice_items'         => $invoiceItems,
             'transaction_amount'    => $transactionAmount,
-            'transaction_currency'  => Config::get('constants.finance.currency'),
+            'transaction_currency'  => AppSettings::get_setting_value_by_name('finance_currency'),
             'transaction_type'      => $transaction_type,
             'transaction_date'      => Carbon::now()->format('Y-m-d'),
             'status'                => $status,
@@ -487,7 +556,7 @@ class Invoice extends Model
                         'booking_invoice_item_id'   => $item->item_reference_id,
                         'user_id'                   => $userId,
                         'transaction_amount'        => $item->price,
-                        'transaction_currency'      => Config::get('constants.finance.currency'),
+                        'transaction_currency'      => AppSettings::get_setting_value_by_name('finance_currency'),
                         'transaction_type'          => $itemTransactionDetails[$item->id]['method'],
                         'transaction_date'          => Carbon::now(),
                         'other_details'             => $itemTransactionDetails[$item->id]['details'],

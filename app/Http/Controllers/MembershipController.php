@@ -1,39 +1,63 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use Illuminate\Support\Facades\Session;
+use App\InvoiceFinancialTransaction;
 use App\MembershipPlan;
 use App\MembershipPlanPrice;
 use App\Role;
 use App\UserMembership;
+use App\IframePermission;
 use App\ShopResourceCategory;
 use App\UserMembershipAction;
 use App\UserMembershipInvoicePlanning;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Auth;
+use App\Http\Libraries\ApiAuth;
+//use Auth;
 use App\User;
+use Illuminate\Support\Facades\Input;
 use App\Http\Requests;
 use Validator;
 use Regulus\ActivityLog\Models\Activity;
-
+use App\Http\Libraries\Auth;
+use Illuminate\Support\Facades\Auth as AuthLocal;
+use App\InvoiceItem;
+use App\Invoice;
+use App\Paypal;
 /*
  * This controller is linked to the User Membership Plan assigned to him. The actions here are linked to an active membership plan assigned to a user or a plan that will be assigned
  */
 class MembershipController extends Controller
 {
-    public function assign_membership_to_member(Request $request){
-        if (!Auth::check()) {
+    public static $PAYMENT_PENDING = "pending";
+
+    public static $PAYMENT_DONE = "done";
+
+    public function assign_membership_to_member(Request $request, $status = 'active', $federationMemberId = false){
+
+        if (!Auth::check() && $federationMemberId==false) {
             return [
                 'success'   => false,
                 'title'     => 'An error occurred',
                 'errors'    => 'You need to be logged in to have access to this function'
             ];
         }
+        elseif (env('FEDERATION',false) && $federationMemberId!=false){
+            // we have a federation member trying to buy using the iframe
+            $user = User::where('id','=',$federationMemberId)->first();
+            if (!$user){
+                return [
+                    'success'   => false,
+                    'errors'    => 'Could not find the requested member',
+                    'title'     => 'An error occurred'
+                ];
+            }
+        }
         else{
             $user = Auth::user();
-            $is_backend_employee = $user->can('members-management');
         }
+        $is_backend_employee = $user->can('members-management');
 
         $vars = $request->only('member_id', 'selected_plan', 'start_date');
         if ($is_backend_employee==false && $user->id!=$vars['member_id']){
@@ -84,9 +108,9 @@ class MembershipController extends Controller
         $old_plan = UserMembership::where('user_id','=',$member->id)->whereIn('status',['active','suspended'])->orderBy('created_at','desc')->get()->first();
 
         $new_plan = new UserMembership();
-        if ($new_plan->create_new($member, $the_plan, $user, $startDate)){
+        if ($new_plan->create_new($member, $the_plan, $user, $startDate, $status = $status)){
             if ($old_plan) {
-                $old_plan->status = 'canceled';
+                $old_plan->status = $status;
                 $old_plan->save();
             }
 
@@ -94,6 +118,8 @@ class MembershipController extends Controller
             if ($member->hasRole('front-member')===false) {
                 $member->attachRole($memberRole);
             }
+
+            User::set_general_setting_to_user($member->id,'registration_signed_location',$request->get('selected_location'));
 
             return [
                 'success'   => true,
@@ -713,5 +739,162 @@ class MembershipController extends Controller
         else{
             return ['success' => true, 'message' => 'No invoice updated'];
         }
+    }
+
+    public function iframed($token ,$sso_id, $membership_id)
+    {
+        $permission = IframePermission::where([['user_id','=',$sso_id],['permission_token','=',$token]])->first();
+        if(!isset($permission)) {
+            return "You have no permission";
+        }
+        $permission->delete();
+
+        $synchronized = ApiAuth::synchronize($sso_id);
+        if($synchronized != true) {
+            return $synchronized;
+        }
+        $user = User::where('sso_user_id',$sso_id)->first();
+        if($user) {
+            $m = $user->get_active_membership();
+            if( $m ) {
+                if ($m->status = 'active'){
+                    return view('front/iframe/federation/buy_license_new' ,[
+                        'membership_active' => true
+                    ]);
+                } else {
+                    return view('front/iframe/federation/buy_license_new' ,[
+                        'membership_suspended' => true
+                    ]);
+                }
+            }
+        }
+        $redirect_url = Input::get('redirect_url',false);
+        $membership = null;
+        $membership_list = null;
+        if (isset($membership_id)) {
+            $membership = MembershipPlan::find($membership_id);
+        }
+        if (!$membership) {
+            $membership_id = null;
+            $membership_list = MembershipPlan::all();
+        }
+
+        return view('front/iframe/federation/buy_license_new' ,[
+            'user_id' => $sso_id ,
+            'membership' => $membership ,
+            'membership_list' => $membership_list,
+            'redirect_url' => $redirect_url,
+            'paypal_email' => AppSettings::get_setting_value_by_name('finance_simple_paypal_payment_account')
+        ]);
+    }
+
+    public function iframed_paypal_pay(Request $r)
+    {
+        if ($r->get('user_id')  && $r->get('payment_method') && $r->get('membership')) {
+            $user = User::where('sso_user_id',$r->get('user_id'))->first();
+            if ( $user ) {
+                $r->request->add([
+                    'member_id' => $user->id,
+                    'selected_plan' => $r->get('membership'),
+                    'start_date' => date('Y-m-d')
+                ]);
+
+                $membership = UserMembership::where([
+                    ['user_id','=',$user->id],
+                    ['membership_id','=',$r->get('membership')],
+                    ['status','=','pending']
+                ])->first();
+
+                if(!isset($membership)) {
+                    $status = $this->assign_membership_to_member($r,'pending', $user->id);
+                    if($status['success'] == false ){
+                        return json_encode([
+                                'success' => false ,
+                                'message' => $status['errors']
+                            ]
+                        );
+                    }
+                }
+            }
+            else{
+                // we could not login user
+                return json_encode([
+                    'success' => false,
+                    'data' => [
+                        'error' => 'could not assign membership to member',
+                        'payment_method' => $r->get('payment_method')
+                    ]
+                ]);
+            }
+
+            if ($r->get('payment_method') == 'paypal') {
+                $u = User::where('sso_user_id',$r->get('user_id'))->first();
+                $userMembership = UserMembership::where([
+                    ['user_id','=',$u->id],
+                    ['membership_id','=',$r->get('membership')]
+                ])->first();
+
+                $invoicePlan = UserMembershipInvoicePlanning::where('user_membership_id', $userMembership->id)->first();
+
+                $custom = json_encode(array(
+                    'redirect_url' => $r->get('redirect_url'),
+                    'invoice_id' => $invoicePlan->invoice_id));
+                $key = env('APP_KEY') ;
+                if($key){
+                    while(strlen($key) < 16){
+                        $key .= env('APP_KEY');
+                    }
+                    $key = substr($key,0,16);
+                }
+                $iv = env('APP_KEY');
+                if($iv){
+                    while(strlen($iv) < 16){
+                        $iv .= env('APP_KEY');
+                    }
+                    $iv = substr($key,0,16);
+                }
+                $custom = base64_encode(openssl_encrypt($custom,'AES-256-CBC',$key,0 ,$iv));
+
+                $invoices = InvoiceItem::where('invoice_id',$invoicePlan->invoice_id)->get();
+
+                return json_encode([
+                        'success' => true ,
+                        'data' => [
+                            'paying' => true,
+                            'payment_method' => $r->get('payment_method'),
+                            'user' => $u,
+                            'invoices' => $invoices,
+                            'custom' => $custom
+//                        'membership_name' => $membership->name,
+//                        'price' => $membership->get_price()->price
+                        ]
+                    ]
+                );
+            } else {
+                return json_encode([
+                    'success' => true,
+                    'data' => [
+                        'paying' => true,
+                        'payment_method' => $r->get('payment_method')
+                    ]
+                ]);
+            }
+        } else {
+            return json_encode([
+                'user_id' => null ,
+                'membership' => null
+            ]);
+        }
+    }
+
+    public function paypal_cancel(Request $r)
+    {
+        $url = $r->get('cm');
+        return view('front/iframe/federation/redirect_page',[
+            'text' => 'Payment Canceled :(',
+            'status' => 'Failed',
+            'link' => 'http://book.net/admin/test_api_call',
+            'url' => $url
+        ]);
     }
 }

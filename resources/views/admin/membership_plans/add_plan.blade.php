@@ -111,7 +111,7 @@
                                             <label class="control-label col-md-3"> Administration Fee Price </label>
                                             <div class="col-md-9">
                                                 <input type="text" class="form-control input-small inline-block" name="administration_fee_price">
-                                                <span class="help-inline inline-block"> {{Config::get('constants.finance.currency')}} </span><br />
+                                                <span class="help-inline inline-block"> {{\App\Http\Controllers\AppSettings::get_setting_value_by_name('finance_currency')}} </span><br />
                                                 <span class="help-inline"> One time payment at the start of the membership period </span>
                                             </div>
                                         </div>
@@ -228,7 +228,7 @@
                     ignore: "",  // validate all fields including form hidden input
                     rules: {
                         membership_name: {
-                            minlength: 5,
+                            minlength: 3,
                             required: true
                         },
                         membership_price: {

@@ -19,6 +19,7 @@ use Validator;
 use App\ShopLocations;
 use App\CashTerminal;
 use Illuminate\Support\Facades\Config;
+use App\Http\Controllers\AppSettings;
 
 /*
  * This controller is linked to the Membership Plans and the management of the membership plans
@@ -65,8 +66,8 @@ class MembershipPlansController extends Controller
             'Permissions'        => '',
         ];
         $text_parts  = [
-            'title'     => 'All Cash Terminals',
-            'subtitle'  => 'add/edit/view terminals',
+            'title'     => 'All Membership Plans',
+            'subtitle'  => 'add/edit/view plans',
             'table_head_text1' => 'Backend Roles Permissions List'
         ];
         $sidebar_link= 'admin-backend-memberships-all_plans';
@@ -145,7 +146,7 @@ class MembershipPlansController extends Controller
 
         $vars = $request->only('name', 'price', 'plan_period', 'binding_period', 'sign_out_period', 'administration_fee_name', 'administration_fee_amount', 'plan_calendar_color', 'membership_short_description', 'membership_long_description');
 
-        if (!in_array($vars['plan_period'], ['7','14','30','90','180','360'])){
+        if (!in_array($vars['plan_period'], ['7','14','30','90','180','360','-1'])){
             return [
                 'success' => false,
                 'errors'  => 'Error validating time for invoicing period',
@@ -294,7 +295,6 @@ class MembershipPlansController extends Controller
         if (!$the_plan){
             $the_plan = false;
         }
-
         $activities = ShopResourceCategory::all()->sortBy('name');
         $restrictions = array();
         $plan_restrictions = MembershipRestriction::with('restriction_title')->where('membership_id','=',$the_plan->id)->orderBy('restriction_id','asc')->get();
@@ -368,7 +368,7 @@ class MembershipPlansController extends Controller
 
         $vars = $request->only('name','price','plan_period','binding_period','sign_out_period','administration_fee_name','administration_fee_amount','plan_calendar_color','membership_short_description','membership_long_description','status');
 
-        if (!in_array($vars['plan_period'], [7,14,30,90,180,360])){
+        if (!in_array($vars['plan_period'], [7,14,30,90,180,360,-1])){
             return [
                 'success' => false,
                 'errors'  => 'Plan period not in the correct form. Try again!',
@@ -707,17 +707,17 @@ class MembershipPlansController extends Controller
     }
 
     public function ajax_get_plan_details(Request $request, $status='active'){
-        $vars = $request->only('selected_plan');
+        $vars = $request->only(['selected_plan','selected_location']);
 
         $the_plan = MembershipPlan::with('price')->where('id','=',$vars['selected_plan'])->where('status','=',$status)->get()->first();
         if ($the_plan){
             $details = [
                 'success'   => true,
                 'name'      => $the_plan->name,
-                'price'     => $the_plan->price[0]->price.' '.Config::get('constants.finance.currency'),
+                'price'     => $the_plan->price[0]->price.' '.AppSettings::get_setting_value_by_name('finance_currency'),
                 'invoice_time'  => $the_plan->plan_period,
                 'one_time_fee_name' => $the_plan->administration_fee_name,
-                'one_time_fee_value'=> $the_plan->administration_fee_amount.' '.Config::get('constants.finance.currency'),
+                'one_time_fee_value'=> $the_plan->administration_fee_amount.' '.AppSettings::get_setting_value_by_name('finance_currency'),
                 'description'   => $the_plan->short_description,
                 'plan_order_id' => $the_plan->id,
                 'sign_out_period'   => $the_plan->sign_out_period

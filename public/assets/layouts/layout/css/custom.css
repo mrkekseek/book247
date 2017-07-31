@@ -1,1 +1,36 @@
 /* here you can put your own css to customize and override the theme */
+
+.profile-userpic {
+	margin: 0 auto; 
+	width: 150px; 
+	height: 150px; 
+	border-radius: 50%; 
+	background-size: cover;
+	background-position: center center;
+}
+
+.menu-user-avatar {
+	width: 35px;
+	height: 35px;
+	border-radius: 50%;
+	background-size: cover;
+	background-position: center center;
+	display: inline-block;
+	margin-right: 10px;
+}
+
+.fileinput-preview {
+	min-width: 150px;
+	min-height: 150px;
+	background-position: center;
+	background-position: center center;
+}
+
+.item-avatar {
+	background-size: cover;
+	background-position: center center;
+	width: 45px;
+	height: 45px;
+	border-radius: 50%;
+	margin-right: 10px;
+}

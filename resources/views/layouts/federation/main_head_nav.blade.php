@@ -420,6 +420,23 @@
                     {{--</ul>--}}
                 {{--</li>--}}
                 {{--@endif--}}
+                @if (\App\Http\Controllers\AppSettings::get_setting_value_by_name('globalWebsite_show_finance_on_frontend')==1 || \App\Http\Controllers\AppSettings::get_setting_value_by_name('globalWebsite_show_invoices_on_frontend')==1)
+                    <li class="menu-dropdown classic-menu-dropdown {{ in_array($in_sidebar, ['front-finance_invoice_list', 'front-finance_active_membership'])?'active':'' }}">
+                        <a href="javascript:;"> Financial
+                            <span class="arrow"></span>
+                        </a>
+                        <ul class="dropdown-menu pull-left">
+                            @if (\App\Http\Controllers\AppSettings::get_setting_value_by_name('globalWebsite_show_invoices_on_frontend')==1)
+                                <li class=" {{ $in_sidebar=='front-finance_invoice_list'?'active':'' }}">
+                                    <a href="{{ route('front/member_invoice_list') }}" class="nav-link  "> List of Invoices </a>
+                                </li>
+                            @endif
+                            <li class=" {{ $in_sidebar=='front-finance_active_membership'?'active':'' }}">
+                                <a href="{{ route('front/active_membership') }}"> Active Membership </a>
+                            </li>
+                        </ul>
+                    </li>
+                @endif
                 <li class="menu-dropdown mega-menu-dropdown {{ in_array($in_sidebar, ['front-settings_account', 'front-settings_personal', 'front-settings_finance'])?'active':'' }}">
                     <a href="javascript:;"> Settings
                         <span class="arrow"></span>

@@ -34,18 +34,19 @@
                 <div class="portlet light portlet-fit portlet-datatable bordered">
                     <div class="portlet-body">
                         <div class="invoice">
-                            <div class="row invoice-logo">
-                                <div class="col-xs-6 invoice-logo-space">
-                                    <img src="{{ asset('assets/global/img/sqf-logo.png') }}" class="img-responsive" alt="" /> </div>
-                                <div class="col-xs-6">
-                                    <p> #{{ $invoice->invoice_number }} / {{ \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $invoice->created_at)->format('d M Y') }}
+                            <div class="row invoice-logo ">
+                                <div class="col-md-6 invoice-logo-space">
+                                    <img src="{{ asset('assets/global/img/sqf-logo.png') }}" class="img-responsive" alt="" />
+                                </div>
+                                <div class="col-md-6">
+                                    <p class="md-text-center"> #{{ $invoice->invoice_number }} / {{ \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $invoice->created_at)->format('d M Y') }}
                                         <span class="muted"> {{ $invoice->invoice_type }} </span>
                                     </p>
                                 </div>
                             </div>
                             <hr/>
                             <div class="row">
-                                <div class="col-xs-4">
+                                <div class="col-md-4">
                                     <h3>Client:</h3>
                                     <ul class="list-unstyled">
                                         <li> {{ $member['full_name'] }} </li>
@@ -53,15 +54,17 @@
                                         <li> {{ $member['country'] }} </li>
                                     </ul>
                                 </div>
-                                <div class="col-xs-4  hidden-print">
+                                <div class="col-md-4  hidden-print">
                                 </div>
-                                <div class="col-xs-4 invoice-payment">
+                                <div class="col-md-4 invoice-payment">
                                     <h3>Payment Details:</h3>
                                     <ul class="list-unstyled">
                                         <li>
-                                            <strong>V.A.T Reg #:</strong> 542554(DEMO)78 </li>
+                                            <strong>V.A.T Reg #:</strong> 542554(DEMO)78
+                                        </li>
                                         <li>
-                                            <strong>Account Name:</strong> FoodMaster Ltd </li>
+                                            <strong>Account Name:</strong> FoodMaster Ltd
+                                        </li>
                                         <li>
                                             <strong>SWIFT code:</strong> 45454DEMO545DEMO </li>
                                     </ul>
@@ -98,14 +101,15 @@
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-xs-4">
+                                <div class="col-md-4">
                                     <div class="well">
                                         <address>
                                             <strong>Rud Squash AS</strong>
                                             <br/> Postbox 60
                                             <br/> N-1309 Rud
                                             <br/>
-                                            <abbr title="Phone">P:</abbr> (234) 145-1810 </address>
+                                            <abbr title="Phone">P:</abbr> (234) 145-1810 
+                                        </address>
                                         <address>
                                             <strong>{{ $member['full_name'] }}</strong>
                                             <br/>
@@ -113,7 +117,7 @@
                                         </address>
                                     </div>
                                 </div>
-                                <div class="col-xs-8 invoice-block">
+                                <div class="col-md-8 invoice-block">
                                     <ul class="list-unstyled amounts">
                                         <li>
                                             <strong>Sub - Total amount:</strong> {{$sub_total}} </li>
@@ -127,27 +131,28 @@
                                             <strong>Total:</strong> {{$grand_total}} </li>
                                     </ul>
                                     <br/>
-                                    <a class="btn blue hidden-print margin-bottom-5" onclick="javascript:window.print();"> Print
-                                        <i class="fa fa-print"></i>
+                                    <a class="btn btn blue hidden-print margin-bottom-5 download" hidden >
+                                        Download PDF
+                                        <i class="fa fa-download"></i>
                                     </a>
                                     @if ($invoice->status=='pending')
-                                    <a class="btn green hidden-print margin-bottom-5" data-toggle="confirmation-custom" data-key="{{$invoice->invoice_number}}" data-original-title="How would you pay?" data-singleton="true">
+                                    <a class="btn green hidden-print margin-bottom-5" hidden data-toggle="confirmation-custom" data-key="{{$invoice->invoice_number}}" data-original-title="How would you pay?" data-singleton="true">
                                         Make Manual Payment <i class="fa fa-check"></i>
                                     </a>
                                     @elseif ($invoice->status=='processing')
-                                        <a class="btn green hidden-print margin-bottom-5" style="cursor:default;">
+                                        <a class="btn green hidden-print margin-bottom-5" hidden style="cursor:default;">
                                             Payment is processing <i class="fa fa-check"></i>
                                         </a>
                                     @elseif ($invoice->status=='cancelled')
-                                        <a class="btn green hidden-print margin-bottom-5" style="cursor:default;"> Invoice Cancelled
+                                        <a class="btn green hidden-print margin-bottom-5" hidden style="cursor:default;"> Invoice Cancelled
                                             <i class="fa fa-check"></i>
                                         </a>
                                     @elseif ($invoice->status=='declined')
-                                        <a class="btn green hidden-print margin-bottom-5" data-toggle="confirmation-custom" data-key="{{$invoice->invoice_number}}" data-original-title="How would you pay?" data-singleton="true"> Payment is declined
+                                        <a class="btn green hidden-print margin-bottom-5" hidden data-toggle="confirmation-custom" data-key="{{$invoice->invoice_number}}" data-original-title="How would you pay?" data-singleton="true"> Payment is declined
                                             <i class="fa fa-check"></i>
                                         </a>
                                     @elseif ($invoice->status=='incomplete')
-                                        <a class="btn green hidden-print margin-bottom-5" data-toggle="confirmation-custom" data-key="{{$invoice->invoice_number}}" data-original-title="How would you pay?" data-singleton="true"> Partially paid - pay remaining
+                                        <a class="btn green hidden-print margin-bottom-5" hidden data-toggle="confirmation-custom" data-key="{{$invoice->invoice_number}}" data-original-title="How would you pay?" data-singleton="true"> Partially paid - pay remaining
                                             <i class="fa fa-check"></i>
                                         </a>
                                     @endif
@@ -159,7 +164,7 @@
                 <!-- End: life time stats -->
             </div>
             <div class="col-md-12">
-                <div class="portlet light portlet-fit bordered">
+                <div class="portlet light portlet-fit">
                     <div class="portlet-title">
                         <div class="caption">
                             <i class="icon-bubble font-dark"></i>
@@ -184,7 +189,7 @@
                                 @if (sizeof($financialTransactions)>0)
                                     @foreach($financialTransactions as $single)
                                         <tr>
-                                            <td> 2 </td>
+                                            <td> {{ $key }} </td>
                                             <td>@foreach ($single->names as $itemNames)
                                                     {{$itemNames}}<br />
                                                 @endforeach
@@ -213,7 +218,7 @@
                                 @else
                                     <tr>
                                         <td></td>
-                                        <td colspan="5">There are no financial transactions associated with this invoice</td>
+                                        <td colspan="6">There are no financial transactions associated with this invoice</td>
                                     </tr>
                                 @endif
                                 </tbody>
@@ -243,6 +248,8 @@
     <script src="{{ asset('assets/layouts/layout4/scripts/layout.min.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/layouts/layout4/scripts/demo.min.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/layouts/global/scripts/quick-sidebar.min.js') }}" type="text/javascript"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.4/jspdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></script>
 @endsection
 
 @section('pageCustomJScripts')
@@ -335,6 +342,29 @@
 
         $(document).ready(function(){
             FormValidation.init();
+
+            $(".download").click(function(){
+                $(".bordered").find("[hidden]").hide();
+                var doc = new jsPDF();
+                doc.addHTML($('.bordered').first(), function(){
+                    $(".bordered").find("[hidden]").show();
+                    doc.save("test.pdf");
+                })
+                /*html2canvas($('.bordered')[0], {
+                    onrendered: function(canvas) {
+                        $(".bordered").find("[hidden]").show();
+
+                        var doc = new jsPDF("p", "mm", "a4");
+                        var image = canvas.toDataURL("image/png");
+
+                        doc.addImage(image, 'PNG', 10, 10, 190, 160 );
+                        doc.save('export.pdf');
+
+                    }
+                });*/
+
+            });
+            
         });
 
         function mark_invoice_as_paid(invoice_number, payment_type){
@@ -376,10 +406,6 @@
                         if ( pay_answer == true ){
                             abutton.remove();
                             location.reload();
-
-                            //abutton.confirmation('destroy');
-                            //abutton.unbind('click');
-                            //abutton.css('cursor','default');
                         }
                         else{
                             abutton.confirmation('toggle');
@@ -397,10 +423,6 @@
                         if ( pay_answer == true ){
                             abutton.remove();
                             location.reload();
-
-                            //abutton.confirmation('destroy');
-                            //abutton.unbind('click');
-                            //abutton.css('cursor','default');
                         }
                         else{
                             abutton.confirmation('toggle');

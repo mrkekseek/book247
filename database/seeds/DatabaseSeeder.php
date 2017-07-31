@@ -11,6 +11,8 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
+        DB::statement('SET FOREIGN_KEY_CHECKS=0');
+
         $this->call('MembershipRestrictionTypesTableSeeder');
         $this->command->info('Seeded : Member Restrictions Table');
 
@@ -34,5 +36,13 @@ class DatabaseSeeder extends Seeder
 
         $this->call(UserTableSeeder::class);
         $this->command->info('Seeded : User admin + role');
+
+        $this->call(GeneralSettingsSeeder::class);
+        $this->command->info('Seeded : Application Settings');
+
+        $this->call(EmailTemplateSeeder::class);
+        $this->command->info('Seeded : Email Templates');
+
+        DB::statement('SET FOREIGN_KEY_CHECKS=1');
     }
 }

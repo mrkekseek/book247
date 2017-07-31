@@ -9,6 +9,8 @@
 |
 */
 
+
+
 Route::get('/get','Federation\AdminController@get_from_api_test' );
 
 
@@ -27,6 +29,83 @@ Route::get('api/federation_buy_license', [
     'as'    => 'api/federation_buy_license',
     'uses'  => 'Federation\FederationApi@federation_buy_license'
 ]);
+
+Route::post('api/federation_buy_license', [
+    'as'    => 'api/federation_buy_license',
+    'uses'  => 'Federation\FederationApi@federation_buy_license'
+]);
+
+
+
+
+Route::post('api/register_owner', [
+    'as'    => 'api/register_owner',
+    'uses'  => 'Federation\FederationApi@register_owner'
+]);
+
+Route::post('api/assign_subdomain_settings', [
+    'as' => 'api/assign_subdomain_settings',
+    'uses' => 'Federation\FederationApi@assign_subdomain_settings'
+]);
+
+Route::get('api/status', [
+    'as'    => 'api/status',
+    'uses'  => 'Federation\FederationApi@status'
+]);
+
+
+
+
+Route::get('buy_license/{token}/{sso_id}/{license_id?}{request_url?}', [
+    'as'    => 'buy_license',
+    'uses'  => 'Federation\MembershipController@iframed'
+]);
+
+
+
+//END LOCAL API ROUTES
+Route::post('membership/paypal_payment', [
+    'as'    => 'membership/paypal_payment',
+    'uses'  => 'Federation\MembershipController@iframed_paypal_pay'
+]);
+
+
+Route::post('payment/paypal-ipn', [
+    'as'    => 'payment/paypal-ipn',
+    'uses'  => 'IPN@membership_ipn'
+]);
+
+Route::get('membership/paypal_success', [
+    'as'    => 'membership/paypal_success',
+    'uses'  => 'IPN@membership_paypal_success'
+]);
+
+Route::post('membership/paypal_success', [
+    'as'    => 'membership/paypal_success',
+    'uses'  => 'IPN@membership_paypal_success'
+]);
+
+Route::get('membership/paypal_cancel', [
+    'as'    => 'membership/paypal_cancel',
+    'uses'  => 'IPN@membership_paypal_cancel'
+]);
+
+/*Route::post('invoice/ipn', [
+    'as'    => 'membership/ipn',
+    'uses'  => 'IPN@invoice_ipn'
+]);*/
+
+Route::get('invoice/paypal_success', [
+    'as'    => 'membership/paypal_success',
+    'uses'  => 'IPN@invoice_paypal_success'
+]);
+
+Route::post('invoice/paypal_success', [
+    'as'    => 'membership/paypal_success',
+    'uses'  => 'IPN@invoice_paypal_success'
+]);
+
+
 
 
 Route::group(['middleware' => 'web'], function () {
@@ -63,6 +142,16 @@ Route::group(['middleware' => 'web'], function () {
         'uses'  => 'AdminController@logout'
     ]);
 
+    Route::get('admin/registration', [
+            'as' => 'admin/registration',
+            'uses' => 'Federation\BackEndUserController@registrationStepsIndex']
+    );
+
+    Route::post('admin/registration', [
+            'as' => 'admin/registration',
+            'uses' => 'Federation\BackEndUserController@registrationStepsSave']
+    );
+
     //Route::get('/admin/text-auth', 'HomeController@index');
 
     Route::get('/admin', [
@@ -87,19 +176,15 @@ Route::group(['middleware' => 'web'], function () {
     ]);
 
 
-    Route::get('/admin-home-public', [
-        'as'    => 'admin-home-public',
-        'uses'  => 'Federation\AdminController@index'
-    ]);
 
     Route::get('/admin/error/permission_denied', [
         'as'    => 'admin/error/permission_denied',
-        'uses'  => 'AdminController@permission_denied'
+        'uses'  => 'Federation\AdminController@permission_denied'
     ]);
 
     Route::get('/admin/error/not_found', [
         'as'    => 'admin/error/not_found',
-        'uses'  => 'AdminController@not_found'
+        'uses'  => 'Federation\AdminController@not_found'
     ]);
 
     /** Start - Back end users route */
@@ -160,54 +245,53 @@ Route::group(['middleware' => 'web'], function () {
 
     Route::post('admin/back_users/view_user/{id}/avatar_image', [
         'as' => 'admin/back_users/view_user/avatar_image',
-        'uses' => 'Federation\BackEndUserController@update_personal_avatar',
+        'uses' => 'BackEndUserController@update_personal_avatar',
     ]);
 
     Route::post('admin/front_users/view_user/{id}/avatar_image', [
         'as' => 'admin/front_users/view_user/avatar_image',
-        'uses' => 'Federation\FrontEndUserController@update_account_avatar',
+        'uses' => 'FrontEndUserController@update_account_avatar',
     ]);
 
     Route::post('admin/back_users/view_user/{id}/add_document', [
         'as' => 'admin/back_users/view_user/add_document',
-        'uses' => 'Federation\BackEndUserController@add_account_document',
+        'uses' => 'BackEndUserController@add_account_document',
     ]);
 
     Route::post('admin/front_users/view_user/{id}/add_document', [
         'as' => 'admin/front_users/view_user/add_document',
-        'uses' => 'Federation\FrontEndUserController@add_account_document',
+        'uses' => 'FrontEndUserController@add_account_document',
     ]);
 
     Route::get('admin/back_users/{id}/get_document/{document_name}',[
         'as' => 'admin/back_user/get_document',
-        'uses' => 'Federation\BackEndUserController@get_user_account_document'
+        'uses' => 'BackEndUserController@get_user_account_document'
     ]);
 
     Route::get('admin/front_users/{id}/get_document/{document_name}',[
         'as' => 'admin/front_user/get_document',
-        'uses' => 'Federation\FrontEndUserController@get_user_account_document'
+        'uses' => 'FrontEndUserController@get_user_account_document'
     ]);
     //** Start - Back end users route */
 
     Route::post('admin/users/ajax_get_info', [
         'as'     => 'admin/users/ajax_get_info',
-        'uses'  => 'Federation\BackEndUserController@ajax_get_user_info'
+        'uses'  => 'BackEndUserController@ajax_get_user_info'
     ]);
 
     Route::post('admin/users/ajax_get_users', [
         'as'     => 'admin/users/ajax_get_users',
-        //'uses'  => 'BackEndUserController@ajax_get_users'
-        'uses'  => 'Federation\BackEndUserController@ajax_get_users_optimized'
+        'uses'  => 'BackEndUserController@ajax_get_users_optimized'
     ]);
 
     Route::post('admin/users/ajax_get_bill_address', [
         'as'     => 'admin/users/ajax_get_bill_address',
-        'uses'  => 'Federation\BackEndUserController@ajax_get_bill_address'
+        'uses'  => 'BackEndUserController@ajax_get_bill_address'
     ]);
 
     Route::post('admin/users/ajax_get_ship_address', [
         'as'     => 'admin/users/ajax_get_ship_address',
-        'uses'  => 'Federation\BackEndUserController@ajax_get_ship_address'
+        'uses'  => 'BackEndUserController@ajax_get_ship_address'
     ]);
 
     /** Routes for employees and backend users roles */
@@ -582,51 +666,66 @@ Route::group(['middleware' => 'web'], function () {
     /** Start Finance Part */
     Route::get('admin/invoices', [
         'as'    => 'admin/invoices',
-        'uses'  => 'InvoiceController@list_all_invoices'
+        'uses'  => 'Federation\InvoiceController@list_all_invoices'
     ]);
 
     Route::get('admin/invoices/{id}/view', [
         'as'    => 'admin/invoices/view',
-        'uses'  => 'InvoiceController@view_invoice'
+        'uses'  => 'Federation\InvoiceController@view_invoice'
     ]);
     /** Stop Finance Part */
 
     /* Start General Settings Part */
     Route::get('admin/settings/list_all', [
-        'as'    => 'admin/settings/list_all',
-        'uses'  => 'AppSettings@index'
+        'as' => 'admin/settings/list_all',
+        'uses' => 'Federation\AppSettings@index'
+    ]);
+
+    Route::get('admin/settings/manage_settings', [
+        'as' => 'admin/settings/manage_settings',
+        'uses' => 'Federation\AppSettings@manage_settings'
+    ]);
+
+//    Route::post('admin/settings/manage_settings/clear_cache', [
+//        'as' => 'admin/settings/manage_settings/clear_cache',
+//        'uses' => 'Federation\AppSettings@reset_application_cache_settings'
+//    ]);
+
+    Route::get('admin/settings/account_key', [
+        'as'    => 'admin/settings/account_key',
+        'uses'  => 'Federation\AppSettings@rankedin_app_key_integration'
     ]);
     /* Stop General Settings Part */
 
     /* Start Finance Profiles Part */
     Route::get('admin/settings_financial_profiles/list_all', [
         'as'    => 'admin/settings_financial_profiles/list_all',
-        'uses'  => 'FinancialProfiles@list_all'
+        'uses'  => 'Federation\FinancialProfiles@list_all'
     ]);
 
     Route::get('admin/settings_financial_profiles/add', [
         'as'    => 'admin/settings_financial_profiles/add',
-        'uses'  => 'FinancialProfiles@add_shop_financial_profile'
+        'uses'  => 'Federation\FinancialProfiles@add_shop_financial_profile'
     ]);
 
     Route::post('admin/settings_financial_profiles/create', [
         'as'    => 'admin/settings_financial_profiles/create',
-        'uses'  => 'FinancialProfiles@store_shop_financial_profile'
+        'uses'  => 'Federation\FinancialProfiles@store_shop_financial_profile'
     ]);
 
     Route::get('admin/settings_financial_profiles/{id}/show', [
         'as'    => 'admin/settings_financial_profiles/show',
-        'uses'  => 'FinancialProfiles@show_shop_financial_profile'
+        'uses'  => 'Federation\FinancialProfiles@show_shop_financial_profile'
     ]);
 
     Route::get('admin/settings_financial_profiles/{id}/edit', [
         'as'    => 'admin/settings_financial_profiles/edit',
-        'uses'  => 'FinancialProfiles@edit_shop_financial_profile'
+        'uses'  => 'Federation\FinancialProfiles@edit_shop_financial_profile'
     ]);
 
     Route::post('admin/settings_financial_profiles/{id}/update', [
         'as'    => 'admin/settings_financial_profiles/update',
-        'uses'  => 'FinancialProfiles@update_shop_financial_profile'
+        'uses'  => 'Federation\FinancialProfiles@update_shop_financial_profile'
     ]);
     /* Stop Finance Profiles Part */
 });
@@ -743,6 +842,16 @@ Route::group(['prefix'=>'front', 'middleware'=>'web'], function(){
 //        'uses'  => 'BookingController@get_user_booking_archive'
 //    ]);
 
+    Route::get('finance/invoice/{id}', [
+        'as' => 'front/finance/invoice/id',
+        'uses' => 'Federation\FrontEndUserController@invoice_payment'
+    ]);
+
+    Route::post('finance/invoice', [
+        'as' => 'front/finance/invoice',
+        'uses' => 'Federation\FrontEndUserController@post_invoice_payment'
+    ]);
+
     Route::get('friends_list', [
         'as'    => 'front/member_friend_list',
         'uses'  => 'Federation\FrontEndUserController@member_friends_list'
@@ -842,6 +951,12 @@ Route::group(['prefix'=>'front', 'middleware'=>'web'], function(){
 
 Route::group(['prefix'=>'ajax', 'middleware' => 'web'], function(){
 
+    Route::post('ajax/app_settings/clear_cache', [
+        'as' => 'ajax/app_settings/clear_cache',
+        'uses' => 'Federation\AppSettings@clear_cache'
+    ]);
+
+
     Route::post('get_booking_hours',[
         'as'    => 'ajax/get_booking_hours',
         'uses'  => 'Federation\FrontPageController@get_booking_hours'
@@ -852,15 +967,60 @@ Route::group(['prefix'=>'ajax', 'middleware' => 'web'], function(){
         'uses'  => 'ShopResourceController@get_rooms_for_activity'
     ]);
 
+    Route::post('make_default_profile', [
+        'as'    => 'ajax/make_default_profile',
+        'uses'  => 'FinancialProfiles@make_default_profile'
+    ]);
+
     Route::post('book_resource',[
         'as'    => 'ajax/book_resource',
         'uses'  => 'Federation\FrontPageController@book_resource'
+    ]);
+
+    Route::post('ajax/finance_action_invoice_paid', [
+        'as' => 'ajax/finance_action_invoice_paid',
+        'uses' => 'InvoiceController@mark_as_paid'
     ]);
 
     Route::post('resources_available_for_date_time',[
         'as'    => 'ajax/get_resource_date_time',
         'uses'  => 'Federation\FrontPageController@get_resource_list_for_date_time'
     ]);
+
+    Route::post('get_settings', [
+        'as' => 'ajax/get_settings',
+        'uses' => 'Federation\AppSettings@get_settings'
+    ]);
+
+    Route::post('delete_settings', [
+        'as' => 'ajax/delete_settings',
+        'uses' => 'Federation\AppSettings@delete_settings'
+    ]);
+
+    Route::post('add_items_settings', [
+        'as' => 'ajax/add_items_settings',
+        'uses' => 'Federation\AppSettings@add_items_settings'
+    ]);
+
+    Route::post('get_items_settings', [
+        'as' => 'ajax/get_items_settings',
+        'uses' => 'Federation\AppSettings@get_items_settings'
+    ]);
+
+    Route::post('update_settings', [
+        'as' => 'ajax/update_settings',
+        'uses' => 'Federation\AppSettings@update_settings'
+    ]);
+
+    Route::post('save_setting_application', [
+        'as' => 'ajax/save_setting_application',
+        'uses' => 'Federation\AppSettings@save_setting_application'
+    ]);
+    Route::post('save_allowed_setting', [
+        'as' => 'ajax/save_allowed_setting',
+        'uses' => 'Federation\AppSettings@save_allowed_setting'
+    ]);
+
 
 //    Route::post('booking_confirmed', [
 //        'as'    => 'ajax/booking-confirm',
@@ -940,6 +1100,15 @@ Route::group(['prefix'=>'ajax', 'middleware' => 'web'], function(){
     Route::post('get_friends_players_list', [
         'as'    => 'ajax/get_players_list',
         'uses'  => 'Federation\FrontEndUserController@ajax_get_available_players_list'
+    ]);
+
+    Route::get('admin/templates_email/list_all', [
+        'as' => 'admin/templates_email/list_all',
+        'uses' => 'Federation\EmailsController@list_all'
+    ]);
+    Route::post('admin/templates_email/delete', [
+        'as' => 'admin/templates_email/delete',
+        'uses' => 'Federation\EmailsController@delete_email_template'
     ]);
 
 //    Route::post('booking_action_player_show', [
@@ -1064,3 +1233,6 @@ Route::group(['prefix' => 'optimize', 'middleware' => 'web'], function(){
         'uses'  => 'Optimizations@add_new_members_to_table'
     ]);
 });
+
+
+

@@ -318,6 +318,17 @@
                                                                     </div>
                                                                 </div>
                                                                 <div class="form-group">
+                                                                    <label class="control-label col-md-3 inline"> Signing location </label>
+                                                                    <div class="col-md-8">
+                                                                        <select name="locations_list" class="form-control input-inline input-large  inline-block list_all_plans">
+                                                                            <option value="-1"> Select signing location  </option>
+                                                                            @foreach ($locations as $location)
+                                                                                <option value="{{$location->id}}"> {{$location->name}} </option>
+                                                                            @endforeach
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="form-group">
                                                                     <label class="control-label col-md-3 inline"> Membership Start Date </label>
                                                                     <div class="col-md-8">
                                                                         <div class="input-group input date date-picker" data-date="{{ \Carbon\Carbon::today()->format('d-m-Y') }}" data-date-format="dd-mm-yyyy" data-date-viewmode="years" style="display:inline-flex; margin-top:2px; margin-right:40px;">
@@ -361,8 +372,8 @@
                                                                 <div class="note note-info font-grey-mint membership_options" style="margin:0 0 10px; padding:5px 20px 10px 10px;">
                                                                     <p> <b>Price</b> / Discount </p>
                                                                     <h4 class="block" style="margin-bottom:0px; font-size:28px;">
-                                                                        <b>{{ $plan_details['price'].' '.Config::get('constants.finance.currency') }} </b> /
-                                                                        {{ $plan_details['discount'].' '.Config::get('constants.finance.currency') }}
+                                                                        <b>{{ $plan_details['price'].' '.\App\Http\Controllers\AppSettings::get_setting_value_by_name('finance_currency') }} </b> /
+                                                                        {{ $plan_details['discount'].' '.\App\Http\Controllers\AppSettings::get_setting_value_by_name('finance_currency') }}
                                                                     </h4>
                                                                 </div>
                                                             </div>
@@ -499,7 +510,7 @@
                                                                         </td>
                                                                         <td> {{ $singlePlanned['object']['issued_date'] }} - {{ $singlePlanned['object']['status'] }} </td>
                                                                         <td> {{ $singlePlanned['object']['last_active_date'] }} </td>
-                                                                        <td class="hidden-xs"> {{ $singlePlanned['object']['price'].' '.Config::get('constants.finance.currency') }} </td>
+                                                                        <td class="hidden-xs"> {{ $singlePlanned['object']['price'].' '.\App\Http\Controllers\AppSettings::get_setting_value_by_name('finance_currency') }} </td>
                                                                         <td>
                                                                             @if ($singlePlanned['object']['invoiceStatus']!='')
                                                                                 <span class="label label-sm label-success"> {{$singlePlanned['object']['invoiceStatus']}} </span>
@@ -568,6 +579,67 @@
                                                 </div>
                                             </div>
                                             @endif
+                                            <div class="col-md-12">
+                                                <div class="portlet light bordered">
+                                                    <div class="portlet-title">
+                                                        <div class="caption">
+                                                            <i class="icon-equalizer font-blue-steel"></i>
+                                                            <span class="caption-subject font-blue-steel bold uppercase"> Membership history </span>
+                                                        </div>
+                                                        <div class="tools">
+                                                            <a class="expand" href="" data-original-title="" title=""> </a>
+                                                        </div>
+                                                    </div>
+                                                    <div class="portlet-body row" style="display:none;">
+                                                        <div class="table-scrollable">
+                                                            <table class="table table-bordered table-hover">
+                                                                <thead>
+                                                                <tr>
+                                                                    <th> # </th>
+                                                                    <th> Membership </th>
+                                                                    <th> Start date </th>
+                                                                    <th> End date </th>
+                                                                    <th> Number of invoices </th>
+                                                                    <th> Status </th>
+                                                                </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    @if( sizeof($old_memberships)>0)
+                                                                        @foreach($old_memberships as $key => $membership)
+                                                                            <tr>
+                                                                                <td> {{ $key + 1 }} </td>
+                                                                                <td> {{ $membership['membership_name'] }}</td>
+                                                                                <td> {{ $membership['start_day'] }} </td>
+                                                                                <td> {{ $membership['stop_day'] }} </td>
+                                                                                <td> {{ $membership['number_of_invoices'] }} </td>
+                                                                                <td>
+                                                                                    @if ($membership['status']=='pending')
+                                                                                        <span class="label label-sm label-info "> Pending </span>
+                                                                                    @elseif ($membership['status']=='active')
+                                                                                        <span class="label label-sm label-success"> Active </span>
+                                                                                    @elseif($membership['status']=='suspended')
+                                                                                        <span class="label label-sm label-warning"> Suspended </span>
+                                                                                    @elseif($membership['status']=='canceled')
+                                                                                        <span class="label label-sm label-warning"> Cancelled </span>
+                                                                                    @elseif($membership['status']=='expired')
+                                                                                        <span class="label label-sm label-danger"> Expired </span>
+                                                                                    @endif
+                                                                                </td>
+                                                                            </tr>
+                                                                        @endforeach
+                                                                    @else
+                                                                        <tr>
+                                                                            <td></td>
+                                                                            <td colspan="5">There are no old memberships associated with this user</td>
+                                                                        </tr>
+                                                                    @endif
+
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                         <!-- END Membership Plan TAB -->
                                         <!-- DOCUMENTS TAB -->
@@ -1312,6 +1384,7 @@
                 type: "post",
                 data: {
                     'selected_plan': $('select[name=membership_plans_list]').val(),
+                    'selected_location': $('select[name=locations_list]').val()
                 },
                 success: function(data){
                     if (data.success) {
@@ -1322,7 +1395,6 @@
                         $('input[name="membership_invoice_period"]').val(data.invoice_time);
                         $('textarea[name="membership_description"]').html(data.description);
                         $('input[name="selected_plan_number"]').val(data.plan_order_id);
-
                         $('#changeIt').modal('show');
                     }
                     else{
@@ -1375,6 +1447,7 @@
                 url: '{{route('admin/membership_plans/assign_to_member')}}',
                 type: "post",
                 data: {
+                    'selected_location': $('select[name=locations_list]').val(),
                     'selected_plan':    $('select[name=membership_plans_list]').val(),
                     'start_date':       $('input[name="start_date"]').val(),
                     'member_id':        userID

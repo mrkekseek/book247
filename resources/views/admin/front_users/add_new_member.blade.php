@@ -67,25 +67,16 @@
                                                     <option value="M">Male</option>
                                                 </select>
                                             </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="panel panel-info">
-                                        <div class="panel-heading">
-                                            <h3 class="panel-title">Personal details - optional</h3>
-                                        </div>
-                                        <div class="panel-body">
                                             <div class="form-group">
-                                                <span class="help-inline">Date of Birth</span>
-                                                <div class="input-group input-medium date date-picker" data-date="{{ \Carbon\Carbon::today()->format('d-m-Y') }}" data-date-format="dd-mm-yyyy" data-date-viewmode="years" style="display:inline-flex; margin-top:2px; margin-right:40px;">
-                                                    <input type="text" class="form-control" name="date_of_birth" readonly style="background-color:#ffffff;">
-                                                        <span class="input-group-btn">
-                                                            <button class="btn default" type="button">
-                                                                <i class="fa fa-calendar"></i>
-                                                            </button>
-                                                        </span>
+                                                <div class="input-group  date date-picker" data-date="{{ \Carbon\Carbon::today()->format('Y-m-d') }}" data-date-format="yyyy-mm-dd" data-date-end-date="-0d" data-date-start-view="decades" style="display:inline-flex; margin-top:2px; margin-right:40px;">
+                                                    <input type="text" class="form-control" name="date_of_birth" readonly style="background-color:#ffffff;" placeholder="Date of Birth">
+                                                    <span class="input-group-btn">
+                                                        <button class="btn default" type="button">
+                                                            <i class="fa fa-calendar"></i>
+                                                        </button>
+                                                    </span>
                                                 </div>
-                                            </div>
+                                            </div>       
                                         </div>
                                     </div>
 
@@ -211,8 +202,8 @@
     <script type="text/javascript">
         $.validator.addMethod("datePickerDate",function(value, element) {
             // put your own logic here, this is just a (crappy) example
-            return value.match(/^\d\d?-\d\d?-\d\d\d\d$/);
-        },"Please enter a date in the format dd/mm/yyyy.");
+            return value.match(/^\d\d\d\d-\d\d?-\d\d?$/);
+        },"Please enter a date in the format yyyy/mm/dd.");
         $.validator.addMethod('filesize',function(value, element, param) {
             // param = size (in bytes)
             // element = element to validate (<input>)
@@ -252,8 +243,10 @@
                             required: true
                         },
                         phone: {
-                            number: true,
                             required: true,
+                            digits: true,
+                            minlength: 8,
+                            maxlength: 20,
                             remote: {
                                 url: "{{ route('ajax/check_phone_for_member_registration') }}",
                                 type: "post",
@@ -296,8 +289,8 @@
                             minlength: 1,
                         },
                         date_of_birth: {
-                            //required:false,
-                            //datePickerDate: true,
+                            required:true,
+                            datePickerDate: true,
                         },
 
                         personal_addr1: {
@@ -312,6 +305,9 @@
                         personal_addr_pcode: {
                             minlength: 2,
                         },
+                        adr_country_id: {
+                            required:true,
+                        }
                     },
 
                     messages: { // custom messages for radio buttons and checkboxes
@@ -419,13 +415,23 @@
                 },
                 success: function (data) {
                     if (data.success) {
-                        show_notification('New user registered', 'The details entered were correct so the user is now registered.', 'lime', 3500, 0);
+                        show_notification(data.title, data.message, 'lime', 3500, 0);
                         setTimeout(function(){
                             window.location.reload(true);
                         },2500);
                     }
                     else{
-                        show_notification('User registration ERROR', 'Something went wrong with the registration. Try changing the email/phone number or try reloading the page', 'tangerine', 3500, 0);
+                        if (data.errors.length > 0)
+                        {
+                            var error = '';
+                            for (var i = 0; i < data.errors.length; i++){
+                                error = error+data.errors[i];
+                            }
+                            show_notification(data.title, error, 'tangerine', 3500, 0);
+                        }
+                        else{
+                            show_notification('User registration ERROR', 'Something went wrong with the registration. Try changing the email/phone number or try reloading the page', 'tangerine', 3500, 0);
+                        }
                     }
                 }
             });

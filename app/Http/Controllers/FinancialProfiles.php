@@ -5,9 +5,8 @@ namespace App\Http\Controllers;
 use App\FinancialProfile;
 use Validator;
 use Illuminate\Http\Request;
-
+use Auth;
 use App\Http\Requests;
-use Illuminate\Support\Facades\Auth;
 use Regulus\ActivityLog\Models\Activity;
 use Webpatser\Countries\Countries;
 
@@ -15,7 +14,8 @@ class FinancialProfiles extends Controller
 {
     public function list_all(){
         $user = Auth::user();
-        if (!$user || !$user->is_back_user()) {
+        if ( ! $user || !$user->is_back_user())
+        {
             return redirect()->intended(route('admin/login'));
         }
 
@@ -109,6 +109,8 @@ class FinancialProfiles extends Controller
 
         $vars = $request->only('profile_name', 'company_name', 'bank_name', 'bank_account', 'organisation_number', 'address1', 'address2', 'city', 'postal_code', 'region', 'country');
 
+        $defaultProfile = FinancialProfile::where('is_default','=','1')->first();
+
         $fillable = [
             'profile_name'  => $vars['profile_name'],
             'company_name'  => $vars['company_name'],
@@ -121,6 +123,7 @@ class FinancialProfiles extends Controller
             'postal_code'   => $vars['postal_code'],
             'region'        => $vars['region'],
             'country_id'    => $vars['country'],
+            'is_default'    => isset($defaultProfile)?'0':'1'
         ];
         $validator = Validator::make($fillable, FinancialProfile::rules('POST'), FinancialProfile::$message, FinancialProfile::$attributeNames);
         if ($validator->fails()){
@@ -292,6 +295,41 @@ class FinancialProfiles extends Controller
         catch (Exception $e) {
             return Response::json(['error' => 'Booking Error'], Response::HTTP_CONFLICT);
         }
+    }
+
+    public function make_default_profile(Request $r){
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
+            return json_encode([
+                'success' => false,
+                'message' => "you don't have permission"
+            ]);
+        }
+
+        $p = FinancialProfile::find($r->get('id'));
+        if (!$p) {
+            return json_encode([
+                'success' => false,
+                'message' => "not a valid profile"
+            ]);
+        }
+
+        $profiles = FinancialProfile::all();
+        foreach ($profiles as $profile) {
+            if ($profile->id != $p->id) {
+                $profile->is_default = 0;
+                $profile->save();
+            } else {
+                $profile->is_default = 1;
+                $profile->save();
+            }
+        }
+        return json_encode([
+            'success' => true,
+            'message' => "Changed the default profile.",
+            'sub_message' => "This is the default profile."
+        ]);
+
     }
 
 }
