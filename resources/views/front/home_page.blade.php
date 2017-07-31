@@ -316,9 +316,9 @@
                                             <label class="check center-block center-align">
                                                 <input type="checkbox" name="tnc" />
                                                 <span class="loginblue-font">I agree to the</span>
-                                                <a href="javascript:;" class="loginblue-link">Terms of Service</a>
+                                                <a href={{route('terms_of_service')}} target="_blank" class="loginblue-link">Terms of Service</a>
                                                 <span class="loginblue-font">and</span>
-                                                <a href="javascript:;" class="loginblue-link">Privacy Policy </a>
+                                                <a href={{route('privacy_policy')}} target="_blank" class="loginblue-link">Privacy Policy </a>
                                             </label>
                                             <div id="register_tnc_error"> </div>
                                         </div>
