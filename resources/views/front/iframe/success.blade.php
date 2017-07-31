@@ -45,9 +45,19 @@
                                                 <span>If that was the case, the page will redirect you to homepage in a few seconds.</span><br/>
                                                 <span>If you are not automatically redirected, click the button bellow.</span>
                                             </div>
-                                        @else
+                                        @elseif($status=="Success")
                                             <div class="success-box-mark">
                                                 <img src="{{ asset('assets/success/img/success-mark.png') }}">
+                                            </div>
+                                            <div class="success-box-text">
+                                                <span>PAYMENT APPROVED</span><br/>
+                                                <span>Thank you for your purchase.</span>
+                                                <span>We received your payment and the services bought are active and can be used.</span><br/>
+                                                <span>If you are not automatically redirected, click the button bellow.</span>
+                                            </div>
+                                        @else
+                                            <div class="success-box-mark">
+                                                <img src="{{ asset('assets/success/img/cancel-mark.png') }}">
                                             </div>
                                             <div class="success-box-text">
                                                 <span>PAYMENT APPROVED</span><br/>
