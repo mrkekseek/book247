@@ -61,6 +61,7 @@ use App\FinancialProfile;
 use App\ShopFinancialProfile;
 use App\UserMembershipAction;
 use App\StoreCreditProducts;
+use App\StoreCreditPurchases;
 
 class FrontEndUserController extends Controller
 {
@@ -159,6 +160,43 @@ class FrontEndUserController extends Controller
             'in_sidebar'  => $sidebar_link,
             'allMemberships'    => $allMemberships
         ]);
+    }
+
+    public function buy_store_credit_ajax_call(Request $request)
+    {
+        $user = Auth::user();
+        $pack = StoreCreditProducts::find($request->input("store_credits_id"));
+
+        $invoice = new Invoice;
+        $invoice->user_id = $user->id;
+        $invoice->employee_id = 1;
+        $invoice->invoice_number = Invoice::next_invoice_number();
+        $invoice->invoice_type = "store_credit_pack_invoice";
+        $invoice->status = 'pending';
+        $invoice->payee_info = json_encode(array_merge($pack->toArray(), ['company_name' => '', 'country_id' => 0]));
+        $invoice->payer_info = json_encode($user);
+        $invoice->save();
+
+        $invoice_item = [
+            'item_name'         => $pack->name,
+            'item_type'         => 'store_credit_pack',
+            'item_reference_id' => 0,
+            'quantity'          => 1,
+            'price'             => $pack->store_credit_value,
+            'vat'               => 0,
+            'discount'          => $pack->store_credit_discount_fixed
+        ];
+
+        $invoice->add_invoice_item($invoice_item);
+
+        $store_pack = new StoreCreditPurchases;
+        $store_pack->user_id = Auth::user()->id;
+        $store_pack->invoice_id = $invoice->id;
+        $store_pack->store_credit_pack_id = $request->input("store_credits_id");
+        $store_pack->status = 'pending';
+        $store_pack->save();
+
+        return ['redirect' => '/front/finance/invoice/' . $invoice->invoice_number];
     }
 
     public function get_front_members_ajax_call(Request $request){
@@ -1531,12 +1569,12 @@ class FrontEndUserController extends Controller
             'email'         => trim($vars['personal_email'])
         ];
         $validator = Validator::make($userVars, User::rules('PUT', $user->id), User::$messages, User::$attributeNames);
-        
+
         if ($validator->fails()){
             return [
                 'success' => false,
                 'title'   => 'Validation Error',
-                'errors'  => $validator->getMessageBag()->toArray()                
+                'errors'  => $validator->getMessageBag()->toArray()
             ];
         }
         else{
@@ -1568,7 +1606,7 @@ class FrontEndUserController extends Controller
             'user_id'       => $user->id
         ];
         $validator = Validator::make($personalData, PersonalDetail::rules('PUT',$user->id), PersonalDetail::$messages, PersonalDetail::$attributeNames);
-        if ($validator->fails()){            
+        if ($validator->fails()){
             return array(
                 'success'   => false,
                 'title'     => 'You have some errors',
@@ -1727,7 +1765,7 @@ class FrontEndUserController extends Controller
                 'errors'  => $validator->getMessageBag()->toArray()
             ];
         }
-        else {            
+        else {
             if ($is_staff){
                 $user->fill([
                     'password' => Hash::make($request->password1)
@@ -1739,7 +1777,7 @@ class FrontEndUserController extends Controller
                     'message' => 'Old password changed ... user updated'
                 ];
             }
-            else{                
+            else{
                 if (Auth::attempt(['email' => Auth::user()->email, 'password' => $userVars['old_password']])) {
                     $token = \App\Http\Libraries\ApiAuth::resetPassword(Auth::user()->email)['data'];
                     $apiData = [
@@ -1748,8 +1786,8 @@ class FrontEndUserController extends Controller
                           "Password" => ''
                         ],
                         "Token"=> $token,
-                        "NewPassword"=> $request->password1,                        
-                    ];                    
+                        "NewPassword"=> $request->password1,
+                    ];
                     $updatePassword = \App\Http\Libraries\ApiAuth::updatePassword($apiData);
                     if ($updatePassword['success'])
                     {
@@ -1766,7 +1804,7 @@ class FrontEndUserController extends Controller
                             'title'  => 'Error updating password',
                             'errors' => $updatePassword['message']
                         ];
-                    }                    
+                    }
                 }
                 else{
                     return [
@@ -2357,7 +2395,7 @@ class FrontEndUserController extends Controller
     }
 
     public function add_friend_by_phone(Request $request, $id=-1){
-        
+
         if ( ! Auth::check())
         {
             $msg = ['success'=>'false', 'error'=> ['title'=>'An error occured', 'message'=>'Please check the number and add it again. You have a limited number of attempts']];
@@ -2405,7 +2443,6 @@ class FrontEndUserController extends Controller
             }
             else
             {
-                //mjs
                 $friend_approval_status = $newFriend->get_general_setting('auto_approve_friends')==='0'?'pending':'active';
 
                 $friend_fill = ['user_id'=>$user_id, 'friend_id'=>$friends->user_id, 'status' => $friend_approval_status];
@@ -2463,7 +2500,7 @@ class FrontEndUserController extends Controller
                             $subject = "You have a new friend";
                         }
 
-                       
+
 
                         $beauty_mail = app()->make(Beautymail::class);
                         $beauty_mail->send('emails.email_default_v2',
@@ -2508,7 +2545,7 @@ class FrontEndUserController extends Controller
                             $subject = "You have a new friend";
                         }
 
-                       
+
 
                         $beauty_mail = app()->make(Beautymail::class);
                         $beauty_mail->send('emails.email_default_v2',
@@ -2660,7 +2697,7 @@ class FrontEndUserController extends Controller
         $vars = $request->only('first_name', 'middle_name', 'last_name', 'gender', 'email', 'phone_number', 'dob', 'password', 'rpassword', 'username', 'user_type',
             'address1', 'address2', 'city', 'adr_country_id', 'postal_code', 'region',
             'membership_plan', 'start_date', 'sign_location'); //exit;
-        
+
         if (!isset($vars['middle_name'])){
             $vars['middle_name'] = '';
         }
@@ -2735,19 +2772,19 @@ class FrontEndUserController extends Controller
         $password_api = $vars['password'];
         $text_psw    = $vars['password'];
         $credentials['password'] = Hash::make($credentials['password']);
-        $the_plan = MembershipPlan::where('id','=',$vars['membership_plan'])->where('id','!=',1)->where('status','=','active')->get()->first();        
-        try {            
+        $the_plan = MembershipPlan::where('id','=',$vars['membership_plan'])->where('id','!=',1)->where('status','=','active')->get()->first();
+        try {
             $personalData = [
                 'personal_email'=> $vars['email'],
                 'mobile_number' => $vars['phone_number'],
                 'date_of_birth' => $vars['date_of_birth'],
                 'bank_acc_no'   => 0,
                 'social_sec_no' => 0,
-                'about_info'    => '',                
+                'about_info'    => '',
                 'customer_number'   => $user->get_next_customer_number()
-            ];            
-            $validator = Validator::make($personalData, PersonalDetail::rules('POST'), PersonalDetail::$messages, PersonalDetail::$attributeNames);            
-            if ($validator->fails()){                
+            ];
+            $validator = Validator::make($personalData, PersonalDetail::rules('POST'), PersonalDetail::$messages, PersonalDetail::$attributeNames);
+            if ($validator->fails()){
                 return array(
                     'success'   => false,
                     'title'     => 'Error validating',
@@ -2770,13 +2807,13 @@ class FrontEndUserController extends Controller
                 $credentials['sso_user_id'] = $api_user;
                 $user = User::create($credentials);
                 $personalDetails['user_id'] = $user->id;
-                $user->attachRole($userType);    
+                $user->attachRole($userType);
                 $personalDetails = PersonalDetail::firstOrNew(['user_id'=>$user->id]);
                 $personalDetails->fill($personalData);
                 $personalDetails->save();
-            } 
+            }
 
-            
+
             $data = [
                 'first_name'            => $user->first_name,
                 'last_name'             => $user->last_name,
@@ -2810,7 +2847,7 @@ class FrontEndUserController extends Controller
                             ->from(AppSettings::get_setting_value_by_name('globalWebsite_system_email'))
                             ->to($user->email, $user->first_name.' '.$user->middle_name.' '.$user->last_name)
                             ->subject(AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title').' - Online Booking System - You are registered!');
-                }); 
+                });
 
 
             $addressFill = [
@@ -2897,8 +2934,8 @@ class FrontEndUserController extends Controller
             $client_vars['user_type'] = Role::where('name','=','front-user')->get()->first()->id;
         }
 
-        if ($client_vars['password']==""){            
-            $client_vars['password'] = substr(bcrypt(str_random(12)),0,8);            
+        if ($client_vars['password']==""){
+            $client_vars['password'] = substr(bcrypt(str_random(12)),0,8);
         }
 
         $validator = Validator::make($client_vars, User::rules('POST'), User::$messages, User::$attributeNames);
@@ -2916,7 +2953,7 @@ class FrontEndUserController extends Controller
         $password_api = $credentials['password'];
         $credentials['password'] = Hash::make($credentials['password']);
 
-        try {            
+        try {
             $user = new User;
             if (isset($client_vars['customer_number']) && strlen($client_vars['customer_number'])>0){
                 $customer_number = $user->get_next_customer_number($client_vars['customer_number']);
@@ -2932,7 +2969,7 @@ class FrontEndUserController extends Controller
                 'mobile_number'     => $client_vars['phone_number'],
                 'bank_acc_no'       => 0,
                 'social_sec_no'     => 0,
-                'about_info'        => $client_vars['about_info'],                
+                'about_info'        => $client_vars['about_info'],
                 'customer_number'   => $customer_number
             ];
             $validator = Validator::make($personalData, PersonalDetail::rules('POST'), PersonalDetail::$messages, PersonalDetail::$attributeNames);
@@ -3081,7 +3118,7 @@ class FrontEndUserController extends Controller
                     $row['start_date'] = isset($row['start_date']) ? date("d.m.Y", strtotime($row['start_date'])) : "";
                     $row['last_playing_date'] = isset($row['last_playing_date']) ? date("d.m.Y", strtotime($row['last_playing_date'])) : "";
 
-                    
+
                     $singleRow = [];
                     $nr = 1;
                     $chars = 0;
@@ -3280,12 +3317,12 @@ class FrontEndUserController extends Controller
 
             foreach ($members as $member){
                 //xdebug_var_dump($member); //exit;
-                // add member                
+                // add member
                 $newUser = FrontEndUserController::register_new_client($member);
 
                 if ($newUser['success']==false){
                     $msg = 'Following errors occurred : <br />';
-                    foreach ($newUser['errors'] as $key=>$error){                        
+                    foreach ($newUser['errors'] as $key=>$error){
                         $msg.= $key.' : '.implode(', ',$error).'; <br />';
                     }
                 }
@@ -4085,7 +4122,7 @@ class FrontEndUserController extends Controller
         {
             $avatar = new UserAvatars();
         }
-        
+
         $avatar->fill($avatarData);
         $avatar->save();
 
@@ -4168,7 +4205,7 @@ class FrontEndUserController extends Controller
     }
 
     public function password_reset_action(Request $request, $token){
-        
+
         $this->check_expired_password_requests();
 
         $vars = $request->only('token', 'email', 'password1', 'password2');
@@ -4213,8 +4250,8 @@ class FrontEndUserController extends Controller
               "Password" => ''
             ],
             "Token"=> $token,
-            "NewPassword"=> $vars['password1'],                        
-        ];                    
+            "NewPassword"=> $vars['password1'],
+        ];
         $updatePassword = \App\Http\Libraries\ApiAuth::updatePassword($apiData);
         if (!$updatePassword['success'])
         {
@@ -4224,7 +4261,7 @@ class FrontEndUserController extends Controller
                 'errors' => $updatePassword['message']
             ];
         }
-       
+
         $data = [
             'first_name'            => $user->first_name,
             'last_name'             => $user->last_name,
@@ -4254,7 +4291,7 @@ class FrontEndUserController extends Controller
                     ->from(AppSettings::get_setting_value_by_name('globalWebsite_system_email'))
                     ->to($user->email, $user->first_name.' '.$user->middle_name.' '.$user->last_name)
                     ->subject(AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title').' - Password successfully changed');
-            }); 
+            });
 
         return [
             'success'   => true,
@@ -4293,7 +4330,7 @@ class FrontEndUserController extends Controller
                 ];
             }
         }
-        
+
         $generateKey = $this->createNewToken();
         $oldKey = DB::select('select * from password_resets where email = :email limit 1', ['email'=>$user->email]);
         if (sizeof($oldKey)>0){
@@ -4847,7 +4884,7 @@ class FrontEndUserController extends Controller
         }
     }
     // Stop - Store credit add - backend add store credit to member
-    
+
     public function auth_chek_email(Request $request){
         $email = $request->input('email');
         $existLocal = User::where('email', $email)->first();
@@ -4861,7 +4898,7 @@ class FrontEndUserController extends Controller
                     'fieldValue' =>[
                         [
                             'selector'=>'.register-form input[name="reg_email"]',
-                            'value' => $email,                        
+                            'value' => $email,
                         ]
                     ],
                     'title'   => 'Registration',
@@ -4943,21 +4980,21 @@ class FrontEndUserController extends Controller
                     'errors'  => 'Please enter your password'
                     ];
                 break;
-        }        
+        }
         return [
             'success' => false,
             'title'   => 'Error',
             'errors'  => 'Something went wrong'
             ];
-        
+
     }
-    
+
     public function auth_check_password(Request $request){
         $data = $request->input('data');
         switch ($data['type']){
             case ('only_api'):
                 if (ApiAuth::autorize($data)['success'])
-                {  
+                {
                     $api_user = ApiAuth::accounts_get_by_username($data['email'])['data'];
                     $local_user = [
                         'sso_user_id'=>$api_user->id,
@@ -4965,7 +5002,7 @@ class FrontEndUserController extends Controller
                         'email'=>$api_user->username,
                         'first_name'=>$api_user->firstName,
                         'last_name'=>$api_user->lastName,
-                        'middle_name'=>$api_user->middleName,            
+                        'middle_name'=>$api_user->middleName,
                         'country_id'=> AppSettings::get_setting_value_by_name('globalWebsite_defaultCountryId'),
                         'password'=> bcrypt($data['password']),
                     ];
@@ -4997,7 +5034,7 @@ class FrontEndUserController extends Controller
                 break;
                 case('local_and_api'):
                      if (ApiAuth::autorize($data)['success'])
-                    {  
+                    {
                             $api_user = ApiAuth::accounts_get_by_username($data['email'])['data'];
                             Auth::set_local_user($api_user->id);
                             Auth::set_cookie_session($api_user->id);
@@ -5052,7 +5089,7 @@ class FrontEndUserController extends Controller
                     break;
         }
     }
-    
+
     public function auth_autorize(Request $request){
         $data = $request->input('data');
         if (Auth::attempt(['email' => $data['username'], 'password' => $request->data['password']])) {
@@ -5201,7 +5238,7 @@ class FrontEndUserController extends Controller
             'payee_country' => $payee_country
         ]);
     }
-    
+
     public function logout()
     {
         Auth::logout();

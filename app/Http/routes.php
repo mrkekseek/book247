@@ -61,7 +61,7 @@ else
             'uses' => 'ApicController@get_bookings_per_parts_of_day'
         ]);
     });
-    
+
     Route::group(['middleware' => 'web'], function () {
         // default login/register/forgot password routes
         Route::auth();
@@ -75,7 +75,7 @@ else
             'as' => 'front_login',
             'uses' => 'FrontPageController@authenticate'
         ]);
-        
+
         Route::get('logout', 'FrontEndUserController@logout');
 
         //Route::get('login-new', function () {
@@ -86,12 +86,12 @@ else
             'as' => 'admin/registration',
             'uses' => 'BackEndUserController@registrationStepsIndex']
         );
-        
+
         Route::post('admin/registration', [
             'as' => 'admin/registration',
             'uses' => 'BackEndUserController@registrationStepsSave']
         );
-        
+
         Route::get('admin/login', [
             'as' => 'admin/login',
             function () {
@@ -923,6 +923,11 @@ else
         Route::get('active_membership', [
             'as' => 'front/active_membership',
             'uses' => 'FrontEndUserController@member_active_membership'
+        ]);
+
+        Route::post('buy_store_credit', [
+            'as' => 'front/buy_store_credit',
+            'uses' => 'FrontEndUserController@buy_store_credit_ajax_call'
         ]);
 
         Route::get('calendar_booking/{day}/', [
