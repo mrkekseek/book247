@@ -743,6 +743,7 @@ class MembershipController extends Controller
 
     public function iframed($token ,$sso_id, $membership_id)
     {
+
         $permission = IframePermission::where([['user_id','=',$sso_id],['permission_token','=',$token]])->first();
         if(!isset($permission)) {
             return "You have no permission";
@@ -753,22 +754,25 @@ class MembershipController extends Controller
         if($synchronized != true) {
             return $synchronized;
         }
+        $redirect_url = Input::get('redirect_url',false);
         $user = User::where('sso_user_id',$sso_id)->first();
         if($user) {
             $m = $user->get_active_membership();
             if( $m ) {
                 if ($m->status = 'active'){
                     return view('front/iframe/federation/buy_license_new' ,[
-                        'membership_active' => true
+                        'membership_active' => true,
+                        'redirect_url' => $redirect_url,
                     ]);
                 } else {
                     return view('front/iframe/federation/buy_license_new' ,[
-                        'membership_suspended' => true
+                        'membership_suspended' => true,
+                        'redirect_url' => $redirect_url,
                     ]);
                 }
             }
         }
-        $redirect_url = Input::get('redirect_url',false);
+
         $membership = null;
         $membership_list = null;
         if (isset($membership_id)) {
@@ -831,7 +835,8 @@ class MembershipController extends Controller
                 $u = User::where('sso_user_id',$r->get('user_id'))->first();
                 $userMembership = UserMembership::where([
                     ['user_id','=',$u->id],
-                    ['membership_id','=',$r->get('membership')]
+                    ['membership_id','=',$r->get('membership')],
+                    ['status','=','pending']
                 ])->first();
 
                 $invoicePlan = UserMembershipInvoicePlanning::where('user_membership_id', $userMembership->id)->first();
