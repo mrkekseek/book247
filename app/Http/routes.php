@@ -996,6 +996,16 @@ else
             'as' => 'back_error_404',
             'uses' => 'AdminController@error_404'
         ]);
+        
+        Route::get('terms_of_service', [
+            'as' => 'terms_of_service',
+            'uses' => 'FrontPageController@terms_of_service'
+        ]);
+        
+        Route::get('privacy_policy', [
+            'as' => 'privacy_policy',
+            'uses' => 'FrontPageController@privacy_policy'
+        ]);
 
     });
     /** Stop Routes for front end */
