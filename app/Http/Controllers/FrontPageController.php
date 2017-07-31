@@ -475,4 +475,18 @@ class FrontPageController extends Controller
     public function error_404(){
 
     }
+    
+    public function terms_of_service(){
+        $sidebar_link= 'front-homepage';
+        return view('front.terms_of_service',[
+            'in_sidebar'  => $sidebar_link,
+        ]);
+    }
+    
+    public function privacy_policy(){
+        $sidebar_link= 'front-homepage';
+        return view('front.privacy_policy',[
+            'in_sidebar'  => $sidebar_link,
+        ]);
+    }
 }
