@@ -164,6 +164,7 @@ class FrontEndUserController extends Controller
 
     public function buy_store_credit_ajax_call(Request $request)
     {
+        $check = true;
         $user = Auth::user();
         if ( ! $user || ! $user->is_front_user())
         {
@@ -182,6 +183,9 @@ class FrontEndUserController extends Controller
         $invoice->invoice_type = "store_credit_pack_invoice";
         $invoice->status = 'pending';
         $invoice->save();
+        $check = ! empty($invoice->id)  ? $check : true;
+
+        $discount = $pack->store_credit_discount_fixed ? $pack->store_credit_discount_fixed : ($pack->store_credit_discount_percentage ? 100 * $pack->store_credit_discount_percentage / $pack->store_credit_value : 0);
 
         $invoice_item = [
             'item_name'         => $pack->name,
@@ -190,7 +194,7 @@ class FrontEndUserController extends Controller
             'quantity'          => 1,
             'price'             => $pack->store_credit_value,
             'vat'               => 0,
-            'discount'          => $pack->store_credit_discount_fixed
+            'discount'          => $discount
         ];
 
         $invoice->add_invoice_item($invoice_item);
@@ -201,8 +205,23 @@ class FrontEndUserController extends Controller
         $store_pack->store_credit_pack_id = $request->input("store_credits_id");
         $store_pack->status = 'pending';
         $store_pack->save();
+        $check = ! empty($store_pack->id)  ? $check : true;
 
-        return ['redirect' => '/front/finance/invoice/' . $invoice->invoice_number];
+        if ( ! $check)
+        {
+            return [
+                'success' => false,
+                'errors'  => 'Error while purchased Store Credit Packs',
+                'title'   => 'Store Credit Packs Error'
+            ];
+        }
+
+        return [
+            'success' => true,
+            'errors'  => 'Your purchase is successful.',
+            'title'   => 'Store Credit Packs',
+            'redirect'=> route('front/finance/invoice/id', ['id' => $invoice->invoice_number])
+        ];
     }
 
     public function get_front_members_ajax_call(Request $request){
@@ -3675,6 +3694,8 @@ class FrontEndUserController extends Controller
 
                 $total+= ($item_one_price + $item_vat)*$item->quantity;
             }
+
+
 
             $member = json_decode($invoice->payer_info);
             $member_professional = isset($member->professional_detail) ? $member->professional_detail : false;

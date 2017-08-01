@@ -59,7 +59,7 @@
                                                 <div class="portlet-body payer_payee_boxes">
                                                     <div class="row static-info">
                                                         <div class="col-md-5 name">
-                                                            Name
+                                                            Name:
                                                         </div>
                                                         <div class="col-md-7 value">
                                                             {{ $member->first_name.' '.$member->middle_name.' '.$member->last_name }}
@@ -67,7 +67,7 @@
                                                     </div>
                                                     <div class="row static-info">
                                                         <div class="col-md-5 name">
-                                                            Email
+                                                            Email:
                                                         </div>
                                                         <div class="col-md-7 value">
                                                             {{ @$member->email }}
@@ -75,7 +75,7 @@
                                                     </div>
                                                     <div class="row static-info">
                                                         <div class="col-md-5 name">
-                                                            Country
+                                                            Country:
                                                         </div>
                                                         <div class="col-md-7 value">
                                                             {{ $country }}
