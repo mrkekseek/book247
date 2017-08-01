@@ -167,7 +167,7 @@
                     ignore: "",  // validate all fields including form hidden input
                     rules: {
                         profile_name: {
-                            minlength: 5,
+                            minlength: 3,
                             required: true
                         },
                         company_name: {
@@ -176,11 +176,11 @@
                         },
                         registration_name: {
                             required: true,
-                            minlength: 5,
+                            minlength: 3,
                         },
                         bank_name: {
                             required: true,
-                            minlength: 5,
+                            minlength: 3,
                         },
                         bank_acc_no: {
                             required: true,

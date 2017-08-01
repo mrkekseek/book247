@@ -50,9 +50,9 @@ class FinancialProfile extends Model
             case 'POST':
             {
                 return [
-                    'profile_name'  => 'required|min:5|unique:financial_profiles',
+                    'profile_name'  => 'required|min:3|unique:financial_profiles',
                     'company_name'  => 'required|min:3',
-                    'bank_name'     => 'required|min:5',
+                    'bank_name'     => 'required|min:3',
                     'bank_account'  => 'required|min:5',
                     'organisation_number'  => 'required|min:3',
                     'address1'      => 'required|min:5',
@@ -68,10 +68,10 @@ class FinancialProfile extends Model
             case 'PATCH':
             {
                 return [
-                    'profile_name'  => 'required|min:5|unique:financial_profiles,profile_name'.($id ? ','.$id.',id' : ''),
+                    'profile_name'  => 'required|min:3|unique:financial_profiles,profile_name'.($id ? ','.$id.',id' : ''),
                     'company_name'  => 'required|min:3',
-                    'bank_name'     => 'required|min:5',
-                    'bank_account'  => 'required|min:5',
+                    'bank_name'     => 'required|min:3',
+                    'bank_account'  => 'required|min:3',
                     'organisation_number'  => 'required|min:3',
                     'address1'      => 'required|min:5',
                     'address2'      => '',
