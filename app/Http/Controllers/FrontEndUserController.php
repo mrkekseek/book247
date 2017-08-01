@@ -165,22 +165,28 @@ class FrontEndUserController extends Controller
     public function buy_store_credit_ajax_call(Request $request)
     {
         $user = Auth::user();
-        $pack = StoreCreditProducts::find($request->input("store_credits_id"));
+        if ( ! $user || ! $user->is_front_user())
+        {
+            return [
+                'success' => false,
+                'title'   => 'You need to be logged in',
+                'errors'  => 'You need to be logged in'];
+        }
 
+        $pack = StoreCreditProducts::find($request->input("store_credits_id"));
         $invoice = new Invoice;
         $invoice->user_id = $user->id;
         $invoice->employee_id = 1;
+        $invoice->invoice_reference_id = $pack->id;
         $invoice->invoice_number = Invoice::next_invoice_number();
         $invoice->invoice_type = "store_credit_pack_invoice";
         $invoice->status = 'pending';
-        $invoice->payee_info = json_encode(array_merge($pack->toArray(), ['company_name' => '', 'country_id' => 0]));
-        $invoice->payer_info = json_encode($user);
         $invoice->save();
 
         $invoice_item = [
             'item_name'         => $pack->name,
             'item_type'         => 'store_credit_pack',
-            'item_reference_id' => 0,
+            'item_reference_id' => $pack->id,
             'quantity'          => 1,
             'price'             => $pack->store_credit_value,
             'vat'               => 0,
@@ -3671,22 +3677,24 @@ class FrontEndUserController extends Controller
             }
 
             $member = json_decode($invoice->payer_info);
-            $member_professional = $member->professional_detail;
-            $member_personal = $member->personal_detail;
+            $member_professional = isset($member->professional_detail) ? $member->professional_detail : false;
+            $member_personal = isset($member->personal_detail) ? $member->personal_detail : false;
 
-            if ($member->country_id==0){
+            if (isset($member->country_id) && $member->country_id==0)
+            {
                 $country = '-';
             }
-            else{
+            elseif (isset($member->country_id))
+            {
                 $get_country = Countries::where('id','=',$member->country_id)->get()->first();
                 $country = $get_country->name;
             }
 
             $invoice_user = [
-                'full_name' => $member->first_name.' '.$member->middle_name.' '.$member->last_name,
-                'email_address' => $member->email,
-                'date_of_birth' => $member_personal->date_of_birth,
-                'country'   => $country,
+                'full_name' => @$member->first_name.' '.@$member->middle_name.' '.@$member->last_name,
+                'email_address' => @$member->email,
+                'date_of_birth' => @$member_personal->date_of_birth,
+                'country'   => @$country,
             ];
         }
 
@@ -3696,11 +3704,13 @@ class FrontEndUserController extends Controller
             'Back End User'     => route('admin'),
             'All Backend Users' => '',
         ];
+
         $text_parts  = [
             'title'     => 'Back-End Users',
             'subtitle'  => 'view all users',
             'table_head_text1' => 'Backend User List'
         ];
+
         $sidebar_link= 'admin-backend-shop-new_order';
 
 
@@ -3717,7 +3727,7 @@ class FrontEndUserController extends Controller
             'vat'       => $vat,
             'grand_total'   => $total,
             'financial_profile' => json_decode($invoice->payee_info),
-            'country' => $country
+            'country' => @$country
         ]);
     }
 
