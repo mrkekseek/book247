@@ -88,25 +88,25 @@
                                             <div class="portlet red-sunglo box">
                                                 <div class="portlet-title">
                                                     <div class="caption">
-                                                        <i class="fa fa-cogs"></i>Company Information 
+                                                        <i class="fa fa-cogs"></i>Company Information
                                                     </div>
                                                 </div>
                                                 <div class="portlet-body payer_payee_boxes">
                                                     <div class="row static-info">
                                                         <div class="col-md-5 name"> Name: </div>
-                                                        <div class="col-md-7 value"> {{ $customer->company_name }} </div>
+                                                        <div class="col-md-7 value"> {{ @$customer->company_name }} </div>
                                                     </div>
                                                     <div class="row static-info">
                                                         <div class="col-md-5 name"> Address: </div>
-                                                        <div class="col-md-7 value"> {{ $customer->address1.' '.$customer->address2 }} </div>
+                                                        <div class="col-md-7 value"> {{ @$customer->address1.' '.@$customer->address2 }} </div>
                                                     </div>
                                                     <div class="row static-info">
                                                         <div class="col-md-5 name"> City: </div>
-                                                        <div class="col-md-7 value"> {{ $customer->city.", ".$customer->region }} </div>
+                                                        <div class="col-md-7 value"> {{ @$customer->city.", ".@$customer->region }} </div>
                                                     </div>
                                                     <div class="row static-info">
                                                         <div class="col-md-5 name"> Postal Code: </div>
-                                                        <div class="col-md-7 value"> {{ $customer->postal_code }} </div>
+                                                        <div class="col-md-7 value"> {{ @$customer->postal_code }} </div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -136,7 +136,7 @@
                                                                 </tr>
                                                             </thead>
                                                             <tbody>
-                                                                
+
                                                                 @foreach($invoice_items as $item)
                                                                     <tr>
                                                                         <td>
@@ -204,7 +204,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                
+
                             </div>
                         </div>
                     </div>

@@ -126,7 +126,7 @@
                                             </div>
                                             <div class="arrow-down arrow-grey"></div>
                                             <div class="price-table-footer">
-                                                <a href="javascript:;" type="button" class="btn price-button sbold uppercase" style="background-color: #f29407; color: #fff;">Buy {{ $p->name }}</a>
+                                                <a href="javascript:;" type="button" class="btn price-button sbold uppercase buy-store-credit" data-id="{{ $p->id }}" data-target="#buy-store-credit" data-toggle="modal" style="background-color: #f29407; color: #fff;" >Buy {{ $p->name }}</a>
                                             </div>
                                         </div>
                                     </div>
@@ -147,6 +147,24 @@
         </div>
         <!-- END PAGE CONTENT BODY -->
         <!-- END CONTENT BODY -->
+    </div>
+
+    <div class="modal fade" id="buy-store-credit" tabindex="-1" role="dialog" aria-labelledby="" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h4 class="modal-title" id="store-credit-title"></h4>
+          </div>
+          <div class="modal-body" id="store-credit-content">
+
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Return</button>
+            <button type="button" class="btn btn-primary btn-buy" data-id="0">Buy</button>
+          </div>
+        </div>
+      </div>
     </div>
 @endsection
 
@@ -183,6 +201,7 @@
 
 @section('pageCustomJScripts')
     <script type="text/javascript">
+        var store_credits = {!! json_encode($store_credit_purchases ? $store_credit_purchases->toArray() : []) !!};
         $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -190,10 +209,58 @@
         });
 
         var options = { byRow: true, property: 'height', target: null, remove: false};
+
         $(function() {
             $('.price-table-content').matchHeight(options);
             $('.is_pack_description').matchHeight(options);
         });
+
+        $(document).ready(function(){
+            $(".buy-store-credit").click(function(){
+                var store = {};
+                for(var i in store_credits)
+                {
+                    if (store_credits[i].id == $(this).data("id"))
+                    {
+                        store = store_credits[i];
+                    }
+                }
+
+                if (store)
+                {
+                    $('#store-credit-title').html(store.name);
+                    var content = "";
+                    content += "<ul>";
+
+                    content += "<li>Price without a discount : " + store.store_credit_value + "</li>";
+                    content += "<li>Paying Price : " + store.store_credit_discount_fixed + "</li>";
+                    content += "<li>Available until : " + store.valid_to + "</li>";
+
+                    content += "</ul>";
+                    $('#store-credit-content').html(content);
+                    $('.btn-buy').data("id", store.id);
+                }
+            });
+
+            $(".btn-buy").click(function(){
+                $.ajax({
+                    url : '{{ route("front/buy_store_credit") }}',
+                    method : 'post',
+                    data : {
+                        store_credits_id : $(this).data("id")
+                    },
+                    success : function(data)
+                    {
+                        if (data.redirect)
+                        {
+                            window.location.href = data.redirect;
+                        }
+                    }
+                });
+            });
+
+
+        })
 
         function show_notification(title_heading, message, theme, life, sticky) {
             var settings = {
