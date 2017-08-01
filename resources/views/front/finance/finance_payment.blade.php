@@ -158,7 +158,7 @@
                                                                             -
                                                                         </td>
                                                                         <td>
-                                                                            {{ (($item->discount * $item->price) / 100) }}
+                                                                            {{ $item->discount }} %
                                                                         </td>
                                                                         <td>
                                                                             {{ $item->total_price }}

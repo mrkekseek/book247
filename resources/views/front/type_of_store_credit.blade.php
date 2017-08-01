@@ -237,6 +237,10 @@
                     {
                         discount = store.store_credit_value - store.store_credit_discount_fixed;
                     }
+                    else if(store.store_credit_discount_percentage)
+                    {
+                        discount = store.store_credit_value - ( store.store_credit_value * store.store_credit_discount_percentage / 100);
+                    }
                     else {
                         discount = store.store_credit_value;
                     }

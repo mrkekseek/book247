@@ -185,7 +185,7 @@ class FrontEndUserController extends Controller
         $invoice->save();
         $check = ! empty($invoice->id)  ? $check : true;
 
-        $discount = $pack->store_credit_discount_fixed ? $pack->store_credit_discount_fixed : ($pack->store_credit_discount_percentage ? 100 * $pack->store_credit_discount_percentage / $pack->store_credit_value : 0);
+        $discount = $pack->store_credit_discount_percentage ? $pack->store_credit_discount_percentage : ($pack->store_credit_discount_fixed ? ($pack->store_credit_discount_fixed * 100 / $pack->store_credit_value) : 0);
 
         $invoice_item = [
             'item_name'         => $pack->name,
