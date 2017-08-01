@@ -477,16 +477,25 @@ class FrontPageController extends Controller
     }
     
     public function terms_of_service(){
+        $text_parts  = [
+            'title'     => 'Terms and conditions',
+        ];
         $sidebar_link= 'front-homepage';
         return view('front.terms_of_service',[
             'in_sidebar'  => $sidebar_link,
+            'title'    => $text_parts['title']
         ]);
     }
     
     public function privacy_policy(){
+        $text_parts  = [
+            'title'     => 'Privacy Policy',
+        ];
+
         $sidebar_link= 'front-homepage';
         return view('front.privacy_policy',[
-            'in_sidebar'  => $sidebar_link,
+            'in_sidebar'    => $sidebar_link,
+            'title'    => $text_parts['title']
         ]);
     }
 }
