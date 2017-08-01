@@ -232,8 +232,21 @@
                     var content = "";
                     content += "<ul>";
 
+                    var discount = 0;
+                    if (store.store_credit_discount_fixed)
+                    {
+                        discount = store.store_credit_value - store.store_credit_discount_fixed;
+                    }
+                    else if(store.store_credit_discount_percentage)
+                    {
+                        discount = store.store_credit_value - ( store.store_credit_value * store.store_credit_discount_percentage / 100);
+                    }
+                    else {
+                        discount = store.store_credit_value;
+                    }
+
                     content += "<li>Price without a discount : " + store.store_credit_value + "</li>";
-                    content += "<li>Paying Price : " + store.store_credit_discount_fixed + "</li>";
+                    content += "<li>Paying Price : " + discount + "</li>";
                     content += "<li>Available until : " + store.valid_to + "</li>";
 
                     content += "</ul>";
@@ -246,14 +259,24 @@
                 $.ajax({
                     url : '{{ route("front/buy_store_credit") }}',
                     method : 'post',
+                    cache: false,
                     data : {
                         store_credits_id : $(this).data("id")
                     },
                     success : function(data)
                     {
-                        if (data.redirect)
+                        if (data.success)
                         {
-                            window.location.href = data.redirect;
+                            $('#buy-store-credit').modal('hide');
+                            show_notification(data.title, data.errors, 'lime', 3500, 0);
+
+                            setTimeout(function(){
+                                window.location.href = data.redirect;
+                            }, 1500);
+                        }
+                        else
+                        {
+                            show_notification(data.title, data.errors, 'tangerine', 3500, 0);
                         }
                     }
                 });
