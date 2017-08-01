@@ -94,7 +94,9 @@ class Invoice extends Model
     public function update_payee_payer_information()
     {
         if (isset($this->user_id) && isset($this->invoice_type) && isset($this->invoice_reference_id)) {
+
             $user = User::with('ProfessionalDetail')->with('PersonalDetail')->where('id','=',$this->user_id)->get()->first();
+            
             $this->payer_info = json_encode($user);
             switch ($this->invoice_type) {
                 case 'booking_invoice':
@@ -138,6 +140,10 @@ class Invoice extends Model
                     $financial_profile = FinancialProfile::where('is_default',1)->first();
                     break;
 
+                case 'store_credit_pack_invoice':
+                    $financial_profile = FinancialProfile::where('is_default',1)->first();
+                    break;
+
                 default :
                     $financial_profile = null;
             }
@@ -146,7 +152,6 @@ class Invoice extends Model
         }
         return false;
     }
-
 
     public function save(array $options = []) {
         if (!isset($this->payee_info) && !isset($this->payer_info)) {
