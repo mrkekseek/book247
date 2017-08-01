@@ -143,10 +143,11 @@
                                                                             {{ $item->item_name }}
                                                                         </td>
                                                                         <td>
-                                                                           {{ $item->price }}
+                                                                           {{ number_format($item->price, 2) }}
                                                                         </td>
                                                                         <td>
-                                                                            {{ $item->price - (($item->discount * $item->price) / 100) }}
+                                                                            {{ number_format($item->price - (($item->discount * $item->price) / 100), 2) }}
+                                                                            
                                                                         </td>
                                                                         <td>
                                                                             {{ $item->quantity }}
@@ -158,10 +159,10 @@
                                                                             -
                                                                         </td>
                                                                         <td>
-                                                                            {{ $item->discount }} %
+                                                                            {{ number_format($item->discount, 2) }} %
                                                                         </td>
                                                                         <td>
-                                                                            {{ $item->total_price }}
+                                                                            {{ number_format($item->total_price, 2) }}
                                                                         </td>
                                                                     </tr>
                                                                 @endforeach
@@ -179,15 +180,15 @@
                                             <div class="well">
                                                 <div class="row static-info align-reverse">
                                                     <div class="col-md-8 name"> Sub - Total: </div>
-                                                    <div class="col-md-3 value"> {{ $sub_total }} {{\App\Http\Controllers\AppSettings::get_setting_value_by_name('finance_currency')}} </div>
+                                                    <div class="col-md-3 value"> {{ number_format($sub_total, 2) }} {{\App\Http\Controllers\AppSettings::get_setting_value_by_name('finance_currency')}} </div>
                                                 </div>
                                                 <div class="row static-info align-reverse">
                                                     <div class="col-md-8 name"> Discount: </div>
-                                                    <div class="col-md-3 value"> {{ $discount }} {{\App\Http\Controllers\AppSettings::get_setting_value_by_name('finance_currency')}}</div>
+                                                    <div class="col-md-3 value"> {{ number_format($discount, 2) }} {{\App\Http\Controllers\AppSettings::get_setting_value_by_name('finance_currency')}}</div>
                                                 </div>
                                                 <div class="row static-info align-reverse">
                                                     <div class="col-md-8 name"> Grand Total: </div>
-                                                    <div class="col-md-3 value"> {{ $grand_total }} {{\App\Http\Controllers\AppSettings::get_setting_value_by_name('finance_currency')}} </div>
+                                                    <div class="col-md-3 value"> {{ number_format($grand_total, 2) }} {{\App\Http\Controllers\AppSettings::get_setting_value_by_name('finance_currency')}} </div>
                                                 </div>
                                             </div>
                                         </div>
