@@ -161,7 +161,6 @@ return [
         Regulus\ActivityLog\ActivityLogServiceProvider::class,
         Barryvdh\Debugbar\ServiceProvider::class,
         Maatwebsite\Excel\ExcelServiceProvider::class,
-        Srmklive\PayPal\Providers\PayPalServiceProvider::class
     ],
 
     /*
@@ -213,7 +212,6 @@ return [
         'Debugbar'  => Barryvdh\Debugbar\Facade::class,
         'Excel'     => Maatwebsite\Excel\Facades\Excel::class,
         'Auth'     => App\Http\Libraries\Auth::class,
-        'PayPal' => Srmklive\PayPal\Facades\PayPal::class
     ],
 
 ];
