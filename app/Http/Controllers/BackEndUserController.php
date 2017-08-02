@@ -26,6 +26,8 @@ use Auth;
 use Hash;
 use Storage;
 use DB;
+use Illuminate\Support\Str;
+use Snowfire\Beautymail\Beautymail;
 use Mockery\CountValidator\Exception;
 use \App\Role;
 use Webpatser\Countries\Countries;
@@ -95,6 +97,118 @@ class BackEndUserController extends Controller
             'in_sidebar'  => $sidebar_link,
             'all_roles'   => $all_roles,
             'countries' => $countries,
+        ]);
+    }
+
+    private function createNewToken()
+    {
+        return hash_hmac('sha256', Str::random(40), \Config::get('app.key'));
+    }
+
+
+    public function password_reset_request(Request $request){
+        $vars = $request->only('email');
+
+        $validator = Validator::make($vars, [
+            'email' => 'required|email',
+        ]);
+
+        if ($validator->fails()){
+            return [
+                'success'   => false,
+                'errors'    => 'Invalid email used in password reset function',
+                'title'     => 'Invalid email'
+            ];
+        }
+
+        $user = User::where('username','=',$vars['email'])->get()->first();
+        if (empty($user))
+        {
+            if (Auth::check_exist_api_user($vars['email']))
+            {
+                $user = Auth::create_local_user(FALSE, $vars['email']);
+            }
+            else
+            {
+                return [
+                    'success'   => false,
+                    'errors'    => 'User not found.',
+                    'title'     => 'Error'
+                ];
+            }
+        }
+
+        $generateKey = $this->createNewToken();
+        $oldKey = DB::select('select * from password_resets where email = :email limit 1', ['email'=>$user->email]);
+        if (sizeof($oldKey)>0){
+            // we have old key so we delete it then insert the new key
+            DB::delete('delete from password_resets where email = :email limit 1', ['email'=>$user->email]);
+        }
+
+        DB::insert('insert into password_resets (email, token, created_at) values (:email, :key, :now_time)', ['email'=>$user->email, 'key'=>$generateKey, 'now_time'=>Carbon::now()]);
+
+        $data = [
+            'first_name'            => $user->first_name,
+            'middle_name'           => $user->middle_name,
+            'last_name'             => $user->last_name,
+            'company_name'          => AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title'),
+            'reset_password_link'   => '<a href="' . route('backend_reset_password', ['token'=>$generateKey]) . '" target="_blank">reset your password</a>'
+        ];
+
+        $template = EmailsController::build('Password reset – first step after reset password', $data);
+
+        if ($template)
+        {
+            $main_message = $template["message"];
+            $subject = AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title').' - Password reset request';
+        }
+        else
+        {
+            $main_message = 'This is a password reset request email sent by Booking System Agent. If you did not request a password reset, ignore this email.<br /><br />'.
+                'If this request was initiated by you, click the following link to <a href="'.route('backend_reset_password', ['token'=>$generateKey]).'" target="_blank">reset your password</a>.'.
+                'The link will be available for the next 60 minutes, after that you will need to request another password reset request.<br /><br />';
+            $main_message.= 'Once the password is reset you will get a new email with the outcome of your action, then you can login to the system with your newly created password.<br />'.
+                '<b>Remember this link is active for the next 60 minutes.</b>';
+            $subject = AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title').' - Password reset request';
+        }
+
+        $beauty_mail = app()->make(Beautymail::class);
+        $beauty_mail->send('emails.email_default_v2',
+            ['body_message' => $main_message, 'user'=>$user],
+            function($message) use ($user, $subject) {
+                $message
+                    ->from(AppSettings::get_setting_value_by_name('globalWebsite_system_email'))
+                    ->to($user->email, $user->first_name.' '.$user->middle_name.' '.$user->last_name)
+                    ->subject($subject);
+            });
+
+        return [
+            'success'   => true,
+            'title'     => 'Password reset action',
+            'message'   => 'If the email is registered in our system, an email will be sent in the next minute with the steps to reset your email'
+        ];
+    }
+
+    public function password_reset_form(Request $request, $token){
+
+        $breadcrumbs = [
+            'Home'      => route('admin'),
+            'Dashboard' => '',
+        ];
+
+        $text_parts  = [
+            'title'     => 'Home',
+            'subtitle'  => 'users dashboard',
+            'table_head_text1' => 'Dashboard Summary'
+        ];
+
+        $sidebar_link= 'front-password_reset';
+
+        return view('admin/password_reset/reset_password',[
+            'breadcrumbs' => $breadcrumbs,
+            'text_parts'  => $text_parts,
+            'in_sidebar'  => $sidebar_link,
+            'token'       => $token
         ]);
     }
 

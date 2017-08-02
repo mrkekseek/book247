@@ -416,6 +416,11 @@ class User extends Authenticatable
         }
     }
 
+    public static function get_numbver_by_id($id) {
+        $personal_details = PersonalDetail::where('user_id',$id)->get()->first();
+        return $personal_details->mobile_number;
+    }
+
     /**
      * @param string $ord - order the notes ascending or descending
      * @param string $status - all, read, unread

@@ -36,56 +36,37 @@
     <!-- BEGIN THEME LAYOUT STYLES -->
     <!-- END THEME LAYOUT STYLES -->
     <link rel="shortcut icon" href="favicon.ico" /> </head>
+
 <!-- END HEAD -->
 <body class=" login">
 <!-- BEGIN : LOGIN PAGE 5-1 -->
 <div class="user-login-5">
     <div class="row bs-reset">
         <div class="col-md-6 bs-reset">
-            <div class="login-bg" style="background-image:url(../assets/pages/img/login/bg1.jpg)">
-                <img class="login-logo" src="../assets/pages/img/login/logo_sqf.png" /> </div>
+            <div class="login-bg" style="background-image:url('{{ asset('assets/pages/img/login/bg1.jpg') }}')">
+                <img class="login-logo" src="{{ asset('assets/pages/img/login/logo_sqf.png') }}" /> </div>
         </div>
         <div class="col-md-6 login-container bs-reset">
             <div class="login-content">
-                <h1>Booking System Administration</h1>
-                <p> This page and the functionality on it is intended only for the employees of "Business Name" and is not for general use. If you got here by mistake please close the page and go on your way. Thanks!  </p>
-                <form class="login-form" method="post" action="{{ route('admin/login') }}">
+                <h1>Password Reset Form</h1>
+                <p> Use your registration email, the email that you received the reset password link, in the "Email Address" field.
+                    Use the same password in the two password fields, passwords must be at least 8 characters long.</p>
+                <form class="login-form" id="form_reset" method="post">
                     {!! csrf_field() !!}
-                    <div class="alert alert-danger display-hide">
-                        <button class="close" data-close="alert"></button>
-                        <span>Enter any email and password. </span>
-                    </div>
-                    <div class="row">
-                        <div class="col-xs-6">
-                            <input class="form-control form-control-solid placeholder-no-fix form-group{{ $errors->has('username') ? ' has-error' : '' }}" type="email" value="{{ old('username') }}" autocomplete="off" placeholder="Email" name="email" required/> </div>
-                        <div class="col-xs-6">
-                            <input class="form-control form-control-solid placeholder-no-fix form-group{{ $errors->has('password') ? ' has-error' : '' }}" type="password" autocomplete="off" placeholder="Password" name="password" required/> </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-4">
-                            <div class="rem-password">
-                                <p>Remember Me
-                                    <input type="checkbox" name="remember" class="rem-checkbox" />
-                                </p>
-                            </div>
-                        </div>
-                        <div class="col-sm-8 text-right">
-                            <div class="forgot-password">
-                                <a href="javascript:;" id="forget-password" class="forget-password">Forgot Password?</a>
-                            </div>
-                            <button class="btn blue" type="submit">Sign In</button>
-                        </div>
-                    </div>
-                </form>
-                <!-- BEGIN FORGOT PASSWORD FORM -->
-                <form class="forget-form" action="javascript:;" method="post">
                     <h3 class="font-green">Forgot Password ?</h3>
                     <p> Enter your e-mail address below to reset your password. </p>
                     <div class="form-group">
-                        <input class="form-control placeholder-no-fix form-group" type="text" autocomplete="off" placeholder="Email" name="forgot_email" /> </div>
+                        <input class="form-control placeholder-no-fix form-group" type="text" autocomplete="off" placeholder="Email" name="email" />
+                    </div>
+                    <div class="form-group">
+                        <input class="form-control placeholder-no-fix form-group" type="password" autocomplete="off" placeholder="Password" name="password" />
+                    </div>
+                    <div class="form-group">
+                        <input class="form-control placeholder-no-fix form-group" type="password" autocomplete="off" placeholder="Password" name="rpassword" />
+                    </div>
                     <div class="form-actions">
                         <button type="button" id="back-btn" class="btn grey btn-default">Back</button>
-                        <button type="submit" class="btn blue btn-success uppercase pull-right" onclick="javascript: request_reset_email($('input[name=forgot_email]').val());">Submit</button>
+                        <button type="button" class="btn blue btn-success uppercase pull-right" onclick="javascript: password_reset();">Submit</button>
                     </div>
                 </form>
                 <!-- END FORGOT PASSWORD FORM -->
@@ -150,6 +131,110 @@
 <script src="{{ asset('assets/pages/scripts/login-5.min.js') }}" type="text/javascript"></script>
 <script type="text/javascript">
 
+
+
+    var FormValidation = function () {
+        var handleValidation2 = function() {
+            var form2 = $('#form_reset');
+            var error2 = $('.alert-danger', form2);
+            var success2 = $('.alert-success', form2);
+
+            form2.validate({
+                errorElement: 'span', //default input error message container
+                errorClass: 'help-block help-block-error', // default input error message class
+                focusInvalid: false, // do not focus the last invalid input
+                ignore: "",  // validate all fields including form hidden input
+                rules: {
+                    email: {
+                        email: true,
+                        validate_email: true,
+                        required: true,
+                    },
+                    password: {
+                        required:true,
+                        minlength: 8,
+                        maxlength: 150,
+                    },
+                    rpassword: {
+                        required:true,
+                        minlength: 8,
+                        maxlength: 150,
+                        equalTo:"#InputPassword1"
+                    },
+                },
+
+                invalidHandler: function (event, validator) { //display error alert on form submit
+                    success2.hide();
+                    error2.show();
+                    App.scrollTo(error2, -200);
+                },
+
+                errorPlacement: function (error, element) { // render error placement for each input type
+                    var icon = $(element).parent('.input-icon').children('i');
+                    icon.removeClass('fa-check').addClass("fa-warning");
+                    icon.attr("data-original-title", error.text()).tooltip({'container': 'body'});
+                },
+
+                highlight: function (element) { // hightlight error inputs
+                    $(element)
+                            .closest('.form-group').removeClass("has-success").addClass('has-error'); // set error class to the control group
+                },
+
+                unhighlight: function (element) { // revert the change done by hightlight
+
+                },
+
+                success: function (label, element) {
+                    var icon = $(element).parent('.input-icon').children('i');
+                    $(element).closest('.form-group').removeClass('has-error').addClass('has-success'); // set success class to the control group
+                    icon.removeClass("fa-warning").addClass("fa-check");
+                },
+
+                submitHandler: function (form) {
+                    success2.show();
+                    error2.hide();
+                    password_reset(); // submit the form
+                }
+            });
+        }
+
+        return {
+            //main function to initiate the module
+            init: function () {
+                handleValidation2();
+            }
+        };
+    }();
+    $(document).ready(function(){
+        FormValidation.init();
+    });
+
+    function password_reset(){
+        $.ajax({
+            url: '{{ route('reset_password', ['token'=>$token]) }}',
+            type: "post",
+            cache: false,
+            data: {
+                'email': $('input[name="email"]').val(),
+                'password1': $('input[name="password"]').val(),
+                'password2': $('input[name="rpassword"]').val(),
+                '_token': '{{csrf_token()}}',
+                'token': "{{$token}}"
+            },
+            success: function (data) {
+                if (data.success==1) {
+                    show_notification(data.title, data.message, 'lime', 4500, 0);
+                    setTimeout(function(){
+                        location.href = "{{route('homepage')}}";
+                    },5000);
+                }
+                else{
+                    show_notification(data.title, data.errors, 'lemon', 3500, 0);
+                }
+            }
+        });
+    }
+
     function show_notification(title_heading, message, theme, life, sticky) {
         var settings = {
             theme: theme,
@@ -169,81 +254,34 @@
 
     @if($errors->has('email') || $errors->has('password'))
         setTimeout(function() {
-            show_notification('{{$errors->first('header')}}', '{{$errors->first('message_body')}}', 10000, false);
-        }, 500);
+        show_notification('{{$errors->first('header')}}', '{{$errors->first('message_body')}}', 10000, false);
+    }, 500);
     @endif
 
-    function request_reset_email(email){
-        $.ajax({
-            url: '{{ route('ajax/backend_password_reset_request') }}',
-            type: "post",
-            cache: false,
-            data: {
-                'email': $('input[name=forgot_email]').val(),
-                '_token': '{{ csrf_token() }}'
-            },
-            success: function (data) {
-                console
-                if (data.success==true) {
-                    show_notification(data.title, data.message, 'lime', 5000, 0);
-                    setTimeout(function(){
-                        window.location.reload(true);
-                    },5500);
-                }
-                else{
-                    show_notification(data.title, data.errors, 'lemon', 5000, 0);
-                }
-            }
-        });
-    }
+    {{--function request_reset_email(email){--}}
+        {{--$.ajax({--}}
+            {{--url: '{{ route('ajax/backend_password_reset_request') }}',--}}
+            {{--type: "post",--}}
+            {{--cache: false,--}}
+            {{--data: {--}}
+                {{--'email': $('input[name=forgot_email]').val(),--}}
+                {{--'_token': '{{ csrf_token() }}'--}}
+            {{--},--}}
+            {{--success: function (data) {--}}
+                {{--console--}}
+                {{--if (data.success==true) {--}}
+                    {{--show_notification(data.title, data.message, 'lime', 5000, 0);--}}
+                    {{--setTimeout(function(){--}}
+                        {{--window.location.reload(true);--}}
+                    {{--},5500);--}}
+                {{--}--}}
+                {{--else{--}}
+                    {{--show_notification(data.title, data.errors, 'lemon', 5000, 0);--}}
+                {{--}--}}
+            {{--}--}}
+        {{--});--}}
+    {{--}--}}
 
-    $('.forget-form').validate({
-        errorElement: 'span', //default input error message container
-        errorClass: 'help-block', // default input error message class
-        focusInvalid: false, // do not focus the last invalid input
-        rules: {
-            email: {
-                required: true
-            }
-        },
-
-        messages: {
-            email: {
-                required: "Email is required."
-            }
-        },
-
-        invalidHandler: function(event, validator) { //display error alert on form submit
-            $('.alert-danger', $('.login-form')).show();
-        },
-
-        highlight: function(element) { // hightlight error inputs
-            $(element)
-                    .closest('.form-group').addClass('has-error'); // set error class to the control group
-        },
-
-        success: function(label) {
-            label.closest('.form-group').removeClass('has-error');
-            label.remove();
-        },
-
-        errorPlacement: function(error, element) {
-            error.insertAfter(element.closest('.input-icon'));
-        },
-
-        submitHandler: function(form) {
-            request_reset_email($('input[name=email]').val());
-        }
-    });
-
-//    $('.forget-form input').keypress(function(e) {
-//        if (e.which == 13) {
-//            if ($('.forget-form').validate().form()) {
-//                $('.forget-form').submit(); //form validation success, call ajax form submit
-//            }
-//            return false;
-//        }
-//    });
 
 </script>
 <!-- END PAGE LEVEL SCRIPTS -->
