@@ -826,6 +826,10 @@ Route::group(['middleware'=>'web', 'prefix'=>'admin'], function(){
         'as'    => 'admin/membership_products/update',
         'uses'  => 'Federation\MembershipProductsController@update'
     ]);
+    Route::get('backend_reset_password/{token}', [
+        'as' => 'backend_reset_password',
+        'uses' => 'BackEndUserController@password_reset_form'
+    ]);
 
     /** Stop  - Membership Management */
 });
@@ -931,6 +935,7 @@ Route::group(['prefix'=>'front', 'middleware'=>'web'], function(){
         'as'    => 'reset_password',
         'uses'  => 'Federation\FrontEndUserController@password_reset_form'
     ]);
+
 
     Route::get('my_messages',[
         'as'    => 'my_messages',
@@ -1189,6 +1194,11 @@ Route::group(['prefix'=>'ajax', 'middleware' => 'web'], function(){
     Route::post('password_reset_request',[
         'as'    => 'ajax/password_reset_request',
         'uses'  => 'Federation\FrontEndUserController@password_reset_request'
+    ]);
+
+    Route::post('backend_password_reset_request',[
+        'as'    => 'ajax/backend_password_reset_request',
+        'uses'  => 'Federation\BackEndUserController@password_reset_request'
     ]);
 
     Route::post('general_note_add_new', [

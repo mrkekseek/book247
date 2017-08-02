@@ -833,6 +833,10 @@ else
             'as' => 'admin/invoices/payment/{id}',
             'uses' => 'BackEndUserController@invoice_payment'
         ]);
+        Route::get('backend_reset_password/{token}', [
+            'as' => 'backend_reset_password',
+            'uses' => 'BackEndUserController@password_reset_form'
+        ]);
 
         /** Stop  - Membership Management */
     });
@@ -976,6 +980,7 @@ else
             'as' => 'reset_password',
             'uses' => 'FrontEndUserController@password_reset_form'
         ]);
+
 
         Route::get('my_messages', [
             'as' => 'my_messages',
@@ -1195,6 +1200,11 @@ else
         Route::post('password_reset_request', [
             'as' => 'ajax/password_reset_request',
             'uses' => 'FrontEndUserController@password_reset_request'
+        ]);
+
+        Route::post('backend_password_reset_request',[
+            'as'    => 'ajax/backend_password_reset_request',
+            'uses'  => 'Federation\BackEndUserController@password_reset_request'
         ]);
 
         Route::post('general_note_add_new', [

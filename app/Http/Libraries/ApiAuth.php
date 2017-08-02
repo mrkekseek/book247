@@ -279,7 +279,6 @@ class ApiAuth
         return $hash;
     }
 
-
     private static function send_curl($data, $api_url, $method = 'GET')
     {
         if ($method == 'GET') {
@@ -317,12 +316,11 @@ class ApiAuth
     public static function generateKey($data)
     {
         if (is_array($data)) {
-            $data = json_encode($data, JSON_UNESCAPED_SLASHES);
+            $data = json_encode($data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
         }
         $hash = base64_encode(hash_hmac('sha256', $data, self::APIKEY, TRUE));
         return $hash;
     }
-
 
     public static function send($data, $api_url, $method = 'GET')
     {

@@ -2442,6 +2442,31 @@ class FrontEndUserController extends Controller
             $user_id = $id;
         }
 
+        $user_personal_details = PersonalDetail::where('user_id',$user->id)->get()->first();
+        if ($user_personal_details->mobile_number == $vars['phone_no']) {
+            return [
+                'success'=>'false',
+                'error'=> [
+                    'title'=>'An error occurred',
+                    'message'=>'You cannot add yourself as a friend.'
+                ]
+            ];
+        }
+
+        $user_friends_ids = UserFriends::where('user_id',$user->id)->get();
+        foreach ($user_friends_ids as $friend_id) {
+            if (User::get_numbver_by_id($friend_id->friend_id) == $vars['phone_no']) {
+                return [
+                    'success'=>'false',
+                    'error'=> [
+                        'title'=>'An error occurred',
+                        'message'=>'You already have this friend.'
+                    ]
+                ];
+            }
+        }
+
+
         $friends = PersonalDetail::where('mobile_number','=',$vars['phone_no'])->get()->first();
         if (sizeof($friends) == 0)
         {
