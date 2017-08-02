@@ -402,7 +402,7 @@ class MembershipPlansController extends Controller
             Cache::forget('membership_plans_table');
         }
 
-        if ($vars['price'] != $the_plan->price[0]->price) {
+        if ($vars['price'] != $the_plan->price->price) {
             $fillable = [
                 'membership_id' => $the_plan->id,
                 'price' => $vars['price'],
@@ -714,7 +714,7 @@ class MembershipPlansController extends Controller
             $details = [
                 'success'   => true,
                 'name'      => $the_plan->name,
-                'price'     => $the_plan->price[0]->price.' '.AppSettings::get_setting_value_by_name('finance_currency'),
+                'price'     => $the_plan->price->price.' '.AppSettings::get_setting_value_by_name('finance_currency'),
                 'invoice_time'  => $the_plan->plan_period,
                 'one_time_fee_name' => $the_plan->administration_fee_name,
                 'one_time_fee_value'=> $the_plan->administration_fee_amount.' '.AppSettings::get_setting_value_by_name('finance_currency'),

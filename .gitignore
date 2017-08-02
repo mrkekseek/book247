@@ -11,3 +11,5 @@ composer.lock
 /api/app/Cache.php
 storage/app/members/*
 storage/app/employees/*
+storage/exports/4_bookings_02-08-2017.xls
+storage/exports/5_bookings_02-08-2017.xls
