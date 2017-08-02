@@ -604,7 +604,7 @@ class MembershipController extends Controller
         ];
 
         // check if is an update or an downgrade
-        if ( $new_plan->price[0]->price >= $old_plan->price){
+        if ( $new_plan->price->price >= $old_plan->price){
             // we have an upgrade
             $additional_values['is_update'] = true;
             $return =  $member->update_membership_plan($old_plan, $start_date, $additional_values);
