@@ -159,10 +159,12 @@
                         <p>Can not book squash</p>
                         <div class="button-box">
                             <a href="#" data-id="payment_method" data-value="card" class="steps-button pay-but pay-with-card form-choice" style="background: {{ $membership->plan_calendar_color }}">PAY WITH A CARD</a>
-                            <a href="#" data-id="payment_method" data-value="paypal" class="steps-button pay-but pay-with-paypal form-choice">
-                                <span>PAY WITH</span>
-                                <img src="{{  asset('assets/iframe/img/icon-pay.png') }}" alt="PayPal">
-                            </a>
+                            @if($paypal_email)
+                                <a href="#" data-id="payment_method" data-value="paypal" class="steps-button pay-but pay-with-paypal form-choice">
+                                    <span>PAY WITH</span>
+                                    <img src="{{  asset('assets/iframe/img/icon-pay.png') }}" alt="PayPal">
+                                </a>
+                            @endif
                         </div>
                     </div>
                 @else
@@ -170,10 +172,12 @@
 
                         <div class="button-box">
                             <a href="#" data-id="payment_method" data-value="card" class="steps-button pay-but pay-with-card form-choice">PAY WITH A CARD</a>
-                            <a href="#" data-id="payment_method" data-value="paypal" class="steps-button pay-but pay-with-paypal form-choice">
-                                <span>PAY WITH</span>
-                                <img src="{{  asset('assets/iframe/img/icon-pay.png') }}" alt="PayPal">
-                            </a>
+                            @if($paypal_email)
+                                <a href="#" data-id="payment_method" data-value="paypal" class="steps-button pay-but pay-with-paypal form-choice">
+                                    <span>PAY WITH</span>
+                                    <img src="{{  asset('assets/iframe/img/icon-pay.png') }}" alt="PayPal">
+                                </a>
+                            @endif
                         </div>
                     </div>
                 @endif
