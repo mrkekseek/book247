@@ -273,7 +273,7 @@ class ApiAuth
     private static function generateApiKey($data)
     {
         if (is_array($data)) {
-            $data = json_encode($data, JSON_UNESCAPED_SLASHES);
+            $data = json_encode($data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
         }
         $hash = base64_encode(hash_hmac('sha256', $data, self::APIKEY, TRUE));
         return $hash;

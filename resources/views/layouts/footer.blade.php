@@ -72,8 +72,8 @@
 <!-- END PRE-FOOTER -->
 <!-- BEGIN INNER FOOTER -->
 <div class="page-footer">
-    <div class="container"> {{ \Carbon\Carbon::now()->format('Y') }} &copy; BookingSystem by SQF.
-        <a href="http://www.sqf.no" title="Company Website" target="_blank">Squash Fitness!</a>
+    <div class="container"> {{ \Carbon\Carbon::now()->format('Y') }} &copy; BookingSystem by
+        <a href="https://www.book247.com" title="Online Booking System" target="_blank">book247.com</a>
     </div>
 </div>
 <div class="scroll-to-top">

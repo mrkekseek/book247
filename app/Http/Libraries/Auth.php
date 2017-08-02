@@ -65,7 +65,7 @@ class Auth
                 return true;
             }
             else
-            {                
+            {
                 $personalDetail = PersonalDetail::where('user_id', $local_id)->first()->toArray();
                 $dataApiUser = $user + $personalDetail;
                 $new_sso_id = self::create_api_user($dataApiUser, $data['password']);                                    
@@ -105,7 +105,6 @@ class Auth
         if ($user) {
             $personalDetail = PersonalDetail::where('user_id', $uId)->first()->toArray();
             $dataApiUser = $user->toArray() + $personalDetail;
-
             $update_user = User::find($uId);
             $u = ApiAuth::checkExist($dataApiUser['username']);
             if ($u['success']) {
@@ -113,8 +112,9 @@ class Auth
                 $update_user->sso_user_id = $account['data']->id;
                 $update_user->save();
                 return true;
-            } else {
-                $new_sso_id = self::create_api_user($dataApiUser);
+            }
+            else {
+                $new_sso_id = self::create_api_user($dataApiUser, '1122tt5566');
                 if ($new_sso_id) {
                     $update_user->sso_user_id = $new_sso_id;
                     $update_user->save();
@@ -321,7 +321,7 @@ class Auth
             {
                 $user['date_of_birth'] = date('Y-m-d', strtotime($user['date_of_birth'])).'T00:00:00';
             }
-            $api_user = ApiAuth::account_create($user);                    
+            $api_user = ApiAuth::account_create($user);
             if ($api_user['success'])
             {
                 return $api_user['data'];                
