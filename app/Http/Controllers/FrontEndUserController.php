@@ -4274,6 +4274,16 @@ class FrontEndUserController extends Controller
                 'title'     => 'Invalid email provided'
             ];
         }
+        if (!$user->sso_user_id) {
+            $status = \App\Http\Libraries\Auth::synchronize_local_to_sso($user->id);
+            if (!$status) {
+                return json_encode([
+                    'success' => $status,
+                    'title'  => 'Error updating password',
+                    'errors' => 'Unavailable user.'
+                ]);
+            }
+        }
         $token = \App\Http\Libraries\ApiAuth::resetPassword($user->email)['data'];
         $apiData = [
             "Credentials" => [

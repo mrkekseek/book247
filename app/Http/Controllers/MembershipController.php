@@ -833,6 +833,11 @@ class MembershipController extends Controller
 
             if ($r->get('payment_method') == 'paypal') {
                 $u = User::where('sso_user_id',$r->get('user_id'))->first();
+                $user = [
+                    'first_name' => $u->first_name,
+                    'last_name' => $u->last_name,
+                    'email' => $u->email
+                ];
                 $userMembership = UserMembership::where([
                     ['user_id','=',$u->id],
                     ['membership_id','=',$r->get('membership')],
@@ -858,7 +863,7 @@ class MembershipController extends Controller
                     }
                     $iv = substr($key,0,16);
                 }
-                $custom = base64_encode(openssl_encrypt($custom,'AES-256-CBC',$key,0 ,$iv));
+                $custom = base64_encode(openssl_encrypt($custom,'AES-256-CBC',$key,0,$iv));
 
                 $invoices = InvoiceItem::where('invoice_id',$invoicePlan->invoice_id)->get();
 
@@ -867,7 +872,7 @@ class MembershipController extends Controller
                         'data' => [
                             'paying' => true,
                             'payment_method' => $r->get('payment_method'),
-                            'user' => $u,
+                            'user' => $user,
                             'invoices' => $invoices,
                             'custom' => $custom
 //                        'membership_name' => $membership->name,

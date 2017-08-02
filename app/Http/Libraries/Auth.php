@@ -98,7 +98,37 @@ class Auth
             return false;        
         }
     }
-    
+
+    public static function synchronize_local_to_sso($uId)
+    {
+        $user = User::find($uId);
+        if ($user) {
+            $personalDetail = PersonalDetail::where('user_id', $uId)->first()->toArray();
+            $dataApiUser = $user->toArray() + $personalDetail;
+
+            $update_user = User::find($uId);
+            $u = ApiAuth::checkExist($dataApiUser['username']);
+            if ($u['success']) {
+                $account = ApiAuth::accounts_get_by_username($dataApiUser['username']);
+                $update_user->sso_user_id = $account['data']->id;
+                $update_user->save();
+                return true;
+            } else {
+                $new_sso_id = self::create_api_user($dataApiUser);
+                if ($new_sso_id) {
+                    $update_user->sso_user_id = $new_sso_id;
+                    $update_user->save();
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        } else {
+            return false;
+        }
+
+    }
+
     public static function logout()
     {        
         $domain = self::get_domain();        
