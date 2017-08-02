@@ -1,5 +1,7 @@
 @extends('layouts.main')
 
+@section('title', 'Book247.com - Terms of Service')
+
 @section('themeGlobalStyle')
     <link href="{{ asset('assets/global/css/components-rounded.min.css') }}" rel="stylesheet" id="style_components" type="text/css" />
     <link href="{{ asset('assets/global/css/plugins.min.css') }}" rel="stylesheet" type="text/css" />
