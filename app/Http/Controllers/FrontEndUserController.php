@@ -2455,7 +2455,7 @@ class FrontEndUserController extends Controller
 
         $user_friends_ids = UserFriends::where('user_id',$user->id)->get();
         foreach ($user_friends_ids as $friend_id) {
-            if (User::get_numbver_by_id($friend_id->friend_id) == $vars['phone_no']) {
+            if (User::get_phone_number_by_id($friend_id->friend_id) == $vars['phone_no']) {
                 return [
                     'success'=>'false',
                     'error'=> [
