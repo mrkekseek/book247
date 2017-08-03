@@ -165,6 +165,10 @@ else
             'as' => 'admin/front_users/view_user/personal_info',
             'uses' => 'FrontEndUserController@update_personal_info',
         ]);
+        Route::post('admin/front_users/view_user/{id}/allowed_personal_info', [
+            'as' => 'admin/front_users/view_user/allowed_personal_info',
+            'uses' => 'FrontEndUserController@update_allowed_personal_info',
+        ]);
 
         Route::post('admin/back_users/view_user/{id}/personal_info', [
             'as' => 'admin/back_users/view_user/personal_info',
@@ -1215,6 +1219,16 @@ else
         Route::post('general_note_add_new', [
             'as' => 'ajax/general_note_add_new',
             'uses' => 'GeneralNotesController@create'
+        ]);
+
+        Route::post('remove_member', [
+            'as' => 'ajax/remove_member',
+            'uses' => 'BackEndUserController@remove_member'
+        ]);
+
+        Route::post('back_member_change_status', [
+            'as' => 'ajax/back_member_change_status',
+            'uses' => 'BackEndUserController@activate_deactivate_member'
         ]);
 
         Route::post('internal_note_status_change', [
