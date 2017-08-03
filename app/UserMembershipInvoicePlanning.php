@@ -129,7 +129,7 @@ class UserMembershipInvoicePlanning extends Model
             $start_day = Carbon::createFromFormat('Y-m-d H:i:s', $day_start.' 00:00:00');
 
             if ($invoice_period==7 || $invoice_period==14){
-                $start_day->addDays($invoice_period * i);
+                $start_day->addDays($invoice_period * $i);
                 $end_day = Carbon::instance($start_day)->addDays($invoice_period)->addDays(-1);
             }
             elseif($invoice_period==30 || $invoice_period==90 || $invoice_period==180){
