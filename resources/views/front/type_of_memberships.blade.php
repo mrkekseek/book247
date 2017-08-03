@@ -71,12 +71,13 @@
                                                             {{ $p->plan_period }} Days
                                                         @elseif( in_array($p->plan_period,[30, 90, 180]))
                                                             {{ $p->plan_period/30 }} Month{{$p->plan_period==30?'':'s'}}
-                                                        @elseif( in_array($p->plan_period, 360) )
+                                                        @elseif( in_array($p->plan_period, [360]) )
                                                             one year
                                                         @else
                                                             lifetime
                                                         @endif
                                                     </div>
+
                                                 </div>
                                                 <div class="row mobile-padding">
                                                     <div class="col-xs-6 col-xs-offset-1 text-left mobile-padding">
@@ -218,11 +219,11 @@
                     {
                         plan_period = plan.plan_period + ' Days';
                     }
-                    else if([30, 90, 180].indexOf(plan.plan_period) + 1)
+                    else if(['30', '90', '180'].indexOf(plan.plan_period) + 1)
                     {
-                        plan_period = (plan.plan_period / 30) + 'Month' + (plan.plan_period == 30 ? '' : 's');
+                        plan_period = (plan.plan_period * 1 / 30) + 'Month' + (plan.plan_period * 1 == 30 ? '' : 's');
                     }
-                    else if(plan.plan_period(360))
+					else if(['360'].indexOf(plan.plan_period) + 1)
                     {
                         plan_period = 'one year';
                     }
