@@ -110,6 +110,15 @@ class User extends Authenticatable
         }
     }
 
+    public function is_backend_user() {
+        if ( $this->hasRole('front-user') || $this->hasRole('front-member') || $this->status == "deleted") {
+            return false;
+        }
+        else {
+            return true;
+        }
+    }
+
     public function is_front_user($all = true) {        
         if ( ($this->hasRole('front-user') || $this->hasRole('front-member')) && ($this->status == "active" || $all )) {
             return true;

@@ -81,7 +81,7 @@
                 <div class="profile-content">
                     <div class="row">
                         <div class="col-md-12">
-                            <div class="portlet light bordered">
+                            <div id="main_form" class="portlet light bordered">
                                 <div class="portlet-title tabbable-line">
                                     <div class="caption caption-md">
                                         <i class="icon-globe theme-font hide"></i>
@@ -113,16 +113,16 @@
                                                     <button class="close" data-close="alert"></button> Your form validation is successful! </div>
                                                 <div class="form-group">
                                                     <label class="control-label">First Name</label>
-                                                    <input type="text" name="personalFirstName" id="personalFirstName" placeholder="First Name" value="{{$user->first_name}}" class="form-control" /> </div>
+                                                    <input type="text" name="personalFirstName" id="personalFirstName" {{ isset($user->sso_user_id)?'disabled':'' }} placeholder="First Name" value="{{$user->first_name}}" class="form-control" /> </div>
                                                 <div class="form-group">
                                                     <label class="control-label">Middle Name</label>
-                                                    <input type="text" name="personalMiddleName" id="personalMiddleName" placeholder="Middle Name" value="{{$user->middle_name}}" class="form-control" /> </div>
+                                                    <input type="text" name="personalMiddleName" id="personalMiddleName" {{ isset($user->sso_user_id)?'disabled':'' }} placeholder="Middle Name" value="{{$user->middle_name}}" class="form-control" /> </div>
                                                 <div class="form-group">
                                                     <label class="control-label">Last Name</label>
-                                                    <input type="text" name="personalLastName" id="personalLastName" placeholder="Last Name" value="{{$user->last_name}}" class="form-control" /> </div>
+                                                    <input type="text" name="personalLastName" id="personalLastName" {{ isset($user->sso_user_id)?'disabled':'' }} placeholder="Last Name" value="{{$user->last_name}}" class="form-control" /> </div>
                                                 <div class="form-group">
                                                     <label class="control-label">Gender</label>
-                                                    <select name="gender" class="form-control">
+                                                    <select name="gender" {{ isset($user->sso_user_id)?'disabled':'' }} class="form-control">
                                                         <option value>Select Gender</option>
                                                         <option {!! $user->gender=='F'?'selected="selected"':'' !!} value="F"> Female </option>
                                                         <option {!! $user->gender=='M'?'selected="selected"':'' !!} value="M"> Male </option>
@@ -130,7 +130,7 @@
                                                 </div>
                                                 <div class="form-group">
                                                     <label class="control-label">Citizenship</label>
-                                                    <select name="personalCountry" id="personalCountry" class="form-control">
+                                                    <select name="personalCountry" {{ isset($user->sso_user_id)?'disabled':'' }} id="personalCountry" class="form-control">
                                                         @foreach ($countries as $country)
                                                             <option value="{{ $country->id }}" {!! ($country->id==$user->country_id ? ' selected="selected" ' : '') !!}>{{ $country->citizenship }}</option>
                                                         @endforeach
@@ -139,7 +139,7 @@
                                                     <label class="control-label">Date of Birth</label>
                                                     <div class="control-label">
                                                         <div class="input-group input-medium date date-picker" data-date="{{ @$personal->dob_format }}" data-date-format="yyyy-mm-dd" data-date-end-date="-0d" data-date-start-view="decades">
-                                                            <input type="text" class="form-control" name="personalDOB" id="personalDOB" value="{{ @$personal->dob_format }}" readonly>
+                                                            <input type="text" class="form-control" {{ isset($user->sso_user_id)?'disabled':'' }} name="personalDOB" id="personalDOB" value="{{ @$personal->dob_format }}" readonly>
                                                         <span class="input-group-btn">
                                                             <button class="btn default" type="button">
                                                                 <i class="fa fa-calendar"></i>
@@ -150,17 +150,17 @@
                                                 </div>
                                                 <div class="form-group">
                                                     <label class="control-label">Registration Email</label>
-                                                    <input type="text" name="personalEmail" id="personalEmail" placeholder="Personal Email Address" class="form-control" value="{{@$personal->personal_email}}" /> </div>
+                                                    <input type="text" name="personalEmail" id="personalEmail" {{ isset($user->sso_user_id)?'disabled':'' }} placeholder="Personal Email Address" class="form-control" value="{{@$personal->personal_email}}" /> </div>
                                                 <div class="form-group">
                                                     <label class="control-label">Mobile Phone Number</label>
-                                                    <input type="text" name="personalPhone" id="personalPhone" placeholder="+1 234 567 8910 (6284)" class="form-control" value="{{@$personal->mobile_number}}" /> </div>
+                                                    <input type="text" name="personalPhone" id="personalPhone" {{ isset($user->sso_user_id)?'disabled':'' }} placeholder="+1 234 567 8910 (6284)" class="form-control" value="{{@$personal->mobile_number}}" /> </div>
                                                 <div class="form-group">
                                                     <label class="control-label">About user information</label>
                                                     <textarea class="form-control" rows="3" placeholder="About Me!!!" id="personalAbout" name="personalAbout">{{@$personal->about_info}}</textarea>
                                                 </div>
                                                 <div class="form-group">
                                                     <label class="control-label">Contract Signed Location</label>
-                                                    <input type="text" placeholder="No signed location defined" class="form-control" value="{{@$user->get_signed_location_name()}}" readonly disabled /> </div>
+                                                    <input type="text" placeholder="No signed location defined" class="form-control" disabled value="{{@$user->get_signed_location_name()}}" /> </div>
                                                 <div class="form-group">
                                                     <label class="control-label">Preferred Location</label>
                                                     <select name="preferredLocation" id="preferredLocation" class="form-control">
@@ -171,7 +171,11 @@
                                                     </select>
                                                 </div>
                                                 <div class="margiv-top-10">
-                                                    <a href="javascript:;" onclick="javascript: $('#form_acc_personal').submit();" class="btn green"> Update Details </a>
+                                                    @if ($user->sso_user_id)
+                                                        <a href="javascript:;" onclick="update_editable_information();" class="btn green"> Update Details </a>
+                                                    @else
+                                                        <a href="javascript:;" onclick="javascript: $('#form_acc_personal').submit();" class="btn green"> Update Details </a>
+                                                    @endif
                                                     <a href="javascript:;" class="btn default"> Cancel </a>
                                                 </div>
                                             </form>
@@ -864,6 +868,33 @@
         }
 
         /* Done */
+        function update_editable_information(e) {
+            $('#main_form').block({
+                message: '<h1>Processing</h1>',
+                css: { border: '3px solid #a00' }
+            });
+            $.ajax({
+                url: '{{route('admin/front_users/view_user/allowed_personal_info', ['id' => $user->id])}}',
+                type: "post",
+                data: {
+                    'about_info': $('textarea[name=personalAbout]').val(),
+                    'preferred_location': $('select[name=preferredLocation]').val()
+                },
+                success: function (data) {
+                    if (data.success) {
+                        show_notification(data.title, data.message, 'lime', 3500, 0);
+                    }
+                    else {
+                        show_notification(data.title, data.errors, 'tangerine', 3500, 0);
+                    }
+                    $('#main_form').unblock();
+                }
+            });
+        }
+
+
+
+
         function update_passwd(){
             $.ajax({
                 url: '{{route('admin/front_users/view_user/password_update', ['id'=>$user->id])}}',

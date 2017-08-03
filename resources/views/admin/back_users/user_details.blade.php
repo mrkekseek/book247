@@ -28,6 +28,51 @@
 
 @section('pageContentBody')
     <div class="page-content">
+        <div class="modal fade" id="remove_member" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                        <h4 class="modal-title"> Remove member </h4>
+                    </div>
+                    <div class="modal-body form-horizontal">
+                        Do you really want to remove this member?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn green btn_modify_booking" onclick="javascript:remove_member();">Remove</button>
+                        <button type="button" class="btn dark btn-outline" data-dismiss="modal">Return</button>
+                    </div>
+                </div>
+                <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+        </div>
+        <div class="modal fade" id="change_member_status" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form role="form" id="form_account_change_status" action="#">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                            <h4 class="modal-title"> {{ $user->status=='active'?'Suspend ':'Reactivate ' }} member </h4>
+                        </div>
+                        <div class="modal-body form-horizontal">
+                            @if($user->status=='active')
+                                <input type="hidden" name="action" value="suspend"/>
+                            @else
+                                <input type="hidden" name="action" value="reactivate"/>
+                            @endif
+                            {{ $user->status=='active'?'Do you really want to suspend this user?':'Do you really want to reactivate this user' }}
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" onclick="javascript:change_member_status();" class="btn green btn_modify_booking">{{ $user->status=='active'?'Suspend User':'Reactivate User' }}</button>
+                            <button type="button" class="btn dark btn-outline" data-dismiss="modal">Return</button>
+                        </div>
+                    </form>
+                </div>
+                <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+        </div>
         <!-- BEGIN PAGE HEAD-->
         <div class="page-head">
             <!-- BEGIN PAGE TITLE -->
@@ -64,6 +109,12 @@
                                     <li>
                                         <img src="{{$avatar}}" class="img-responsive pic-bordered" alt="" />
                                         <a data-toggle="modal" href="#draggable" class="profile-edit"> edit </a>
+                                    </li>
+                                    <li>
+                                        <a class="red remove_member" href="javascript:;" >Remove</a>
+                                    </li>
+                                    <li>
+                                        <a class="{{ $user->status=='active'?'yellow-mint':'green-jungle' }} member_suspend"  href="javascript:;">{{ $user->status=='active'?'Suspend ':'Reactivate ' }} Member</a>
                                     </li>
                                     <li>
                                         <a href="javascript:;"> Bookings </a>
@@ -1526,6 +1577,61 @@
                     else{
                         show_notification(data.title, data.errors, 'ruby', 3500, 0);
                     }
+                }
+            });
+        }
+
+        $(".member_suspend").on("click", function(){
+            $('#change_member_status').modal('show');
+        });
+
+        function change_member_status(){
+            $.ajax({
+                url: '{{route('ajax/back_member_change_status')}}',
+                type: "post",
+                cache: false,
+                data: {
+                    'memberID':         '{{ $user->id }}',
+                    'action':  $('#form_account_change_status').find('input[name="action"]').val()
+                },
+                success: function (data) {
+                    if (data.success) {
+                        $('#change_member_status').modal('hide');
+                        show_notification(data.title, data.message, 'lemon', 3500, 0);
+                        location.reload();
+                    }
+                    else{
+                        show_notification(data.title, data.errors, 'ruby', 3500, 0);
+                    }
+                }
+            });
+        }
+
+        $(".remove_member").on("click", function(){
+            $('#remove_member').modal('show');
+        });
+
+        function remove_member(){
+
+            $.ajax({
+                url: '{{route('ajax/remove_member')}}',
+                type: "post",
+                cache: false,
+                data: {
+                    'memberID': '{{ $user->id }}'
+                },
+                success: function (data) {
+                    if (data.success) {
+                        show_notification(data.title, data.message, 'lemon', 3500, 0);
+                        setTimeout(function(){
+                            location.reload();
+                        }, 1000);
+                    }
+                    else{
+                        show_notification(data.title, data.errors, 'ruby', 3500, 0);
+                    }
+
+                    $('#general_message_box').modal('hide');
                 }
             });
         }

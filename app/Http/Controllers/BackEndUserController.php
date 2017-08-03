@@ -353,7 +353,7 @@ class BackEndUserController extends Controller
         }
 
         $back_user = User::with('roles')->find($id);
-        if ($back_user->is_back_user() === false){
+        if ($back_user->is_backend_user() === false){
             return redirect()->intended(route('admin/error/not_found'));
         }
 
@@ -440,6 +440,77 @@ class BackEndUserController extends Controller
     public function edit($id)
     {
         //
+    }
+
+    public function remove_member(Request $request)
+    {
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
+            return redirect()->intended(route('admin/login'));
+        } elseif (!$user->can('manage-employees') || $user->id == $request->get('memberID')){
+            /*return [
+                'success'   => false,
+                'errors'    => 'You don\'t have permission to access this page',
+                'title'     => 'Permission Error'];*/
+            return redirect()->intended(route('admin/error/permission_denied'));
+        }
+
+        $back_user = User::find($request->get('memberID'));
+        if ($back_user) {
+            $back_user->status = 'deleted';
+            $back_user->save();
+            return [
+                'success' => true,
+                'title'   => 'User removed',
+                'message' => 'Backend user was removed'
+            ];
+        } else {
+            return [
+                'success' => false,
+                'title'   => 'Invalid user',
+                'message' => 'This is not a valid user'
+            ];
+        }
+
+    }
+
+
+    public function activate_deactivate_member(Request $request)
+    {
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
+            return redirect()->intended(route('admin/login'));
+        } elseif (!$user->can('manage-employees') || $user->id == $request->get('memberID')){
+            /*return [
+                'success'   => false,
+                'errors'    => 'You don\'t have permission to access this page',
+                'title'     => 'Permission Error'];*/
+            return redirect()->intended(route('admin/error/permission_denied'));
+        }
+        $back_user = User::find($request->get('memberID'));
+        if($back_user) {
+            if ($request->get('action') == 'suspend') {
+                $back_user->status = 'suspended';
+                $message = "User suspended";
+            } elseif ($request->get('action') == 'reactivate') {
+                $back_user->status = 'active';
+                $message = "User reactivated";
+            }
+            $back_user->save();
+            return [
+                'success' => true,
+                'title'   => 'Success',
+                'message' => $message
+            ];
+
+        } else {
+            return [
+                'success' => false,
+                'title'   => 'Invalid user',
+                'message' => 'This is not a valid user'
+            ];
+        }
+
     }
 
     /**

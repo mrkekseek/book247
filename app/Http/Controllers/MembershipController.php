@@ -752,7 +752,15 @@ class MembershipController extends Controller
 
         $synchronized = ApiAuth::synchronize($sso_id);
         if($synchronized != true) {
-            return $synchronized;
+            if (is_string($synchronized)) {
+                return [
+                    'success' => false,
+                    'message' => $synchronized
+                ];
+            } else {
+                return $synchronized;
+            }
+
         }
         $redirect_url = Input::get('redirect_url',false);
         $user = User::where('sso_user_id',$sso_id)->first();

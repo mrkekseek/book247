@@ -1,0 +1,47 @@
+.profile ul.profile-nav li a.red {
+    color: #fff;
+    background-color: #e7505a;
+    border-color: #e7505a
+}
+
+.profile ul.profile-nav li a.red:hover {
+    color: #fff;
+    background-color: #e12330;
+    border-color: #dc1e2b;
+    text-decoration: none;
+}
+
+.profile ul.profile-nav li a.yellow-mint {
+    color: #fff;
+    background-color: #c5b96b;
+    border-color: #c5b96b
+}
+
+.profile ul.profile-nav li a.yellow-mint:hover {
+    color: #fff;
+    background-color: #b6a747;
+    border-color: #aea044;
+    text-decoration: none;
+}
+
+.profile ul.profile-nav li a.green-jungle {
+    color: #FFF;
+    background-color: #26C281;
+    border-color: #26C281;
+}
+
+.profile ul.profile-nav li a.green-jungle:hover {
+    color: #FFF;
+    background-color: #187a51;
+    border-color: #11573a;
+    text-decoration: none;
+}
+
+
+.profile ul.profile-nav li a:focus {
+    text-decoration: none;
+}
+
+.profile ul.profile-nav li a:active {
+    text-decoration: none;
+}
