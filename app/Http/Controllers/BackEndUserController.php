@@ -353,7 +353,7 @@ class BackEndUserController extends Controller
         }
 
         $back_user = User::with('roles')->find($id);
-        if ($back_user->is_backend_user() === false){
+        if ($back_user->is_back_user() === false){
             return redirect()->intended(route('admin/error/not_found'));
         }
 
@@ -605,8 +605,8 @@ class BackEndUserController extends Controller
         $userCh = User::find($id);
 
         $updateRules = [
-            'first_name'=> 'required|min:4|max:150',
-            'last_name' => 'required|min:4|max:150',
+            'first_name'=> 'required|min:2|max:150',
+            'last_name' => 'required|min:2|max:150',
             'gender'    => 'in:M,F'
         ];
         $validator = Validator::make($userVars, $updateRules, User::$messages, User::$attributeNames);

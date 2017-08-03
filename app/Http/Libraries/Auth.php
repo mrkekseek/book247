@@ -24,7 +24,7 @@ class Auth
     public static function user()
     {   
         self::set_session();
-        $session_sso = Session::get('sso_user_id');                       
+        $session_sso = Session::get('sso_user_id');
         if (!empty($session_sso))
         {   
             $user_locale = User::where('sso_user_id',$session_sso)->first();            
@@ -51,9 +51,10 @@ class Auth
     public static function attempt($data = [])
     {
         if (AuthLocal::once(['username' => $data['email'], 'password' => $data['password'], 'sso_user_id' => NULL]) || AuthLocal::once(['email' => $data['email'], 'password' => $data['password'], 'sso_user_id' => NULL]))
-        {   
+        {
             $local_id = AuthLocal::user()->id;
-            $user = User::find($local_id)->toArray();                                  
+            $user = User::find($local_id)->toArray();
+
             if (self::check_exist_api_user($user['username']))
             {   
                 $sso_user = ApiAuth::accounts_get_by_username($user['username']);
@@ -85,7 +86,7 @@ class Auth
             $sso_user = ApiAuth::accounts_get_by_username($data['email']);            
             $sso_user_id = $sso_user['data']->id;
             $exist = User::where('sso_user_id',$sso_user_id)->first();
-            if ( ! empty($exist))
+            if ( ! empty($exist) )
             {
                 self::set_local_user($sso_user_id);
                 return true;

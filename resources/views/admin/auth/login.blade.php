@@ -273,7 +273,6 @@
         Login.init();
     });
 
-
     function show_notification(title_heading, message, theme, life, sticky) {
         var settings = {
             theme: theme,
@@ -291,9 +290,9 @@
         $.notific8($.trim(message), settings);
     }
 
-    @if($errors->has('email') || $errors->has('password'))
+    @if(strlen($errors->first('message_body'))>0)
         setTimeout(function() {
-            show_notification('{{$errors->first('header')}}', '{{$errors->first('message_body')}}', 10000, false);
+            show_notification('{{$errors->first('header')}}', '{{$errors->first('message_body')}}', 'ruby', 10000, true);
         }, 500);
     @endif
 
