@@ -428,6 +428,18 @@
                     submitHandler: function (form) {
                        $("#errors_list").empty();
                         success1.show();
+                        var message =  "<div class='loading-message loading-message-boxed'>	<img src='/assets/global/img/loading-spinner-grey.gif' align=''><span>&nbsp;&nbsp;Processing...</span></div>";
+                        $('.profile-content').block({ 
+                            message: message, 
+                            overlayCSS: { 
+                                backgroundColor: '#555555',
+                                opacity : '0.05'
+                            },
+                            css: {
+                                border: 'none',
+                                backgroundColor: 'none'
+                            }
+                        }); 
                         store_account_personal(); // submit the form
                     }
                 });
@@ -608,6 +620,19 @@
                     submitHandler: function (form) {
                         success4.show();
                         error4.hide();
+                        var message =  "<div class='loading-message loading-message-boxed'>	<img src='/assets/global/img/loading-spinner-grey.gif' align=''><span>&nbsp;&nbsp;Processing...</span></div>";
+                        $('.profile-content').block({ 
+                            message: message, 
+                            overlayCSS: { 
+                                backgroundColor: '#555555',
+                                opacity : '0.05'
+                            },
+                            css: {
+                                border: 'none',
+                                backgroundColor: 'none'
+                            }
+                        });
+                        
                         update_passwd(); // submit the form
                     }
                 });
@@ -785,9 +810,8 @@
                 success: function(data){
                     if (data.success) {
                         show_notification(data.title, data.message, 'lime', 3500, 0);
-                        setTimeout(function(){
-                            location.reload();
-                        }, 1500);
+                        $('.profile-content').unblock();
+                        $('#form_acc_personal .alert-success').hide();
                     }
                     else{
                         var msg_error = '';
@@ -820,6 +844,9 @@
 
                         $('#new_password1').val('');
                         $('#new_password2').val('');
+                        
+                        $('.profile-content').unblock();
+                        $('#form_password_update .alert-success').hide();
                     }
                     else{
                         show_notification(data.title, data.errors, 'tangerine', 3500, 0);
