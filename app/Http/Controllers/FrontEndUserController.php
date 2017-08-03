@@ -2738,6 +2738,53 @@ class FrontEndUserController extends Controller
         }
     }
 
+    public function singup_membership_plan_ajax_call(Request $request)
+    {
+        $user = Auth::user();
+        if ( ! $user || ! $user->is_front_user())
+        {
+            return [
+                'success'   => false,
+                'title'     => 'An error occurred',
+                'errors'    => 'You need to be logged in to have access to this function'
+            ];
+        }
+
+        $validator = Validator::make($request->all(), [
+            'membership_id' => 'required',
+            'terms_and_condition' => 'required|in:true',
+        ]);
+
+        if ($validator->fails()) {
+            return [
+                    'success'   => false,
+                    'title'     => 'Singup membership',
+                    'errors'    => 'Error validation'
+                ];
+        }
+
+        $vars = $request->only('membership_id', 'terms_and_condition');
+        $plan = MembershipPlan::where('id', '=', $vars['membership_id'])->first();
+
+        if( ! $user->attach_membership_plan($plan, $user, Carbon::today()->format('Y-m-d'), 0, 'active', 'panding'))
+        {
+            return [
+                'success'   => false,
+                'title'     => 'Singup membership',
+                'errors'    => 'Error singup membership plan'
+            ];
+        }
+
+        $last_invoice = Invoice::where('user_id', '=', Auth::user()->id)->orderBy('id', 'desc')->first()->invoice_number;
+
+        return [
+            'success'   => true,
+            'title'     => 'Singup membership',
+            'errors'    => 'Success singup membership plan',
+            'redirect'  => route('front/finance/invoice/id', ['id' => $last_invoice])
+        ];
+    }
+
     public function new_member_registration(Request $request){
         $user = Auth::user();
         if ($user && $user->is_back_user()) {
