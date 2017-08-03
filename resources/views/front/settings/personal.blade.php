@@ -849,6 +849,9 @@
                         $('#form_password_update .alert-success').hide();
                     }
                     else{
+                        $('.profile-content').unblock();
+                        $('#form_password_update .alert-success').hide();
+                        $('#form_password_update .alert-danger').show();
                         show_notification(data.title, data.errors, 'tangerine', 3500, 0);
                     }
                 }
