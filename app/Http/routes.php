@@ -938,6 +938,11 @@ else
             'uses' => 'FrontEndUserController@buy_store_credit_ajax_call'
         ]);
 
+        Route::post('singup_membership_plan', [
+            'as' => 'front/singup_membership_plan',
+            'uses' => 'FrontEndUserController@singup_membership_plan_ajax_call'
+        ]);
+
         Route::get('calendar_booking/{day}/', [
             'as' => 'front_calendar_booking',
             'uses' => 'BookingController@front_bookings_calendar_view'
@@ -1005,12 +1010,12 @@ else
             'as' => 'back_error_404',
             'uses' => 'AdminController@error_404'
         ]);
-        
+
         Route::get('terms_of_service', [
             'as' => 'terms_of_service',
             'uses' => 'FrontPageController@terms_of_service'
         ]);
-        
+
         Route::get('privacy_policy', [
             'as' => 'privacy_policy',
             'uses' => 'FrontPageController@privacy_policy'

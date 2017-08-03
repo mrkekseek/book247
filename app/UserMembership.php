@@ -225,7 +225,7 @@ class UserMembership extends Model
 
         $validator = Validator::make($fillable, UserMembership::rules('POST'), UserMembership::$message, UserMembership::$attributeNames);
         if ($validator->fails()){
-            //xdebug_var_dump($validator->getMessageBag()->toArray()); exit;
+            xdebug_var_dump($validator->getMessageBag()->toArray()); exit;
             return false;
         }
 

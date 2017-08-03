@@ -188,6 +188,11 @@ class User extends Authenticatable
         return $membership;
     }
 
+    public function get_newest_pending_membership(){
+        $membership = UserMembership::where('user_id','=',$this->id)->whereIn('status',['pending'])->first();
+        return $membership;
+    }
+
     public function attach_membership_plan(MembershipPlan $the_plan, User $signed_by, $day_start = false, $contract_number = 0, $status = 'active'){
         if ($this->is_back_user()){
             return false;
@@ -195,7 +200,8 @@ class User extends Authenticatable
 
         $user_plan = new UserMembership();
         //$user_plan->assign_plan($this, $the_plan, $signed_by);
-        if ( $user_plan->create_new($this, $the_plan, $signed_by, $day_start, $contract_number,$status) ){
+
+        if ( $user_plan->create_new($this, $the_plan, $signed_by, $day_start, $status, $contract_number) ){
             return true;
         }
         else{
@@ -425,9 +431,14 @@ class User extends Authenticatable
         }
     }
 
-    public static function get_numbver_by_id($id) {
-        $personal_details = PersonalDetail::where('user_id',$id)->get()->first();
-        return $personal_details->mobile_number;
+    public static function get_phone_number_by_id($id) {
+        $personal_details = PersonalDetail::where('user_id',$id)->first();
+        if ($personal_details){
+            return $personal_details->mobile_number;
+        }
+        else{
+            return false;
+        }
     }
 
     /**
