@@ -191,7 +191,8 @@ class User extends Authenticatable
 
         $user_plan = new UserMembership();
         //$user_plan->assign_plan($this, $the_plan, $signed_by);
-        if ( $user_plan->create_new($this, $the_plan, $signed_by, $day_start, $contract_number,$status) ){
+
+        if ( $user_plan->create_new($this, $the_plan, $signed_by, $day_start, $status, $contract_number) ){
             return true;
         }
         else{
