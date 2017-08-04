@@ -42,11 +42,10 @@ class AdminController extends Base
 //        $x = AnyApi::send_curl('http://rankedinbookingsso-test.azurewebsites.net',[],'/api/Accounts/28','GET');
 
 
-        if($r->method() == "POST"){
-            return json_encode($r->all());
-        }
-        $result =  Api::send_curl(['memberSSOid' => 78 ,'membership_id' => null, 'account_key' => AppSettings::get_setting_value_by_name('globalWebsite_rankedin_integration_key'), 'return_url' => "https://rankedin.com/Tournament/Index/408" ],'federation_buy_license','POST');
-
+//        if($r->method() == "POST"){
+//            return json_encode($r->all());
+//        }
+        $result =  Api::send_curl(['memberSSOid' => 165 ,'membership_id' => null, 'account_key' => '45788-52757-20554-64471-70259', 'return_url' => "https://rankedin.com/Tournament/Index/408" ],'federation_buy_license','POST');
         if(isset($result->iFrameUrl)) {
             return view('development',['link' => $result->iFrameUrl]);
         } else {
@@ -56,6 +55,12 @@ class AdminController extends Base
                 return json_encode($result);
             }
         }
+
+//        return view('development');
+    }
+
+    public function ajaxPay(Request $r) {
+
     }
 
 

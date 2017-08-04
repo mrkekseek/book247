@@ -447,12 +447,17 @@ class BackEndUserController extends Controller
         $user = Auth::user();
         if (!$user || !$user->is_back_user()) {
             return redirect()->intended(route('admin/login'));
-        } elseif (!$user->can('manage-employees') || $user->id == $request->get('memberID')){
+        } elseif (!$user->can('manage-employees')){
             /*return [
                 'success'   => false,
                 'errors'    => 'You don\'t have permission to access this page',
                 'title'     => 'Permission Error'];*/
             return redirect()->intended(route('admin/error/permission_denied'));
+        } elseif ($user->id == $request->get('memberID')) {
+            return [
+                'success'   => false,
+                'errors'    => 'You don\'t have permission remove yourself.',
+                'title'     => 'Permission Error'];
         }
 
         $back_user = User::find($request->get('memberID'));
@@ -480,12 +485,17 @@ class BackEndUserController extends Controller
         $user = Auth::user();
         if (!$user || !$user->is_back_user()) {
             return redirect()->intended(route('admin/login'));
-        } elseif (!$user->can('manage-employees') || $user->id == $request->get('memberID')){
+        } elseif (!$user->can('manage-employees')){
             /*return [
                 'success'   => false,
                 'errors'    => 'You don\'t have permission to access this page',
                 'title'     => 'Permission Error'];*/
             return redirect()->intended(route('admin/error/permission_denied'));
+        } elseif ($user->id == $request->get('memberID')) {
+            return [
+            'success'   => false,
+            'errors'    => 'You don\'t have permission suspend/reactivate yourself.',
+            'title'     => 'Permission Error'];
         }
         $back_user = User::find($request->get('memberID'));
         if($back_user) {

@@ -870,8 +870,14 @@
         /* Done */
         function update_editable_information(e) {
             $('#main_form').block({
-                message: '<h1>Processing</h1>',
-                css: { border: '3px solid #a00' }
+                message: '<span><div class="loading"></div>Processing...</span>',
+                css: {
+                    'display': 'inline-block',
+                    'padding': '10px 0',
+                    'border': '0px',
+                    'border-radius': '5px',
+                    'font-size': '20px'
+                }
             });
             $.ajax({
                 url: '{{route('admin/front_users/view_user/allowed_personal_info', ['id' => $user->id])}}',
