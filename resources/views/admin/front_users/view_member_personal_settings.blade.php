@@ -869,16 +869,19 @@
 
         /* Done */
         function update_editable_information(e) {
-            $('#main_form').block({
-                message: '<span><div class="loading"></div>Processing...</span>',
+            var message =  "<div class='loading-message loading-message-boxed'>	<img src='{{ asset('assets/global/img/loading-spinner-grey.gif') }}' align=''><span>&nbsp;&nbsp;Processing...</span></div>";
+            $('#tab_1_1').block({
+                message: message,
+                overlayCSS: {
+                    backgroundColor: '#555555',
+                    opacity : '0.05'
+                },
                 css: {
-                    'display': 'inline-block',
-                    'padding': '10px 0',
-                    'border': '0px',
-                    'border-radius': '5px',
-                    'font-size': '20px'
+                    border: 'none',
+                    backgroundColor: 'none'
                 }
             });
+
             $.ajax({
                 url: '{{route('admin/front_users/view_user/allowed_personal_info', ['id' => $user->id])}}',
                 type: "post",
@@ -893,13 +896,10 @@
                     else {
                         show_notification(data.title, data.errors, 'tangerine', 3500, 0);
                     }
-                    $('#main_form').unblock();
+                    $('#tab_1_1').unblock();
                 }
             });
         }
-
-
-
 
         function update_passwd(){
             $.ajax({

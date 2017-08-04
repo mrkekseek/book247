@@ -1213,7 +1213,7 @@ else
 
         Route::post('backend_password_reset_request',[
             'as'    => 'ajax/backend_password_reset_request',
-            'uses'  => 'Federation\BackEndUserController@password_reset_request'
+            'uses'  => 'BackEndUserController@password_reset_request'
         ]);
 
         Route::post('general_note_add_new', [

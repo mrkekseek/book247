@@ -223,13 +223,13 @@
             },
             success: function (data) {
                 if (data.success==1) {
-                    show_notification(data.title, data.message, 'lime', 4500, 0);
+                    show_notification(data.title, data.message, 'lime', 3500, true);
                     setTimeout(function(){
-                        location.href = "{{route('homepage')}}";
+                        location.href = "{{route('admin/login')}}";
                     },5000);
                 }
                 else{
-                    show_notification(data.title, data.errors, 'lemon', 3500, 0);
+                    show_notification(data.title, data.errors, 'red', 3500, true);
                 }
             }
         });

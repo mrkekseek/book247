@@ -260,7 +260,7 @@
 
                 <li class="dropdown dropdown-user dropdown-dark">
                     
-                    <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true">
+                    <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true"  style="padding-top:10px;">
                         <span class="username username-hide-on-mobile"> {{ Auth::user()->name }} </span>
                         <div class="header-avatar" style="background-image: url({{ Auth::user()->get_avatar_image(true) }});"></div>
                     </a>
