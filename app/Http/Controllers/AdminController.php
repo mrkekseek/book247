@@ -235,6 +235,14 @@ class AdminController extends Controller
             // Authentication passed...
             $user = Auth::user(); return redirect()->intended('admin');
             // check user status
+
+            if ($user->hasRole(['manager','employee'])){
+                return redirect()->route('bookings/location_calendar_day_view',['day'=>\Carbon\Carbon::now()->format('d-m-Y')]);
+            }
+            else{
+                return redirect()->intended('admin');
+            }
+
             switch ($user->status){
                 case 'active' :
                     // all good

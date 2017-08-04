@@ -24,7 +24,7 @@ class Auth
     public static function user()
     {   
         self::set_session();
-        $session_sso = Session::get('sso_user_id');
+        $session_sso = Session::get('sso_user_id');                       
         if (!empty($session_sso))
         {
             $user_locale = User::where('sso_user_id',$session_sso)->first();            
@@ -204,7 +204,7 @@ class Auth
                 }
             }
         }
-        elseif (empty($cookie_sso) && !empty($session_sso))
+        elseif (empty($cookie_sso) && !empty($session_sso) && empty($new_auth))
         {
             Session::put('sso_user_id','');
         }
