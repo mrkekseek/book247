@@ -1207,7 +1207,7 @@ class BackEndUserController extends Controller
         $status = AppSettings::get_setting_value_by_name('globalWebsite_registration_finished');
         if ( $status == 0 )
         {
-            return redirect('');
+            return redirect('/admin');
         }
         $countries = Countries::orderBy('name', 'asc')->get();
 		$currencies = Countries::groupBy('currency_code')->get();

@@ -103,6 +103,11 @@ else
                 'uses' => 'AdminController@authenticate']
         );
 
+        Route::post('admin/ajax_login', [
+                'as' => 'admin/ajax_login',
+                'uses' => 'AdminController@ajax_authenticate']
+        );
+
         Route::get('admin/logout', [
             'as' => 'admin/logout',
             'uses' => 'AdminController@logout'
