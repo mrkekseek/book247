@@ -12,7 +12,7 @@
         "snowfire/beautymail": "dev-master",
         "regulus/activity-log": "0.6.*",
         "barryvdh/laravel-debugbar": "^2.2",
-        "maatwebsite/excel": "~2.1.0",
+        "maatwebsite/excel": "~2.1.0"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",

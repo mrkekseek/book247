@@ -1206,7 +1206,6 @@
                         },
                         shop_fax: {
                             minlength: 5,
-                            required: true
                         },
                         shop_email: {
                             email: true,

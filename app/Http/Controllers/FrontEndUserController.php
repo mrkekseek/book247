@@ -5320,6 +5320,7 @@ class FrontEndUserController extends Controller
         $data = $request->input('data');
         if (Auth::attempt(['email' => $data['username'], 'password' => $request->data['password']])) {
             $user = Auth::user();
+
             Activity::log([
                 'contentId'     => $user->id,
                 'contentType'   => 'login',
@@ -5328,12 +5329,9 @@ class FrontEndUserController extends Controller
                 'details'       => 'User Email : '.$user->email,
                 'updated'       => false,
             ]);
-            \Cache::forget('globalWebsite_registration_finished');
-            $status = AppSettings::get_setting_value_by_name('globalWebsite_registration_finished');
-            $start_form = ! empty($status) ? TRUE : FALSE;
             return [
                         'success' => true,
-                        'start_form' => $start_form
+                        'start_form' => false
                     ];
         }
         else {
@@ -5351,6 +5349,7 @@ class FrontEndUserController extends Controller
                     ];
         }
     }
+
     protected function get_custom($invoice_id)
     {
         $custom = json_encode(array(
