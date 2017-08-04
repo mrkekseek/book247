@@ -300,6 +300,7 @@
                     submitHandler: function (form) {
                         success1.show();
                         error1.hide();
+                        blockContent('.modal-dialog');
                         search_friend_by_phone($('input[name=friend_phone_no]').val()); // submit the form
                     }
                 });
@@ -328,6 +329,7 @@
                     'phone_no':    input_nr,
                 },
                 success: function(data){
+                    $('.modal-dialog').unblock();
                     if (data.success=='true') {
                         show_notification('Friend Added', 'Your have added ' + data.full_name + ' as a friend. You can now book an activity and include him.', 'lemon', 3500, 0);
                         $('input[name=friend_phone_no]').val('')
@@ -479,6 +481,21 @@
 
             $.notific8('zindex', 11500);
             $.notific8($.trim(message), settings);
+        }
+        
+        function blockContent(selector){
+            var message =  "<div class='loading-message loading-message-boxed'>	<img src='/assets/global/img/loading-spinner-grey.gif' align=''><span>&nbsp;&nbsp;Processing...</span></div>";
+            $(selector).block({ 
+                message: message, 
+                overlayCSS: { 
+                    backgroundColor: '#555555',
+                    opacity : '0.05'
+                },
+                css: {
+                    border: 'none',
+                    backgroundColor: 'none'
+                }
+            });
         }
     </script>
 @endsection

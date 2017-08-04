@@ -1246,6 +1246,11 @@ else
             'uses' => 'FrontEndUserController@change_account_status'
         ]);
 
+        Route::post('reactivate_member', [
+            'as' => 'ajax/reactivate_member',
+            'uses' => 'FrontEndUserController@reactivate_member'
+        ]);
+
         Route::post('front_member_update_access_card', [
             'as' => 'ajax/front_member_update_access_card',
             'uses' => 'FrontEndUserController@update_access_card'
