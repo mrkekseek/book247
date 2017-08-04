@@ -137,7 +137,6 @@
                                     </div>
                                     <div class="form-group">
                                         <label class="control-label col-md-4">Fax
-                                            <span class="required"> * </span>
                                         </label>
                                         <div class="col-md-7">
                                             <div class="input-icon right">
@@ -288,7 +287,6 @@
                         },
                         shop_fax: {
                             minlength: 5,
-                            required: true,
                         },
                         shop_address1: {
                             minlength: 5,

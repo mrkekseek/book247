@@ -296,7 +296,7 @@
                                             <select name="country" id="country" class="form-control">
                                                 <option value="">Select Citizenship</option>
                                                 @foreach ($countries as $country)
-                                                    <option value="{{ $country->id }}" {!! ($country->id==$user->country_id ? ' selected="selected" ' : '') !!}>{{ $country->name }}</option>
+                                                    <option value="{{ $country->id }}">{{ $country->name }}</option>
                                                 @endforeach
                                             </select>
                                         </div>
@@ -1388,12 +1388,7 @@
                     //console.log(data);
                     $('.content').unblock();
                     if (data.success == true){
-                        if (data.start_form == true){
-                            window.location.href = '/admin/registration';
-                        }
-                        else{
-                            window.location.reload();
-                        }
+                        window.location.reload();
                    }
                    else{
                        $('.alert-danger').show();

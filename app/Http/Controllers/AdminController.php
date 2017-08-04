@@ -233,7 +233,7 @@ class AdminController extends Controller
     {
         if (Auth::attempt(['email' => $request->input('email'), 'password' => $request->input('password')])) {
             // Authentication passed...
-            $user = Auth::user();
+            $user = Auth::user(); return redirect()->intended('admin');
             // check user status
 
             if ($user->hasRole(['manager','employee'])){

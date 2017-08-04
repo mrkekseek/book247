@@ -106,7 +106,7 @@ class FrontPageController extends Controller
         }
 
         $unreadNotes= [];
-        if (isset($user)) {
+        if (isset($user) && $user!=false) {
             $own_friends_bookings = $this::get_own_and_friends_bookings($user->id);
             $settings   = UserSettings::get_general_settings($user->id, ['settings_preferred_location','settings_preferred_activity']);
 
