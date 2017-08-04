@@ -231,18 +231,15 @@
 //                        console.log(data);
                         if (data.success == true) {
                             if (data.title.length) {
-                                show_notification(data.title,'', 'lime', 5000, 0);
+                                show_notification(data.title, data.message, 'lime', 5000, 0);
                             }
-                            setTimeout(function () {
-                                window.location.href = data.redirect_url;
-                            }, 2000);
-                        } else {
+
+                            window.location.href = data.redirect_url;
+                        }
+                        else {
                             if (data.title.length) {
-                                show_notification(data.title,  data.message.message_body, 'ruby', 5000, 0);
+                                show_notification(data.title,  data.errors, 'ruby', 5000, true);
                             }
-                            setTimeout(function () {
-                                window.location.href = data.redirect_url;
-                            }, 2000);
                         }
                     }
 
