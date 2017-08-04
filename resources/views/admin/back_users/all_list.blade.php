@@ -67,20 +67,71 @@
                             <tbody>
 
                         @foreach($users as $user)
-                            <tr class="odd gradeX">
-                                <td>
-                                    <input type="checkbox" class="checkboxes" value="{{$user->id}}" /> </td>
-                                <td> <a href="{{route("admin/back_users/view_user/", $user->id)}}">{{$user->first_name}} {{$user->middle_name}} {{$user->last_name}}</a> </td>
-                                <td> {{$user->username}} </td>
-                                <td>
-                                    <a href="mailto:{{$user->email}}"> {{$user->email}} </a>
-                                </td>
-                                <td class="center"> {{$user->created_at}} </td>
-                                <td>
-                                    <span class="label label-sm label-success"> Approved </span>
-                                </td>
-                            </tr>
+                            @if($user->status != 'deleted')
+                                <tr class="odd gradeX">
+                                    <td>
+                                        <input type="checkbox" class="checkboxes" value="{{$user->id}}" /> </td>
+                                    <td> <a href="{{route("admin/back_users/view_user/", $user->id)}}">{{$user->first_name}} {{$user->middle_name}} {{$user->last_name}}</a> </td>
+                                    <td> {{$user->username}} </td>
+                                    <td>
+                                        <a href="mailto:{{$user->email}}"> {{$user->email}} </a>
+                                    </td>
+                                    <td class="center"> {{$user->created_at}} </td>
+                                    <td>
+                                        <span class="label label-sm {{ $user->status == 'active' ? 'label-success' : 'label-danger' }}"> {{ ucfirst($user->status) }} </span>
+                                    </td>
+                                </tr>
+                            @endif
                         @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="portlet light bordered">
+                    <div class="portlet-title">
+                        <div class="caption">
+                            <i class="icon-equalizer font-blue-steel"></i>
+                            <span class="caption-subject font-blue-steel bold uppercase"> Deleted Members </span>
+                        </div>
+                        <div class="tools">
+                            <a class="expand" href="" data-original-title="" title=""> </a>
+                        </div>
+                    </div>
+                    <div class="portlet-body" style="display:none;">
+                        <table class="table table-striped table-bordered table-hover table-checkable order-column" id="sample_1">
+                            <thead>
+                            <tr>
+                                <th>
+                                    <input type="checkbox" class="group-checkable" data-set="#sample_1 .checkboxes" /> </th>
+                                <th> Full Name </th>
+                                <th> Username </th>
+                                <th> Email </th>
+                                <th> Status </th>
+                                <th> Action </th>
+                            </tr>
+                            </thead>
+                            <tbody>
+
+                            @foreach($users as $user)
+                                @if($user->status == 'deleted')
+                                    <tr class="odd gradeX">
+                                        <td>
+                                            <input type="checkbox" class="checkboxes" value="{{$user->id}}" /> </td>
+                                        <td> <a href="{{route("admin/back_users/view_user/", $user->id)}}">{{$user->first_name}} {{$user->middle_name}} {{$user->last_name}}</a> </td>
+                                        <td> {{$user->username}} </td>
+                                        <td>
+                                            <a href="mailto:{{$user->email}}"> {{$user->email}} </a>
+                                        </td>
+                                        <td>
+                                            <span class="label label-sm {{ $user->status == 'active' ? 'label-success' : 'label-danger' }}"> {{ ucfirst($user->status) }} </span>
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-sm btn-info yellow-mint" onclick="javascript: reactivate_member('{{ $user->id }}')"> Reactivate </button>
+                                        </td>
+                                    </tr>
+                                @endif
+                            @endforeach
                             </tbody>
                         </table>
                     </div>
@@ -396,6 +447,27 @@
                         $('.alert-success', '#form_sample_2').hide();
                         $('.alert-danger', '#form_sample_2').html(data.errors);
                         $('.alert-danger', '#form_sample_2').show();
+                        show_notification(data.title, data.errors, 'ruby', 3500, 0);
+                    }
+                }
+            });
+        }
+
+        function reactivate_member(id){
+            $.ajax({
+                url: '{{ route('ajax/reactivate_member') }}',
+                type: "post",
+                data: {
+                    'user_id': id
+                },
+                success: function (data) {
+                    if (data.success) {
+                        show_notification(data.title, data.message, 'lime', 3500, 0);
+                        setTimeout(function () {
+                            location.reload();
+                        }, 2000);
+                    }
+                    else {
                         show_notification(data.title, data.errors, 'ruby', 3500, 0);
                     }
                 }
