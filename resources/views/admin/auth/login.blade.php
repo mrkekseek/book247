@@ -367,10 +367,9 @@
                 },
 
                 submitHandler: function (form1) {
-                    alert('aa');
                     success1.show();
                     error1.hide();
-                    request_reset_email($('input[name=email]').val()); // submit the form
+                    request_reset_email($('input[name=forgot_email]').val()); // submit the form
                 }
             });
         }

@@ -108,7 +108,6 @@ class BackEndUserController extends Controller
 
     public function password_reset_request(Request $request){
         $vars = $request->only('email');
-
         $validator = Validator::make($vars, [
             'email' => 'required|email',
         ]);
