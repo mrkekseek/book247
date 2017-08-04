@@ -39,7 +39,7 @@
         <div class="row">
         @if ($membership_plan)
             <div class="col-md-12">
-                <div class="portlet light bordered">
+                <div class="portlet light bordered membership-details">
                     <div class="portlet-title">
                         <div class="caption">
                             <i class="icon-equalizer {{ $membership_plan->status == 'active' ? 'font-green-jungle' : 'font-red-thunderbird' }}"></i>
@@ -188,7 +188,7 @@
 
             @if ($membership_plan->status != 'active')
             <div class="col-md-12">
-                <div class="portlet light bordered">
+                <div class="portlet light bordered membership-attributes">
                     <div class="portlet-title">
                         <div class="caption">
                             <i class="icon-equalizer font-purple-studio"></i>
@@ -732,6 +732,7 @@
                     submitHandler: function (form) {
                         success1.show();
                         error1.hide();
+                        blockContent('.membership-details');
                         update_membership_details(); // submit the form
                     }
                 });
@@ -772,6 +773,7 @@
                         '_method':'patch'
                     },
                     success: function(data){
+                        $('.membership-details').unblock();
                         if(data.success){
                             show_notification('Membership Plan Details Updated', data.message, 'lime', 3500, 0);
                             setTimeout(function(){
@@ -785,10 +787,26 @@
                 });
             @endif
         }
+        
+        function blockContent(selector){
+            var message =  "<div class='loading-message loading-message-boxed'>	<img src='/assets/global/img/loading-spinner-grey.gif' align=''><span>&nbsp;&nbsp;Processing...</span></div>";
+            $(selector).block({ 
+                message: message, 
+                overlayCSS: { 
+                    backgroundColor: '#555555',
+                    opacity : '0.05'
+                },
+                css: {
+                    border: 'none',
+                    backgroundColor: 'none'
+                }
+            });
+        }
 
         $('.add_included_activity').on('click', function(event){
             event.preventDefault();
-
+            blockContent('.membership-attributes');
+            
             $.ajax({
                 url: '{{route('membership_plan-add_restriction')}}',
                 type: "post",
@@ -798,6 +816,7 @@
                     'membership_id': '{{@$membership_plan->id}}'
                 },
                 success: function(data){
+                    $('.membership-attributes').unblock();
                     if(data.success){
                         show_notification('Included Activities Added', data.message, 'lime', 3500, 0);
                         setTimeout(function(){
@@ -813,7 +832,8 @@
 
         $('.add_booking_allowed_interval').on('click', function(event){
             event.preventDefault();
-
+            blockContent('.membership-attributes');
+            
             $.ajax({
                 url: '{{route('membership_plan-add_restriction')}}',
                 type: "post",
@@ -824,6 +844,7 @@
                     'membership_id': '{{@$membership_plan->id}}'
                 },
                 success: function(data){
+                    $('.membership-attributes').unblock();
                     if(data.success){
                         show_notification('Booking Time Period Added', data.message, 'lime', 3500, 0);
                         setTimeout(function(){
@@ -839,6 +860,7 @@
 
         $('.add_booking_time_of_day').on('click', function(event){
             event.preventDefault();
+            blockContent('.membership-attributes');
 
             var special_current_day = '';
             var special_days_ahead = '';
@@ -862,6 +884,7 @@
                     'special_days_ahead':special_days_ahead
                 },
                 success: function(data){
+                    $('.membership-attributes').unblock();
                     if(data.success){
                         show_notification('Booking Time of Day added', data.message, 'lime', 3500, 0);
                         setTimeout(function(){
@@ -877,6 +900,7 @@
 
         $('.add_nr_open_bookings').on('click', function(event){
             event.preventDefault();
+            blockContent('.membership-attributes');
 
             $.ajax({
                 url: '{{route('membership_plan-add_restriction')}}',
@@ -887,6 +911,7 @@
                     'membership_id': '{{@$membership_plan->id}}'
                 },
                 success: function(data){
+                    $('.membership-attributes').unblock();
                     if(data.success){
                         show_notification('Nr. of open bookings added', data.message, 'lime', 3500, 0);
                         setTimeout(function(){
@@ -902,7 +927,8 @@
 
         $('.add_cancellation_hours').on('click', function(event){
             event.preventDefault();
-
+            blockContent('.membership-attributes');
+            
             $.ajax({
                 url: '{{route('membership_plan-add_restriction')}}',
                 type: "post",
@@ -912,6 +938,7 @@
                     'membership_id': '{{@$membership_plan->id}}'
                 },
                 success: function(data){
+                    $('.membership-attributes').unblock();
                     if(data.success){
                         show_notification('Cancellation hours restriction added', data.message, 'lime', 3500, 0);
                         setTimeout(function(){
