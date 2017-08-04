@@ -204,7 +204,7 @@ class Auth
                 }
             }
         }
-        elseif (empty($cookie_sso) && !empty($session_sso))
+        elseif (empty($cookie_sso) && !empty($session_sso) && empty($new_auth))
         {
             Session::put('sso_user_id','');
         }
