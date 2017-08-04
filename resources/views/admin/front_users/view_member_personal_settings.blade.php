@@ -244,28 +244,47 @@
                                         <!-- END CHANGE AVATAR TAB -->
                                         <!-- CHANGE PASSWORD TAB -->
                                         <div class="tab-pane" id="tab_1_3">
+                                            @if($user->sso_user_id)
                                             <form action="#" id="form_password_update" role="form">
                                                 <div class="alert alert-danger display-hide">
                                                     <button class="close" data-close="alert"></button> You have some form errors. Please check below. </div>
                                                 <div class="alert alert-success display-hide">
                                                     <button class="close" data-close="alert"></button> Your form validation is successful! </div>
                                                 <div class="form-group">
-                                                    <label class="control-label">New Password</label>
+                                                    <label class="control-label">Email</label>
                                                     <div class="input-icon">
                                                         <i class="fa"></i>
-                                                        <input type="password" name="new_password1" id="new_password1" class="form-control" /> </div>
-                                                </div>
-                                                <div class="form-group">
-                                                    <label class="control-label">Re-type New Password</label>
-                                                    <div class="input-icon">
-                                                        <i class="fa"></i>
-                                                        <input type="password" name="new_password2" id="new_password2" class="form-control" /> </div>
+                                                        <input type="text" name="reset_password_email" id="reset_password_email" class="form-control" value="{{ $user->email }}"/> </div>
                                                 </div>
                                                 <div class="margin-top-10">
-                                                    <a href="javascript:;" class="btn green" onClick="javascript: $('#form_password_update').submit();"> Change Password </a>
-                                                    <a href="javascript:;" class="btn default"> Cancel </a>
+                                                    <a href="javascript:;" class="btn green" onClick="javascript:request_reset_email() ;"> Forgot password </a>
                                                 </div>
                                             </form>
+
+                                            @else
+                                                <form action="#" id="form_password_update" role="form">
+                                                    <div class="alert alert-danger display-hide">
+                                                        <button class="close" data-close="alert"></button> You have some form errors. Please check below. </div>
+                                                    <div class="alert alert-success display-hide">
+                                                        <button class="close" data-close="alert"></button> Your form validation is successful! </div>
+                                                    <div class="form-group">
+                                                        <label class="control-label">New Password</label>
+                                                        <div class="input-icon">
+                                                            <i class="fa"></i>
+                                                            <input type="password" {{ isset($user->sso_user_id)?'disabled':'' }} name="new_password1" id="new_password1" class="form-control" /> </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="control-label">Re-type New Password</label>
+                                                        <div class="input-icon">
+                                                            <i class="fa"></i>
+                                                            <input type="password" {{ isset($user->sso_user_id)?'disabled':'' }} name="new_password2" id="new_password2" class="form-control" /> </div>
+                                                    </div>
+                                                    <div class="margin-top-10">
+                                                        <a href="javascript:;" class="btn green" onClick="javascript: $('#form_password_update').submit();"> Change Password </a>
+                                                        <a href="javascript:;" class="btn default"> Cancel </a>
+                                                    </div>
+                                                </form>
+                                            @endif
                                         </div>
                                         <!-- END CHANGE PASSWORD TAB -->
                                         <!-- DOCUMENTS TAB -->
@@ -948,6 +967,18 @@
         });
 
         function update_personal_address(){
+            var message =  "<div class='loading-message loading-message-boxed'>	<img src='{{ asset('assets/global/img/loading-spinner-grey.gif') }}' align=''><span>&nbsp;&nbsp;Processing...</span></div>";
+            $('#tab_1_4').block({
+                message: message,
+                overlayCSS: {
+                    backgroundColor: '#555555',
+                    opacity : '0.05'
+                },
+                css: {
+                    border: 'none',
+                    backgroundColor: 'none'
+                }
+            });
             $.ajax({
                 url: '{{route('admin/front_users/view_user/personal_address', ['id'=>$user->id])}}',
                 type: "post",
@@ -969,6 +1000,7 @@
                     else{
                         show_notification(data.title, data.errors, 'tangerine', 3500, 0);
                     }
+                    $('#tab_1_4').unblock();
                 }
             });
         }
@@ -1018,6 +1050,28 @@
         $(".member_suspend_access").on("click", function(){
             $('#change_member_status').modal('show');
         });
+
+        function request_reset_email(){
+            $.ajax({
+                url: '{{ route('ajax/password_reset_request') }}',
+                type: "post",
+                cache: false,
+                data: {
+                    'email': $('#form_password_update').find('input[name="reset_password_email"]').val(),
+                },
+                success: function (data) {
+                    if (data.success==1) {
+                        show_notification(data.title, data.message, 'lime', 5000, 0);
+                        setTimeout(function(){
+                            window.location.reload(true);
+                        },5500);
+                    }
+                    else{
+                        show_notification(data.title, data.errors, 'lemon', 5000, 0);
+                    }
+                }
+            });
+        }
 
         function change_member_status(){
             $.ajax({

@@ -4689,6 +4689,43 @@ class FrontEndUserController extends Controller
         }
     }
 
+
+    public function reactivate_member(Request $request){
+
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
+            return [
+                'success' => false,
+                'title'   => 'You need to be logged in',
+                'errors'  => 'You need to be logged in as an employee in order to use this function'];
+        }
+        $vars = $request->only('user_id');
+        $member = User::where('id','=',$vars['user_id'])->get()->first();
+        if (!$member){
+            return [
+                'success' => false,
+                'title'   => 'Member not found',
+                'errors'  => 'The member you want to suspend/reactivate was not found in the system'];
+        }
+        
+        if ($member->status != 'deleted') {
+            return [
+                'success' => false,
+                'title'   => 'Not a relevant action.',
+                'errors'  => 'The member you want to reactivate is already active'];
+        }
+
+        $member->status = 'active';
+        $member->save();
+        return [
+            'success' => true,
+            'title'   => 'User reactivated.',
+            'message'  => 'You successfully reactivated the user.'];
+    }
+
+
+
+
     public function update_access_card(Request $request){
         $user = Auth::user();
         if (!$user || !$user->is_back_user()) {

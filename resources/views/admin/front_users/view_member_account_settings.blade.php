@@ -119,7 +119,7 @@
                                                                     <label class="control-label col-md-4"> Access Card Number </label>
                                                                     <div class="col-md-8">
                                                                         <input class="form-control input-inline inline-block input-xlarge" name="access_card_number" placeholder="insert/paste number here" value="{{ $accessCardNo }}" />
-                                                                        <button class="btn uppercase green-meadow inline-block">Update</button>
+                                                                        <button class="btn uppercase green-meadow inline-block" >Update</button>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -186,7 +186,9 @@
                                                                 <div class="form-group" style="margin-bottom:0px;">
                                                                     <label class="control-label col-md-4"> Add Store Credit </label>
                                                                     <div class="col-md-8">
-                                                                        <input class="form-control input-inline inline-block input-xlarge" name="store_credit_value" placeholder="store credit amount" value="" />
+                                                                        <select name="store_credit_value" class="form-control input-inline input-large  inline-block list_all_plans">
+                                                                            <option value="-1"> Select store credit package </option>
+                                                                        </select>
                                                                         <button class="btn uppercase green-meadow inline-block">Add to account</button>
                                                                     </div>
                                                                 </div>
@@ -270,20 +272,20 @@
                                                                             <input class="form-control input-inline input-large inline-block margin-bottom-10" disabled readonly name="what_is_the_plan" value="{{$membership_plan->membership_name}}" />
 
                                                                             @if($canUpdate==true)
-                                                                            <a href="#upgrade_downgrade_plan_box" class="btn bg-green-jungle bg-font-green-jungle input margin-bottom-10" data-toggle="modal" style="min-width:160px;">
+                                                                            <a href="#upgrade_downgrade_plan_box" class="btn bg-green-jungle bg-font-green-jungle input margin-bottom-10" onclick="javascript: ui_block($('#tab_1_5')) ;" data-toggle="modal" style="min-width:160px;">
                                                                                 <i class="fa fa-play"></i> Upgrade/Downgrade Plan</a>
                                                                             @endif
                                                                             <br />
                                                                             @if ($membership_plan->status=='suspended')
-                                                                            <a href="#unfreeze_plan_box" class="btn bg-green-jungle bg-font-green-jungle input margin-bottom-10" data-toggle="modal" style="min-width:158px;">
+                                                                            <a href="#unfreeze_plan_box" class="btn bg-green-jungle bg-font-green-jungle input margin-bottom-10" onclick="javascript: ui_block($('#tab_1_5')) ;" data-toggle="modal" style="min-width:158px;">
                                                                                 <i class="fa fa-play"></i> Un-Freeze Plan</a>
                                                                             @elseif($canFreeze==true)
-                                                                            <a href="#freeze_plan_box" class="btn bg-blue-sharp bg-font-blue-sharp input margin-bottom-10" data-toggle="modal" style="min-width:158px;">
+                                                                            <a href="#freeze_plan_box" class="btn bg-blue-sharp bg-font-blue-sharp input margin-bottom-10" data-toggle="modal" onclick="javascript: ui_block($('#tab_1_5')) ;" style="min-width:158px;">
                                                                                 <i class="fa fa-pause"></i> Freeze Plan</a>
                                                                             @endif
 
                                                                             @if($canCancel==true)
-                                                                            <a href="#cancel_plan_box" class="btn red-soft input margin-bottom-10" data-toggle="modal" style="min-width:158px;">
+                                                                            <a href="#cancel_plan_box" class="btn red-soft input margin-bottom-10" data-toggle="modal" onclick="javascript: ui_block($('#tab_1_5')) ;" style="min-width:158px;">
                                                                                 <i class="fa fa-eject"></i> Cancel Plan</a>
                                                                             @endif
                                                                         @else
@@ -734,7 +736,7 @@
                                 </div>
                             </div>
                             <div class="modal-footer">
-                                <button type="button" class="btn green btn_no_show" data-dismiss="modal"> Return </button>
+                                <button type="button" class="btn green btn_no_show" onclick="javascript: $('#tab_1_5').unblock() ;"  data-dismiss="modal"> Return </button>
                                 <button type="button" class="btn btn-primary mt-ladda-btn ladda-button update_downgrade_membership" data-style="expand-right" onclick="javascript:update_assigned_membership_plan();"> <span class="ladda-label"> Apply Change </span> </button>
                             </div>
                         </div>
@@ -792,7 +794,7 @@
                                 </div>
                             </div>
                             <div class="modal-footer">
-                                <button type="button" class="btn green btn_no_show" data-toggle="modal" href="#changeIt"> Return </button>
+                                <button type="button" class="btn green btn_no_show" data-toggle="modal" onclick="javascript: $('#tab_1_5').unblock();" href="#changeIt"> Return </button>
                                 <button type="button" class="btn green btn_modify_booking" onclick="javascript:change_membership_plan();"> Assign New Plan </button>
                                 <input type="hidden" name="selected_plan_number" value="" />
                             </div>
@@ -842,7 +844,7 @@
                             @endif
 
                             <div class="modal-footer">
-                                <button type="button" class="btn dark btn-outline" data-dismiss="modal">No, Go Back</button>
+                                <button type="button" class="btn dark btn-outline" onclick="javascript: $('#tab_1_5').unblock() ;" data-dismiss="modal">No, Go Back</button>
                                 <button type="button" class="btn green" data-toggle="modal" href="#cancel_plan_confirm_box">Cancel Membership</button>
                             </div>
                         </div>
@@ -861,7 +863,7 @@
                             <div class="modal-body margin-top-10 margin-bottom-10"> By clicking "Cancel Membership" the member will be switched to the default membership plan (the "No Membership Plan").
                                 After the cancellation you can apply another membership plan to this user from the same page.</div>
                             <div class="modal-footer">
-                                <button type="button" class="btn dark btn-outline" data-dismiss="modal">No, Go Back</button>
+                                <button type="button" class="btn dark btn-outline"  data-dismiss="modal">No, Go Back</button>
                                 <button type="button" class="btn green" onclick="javascript:cancel_membership();">Yes, Cancel</button>
                             </div>
                         </div>
@@ -926,7 +928,7 @@
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn green btn_no_show" data-toggle="modal" href="#freeze_plan_confirm_box">Freeze plan</button>
-                                <button type="button" class="btn dark btn-outline" data-dismiss="modal">Return</button>
+                                <button type="button" class="btn dark btn-outline" onclick="javascript: $('#tab_1_5').unblock() ;" data-dismiss="modal">Return</button>
                             </div>
                         </div>
                         <!-- /.modal-content -->
@@ -950,7 +952,7 @@
                                 </div>
                             </div>
                             <div class="modal-footer">
-                                <button type="button" class="btn dark btn-outline" data-dismiss="modal">No, Go Back</button>
+                                <button type="button" class="btn dark btn-outline" onclick="javascript: $('#tab_1_5').unblock() ;" data-dismiss="modal">No, Go Back</button>
                                 <button type="button" class="btn green" onclick="javascript:freeze_membership();">Yes, Freeze</button>
                             </div>
                         </div>
@@ -1375,7 +1377,34 @@
             }
         });
 
+        function ui_block(selector) {
+            var message =  "<div class='loading-message loading-message-boxed'>	<img src='{{ asset('assets/global/img/loading-spinner-grey.gif') }}' align=''><span>&nbsp;&nbsp;Processing...</span></div>";
+            selector.block({
+                message: message,
+                overlayCSS: {
+                    backgroundColor: '#555555',
+                    opacity : '0.05'
+                },
+                css: {
+                    border: 'none',
+                    backgroundColor: 'none'
+                }
+            });
+        }
+
         $('.apply_new_membership_plan').on('click', function(){
+            var message =  "<div class='loading-message loading-message-boxed'>	<img src='{{ asset('assets/global/img/loading-spinner-grey.gif') }}' align=''><span>&nbsp;&nbsp;Processing...</span></div>";
+            $('#tab_1_5').block({
+                message: message,
+                overlayCSS: {
+                    backgroundColor: '#555555',
+                    opacity : '0.05'
+                },
+                css: {
+                    border: 'none',
+                    backgroundColor: 'none'
+                }
+            });
             $.ajax({
                 url: '{{route('admin/membership_plans/ajax_get_details')}}',
                 type: "post",
@@ -1461,6 +1490,7 @@
                         $('input[name="selected_plan_number"]').html(-1);
 
                         $('#changeIt').modal('hide');
+                        $('#tab_1_5').unblock();
                         show_notification(data.title, data.message, 'lime', 3500, 0);
 
                         setTimeout(function(){
@@ -1470,6 +1500,7 @@
                     else{
                         show_notification(data.title, data.errors, 'tangerine', 3500, 0);
                     }
+                    $('#tab_1_5').unblock();
                 }
             });
         }
@@ -1503,6 +1534,7 @@
                     else{
                         show_notification(data.title, data.errors, 'tangerine', 5000, 0);
                     }
+                    $('#tab_1_5').unblock();
                 }
             });
         }
@@ -1534,6 +1566,7 @@
                         $('#freeze_plan_confirm_box').modal('hide');
                         show_notification(data.title, data.errors, 'tangerine', 3500, 0);
                     }
+                    $('#tab_1_5').unblock();
                 }
             });
         }
@@ -1566,11 +1599,13 @@
                         $('#cancel_plan_confirm_box').modal('hide');
                         show_notification(data.title, data.errors, 'tangerine', 3500, 0);
                     }
+                    $('#tab_1_5').unblock();
                 }
             });
         }
 
         function access_card_number_update(){
+            ui_block($('#tab_1_2'));
             $.ajax({
                 url: '{{route('ajax/front_member_update_access_card')}}',
                 type: "post",
@@ -1588,11 +1623,14 @@
                     else{
                         show_notification(data.title, data.errors, 'ruby', 3500, 0);
                     }
+                    $('#tab_1_2').unblock();
                 }
+
             });
         }
 
         function add_store_credit(){
+            ui_block($('#tab_1_3'));
             $.ajax({
                 url: '{{route('ajax/buy_store_credit')}}',
                 type: "post",
@@ -1612,6 +1650,7 @@
                     else{
                         show_notification(data.title, data.errors, 'ruby', 3500, 0);
                     }
+                    $('#tab_1_3').unblock();
                 }
             });
         }
