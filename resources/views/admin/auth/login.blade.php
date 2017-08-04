@@ -228,12 +228,10 @@
                         '_token': '{{ csrf_token() }}'
                     },
                     success: function (data) {
-//                        console.log(data);
                         if (data.success == true) {
                             if (data.title.length) {
                                 show_notification(data.title, data.message, 'lime', 5000, 0);
                             }
-
                             window.location.href = data.redirect_url;
                         }
                         else {
@@ -242,7 +240,6 @@
                             }
                         }
                     }
-
                 });
             });
 
