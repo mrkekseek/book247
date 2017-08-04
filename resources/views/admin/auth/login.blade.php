@@ -212,8 +212,41 @@
                 },
 
                 submitHandler: function(form) {
-                    form.submit(); // form validation success, call ajax form submit
+//                    form.submit(); // form validation success, call ajax form submit
                 }
+            });
+
+            $('.login-form').submit(function(e) {
+                e.preventDefault();
+                $.ajax({
+                    url: '{{ route('admin/ajax_login')}}',
+                    type: "post",
+                    cache: false,
+                    data: {
+                        'email': $('.login-form').find('input[name=email]').val(),
+                        'password': $('.login-form').find('input[name=password]').val(),
+                        '_token': '{{ csrf_token() }}'
+                    },
+                    success: function (data) {
+//                        console.log(data);
+                        if (data.success == true) {
+                            if (data.title.length) {
+                                show_notification(data.title,'', 'lime', 5000, 0);
+                            }
+                            setTimeout(function () {
+                                window.location.href = data.redirect_url;
+                            }, 2000);
+                        } else {
+                            if (data.title.length) {
+                                show_notification(data.title,  data.message.message_body, 'ruby', 5000, 0);
+                            }
+                            setTimeout(function () {
+                                window.location.href = data.redirect_url;
+                            }, 2000);
+                        }
+                    }
+
+                });
             });
 
             $('.login-form input').keypress(function(e) {
