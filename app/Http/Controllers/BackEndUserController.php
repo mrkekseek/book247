@@ -1203,7 +1203,7 @@ class BackEndUserController extends Controller
         $shopLocation = ShopLocations::first();
         $shopResourceCategories = ShopResourceCategory::get();
         $user = Auth::user();
-		return view('registration-form', [
+		return view('admin/registration-form', [
             'countries'=>$countries, 
             'currencies'=>$currencies, 
             'shopLocation'=>$shopLocation,
