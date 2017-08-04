@@ -1,6 +1,7 @@
 @extends('login_header');
 
 @section('main_content')
+
 <!-- BEGIN REGISTRATION -->
     <div class="container">
         <div class="row">
@@ -29,14 +30,14 @@
                                             <a href="#tab3" data-toggle="tab" class="step active">
                                                 <span class="number"> 3 </span>
                                                 <span class="desc">
-                                                    <i class="fa fa-check"></i> Booking behavior Setup </span>
+                                                    <i class="fa fa-check"></i> Booking behavior </span>
                                             </a>
                                         </li>
                                         <li>
                                             <a href="#tab4" data-toggle="tab" class="step">
                                                 <span class="number"> 4 </span>
                                                 <span class="desc">
-                                                    <i class="fa fa-check"></i>  Finish </span>
+                                                    <i class="fa fa-check"></i>  Payment </span>
                                             </a>
                                         </li>
                                     </ul>
@@ -49,7 +50,7 @@
                                         <div class="alert alert-success display-none">
                                             <button class="close" data-dismiss="alert"></button> Your form validation is successful! </div>
                                         <!--STEP 1-->
-                                        <div class="tab-pane tab-pane-width active" id="tab1">
+                                        <div class="tab-pane tab-pane-width " id="tab1">
                                             <div class="form-group">
                                                 <label class="control-label col-md-3">Club name
                                                     <span class="required"> * </span>
@@ -360,13 +361,23 @@
                                         </div>
                                         <!--END STEP 3-->
                                         <!--STEP 4-->
-                                        <div class="tab-pane clearfix" id="tab4">
-                                            <div class="col-md-offset-4 col-md-4 well">
+                                        <div class="tab-pane clearfix text-center" id="tab4">
+                                              <script
+                                                src="https://checkout.stripe.com/checkout.js" class="stripe-button"
+                                                data-key="{{ env('STRIPE_KEY') }}"
+                                                data-amount="0.50"
+                                                data-name="Book247"
+                                                data-description="Sport Booking System"
+                                                data-image="{{ asset('assets/global/img/sqf-logo.png') }}"
+                                                data-locale="auto">
+                                              </script>
+
+                                            <!--<div class="col-md-offset-4 col-md-4 well">
                                                 <p><strong>Finish:</strong> Click submit to finish your registration! But don`t worry if you want to make changes. Every setting can be changed in "General settings".</p>
                                             </div>
                                             <div class="col-md-12">
                                                 <h3 class="text-center text-success">Congrats! You can now start using Book247!</h3>
-                                            </div>
+                                            </div>-->
                                         </div>
                                         <!--END STEP 4-->
                                     </div>
@@ -429,4 +440,25 @@
 <!-- END PAGE LEVEL SCRIPTS -->
 <!-- BEGIN THEME LAYOUT SCRIPTS -->
 <!-- END THEME LAYOUT SCRIPTS -->
+
+<script>
+    $(document).ready(function(){
+
+        $("input[name='clubname']").val('Test');
+        $("input[name='email']").val('test@div-art.com');
+        $("input[name='phone']").val('380986604726');
+        $("input[name='fax']").val('12341234');
+        $("input[name='addressline1']").val('Test');
+        $("input[name='addressline2']").val('Test');
+        $("input[name='city']").val('Test');
+        $("input[name='region']").val('Test');
+        $("input[name='postalcode']").val('123123');
+
+        $("select").each(function(index, value){
+            $(value).val($(this).find("option").last().val());
+        });
+
+
+    });
+</script>
 @stop

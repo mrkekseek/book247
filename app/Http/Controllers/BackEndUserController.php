@@ -278,11 +278,11 @@ class BackEndUserController extends Controller
                 'date_of_birth' => $vars['dob'],
                 'bank_acc_no'   => 0,
                 'social_sec_no' => 0,
-                'about_info'    => '',                
+                'about_info'    => '',
                 'customer_number'   => $user->get_next_customer_number()
-            ];            
-        $validator = Validator::make($personalData, PersonalDetail::rules('POST'), PersonalDetail::$messages, PersonalDetail::$attributeNames);            
-            if ($validator->fails()){                
+            ];
+        $validator = Validator::make($personalData, PersonalDetail::rules('POST'), PersonalDetail::$messages, PersonalDetail::$attributeNames);
+            if ($validator->fails()){
                 return array(
                     'success'   => false,
                     'title'     => 'Error validating',
@@ -385,7 +385,7 @@ class BackEndUserController extends Controller
 
         $roles = Role::all();
         $countries = Countries::orderBy('name')->get();
-       
+
         $userCountry = Countries::find($back_user->country_id);
 
         $avatar = $back_user->get_avatar_image();
@@ -1125,7 +1125,7 @@ class BackEndUserController extends Controller
             $items = DB::table("invoice_items")->where('invoice_id', $invoice->id)->get();
 
             foreach($items as $item)
-            { 
+            {
                 $item_one_price = $item->price - (($item->price*$item->discount)/100);
                 $item_vat = $item_one_price * ($item->vat/100);
 
@@ -1148,7 +1148,7 @@ class BackEndUserController extends Controller
         {
             return redirect('/');
         }
-        
+
 
         $member = User::with('ProfessionalDetail')->with('PersonalDetail')->where('id', $invoice->user_id)->get()->first();
         $member->country = Countries::where('id', $member->country_id)->get()->first();
@@ -1159,7 +1159,7 @@ class BackEndUserController extends Controller
             'Back End User'     => route('admin'),
             'All Backend Users' => '',
         ];
-        
+
         $text_parts  = [
             'title'     => 'Back-End Users',
             'subtitle'  => 'view all users',
@@ -1201,7 +1201,7 @@ class BackEndUserController extends Controller
         ];
 
     }
-    
+
     public function registrationStepsIndex()
    	{
         $status = AppSettings::get_setting_value_by_name('globalWebsite_registration_finished');
@@ -1215,14 +1215,96 @@ class BackEndUserController extends Controller
         $shopResourceCategories = ShopResourceCategory::get();
         $user = Auth::user();
 		return view('registration-form', [
-            'countries'=>$countries, 
-            'currencies'=>$currencies, 
+            'countries'=>$countries,
+            'currencies'=>$currencies,
             'shopLocation'=>$shopLocation,
             'shopResourceCategories'=>$shopResourceCategories,
             'user'=>$user,
         ]);
    	}
-    
+
+
+   /**
+    * Charge a Stripe customer.
+    *
+    * @var Stripe\Customer $customer
+    * @param integer $product_id
+    * @param integer $product_price
+    * @param string $product_name
+    * @param string $token
+    * @return createStripeCharge()
+    */
+    public function chargeCustomer($token)
+    {
+        \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
+
+        if ( ! $this->isStripeCustomer())
+        {
+            $customer = $this->createStripeCustomer($token);
+        }
+        else
+        {
+            $customer = \Stripe\Customer::retrieve(Auth::user()->stripe_id);
+        }
+
+        return $this->createStripeCharge($customer);
+    }
+
+   /**
+    * Create a Stripe charge.
+    *
+    * @var Stripe\Charge $charge
+    * @var Stripe\Error\Card $e
+    * @param integer $product_id
+    * @param integer $product_price
+    * @param string $product_name
+    * @param Stripe\Customer $customer
+    * @return postStoreOrder()
+    */
+    public function createStripeCharge($customer)
+    {
+        $charge = \Stripe\Charge::create(array(
+            "amount" => 50,
+            "currency" => "usd",
+            "customer" => $customer->id,
+            "description" => 'test'
+        ));
+        return $charge;
+    }
+
+
+   /**
+    * Create a new Stripe customer for a given user.
+    *
+    * @var Stripe\Customer $customer
+    * @param string $token
+    * @return Stripe\Customer $customer
+    */
+    public function createStripeCustomer($token)
+    {
+        \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
+
+        $customer = \Stripe\Customer::create([
+            "description" => Auth::user()->email,
+            "source" => $token
+        ]);
+
+        Auth::user()->stripe_id = $customer->id;
+        Auth::user()->save();
+
+        return $customer;
+    }
+
+   /**
+    * Check if the Stripe customer exists.
+    *
+    * @return boolean
+    */
+    public function isStripeCustomer()
+    {
+        return \App\User::where('id', '=', Auth::user()->id)->where('stripe_id', '!=', 0)->first();
+    }
+
     public function registrationStepsSave(Request $request)
     {
         $status = AppSettings::get_setting_value_by_name('globalWebsite_registration_finished');
@@ -1234,14 +1316,19 @@ class BackEndUserController extends Controller
         }
         else
         {
-            $user = Auth::user();    
+            if ( ! empty($data['stripeToken']))
+            {
+                $this->chargeCustomer($data['stripeToken']);
+            }
+            
+            $user = Auth::user();
             $data = $request->only('clubname','email','phone','fax','addressline1','addressline2','city','region','postalcode','country','currency','sport','time','members','pay','resource','day','limit');
             $shopLocation = ShopLocations::first();
             $shopLocation->phone = $data['phone'];
             $shopLocation->fax = $data['fax'];
             $shopLocation->email = $data['email'];
             $shopLocation->save();
-            
+
             $address = Address::find($shopLocation->address_id);
             $address->user_id = $user->id;
             $address->address1 = $data['addressline1'];
@@ -1251,9 +1338,9 @@ class BackEndUserController extends Controller
             $address->postal_code = $data['postalcode'];
             $address->country_id = $data['country'];
             $address->save();
-            
+
             AppSettings::update_settings_value_by_name('finance_currency', $data['currency']);
-            
+
             $shopLocationCategoryIntervals = new ShopLocationCategoryIntervals;
             $shopLocationCategoryIntervals->location_id = $shopLocation->id;
             $shopLocationCategoryIntervals->category_id = $data['sport'];
@@ -1261,7 +1348,7 @@ class BackEndUserController extends Controller
             $shopLocationCategoryIntervals->is_locked = 0;
             $shopLocationCategoryIntervals->added_by = $user->id;
             $shopLocationCategoryIntervals->save();
-            
+
             $membershipPlan = MembershipPlan::first();
             if ( empty ($membershipPlan))
             {
@@ -1269,7 +1356,7 @@ class BackEndUserController extends Controller
                 $membershipPlan->name = $data['clubname'];
                 $membershipPlan->save();
             }
-            
+
             $activity = ShopResourceCategory::find($shopLocationCategoryIntervals->category_id);
             if ( ! empty($data['members']))
             {
@@ -1285,7 +1372,7 @@ class BackEndUserController extends Controller
             $membershipRestriction->max_value = $data['day']*24;
             $membershipRestriction->save();
             AppSettings::update_settings_value_by_name('bookings_upfront_reservation_rule', $data['day']);
-            
+
             $membershipRestriction = new MembershipRestriction;
             $membershipRestriction->membership_id = 1;
             $membershipRestriction->restriction_id = 3;
@@ -1302,7 +1389,7 @@ class BackEndUserController extends Controller
                     break;
             }
             AppSettings::update_settings_value_by_name('bookings_online_payment_rule', $allowed_settings_id);
-            
+
             switch ($data['resource'])
             {
                 case (0):
@@ -1316,9 +1403,9 @@ class BackEndUserController extends Controller
             $response = [
                 'success' => TRUE,
             ];
-            
+
             AppSettings::update_settings_value_by_name('globalWebsite_registration_finished', 20);
-            
+
             AppSettings::clear_cache();
         }
         return $response;
