@@ -310,7 +310,7 @@ class AdminController extends Controller
             switch ($user->status){
                 case 'active' :
                     // all good
-                    // \Cache::forget('globalWebsite_registration_finished');
+                    \Cache::forget('globalWebsite_registration_finished');
                     $status = AppSettings::get_setting_value_by_name('globalWebsite_registration_finished');
 
                     if ( $status==0 && $user->hasRole('owner') ){

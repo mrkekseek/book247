@@ -613,7 +613,6 @@ class BackEndUserController extends Controller
             'gender'        => $vars['gender']
         ];
         $userCh = User::find($id);
-
         $updateRules = [
             'first_name'=> 'required|min:2|max:150',
             'last_name' => 'required|min:2|max:150',
@@ -642,7 +641,7 @@ class BackEndUserController extends Controller
                                 'social_sec_no' => $vars['social_sec_no'],
                                 'about_info'    => $vars['about_info'],
                                 'user_id'       => $id);
-        $validator = Validator::make($personalData, PersonalDetail::rules('PUT',$id), PersonalDetail::$messages, PersonalDetail::$attributeNames);
+        $validator = Validator::make($personalData, PersonalDetail::rules('PATCH',$userCh->id), PersonalDetail::$messages, PersonalDetail::$attributeNames);
         if ($validator->fails()){
             return array(
                 'success'   => false,
