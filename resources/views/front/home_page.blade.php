@@ -296,7 +296,7 @@
                                             <select name="country" id="country" class="form-control">
                                                 <option value="">Select Citizenship</option>
                                                 @foreach ($countries as $country)
-                                                    <option value="{{ $country->id }}" {!! ($country->id==$user->country_id ? ' selected="selected" ' : '') !!}>{{ $country->name }}</option>
+                                                    <option value="{{ $country->id }}">{{ $country->name }}</option>
                                                 @endforeach
                                             </select>
                                         </div>
@@ -772,6 +772,7 @@
                             username : $(form).find('input[name="username"]').val(),
                             password : $(form).find('input[name="password"]').val(),
                         };
+                        blockContent('.content');
                         auth_autorize(data);
                     }
                 });
@@ -912,6 +913,7 @@
                     },
 
                     submitHandler: function(form) {
+                        blockContent('.content');
                         auth_chek_email($(form).find('input[name="email"]').val());
                     }
                 });
@@ -955,6 +957,7 @@
                             password : $(form).find('input[name="password"]').val(),
                             type : $(form).find('input[name="type"]').val()
                         };
+                        blockContent('.content');
                         auth_check_password(data);
                     }
                 });
@@ -1223,6 +1226,7 @@
                         $(".terms_and_conditions").hide();
                         success2.show();
                         error2.hide();
+                        blockContent('.content');
                         register_member(); // submit the form
                     }
                 });
@@ -1265,6 +1269,7 @@
                     'country': $('select[name=country]').val(),
                 },
                 success: function (data) {
+                    $('.content').unblock();
                     if (data.success==1) {
                         show_notification('You are now registered', 'After page reload, use the email/password combination you used for registration and login', 'lemon', 3500, 0);
                         $('#user_registration_form').hide();
@@ -1320,6 +1325,7 @@
                     'email': email,
                 },
                 success: function (data) {
+                    $('.content').unblock();
                    if (data.success == true){
                       if (typeof data.show !== 'undefined'){
                           $(data.show).show();
@@ -1355,6 +1361,7 @@
                     'data': data,
                 },
                 success: function (data) {
+                    $('.content').unblock();
                     if (data.success == true){
                         $('#user_preregistration_password_form').hide();
                         $('#user_result_registration_form .caption-subject').html('email already registered');
@@ -1379,18 +1386,29 @@
                 },
                 success: function (data) {
                     //console.log(data);
+                    $('.content').unblock();
                     if (data.success == true){
-                        if (data.start_form == true){
-                            window.location.href = '/admin/registration';
-                        }
-                        else{
-                            window.location.reload();
-                        }
+                        window.location.reload();
                    }
                    else{
                        $('.alert-danger').show();
                        $('.alert-danger span').html(data.errors);
                     }
+                }
+            });
+        }
+        
+        function blockContent(selector){
+            var message =  "<div class='loading-message loading-message-boxed'>	<img src='/assets/global/img/loading-spinner-grey.gif' align=''><span>&nbsp;&nbsp;Processing...</span></div>";
+            $(selector).block({ 
+                message: message, 
+                overlayCSS: { 
+                    backgroundColor: '#555555',
+                    opacity : '0.05'
+                },
+                css: {
+                    border: 'none',
+                    backgroundColor: 'none'
                 }
             });
         }

@@ -58,7 +58,7 @@ class PersonalDetail extends Model
             {
                 return [
                     'user_id'           => 'required|exists:users,id',
-                    'personal_email'    => 'required|unique:personal_details,personal_email'.($id ? ",$id,user_id" : ''),
+                    'personal_email'    => 'required|unique:personal_details,personal_email'.($id ? ','.$id.',user_id' : ''),
                     'mobile_number'     => 'required|min:3|unique:personal_details,mobile_number'.($id ? ",$id,user_id" : ''),
                     'date_of_birth'     => 'required|date',
                     'about_info'        => '',

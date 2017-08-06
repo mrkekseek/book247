@@ -103,6 +103,11 @@ else
                 'uses' => 'AdminController@authenticate']
         );
 
+        Route::post('admin/ajax_login', [
+                'as' => 'admin/ajax_login',
+                'uses' => 'AdminController@ajax_authenticate']
+        );
+
         Route::get('admin/logout', [
             'as' => 'admin/logout',
             'uses' => 'AdminController@logout'
@@ -164,6 +169,10 @@ else
         Route::post('admin/front_users/view_user/{id}/personal_info', [
             'as' => 'admin/front_users/view_user/personal_info',
             'uses' => 'FrontEndUserController@update_personal_info',
+        ]);
+        Route::post('admin/front_users/view_user/{id}/allowed_personal_info', [
+            'as' => 'admin/front_users/view_user/allowed_personal_info',
+            'uses' => 'FrontEndUserController@update_allowed_personal_info',
         ]);
 
         Route::post('admin/back_users/view_user/{id}/personal_info', [
@@ -934,6 +943,11 @@ else
             'uses' => 'FrontEndUserController@buy_store_credit_ajax_call'
         ]);
 
+        Route::post('singup_membership_plan', [
+            'as' => 'front/singup_membership_plan',
+            'uses' => 'FrontEndUserController@singup_membership_plan_ajax_call'
+        ]);
+
         Route::get('calendar_booking/{day}/', [
             'as' => 'front_calendar_booking',
             'uses' => 'BookingController@front_bookings_calendar_view'
@@ -1001,12 +1015,12 @@ else
             'as' => 'back_error_404',
             'uses' => 'AdminController@error_404'
         ]);
-        
+
         Route::get('terms_of_service', [
             'as' => 'terms_of_service',
             'uses' => 'FrontPageController@terms_of_service'
         ]);
-        
+
         Route::get('privacy_policy', [
             'as' => 'privacy_policy',
             'uses' => 'FrontPageController@privacy_policy'
@@ -1204,12 +1218,22 @@ else
 
         Route::post('backend_password_reset_request',[
             'as'    => 'ajax/backend_password_reset_request',
-            'uses'  => 'Federation\BackEndUserController@password_reset_request'
+            'uses'  => 'BackEndUserController@password_reset_request'
         ]);
 
         Route::post('general_note_add_new', [
             'as' => 'ajax/general_note_add_new',
             'uses' => 'GeneralNotesController@create'
+        ]);
+
+        Route::post('remove_member', [
+            'as' => 'ajax/remove_member',
+            'uses' => 'BackEndUserController@remove_member'
+        ]);
+
+        Route::post('back_member_change_status', [
+            'as' => 'ajax/back_member_change_status',
+            'uses' => 'BackEndUserController@activate_deactivate_member'
         ]);
 
         Route::post('internal_note_status_change', [
@@ -1220,6 +1244,11 @@ else
         Route::post('front_member_change_status', [
             'as' => 'ajax/front_member_change_status',
             'uses' => 'FrontEndUserController@change_account_status'
+        ]);
+
+        Route::post('reactivate_member', [
+            'as' => 'ajax/reactivate_member',
+            'uses' => 'FrontEndUserController@reactivate_member'
         ]);
 
         Route::post('front_member_update_access_card', [

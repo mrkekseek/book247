@@ -8,7 +8,6 @@ use App\Role;
 use App\ShopLocations;
 use App\ShopResource;
 use App\ShopResourceCategory;
-use App\UserMembership;
 use Illuminate\Http\Request;
 use Auth;
 use Illuminate\Support\Facades\DB;
@@ -234,19 +233,51 @@ class AdminController extends Controller
     {
         if (Auth::attempt(['email' => $request->input('email'), 'password' => $request->input('password')])) {
             // Authentication passed...
-            $user = Auth::user();
-            \Cache::forget('globalWebsite_registration_finished');
-            $status = AppSettings::get_setting_value_by_name('globalWebsite_registration_finished');
-            if ( ! empty($status))
-            {
-                return redirect('admin/registration');
+            $user = Auth::user(); return redirect()->intended('admin');
+            // check user status
+            xdebug_var_dump($user); exit;
+
+            switch ($user->status){
+                case 'active' :
+                    // all good
+                    // \Cache::forget('globalWebsite_registration_finished');
+                    $status = AppSettings::get_setting_value_by_name('globalWebsite_registration_finished');
+                    if ( $status==0 ) {
+                        return redirect('admin/registration');
+                    }
+                    break;
+                case 'suspended':
+                    // show message suspended;
+                    Auth::logout();
+                    $errors = new MessageBag([
+                        'password'  => ['Username and/or password invalid.'],
+                        'username'  => ['Username and/or password invalid.'],
+                        'header'    => ['Invalid Login Attempt'],
+                        'message_body' => ['Your account is suspended. Contact the owner.'],
+                    ]);
+
+                    return  redirect()->intended(route('admin/login'))
+                        ->withInput()
+                        ->withErrors($errors)
+                        ->with('message', 'Login Failed');
+                    break;
+                case 'deleted' :
+                default:
+                    Auth::logout();
+                    $errors = new MessageBag([
+                        'password'  => ['Username and/or password invalid.'],
+                        'username'  => ['Username and/or password invalid.'],
+                        'header'    => ['Invalid Login Attempt'],
+                        'message_body' => ['Your account is deleted. Contact the owner.'],
+                    ]);
+
+                    return  redirect()->intended(route('admin/login'))
+                        ->withInput()
+                        ->withErrors($errors)
+                        ->with('message', 'Login Failed');
+                        break;
             }
-            if ($user->hasRole(['manager','employee'])){
-                return redirect()->route('bookings/location_calendar_day_view',['day'=>\Carbon\Carbon::now()->format('d-m-Y')]);
-            }
-            else{
-                return redirect()->intended('admin');
-            }
+
         }
         else {
             $errors = new MessageBag([
@@ -267,6 +298,87 @@ class AdminController extends Controller
                     ->withInput()
                     ->withErrors($errors)
                     ->with('message', 'Login Failed');
+        }
+    }
+
+    public function ajax_authenticate(Request $request)
+    {
+        if (Auth::attempt(['email' => $request->input('email'), 'password' => $request->input('password')])) {
+            // Authentication passed...
+            $user = Auth::user();
+            // check user status
+            switch ($user->status){
+                case 'active' :
+                    // all good
+                    \Cache::forget('globalWebsite_registration_finished');
+                    $status = AppSettings::get_setting_value_by_name('globalWebsite_registration_finished');
+
+                    if ( $status==0 && $user->hasRole('owner') ){
+                        $redirect_url = route('admin/registration');
+                    }
+                    elseif ($user->hasRole(['manager','employee'])){
+                        $redirect_url = route('bookings/location_calendar_day_view',['day' => \Carbon\Carbon::now()->format('d-m-Y')]);
+                    }
+                    else{
+                        $redirect_url = route('admin');
+                    }
+
+                    return [
+                        'success'   => true,
+                        'title'     => 'Login Successful',
+                        'message'   => 'Please wait while you are being redirected to admin page',
+                        'redirect_url' => $redirect_url
+
+                    ];
+                    break;
+                case 'suspended':
+                    // show message suspended;
+                    Auth::logout();
+                    $errors = 'This account is suspended. Contact club owner for details';
+
+                    return [
+                        'success'   => false,
+                        'title'     => 'Login warning',
+                        'redirect_url' => '',
+                        'errors'    => $errors
+                    ];
+
+                    break;
+                case 'deleted' :
+                default:
+                    Auth::logout();
+                    $errors = 'This account is deleted. Contact club owner for details';
+
+                    return [
+                        'success'   => false,
+                        'title'     => 'Login Failed',
+                        'redirect_url' => route('admin/login'),
+                        'errors'    => $errors
+                    ];
+                    break;
+            }
+        }
+        else {
+            $errors = [
+                'password' => ['Username and/or password invalid.'],
+                'username' => ['Username and/or password invalid.'],
+                'header' => ['Invalid Login Attempt'],
+                'message_body' => ['Username and/or password invalid.'],
+            ];
+            if (!empty(Auth::$error)){
+                $errors = [
+                    'password' => ['Username and/or password invalid.'],
+                    'username' => ['Username and/or password invalid.'],
+                    'header' => ['Invalid Login Attempt'],
+                    'message_body' => [Auth::$error],
+                ];
+            }
+            return [
+                'success' => false,
+                'title'   => 'Login Failed',
+                'redirect_url' => '',
+                'message' => $errors
+            ];
         }
     }
 

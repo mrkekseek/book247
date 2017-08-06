@@ -1546,6 +1546,85 @@ class FrontEndUserController extends Controller
         return redirect()->intended(route('admin/front_users/view_personal_settings', ['id' => $id]));
     }
 
+
+    /**
+     * Update member/user personal details - needs updated
+     * @param Request $request
+     * @param $id
+     * @return \Illuminate\Http\RedirectResponse|string
+     */
+    public function update_allowed_personal_info(Request $request, $id)
+    {
+        if (!Auth::check()) {
+            return [
+                'success' => false,
+                'title'   => 'Authentication Error',
+                'errors'  => 'Please reload the page and try again'
+            ];
+        }
+        else{
+            $user = Auth::user();
+        }
+
+
+        $is_staff = false;
+        if (!$user->hasRole(['front-member','front-user'])){
+            $is_staff = true;
+        }
+
+        if ($id!=$user->id && $is_staff || $id==$user->id) {
+            // an employee is updating a member details
+            $user = User::findOrFail($id);
+        }
+        else{
+            return [
+                'success' => false,
+                'title'   => 'Authentication Error',
+                'errors'  => 'Please reload the page and try again'
+            ];
+        }
+
+        $vars = $request->only('about_info', 'preferred_location');
+
+        $pd = PersonalDetail::where('user_id',$user->id)->get()->first();
+        $personalData = [
+            'personal_email'=> $user->email,
+            'mobile_number' => $pd->mobile_number,
+            'date_of_birth' => $pd->date_of_birth,
+            'about_info'    => trim($vars['about_info']),
+            'user_id'       => $user->id
+        ];
+
+        $validator = Validator::make($personalData, PersonalDetail::rules('PUT',$user->id), PersonalDetail::$messages, PersonalDetail::$attributeNames);
+        if ($validator->fails()){
+            return array(
+                'success'   => false,
+                'title'     => 'You have some errors',
+                'errors'    => $validator->getMessageBag()->toArray()
+            );
+        }
+        else{
+            $personalDetails = PersonalDetail::firstOrNew(array('user_id'=>$user->id));
+            $personalDetails->fill($personalData);
+            $personalDetails->save();
+        }
+
+        // validate the preferred location and set it in the DB
+        $preferredLocation = ShopLocations::where('id','=',$vars['preferred_location'])->whereIn('visibility',['public','pending','suspended'])->get()->first();
+        if ($preferredLocation){
+            // we update it
+            $user->set_general_setting('settings_preferred_location',$preferredLocation->id);
+        }
+
+        return [
+            'success' => true,
+            'title'   => 'Information Updated',
+            'message' => 'Member/user information successfully updated'
+        ];
+    }
+
+
+
     /**
      * Update member/user personal details - needs updated
      * @param Request $request
@@ -1563,6 +1642,14 @@ class FrontEndUserController extends Controller
         }
         else{
             $user = Auth::user();
+        }
+
+        if ($user->sso_user_id) {
+            return [
+                'success' => false,
+                'title'   => 'You don\'t have permissions.',
+                'errors'  => 'Please reload the page and try again'
+            ];
         }
 
         $is_staff = false;
@@ -2455,7 +2542,7 @@ class FrontEndUserController extends Controller
 
         $user_friends_ids = UserFriends::where('user_id',$user->id)->get();
         foreach ($user_friends_ids as $friend_id) {
-            if (User::get_numbver_by_id($friend_id->friend_id) == $vars['phone_no']) {
+            if (User::get_phone_number_by_id($friend_id->friend_id) == $vars['phone_no']) {
                 return [
                     'success'=>'false',
                     'error'=> [
@@ -2736,6 +2823,53 @@ class FrontEndUserController extends Controller
         else{
             return false;
         }
+    }
+
+    public function singup_membership_plan_ajax_call(Request $request)
+    {
+        $user = Auth::user();
+        if ( ! $user || ! $user->is_front_user())
+        {
+            return [
+                'success'   => false,
+                'title'     => 'An error occurred',
+                'errors'    => 'You need to be logged in to have access to this function'
+            ];
+        }
+
+        $validator = Validator::make($request->all(), [
+            'membership_id' => 'required',
+            'terms_and_condition' => 'required|in:true',
+        ]);
+
+        if ($validator->fails()) {
+            return [
+                    'success'   => false,
+                    'title'     => 'Singup membership',
+                    'errors'    => 'Error validation'
+                ];
+        }
+
+        $vars = $request->only('membership_id', 'terms_and_condition');
+        $plan = MembershipPlan::where('id', '=', $vars['membership_id'])->first();
+
+        if( ! $user->attach_membership_plan($plan, $user, Carbon::today()->format('Y-m-d'), 0, 'active', 'panding'))
+        {
+            return [
+                'success'   => false,
+                'title'     => 'Singup membership',
+                'errors'    => 'Error singup membership plan'
+            ];
+        }
+
+        $last_invoice = Invoice::where('user_id', '=', Auth::user()->id)->orderBy('id', 'desc')->first()->invoice_number;
+
+        return [
+            'success'   => true,
+            'title'     => 'Singup membership',
+            'errors'    => 'Success singup membership plan',
+            'redirect'  => route('front/finance/invoice/id', ['id' => $last_invoice])
+        ];
     }
 
     public function new_member_registration(Request $request){
@@ -3692,9 +3826,12 @@ class FrontEndUserController extends Controller
             foreach($invoice->transactions as &$transaction){
                 $innerItems = json_decode($transaction->invoice_items);
                 $transactionItemNames = [];
-                foreach($innerItems as $single){
-                    $transactionItemNames[] = $itemNames[$single];
+                if ($innerItems) {
+                    foreach($innerItems as $single){
+                        $transactionItemNames[] = $itemNames[$single];
+                    }
                 }
+
 
                 $transaction->names = $transactionItemNames;
             }
@@ -3736,11 +3873,23 @@ class FrontEndUserController extends Controller
                 $country = $get_country->name;
             }
 
+            $address = '';
+            if (isset($member_personal->address) && $member_personal->address) {
+                $address = Address::find($member_personal->address);
+                if (isset($address->country_id) && $address->country_id==0) {
+                    $country = '-';
+                } elseif (isset($address->country_id)) {
+                    $get_country = Countries::where('id','=',$address->country_id)->get()->first();
+                    $country = $get_country->name;
+                }
+            }
+
             $invoice_user = [
                 'full_name' => @$member->first_name.' '.@$member->middle_name.' '.@$member->last_name,
                 'email_address' => @$member->email,
                 'date_of_birth' => @$member_personal->date_of_birth,
                 'country'   => @$country,
+                'address'   => $address
             ];
         }
 
@@ -3760,6 +3909,16 @@ class FrontEndUserController extends Controller
         $sidebar_link= 'admin-backend-shop-new_order';
 
 
+        $payee = json_decode($invoice->payee_info);
+        if (isset($payee->country_id) && $payee->country_id == 0) {
+            $country = '-';
+            $currency = '' ;
+        } else {
+            $get_country = Countries::where('id', '=', $member->country_id)->get()->first();
+            $country = $get_country->name;
+            $currency = $get_country->currency_code;
+        }
+
         return view('front/finance/show_invoice', [
             'breadcrumbs'   => $breadcrumbs,
             'text_parts'    => $text_parts,
@@ -3773,7 +3932,8 @@ class FrontEndUserController extends Controller
             'vat'       => $vat,
             'grand_total'   => $total,
             'financial_profile' => json_decode($invoice->payee_info),
-            'country' => @$country
+            'country' => @$country,
+            'currency' => $currency
         ]);
     }
 
@@ -4529,6 +4689,43 @@ class FrontEndUserController extends Controller
         }
     }
 
+
+    public function reactivate_member(Request $request){
+
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
+            return [
+                'success' => false,
+                'title'   => 'You need to be logged in',
+                'errors'  => 'You need to be logged in as an employee in order to use this function'];
+        }
+        $vars = $request->only('user_id');
+        $member = User::where('id','=',$vars['user_id'])->get()->first();
+        if (!$member){
+            return [
+                'success' => false,
+                'title'   => 'Member not found',
+                'errors'  => 'The member you want to suspend/reactivate was not found in the system'];
+        }
+        
+        if ($member->status != 'deleted') {
+            return [
+                'success' => false,
+                'title'   => 'Not a relevant action.',
+                'errors'  => 'The member you want to reactivate is already active'];
+        }
+
+        $member->status = 'active';
+        $member->save();
+        return [
+            'success' => true,
+            'title'   => 'User reactivated.',
+            'message'  => 'You successfully reactivated the user.'];
+    }
+
+
+
+
     public function update_access_card(Request $request){
         $user = Auth::user();
         if (!$user || !$user->is_back_user()) {
@@ -5160,6 +5357,7 @@ class FrontEndUserController extends Controller
         $data = $request->input('data');
         if (Auth::attempt(['email' => $data['username'], 'password' => $request->data['password']])) {
             $user = Auth::user();
+
             Activity::log([
                 'contentId'     => $user->id,
                 'contentType'   => 'login',
@@ -5168,12 +5366,9 @@ class FrontEndUserController extends Controller
                 'details'       => 'User Email : '.$user->email,
                 'updated'       => false,
             ]);
-            \Cache::forget('globalWebsite_registration_finished');
-            $status = AppSettings::get_setting_value_by_name('globalWebsite_registration_finished');
-            $start_form = ! empty($status) ? TRUE : FALSE;
             return [
                         'success' => true,
-                        'start_form' => $start_form
+                        'start_form' => false
                     ];
         }
         else {
@@ -5191,6 +5386,7 @@ class FrontEndUserController extends Controller
                     ];
         }
     }
+
     protected function get_custom($invoice_id)
     {
         $custom = json_encode(array(

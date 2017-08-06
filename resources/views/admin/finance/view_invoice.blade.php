@@ -60,13 +60,15 @@
                                     <h3>Payment Details:</h3>
                                     <ul class="list-unstyled">
                                         <li>
-                                            <strong>V.A.T Reg #:</strong> 542554(DEMO)78
-                                        </li>
+                                            <strong>Company name:</strong> {{ isset($financial_profile->company_name) ? $financial_profile->company_name : 'None available'}} </li>
                                         <li>
-                                            <strong>Account Name:</strong> FoodMaster Ltd
-                                        </li>
+                                            <strong>Registration number:</strong> {{ isset($financial_profile->organisation_number) ? $financial_profile->organisation_number : 'None available'}} </li>
                                         <li>
-                                            <strong>SWIFT code:</strong> 45454DEMO545DEMO </li>
+                                            <strong>Bank name:</strong> {{ isset($financial_profile->bank_name) ? $financial_profile->bank_name : 'None available' }} </li>
+                                        <li>
+                                            <strong>Bank account:</strong> {{ isset($financial_profile->bank_account) ? $financial_profile->bank_account : 'None available' }} </li>
+                                        <li>
+                                            <strong>Invoice number:</strong> {{ isset($invoice->invoice_number) ? $invoice->invoice_number : 'None available' }} </li>
                                     </ul>
                                 </div>
                             </div>
@@ -104,23 +106,29 @@
                                 <div class="col-md-4">
                                     <div class="well">
                                         <address>
-                                            <strong>Rud Squash AS</strong>
-                                            <br/> Postbox 60
-                                            <br/> N-1309 Rud
-                                            <br/>
-                                            <abbr title="Phone">P:</abbr> (234) 145-1810 
+                                            <strong>{{ !isset($financial_profile->address1) ? (isset($financial_profile->address2) ? $financial_profile->address2 : '') : $financial_profile->address1 }}</strong>
+                                            <br/> {{ isset($financial_profile->city) ? $financial_profile->city : ''}}
+                                            <abbr title="Postal Code">P:</abbr> {{ isset($financial_profile->postal_code) ? $financial_profile->postal_code : '' }}
+                                            <br/> {{ isset($financial_profile->region) ? $financial_profile->region : ''}}
+                                            <br/> {{ isset($country) ? $country : ''}}
                                         </address>
                                         <address>
                                             <strong>{{ $member['full_name'] }}</strong>
                                             <br/>
-                                            <a href="mailto:{{$member['email_address']}}"> {{ $member['email_address'] }} </a>
+                                            <a href="mailto:{{$member['email_address']}}"> {{ $member['email_address'] }} </a></br>
+                                            @if(isset($member['address']) && $member['address'])
+                                                {{
+                                                    $member['address']->address1.' '.$member['address']->postal_code.' '.$member['address']->city.' '.$member['address']->region
+                                                }}
+                                            @endif
+                                            {{ ' '.$member['country'] }}
                                         </address>
                                     </div>
                                 </div>
                                 <div class="col-md-8 invoice-block">
                                     <ul class="list-unstyled amounts">
                                         <li>
-                                            <strong>Sub - Total amount:</strong> {{$sub_total}} </li>
+                                            <strong>Sub - Total amount:</strong> {{$sub_total.' '.$currency}} </li>
                                         <li>
                                             <strong>Discount:</strong> {{$discount}} </li>
                                         @foreach($vat as $key_vat=>$item_vat)

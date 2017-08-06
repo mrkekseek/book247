@@ -1841,21 +1841,32 @@ class FrontEndUserController extends Base
                 $country = $get_country->name;
             }
 
+            $address = '';
+            if (isset($member_personal->address) && $member_personal->address) {
+                $address = Address::find($member_personal->address);
+                if (isset($address->country_id) && $address->country_id==0) {
+                    $country = '-';
+                } elseif (isset($address->country_id)) {
+                    $get_country = Countries::where('id','=',$address->country_id)->get()->first();
+                    $country = $get_country->name;
+                }
+            }
+
             $invoice_user = [
                 'full_name' => $member->first_name . ' ' . $member->middle_name . ' ' . $member->last_name,
                 'email_address' => $member->email,
                 'date_of_birth' => $member_personal->date_of_birth,
                 'country' => $country,
+                'address'   => $address
             ];
         }
-
-
         $breadcrumbs = [
             'Home' => route('admin'),
             'Administration' => route('admin'),
             'Back End User' => route('admin'),
             'All Backend Users' => '',
         ];
+
         $text_parts = [
             'title' => 'Back-End Users',
             'subtitle' => 'view all users',
@@ -1864,6 +1875,17 @@ class FrontEndUserController extends Base
         $sidebar_link = 'admin-backend-shop-new_order';
 
         $invoice = Invoice::with('transactions')->with('items')->where('invoice_number','=',$id)->get()->first();
+
+
+        $payee = json_decode($invoice->payee_info);
+        if (isset($payee->country_id) && $payee->country_id == 0) {
+            $country = '-';
+            $currency = '';
+        } else {
+            $get_country = Countries::where('id', '=', $member->country_id)->get()->first();
+            $country = $get_country->name;
+            $currency = $get_country->currency_code;
+        }
 
 
         return view('front/finance/federation/show_invoice', [
@@ -1879,7 +1901,8 @@ class FrontEndUserController extends Base
             'vat' => $vat,
             'grand_total' => $total,
             'financial_profile' =>  json_decode($invoice->payee_info),
-            'country' => $country
+            'country' => $country,
+            'currency' => $currency
         ]);
     }
 

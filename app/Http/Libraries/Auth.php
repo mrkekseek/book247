@@ -26,14 +26,14 @@ class Auth
         self::set_session();
         $session_sso = Session::get('sso_user_id');                       
         if (!empty($session_sso))
-        {   
+        {
             $user_locale = User::where('sso_user_id',$session_sso)->first();            
             if ($user_locale)
             {
                 return $user_locale;
             }
         }        
-        return new User();
+        return false;
     }
 
     public static function check()
@@ -51,9 +51,10 @@ class Auth
     public static function attempt($data = [])
     {
         if (AuthLocal::once(['username' => $data['email'], 'password' => $data['password'], 'sso_user_id' => NULL]) || AuthLocal::once(['email' => $data['email'], 'password' => $data['password'], 'sso_user_id' => NULL]))
-        {   
+        {
             $local_id = AuthLocal::user()->id;
-            $user = User::find($local_id)->toArray();                                  
+            $user = User::find($local_id)->toArray();
+
             if (self::check_exist_api_user($user['username']))
             {   
                 $sso_user = ApiAuth::accounts_get_by_username($user['username']);
@@ -85,7 +86,7 @@ class Auth
             $sso_user = ApiAuth::accounts_get_by_username($data['email']);            
             $sso_user_id = $sso_user['data']->id;
             $exist = User::where('sso_user_id',$sso_user_id)->first();
-            if ( ! empty($exist))
+            if ( ! empty($exist) )
             {
                 self::set_local_user($sso_user_id);
                 return true;
@@ -103,8 +104,25 @@ class Auth
     {
         $user = User::find($uId);
         if ($user) {
-            $personalDetail = PersonalDetail::where('user_id', $uId)->first()->toArray();
-            $dataApiUser = $user->toArray() + $personalDetail;
+            $personalDetail = PersonalDetail::where('user_id', $uId)->first();
+            if (!$personalDetail){
+                // generate basic details so that we can sync-it
+                $personalData = [
+                    'personal_email'=> trim($user->email),
+                    'mobile_number' => Carbon::now()->timestamp . rand(1000, 9999).rand(1000, 9999),
+                    'date_of_birth' => Carbon::today()->toDateString(),
+                    'about_info'    => 'This user has dummy data because it was missing personal information',
+                    'user_id'       => $user->id
+                ];
+
+                $personalDetails = PersonalDetail::firstOrNew(array('user_id'=>$user->id));
+                $personalDetails->fill($personalData);
+                $personalDetails->save();
+
+                $personalDetail = PersonalDetail::where('user_id', $uId)->first();
+            }
+
+            $dataApiUser = $user->toArray() + $personalDetail->toArray();
             $update_user = User::find($uId);
             $u = ApiAuth::checkExist($dataApiUser['username']);
             if ($u['success']) {
@@ -140,7 +158,7 @@ class Auth
     {   
         $domain = self::get_domain();
         Session::flash('new_auth', TRUE);            
-        Session::put('sso_user_id',$sso_user_id);            
+        Session::put('sso_user_id',$sso_user_id);
         Cookie::queue(Cookie::forever('sso_user_id', $sso_user_id, '/', $domain));
     }
 
@@ -186,7 +204,7 @@ class Auth
                 }
             }
         }
-        elseif (empty($cookie_sso) && !empty($session_sso))
+        elseif (empty($cookie_sso) && !empty($session_sso) && empty($new_auth))
         {
             Session::put('sso_user_id','');
         }

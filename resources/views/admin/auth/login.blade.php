@@ -47,14 +47,16 @@
         </div>
         <div class="col-md-6 login-container bs-reset">
             <div class="login-content">
-                <h1>Booking System Administration</h1>
-                <p> This page and the functionality on it is intended only for the employees of "Business Name" and is not for general use. If you got here by mistake please close the page and go on your way. Thanks!  </p>
                 <form class="login-form" method="post" action="{{ route('admin/login') }}">
-                    {!! csrf_field() !!}
                     <div class="alert alert-danger display-hide">
-                        <button class="close" data-close="alert"></button>
-                        <span>Enter any email and password. </span>
-                    </div>
+                        <button class="close" data-close="alert"></button> You have some mistakes highlighted in red. Enter your username and password </div>
+                    <div class="alert alert-success display-hide">
+                        <button class="close" data-close="alert"></button> All went well. Please wait while we authorize you! </div>
+
+                    <h1>Booking System Administration</h1>
+                    <p> This page and the functionality on it is intended only for the employees of "Business Name" and is not for general use. If you got here by mistake please close the page and go on your way. Thanks!  </p>
+
+                    {!! csrf_field() !!}
                     <div class="row">
                         <div class="col-xs-6">
                             <input class="form-control form-control-solid placeholder-no-fix form-group{{ $errors->has('username') ? ' has-error' : '' }}" type="email" value="{{ old('username') }}" autocomplete="off" placeholder="Email" name="email" required/> </div>
@@ -78,14 +80,18 @@
                     </div>
                 </form>
                 <!-- BEGIN FORGOT PASSWORD FORM -->
-                <form class="forget-form" action="javascript:;" method="post">
+                <form class="forget-form" role="form" id="form_forgot_passwd" name="form_forgot_passwd">
+                    <div class="alert alert-danger display-hide">
+                        <button class="close" data-close="alert"></button> You have some form errors. Please check below. </div>
+                    <div class="alert alert-success display-hide">
+                        <button class="close" data-close="alert"></button> Your form validation is successful! </div>
                     <h3 class="font-green">Forgot Password ?</h3>
                     <p> Enter your e-mail address below to reset your password. </p>
                     <div class="form-group">
                         <input class="form-control placeholder-no-fix form-group" type="text" autocomplete="off" placeholder="Email" name="forgot_email" /> </div>
                     <div class="form-actions">
                         <button type="button" id="back-btn" class="btn grey btn-default">Back</button>
-                        <button type="submit" class="btn blue btn-success uppercase pull-right" onclick="javascript: request_reset_email($('input[name=forgot_email]').val());">Submit</button>
+                        <button type="submit" class="btn blue btn-success uppercase pull-right">Submit</button>
                     </div>
                 </form>
                 <!-- END FORGOT PASSWORD FORM -->
@@ -147,8 +153,152 @@
 <script src="{{ asset('assets/global/scripts/app.min.js') }}" type="text/javascript"></script>
 <!-- END THEME GLOBAL SCRIPTS -->
 <!-- BEGIN PAGE LEVEL SCRIPTS -->
-<script src="{{ asset('assets/pages/scripts/login-5.min.js') }}" type="text/javascript"></script>
+
 <script type="text/javascript">
+    $.validator.addMethod("validate_email",function(value, element) {
+        if(/^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/.test( value )) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    },"Please enter a valid Email.");
+
+    var Login = function() {
+
+        var handleLogin = function() {
+
+            $('.login-form').validate({
+                errorElement: 'span', //default input error message container
+                errorClass: 'help-block', // default input error message class
+                focusInvalid: false, // do not focus the last invalid input
+                rules: {
+                    username: {
+                        required: true
+                    },
+                    password: {
+                        required: true
+                    },
+                    remember: {
+                        required: false
+                    }
+                },
+
+                messages: {
+                    username: {
+                        required: "Username is required."
+                    },
+                    password: {
+                        required: "Password is required."
+                    }
+                },
+
+                invalidHandler: function(event, validator) { //display error alert on form submit
+                    $('.alert-danger', $('.login-form')).show();
+                },
+
+                highlight: function(element) { // hightlight error inputs
+                    $(element)
+                        .closest('.form-group').addClass('has-error'); // set error class to the control group
+                },
+
+                success: function(label) {
+                    label.closest('.form-group').removeClass('has-error');
+                    label.remove();
+                },
+
+                errorPlacement: function(error, element) {
+                    error.insertAfter(element.closest('.input-icon'));
+                },
+
+                submitHandler: function(form) {
+//                    form.submit(); // form validation success, call ajax form submit
+                }
+            });
+
+            $('.login-form').submit(function(e) {
+                e.preventDefault();
+                $.ajax({
+                    url: '{{ route('admin/ajax_login')}}',
+                    type: "post",
+                    cache: false,
+                    data: {
+                        'email': $('.login-form').find('input[name=email]').val(),
+                        'password': $('.login-form').find('input[name=password]').val(),
+                        '_token': '{{ csrf_token() }}'
+                    },
+                    success: function (data) {
+                        if (data.success == true) {
+                            if (data.title.length) {
+                                show_notification(data.title, data.message, 'lime', 5000, 0);
+                            }
+                            window.location.href = data.redirect_url;
+                        }
+                        else {
+                            if (data.title.length) {
+                                show_notification(data.title,  data.errors, 'ruby', 5000, true);
+                            }
+                        }
+                    }
+                });
+            });
+
+            $('.login-form input').keypress(function(e) {
+                if (e.which == 13) {
+                    if ($('.login-form').validate().form()) {
+                        $('.login-form').submit(); //form validation success, call ajax form submit
+                    }
+                    return false;
+                }
+            });
+
+            $('.forget-form input').keypress(function(e) {
+                if (e.which == 13) {
+                    if ($('.forget-form').validate().form()) {
+                        $('.forget-form').submit();
+                    }
+                    return false;
+                }
+            });
+
+            $('#forget-password').click(function(){
+                $('.login-form').hide();
+                $('.forget-form').show();
+            });
+
+            $('#back-btn').click(function(){
+                $('.login-form').show();
+                $('.forget-form').hide();
+            });
+        }
+
+        return {
+            //main function to initiate the module
+            init: function() {
+                handleLogin();
+
+                // init background slide images
+                $('.login-bg').backstretch([
+                        "../assets/pages/img/login/bg1.jpg",
+                        "../assets/pages/img/login/bg2.jpg",
+                        "../assets/pages/img/login/bg3.jpg"
+                    ], {
+                        fade: 1000,
+                        duration: 8000
+                    }
+                );
+
+                $('.forget-form').hide();
+
+            }
+
+        };
+
+    }();
+
+    jQuery(document).ready(function() {
+        Login.init();
+    });
 
     function show_notification(title_heading, message, theme, life, sticky) {
         var settings = {
@@ -167,9 +317,9 @@
         $.notific8($.trim(message), settings);
     }
 
-    @if($errors->has('email') || $errors->has('password'))
+    @if(strlen($errors->first('message_body'))>0)
         setTimeout(function() {
-            show_notification('{{$errors->first('header')}}', '{{$errors->first('message_body')}}', 10000, false);
+            show_notification('{{$errors->first('header')}}', '{{$errors->first('message_body')}}', 'ruby', 10000, true);
         }, 500);
     @endif
 
@@ -179,11 +329,10 @@
             type: "post",
             cache: false,
             data: {
-                'email': $('input[name=forgot_email]').val(),
+                'email': email,
                 '_token': '{{ csrf_token() }}'
             },
             success: function (data) {
-                console
                 if (data.success==true) {
                     show_notification(data.title, data.message, 'lime', 5000, 0);
                     setTimeout(function(){
@@ -197,53 +346,72 @@
         });
     }
 
-    $('.forget-form').validate({
-        errorElement: 'span', //default input error message container
-        errorClass: 'help-block', // default input error message class
-        focusInvalid: false, // do not focus the last invalid input
-        rules: {
-            email: {
-                required: true
-            }
-        },
+    var FormValidation = function () {
+        /* Personal Info */
+        var handleValidation3 = function() {
+            var form1 = $('#form_forgot_passwd');
+            var error1 = $('.alert-danger', form1);
+            var success1 = $('.alert-success', form1);
 
-        messages: {
-            email: {
-                required: "Email is required."
-            }
-        },
+            form1.validate({
+                errorElement: 'span', //default input error message container
+                errorClass: 'help-block help-block-error', // default input error message class
+                focusInvalid: false, // do not focus the last invalid input
+                ignore: "",  // validate all fields including form hidden input
+                rules: {
+                    forgot_email: {
+                        required: true,
+                        email: true,
+                        validate_email: true
+                    },
+                },
 
-        invalidHandler: function(event, validator) { //display error alert on form submit
-            $('.alert-danger', $('.login-form')).show();
-        },
+                invalidHandler: function (event, validator) { //display error alert on form submit
+                    success1.hide();
+                    error1.show();
+                    App.scrollTo(error1, -200);
+                },
 
-        highlight: function(element) { // hightlight error inputs
-            $(element)
-                    .closest('.form-group').addClass('has-error'); // set error class to the control group
-        },
+                errorPlacement: function (error, element) { // render error placement for each input type
+                    var icon = $(element).parent('.input-icon').children('i');
+                    icon.removeClass('fa-check').addClass("fa-warning");
+                    icon.attr("data-original-title", error.text()).tooltip({'container': 'body'});
+                },
 
-        success: function(label) {
-            label.closest('.form-group').removeClass('has-error');
-            label.remove();
-        },
+                highlight: function (element) { // hightlight error inputs
+                    $(element)
+                        .closest('.form-group').removeClass("has-success").addClass('has-error'); // set error class to the control group
+                },
 
-        errorPlacement: function(error, element) {
-            error.insertAfter(element.closest('.input-icon'));
-        },
+                unhighlight: function (element) { // revert the change done by hightlight
 
-        submitHandler: function(form) {
-            request_reset_email($('input[name=email]').val());
+                },
+
+                success: function (label, element) {
+                    var icon = $(element).parent('.input-icon').children('i');
+                    $(element).closest('.form-group').removeClass('has-error').addClass('has-success'); // set success class to the control group
+                    icon.removeClass("fa-warning").addClass("fa-check");
+                },
+
+                submitHandler: function (form1) {
+                    success1.show();
+                    error1.hide();
+                    request_reset_email($('input[name=forgot_email]').val()); // submit the form
+                }
+            });
         }
-    });
 
-//    $('.forget-form input').keypress(function(e) {
-//        if (e.which == 13) {
-//            if ($('.forget-form').validate().form()) {
-//                $('.forget-form').submit(); //form validation success, call ajax form submit
-//            }
-//            return false;
-//        }
-//    });
+        return {
+            //main function to initiate the module
+            init: function () {
+                handleValidation3();
+            }
+        };
+    }();
+
+    $(document).ready(function(){
+        FormValidation.init();
+    });
 
 </script>
 <!-- END PAGE LEVEL SCRIPTS -->

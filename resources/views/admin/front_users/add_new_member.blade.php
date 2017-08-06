@@ -343,6 +343,7 @@
                     submitHandler: function (form) {
                         success2.show();
                         error2.hide();
+                        blockContent('.portlet');
                         register_member(); // submit the form
                     }
                 });
@@ -414,6 +415,7 @@
                     'adr_country_id':   $('select[name=personal_addr_country]').val(),
                 },
                 success: function (data) {
+                    $('.portlet').unblock();
                     if (data.success) {
                         show_notification(data.title, data.message, 'lime', 3500, 0);
                         setTimeout(function(){
@@ -433,6 +435,21 @@
                             show_notification('User registration ERROR', 'Something went wrong with the registration. Try changing the email/phone number or try reloading the page', 'tangerine', 3500, 0);
                         }
                     }
+                }
+            });
+        }
+        
+        function blockContent(selector){
+            var message =  "<div class='loading-message loading-message-boxed'>	<img src='/assets/global/img/loading-spinner-grey.gif' align=''><span>&nbsp;&nbsp;Processing...</span></div>";
+            $(selector).block({ 
+                message: message, 
+                overlayCSS: { 
+                    backgroundColor: '#555555',
+                    opacity : '0.05'
+                },
+                css: {
+                    border: 'none',
+                    backgroundColor: 'none'
                 }
             });
         }

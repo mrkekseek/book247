@@ -442,6 +442,87 @@ class BackEndUserController extends Controller
         //
     }
 
+    public function remove_member(Request $request)
+    {
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
+            return redirect()->intended(route('admin/login'));
+        } elseif (!$user->can('manage-employees')){
+            /*return [
+                'success'   => false,
+                'errors'    => 'You don\'t have permission to access this page',
+                'title'     => 'Permission Error'];*/
+            return redirect()->intended(route('admin/error/permission_denied'));
+        } elseif ($user->id == $request->get('memberID')) {
+            return [
+                'success'   => false,
+                'errors'    => 'You don\'t have permission remove yourself.',
+                'title'     => 'Permission Error'];
+        }
+
+        $back_user = User::find($request->get('memberID'));
+        if ($back_user) {
+            $back_user->status = 'deleted';
+            $back_user->save();
+            return [
+                'success' => true,
+                'title'   => 'User removed',
+                'message' => 'Backend user was removed'
+            ];
+        } else {
+            return [
+                'success' => false,
+                'title'   => 'Invalid user',
+                'message' => 'This is not a valid user'
+            ];
+        }
+
+    }
+
+
+    public function activate_deactivate_member(Request $request)
+    {
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
+            return redirect()->intended(route('admin/login'));
+        } elseif (!$user->can('manage-employees')){
+            /*return [
+                'success'   => false,
+                'errors'    => 'You don\'t have permission to access this page',
+                'title'     => 'Permission Error'];*/
+            return redirect()->intended(route('admin/error/permission_denied'));
+        } elseif ($user->id == $request->get('memberID')) {
+            return [
+            'success'   => false,
+            'errors'    => 'You don\'t have permission suspend/reactivate yourself.',
+            'title'     => 'Permission Error'];
+        }
+        $back_user = User::find($request->get('memberID'));
+        if($back_user) {
+            if ($request->get('action') == 'suspend') {
+                $back_user->status = 'suspended';
+                $message = "User suspended";
+            } elseif ($request->get('action') == 'reactivate') {
+                $back_user->status = 'active';
+                $message = "User reactivated";
+            }
+            $back_user->save();
+            return [
+                'success' => true,
+                'title'   => 'Success',
+                'message' => $message
+            ];
+
+        } else {
+            return [
+                'success' => false,
+                'title'   => 'Invalid user',
+                'message' => 'This is not a valid user'
+            ];
+        }
+
+    }
+
     /**
      * Update the specified resource in storage.
      *
@@ -532,10 +613,9 @@ class BackEndUserController extends Controller
             'gender'        => $vars['gender']
         ];
         $userCh = User::find($id);
-
         $updateRules = [
-            'first_name'=> 'required|min:4|max:150',
-            'last_name' => 'required|min:4|max:150',
+            'first_name'=> 'required|min:2|max:150',
+            'last_name' => 'required|min:2|max:150',
             'gender'    => 'in:M,F'
         ];
         $validator = Validator::make($userVars, $updateRules, User::$messages, User::$attributeNames);
@@ -561,7 +641,7 @@ class BackEndUserController extends Controller
                                 'social_sec_no' => $vars['social_sec_no'],
                                 'about_info'    => $vars['about_info'],
                                 'user_id'       => $id);
-        $validator = Validator::make($personalData, PersonalDetail::rules('PUT',$id), PersonalDetail::$messages, PersonalDetail::$attributeNames);
+        $validator = Validator::make($personalData, PersonalDetail::rules('PATCH',$userCh->id), PersonalDetail::$messages, PersonalDetail::$attributeNames);
         if ($validator->fails()){
             return array(
                 'success'   => false,
@@ -664,7 +744,7 @@ class BackEndUserController extends Controller
         }
 
         $userVars = $request->only('old_password','password1','password2');
-        if ($user->id!=$backUser->id && !$user->can('manage-employees')){
+        if ($user->id!=$backUser->id || !$user->can('manage-employees')){
             $validator = Validator::make($userVars, [
                 'old_password'  => 'required|min:8',
                 'password1'     => 'required|min:8',
@@ -687,14 +767,35 @@ class BackEndUserController extends Controller
             $auth = auth();
             if ($auth->attempt([ 'id' => $id, 'password' => $userVars['old_password'] ]) || $user->can('manage-employees')) {
                 $backUser->fill(['password' => Hash::make($request->password1)])->save();
+
+                if ($backUser->sso_user_id != null){
+                    $token = \App\Http\Libraries\ApiAuth::resetPassword($backUser->username)['data'];
+                    $apiData = [
+                        "Credentials" => [
+                            "Username" => $backUser->email,
+                            "Password" => ''
+                        ],
+                        "Token"=> $token,
+                        "NewPassword"=> $request->password1,
+                    ];
+                    $updatePassword = \App\Http\Libraries\ApiAuth::updatePassword($apiData);
+                    if ($updatePassword['success']){}
+                    else{
+                        return ['success' => true,
+                            'title'   => 'Password update error',
+                            'errors' => 'There was an error updating password [SSO]'];
+                    }
+                }
+
                 return ['success' => true,
-                        'title'   => 'Password changed',
-                        'message' => 'Everything went well, password was changed'];
+                    'title'   => 'Password changed',
+                    'message' => 'Everything went well, password was changed'];
+
             }
             else{
                 return ['success' => false,
                         'title'   => 'Permission/Old password error',
-                        'errors'  => 'You don\'t have permission to change this user password or old password error.'];
+                        'errors'  => 'No permission to change user password or old password error [LOCAL]'];
             }
         }
     }
@@ -1126,14 +1227,14 @@ class BackEndUserController extends Controller
         $status = AppSettings::get_setting_value_by_name('globalWebsite_registration_finished');
         if ( $status == 0 )
         {
-            return redirect('');
+            return redirect('/admin');
         }
         $countries = Countries::orderBy('name', 'asc')->get();
 		$currencies = Countries::groupBy('currency_code')->get();
         $shopLocation = ShopLocations::first();
         $shopResourceCategories = ShopResourceCategory::get();
         $user = Auth::user();
-		return view('registration-form', [
+		return view('admin/registration-form', [
             'countries'=>$countries, 
             'currencies'=>$currencies, 
             'shopLocation'=>$shopLocation,
