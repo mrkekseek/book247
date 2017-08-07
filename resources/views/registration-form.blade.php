@@ -457,26 +457,6 @@
 <!-- BEGIN THEME LAYOUT SCRIPTS -->
 <!-- END THEME LAYOUT SCRIPTS -->
 
-<script>
-    $(document).ready(function(){
-
-        $("input[name='clubname']").val('Test');
-        $("input[name='email']").val('test@div-art.com');
-        $("input[name='phone']").val('380986604726');
-        $("input[name='fax']").val('12341234');
-        $("input[name='addressline1']").val('Test');
-        $("input[name='addressline2']").val('Test');
-        $("input[name='city']").val('Test');
-        $("input[name='region']").val('Test');
-        $("input[name='postalcode']").val('123123');
-
-        $("select").each(function(index, value){
-            $(value).val($(this).find("option").last().val());
-        });
-
-    });
-</script>
-
 <script src="https://checkout.stripe.com/checkout.js" type="text/javascript"></script>
 <script>
 
@@ -486,7 +466,7 @@
             image : '{{ asset('assets/global/img/sqf-logo.png') }}',
             email : '{{ Auth::user()->email }}',
             token: function(token, args) {
-                
+
                 $.ajax({
                     url : "{{ route('charge_customer') }}",
                     data : {
