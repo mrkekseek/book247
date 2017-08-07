@@ -789,7 +789,7 @@ Route::group(['middleware'=>'web', 'prefix'=>'admin'], function(){
 
     Route::post('membership_plans/cancel_member_plan', [
         'as'    => 'admin/membership_plans/cancel_member_plan',
-        'uses'  => 'Federation\@cancel_membership_for_member'
+        'uses'  => 'Federation\MembershipController@cancel_membership_for_member'
     ]);
 
     Route::post('membership_plans/delete_pending_action', [
