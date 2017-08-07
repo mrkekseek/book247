@@ -137,6 +137,11 @@ Route::group(['middleware' => 'web'], function () {
             return view('admin/auth/login');
         }]);
 
+    Route::post('admin/ajax_login', [
+            'as' => 'admin/ajax_login',
+            'uses' => 'AdminController@ajax_authenticate']
+    );
+
     Route::post('admin/login', [
             'as'    => 'admin/login',
             'uses'  => 'AdminController@authenticate']
@@ -1086,6 +1091,8 @@ Route::group(['prefix'=>'ajax', 'middleware' => 'web'], function(){
 //        'as'    => 'ajax/booking_not_show_change_status',
 //        'uses'  => 'BookingController@not_show_status_change'
 //    ]);
+
+
 
     Route::post('add_friend_by_phone', [
         'as'    => 'ajax/add_friend_by_phone',

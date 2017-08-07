@@ -16,6 +16,7 @@ use App\UserDocuments;
 use App\ShopLocationCategoryIntervals;
 use App\MembershipRestriction;
 use App\MembershipPlan;
+use App\GeneralNote;
 use Illuminate\Http\Response;
 use Illuminate\Http\Request;
 use App\Http\Requests;
@@ -504,6 +505,30 @@ class BackEndUserController extends Controller
                 $back_user->status = 'active';
                 $message = "User reactivated";
             }
+
+
+
+
+
+            $note_fill = [
+                'by_user_id'    => $user->id,
+                'for_user_id'   => $back_user->id,
+                'note_title'    => $back_user->status == 'active' ? 'User reactivated.' : "User suspended",
+                'note_body'     => '',
+                'note_type'     => 'member status update',
+                'privacy'       => '',
+                'status'        => 'unread'];
+            if (strlen($request->get('message'))){
+                $note_fill['note_body'] = $request->get('message');
+                $note_fill['privacy']   = 'employees';
+
+                $validator = Validator::make($note_fill, GeneralNote::rules('POST'), GeneralNote::$message, GeneralNote::$attributeNames);
+                if (!$validator->fails()){
+                    $generalNote = GeneralNote::create($note_fill);
+                    $generalNote->save();
+                }
+            }
+
             $back_user->save();
             return [
                 'success' => true,
@@ -518,7 +543,59 @@ class BackEndUserController extends Controller
                 'message' => 'This is not a valid user'
             ];
         }
+    }
 
+    public function reactivate_member(Request $request){
+
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
+            return [
+                'success' => false,
+                'title'   => 'You need to be logged in',
+                'errors'  => 'You need to be logged in as an employee in order to use this function'];
+        }
+        $vars = $request->only('user_id','message');
+
+        $member = User::where('id','=',$vars['user_id'])->get()->first();
+        if (!$member){
+            return [
+                'success' => false,
+                'title'   => 'Member not found',
+                'errors'  => 'The member you want to suspend/reactivate was not found in the system'];
+        }
+
+        if ($member->status != 'deleted') {
+            return [
+                'success' => false,
+                'title'   => 'Not a relevant action.',
+                'errors'  => 'The member you want to reactivate is already active'];
+        }
+
+        $note_fill = [
+            'by_user_id'    => $user->id,
+            'for_user_id'   => $member->id,
+            'note_title'    => 'User reactivated.',
+            'note_body'     => '',
+            'note_type'     => 'member status update',
+            'privacy'       => '',
+            'status'        => 'unread'];
+        if (strlen($vars['message'])){
+            $note_fill['note_body'] = $vars['message'];
+            $note_fill['privacy']   = 'employees';
+
+            $validator = Validator::make($note_fill, GeneralNote::rules('POST'), GeneralNote::$message, GeneralNote::$attributeNames);
+            if (!$validator->fails()){
+                $generalNote = GeneralNote::create($note_fill);
+                $generalNote->save();
+            }
+        }
+
+        $member->status = 'active';
+        $member->save();
+        return [
+            'success' => true,
+            'title'   => 'User reactivated.',
+            'message'  => 'You successfully reactivated the user.'];
     }
 
     /**

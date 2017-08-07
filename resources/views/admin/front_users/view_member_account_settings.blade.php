@@ -188,6 +188,9 @@
                                                                     <div class="col-md-8">
                                                                         <select name="store_credit_value" class="form-control input-inline input-large  inline-block list_all_plans">
                                                                             <option value="-1"> Select store credit package </option>
+                                                                            @foreach($store_credit_products as $package)
+                                                                                <option value="{{ $package->id }}"> {{ $package->name }} </option>
+                                                                            @endforeach
                                                                         </select>
                                                                         <button class="btn uppercase green-meadow inline-block">Add to account</button>
                                                                     </div>
@@ -1637,7 +1640,7 @@
                 cache: false,
                 data: {
                     'member_id':     '{{ $user->id }}',
-                    'amount':   $('input[name="store_credit_value"]').val(),
+                    'package_id':   $('select[name="store_credit_value"]').val(),
                     'is_bonus':0,
                     'issue_invoice':1
                 },

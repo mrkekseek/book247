@@ -60,6 +60,18 @@
     animation: spin 2s linear infinite;
 }
 
+.text-info {
+    color: #5b9bd1;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 25px;
+    display: block;
+}
+
+.text-info b {
+    font-weight: 600;
+}
+
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
