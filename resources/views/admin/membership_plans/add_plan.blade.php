@@ -297,6 +297,7 @@
                     submitHandler: function (form) {
                         success1.show();
                         error1.hide();
+                        blockContent('.portlet');
                         add_new_membership(); // submit the form
                     }
                 });
@@ -334,6 +335,7 @@
                     'membership_long_description':  $('textarea[name=membership_long_description]').val(),
                 },
                 success: function(data){
+                    $('.portlet').unblock();
                     if(data.success){
                         show_notification(data.title, data.message, 'lime', 3500, 0);
                         setTimeout(function(){
@@ -343,6 +345,21 @@
                     else{
                         show_notification(data.title, data.errors, 'ruby', 3500, 0);
                     }
+                }
+            });
+        }
+        
+        function blockContent(selector){
+            var message =  "<div class='loading-message loading-message-boxed'>	<img src='/assets/global/img/loading-spinner-grey.gif' align=''><span>&nbsp;&nbsp;Processing...</span></div>";
+            $(selector).block({ 
+                message: message, 
+                overlayCSS: { 
+                    backgroundColor: '#555555',
+                    opacity : '0.05'
+                },
+                css: {
+                    border: 'none',
+                    backgroundColor: 'none'
                 }
             });
         }

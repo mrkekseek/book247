@@ -690,7 +690,6 @@ class BackEndUserController extends Controller
             'gender'        => $vars['gender']
         ];
         $userCh = User::find($id);
-
         $updateRules = [
             'first_name'=> 'required|min:2|max:150',
             'last_name' => 'required|min:2|max:150',
@@ -719,7 +718,7 @@ class BackEndUserController extends Controller
                                 'social_sec_no' => $vars['social_sec_no'],
                                 'about_info'    => $vars['about_info'],
                                 'user_id'       => $id);
-        $validator = Validator::make($personalData, PersonalDetail::rules('PUT',$id), PersonalDetail::$messages, PersonalDetail::$attributeNames);
+        $validator = Validator::make($personalData, PersonalDetail::rules('PATCH',$userCh->id), PersonalDetail::$messages, PersonalDetail::$attributeNames);
         if ($validator->fails()){
             return array(
                 'success'   => false,
@@ -822,7 +821,7 @@ class BackEndUserController extends Controller
         }
 
         $userVars = $request->only('old_password','password1','password2');
-        if ($user->id!=$backUser->id && !$user->can('manage-employees')){
+        if ($user->id!=$backUser->id || !$user->can('manage-employees')){
             $validator = Validator::make($userVars, [
                 'old_password'  => 'required|min:8',
                 'password1'     => 'required|min:8',
@@ -845,14 +844,35 @@ class BackEndUserController extends Controller
             $auth = auth();
             if ($auth->attempt([ 'id' => $id, 'password' => $userVars['old_password'] ]) || $user->can('manage-employees')) {
                 $backUser->fill(['password' => Hash::make($request->password1)])->save();
+
+                if ($backUser->sso_user_id != null){
+                    $token = \App\Http\Libraries\ApiAuth::resetPassword($backUser->username)['data'];
+                    $apiData = [
+                        "Credentials" => [
+                            "Username" => $backUser->email,
+                            "Password" => ''
+                        ],
+                        "Token"=> $token,
+                        "NewPassword"=> $request->password1,
+                    ];
+                    $updatePassword = \App\Http\Libraries\ApiAuth::updatePassword($apiData);
+                    if ($updatePassword['success']){}
+                    else{
+                        return ['success' => true,
+                            'title'   => 'Password update error',
+                            'errors' => 'There was an error updating password [SSO]'];
+                    }
+                }
+
                 return ['success' => true,
-                        'title'   => 'Password changed',
-                        'message' => 'Everything went well, password was changed'];
+                    'title'   => 'Password changed',
+                    'message' => 'Everything went well, password was changed'];
+
             }
             else{
                 return ['success' => false,
                         'title'   => 'Permission/Old password error',
-                        'errors'  => 'You don\'t have permission to change this user password or old password error.'];
+                        'errors'  => 'No permission to change user password or old password error [LOCAL]'];
             }
         }
     }
