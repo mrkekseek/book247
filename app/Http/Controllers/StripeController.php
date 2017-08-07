@@ -42,7 +42,7 @@ class StripeController extends Controller
              }
              $response["success"] = TRUE;
          }
-         
+
          return $response;
      }
 
@@ -96,6 +96,6 @@ class StripeController extends Controller
      */
      static public function isStripeCustomer()
      {
-         return User::where('id', '=', Auth::user()->id)->where('stripe_id', '!=', 0)->first();
+         return User::where('id', '=', Auth::user()->id)->where('stripe_id', '!=', '')->first();
      }
 }
