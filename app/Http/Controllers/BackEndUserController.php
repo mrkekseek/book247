@@ -34,6 +34,7 @@ use Webpatser\Countries\Countries;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Config;
 use App\Http\Controllers\AppSettings;
+use App\Http\Controllers\StripeController;
 
 class BackEndUserController extends Controller
 {
@@ -1223,106 +1224,23 @@ class BackEndUserController extends Controller
         ]);
    	}
 
-
-   /**
-    * Charge a Stripe customer.
-    *
-    * @var Stripe\Customer $customer
-    * @param integer $product_id
-    * @param integer $product_price
-    * @param string $product_name
-    * @param string $token
-    * @return createStripeCharge()
-    */
-    public function chargeCustomer($token)
-    {
-        \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
-
-        if ( ! $this->isStripeCustomer())
-        {
-            $customer = $this->createStripeCustomer($token);
-        }
-        else
-        {
-            $customer = \Stripe\Customer::retrieve(Auth::user()->stripe_id);
-        }
-
-        return $this->createStripeCharge($customer);
-    }
-
-   /**
-    * Create a Stripe charge.
-    *
-    * @var Stripe\Charge $charge
-    * @var Stripe\Error\Card $e
-    * @param integer $product_id
-    * @param integer $product_price
-    * @param string $product_name
-    * @param Stripe\Customer $customer
-    * @return postStoreOrder()
-    */
-    public function createStripeCharge($customer)
-    {
-        $charge = \Stripe\Charge::create(array(
-            "amount" => 50,
-            "currency" => "usd",
-            "customer" => $customer->id,
-            "description" => 'test'
-        ));
-        return $charge;
-    }
-
-
-   /**
-    * Create a new Stripe customer for a given user.
-    *
-    * @var Stripe\Customer $customer
-    * @param string $token
-    * @return Stripe\Customer $customer
-    */
-    public function createStripeCustomer($token)
-    {
-        \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
-
-        $customer = \Stripe\Customer::create([
-            "description" => Auth::user()->email,
-            "source" => $token
-        ]);
-
-        Auth::user()->stripe_id = $customer->id;
-        Auth::user()->save();
-
-        return $customer;
-    }
-
-   /**
-    * Check if the Stripe customer exists.
-    *
-    * @return boolean
-    */
-    public function isStripeCustomer()
-    {
-        return \App\User::where('id', '=', Auth::user()->id)->where('stripe_id', '!=', 0)->first();
-    }
-
     public function registrationStepsSave(Request $request)
     {
         $status = AppSettings::get_setting_value_by_name('globalWebsite_registration_finished');
-        if ( $status == 0 )
+        $response = [
+            'success' => FALSE,
+        ];
+
+        if ( $status != 0 )
         {
-            $response = [
-                'success' => FALSE,
-            ];
-        }
-        else
-        {
+            $user = Auth::user();
+            $data = $request->only('stripeToken', 'clubname','email','phone','fax','addressline1','addressline2','city','region','postalcode','country','currency','sport','time','members','pay','resource','day','limit');
+
             if ( ! empty($data['stripeToken']))
             {
-                $this->chargeCustomer($data['stripeToken']);
+                $customer  = StripeController::chargeCustomer($data['stripeToken']);
             }
-            
-            $user = Auth::user();
-            $data = $request->only('clubname','email','phone','fax','addressline1','addressline2','city','region','postalcode','country','currency','sport','time','members','pay','resource','day','limit');
+
             $shopLocation = ShopLocations::first();
             $shopLocation->phone = $data['phone'];
             $shopLocation->fax = $data['fax'];
@@ -1407,7 +1325,9 @@ class BackEndUserController extends Controller
             AppSettings::update_settings_value_by_name('globalWebsite_registration_finished', 20);
 
             AppSettings::clear_cache();
+            $response['success'] = TRUE;
         }
+
         return $response;
     }
 }

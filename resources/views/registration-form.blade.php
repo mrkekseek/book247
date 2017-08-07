@@ -362,22 +362,23 @@
                                         <!--END STEP 3-->
                                         <!--STEP 4-->
                                         <div class="tab-pane clearfix text-center" id="tab4">
-                                              <script
-                                                src="https://checkout.stripe.com/checkout.js" class="stripe-button"
-                                                data-key="{{ env('STRIPE_KEY') }}"
-                                                data-amount="0.50"
-                                                data-name="Book247"
-                                                data-description="Sport Booking System"
-                                                data-image="{{ asset('assets/global/img/sqf-logo.png') }}"
-                                                data-locale="auto">
-                                              </script>
-
-                                            <!--<div class="col-md-offset-4 col-md-4 well">
-                                                <p><strong>Finish:</strong> Click submit to finish your registration! But don`t worry if you want to make changes. Every setting can be changed in "General settings".</p>
+                                            <div class="col-md-offset-4 col-md-4 well">
+                                                <button class="btn btn-success btnPay">Pay with Card</button>
                                             </div>
+
+                                            <div class="col-md-offset-4 col-md-4">
+                                                <div class="alert alert-danger display-none">
+                                                    <button class="close" data-dismiss="alert"></button>
+                                                    <p><strong>Finish:</strong> Click submit to finish your registration! But don`t worry if you want to make changes. Every setting can be changed in "General settings".</p>
+                                                </div>
+                                                <div class="alert alert-success display-none">
+                                                    <button class="close" data-dismiss="alert"></button> Your card is successful!
+                                                </div>
+                                            </div>
+
                                             <div class="col-md-12">
                                                 <h3 class="text-center text-success">Congrats! You can now start using Book247!</h3>
-                                            </div>-->
+                                            </div>
                                         </div>
                                         <!--END STEP 4-->
                                     </div>
@@ -391,7 +392,7 @@
                                             <a href="javascript:;" class="btn btn-outline green button-next"> Continue
                                                 <i class="fa fa-angle-right"></i>
                                             </a>
-                                            <a href="javascript:;" class="btn green button-submit"> Submit
+                                            <a href="javascript:;" class="btn green  btn-finish" > Submit
                                                 <i class="fa fa-check"></i>
                                             </a>
                                         </div>
@@ -405,6 +406,21 @@
         </div>
     </div>
 <!-- END REGISTRATION -->
+<!-- BEGIN MODEL -->
+<div class="modal fade" id="thank_messages" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" >&times;</button>
+        <h4 class="modal-title">Thank you message!</h4>
+      </div>
+      <div class="modal-body">
+        <p>Thank you message!</p>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- END MODEL -->
 <!-- BEGIN COPYRIGHT -->
 <div class="copyright"> 2017 © BookingSystem by SQF. Squash Fitness! </div>
 <!-- END COPYRIGHT -->
@@ -458,7 +474,50 @@
             $(value).val($(this).find("option").last().val());
         });
 
+    });
+</script>
 
+<script src="https://checkout.stripe.com/checkout.js" type="text/javascript"></script>
+<script>
+
+    $(document).ready(function(){
+        var handler = StripeCheckout.configure({
+            key : '{{ env('STRIPE_KEY') }}',
+            image : '{{ asset('assets/global/img/sqf-logo.png') }}',
+            email : '{{ Auth::user()->email }}',
+            token: function(token, args) {
+                
+                $.ajax({
+                    url : "{{ route('charge_customer') }}",
+                    data : {
+                        '_token' : '{{ csrf_token() }}',
+                        'token' : token.id,
+                        'args'  : args
+                    },
+                    method : 'post',
+                    success : function(data)
+                    {
+                        if (data.success)
+                        {
+                            $("#tab4 .alert-success").show();
+                            $(".btn-finish").show();
+                        }
+                        else
+                        {
+                            $("#tab4 .alert-errors").show();
+                        }
+                    }
+                });
+            }
+        });
+
+        $(".btnPay").click(function(e) {
+            handler.open({
+                name: 'Book 247',
+                description: 'Sport Booking System'
+            });
+            e.preventDefault();
+        });
     });
 </script>
 @stop

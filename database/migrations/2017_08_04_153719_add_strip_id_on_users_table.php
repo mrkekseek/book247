@@ -13,7 +13,9 @@ class AddStripIdOnUsersTable extends Migration
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->integer('stripe_id')->unsigned()->after('id');
+            $table->string('stripe_id', 255)->nullable()->after('sso_user_id');
+            $table->string('card_brand', 255)->nullable()->after('stripe_id');
+            $table->integer('card_last_four')->unsigned()->after('card_brand');
         });
     }
 
@@ -26,6 +28,8 @@ class AddStripIdOnUsersTable extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
              $table->dropColumn('stripe_id');
+             $table->dropColumn('card_brand');
+             $table->dropColumn('card_last_four');
         });
     }
 }
