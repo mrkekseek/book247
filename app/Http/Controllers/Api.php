@@ -1,5 +1,6 @@
 <?php
 namespace App\Http\Controllers;
+use Exception;
 
 
 class Api {
@@ -57,15 +58,15 @@ class Api {
                 $api_url .= '?'. $get_url;
             }
             $ApiKey = self::generateApiKey($get_url);
-        } else {
+        }
+        else {
             $ApiKey = self::generateApiKey($data);
         }
         $curl = curl_init($api_base.'/'.$api_url);
 
-//        dd($api_base.'/'.$api_url . '    ' .$ApiKey . '    ' . json_encode($data));
-//        dd(json_encode($data,JSON_UNESCAPED_SLASHES));
         curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $method);
         curl_setopt($curl, CURLOPT_FRESH_CONNECT, TRUE);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, TRUE);
         $headers = [
             'Content-Type: application/json',
             'ApiKey:'.$ApiKey,
@@ -78,6 +79,19 @@ class Api {
         }
         curl_setopt($curl, CURLOPT_HTTPHEADER,$headers);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+
+        /*try{
+            $curl_results = curl_exec($curl);
+            if (FALSE === $curl_results)
+                throw new Exception(curl_error($curl), curl_errno($curl));
+        } catch(Exception $e) {
+
+        trigger_error(sprintf(
+            'Curl failed with error #%d: %s',
+            $e->getCode(), $e->getMessage()),
+            E_USER_ERROR);
+        }*/
+        
         $curl_results = curl_exec($curl);
         $result = json_decode(str_replace('&quot;', '"', $curl_results));
         if (!empty(json_last_error()))

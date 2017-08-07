@@ -45,7 +45,14 @@ class AdminController extends Base
 //        if($r->method() == "POST"){
 //            return json_encode($r->all());
 //        }
-        $result =  Api::send_curl(['memberSSOid' => 165 ,'membership_id' => null, 'account_key' => '45788-52757-20554-64471-70259', 'return_url' => "https://rankedin.com/Tournament/Index/408" ],'federation_buy_license','POST');
+        $result =  Api::send_curl([
+            'memberSSOid' => 165 ,
+            'membership_id' => null,
+            'account_key' => '45788-52757-20554-64471-70259',
+            'return_url' => "https://rankedin.com/Tournament/Index/408" ],
+            'federation_buy_license',
+            'POST');
+        //$result =  Api::send_curl(['memberSSOid' => 116 ,'membership_id' => null, 'account_key' => '41422-65673-68269-90561-57420', 'return_url' => "https://rankedin.com/Tournament/Index/408" ],'federation_buy_license','POST');
         if(isset($result->iFrameUrl)) {
             return view('development',['link' => $result->iFrameUrl]);
         } else {

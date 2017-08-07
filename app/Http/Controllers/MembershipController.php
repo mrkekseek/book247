@@ -743,7 +743,6 @@ class MembershipController extends Controller
 
     public function iframed($token ,$sso_id, $membership_id)
     {
-
         $permission = IframePermission::where([['user_id','=',$sso_id],['permission_token','=',$token]])->first();
         if(!isset($permission)) {
             return "You have no permission";
@@ -788,7 +787,7 @@ class MembershipController extends Controller
         }
         if (!$membership) {
             $membership_id = null;
-            $membership_list = MembershipPlan::all();
+            $membership_list = MembershipPlan::where('status','=','active')->where('id','!=',1)->get();
         }
 
         return view('front/iframe/federation/buy_license_new' ,[
