@@ -246,15 +246,16 @@
                                         <div class="tab-pane" id="tab_1_3">
                                             @if($user->sso_user_id)
                                             <form action="#" id="form_password_update" role="form">
-                                                <div class="alert alert-danger display-hide">
-                                                    <button class="close" data-close="alert"></button> You have some form errors. Please check below. </div>
-                                                <div class="alert alert-success display-hide">
-                                                    <button class="close" data-close="alert"></button> Your form validation is successful! </div>
+                                                <div class="note note-warning membership_rules">
+                                                    Under this note you have information about where the user will receive an email with password reset link.
+                                                </div>
+
+                                                <span class="text-info" ><b>Email</b>: &nbsp; {{ $user->email }} </span><br/>
+                                                <span class="text-info" ><b>Username</b>: &nbsp; {{ $user->username }} </span>
                                                 <div class="form-group">
-                                                    <label class="control-label">Email</label>
                                                     <div class="input-icon">
                                                         <i class="fa"></i>
-                                                        <input type="text" name="reset_password_email" id="reset_password_email" class="form-control" value="{{ $user->email }}"/> </div>
+                                                        <input type="hidden" name="reset_password_email" id="reset_password_email" class="form-control" value="{{ $user->email }}"/> </div>
                                                 </div>
                                                 <div class="margin-top-10">
                                                     <a href="javascript:;" class="btn green" onClick="javascript:request_reset_email() ;"> Forgot password </a>

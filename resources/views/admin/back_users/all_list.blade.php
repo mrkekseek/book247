@@ -24,6 +24,39 @@
 
 @section('pageContentBody')
     <div class="page-content">
+        <div class="modal fade" id="reactivate_member" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form role="form" id="form_activate_deleted_user" action="#">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                            <h4 class="modal-title"> Reactivate user </h4>
+                        </div>
+                        <div class="modal-body form-horizontal">
+                            <div class="modal-body form-horizontal">
+                                <div class="alert alert-danger display-hide">
+                                    <button class="close" data-close="alert"></button> Please add a short message about your action - more than 10 characters. </div>
+                                <div class="alert alert-success display-hide">
+                                    <button class="close" data-close="alert"></button> Your form validation is successful! </div>
+                                <div class="note note-info" style="margin-bottom:0px;">
+                                    <div class="form-group" style="margin:0px -15px 0px 0px;">
+                                        <label class="control-label"> Message: &nbsp;&nbsp; </label>
+                                        <textarea type="text" class="form-control input-inline input-large input-sm" name="reactivate_member_message"></textarea><br />
+                                    </div>
+                                </div>
+                            </div>
+                            {{ 'Do you really want to reactivate this user?' }}
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn green btn_modify_booking reactivate" data-id="" onclick="javascript: $('#form_activate_deleted_user').submit() ;"> Reactivate </button>
+                            <button type="button" class="btn dark btn-outline" data-dismiss="modal">Return</button>
+                        </div>
+                    </form>
+                </div>
+                <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+        </div>
         <!-- BEGIN PAGE HEAD-->
         <div class="page-head">
             <!-- BEGIN PAGE TITLE -->
@@ -92,7 +125,7 @@
                     <div class="portlet-title">
                         <div class="caption">
                             <i class="icon-equalizer font-blue-steel"></i>
-                            <span class="caption-subject font-blue-steel bold uppercase"> Deleted Members </span>
+                            <span class="caption-subject font-blue-steel bold uppercase"> Deleted Back-End Users </span>
                         </div>
                         <div class="tools">
                             <a class="expand" href="" data-original-title="" title=""> </a>
@@ -127,7 +160,7 @@
                                             <span class="label label-sm {{ $user->status == 'active' ? 'label-success' : 'label-danger' }}"> {{ ucfirst($user->status) }} </span>
                                         </td>
                                         <td>
-                                            <button class="btn btn-sm btn-info yellow-mint" onclick="javascript: reactivate_member('{{ $user->id }}')"> Reactivate </button>
+                                            <button class="btn btn-sm btn-info yellow-mint reactivate-member" data-id="{{ $user->id }}"> Reactivate </button>
                                         </td>
                                     </tr>
                                 @endif
@@ -410,12 +443,64 @@
 
 
             }
+            var handleValidationModal= function() {
+                var form7 = $('#form_activate_deleted_user');
+                var error7 = $('.alert-danger', form7);
+                var success7 = $('.alert-success', form7);
+
+                form7.validate({
+                    errorElement: 'span', //default input error message container
+                    errorClass: 'help-block help-block-error', // default input error message class
+                    focusInvalid: false, // do not focus the last invalid input
+                    ignore: "",  // validate all fields including form hidden input
+                    rules: {
+                        reactivate_member_message: {
+                            minlength: 10,
+                            required: true
+                        },
+                    },
+
+                    invalidHandler: function (event, validator) { //display error alert on form submit
+                        success7.hide();
+                        error7.show();
+                        App.scrollTo(error7, -200);
+                    },
+
+                    errorPlacement: function (error, element) { // render error placement for each input type
+                        var icon = $(element).parent('.input-icon').children('i');
+                        icon.removeClass('fa-check').addClass("fa-warning");
+                        icon.attr("data-original-title", error.text()).tooltip({'container': 'body'});
+                    },
+
+                    highlight: function (element) { // hightlight error inputs
+                        $(element)
+                                .closest('.form-group').removeClass("has-success").addClass('has-error'); // set error class to the control group
+                    },
+
+                    unhighlight: function (element) { // revert the change done by hightlight
+
+                    },
+
+                    success: function (label, element) {
+                        var icon = $(element).parent('.input-icon').children('i');
+                        $(element).closest('.form-group').removeClass('has-error').addClass('has-success'); // set success class to the control group
+                        icon.removeClass("fa-warning").addClass("fa-check");
+                    },
+
+                    submitHandler: function (form) {
+                        success7.show();
+                        error7.hide();
+                        reactivate_member($('#reactivate_member').find('.reactivate').attr('data-id'),$('#reactivate_member').find('textarea[name=reactivate_member_message]').val());
+                    }
+                });
+            }
 
             return {
                 //main function to initiate the module
                 init: function () {
 
                     handleValidation2();
+                    handleValidationModal();
 
                 }
 
@@ -453,12 +538,21 @@
             });
         }
 
-        function reactivate_member(id){
+
+        $(document).on('click','.reactivate-member',function(){
+            $('#reactivate_member').find('.reactivate').attr('data-id',$(this).attr('data-id'));
+            $('#reactivate_member').modal('show');
+
+        });
+
+
+        function reactivate_member(id,message){
             $.ajax({
                 url: '{{ route('ajax/reactivate_member') }}',
                 type: "post",
                 data: {
-                    'user_id': id
+                    'user_id': id,
+                    'message': message
                 },
                 success: function (data) {
                     if (data.success) {

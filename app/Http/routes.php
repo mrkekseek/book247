@@ -1248,7 +1248,7 @@ else
 
         Route::post('reactivate_member', [
             'as' => 'ajax/reactivate_member',
-            'uses' => 'FrontEndUserController@reactivate_member'
+            'uses' => 'BackEndUserController@reactivate_member'
         ]);
 
         Route::post('front_member_update_access_card', [

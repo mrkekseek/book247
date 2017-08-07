@@ -56,15 +56,29 @@
                             <h4 class="modal-title"> {{ $user->status=='active'?'Suspend ':'Reactivate ' }} member </h4>
                         </div>
                         <div class="modal-body form-horizontal">
-                            @if($user->status=='active')
-                                <input type="hidden" name="action" value="suspend"/>
-                            @else
-                                <input type="hidden" name="action" value="reactivate"/>
-                            @endif
-                            {{ $user->status=='active'?'Do you really want to suspend this user?':'Do you really want to reactivate this user' }}
+                            <div class="modal-body form-horizontal">
+                                <div class="alert alert-danger display-hide">
+                                    <button class="close" data-close="alert"></button> Please add a short message about your action - more than 10 characters. </div>
+                                <div class="alert alert-success display-hide">
+                                    <button class="close" data-close="alert"></button> Your form validation is successful! </div>
+                                <div class="note note-info" style="margin-bottom:0px;">
+                                    <div class="form-group" style="margin:0px -15px 0px 0px;">
+                                        <label class="control-label"> Message: &nbsp;&nbsp; </label>
+                                        <textarea class="form-control input-inline input-large" name="change_status_member_message"></textarea><br />
+                                    </div>
+                                    <div class="form-group" style="margin:0px -15px 0px 0px;">
+                                        @if($user->status=='active')
+                                            <input type="hidden" name="action" value="suspend"/>
+                                        @else
+                                            <input type="hidden" name="action" value="reactivate"/>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                            {{ $user->status=='active'?'Do you really want to suspend this user?':'Do you really want to reactivate this user?' }}
                         </div>
                         <div class="modal-footer">
-                            <button type="button" onclick="javascript:change_member_status();" class="btn green btn_modify_booking">{{ $user->status=='active'?'Suspend User':'Reactivate User' }}</button>
+                            <button type="button" onclick="javascript:$('#form_account_change_status').submit();" class="btn green btn_modify_booking">{{ $user->status=='active'?'Suspend User':'Reactivate User' }}</button>
                             <button type="button" class="btn dark btn-outline" data-dismiss="modal">Return</button>
                         </div>
                     </form>
@@ -1391,6 +1405,58 @@
                 });
             }
 
+            var handleValidationModal= function() {
+                var form7 = $('#form_account_change_status');
+                var error7 = $('.alert-danger', form7);
+                var success7 = $('.alert-success', form7);
+
+                form7.validate({
+                    errorElement: 'span', //default input error message container
+                    errorClass: 'help-block help-block-error', // default input error message class
+                    focusInvalid: false, // do not focus the last invalid input
+                    ignore: "",  // validate all fields including form hidden input
+                    rules: {
+                       change_status_member_message: {
+                            minlength: 10,
+                            required: true
+                        },
+                    },
+
+                    invalidHandler: function (event, validator) { //display error alert on form submit
+                        success7.hide();
+                        error7.show();
+                        App.scrollTo(error7, -200);
+                    },
+
+                    errorPlacement: function (error, element) { // render error placement for each input type
+                        var icon = $(element).parent('.input-icon').children('i');
+                        icon.removeClass('fa-check').addClass("fa-warning");
+                        icon.attr("data-original-title", error.text()).tooltip({'container': 'body'});
+                    },
+
+                    highlight: function (element) { // hightlight error inputs
+                        $(element)
+                                .closest('.form-group').removeClass("has-success").addClass('has-error'); // set error class to the control group
+                    },
+
+                    unhighlight: function (element) { // revert the change done by hightlight
+
+                    },
+
+                    success: function (label, element) {
+                        var icon = $(element).parent('.input-icon').children('i');
+                        $(element).closest('.form-group').removeClass('has-error').addClass('has-success'); // set success class to the control group
+                        icon.removeClass("fa-warning").addClass("fa-check");
+                    },
+
+                    submitHandler: function (form) {
+                        success7.show();
+                        error7.hide();
+                        change_member_status(); // submit the form
+                    }
+                });
+            }
+
             return {
                 //main function to initiate the module
                 init: function () {
@@ -1399,6 +1465,7 @@
                     handleValidation3();
                     handleValidation4();
                     handleValidation5();
+                    handleValidationModal();
                 }
             };
         }();
@@ -1592,7 +1659,8 @@
                 cache: false,
                 data: {
                     'memberID':         '{{ $user->id }}',
-                    'action':  $('#form_account_change_status').find('input[name="action"]').val()
+                    'action':  $('#form_account_change_status').find('input[name="action"]').val(),
+                    'message': $('#form_account_change_status').find('textarea').val(),
                 },
                 success: function (data) {
                     if (data.success) {
