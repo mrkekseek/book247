@@ -305,28 +305,46 @@ class ApiAuth
         }
         $ApiKey = self::generateApiKey($data);
 
-        $curl = curl_init(env('SSO_API',false) . $api_url);
-        curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $method);
-        $headers = [
-            'Content-Type: application/json',
-            'ApiKey:' . $ApiKey,
-        ];
+        try {
+            $curl = curl_init(env('SSO_API',false) . $api_url);
 
-        if (in_array($method, ['POST', 'PUT']) && is_array($data)) {
-            curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($data));
-            $headers[] = 'Accept: application/json';
-        } else {
-            $headers[] = 'Accept: text/plain';
+            if (FALSE === $curl)
+                throw new Exception('failed to initialize');
+
+            curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $method);
+            $headers = [
+                'Content-Type: application/json',
+                'ApiKey:' . $ApiKey,
+            ];
+
+            if (in_array($method, ['POST', 'PUT']) && is_array($data)) {
+                curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($data));
+                $headers[] = 'Accept: application/json';
+            } else {
+                $headers[] = 'Accept: text/plain';
+            }
+
+            curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
+            curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+
+            if (App::environment('local')){
+                curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 0);
+                curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
+            }
+
+            $curl_results = curl_exec($curl);
+
+            if (FALSE === $curl_results)
+                throw new Exception(curl_error($curl), curl_errno($curl));
+
+        } catch(Exception $e) {
+
+            trigger_error(sprintf(
+                'Curl failed with error #%d: %s',
+                $e->getCode(), $e->getMessage()),
+                E_USER_ERROR);
         }
 
-        curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-        if (App::environment('local')){
-            curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 0);
-            curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
-        }
-
-        $curl_results = curl_exec($curl);
         $result = json_decode($curl_results);
         if (!empty(json_last_error())) {
             $result = $curl_results;
