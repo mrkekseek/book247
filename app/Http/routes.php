@@ -24,9 +24,53 @@
 
 if (env('FEDERATION',false)){
     include('federation_routes.php');
-}
-else
-{
+} else {
+
+    // Federation api requests
+    Route::get('api/federation_member_has_valid_license', [
+        'as'    => 'api/federation_member_has_valid_license',
+        'uses'  => 'Federation\FederationApi@federation_member_has_valid_license'
+    ]);
+
+    Route::get('api/federation_list_of_licenses', [
+        'as'    => 'api/federation_list_of_licenses',
+        'uses'  => 'Federation\FederationApi@federation_list_of_licenses'
+    ]);
+
+    Route::get('api/federation_buy_license', [
+        'as'    => 'api/federation_buy_license',
+        'uses'  => 'Federation\FederationApi@federation_buy_license'
+    ]);
+
+    Route::post('api/federation_buy_license', [
+        'as'    => 'api/federation_buy_license',
+        'uses'  => 'Federation\FederationApi@federation_buy_license'
+    ]);
+
+
+    Route::post('api/register_owner', [
+        'as'    => 'api/register_owner',
+        'uses'  => 'Federation\FederationApi@register_owner'
+    ]);
+
+    Route::post('api/assign_subdomain_settings', [
+        'as' => 'api/assign_subdomain_settings',
+        'uses' => 'Federation\FederationApi@assign_subdomain_settings'
+    ]);
+
+    Route::get('api/status', [
+        'as'    => 'api/status',
+        'uses'  => 'Federation\FederationApi@status'
+    ]);
+
+    // Federation api requests end
+
+    
+    Route::get('buy_license/{token}/{sso_id}/{license_id?}{request_url?}', [
+        'as'    => 'buy_license',
+        'uses'  => 'MembershipController@iframed'
+    ]);
+
     Route::group(['middleware' => 'apikey', 'prefix' => 'apic'], function () {
         Route::get('status', [
             'as' => 'status',
@@ -119,6 +163,7 @@ else
             'as' => 'admin',
             'uses' => 'AdminController@index'
         ]);
+
 
         Route::get('/admin-home-public', [
             'as' => 'admin-home-public',
@@ -1256,7 +1301,7 @@ else
 
         Route::post('reactivate_member', [
             'as' => 'ajax/reactivate_member',
-            'uses' => 'FrontEndUserController@reactivate_member'
+            'uses' => 'BackEndUserController@reactivate_member'
         ]);
 
         Route::post('front_member_update_access_card', [

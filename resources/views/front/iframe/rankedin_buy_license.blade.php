@@ -78,7 +78,7 @@
                                             </h3>
                                             <p>{{ $m->administration_fee_name .' '. $m->administration_fee_amount }} {{\App\Http\Controllers\AppSettings::get_setting_value_by_name('finance_currency') }}</p>
                                             <p style="height:116px" class="after-cap">
-                                            {{ $m->short_description  }}
+                                                {{ $m->short_description  }}
                                             </p>
                                             <div class="carousel-button-wrap">
                                                 <a href="#" data-id="membership" data-value="{{ $m->id }}" class="form-choice carusel-button steps-button" style="background: {{ $m->plan_calendar_color }}">BUY MEMBERSHIP</a>
@@ -153,7 +153,7 @@
                     <div class="box-item" style="border-top: 8px solid {{ $membership->plan_calendar_color }}">
                         <h2 class="h2">{{ $membership->name }}</h2>
                         {{--<p style="height:96px" class="after-cap">--}}
-                            {{--{{ $membership->short_description  }}--}}
+                        {{--{{ $membership->short_description  }}--}}
                         {{--</p>--}}
                         <h3 class="h3" style="color: {{ $membership->plan_calendar_color }}">{{ $membership->get_price()->price }},-/mo</h3>
                         <p>First month fee {{ $membership->administration_fee_amount }},-</p>

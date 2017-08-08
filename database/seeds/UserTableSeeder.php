@@ -21,12 +21,24 @@ class UserTableSeeder extends Seeder
             'first_name'    => 'Root',
             'last_name'     => 'Administrator',
             'gender'        => 'M',
-            'username'      => 'administrator',
+            'username'      => 'email@book247.net',
             'email'         => 'email@book247.net',
             'password'      => bcrypt('F\bn+uYX6S3}CeUj'),
             'country_id'    => 578,
             'status'        => 'active',
             'created_at'    => Carbon::now()->format('Y-m-d H:i:s')
+        ]);
+
+        // add personal details for the default owner
+        DB::table('personal_details')->insert([
+            'user_id'       => 1,
+            'personal_email'=> 'email@book247.net',
+            'mobile_number' => '123123123123123',
+            'date_of_birth' => Carbon::now(),
+            'about_info'    => 'default owner ID',
+            'bank_acc_no'   => '',
+            'social_sec_no' => '',
+            'customer_number'   => 1
         ]);
 
         // Add system agent account
@@ -41,12 +53,24 @@ class UserTableSeeder extends Seeder
             'first_name'    => 'System',
             'last_name'     => 'Agent',
             'gender'        => 'M',
-            'username'      => 'sysagent',
+            'username'      => 'agent@book247.net',
             'email'         => 'agent@book247.net',
             'password'      => bcrypt(')w2C5nzMcA2V6bQ{'),
             'country_id'    => 578,
             'status'        => 'active',
             'created_at'    => Carbon::now()->format('Y-m-d H:i:s')
+        ]);
+
+        // add personal details for System Agent
+        DB::table('personal_details')->insert([
+            'user_id'       => 2,
+            'personal_email'=> 'agent@book247.net',
+            'mobile_number' => '456456456456456',
+            'date_of_birth' => Carbon::now(),
+            'about_info'    => 'default system user',
+            'bank_acc_no'   => '',
+            'social_sec_no' => '',
+            'customer_number'   => 2
         ]);
 
         // Add system agent account

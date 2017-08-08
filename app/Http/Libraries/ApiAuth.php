@@ -12,9 +12,6 @@ use App\Role;
 
 class ApiAuth
 {
-    const APIKEY = 'apiKey-@f4g8-FH2-8809x-dj22aSwrL=cP24Zd234-TuJh87EqChVBGfs=SG564SD-fgAG47-747AhAP=U456=O97=Y=O6A=OC7b5645MNB-V4OO7Z-qw-OARSOc-SD456OFoCE-=64RW67=QOVq=';
-    const APIURL = 'http://rankedinbookingsso-test.azurewebsites.net/';
-
     static $error = '';
 
     public static function accounts_get($id = 0)
@@ -275,7 +272,7 @@ class ApiAuth
         if (is_array($data)) {
             $data = json_encode($data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
         }
-        $hash = base64_encode(hash_hmac('sha256', $data, self::APIKEY, TRUE));
+        $hash = base64_encode(hash_hmac('sha256', $data, env('SSO_API_KEY',false), TRUE));
         return $hash;
     }
 
@@ -285,7 +282,7 @@ class ApiAuth
             $api_url .= (string)$data;
         }
         $ApiKey = self::generateApiKey($data);
-        $curl = curl_init(self::APIURL . $api_url);
+        $curl = curl_init(env('SSO_API',false) . $api_url);
         curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $method);
         $headers = [
             'Content-Type: application/json',
@@ -318,7 +315,7 @@ class ApiAuth
         if (is_array($data)) {
             $data = json_encode($data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
         }
-        $hash = base64_encode(hash_hmac('sha256', $data, self::APIKEY, TRUE));
+        $hash = base64_encode(hash_hmac('sha256', $data, env('SSO_API_KEY',false), TRUE));
         return $hash;
     }
 
@@ -329,7 +326,7 @@ class ApiAuth
         }
         $ApiKey = self::generateApiKey($data);
         dd($data);
-        $curl = curl_init(self::APIURL . $api_url);
+        $curl = curl_init(env('SSO_API',false) . $api_url);
         curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $method);
         $headers = [
             'Content-Type: application/json',

@@ -595,8 +595,8 @@ class FrontEndUserController extends Controller
             'top_stats'     => $front_statistics,
             'finance_total' => $total_paid,
             'finance_paid_list' => $all_paid,
-            'bookings_total'=> $total_dropins,
-            'bookings_paid_list'=> $dropins_paid,
+            'bookings_total' => $total_dropins,
+            'bookings_paid_list' => $dropins_paid
         ]);
     }
 
@@ -870,6 +870,7 @@ class FrontEndUserController extends Controller
 
         $locations = ShopLocations::all();
 
+        $store_credit_products = StoreCreditProducts::all();
 
         return view('admin/front_users/view_member_account_settings', [
             'user'              => $member,
@@ -895,7 +896,8 @@ class FrontEndUserController extends Controller
             'accessCardNo'      => @$accessCardNo,
             'InvoicesActionsPlanned'=> $plannedInvoicesAndActions,
             'storeCreditNotes'  => $storeCredit,
-            'locations' => $locations
+            'locations' => $locations,
+            'store_credit_products' => $store_credit_products
         ]);
     }
 
@@ -4690,42 +4692,6 @@ class FrontEndUserController extends Controller
     }
 
 
-    public function reactivate_member(Request $request){
-
-        $user = Auth::user();
-        if (!$user || !$user->is_back_user()) {
-            return [
-                'success' => false,
-                'title'   => 'You need to be logged in',
-                'errors'  => 'You need to be logged in as an employee in order to use this function'];
-        }
-        $vars = $request->only('user_id');
-        $member = User::where('id','=',$vars['user_id'])->get()->first();
-        if (!$member){
-            return [
-                'success' => false,
-                'title'   => 'Member not found',
-                'errors'  => 'The member you want to suspend/reactivate was not found in the system'];
-        }
-        
-        if ($member->status != 'deleted') {
-            return [
-                'success' => false,
-                'title'   => 'Not a relevant action.',
-                'errors'  => 'The member you want to reactivate is already active'];
-        }
-
-        $member->status = 'active';
-        $member->save();
-        return [
-            'success' => true,
-            'title'   => 'User reactivated.',
-            'message'  => 'You successfully reactivated the user.'];
-    }
-
-
-
-
     public function update_access_card(Request $request){
         $user = Auth::user();
         if (!$user || !$user->is_back_user()) {
@@ -5118,7 +5084,7 @@ class FrontEndUserController extends Controller
                 'errors'  => 'You need to be logged in as an employee in order to use this function'];
         }
 
-        $vars = $request->only('member_id', 'amount', 'is_bonus', 'issue_invoice');
+        $vars = $request->only('member_id', 'package_id', 'is_bonus', 'issue_invoice');
         $member = User::where('id','=',$vars['member_id'])->first();
         if (!$member){
             // member not found for store credit assignment
@@ -5127,13 +5093,14 @@ class FrontEndUserController extends Controller
                 'title'   => 'Could not add credit',
                 'errors'  => 'The member you are trying to add the store credit does not exist or something went wrong'];
         }
+        $package = StoreCreditProducts::find($vars['package_id']);
 
         $store_credit_fillable = [
             'member_id'     => $member->id,
             'back_user_id'  => $user->id,
             'title'         => 'Store Credit',
-            'value'         => intval($vars['amount']),
-            'total_amount'  => intval($vars['amount'])+$member->get_available_store_credit(),
+            'value'         => intval($package->store_credit_value),
+            'total_amount'  => intval($package->store_credit_value)+$member->get_available_store_credit(),
             //'invoice_id'    => -1,
             'expiration_date'   => 0,
             'status'        => 'active',

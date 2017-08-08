@@ -16,6 +16,7 @@ use App\UserDocuments;
 use App\ShopLocationCategoryIntervals;
 use App\MembershipRestriction;
 use App\MembershipPlan;
+use App\GeneralNote;
 use Illuminate\Http\Response;
 use Illuminate\Http\Request;
 use App\Http\Requests;
@@ -91,6 +92,13 @@ class BackEndUserController extends Controller
         //xdebug_var_dump($all_roles);
         $countries = Countries::orderBy('name', 'asc')->get();
 
+        $deleted = false;
+        foreach ($back_users as $user) {
+            if ($user->status == 'deleted') {
+                $deleted = true;
+            }
+        }
+
         return view('admin/back_users/all_list', [
             'users' => $back_users,
             'breadcrumbs' => $breadcrumbs,
@@ -98,6 +106,7 @@ class BackEndUserController extends Controller
             'in_sidebar'  => $sidebar_link,
             'all_roles'   => $all_roles,
             'countries' => $countries,
+            'deleted' => $deleted
         ]);
     }
 
@@ -105,7 +114,6 @@ class BackEndUserController extends Controller
     {
         return hash_hmac('sha256', Str::random(40), \Config::get('app.key'));
     }
-
 
     public function password_reset_request(Request $request){
         $vars = $request->only('email');
@@ -480,7 +488,6 @@ class BackEndUserController extends Controller
 
     }
 
-
     public function activate_deactivate_member(Request $request)
     {
         $user = Auth::user();
@@ -507,6 +514,30 @@ class BackEndUserController extends Controller
                 $back_user->status = 'active';
                 $message = "User reactivated";
             }
+
+
+
+
+
+            $note_fill = [
+                'by_user_id'    => $user->id,
+                'for_user_id'   => $back_user->id,
+                'note_title'    => $back_user->status == 'active' ? 'User reactivated.' : "User suspended",
+                'note_body'     => '',
+                'note_type'     => 'member status update',
+                'privacy'       => '',
+                'status'        => 'unread'];
+            if (strlen($request->get('message'))){
+                $note_fill['note_body'] = $request->get('message');
+                $note_fill['privacy']   = 'employees';
+
+                $validator = Validator::make($note_fill, GeneralNote::rules('POST'), GeneralNote::$message, GeneralNote::$attributeNames);
+                if (!$validator->fails()){
+                    $generalNote = GeneralNote::create($note_fill);
+                    $generalNote->save();
+                }
+            }
+
             $back_user->save();
             return [
                 'success' => true,
@@ -521,7 +552,59 @@ class BackEndUserController extends Controller
                 'message' => 'This is not a valid user'
             ];
         }
+    }
 
+    public function reactivate_member(Request $request){
+
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
+            return [
+                'success' => false,
+                'title'   => 'You need to be logged in',
+                'errors'  => 'You need to be logged in as an employee in order to use this function'];
+        }
+        $vars = $request->only('user_id','message');
+
+        $member = User::where('id','=',$vars['user_id'])->get()->first();
+        if (!$member){
+            return [
+                'success' => false,
+                'title'   => 'Member not found',
+                'errors'  => 'The member you want to suspend/reactivate was not found in the system'];
+        }
+
+        if ($member->status != 'deleted') {
+            return [
+                'success' => false,
+                'title'   => 'Not a relevant action.',
+                'errors'  => 'The member you want to reactivate is already active'];
+        }
+
+        $note_fill = [
+            'by_user_id'    => $user->id,
+            'for_user_id'   => $member->id,
+            'note_title'    => 'User reactivated.',
+            'note_body'     => '',
+            'note_type'     => 'member status update',
+            'privacy'       => '',
+            'status'        => 'unread'];
+        if (strlen($vars['message'])){
+            $note_fill['note_body'] = $vars['message'];
+            $note_fill['privacy']   = 'employees';
+
+            $validator = Validator::make($note_fill, GeneralNote::rules('POST'), GeneralNote::$message, GeneralNote::$attributeNames);
+            if (!$validator->fails()){
+                $generalNote = GeneralNote::create($note_fill);
+                $generalNote->save();
+            }
+        }
+
+        $member->status = 'active';
+        $member->save();
+        return [
+            'success' => true,
+            'title'   => 'User reactivated.',
+            'message'  => 'You successfully reactivated the user.'];
     }
 
     /**
@@ -614,7 +697,6 @@ class BackEndUserController extends Controller
             'gender'        => $vars['gender']
         ];
         $userCh = User::find($id);
-
         $updateRules = [
             'first_name'=> 'required|min:2|max:150',
             'last_name' => 'required|min:2|max:150',
@@ -643,7 +725,7 @@ class BackEndUserController extends Controller
                                 'social_sec_no' => $vars['social_sec_no'],
                                 'about_info'    => $vars['about_info'],
                                 'user_id'       => $id);
-        $validator = Validator::make($personalData, PersonalDetail::rules('PUT',$id), PersonalDetail::$messages, PersonalDetail::$attributeNames);
+        $validator = Validator::make($personalData, PersonalDetail::rules('PATCH',$userCh->id), PersonalDetail::$messages, PersonalDetail::$attributeNames);
         if ($validator->fails()){
             return array(
                 'success'   => false,
@@ -746,7 +828,7 @@ class BackEndUserController extends Controller
         }
 
         $userVars = $request->only('old_password','password1','password2');
-        if ($user->id!=$backUser->id && !$user->can('manage-employees')){
+        if ($user->id!=$backUser->id || !$user->can('manage-employees')){
             $validator = Validator::make($userVars, [
                 'old_password'  => 'required|min:8',
                 'password1'     => 'required|min:8',
@@ -769,14 +851,35 @@ class BackEndUserController extends Controller
             $auth = auth();
             if ($auth->attempt([ 'id' => $id, 'password' => $userVars['old_password'] ]) || $user->can('manage-employees')) {
                 $backUser->fill(['password' => Hash::make($request->password1)])->save();
+
+                if ($backUser->sso_user_id != null){
+                    $token = \App\Http\Libraries\ApiAuth::resetPassword($backUser->username)['data'];
+                    $apiData = [
+                        "Credentials" => [
+                            "Username" => $backUser->email,
+                            "Password" => ''
+                        ],
+                        "Token"=> $token,
+                        "NewPassword"=> $request->password1,
+                    ];
+                    $updatePassword = \App\Http\Libraries\ApiAuth::updatePassword($apiData);
+                    if ($updatePassword['success']){}
+                    else{
+                        return ['success' => true,
+                            'title'   => 'Password update error',
+                            'errors' => 'There was an error updating password [SSO]'];
+                    }
+                }
+
                 return ['success' => true,
-                        'title'   => 'Password changed',
-                        'message' => 'Everything went well, password was changed'];
+                    'title'   => 'Password changed',
+                    'message' => 'Everything went well, password was changed'];
+
             }
             else{
                 return ['success' => false,
                         'title'   => 'Permission/Old password error',
-                        'errors'  => 'You don\'t have permission to change this user password or old password error.'];
+                        'errors'  => 'No permission to change user password or old password error [LOCAL]'];
             }
         }
     }
@@ -1324,8 +1427,6 @@ class BackEndUserController extends Controller
 
             AppSettings::update_settings_value_by_name('globalWebsite_registration_finished', 20);
 
-            AppSettings::clear_cache();
-            $response['success'] = TRUE;
         }
 
         return $response;

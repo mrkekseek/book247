@@ -83,6 +83,13 @@ BackEndUserController extends Base
         //xdebug_var_dump($all_roles);
         $countries = Countries::orderBy('name', 'asc')->get();
 
+        $deleted = false;
+        foreach ($back_users as $user) {
+            if ($user->status == 'deleted') {
+                $deleted = true;
+            }
+        }
+
         return view('admin/back_users/federation/all_list', [
             'users' => $back_users,
             'breadcrumbs' => $breadcrumbs,
@@ -90,6 +97,7 @@ BackEndUserController extends Base
             'in_sidebar'  => $sidebar_link,
             'all_roles'   => $all_roles,
             'countries' => $countries,
+            'deleted' => $deleted
         ]);
     }
 

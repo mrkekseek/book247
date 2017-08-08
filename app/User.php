@@ -5,7 +5,7 @@ namespace App;
 use App\Http\Controllers\MembershipController;
 use Carbon\Carbon;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Support\Facades\Auth;
+use App\Http\Libraries\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Zizaco\Entrust\Traits\EntrustUserTrait;

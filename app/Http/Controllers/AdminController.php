@@ -26,6 +26,8 @@ class AdminController extends Controller
         //$this->middleware('auth');
     }
 
+
+
     /**
      * Show the application dashboard.
      *
@@ -235,8 +237,6 @@ class AdminController extends Controller
             // Authentication passed...
             $user = Auth::user(); return redirect()->intended('admin');
             // check user status
-            xdebug_var_dump($user); exit;
-
             switch ($user->status){
                 case 'active' :
                     // all good
@@ -310,7 +310,7 @@ class AdminController extends Controller
             switch ($user->status){
                 case 'active' :
                     // all good
-                    // \Cache::forget('globalWebsite_registration_finished');
+                    \Cache::forget('globalWebsite_registration_finished');
                     $status = AppSettings::get_setting_value_by_name('globalWebsite_registration_finished');
 
                     if ( $status==0 && $user->hasRole('owner') ){
