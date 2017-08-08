@@ -1,6 +1,7 @@
-@extends('login_header');
+@extends('login_header')
 
 @section('main_content')
+
 <!-- BEGIN REGISTRATION -->
     <div class="container">
         <div class="row">
@@ -29,14 +30,14 @@
                                             <a href="#tab3" data-toggle="tab" class="step active">
                                                 <span class="number"> 3 </span>
                                                 <span class="desc">
-                                                    <i class="fa fa-check"></i> Booking behavior Setup </span>
+                                                    <i class="fa fa-check"></i> Booking behavior </span>
                                             </a>
                                         </li>
                                         <li>
                                             <a href="#tab4" data-toggle="tab" class="step">
                                                 <span class="number"> 4 </span>
                                                 <span class="desc">
-                                                    <i class="fa fa-check"></i>  Finish </span>
+                                                    <i class="fa fa-check"></i>  Payment </span>
                                             </a>
                                         </li>
                                     </ul>
@@ -49,7 +50,7 @@
                                         <div class="alert alert-success display-none">
                                             <button class="close" data-dismiss="alert"></button> Your form validation is successful! </div>
                                         <!--STEP 1-->
-                                        <div class="tab-pane tab-pane-width active" id="tab1">
+                                        <div class="tab-pane tab-pane-width " id="tab1">
                                             <div class="form-group">
                                                 <label class="control-label col-md-3">Club name
                                                     <span class="required"> * </span>
@@ -75,6 +76,15 @@
                                                 <div class="col-md-9">
                                                     <input type="text" class="form-control" name="phone" required />
                                                     <span class="help-block"> Provide your Phone </span>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="control-label col-md-3"> Fax
+                                                    <span class="required"> * </span>
+                                                </label>
+                                                <div class="col-md-9">
+                                                    <input type="text" class="form-control" name="fax" required />
+                                                    <span class="help-block"> Provide your Fax </span>
                                                 </div>
                                             </div>
                                             <div class="form-group">
@@ -351,10 +361,21 @@
                                         </div>
                                         <!--END STEP 3-->
                                         <!--STEP 4-->
-                                        <div class="tab-pane clearfix" id="tab4">
+                                        <div class="tab-pane clearfix text-center" id="tab4">
                                             <div class="col-md-offset-4 col-md-4 well">
-                                                <p><strong>Finish:</strong> Click submit to finish your registration! But don`t worry if you want to make changes. Every setting can be changed in "General settings".</p>
+                                                <button class="btn btn-success btnPay">Pay with Card</button>
                                             </div>
+
+                                            <div class="col-md-offset-4 col-md-4">
+                                                <div class="alert alert-danger display-none">
+                                                    <button class="close" data-dismiss="alert"></button>
+                                                    <p><strong>Finish:</strong> Click submit to finish your registration! But don`t worry if you want to make changes. Every setting can be changed in "General settings".</p>
+                                                </div>
+                                                <div class="alert alert-success display-none">
+                                                    <button class="close" data-dismiss="alert"></button> Your card is successful!
+                                                </div>
+                                            </div>
+
                                             <div class="col-md-12">
                                                 <h3 class="text-center text-success">Congrats! You can now start using Book247!</h3>
                                             </div>
@@ -371,7 +392,7 @@
                                             <a href="javascript:;" class="btn btn-outline green button-next"> Continue
                                                 <i class="fa fa-angle-right"></i>
                                             </a>
-                                            <a href="javascript:;" class="btn green button-submit"> Submit
+                                            <a href="javascript:;" class="btn green  btn-finish" > Submit
                                                 <i class="fa fa-check"></i>
                                             </a>
                                         </div>
@@ -385,6 +406,21 @@
         </div>
     </div>
 <!-- END REGISTRATION -->
+<!-- BEGIN MODEL -->
+<div class="modal fade" id="thank_messages" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" >&times;</button>
+        <h4 class="modal-title">Thank you message!</h4>
+      </div>
+      <div class="modal-body">
+        <p>Thank you message!</p>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- END MODEL -->
 <!-- BEGIN COPYRIGHT -->
 <div class="copyright"> 2017 © BookingSystem by SQF. Squash Fitness! </div>
 <!-- END COPYRIGHT -->
@@ -409,6 +445,7 @@
 <script src="{{ asset('assets/global/plugins/select2/js/select2.full.min.js') }}" type="text/javascript"></script>
 <script src="{{ asset('assets/global/plugins/backstretch/jquery.backstretch.min.js') }}" type="text/javascript"></script>
 <!--script src="{{ asset('assets/pages/scripts/form-wizard.min.js') }}" type="text/javascript"></script-->
+<script src="{{ asset('assets/pages/scripts/form-wizard.js') }}" type="text/javascript"></script>
 <!-- END PAGE LEVEL PLUGINS -->
 <!-- BEGIN THEME GLOBAL SCRIPTS -->
 <script src="{{ asset('assets/global/scripts/app.min.js') }}" type="text/javascript"></script>
@@ -419,286 +456,48 @@
 <!-- END PAGE LEVEL SCRIPTS -->
 <!-- BEGIN THEME LAYOUT SCRIPTS -->
 <!-- END THEME LAYOUT SCRIPTS -->
-<script type="application/javascript">
-    var FormWizard = function () {
 
-        return {
-            //main function to initiate the module
-            init: function () {
-                if (!jQuery().bootstrapWizard) {
-                    return;
-                }
+<script src="https://checkout.stripe.com/checkout.js" type="text/javascript"></script>
+<script>
 
-                function format(state) {
-                    if (!state.id) return state.text; // optgroup
-                    return "<img class='flag' src='../../assets/global/img/flags/" + state.id.toLowerCase() + ".png'/>&nbsp;&nbsp;" + state.text;
-                }
+    $(document).ready(function(){
+        var handler = StripeCheckout.configure({
+            key : '{{ env('STRIPE_KEY') }}',
+            image : '{{ asset('assets/global/img/sqf-logo.png') }}',
+            email : '{{ Auth::user()->email }}',
+            token: function(token, args) {
 
-                $("#country_list").select2({
-                    placeholder: "Select",
-                    allowClear: true,
-                    formatResult: format,
-                    width: 'auto',
-                    formatSelection: format,
-                    escapeMarkup: function (m) {
-                        return m;
+                $.ajax({
+                    url : "{{ route('charge_customer') }}",
+                    data : {
+                        '_token' : '{{ csrf_token() }}',
+                        'token' : token.id,
+                        'args'  : args
+                    },
+                    method : 'post',
+                    success : function(data)
+                    {
+                        if (data.success)
+                        {
+                            $("#tab4 .alert-success").show();
+                            $(".btn-finish").show();
+                        }
+                        else
+                        {
+                            $("#tab4 .alert-errors").show();
+                        }
                     }
-                });
-
-                var form = $('#submit_form');
-                var error = $('.alert-danger', form);
-                var success = $('.alert-success', form);
-
-                form.validate({
-                    doNotHideMessage: true, //this option enables to show the error/success messages on tab switch.
-                    errorElement: 'span', //default input error message container
-                    errorClass: 'help-block help-block-error', // default input error message class
-                    focusInvalid: false, // do not focus the last invalid input
-                    rules: {
-                        //account
-                        username: {
-                            minlength: 5,
-                            required: true
-                        },
-                        password: {
-                            minlength: 5,
-                            required: true
-                        },
-                        rpassword: {
-                            minlength: 5,
-                            required: true,
-                            equalTo: "#submit_form_password"
-                        },
-                        //profile
-                        fullname: {
-                            required: true
-                        },
-                        email: {
-                            required: true,
-                            email: true
-                        },
-                        phone: {
-                            required: true
-                        },
-                        gender: {
-                            required: true
-                        },
-                        address: {
-                            required: true
-                        },
-                        city: {
-                            required: true
-                        },
-                        country: {
-                            required: true
-                        },
-                        currency: {
-                            required: true
-                        },
-                        //payment
-                        card_name: {
-                            required: true
-                        },
-                        card_number: {
-                            minlength: 16,
-                            maxlength: 16,
-                            required: true
-                        },
-                        card_cvc: {
-                            digits: true,
-                            required: true,
-                            minlength: 3,
-                            maxlength: 4
-                        },
-                        card_expiry_date: {
-                            required: true
-                        },
-                        'payment[]': {
-                            required: true,
-                            minlength: 1
-                        }
-                    },
-
-                    messages: { // custom messages for radio buttons and checkboxes
-                        'payment[]': {
-                            required: "Please select at least one option",
-                            minlength: jQuery.validator.format("Please select at least one option")
-                        }
-                    },
-
-                    errorPlacement: function (error, element) { // render error placement for each input type
-                        if (element.attr("name") == "gender") { // for uniform radio buttons, insert the after the given container
-                            error.insertAfter("#form_gender_error");
-                        } else if (element.attr("name") == "payment[]") { // for uniform checkboxes, insert the after the given container
-                            error.insertAfter("#form_payment_error");
-                        } else {
-                            error.insertAfter(element); // for other inputs, just perform default behavior
-                        }
-                    },
-
-                    invalidHandler: function (event, validator) { //display error alert on form submit
-                        success.hide();
-                        error.show();
-                        App.scrollTo(error, -200);
-                    },
-
-                    highlight: function (element) { // hightlight error inputs
-                        $(element)
-                            .closest('.form-group').removeClass('has-success').addClass('has-error'); // set error class to the control group
-                    },
-
-                    unhighlight: function (element) { // revert the change done by hightlight
-                        $(element)
-                            .closest('.form-group').removeClass('has-error'); // set error class to the control group
-                    },
-
-                    success: function (label) {
-                        if (label.attr("for") == "gender" || label.attr("for") == "payment[]") { // for checkboxes and radio buttons, no need to show OK icon
-                            label
-                                .closest('.form-group').removeClass('has-error').addClass('has-success');
-                            label.remove(); // remove error label here
-                        } else { // display success icon for other inputs
-                            label
-                                .addClass('valid') // mark the current input as valid and display OK icon
-                                .closest('.form-group').removeClass('has-error').addClass('has-success'); // set success class to the control group
-                        }
-                    },
-
-                    submitHandler: function (form) {
-                        success.show();
-                        error.hide();
-                        var data = $(form).serialize();
-                        sendData(data);
-                    }
-
-                });
-
-                var displayConfirm = function() {
-                    $('#tab4 .form-control-static', form).each(function(){
-                        var input = $('[name="'+$(this).attr("data-display")+'"]', form);
-                        if (input.is(":radio")) {
-                            input = $('[name="'+$(this).attr("data-display")+'"]:checked', form);
-                        }
-                        if (input.is(":text") || input.is("textarea")) {
-                            $(this).html(input.val());
-                        } else if (input.is("select")) {
-                            $(this).html(input.find('option:selected').text());
-                        } else if (input.is(":radio") && input.is(":checked")) {
-                            $(this).html(input.attr("data-title"));
-                        } else if ($(this).attr("data-display") == 'payment[]') {
-                            var payment = [];
-                            $('[name="payment[]"]:checked', form).each(function(){
-                                payment.push($(this).attr('data-title'));
-                            });
-                            $(this).html(payment.join("<br>"));
-                        }
-                    });
-                }
-
-                var handleTitle = function(tab, navigation, index) {
-                    var total = navigation.find('li').length;
-                    var current = index + 1;
-                    // set wizard title
-                    $('.step-title', $('#form_wizard_1')).text('Step ' + (index + 1) + ' of ' + total);
-                    // set done steps
-                    jQuery('li', $('#form_wizard_1')).removeClass("done");
-                    var li_list = navigation.find('li');
-                    for (var i = 0; i < index; i++) {
-                        jQuery(li_list[i]).addClass("done");
-                    }
-
-                    if (current == 1) {
-                        $('#form_wizard_1').find('.button-previous').hide();
-                    } else {
-                        $('#form_wizard_1').find('.button-previous').show();
-                    }
-
-                    if (current >= total) {
-                        $('#form_wizard_1').find('.button-next').hide();
-                        $('#form_wizard_1').find('.button-submit').show();
-                        displayConfirm();
-                    } else {
-                        $('#form_wizard_1').find('.button-next').show();
-                        $('#form_wizard_1').find('.button-submit').hide();
-                    }
-                    App.scrollTo($('.page-title'));
-                }
-
-                // default form wizard
-                $('#form_wizard_1').bootstrapWizard({
-                    'nextSelector': '.button-next',
-                    'previousSelector': '.button-previous',
-                    onTabClick: function (tab, navigation, index, clickedIndex) {
-                        return false;
-
-                        success.hide();
-                        error.hide();
-                        if (form.valid() == false) {
-                            return false;
-                        }
-
-                        handleTitle(tab, navigation, clickedIndex);
-                    },
-                    onNext: function (tab, navigation, index) {
-                        success.hide();
-                        error.hide();
-
-                        if (form.valid() == false) {
-                            return false;
-                        }
-
-                        handleTitle(tab, navigation, index);
-                    },
-                    onPrevious: function (tab, navigation, index) {
-                        success.hide();
-                        error.hide();
-
-                        handleTitle(tab, navigation, index);
-                    },
-                    onTabShow: function (tab, navigation, index) {
-                        var total = navigation.find('li').length;
-                        var current = index + 1;
-                        var $percent = (current / total) * 100;
-                        $('#form_wizard_1').find('.progress-bar').css({
-                            width: $percent + '%'
-                        });
-                    }
-                });
-
-                var sendData = function (data){
-                    $.ajax({
-                        url: '/admin/registration',
-                        type: "post",
-                        data: data,
-                        success: function (data) {
-                            if (data.success == true) {
-                                window.location.href = '/admin';
-                            }
-                            else{
-                                window.location.href = '/';
-                            }
-                        }
-                    });
-                }
-
-
-                $('#form_wizard_1').find('.button-previous').hide();
-                $('#form_wizard_1 .button-submit').click(function () {
-                    $('#submit_form').submit();
-                }).hide();
-
-                //apply validation on select2 dropdown value change, this only needed for chosen dropdown integration.
-                $('#country_list', form).change(function () {
-                    form.validate().element($(this)); //revalidate the chosen dropdown value and show error or success message for the input
                 });
             }
+        });
 
-        };
-
-    }();
-
-    jQuery(document).ready(function() {
-        FormWizard.init();
+        $(".btnPay").click(function(e) {
+            handler.open({
+                name: 'Book 247',
+                description: 'Sport Booking System'
+            });
+            e.preventDefault();
+        });
     });
 </script>
 @stop

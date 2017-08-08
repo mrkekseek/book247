@@ -1204,25 +1204,25 @@ class BackEndUserController extends Controller
     }
 
     public function registrationStepsIndex()
-   	{
+    {
         $status = AppSettings::get_setting_value_by_name('globalWebsite_registration_finished');
         if ( $status == 0 )
         {
             return redirect('/admin');
         }
         $countries = Countries::orderBy('name', 'asc')->get();
-		$currencies = Countries::groupBy('currency_code')->get();
+        $currencies = Countries::groupBy('currency_code')->get();
         $shopLocation = ShopLocations::first();
         $shopResourceCategories = ShopResourceCategory::get();
         $user = Auth::user();
-		return view('registration-form', [
+        return view('admin/registration-form', [
             'countries'=>$countries,
             'currencies'=>$currencies,
             'shopLocation'=>$shopLocation,
             'shopResourceCategories'=>$shopResourceCategories,
             'user'=>$user,
         ]);
-   	}
+    }
 
     public function registrationStepsSave(Request $request)
     {
