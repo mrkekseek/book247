@@ -274,6 +274,14 @@ if (env('FEDERATION',false)){
             'as' => 'admin/front_user/get_document',
             'uses' => 'FrontEndUserController@get_user_account_document'
         ]);
+
+        /* Start - Stripe routes */
+        Route::post('charge_customer', [
+            'as' => 'charge_customer',
+            'uses' => 'StripeController@chargeCustomer']
+        );
+        /* End - Stripe routes */
+
         //** Start - Back end users route */
 
         Route::post('admin/users/ajax_get_info', [
