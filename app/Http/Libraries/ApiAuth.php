@@ -192,7 +192,7 @@ class ApiAuth
             }
         }
 
-        if (self::checkExist($apiData['username'])) {
+        if (self::checkExist($apiData['Username'])) {
             $result['success'] = false;
             $result['message'] = 'User already registered in the single sign on.';
         }
@@ -343,8 +343,6 @@ class ApiAuth
                 'Curl failed with error #%d: %s',
                 $e->getCode(), $e->getMessage()),
                 E_USER_ERROR);
-
-            exit;
         }
 
         $result = json_decode($curl_results);
