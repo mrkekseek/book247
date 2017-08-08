@@ -790,7 +790,7 @@ class MembershipController extends Controller
             $membership_list = MembershipPlan::where('status','=','active')->where('id','!=',1)->get();
         }
 
-        return view('front/iframe/federation/buy_license_new' ,[
+        return view('front/iframe/rankedin_buy_license' ,[
             'user_id' => $sso_id ,
             'membership' => $membership ,
             'membership_list' => $membership_list,

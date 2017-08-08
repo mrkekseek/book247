@@ -24,9 +24,13 @@
 
 if (env('FEDERATION',false)){
     include('federation_routes.php');
-}
-else
-{
+} else {
+
+    Route::get('buy_license/{token}/{sso_id}/{license_id?}{request_url?}', [
+        'as'    => 'buy_license',
+        'uses'  => 'MembershipController@iframed'
+    ]);
+
     Route::group(['middleware' => 'apikey', 'prefix' => 'apic'], function () {
         Route::get('status', [
             'as' => 'status',
@@ -119,6 +123,7 @@ else
             'as' => 'admin',
             'uses' => 'AdminController@index'
         ]);
+
 
         Route::get('/admin-home-public', [
             'as' => 'admin-home-public',
