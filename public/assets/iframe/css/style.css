@@ -71,7 +71,7 @@ body.body-iframe{
 	transition: all 0.4s;
 	padding:0 1px;
 	font-family: "OpenSansBold";
-	text-decoration: none;
+	text-decoration: none !important;
 	display: block;
 }
 
@@ -97,7 +97,7 @@ body.body-iframe{
 	font-size: 16px;
 	line-height: 24px;
 	color:#fff;
-	padding: 30px;
+	padding: 20px;
 	background-color: #fff;
 	margin: 0 auto;
 }
@@ -181,7 +181,7 @@ p,
 }
 
 .after-cap {
-	margin-bottom: 35px;
+	margin-bottom: 15px;
 }
 
 .carusel-item-content-1  .h3,
@@ -198,8 +198,8 @@ p,
 }
 
 .carusel-button {
-	max-width: 240px;
-	margin-top: 25px;
+	max-width: 260px;
+	margin-top: 10px;
 }
 
 .carousel-button-wrap {

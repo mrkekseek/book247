@@ -114,7 +114,6 @@ class BackEndUserController extends Controller
         return hash_hmac('sha256', Str::random(40), \Config::get('app.key'));
     }
 
-
     public function password_reset_request(Request $request){
         $vars = $request->only('email');
 
@@ -487,7 +486,6 @@ class BackEndUserController extends Controller
         }
 
     }
-
 
     public function activate_deactivate_member(Request $request)
     {
@@ -1423,7 +1421,6 @@ class BackEndUserController extends Controller
             ];
             
             AppSettings::update_settings_value_by_name('globalWebsite_registration_finished', 20);
-            
             AppSettings::clear_cache();
         }
         return $response;
