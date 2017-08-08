@@ -11,10 +11,10 @@
     <link href="{{ asset('assets/global/css/components-rounded.min.css') }}" rel="stylesheet" id="style_components" type="text/css" />
     <link href="{{ asset('assets/global/css/plugins.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('assets/global/plugins/jquery-notific8/jquery.notific8.min.css') }}" rel="stylesheet" type="text/css" />
-@endsection
+    @endsection
 
-@section('themeLayoutStyle')
-    <!-- BEGIN PAGE LEVEL STYLES -->
+    @section('themeLayoutStyle')
+            <!-- BEGIN PAGE LEVEL STYLES -->
     <link href="{{ asset('assets/pages/css/profile-2.min.css') }}" rel="stylesheet" type="text/css" />
     <!-- END PAGE LEVEL STYLES -->
     <link href="{{ asset('assets/layouts/layout4/css/layout.min.css') }}" rel="stylesheet" type="text/css" />
@@ -28,6 +28,65 @@
 
 @section('pageContentBody')
     <div class="page-content">
+        <div class="modal fade" id="remove_member" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                        <h4 class="modal-title"> Remove member </h4>
+                    </div>
+                    <div class="modal-body form-horizontal">
+                        Do you really want to remove this member?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn green btn_modify_booking" onclick="javascript:remove_member();">Remove</button>
+                        <button type="button" class="btn dark btn-outline" data-dismiss="modal">Return</button>
+                    </div>
+                </div>
+                <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+        </div>
+        <div class="modal fade" id="change_member_status" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form role="form" id="form_account_change_status" action="#">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                            <h4 class="modal-title"> {{ $user->status=='active'?'Suspend ':'Reactivate ' }} member </h4>
+                        </div>
+                        <div class="modal-body form-horizontal">
+                            <div class="modal-body form-horizontal">
+                                <div class="alert alert-danger display-hide">
+                                    <button class="close" data-close="alert"></button> Please add a short message about your action - more than 10 characters. </div>
+                                <div class="alert alert-success display-hide">
+                                    <button class="close" data-close="alert"></button> Your form validation is successful! </div>
+                                <div class="note note-info" style="margin-bottom:0px;">
+                                    <div class="form-group" style="margin:0px -15px 0px 0px;">
+                                        <label class="control-label"> Message: &nbsp;&nbsp; </label>
+                                        <textarea class="form-control input-inline input-large" name="change_status_member_message"></textarea><br />
+                                    </div>
+                                    <div class="form-group" style="margin:0px -15px 0px 0px;">
+                                        @if($user->status=='active')
+                                            <input type="hidden" name="action" value="suspend"/>
+                                        @else
+                                            <input type="hidden" name="action" value="reactivate"/>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                            {{ $user->status=='active'?'Do you really want to suspend this user?':'Do you really want to reactivate this user?' }}
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" onclick="javascript:$('#form_account_change_status').submit();" class="btn green btn_modify_booking">{{ $user->status=='active'?'Suspend User':'Reactivate User' }}</button>
+                            <button type="button" class="btn dark btn-outline" data-dismiss="modal">Return</button>
+                        </div>
+                    </form>
+                </div>
+                <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+        </div>
         <!-- BEGIN PAGE HEAD-->
         <div class="page-head">
             <!-- BEGIN PAGE TITLE -->
@@ -64,6 +123,12 @@
                                     <li>
                                         <img src="{{$avatar}}" class="img-responsive pic-bordered" alt="" />
                                         <a data-toggle="modal" href="#draggable" class="profile-edit"> edit </a>
+                                    </li>
+                                    <li>
+                                        <a class="red remove_member" href="javascript:;" >Remove</a>
+                                    </li>
+                                    <li>
+                                        <a class="{{ $user->status=='active'?'yellow-mint':'green-jungle' }} member_suspend"  href="javascript:;">{{ $user->status=='active'?'Suspend ':'Reactivate ' }} Member</a>
                                     </li>
                                     <li>
                                         <a href="javascript:;"> Bookings </a>
@@ -318,6 +383,7 @@
                                 <div class="tab-content">
                                     <div id="tab_1-1" class="tab-pane active">
                                         <form role="form" action="#" id="form_acc_info">
+
                                             <div class="alert alert-danger display-hide">
                                                 <button class="close" data-close="alert"></button> You have some form errors. Please check below. </div>
                                             <div class="alert alert-success display-hide">
@@ -363,9 +429,9 @@
                                                 <div class="input-icon">
                                                     <i class="fa"></i>
                                                     <select name="employeeRole" id="employeeRole" class="form-control">
-                                                    @foreach ($roles as $role)
-                                                        <option value="{{$role->id}}" {!! $role->id==$userRole->id?' selected="selected" ':'' !!}>{{$role->name}}</option>
-                                                    @endforeach
+                                                        @foreach ($roles as $role)
+                                                            <option value="{{$role->id}}" {!! $role->id==$userRole->id?' selected="selected" ':'' !!}>{{$role->name}}</option>
+                                                        @endforeach
                                                     </select> </div>
                                             </div>
                                             <div class="form-group">
@@ -404,16 +470,17 @@
                                                     <div class="fileinput-new thumbnail" style="width: 200px; height: 244px;">
                                                         <img src="{{ asset('assets/global/img/default-notext-text.png') }}" alt="" /> </div>
                                                     <div class="fileinput-preview fileinput-exists thumbnail" style="max-width: 200px; max-height: 240px; line-height: 200px;">
-                                                    @if ( strlen($avatar)>10 )
-                                                        <img src="{{ $avatar }}" />
-                                                    @endif
+                                                        @if ( strlen($avatar)>10 )
+                                                            <img src="{{ $avatar }}" />
+                                                        @endif
                                                     </div>
                                                     <div>
                                                         <span class="btn default btn-file">
                                                             <span class="fileinput-new"> Select image </span>
                                                             <span class="fileinput-exists"> Change </span>
                                                             <input type="file" name="user_avatar" class="user_avatar_select_btn2" /> </span>
-                                                        <a href="javascript:;" class="btn default fileinput-exists" data-dismiss="fileinput"> Remove </a>
+
+                                                        <a href="javascript:;" class="btn default fileinput-exists remove-avatar" data-dismiss="fileinput"> Remove </a>
                                                     </div>
                                                 </div>
                                                 <div class="clearfix margin-top-10">
@@ -435,12 +502,12 @@
                                             <div class="alert alert-success display-hide">
                                                 <button class="close" data-close="alert"></button> Your form validation is successful! </div>
                                             @if (Auth::user()->id!=$user->id && !Auth::user()->can('manage-employees'))
-                                            <div class="form-group">
-                                                <label class="control-label">Old Password</label>
-                                                <div class="input-icon">
-                                                    <i class="fa"></i>
-                                                    <input type="password" name="old_password" id="old_password" class="form-control" /> </div>
-                                            </div>
+                                                <div class="form-group">
+                                                    <label class="control-label">Old Password</label>
+                                                    <div class="input-icon">
+                                                        <i class="fa"></i>
+                                                        <input type="password" name="old_password" id="old_password" class="form-control" /> </div>
+                                                </div>
                                             @endif
                                             <div class="form-group">
                                                 <label class="control-label">New Password</label>
@@ -517,17 +584,17 @@
                                                     <div class="mt-list-container list-simple ext-1">
                                                         <ul>
                                                             @foreach ($documents as $document)
-                                                            <li class="mt-list-item">
-                                                                <div class="list-icon-container">
-                                                                    <i class="icon-check"></i>
-                                                                </div>
-                                                                <div class="list-datetime"> {{ $document->created_at->format('m/d/y') }} </div>
-                                                                <div class="list-item-content">
-                                                                    <h3 class="uppercase">
-                                                                        <a href="{{ route('admin/back_user/get_document', [ 'id' => $user->id , 'document_name'=> $document->file_name ]) }}" target="_blank">{{ $document->file_name }}</a>
-                                                                    </h3>
-                                                                </div>
-                                                            </li>
+                                                                <li class="mt-list-item">
+                                                                    <div class="list-icon-container">
+                                                                        <i class="icon-check"></i>
+                                                                    </div>
+                                                                    <div class="list-datetime"> {{ $document->created_at->format('m/d/y') }} </div>
+                                                                    <div class="list-item-content">
+                                                                        <h3 class="uppercase">
+                                                                            <a href="{{ route('admin/back_user/get_document', [ 'id' => $user->id , 'document_name'=> $document->file_name ]) }}" target="_blank">{{ $document->file_name }}</a>
+                                                                        </h3>
+                                                                    </div>
+                                                                </li>
                                                             @endforeach
                                                         </ul>
                                                     </div>
@@ -703,6 +770,10 @@
                                 <div class="tab-content">
                                     <div id="tab_5-5" class="tab-pane active">
                                         <form role="form" action="#" name="form_acc_personal" id="form_acc_personal">
+
+                                            <div id="errors_list">
+                                            </div>
+
                                             <div class="alert alert-danger display-hide">
                                                 <button class="close" data-close="alert"></button> You have some form errors. Please check below. </div>
                                             <div class="alert alert-success display-hide">
@@ -719,7 +790,7 @@
                                             <div class="form-group">
                                                 <label class="control-label">Gender</label>
                                                 <select name="gender" class="form-control">
-                                                    <option value="">Select Gender</option>
+                                                    <option>Select Gender</option>
                                                     <option {!! $user->gender=='F'?'selected="selected"':'' !!} value="F"> Female </option>
                                                     <option {!! $user->gender=='M'?'selected="selected"':'' !!} value="M"> Male </option>
                                                 </select>
@@ -728,7 +799,7 @@
                                                 <label class="control-label">Citizenship</label>
                                                 <select name="personalCountry" id="personalCountry" class="form-control">
                                                     @foreach ($countries as $country)
-                                                        <option value="{{ $country->id }}" {!! ($country->id==$user->country_id ? ' selected="selected" ' : '') !!}>{{ $country->citizenship }}</option>
+                                                        <option value="{{ $country->id }}" {!! ($country->id==$user->country_id ? ' selected="selected" ' : '') !!}>{{ $country->name }}</option>
                                                     @endforeach
                                                 </select></div>
                                             <div class="form-group">
@@ -840,7 +911,7 @@
                                                         <span class="fileinput-new"> Select image </span>
                                                         <span class="fileinput-exists"> Change </span>
                                                         <input type="file" name="user_avatar" class="user_avatar_select_btn1" /> </span>
-                                                    <a href="javascript:;" class="btn red fileinput-exists" data-dismiss="fileinput"> Remove </a>
+                                                    <a href="javascript:;" class="btn red fileinput-exists remove-avatar" data-dismiss="fileinput"> Remove </a>
                                                 </div>
                                             </div>
                                             <div class="clearfix margin-top-10">
@@ -869,7 +940,7 @@
 
 @section('pageBelowLevelPlugins')
     <script src="{{ asset('assets/global/plugins/bootstrap-fileinput/bootstrap-fileinput.js') }}" type="text/javascript"></script>
-    <script src="http://maps.google.com/maps/api/js?sensor=false" type="text/javascript"></script>
+    <script src="//maps.google.com/maps/api/js?sensor=false" type="text/javascript"></script>
     <script src="{{ asset('assets/global/plugins/gmaps/gmaps.min.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/global/plugins/jquery-validation/js/jquery.validate.min.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/global/plugins/jquery-validation/js/additional-methods.min.js') }}" type="text/javascript"></script>
@@ -950,36 +1021,56 @@
                     ignore: "",  // validate all fields including form hidden input
                     rules: {
                         personalFirstName: {
-                            minlength: 3,
+                            minlength: 2,
                             required: true
                         },
                         personalLastName: {
-                            minlength: 3,
+                            minlength: 2,
                             required: true
                         },
                         personalDOB: {
                             required: true,
                             datePickerDate:true
                         },
-                        gender: {
-                            required:true
-                        },
                         personalEmail: {
                             required: true,
                             email: true,
-                            validate_email: true
+                            validate_email:true
                         },
-                        personalPhone: {
+                        gender: {
+                            required:true,
+                            minlength:1,
+                        },
+                        personalPhone : {
                             required: true,
                             digits: true,
-                            minlength:4,
-                            maxlength:12
-                        },
+                            minlength: 8,
+                            maxlength: 20,
+                            remote: {
+                                url: "{{ route('ajax/check_phone_for_member_registration') }}",
+                                type: "post",
+                                data: {
+                                    phone: function() {
+                                        return $( "input[name='personalPhone']" ).val();
+                                    }
+                                }
+                            }
+                        }
                     },
 
                     invalidHandler: function (event, validator) { //display error alert on form submit
                         success1.hide();
-                        error1.show();
+
+                        var errors_list = "";
+                        for(var i in validator.errorList)
+                        {
+                            errors_list  += "<div class='alert alert-danger'>";
+                            errors_list  += $(validator.errorList[i].element).parent().find("label").text() + ": ";
+                            errors_list  += validator.errorList[i].message + "</div>";
+                        }
+
+                        $("#errors_list").html(errors_list);
+
                         App.scrollTo(error1, -200);
                     },
 
@@ -1005,8 +1096,8 @@
                     },
 
                     submitHandler: function (form) {
+                        $("#errors_list").empty();
                         success1.show();
-                        error1.hide();
                         store_account_personal(); // submit the form
                     }
                 });
@@ -1314,6 +1405,58 @@
                 });
             }
 
+            var handleValidationModal= function() {
+                var form7 = $('#form_account_change_status');
+                var error7 = $('.alert-danger', form7);
+                var success7 = $('.alert-success', form7);
+
+                form7.validate({
+                    errorElement: 'span', //default input error message container
+                    errorClass: 'help-block help-block-error', // default input error message class
+                    focusInvalid: false, // do not focus the last invalid input
+                    ignore: "",  // validate all fields including form hidden input
+                    rules: {
+                        change_status_member_message: {
+                            minlength: 10,
+                            required: true
+                        },
+                    },
+
+                    invalidHandler: function (event, validator) { //display error alert on form submit
+                        success7.hide();
+                        error7.show();
+                        App.scrollTo(error7, -200);
+                    },
+
+                    errorPlacement: function (error, element) { // render error placement for each input type
+                        var icon = $(element).parent('.input-icon').children('i');
+                        icon.removeClass('fa-check').addClass("fa-warning");
+                        icon.attr("data-original-title", error.text()).tooltip({'container': 'body'});
+                    },
+
+                    highlight: function (element) { // hightlight error inputs
+                        $(element)
+                                .closest('.form-group').removeClass("has-success").addClass('has-error'); // set error class to the control group
+                    },
+
+                    unhighlight: function (element) { // revert the change done by hightlight
+
+                    },
+
+                    success: function (label, element) {
+                        var icon = $(element).parent('.input-icon').children('i');
+                        $(element).closest('.form-group').removeClass('has-error').addClass('has-success'); // set success class to the control group
+                        icon.removeClass("fa-warning").addClass("fa-check");
+                    },
+
+                    submitHandler: function (form) {
+                        success7.show();
+                        error7.hide();
+                        change_member_status(); // submit the form
+                    }
+                });
+            }
+
             return {
                 //main function to initiate the module
                 init: function () {
@@ -1322,6 +1465,7 @@
                     handleValidation3();
                     handleValidation4();
                     handleValidation5();
+                    handleValidationModal();
                 }
             };
         }();
@@ -1373,6 +1517,21 @@
             FormValidation.init();
             FormDropzone.init();
             ComponentsDateTimePickers.init();
+
+            $(".remove-avatar").click(function(){
+                console.log('test')
+                $.ajax({
+                    url : "{{route('admin/back_users/remove_avatar')}}",
+                    type : "post",
+                    success : function(response)
+                    {
+                        if (response.success)
+                        {
+                            window.location.reload();
+                        }
+                    }
+                });
+            });
         });
 
         function store_account_info(){
@@ -1485,6 +1644,62 @@
                     else{
                         show_notification(data.title, data.errors, 'ruby', 3500, 0);
                     }
+                }
+            });
+        }
+
+        $(".member_suspend").on("click", function(){
+            $('#change_member_status').modal('show');
+        });
+
+        function change_member_status(){
+            $.ajax({
+                url: '{{route('ajax/back_member_change_status')}}',
+                type: "post",
+                cache: false,
+                data: {
+                    'memberID':         '{{ $user->id }}',
+                    'action':  $('#form_account_change_status').find('input[name="action"]').val(),
+                    'message': $('#form_account_change_status').find('textarea').val(),
+                },
+                success: function (data) {
+                    if (data.success) {
+                        $('#change_member_status').modal('hide');
+                        show_notification(data.title, data.message, 'lemon', 3500, 0);
+                        location.reload();
+                    }
+                    else{
+                        show_notification(data.title, data.errors, 'ruby', 3500, 0);
+                    }
+                }
+            });
+        }
+
+        $(".remove_member").on("click", function(){
+            $('#remove_member').modal('show');
+        });
+
+        function remove_member(){
+
+            $.ajax({
+                url: '{{route('ajax/remove_member')}}',
+                type: "post",
+                cache: false,
+                data: {
+                    'memberID': '{{ $user->id }}'
+                },
+                success: function (data) {
+                    if (data.success) {
+                        show_notification(data.title, data.message, 'lemon', 3500, 0);
+                        setTimeout(function(){
+                            location.reload();
+                        }, 1000);
+                    }
+                    else{
+                        show_notification(data.title, data.errors, 'ruby', 3500, 0);
+                    }
+
+                    $('#general_message_box').modal('hide');
                 }
             });
         }

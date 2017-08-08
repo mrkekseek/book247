@@ -26,6 +26,8 @@ class AdminController extends Controller
         //$this->middleware('auth');
     }
 
+
+
     /**
      * Show the application dashboard.
      *
@@ -235,8 +237,6 @@ class AdminController extends Controller
             // Authentication passed...
             $user = Auth::user(); return redirect()->intended('admin');
             // check user status
-            xdebug_var_dump($user); exit;
-
             switch ($user->status){
                 case 'active' :
                     // all good

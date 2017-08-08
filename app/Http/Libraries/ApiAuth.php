@@ -9,12 +9,11 @@ use Validator;
 use Webpatser\Countries\Countries;
 use App\Http\Controllers\AppSettings;
 use App\Role;
+use App;
+use Exception;
 
 class ApiAuth
 {
-    const APIKEY = 'apiKey-@f4g8-FH2-8809x-dj22aSwrL=cP24Zd234-TuJh87EqChVBGfs=SG564SD-fgAG47-747AhAP=U456=O97=Y=O6A=OC7b5645MNB-V4OO7Z-qw-OARSOc-SD456OFoCE-=64RW67=QOVq=';
-    const APIURL = 'http://rankedinbookingsso-test.azurewebsites.net/';
-
     static $error = '';
 
     public static function accounts_get($id = 0)
@@ -42,6 +41,14 @@ class ApiAuth
             $result['message'] = self::$error;
         }
         return $result;
+    }
+
+    public static function validate_user_for_email_change($sso_user_id, $email) {
+        $sso_user = self::accounts_get_by_username($email);
+        if (!isset($sso_user['data']->id) || $sso_user['data']->id == $sso_user_id ) {
+            return true;
+        }
+        return false;
     }
 
     public static function accounts_update($data = [])
@@ -106,12 +113,18 @@ class ApiAuth
                 $sortingArray[$key] = $apiData[$key];
             }
         }
-        self::send_curl($sortingArray, 'api/Accounts', 'PUT');
-        if (empty(self::$error)) {
-            $result['success'] = true;
+
+        if (self::validate_user_for_email_change($apiData['Id'],$apiData['Email'])) {
+            self::send_curl($sortingArray, 'api/Accounts', 'PUT');
+            if (empty(self::$error)) {
+                $result['success'] = true;
+            } else {
+                $result['success'] = false;
+                $result['message'] = self::$error;
+            }
         } else {
             $result['success'] = false;
-            $result['message'] = self::$error;
+            $result['message'] = 'There is an user with same email on the single sign on.';
         }
         return $result;
     }
@@ -178,6 +191,12 @@ class ApiAuth
                 $sortingArray[$key] = $apiData[$key];
             }
         }
+
+        if (self::checkExist($apiData['username'])) {
+            $result['success'] = false;
+            $result['message'] = 'User already registered in the single sign on.';
+        }
+
         $response = self::send_curl($sortingArray, 'api/Accounts', 'POST');
         if ($response) {
             $result['success'] = true;
@@ -275,7 +294,7 @@ class ApiAuth
         if (is_array($data)) {
             $data = json_encode($data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
         }
-        $hash = base64_encode(hash_hmac('sha256', $data, self::APIKEY, TRUE));
+        $hash = base64_encode(hash_hmac('sha256', $data, env('SSO_API_APIKEY',false), TRUE));
         return $hash;
     }
 
@@ -285,26 +304,55 @@ class ApiAuth
             $api_url .= (string)$data;
         }
         $ApiKey = self::generateApiKey($data);
-        $curl = curl_init(self::APIURL . $api_url);
-        curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $method);
-        $headers = [
-            'Content-Type: application/json',
-            'ApiKey:' . $ApiKey,
-        ];
-        if (in_array($method, ['POST', 'PUT']) && is_array($data)) {
-            curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($data));
-            $headers[] = 'Accept: application/json';
-        } else {
-            $headers[] = 'Accept: text/plain';
+
+        try {
+            $curl = curl_init(env('SSO_API',false) . $api_url);
+
+            if (FALSE === $curl)
+                throw new Exception('failed to initialize');
+
+            curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $method);
+            $headers = [
+                'Content-Type: application/json',
+                'ApiKey:' . $ApiKey,
+            ];
+
+            if (in_array($method, ['POST', 'PUT']) && is_array($data)) {
+                curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($data));
+                $headers[] = 'Accept: application/json';
+            } else {
+                $headers[] = 'Accept: text/plain';
+            }
+
+            curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
+            curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+
+            if (App::environment('local')){
+                curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 0);
+                curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
+            }
+
+            $curl_results = curl_exec($curl);
+
+            if (FALSE === $curl_results)
+                throw new Exception(curl_error($curl), curl_errno($curl));
+
+        } catch(Exception $e) {
+
+            trigger_error(sprintf(
+                'Curl failed with error #%d: %s',
+                $e->getCode(), $e->getMessage()),
+                E_USER_ERROR);
+
+            exit;
         }
-        curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-        $curl_results = curl_exec($curl);
+
         $result = json_decode($curl_results);
         if (!empty(json_last_error())) {
             $result = $curl_results;
         }
         curl_close($curl);
+
         if ($result && !isset($result->Code)) {
             return $result;
         } else {
@@ -318,7 +366,7 @@ class ApiAuth
         if (is_array($data)) {
             $data = json_encode($data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
         }
-        $hash = base64_encode(hash_hmac('sha256', $data, self::APIKEY, TRUE));
+        $hash = base64_encode(hash_hmac('sha256', $data, env('SSO_API_APIKEY',false), TRUE));
         return $hash;
     }
 
@@ -328,27 +376,35 @@ class ApiAuth
             $api_url .= (string)$data;
         }
         $ApiKey = self::generateApiKey($data);
-        dd($data);
-        $curl = curl_init(self::APIURL . $api_url);
+
+        $curl = curl_init(env('SSO_API',false) . $api_url);
         curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $method);
         $headers = [
             'Content-Type: application/json',
             'ApiKey:' . $ApiKey,
         ];
+
         if (in_array($method, ['POST', 'PUT']) && is_array($data)) {
             curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($data));
             $headers[] = 'Accept: application/json';
         } else {
             $headers[] = 'Accept: text/plain';
         }
+
         curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+        if (App::environment('local')){
+            curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 0);
+            curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
+        }
+
         $curl_results = curl_exec($curl);
         $result = json_decode($curl_results);
         if (!empty(json_last_error())) {
             $result = $curl_results;
         }
         curl_close($curl);
+
         if ($result && !isset($result->Code)) {
             return $result;
         } else {

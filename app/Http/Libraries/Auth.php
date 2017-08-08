@@ -79,11 +79,11 @@ class Auth
                     return true;
                 }
             }
-        }        
+        }
 
         if (ApiAuth::autorize($data)['success'])
         {
-            $sso_user = ApiAuth::accounts_get_by_username($data['email']);            
+            $sso_user = ApiAuth::accounts_get_by_username($data['email']);
             $sso_user_id = $sso_user['data']->id;
             $exist = User::where('sso_user_id',$sso_user_id)->first();
             if ( ! empty($exist) )
