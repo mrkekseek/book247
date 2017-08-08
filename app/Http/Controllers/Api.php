@@ -91,7 +91,7 @@ class Api {
             $e->getCode(), $e->getMessage()),
             E_USER_ERROR);
         }*/
-        
+
         $curl_results = curl_exec($curl);
         $result = json_decode(str_replace('&quot;', '"', $curl_results));
         if (!empty(json_last_error()))
