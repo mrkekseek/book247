@@ -9,6 +9,7 @@ use Stripe\Stripe;
 use Stripe\Customer;
 use Stripe\Charge;
 use Auth;
+use Carbon\Carbon;
 
 class StripeController extends Controller
 {
@@ -85,7 +86,7 @@ class StripeController extends Controller
         ]);
 
         $card = end($customer->sources->data);
-        User::where("id", "=", Auth::user()->id)->update(["stripe_id" => $customer->id, "card_brand" => strtolower($card->brand), "card_last_four" => $card->last4]);
+        User::where("id", "=", Auth::user()->id)->update(["stripe_id" => $customer->id, "card_brand" => strtolower($card->brand), "card_last_four" => $card->last4, "trial_ends_at" => Carbon::createFromFormat("m/d/Y", $card->exp_month . "/1/" . $card->exp_year)]);
         return $customer;
      }
 
