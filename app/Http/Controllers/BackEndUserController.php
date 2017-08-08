@@ -34,6 +34,7 @@ use Webpatser\Countries\Countries;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Config;
 use App\Http\Controllers\AppSettings;
+use App\Http\Controllers\StripeController;
 
 class BackEndUserController extends Controller
 {
@@ -278,11 +279,11 @@ class BackEndUserController extends Controller
                 'date_of_birth' => $vars['dob'],
                 'bank_acc_no'   => 0,
                 'social_sec_no' => 0,
-                'about_info'    => '',                
+                'about_info'    => '',
                 'customer_number'   => $user->get_next_customer_number()
-            ];            
-        $validator = Validator::make($personalData, PersonalDetail::rules('POST'), PersonalDetail::$messages, PersonalDetail::$attributeNames);            
-            if ($validator->fails()){                
+            ];
+        $validator = Validator::make($personalData, PersonalDetail::rules('POST'), PersonalDetail::$messages, PersonalDetail::$attributeNames);
+            if ($validator->fails()){
                 return array(
                     'success'   => false,
                     'title'     => 'Error validating',
@@ -385,7 +386,7 @@ class BackEndUserController extends Controller
 
         $roles = Role::all();
         $countries = Countries::orderBy('name')->get();
-       
+
         $userCountry = Countries::find($back_user->country_id);
 
         $avatar = $back_user->get_avatar_image();
@@ -1125,7 +1126,7 @@ class BackEndUserController extends Controller
             $items = DB::table("invoice_items")->where('invoice_id', $invoice->id)->get();
 
             foreach($items as $item)
-            { 
+            {
                 $item_one_price = $item->price - (($item->price*$item->discount)/100);
                 $item_vat = $item_one_price * ($item->vat/100);
 
@@ -1148,7 +1149,7 @@ class BackEndUserController extends Controller
         {
             return redirect('/');
         }
-        
+
 
         $member = User::with('ProfessionalDetail')->with('PersonalDetail')->where('id', $invoice->user_id)->get()->first();
         $member->country = Countries::where('id', $member->country_id)->get()->first();
@@ -1159,7 +1160,7 @@ class BackEndUserController extends Controller
             'Back End User'     => route('admin'),
             'All Backend Users' => '',
         ];
-        
+
         $text_parts  = [
             'title'     => 'Back-End Users',
             'subtitle'  => 'view all users',
@@ -1201,7 +1202,7 @@ class BackEndUserController extends Controller
         ];
 
     }
-    
+
     public function registrationStepsIndex()
    	{
         $status = AppSettings::get_setting_value_by_name('globalWebsite_registration_finished');
@@ -1214,34 +1215,38 @@ class BackEndUserController extends Controller
         $shopLocation = ShopLocations::first();
         $shopResourceCategories = ShopResourceCategory::get();
         $user = Auth::user();
-		return view('admin/registration-form', [
-            'countries'=>$countries, 
-            'currencies'=>$currencies, 
+		return view('registration-form', [
+            'countries'=>$countries,
+            'currencies'=>$currencies,
             'shopLocation'=>$shopLocation,
             'shopResourceCategories'=>$shopResourceCategories,
             'user'=>$user,
         ]);
    	}
-    
+
     public function registrationStepsSave(Request $request)
     {
         $status = AppSettings::get_setting_value_by_name('globalWebsite_registration_finished');
-        if ( $status == 0 )
+        $response = [
+            'success' => FALSE,
+        ];
+
+        if ( $status != 0 )
         {
-            $response = [
-                'success' => FALSE,
-            ];
-        }
-        else
-        {
-            $user = Auth::user();    
-            $data = $request->only('clubname','email','phone','fax','addressline1','addressline2','city','region','postalcode','country','currency','sport','time','members','pay','resource','day','limit');
+            $user = Auth::user();
+            $data = $request->only('stripeToken', 'clubname','email','phone','fax','addressline1','addressline2','city','region','postalcode','country','currency','sport','time','members','pay','resource','day','limit');
+
+            if ( ! empty($data['stripeToken']))
+            {
+                $customer  = StripeController::chargeCustomer($data['stripeToken']);
+            }
+
             $shopLocation = ShopLocations::first();
             $shopLocation->phone = $data['phone'];
             $shopLocation->fax = $data['fax'];
             $shopLocation->email = $data['email'];
             $shopLocation->save();
-            
+
             $address = Address::find($shopLocation->address_id);
             $address->user_id = $user->id;
             $address->address1 = $data['addressline1'];
@@ -1251,9 +1256,9 @@ class BackEndUserController extends Controller
             $address->postal_code = $data['postalcode'];
             $address->country_id = $data['country'];
             $address->save();
-            
+
             AppSettings::update_settings_value_by_name('finance_currency', $data['currency']);
-            
+
             $shopLocationCategoryIntervals = new ShopLocationCategoryIntervals;
             $shopLocationCategoryIntervals->location_id = $shopLocation->id;
             $shopLocationCategoryIntervals->category_id = $data['sport'];
@@ -1261,7 +1266,7 @@ class BackEndUserController extends Controller
             $shopLocationCategoryIntervals->is_locked = 0;
             $shopLocationCategoryIntervals->added_by = $user->id;
             $shopLocationCategoryIntervals->save();
-            
+
             $membershipPlan = MembershipPlan::first();
             if ( empty ($membershipPlan))
             {
@@ -1269,7 +1274,7 @@ class BackEndUserController extends Controller
                 $membershipPlan->name = $data['clubname'];
                 $membershipPlan->save();
             }
-            
+
             $activity = ShopResourceCategory::find($shopLocationCategoryIntervals->category_id);
             if ( ! empty($data['members']))
             {
@@ -1285,7 +1290,7 @@ class BackEndUserController extends Controller
             $membershipRestriction->max_value = $data['day']*24;
             $membershipRestriction->save();
             AppSettings::update_settings_value_by_name('bookings_upfront_reservation_rule', $data['day']);
-            
+
             $membershipRestriction = new MembershipRestriction;
             $membershipRestriction->membership_id = 1;
             $membershipRestriction->restriction_id = 3;
@@ -1302,7 +1307,7 @@ class BackEndUserController extends Controller
                     break;
             }
             AppSettings::update_settings_value_by_name('bookings_online_payment_rule', $allowed_settings_id);
-            
+
             switch ($data['resource'])
             {
                 case (0):
@@ -1316,11 +1321,13 @@ class BackEndUserController extends Controller
             $response = [
                 'success' => TRUE,
             ];
-            
+
             AppSettings::update_settings_value_by_name('globalWebsite_registration_finished', 20);
-            
+
             AppSettings::clear_cache();
+            $response['success'] = TRUE;
         }
+
         return $response;
     }
 }

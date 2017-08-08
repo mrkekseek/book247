@@ -15,10 +15,12 @@ use Storage;
 use Validator;
 use Illuminate\Support\Facades\Config;
 use App\Http\Controllers\AppSettings;
+use Laravel\Cashier\Billable;
 
 class User extends Authenticatable
 {
     use EntrustUserTrait;
+    use Billable;
 
     /**
      * The attributes that are mass assignable.
@@ -100,7 +102,7 @@ class User extends Authenticatable
             default:break;
         }
     }
-    
+
     public function is_back_user() {
         if ( $this->hasRole('front-user') || $this->hasRole('front-member') || $this->status == "deleted") {
             return false;
@@ -110,7 +112,7 @@ class User extends Authenticatable
         }
     }
 
-    public function is_front_user($all = true) {        
+    public function is_front_user($all = true) {
         if ( ($this->hasRole('front-user') || $this->hasRole('front-member')) && ($this->status == "active" || $all )) {
             return true;
         }
