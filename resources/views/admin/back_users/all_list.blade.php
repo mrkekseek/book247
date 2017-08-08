@@ -132,37 +132,41 @@
                         </div>
                     </div>
                     <div class="portlet-body" style="display:none;">
-                        <table class="table table-striped table-bordered table-hover table-checkable order-column" id="sample_1">
-                            <thead>
-                            <tr>
-                                <th>
-                                    <input type="checkbox" class="group-checkable" data-set="#sample_1 .checkboxes" /> </th>
-                                <th> Full Name </th>
-                                <th> Username </th>
-                                <th> Email </th>
-                                <th> Action </th>
-                            </tr>
-                            </thead>
-                            <tbody>
+                        @if($deleted)
+                            <table class="table table-striped table-bordered table-hover table-checkable order-column" id="sample_1">
+                                <thead>
+                                <tr>
+                                    <th>
+                                        <input type="checkbox" class="group-checkable" data-set="#sample_1 .checkboxes" /> </th>
+                                    <th> Full Name </th>
+                                    <th> Username </th>
+                                    <th> Email </th>
+                                    <th> Action </th>
+                                </tr>
+                                </thead>
+                                <tbody>
 
-                            @foreach($users as $user)
-                                @if($user->status == 'deleted')
-                                    <tr class="odd gradeX">
-                                        <td>
-                                            <input type="checkbox" class="checkboxes" value="{{$user->id}}" /> </td>
-                                        <td> <a>{{$user->first_name}} {{$user->middle_name}} {{$user->last_name}}</a> </td>
-                                        <td> {{$user->username}} </td>
-                                        <td>
-                                            <a href="mailto:{{$user->email}}"> {{$user->email}} </a>
-                                        </td>
-                                        <td>
-                                            <button class="btn btn-sm btn-info yellow-mint reactivate-member" data-id="{{ $user->id }}"> Reactivate </button>
-                                        </td>
-                                    </tr>
-                                @endif
-                            @endforeach
-                            </tbody>
-                        </table>
+                                @foreach($users as $user)
+                                    @if($user->status == 'deleted')
+                                        <tr class="odd gradeX">
+                                            <td>
+                                                <input type="checkbox" class="checkboxes" value="{{$user->id}}" /> </td>
+                                            <td> <a>{{$user->first_name}} {{$user->middle_name}} {{$user->last_name}}</a> </td>
+                                            <td> {{$user->username}} </td>
+                                            <td>
+                                                <a href="mailto:{{$user->email}}"> {{$user->email}} </a>
+                                            </td>
+                                            <td>
+                                                <button class="btn btn-sm btn-info yellow-mint reactivate-member" data-id="{{ $user->id }}"> Reactivate </button>
+                                            </td>
+                                        </tr>
+                                    @endif
+                                @endforeach
+                                </tbody>
+                            </table>
+                        @else
+                            All users are active.
+                        @endif
                     </div>
                 </div>
                 <!-- END EXAMPLE TABLE PORTLET-->

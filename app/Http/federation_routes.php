@@ -37,7 +37,6 @@ Route::post('api/federation_buy_license', [
 
 
 
-
 Route::post('api/register_owner', [
     'as'    => 'api/register_owner',
     'uses'  => 'Federation\FederationApi@register_owner'
@@ -289,6 +288,11 @@ Route::group(['middleware' => 'web'], function () {
         'uses'  => 'BackEndUserController@ajax_get_user_info'
     ]);
 
+    Route::post('reactivate_member', [
+        'as' => 'ajax/reactivate_member',
+        'uses' => 'Federation\BackEndUserController@reactivate_member'
+    ]);
+
     Route::post('admin/users/ajax_get_users', [
         'as'     => 'admin/users/ajax_get_users',
         'uses'  => 'BackEndUserController@ajax_get_users_optimized'
@@ -308,6 +312,11 @@ Route::group(['middleware' => 'web'], function () {
     Route::get('/admin/back_users/user_roles', [
         'as'    =>  'admin/back_users/user_roles',
         'uses'  =>  'RolesController@all_users_roles'
+    ]);
+
+    Route::post('admin/back_users/remove_avatar', [
+        'as' => 'admin/back_users/remove_avatar',
+        'uses' => 'Federation\BackEndUserController@remove_avatar',
     ]);
 
     Route::get('/admin/back_users/roles_permissions', [
@@ -1207,6 +1216,17 @@ Route::group(['prefix'=>'ajax', 'middleware' => 'web'], function(){
         'as'    => 'ajax/backend_password_reset_request',
         'uses'  => 'Federation\BackEndUserController@password_reset_request'
     ]);
+
+    Route::post('back_member_change_status', [
+        'as' => 'ajax/back_member_change_status',
+        'uses' => 'Federation\BackEndUserController@activate_deactivate_member'
+    ]);
+
+    Route::post('remove_member', [
+        'as' => 'ajax/remove_member',
+        'uses' => 'Federation\BackEndUserController@remove_member'
+    ]);
+
 
     Route::post('general_note_add_new', [
         'as'    => 'ajax/general_note_add_new',
