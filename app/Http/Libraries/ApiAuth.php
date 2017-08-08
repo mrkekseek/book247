@@ -41,6 +41,14 @@ class ApiAuth
         return $result;
     }
 
+    public static function validate_user_for_email_change($sso_user_id, $email) {
+        $sso_user = self::accounts_get_by_username($email);
+        if (!isset($sso_user['data']->id) || $sso_user['data']->id == $sso_user_id ) {
+            return true;
+        }
+        return false;
+    }
+
     public static function accounts_update($data = [])
     {
         $sortingArray = [
@@ -103,12 +111,18 @@ class ApiAuth
                 $sortingArray[$key] = $apiData[$key];
             }
         }
-        self::send_curl($sortingArray, 'api/Accounts', 'PUT');
-        if (empty(self::$error)) {
-            $result['success'] = true;
+
+        if (self::validate_user_for_email_change($apiData['Id'],$apiData['Email'])) {
+            self::send_curl($sortingArray, 'api/Accounts', 'PUT');
+            if (empty(self::$error)) {
+                $result['success'] = true;
+            } else {
+                $result['success'] = false;
+                $result['message'] = self::$error;
+            }
         } else {
             $result['success'] = false;
-            $result['message'] = self::$error;
+            $result['message'] = 'There is an user with same email on the single sign on.';
         }
         return $result;
     }
@@ -175,6 +189,12 @@ class ApiAuth
                 $sortingArray[$key] = $apiData[$key];
             }
         }
+
+        if (self::checkExist($apiData['username'])) {
+            $result['success'] = false;
+            $result['message'] = 'User already registered in the single sign on.';
+        }
+
         $response = self::send_curl($sortingArray, 'api/Accounts', 'POST');
         if ($response) {
             $result['success'] = true;
@@ -296,9 +316,9 @@ class ApiAuth
         }
         curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-        $curl_results = curl_exec($curl);
         curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 0);
         curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
+        $curl_results = curl_exec($curl);
         $result = json_decode($curl_results);
         if (!empty(json_last_error())) {
             $result = $curl_results;

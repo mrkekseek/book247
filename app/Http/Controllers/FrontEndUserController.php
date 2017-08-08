@@ -1646,7 +1646,7 @@ class FrontEndUserController extends Controller
             $user = Auth::user();
         }
 
-        if ($user->sso_user_id) {
+        if (!$user->sso_user_id) {
             return [
                 'success' => false,
                 'title'   => 'You don\'t have permissions.',
@@ -1680,7 +1680,8 @@ class FrontEndUserController extends Controller
             'gender'        => $vars['gender'],
             'country_id'    => $vars["country_id"],
             'date_of_birth' => $vars["date_of_birth"],
-            'email'         => trim($vars['personal_email'])
+            'email'         => trim($vars['personal_email']),
+            'username'      => trim($vars['personal_email'])
         ];
         $validator = Validator::make($userVars, User::rules('PUT', $user->id), User::$messages, User::$attributeNames);
 
@@ -1690,14 +1691,14 @@ class FrontEndUserController extends Controller
                 'title'   => 'Validation Error',
                 'errors'  => $validator->getMessageBag()->toArray()
             ];
-        }
-        else{
+        } else {
             $user->first_name  = $userVars["first_name"];
             $user->last_name   = $userVars["last_name"];
             $user->middle_name = $userVars["middle_name"];
             $user->country_id  = $userVars["country_id"];
             $user->gender      = $userVars["gender"];
             $user->email       = $userVars["email"];
+            $user->username    = $userVars["username"];
             $dataForApi = $user->toArray() + $userVars;
             $dataForApi['mobile_number'] = trim($vars['mobile_number']);
             $api_user = Auth::update_api_user($dataForApi);
@@ -1715,7 +1716,7 @@ class FrontEndUserController extends Controller
         $personalData = [
             'personal_email'=> trim($vars['personal_email']),
             'mobile_number' => trim($vars['mobile_number']),
-            'date_of_birth' => Carbon::createFromFormat('Y-m-d', $vars['date_of_birth'])->toDateString(),
+            'date_of_birth' => Carbon::createFromFormat('d-m-Y', $vars['date_of_birth'])->toDateString(),
             'about_info'    => trim($vars['about_info']),
             'user_id'       => $user->id
         ];

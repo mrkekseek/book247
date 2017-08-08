@@ -20,7 +20,7 @@ use Laravel\Cashier\Billable;
 class User extends Authenticatable
 {
     use EntrustUserTrait;
-    use Billable;
+//    use Billable;
 
     /**
      * The attributes that are mass assignable.

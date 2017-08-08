@@ -161,7 +161,7 @@ return [
         Regulus\ActivityLog\ActivityLogServiceProvider::class,
         Barryvdh\Debugbar\ServiceProvider::class,
         Maatwebsite\Excel\ExcelServiceProvider::class,
-        Laravel\Cashier\CashierServiceProvider::class
+//        Laravel\Cashier\CashierServiceProvider::class
     ],
 
     /*
