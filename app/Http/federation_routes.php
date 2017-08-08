@@ -37,7 +37,6 @@ Route::post('api/federation_buy_license', [
 
 
 
-
 Route::post('api/register_owner', [
     'as'    => 'api/register_owner',
     'uses'  => 'Federation\FederationApi@register_owner'
