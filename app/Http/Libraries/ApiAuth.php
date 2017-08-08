@@ -272,7 +272,7 @@ class ApiAuth
         if (is_array($data)) {
             $data = json_encode($data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
         }
-        $hash = base64_encode(hash_hmac('sha256', $data, env('SSO_API_KEY',false), TRUE));
+        $hash = base64_encode(hash_hmac('sha256', $data, env('SSO_API_APIKEY',false), TRUE));
         return $hash;
     }
 
@@ -297,6 +297,8 @@ class ApiAuth
         curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
         $curl_results = curl_exec($curl);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 0);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
         $result = json_decode($curl_results);
         if (!empty(json_last_error())) {
             $result = $curl_results;
@@ -315,7 +317,7 @@ class ApiAuth
         if (is_array($data)) {
             $data = json_encode($data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
         }
-        $hash = base64_encode(hash_hmac('sha256', $data, env('SSO_API_KEY',false), TRUE));
+        $hash = base64_encode(hash_hmac('sha256', $data, env('SSO_API_APIKEY',false), TRUE));
         return $hash;
     }
 
@@ -325,7 +327,7 @@ class ApiAuth
             $api_url .= (string)$data;
         }
         $ApiKey = self::generateApiKey($data);
-        dd($data);
+        dd($api_url);
         $curl = curl_init(env('SSO_API',false) . $api_url);
         curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $method);
         $headers = [

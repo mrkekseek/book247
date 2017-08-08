@@ -65,7 +65,7 @@ if (env('FEDERATION',false)){
 
     // Federation api requests end
 
-    
+
     Route::get('buy_license/{token}/{sso_id}/{license_id?}{request_url?}', [
         'as'    => 'buy_license',
         'uses'  => 'MembershipController@iframed'
