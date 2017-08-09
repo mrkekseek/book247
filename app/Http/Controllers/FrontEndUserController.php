@@ -5471,7 +5471,8 @@ class FrontEndUserController extends Controller
             'customer' => $payee,
             'paypal_email' => AppSettings::get_setting_value_by_name('finance_simple_paypal_payment_account'),
             'country' => $country,
-            'payee_country' => $payee_country
+            'payee_country' => $payee_country,
+            'stripe_account'=> true
         ]);
     }
 
