@@ -33,7 +33,7 @@
                             </div>
 
                             <!-- BEGIN SAMPLE FORM PORTLET-->
-                            <div class="portlet light bordered">
+                            <div class="portlet light bordered reset_pwd_box">
                                 <div class="portlet-body form">
                                     <form role="form" name="form_reset" id="form_reset" action="#" method="POST">
                                         <div class="form-body">
@@ -205,6 +205,7 @@
                     submitHandler: function (form) {
                         success2.show();
                         error2.hide();
+                        blockContent('.reset_pwd_box');
                         password_reset(); // submit the form
                     }
                 });
@@ -239,6 +240,7 @@
                     'token': "{{$token}}"
                 },
                 success: function (data) {
+                    $('.reset_pwd_box').unblock();
                     if (data.success==1) {
                         show_notification(data.title, data.message, 'lime', 4500, 0);
                         setTimeout(function(){
@@ -267,6 +269,21 @@
 
             $.notific8('zindex', 11500);
             $.notific8($.trim(message), settings);
+        }
+
+        function blockContent(selector){
+            var message =  "<div class='loading-message loading-message-boxed'>	<img src='/assets/global/img/loading-spinner-grey.gif' align=''><span>&nbsp;&nbsp;Processing...</span></div>";
+            $(selector).block({
+                message: message,
+                overlayCSS: {
+                    backgroundColor: '#555555',
+                    opacity : '0.05'
+                },
+                css: {
+                    border: 'none',
+                    backgroundColor: 'none'
+                }
+            });
         }
     </script>
 @endsection

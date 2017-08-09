@@ -79,6 +79,10 @@ class Api {
         }
         curl_setopt($curl, CURLOPT_HTTPHEADER,$headers);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+        if (App::environment('local')){
+            curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 0);
+            curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
+        }
 
         /*try{
             $curl_results = curl_exec($curl);

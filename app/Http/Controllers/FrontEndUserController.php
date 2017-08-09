@@ -1702,6 +1702,12 @@ class FrontEndUserController extends Controller
             $dataForApi = $user->toArray() + $userVars;
             $dataForApi['mobile_number'] = trim($vars['mobile_number']);
             $api_user = Auth::update_api_user($dataForApi);
+
+//$aaa = ApiAuth::accounts_get($user->sso_user_id);
+//xdebug_var_dump($dataForApi);
+//xdebug_var_dump($aaa);
+//exit;
+
             if ( ! $api_user)
             {
                 return [
@@ -1716,7 +1722,7 @@ class FrontEndUserController extends Controller
         $personalData = [
             'personal_email'=> trim($vars['personal_email']),
             'mobile_number' => trim($vars['mobile_number']),
-            'date_of_birth' => Carbon::createFromFormat('d-m-Y', $vars['date_of_birth'])->toDateString(),
+            'date_of_birth' => Carbon::createFromFormat('Y-m-d', $vars['date_of_birth'])->toDateString(),
             'about_info'    => trim($vars['about_info']),
             'user_id'       => $user->id
         ];
