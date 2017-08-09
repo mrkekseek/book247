@@ -376,6 +376,7 @@
                                 url: "{{ route('ajax/check_phone_for_member_registration') }}",
                                 type: "post",
                                 data: {
+                                    user_id: '{{ $user->id }}',
                                     phone: function() {
                                         return $( "input[name='personalPhone']" ).val();
                                     }

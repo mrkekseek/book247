@@ -1609,7 +1609,7 @@ class FrontEndUserController extends Base
 
         $userPersonal = $user->PersonalDetail;
         if (isset($userPersonal)) {
-            $userPersonal->dob_format = Carbon::createFromFormat('Y-m-d', $userPersonal->date_of_birth)->format('d-m-Y');
+            $userPersonal->dob_format = Carbon::createFromFormat('Y-m-d', $userPersonal->date_of_birth)->format('Y-m-d');
             $userPersonal->dob_to_show = Carbon::createFromFormat('Y-m-d', $userPersonal->date_of_birth)->format('d M Y');
         }
         else{
@@ -1621,7 +1621,7 @@ class FrontEndUserController extends Base
             $personalAddress = new Address();
         }*/
 
-        $countries = Countries::orderBy('name')->get();
+        $countries = Countries::orderBy('name', 'asc')->get();
         //$userCountry = Countries::find($user->country_id);
 
         $avatar = $user->get_avatar_image();

@@ -3207,8 +3207,8 @@ class FrontEndUserController extends Controller
     }
 
     public function validate_phone_for_member(Request $request){
-        $vars = $request->only('phone');
-        $user = PersonalDetail::where('mobile_number','=',$vars['phone'])->get()->first();
+        $vars = $request->only('phone','user_id');
+        $user = PersonalDetail::where([['mobile_number','=',$vars['phone']],['user_id','<>',$vars['user_id']]])->get()->first();
         if ($user){
             return 'false';
         }
