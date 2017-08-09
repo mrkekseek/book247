@@ -827,6 +827,7 @@
                     },
 
                     submitHandler: function(form) {
+                        blockContent('.content');
                         request_reset_email($('input[name=email]').val());
                     }
                 });
@@ -1300,6 +1301,7 @@
                     'email': $('input[name="email"]').val(),
                 },
                 success: function (data) {
+                    $('.content').unblock();
                     if (data.success==1) {
                         show_notification(data.title, data.message, 'lime', 5000, 0);
                         $('#password_reset_form').hide();
