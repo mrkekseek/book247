@@ -62,6 +62,8 @@ use App\ShopFinancialProfile;
 use App\UserMembershipAction;
 use App\StoreCreditProducts;
 use App\StoreCreditPurchases;
+use App\Http\Controllers\StripeController;
+use App\InvoiceFinancialTransaction;
 
 class FrontEndUserController extends Controller
 {
@@ -5471,9 +5473,50 @@ class FrontEndUserController extends Controller
             'customer' => $payee,
             'paypal_email' => AppSettings::get_setting_value_by_name('finance_simple_paypal_payment_account'),
             'country' => $country,
-            'payee_country' => $payee_country
+            'payee_country' => $payee_country,
+            'stripe_account' => $user->stripe_id
         ]);
     }
+
+    public function pay_with_stripe(Int $id)
+    {
+        $result = [
+            'success' => false,
+            'title' => 'Payment',
+            'errors' => 'Errors payment',
+            'redirect' => route('front/member_invoice_list')
+        ];
+
+        $amount = 0;
+        $invoice = Invoice::where("id", $id)->first();
+        foreach($invoice->items as $row)
+        {
+            $amount += $row->total_price;
+        }
+
+        $transaction = new InvoiceFinancialTransaction;
+        $transaction->invoice_id = $invoice->id;
+        $transaction->user_id = Auth::user()->id;
+        $transaction->transaction_amount = $amount;
+        $transaction->transaction_currency = "usd";
+        $transaction->transaction_date = Carbon::now();
+        $transaction->status = 'pending';
+        $transaction->save();
+
+        $response = StripeController::createStripeCharge(StripeController::retrieveCustomer(Auth::user()->stripe_id), $amount * 100, "usd");
+
+        if ($response->paid)
+        {
+            $transaction->update(['status' => 'completed']);
+            $invoice->update(['status' => 'completed']);
+
+            $result['success'] = true;
+            $result['errors'] = 'Payment successfully completed';
+        }
+
+        return $result;
+    }
+       
 
     public function logout()
     {

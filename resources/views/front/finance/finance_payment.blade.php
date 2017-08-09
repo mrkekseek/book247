@@ -198,9 +198,11 @@
                                             @if (strlen($paypal_email)>=6)
                                             <button id="pay_with_paypal" class="btn btn-primary">Pay with paypal</button>
                                             @endif
-                                            @if (isset($stripe_account))
-                                            <button class="btn btn-success">Pay with strype</button>
+                                            
+                                            @if ( ! empty($stripe_account))
+                                            <button class="btn btn-success" id="pay_with_stripe">Pay with strype</button>
                                             @endif
+                                            
                                             <a href="{{ route('homepage') }}" class="btn btn-success">Return Home</a>
                                         </div>
                                     </div>
@@ -281,6 +283,52 @@
         $(function() {
             $('.payer_payee_boxes').matchHeight(options);
         });
+
+        $(function(){
+            $("#pay_with_stripe").click(function(){
+                $("#pay_with_stripe").attr('disabled', 'disabled');
+                var id = $(this).data("id");
+                $.ajax({
+                    url : "{{ route('pay_with_stripe', ['id' => $invoice->id]) }}",
+                    method : "post",
+                    data : {
+                        '_token' : '{{ csrf_token() }}'
+                    },
+                    success : function(data)
+                    {
+                        if (data.success)
+                        {
+                            show_notification(data.title, data.errors, 'lime', 3500, 0);
+                        }
+                        else
+                        {
+                            show_notification(data.title, data.errors, 'lime', 3500, 0); 
+                        }
+
+                        setTimeout(function(){
+                            location.href =  data.redirect;
+                        }, 2000);
+                    }
+                })
+            })
+        });
+
+        function show_notification(title_heading, message, theme, life, sticky) {
+            var settings = {
+                theme: theme,
+                sticky: sticky,
+                horizontalEdge: 'top',
+                verticalEdge: 'right',
+                life : life,
+            };
+
+            if ($.trim(title_heading) != '') {
+                settings.heading = title_heading;
+            }
+
+            $.notific8('zindex', 11500);
+            $.notific8($.trim(message), settings);
+        }
     </script>
 @endsection
 
