@@ -1906,5 +1906,43 @@ class FrontEndUserController extends Base
         ]);
     }
 
+    public function member_active_membership(){
+        $user = Auth::user();
+        if (!$user || !$user->is_front_user()) {
+            return redirect()->intended(route('homepage'));
+        }
+
+        $my_plan = UserMembership::where('user_id','=',$user->id)->whereIn('status',['active','suspended'])->get()->first();
+        if ($my_plan){
+            $restrictions = $my_plan->get_plan_restrictions();
+            $plan_details = $my_plan->get_plan_details();
+        }
+        else {
+            //$my_plan = MembershipPlan::where('id','=',1)->get()->first();
+        }
+
+        $breadcrumbs = [
+            'Home'      => route('admin'),
+            'Dashboard' => '',
+        ];
+        $text_parts  = [
+            'title'     => 'Home',
+            'subtitle'  => 'users dashboard',
+            'table_head_text1' => 'Dashboard Summary'
+        ];
+        $sidebar_link= 'front-finance_active_membership';
+
+        return view('front/finance/federation/active_membership',[
+            'breadcrumbs' => $breadcrumbs,
+            'text_parts'  => $text_parts,
+            'in_sidebar'  => $sidebar_link,
+            'membership_plan'   => $my_plan,
+            //'activities'    => $activities,
+            'restrictions'  => @$restrictions,
+            'plan_details'  => @$plan_details,
+            'user'          => $user
+        ]);
+    }
+
     // Stop - Store credit add - backend add store credit to member
 }
