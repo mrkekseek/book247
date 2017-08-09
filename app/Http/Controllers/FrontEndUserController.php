@@ -62,6 +62,8 @@ use App\ShopFinancialProfile;
 use App\UserMembershipAction;
 use App\StoreCreditProducts;
 use App\StoreCreditPurchases;
+use App\Http\Controllers\StripeController;
+use App\InvoiceFinancialTransaction;
 
 class FrontEndUserController extends Controller
 {
@@ -2974,7 +2976,7 @@ class FrontEndUserController extends Controller
                 'bank_acc_no'   => 0,
                 'social_sec_no' => 0,
                 'about_info'    => '',
-                'customer_number'   => User::get_next_customer_number()
+                'customer_number'   => $user->get_next_customer_number()
             ];
             $validator = Validator::make($personalData, PersonalDetail::rules('POST'), PersonalDetail::$messages, PersonalDetail::$attributeNames);
             if ($validator->fails()){
@@ -3207,13 +3209,8 @@ class FrontEndUserController extends Controller
     }
 
     public function validate_phone_for_member(Request $request){
-        $vars = $request->only('phone','user_id');
-        if (isset($vars['user_id'])) {
-            $user = PersonalDetail::where([['mobile_number','=',$vars['phone']],['user_id','<>',$vars['user_id']]])->first();
-        } else {
-            $user = PersonalDetail::where('mobile_number',$vars['phone'])->first();
-        }
-
+        $vars = $request->only('phone');
+        $user = PersonalDetail::where('mobile_number','=',$vars['phone'])->get()->first();
         if ($user){
             return 'false';
         }
@@ -5477,9 +5474,49 @@ class FrontEndUserController extends Controller
             'paypal_email' => AppSettings::get_setting_value_by_name('finance_simple_paypal_payment_account'),
             'country' => $country,
             'payee_country' => $payee_country,
-            'stripe_account'=> true
+            'stripe_account' => $user->stripe_id
         ]);
     }
+
+    public function pay_with_stripe($id)
+    {
+        $result = [
+            'success' => false,
+            'title' => 'Payment',
+            'errors' => 'Errors payment',
+            'redirect' => route('front/member_invoice_list')
+        ];
+
+        $amount = 0;
+        $invoice = Invoice::where("id", $id)->first();
+        foreach($invoice->items as $row)
+        {
+            $amount += $row->total_price;
+        }
+
+        $transaction = new InvoiceFinancialTransaction;
+        $transaction->invoice_id = $invoice->id;
+        $transaction->user_id = Auth::user()->id;
+        $transaction->transaction_amount = $amount;
+        $transaction->transaction_currency = "usd";
+        $transaction->transaction_date = Carbon::now();
+        $transaction->status = 'pending';
+        $transaction->save();
+
+        $response = StripeController::createStripeCharge(StripeController::retrieveCustomer(Auth::user()->stripe_id), $amount * 100, "usd");
+
+        if ($response->paid)
+        {
+            $transaction->update(['status' => 'completed']);
+            $invoice->update(['status' => 'completed']);
+
+            $result['success'] = true;
+            $result['errors'] = 'Payment successfully completed';
+        }
+
+        return $result;
+    }
+       
 
     public function logout()
     {
