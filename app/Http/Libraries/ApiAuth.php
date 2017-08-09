@@ -9,6 +9,7 @@ use Validator;
 use Webpatser\Countries\Countries;
 use App\Http\Controllers\AppSettings;
 use App\Role;
+use Illuminate\Support\Facades\App;
 
 class ApiAuth
 {
