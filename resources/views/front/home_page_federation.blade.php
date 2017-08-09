@@ -34,6 +34,7 @@
 @section('pageBodyClass','page-container-bg-solid page-boxed login')
 
 @section('pageContentBody')
+
     <div class="page-content-wrapper">
         <!-- BEGIN CONTENT BODY -->
         <!-- BEGIN PAGE CONTENT BODY -->
@@ -44,7 +45,7 @@
                     <div class="row ">
                         <div class="col-md-6 login " style="background-color:transparent!important;">
                             @if (Auth::check() && Auth::user()->is_front_user())
-                            <!-- BEGIN PORTLET -->
+                                    <!-- BEGIN PORTLET -->
                             <div class="portlet light margin-bottom-15 hidden-xs hidden-sm">
                                 <div class="portlet-title">
                                     <div class="caption caption-md">
@@ -61,7 +62,7 @@
                                                     <div class="item">
                                                         <div class="item-head">
                                                             <div class="item-details">
-                                                                <img class="item-pic" src="{!! $knownBooking['avatar'] !!}">
+                                                                <div class="item-avatar" style="background-image: url({!! $knownBooking['avatar'] !!});"></div>
                                                                 <a href="" class="item-name primary-link">{{ $knownBooking['breated_by'] }}</a>
                                                                 <span class="item-label">{{ $knownBooking['passed_time_since_creation'] }}</span>
                                                             </div>
@@ -85,26 +86,22 @@
                             </div>
                             <!-- END PORTLET -->
                             @else
-                            <div class="content" style="background-color:#ffffff; margin-top:0px;">
+                                <div class="content" style="background-color:#ffffff; margin-top:0px;">
                                     <!-- BEGIN LOGIN FORM -->
                                     <form class="login-form portlet light " action="{{ url('/login') }}" method="post" name="user_login_form" id="user_login_form">
                                         {!! csrf_field() !!}
 
                                         <div class="portlet-title">
                                             <div class="caption">
-                                                <span class="caption-subject font-green-haze bold uppercase">User Login</span>
-                                                <span class="caption-helper">account details...</span>
+                                                <span class="caption-subject bold uppercase">seamless user login</span>
                                             </div>
                                         </div>
                                         <div class="alert alert-danger display-hide">
                                             <button class="close" data-close="alert"></button>
-                                            <span> Incorrect username/password combination ... </span>
+                                            <span>  </span>
                                         </div>
                                         <div class="form-group">
                                             <!--ie8, ie9 does not support html5 placeholder, so we just show field title for that-->
-                                            <label class="control-label visible-ie8 visible-ie9">Username
-                                                <span class="required"> * </span>
-                                            </label>
                                             <input class="form-control form-control-solid placeholder-no-fix {{ $errors->has('username') ? ' has-error' : '' }}" type="text" autocomplete="off" placeholder="Email" name="username" id="username_focus" value="{{ old('username') }}" /> </div>
                                         <div class="form-group">
                                             <label class="control-label visible-ie8 visible-ie9">Password
@@ -114,7 +111,7 @@
                                         <div class="form-actions">
                                             <button type="submit" class="btn red btn-block uppercase">Login</button>
                                         </div>
-                                        <div class="form-actions">
+                                        <div class="form-actions links">
                                             <div class="pull-left">
                                                 <label class="rememberme check">
                                                     <input type="checkbox" name="remember" value="1" />Remember me </label>
@@ -124,9 +121,12 @@
                                             </div>
                                         </div>
                                         <div class="create-account bg-white bg-font-white">
-                                            <p>
-                                                <a href="javascript:;" class="green-meadow btn" id="register-btn">Create an account</a>
-                                            </p>
+                                            <div class="portlet-title">
+                                                <div class="caption">
+                                                    <span class="caption-subject bold uppercase">don't have an account?</span>
+                                                </div>
+                                            </div>
+                                            <button type="button" id="pre-register-btn" class="btn green-meadow center uppercase">create one now</button>
                                         </div>
                                     </form>
                                     <!-- END LOGIN FORM -->
@@ -134,30 +134,128 @@
                                     <form class="forget-form portlet light " action="#" id="password_reset_form">
                                         <div class="portlet-title">
                                             <div class="caption">
-                                                <span class="caption-subject font-green-haze bold uppercase"> Forget Password ?</span>
-                                                <span class="caption-helper">Enter your e-mail to reset it...</span>
+                                                <a href="javascript::void()" id="back-btn" >
+                                                    <i class="fa fa-angle-left"></i>
+                                                </a>
+                                                <span class="separator-header"></span>
+                                                <span class="caption-subject bold uppercase hidden-sm hidden-xs">can't remember your password?</span>
+                                                <span class="caption-subject bold uppercase hidden-md hidden-lg">forgot password?</span>
+                                            </div>
+                                        </div>
+                                        <div class="alert alert-danger display-hide">
+                                            <button class="close" data-close="alert"></button> You have some errors in the form. Please check below. </div>
+                                        <div class="alert alert-successs display-hide">
+                                            <button class="close" data-close="alert"></button> Information is valid, please wait! </div>
+                                        <div class="form-group">
+                                            <input class="form-control placeholder-no-fix" type="text" autocomplete="off" placeholder="Enter you email adress" name="email" /> </div>
+                                        <div class="form-actions">
+                                            <button type="button" class="btn grey btn-block uppercase" onClick="javascript: $('#password_reset_form').submit();">next</button>
+                                        </div>
+                                    </form>
+                                    <!-- END FORGOT PASSWORD FORM -->
+                                    <!-- BEGIN RESULT FORGOT PASSWORD FORM -->
+                                    <form class="result-forget-form portlet light" method="post"  id="user_result_forget_form">
+                                        <div class="portlet-title">
+                                            <div class="caption">
+                                                <span class="caption-subject bold uppercase"> can't remember your password </span>
+                                            </div>
+                                        </div>
+                                        <p class="hint"> We've just send you an email. Folow the instructions to reset your password. Click "Next" if the system does not automatically redirect you. </p>
+                                        <div class="form-actions">
+                                            <a href="/">
+                                                <button type="button" class="btn grey btn-block uppercase">next</button>
+                                            </a>
+                                        </div>
+                                    </form>
+                                    <!-- END RESULT FORGOT PASSWORD FORM -->
+
+                                    <!-- BEGIN PREREGISTRATION FORM -->
+                                    <form class="pre-register-form portlet light" method="post" name="user_pregistration_form" id="user_preregistration_form">
+                                        <div class="portlet-title">
+                                            <div class="caption">
+                                                <a href="javascript::void()" id="pre-back-btn" >
+                                                    <i class="fa fa-angle-left"></i>
+                                                </a>
+                                                <span class="separator-header"></span>
+                                                <span class="caption-subject bold uppercase hidden-sm hidden-xs">register an unique user on our platform</span>
+                                                <span class="caption-subject bold uppercase hidden-md hidden-lg">register an unique user</span>
+
                                             </div>
                                         </div>
                                         <div class="alert alert-danger display-hide">
                                             <button class="close" data-close="alert"></button> You have some errors in the form. Please check below. </div>
                                         <div class="alert alert-success display-hide">
                                             <button class="close" data-close="alert"></button> Information is valid, please wait! </div>
+                                        <!--p class="hint"> Enter your email address: </p-->
                                         <div class="form-group">
-                                            <input class="form-control placeholder-no-fix" type="text" autocomplete="off" placeholder="Email" name="email" /> </div>
+                                            <label class="control-label visible-ie8 visible-ie9">Email</label>
+                                            <input class="form-control placeholder-no-fix" type="text" placeholder="Enter your email address:" name="email" /> </div>
                                         <div class="form-actions">
-                                            <button type="button" id="back-btn" class="btn grey-steel">Back</button>
-                                            <button type="button" class="btn btn-primary uppercase pull-right" onClick="javascript: $('#password_reset_form').submit();">Submit</button>
+                                            <button type="submit" id="preregister-btn" class="btn grey btn-block uppercase">Next</button>
                                         </div>
                                     </form>
-                                    <!-- END FORGOT PASSWORD FORM -->
+                                    <!-- END PREREGISTRATION  FORM -->
+                                    <!-- BEGIN PREREGISTRATION  PASSWORD FORM -->
+                                    <form class="pre-register-form portlet light" method="post"  id="user_preregistration_password_form">
+                                        <div class="portlet-title">
+                                            <div class="caption">
+                                                <a href="javascript::void()" id="pre-back-btn" >
+                                                    <i class="fa fa-angle-left"></i>
+                                                </a>
+                                                <span class="separator-header"></span>
+                                                <span class="caption-subject bold uppercase">email already registered</span>
+                                            </div>
+                                        </div>
+                                        <p class="hint"> </p>
+                                        <input type="text" class="hidden" name="email" />
+                                        <div class="form-group">
+                                            <label class="control-label visible-ie8 visible-ie9">Password</label>
+                                            <input class="form-control placeholder-no-fix" type="password" placeholder="Enter your password for login" name="password" />
+                                        </div>
+                                        <div class="pull-right forget-password-block">
+                                            <a href="javascript:;" id="forget-password" class="forget-password">Forgot Password?</a>
+                                        </div>
+                                        <input type="hidden" name="type" />
+                                        <div class="form-actions">
+                                            <button type="submit" id="preregister-btn" class="btn red btn-block uppercase">Login</button>
+                                        </div>
+                                    </form>
+                                    <!-- END PREREGISTRATION  PASSWORD FORM -->
+
+                                    <!-- BEGIN RESULT REGISTRATION FORM -->
+                                    <form class="result-register-form portlet light" method="post"  id="user_result_registration_form">
+                                        <div class="portlet-title">
+                                            <div class="caption">
+                                                <span class="caption-subject bold uppercase"></span>
+                                            </div>
+                                        </div>
+                                        <p class="hint"> Thank you for using our platform. You are now also registered on Book247. Click "Next" if the system does not automatically redirect you. </p>
+                                        <div class="form-actions">
+                                            <a href="/">
+                                                <button type="button" class="btn center btn-block uppercase">next</button>
+                                            </a>
+                                        </div>
+                                    </form>
+                                    <!-- END RESULT REGISTRATION FORM -->
                                     <!-- BEGIN REGISTRATION FORM -->
+
+
                                     <form class="register-form portlet light " method="post" name="user_registration_form" id="user_registration_form">
                                         <div class="portlet-title">
                                             <div class="caption">
-                                                <span class="caption-subject font-green-haze bold uppercase">Sign Up</span>
-                                                <span class="caption-helper"></span>
+                                                <a href="javascript::void()" id="pre-back-btn" >
+                                                    <i class="fa fa-angle-left"></i>
+                                                </a>
+                                                <span class="separator-header"></span>
+                                                <span class="caption-subject bold uppercase">account details</span>
                                             </div>
                                         </div>
+
+                                        <div class="alert alert-condition display-hide terms_and_conditions">
+                                            <button class="close" data-close="alert"></button>
+                                            Please accept the terms and conditions
+                                        </div>
+
                                         <div class="alert alert-danger display-hide">
                                             <button class="close" data-close="alert"></button> You have some errors in the form. Please check below. </div>
                                         <div class="alert alert-success display-hide">
@@ -170,38 +268,78 @@
                                             <label class="control-label visible-ie8 visible-ie9">Last Name</label>
                                             <input class="form-control placeholder-no-fix" type="text" placeholder="Last Name" name="lastname" /> </div>
                                         <div class="form-group">
+                                            <label class="control-label visible-ie8 visible-ie9">Middle Name</label>
+                                            <input class="form-control placeholder-no-fix" type="text" placeholder="Middle Name" name="middlename" /> </div>
+                                        <div class="form-group">
                                             <label class="control-label visible-ie8 visible-ie9">Phone Number</label>
                                             <input class="form-control placeholder-no-fix" type="text" placeholder="Phone Number" name="phone" /> </div>
-
-                                        <p class="hint"> Enter your account details below: </p>
+                                        <div class="form-group">
+                                            <div class="control-label">
+                                                <div class="input-group date date-picker" data-date="" data-date-format="yyyy-mm-dd" data-date-end-date="-0d" data-date-start-view="decades">
+                                                    <input type="text" class="form-control" name="DOB" id="DOB" placeholder="Date of Birth" value="" readonly>
+                                                    <span class="input-group-btn">
+                                                        <button class="btn default" type="button">
+                                                            <i class="fa fa-calendar"></i>
+                                                        </button>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <select name="gender" class="form-control">
+                                                <option value="">Select Gender</option>
+                                                <option value="M"> Male </option>
+                                                <option value="F"> Female </option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <select name="country" id="country" class="form-control">
+                                                <option value="">Select Citizenship</option>
+                                                @foreach ($countries as $country)
+                                                    <option value="{{ $country->id }}">{{ $country->name }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                        <p class="hint"> Choose a password </p>
                                         <div class="form-group">
                                             <!--ie8, ie9 does not support html5 placeholder, so we just show field title for that-->
                                             <label class="control-label visible-ie8 visible-ie9">Email</label>
-                                            <input class="form-control placeholder-no-fix" type="text" placeholder="Email" name="reg_email" /> </div>
+                                            <input class="form-control placeholder-no-fix hidden" type="text" name="reg_email" /> </div>
                                         <div class="form-group">
                                             <label class="control-label visible-ie8 visible-ie9">Password</label>
                                             <input class="form-control placeholder-no-fix" type="password" autocomplete="off" id="rpassword" placeholder="Password - at least 8 characters" name="rpassword" /> </div>
                                         <div class="form-group">
                                             <label class="control-label visible-ie8 visible-ie9">Re-type Your Password</label>
-                                            <input class="form-control placeholder-no-fix" type="password" autocomplete="off" placeholder="Re-type Your Password" name="re_rpassword" /> </div>
+                                            <input class="form-control placeholder-no-fix" type="password" autocomplete="off" placeholder="Retype your password" name="re_rpassword" /> </div>
                                         <div class="form-group margin-top-20 margin-bottom-20">
-                                            <label class="check">
+                                            <p class="text-danger display-hide terms_and_conditions">Please accept the terms and conditions</p>
+                                            <label class="check center-block center-align">
                                                 <input type="checkbox" name="tnc" />
-                                                <span class="loginblue-font">I agree to the </span>
-                                                <a href="javascript:;" class="loginblue-link">Terms of Service</a>
+                                                <span class="loginblue-font">I agree to the</span>
+                                                <a href={{route('terms_of_service')}} target="_blank" class="loginblue-link">Terms of Service</a>
                                                 <span class="loginblue-font">and</span>
-                                                <a href="javascript:;" class="loginblue-link">Privacy Policy </a>
+                                                <a href={{route('privacy_policy')}} target="_blank" class="loginblue-link">Privacy Policy </a>
                                             </label>
                                             <div id="register_tnc_error"> </div>
                                         </div>
                                         <div class="form-actions">
-                                            <button type="button" id="register-back-btn" class="btn grey-steel">Back</button>
-                                            <button type="submit" class="btn red uppercase pull-right">Submit</button>
+                                            <button type="submit" class="btn red btn-block uppercase">Submit</button>
                                         </div>
                                     </form>
                                     <!-- END REGISTRATION FORM -->
+                                    <div class="powered center-block">
+                                        <div class="caption">
+                                            Powered by:
+                                        </div>
+                                        <a class="min-logo logo-book247">
+                                        </a>
+                                        <span class="separator-logo"></span>
+                                        <a class="min-logo logo-rankedin">
+                                        </a>
+                                    </div>
                                 </div>
                             @endif
+
                         </div>
                         <div class="col-md-6 ">
                             <div class="portlet light search-page search-content-1 hidden-xs hidden-sm">
@@ -217,81 +355,6 @@
                                     <div class="fb-page" data-href="https://www.facebook.com/squashandfitness/?fref=ts" data-tabs="timeline" data-width="535" data-height="460" data-small-header="false" data-adapt-container-width="true" data-hide-cover="false" data-show-facepile="true"><blockquote cite="https://www.facebook.com/squashandfitness/?fref=ts" class="fb-xfbml-parse-ignore"><a href="https://www.facebook.com/squashandfitness/?fref=ts">SQF.no - Squash &amp; Fitness</a></blockquote></div>
                                 </div>
                             </div>
-                            {{--<div class="portlet light margin-bottom-15">--}}
-                                {{--<dt>Select Location</dt>--}}
-                                {{--<div class="portlet-body">--}}
-                                    {{--@foreach($shops as $shop)--}}
-                                        {{--@if (sizeof($shop->resources)>0)--}}
-                                        {{--<a class="btn btn-sm border-blue-steel location_btn " data-id="{{ $shop->id }}" href="javascript:;" style="margin-bottom:3px;">--}}
-                                            {{--{{$shop->name}} <span class="badge badge-success resource_activity_nr"> - </span>--}}
-                                        {{--</a>--}}
-                                        {{--@endif--}}
-                                    {{--@endforeach--}}
-                                    {{--<input type="hidden" name="selected_location" value="{{ isset($settings['settings_preferred_location'])?$settings['settings_preferred_location']:4 }}" />--}}
-                                {{--</div>--}}
-                            {{--</div>--}}
-
-                            {{--<div class="portlet light margin-bottom-15" id="activities-widget">--}}
-                                {{--<dt>Select Activity</dt>--}}
-                                {{--<div class="portlet-body">--}}
-                                    {{--<div class="clearfix util-btn-margin-bottom-5">--}}
-                                        {{--@foreach($resourceCategories as $key=>$category)--}}
-                                            {{--@if ($category['resources_count']>0)--}}
-                                                {{--<a class="btn btn-sm btn-outline blue-steel is_resource {{ $key==2?'active':'' }}" data-id="{{$key}}" href="javascript:;"> {{$category['name']}}--}}
-                                                    {{--<span class="glyphicon glyphicon-cog"> </span>--}}
-                                                {{--</a>--}}
-                                            {{--@endif--}}
-                                        {{--@endforeach--}}
-                                        {{--<input type="hidden" name="selected_category" value="{{ isset($settings['settings_preferred_activity'])?$settings['settings_preferred_activity']:2 }}" />--}}
-                                    {{--</div>--}}
-                                {{--</div>--}}
-                            {{--</div>--}}
-
-                            {{--<div class="portlet light margin-bottom-15">--}}
-                                {{--<dt>Select date of booking</dt>--}}
-                                {{--<div class="portlet-body">--}}
-                                    {{--<div id="datepaginator_sample_4"> </div>--}}
-                                {{--</div>--}}
-                                {{--<input type="hidden" name="selected_date" value="{{ \Carbon\Carbon::now()->format("Y-m-d") }}" />--}}
-                            {{--</div>--}}
-
-                            {{--@if (Auth::check() && Auth::user()->is_front_user())--}}
-                            {{--<div class="portlet light margin-bottom-15 hidden-xs" id="all_friends_men">--}}
-                                {{--<dt>Friends List</dt>--}}
-                                {{--<div class="portlet-body">--}}
-                                    {{--<div class="clearfix util-btn-margin-bottom-5">--}}
-                                        {{--<div id="friends_list">--}}
-
-                                        {{--</div>--}}
-
-                                        {{--<a class="btn btn-sm blue-steel " href="javascript:add_new_friend_popup();">--}}
-                                            {{--<span class="icon-user-follow"> </span> Add new friend--}}
-                                        {{--</a>--}}
-                                    {{--</div>--}}
-                                {{--</div>--}}
-                            {{--</div>--}}
-                            {{--@endif--}}
-
-                            {{--<div class="portlet light margin-bottom-15" id="tasks-widget">--}}
-                                {{--<div class="portlet-title" style="min-height:27px; margin-bottom:3px;">--}}
-                                    {{--<dt>Select booking start time</dt>--}}
-                                {{--</div>--}}
-                                {{--<div class="portlet-body util-btn-margin-bottom-5">--}}
-                                    {{--<div class="clearfix" id="booking_hours">--}}
-
-                                    {{--</div>--}}
-                                {{--</div>--}}
-                                {{--<div class="portlet-title" style="min-height:5px; margin-bottom:5px;"> </div>--}}
-                                {{--@if (Auth::check() && Auth::user()->is_front_user())--}}
-                                    {{--<a href="javascript:;" class="btn default green-jungle-stripe" style="padding:5px 10px; font-size:14px; cursor:default; margin-bottom:5px;"> Many courts available </a>--}}
-                                    {{--<a href="javascript:;" class="btn default yellow-saffron-stripe" style="padding:5px 10px; font-size:14px; cursor:default; margin-bottom:5px;"> Less courts available </a>--}}
-                                    {{--<a href="javascript:;" class="btn default red-stripe btn-lg" style="padding:5px 10px; font-size:14px; cursor:default; margin-bottom:5px;"> All courts are booked </a>--}}
-                                    {{--<a href="javascript:;" class="btn default purple-stripe btn-lg" style="padding:5px 10px; font-size:14px; cursor:default; margin-bottom:5px;"> Outside membership rules </a>--}}
-                                    {{--<a href="{{ route('front/active_membership') }}" class="btn default btn-lg" style="padding: 1px 5px 0px; cursor: pointer; margin-bottom: 5px; font-size: 21px;"><span class="item-box"><span class="item"><span aria-hidden="true" class="icon-question"></span></span></span></a>--}}
-                                {{--@else--}}
-                                    {{--<a href="javascript:;" class="btn default dark-stripe btn-lg book_step" style="padding:5px 10px; font-size:14px; cursor:default;"> You need to be logged in to view availability </a>--}}
-                                {{--@endif--}}
-                            {{--</div>--}}
                         </div>
                     </div>
                 </div>
@@ -299,207 +362,207 @@
             </div>
 
             @if (Auth::check() && Auth::user()->is_front_user())
-            <div class="modal fade draggable-modal" id="booking_modal_end_time" tabindex="-1" role="basic" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-body form-horizontal">
-                            <div class="portlet light " style="padding-bottom:0px;margin-bottom:0px;">
-                                <div class="portlet-title form-group">
-                                    <div class="caption">
-                                        <i class="icon-social-dribbble font-green"></i>
-                                        <span class="caption-subject font-green bold uppercase">Booking Details</span>
+                <div class="modal fade draggable-modal" id="booking_modal_end_time" tabindex="-1" role="basic" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-body form-horizontal">
+                                <div class="portlet light " style="padding-bottom:0px;margin-bottom:0px;">
+                                    <div class="portlet-title form-group">
+                                        <div class="caption">
+                                            <i class="icon-social-dribbble font-green"></i>
+                                            <span class="caption-subject font-green bold uppercase">Booking Details</span>
+                                        </div>
+                                        <div style="float:right;" class="caption" id="countdown_60"><span class="minutes"></span>:<span class="seconds"></span></div>
                                     </div>
-                                    <div style="float:right;" class="caption" id="countdown_60"><span class="minutes"></span>:<span class="seconds"></span></div>
-                                </div>
-                                <div class="portlet-body form">
-                                    <!-- Booking first step Start -->
-                                    <form action="#" id="booking-step-one" role="form" name="new_booking1">
-                                        <div class="form-body" style="padding-top:0px; padding-bottom:0px;">
-                                            <div class="form-group note note-info" style="padding-top:0px; padding-bottom:0px; margin-bottom:2px;">
-                                                <p class="form-control-static"><strong>Select End Time</strong></p>
+                                    <div class="portlet-body form">
+                                        <!-- Booking first step Start -->
+                                        <form action="#" id="booking-step-one" role="form" name="new_booking1">
+                                            <div class="form-body" style="padding-top:0px; padding-bottom:0px;">
+                                                <div class="form-group note note-info" style="padding-top:0px; padding-bottom:0px; margin-bottom:2px;">
+                                                    <p class="form-control-static"><strong>Select End Time</strong></p>
 
-                                                <div class="booking_step_content" style="display:block;">
-                                                    <select class="form-control" name="booking_end_time" id="booking_end_time"> </select>
-                                                    <div class="form-actions right" style="padding-top:5px; padding-bottom:5px;">
-                                                        <a class="btn blue-hoki booking_step_next" data-id="to_own_booking" style="padding-top:4px; padding-bottom:4px;">Next</a>
+                                                    <div class="booking_step_content" style="display:block;">
+                                                        <select class="form-control" name="booking_end_time" id="booking_end_time"> </select>
+                                                        <div class="form-actions right" style="padding-top:5px; padding-bottom:5px;">
+                                                            <a class="btn blue-hoki booking_step_next" data-id="to_own_booking" style="padding-top:4px; padding-bottom:4px;">Next</a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group note note-info is_own_booking" style="padding-top:0px; padding-bottom:0px; margin-bottom:2px;">
+                                                    <input type="hidden" autocomplete="off" value="" name="time_book_key" />
+                                                    <input type="hidden" autocomplete="off" value="" name="time_book_hour" />
+                                                    <p class="form-control-static"><strong>
+                                                            <span data-id="booking_name"> </span>
+                                                            <span data-id="start_time"> </span>
+                                                            <span data-id="room_booked"> </span></strong></p>
+                                                    <div class="form-control-static fa-item booking_payment_type" style="float:right;"></div>
+                                                    <div class="booking_step_content" style="display:none;">
+                                                        <label><small>Select Player</small></label>
+                                                        <select name="friend_booking" class="form-control margin-bottom-10 input-sm"></select>
+
+                                                        <label><small>Select Room</small></label>
+                                                        <select class="form-control input-sm" name="resources_room" id="resources_rooms"></select>
+
+                                                        <div class="form-actions right" style="padding-top:5px; padding-bottom:5px;">
+                                                            <a class="btn blue-hoki booking_step_back" style="padding-top:4px; padding-bottom:4px;">Back</a>
+                                                            <a class="btn blue-hoki booking_step_next" style="padding-top:4px; padding-bottom:4px;">Next</a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group note note-info booking_summary_box" style="padding-top:0px; padding-bottom:0px; margin-bottom:2px;">
+                                                    <p class="form-control-static"><strong>Booking Summary</strong></p>
+
+                                                    <div class="booking_step_content" style="display:none;">
+                                                        <div class="booking_summary_price_membership"></div>
+                                                        <div class="form-actions right" style="padding-top:5px; padding-bottom:5px;">
+                                                            <a class="btn blue-hoki booking_step_back" style="padding-top:4px; padding-bottom:4px;">Back</a>
+                                                            <a class="btn blue-hoki cancel_booking_popup_btn" style="padding-top:4px; padding-bottom:4px;">Cancel</a>
+                                                            <a class="btn blue-hoki " style="padding-top:4px; padding-bottom:4px;" onclick="confirm_booking()">Confirm</a>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="form-group note note-info is_own_booking" style="padding-top:0px; padding-bottom:0px; margin-bottom:2px;">
-                                                <input type="hidden" autocomplete="off" value="" name="time_book_key" />
-                                                <input type="hidden" autocomplete="off" value="" name="time_book_hour" />
-                                                <p class="form-control-static"><strong>
-                                                        <span data-id="booking_name"> </span>
-                                                        <span data-id="start_time"> </span>
-                                                        <span data-id="room_booked"> </span></strong></p>
-                                                <div class="form-control-static fa-item booking_payment_type" style="float:right;"></div>
-                                                <div class="booking_step_content" style="display:none;">
-                                                    <label><small>Select Player</small></label>
-                                                    <select name="friend_booking" class="form-control margin-bottom-10 input-sm"></select>
+                                        </form>
+                                        <!-- Booking first step End -->
 
-                                                    <label><small>Select Room</small></label>
-                                                    <select class="form-control input-sm" name="resources_room" id="resources_rooms"></select>
-
-                                                    <div class="form-actions right" style="padding-top:5px; padding-bottom:5px;">
-                                                        <a class="btn blue-hoki booking_step_back" style="padding-top:4px; padding-bottom:4px;">Back</a>
-                                                        <a class="btn blue-hoki booking_step_next" style="padding-top:4px; padding-bottom:4px;">Next</a>
+                                        <!-- Booking second step Start -->
+                                        <form action="#" id="booking-step-two" role="form" name="new_booking2" style="display:none;">
+                                            <div class="form-body" style="padding-top:0px; padding-bottom:0px;">
+                                                <div class="alert alert-danger display-hide">
+                                                    <button class="close" data-close="alert"></button> You have some form errors. Please check below. </div>
+                                                <div class="alert alert-success display-hide">
+                                                    <button class="close" data-close="alert"></button> Your form validation is successful! </div>
+                                                <div class="form-group note note-info margin-bottom-10">
+                                                    <label>Select Activity Room</label>
+                                                    <span id="selected_resources_rooms"></span>
+                                                </div>
+                                                <div class="form-group note note-success margin-bottom-10">
+                                                    <b3>Booking Time</b3><br />
+                                                    <strong>
+                                                        <span class="pre_book_time"></span> on <span class="pre_book_date"></span></strong>
+                                                    <input type="hidden" name="selected_time" value="" />
+                                                </div>
+                                                <div class="form-group note note-info margin-bottom-10">
+                                                    <!--<div class="radio-list">
+                                                        <label class="radio-inline">
+                                                            <input type="radio" name="payment_method" id="payment_method" value="membership" checked> Membership Included Booking </label>
+                                                    </div>-->
+                                                    <div class="radio-list">
+                                                        <label>Payment Method</label>
+                                                        <span class="text-info">Pay on Location Cash/Card </span>
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="form-group note note-info booking_summary_box" style="padding-top:0px; padding-bottom:0px; margin-bottom:2px;">
-                                                <p class="form-control-static"><strong>Booking Summary</strong></p>
-
-                                                <div class="booking_step_content" style="display:none;">
-                                                    <div class="booking_summary_price_membership"></div>
-                                                    <div class="form-actions right" style="padding-top:5px; padding-bottom:5px;">
-                                                        <a class="btn blue-hoki booking_step_back" style="padding-top:4px; padding-bottom:4px;">Back</a>
-                                                        <a class="btn blue-hoki cancel_booking_popup_btn" style="padding-top:4px; padding-bottom:4px;">Cancel</a>
-                                                        <a class="btn blue-hoki " style="padding-top:4px; padding-bottom:4px;" onclick="confirm_booking()">Confirm</a>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </form>
-                                    <!-- Booking first step End -->
-
-                                    <!-- Booking second step Start -->
-                                    <form action="#" id="booking-step-two" role="form" name="new_booking2" style="display:none;">
-                                        <div class="form-body" style="padding-top:0px; padding-bottom:0px;">
-                                            <div class="alert alert-danger display-hide">
-                                                <button class="close" data-close="alert"></button> You have some form errors. Please check below. </div>
-                                            <div class="alert alert-success display-hide">
-                                                <button class="close" data-close="alert"></button> Your form validation is successful! </div>
-                                            <div class="form-group note note-info margin-bottom-10">
-                                                <label>Select Activity Room</label>
-                                                <span id="selected_resources_rooms"></span>
-                                            </div>
-                                            <div class="form-group note note-success margin-bottom-10">
-                                                <b3>Booking Time</b3><br />
-                                                <strong>
-                                                    <span class="pre_book_time"></span> on <span class="pre_book_date"></span></strong>
-                                                <input type="hidden" name="selected_time" value="" />
-                                            </div>
-                                            <div class="form-group note note-info margin-bottom-10">
-                                                <!--<div class="radio-list">
-                                                    <label class="radio-inline">
-                                                        <input type="radio" name="payment_method" id="payment_method" value="membership" checked> Membership Included Booking </label>
-                                                </div>-->
-                                                <div class="radio-list">
-                                                    <label>Payment Method</label>
-                                                    <span class="text-info">Pay on Location Cash/Card </span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </form>
-                                    <!-- Booking second step End -->
+                                        </form>
+                                        <!-- Booking second step End -->
+                                    </div>
                                 </div>
                             </div>
                         </div>
+                        <!-- /.modal-content -->
                     </div>
-                    <!-- /.modal-content -->
+                    <!-- /.modal-dialog -->
                 </div>
-                <!-- /.modal-dialog -->
-            </div>
 
-            <div class="modal fade draggable-modal" id="new_friend_modal" tabindex="-1" role="basic" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-body form-horizontal">
-                            <div class="portlet light " style="padding-bottom:0px;margin-bottom:0px;">
-                                <div class="portlet-title form-group">
-                                    <div class="caption">
-                                        <i class="icon-social-dribbble font-green"></i>
-                                        <span class="caption-subject font-green bold uppercase">Enter friend's phone number</span>
+                <div class="modal fade draggable-modal" id="new_friend_modal" tabindex="-1" role="basic" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-body form-horizontal">
+                                <div class="portlet light " style="padding-bottom:0px;margin-bottom:0px;">
+                                    <div class="portlet-title form-group">
+                                        <div class="caption">
+                                            <i class="icon-social-dribbble font-green"></i>
+                                            <span class="caption-subject font-green bold uppercase">Enter friend's phone number</span>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="portlet-body form">
-                                    <form action="#" id="friend_search_form" role="form" name="friend_search_form">
-                                        <div class="form-body" style="padding-top:0px; padding-bottom:0px;">
-                                            <div class="form-group note note-info margin-bottom-10">
-                                                <div class="input-group">
-                                                    <input type="text" placeholder="Phone number: ex. 123456789" name="friend_phone_no" class="form-control">
+                                    <div class="portlet-body form">
+                                        <form action="#" id="friend_search_form" role="form" name="friend_search_form">
+                                            <div class="form-body" style="padding-top:0px; padding-bottom:0px;">
+                                                <div class="form-group note note-info margin-bottom-10">
+                                                    <div class="input-group">
+                                                        <input type="text" placeholder="Phone number: ex. 123456789" name="friend_phone_no" class="form-control">
                                                     <span class="input-group-btn">
                                                         <button type="submit" class="btn red">Get Friend!</button>
                                                     </span>
+                                                    </div>
+                                                    <small class="help-block"> numeric field between 8 and 10 digits </small>
                                                 </div>
-                                                <small class="help-block"> numeric field between 8 and 10 digits </small>
                                             </div>
-                                        </div>
-                                    </form>
+                                        </form>
+                                    </div>
                                 </div>
                             </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn dark btn-outline submit_form_2" data-dismiss="modal">Close</button>
+                            </div>
                         </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn dark btn-outline submit_form_2" data-dismiss="modal">Close</button>
-                        </div>
+                        <!-- /.modal-content -->
                     </div>
-                    <!-- /.modal-content -->
+                    <!-- /.modal-dialog -->
                 </div>
-                <!-- /.modal-dialog -->
-            </div>
 
-            <div class="modal fade draggable-modal" id="unread_notes_modal" tabindex="-1" role="basic" aria-hidden="true" data-keyboard="false" data-backdrop="static">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-body form-horizontal">
-                            <div class="portlet light " style="padding:0px;margin:0px;">
-                                <div class="portlet-body form">
-                                    <div class="portlet light bordered" style="margin-bottom:0px;">
-                                        <div class="portlet-title tabbable-line">
-                                            <div class="caption caption-md">
-                                                <i class="icon-globe theme-font hide"></i>
-                                                <span class="caption-subject font-blue-madison bold uppercase">Notes & Messages</span>
+                <div class="modal fade draggable-modal" id="unread_notes_modal" tabindex="-1" role="basic" aria-hidden="true" data-keyboard="false" data-backdrop="static">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-body form-horizontal">
+                                <div class="portlet light " style="padding:0px;margin:0px;">
+                                    <div class="portlet-body form">
+                                        <div class="portlet light bordered" style="margin-bottom:0px;">
+                                            <div class="portlet-title tabbable-line">
+                                                <div class="caption caption-md">
+                                                    <i class="icon-globe theme-font hide"></i>
+                                                    <span class="caption-subject font-blue-madison bold uppercase">Notes & Messages</span>
+                                                </div>
+                                                <ul class="nav nav-tabs">
+                                                    <li class="active">
+                                                        <a href="#tab_1_1" data-toggle="tab"> General </a>
+                                                    </li>
+                                                </ul>
                                             </div>
-                                            <ul class="nav nav-tabs">
-                                                <li class="active">
-                                                    <a href="#tab_1_1" data-toggle="tab"> General </a>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                        <div class="portlet-body">
-                                            <!--BEGIN TABS-->
-                                            <div class="tab-content">
-                                                <div class="tab-pane active" id="tab_1_1">
-                                                    <div class="scroller" style="height: 320px;" data-always-visible="1" data-rail-visible1="0" data-handle-color="#D7DCE2">
-                                                        <ul class="feeds">
-                                                        @if (sizeof($unredNotes)>0)
-                                                            @foreach($unredNotes as $note)
-                                                                <li>
-                                                                    <div class="col1">
-                                                                        <div class="cont" style="margin-right:0px;">
-                                                                            <div class="cont-col1">
-                                                                                <div class="label label-sm label-default">
-                                                                                    <i class="fa fa-bullhorn"></i>
+                                            <div class="portlet-body">
+                                                <!--BEGIN TABS-->
+                                                <div class="tab-content">
+                                                    <div class="tab-pane active" id="tab_1_1">
+                                                        <div class="scroller" style="height: 320px;" data-always-visible="1" data-rail-visible1="0" data-handle-color="#D7DCE2">
+                                                            <ul class="feeds">
+                                                                @if (sizeof($unredNotes)>0)
+                                                                    @foreach($unredNotes as $note)
+                                                                        <li>
+                                                                            <div class="col1">
+                                                                                <div class="cont" style="margin-right:0px;">
+                                                                                    <div class="cont-col1">
+                                                                                        <div class="label label-sm label-default">
+                                                                                            <i class="fa fa-bullhorn"></i>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div class="cont-col2">
+                                                                                        <div class="desc">
+                                                                                            {{ $note['dateAdded'] }} - {{ $note['note_body'] }}
+                                                                                        </div>
+                                                                                    </div>
                                                                                 </div>
                                                                             </div>
-                                                                            <div class="cont-col2">
-                                                                                <div class="desc">
-                                                                                    {{ $note['dateAdded'] }} - {{ $note['note_body'] }}
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                </li>
-                                                            @endforeach
-                                                        @endif
-                                                        </ul>
+                                                                        </li>
+                                                                    @endforeach
+                                                                @endif
+                                                            </ul>
+                                                        </div>
                                                     </div>
                                                 </div>
+                                                <!--END TABS-->
                                             </div>
-                                            <!--END TABS-->
                                         </div>
                                     </div>
                                 </div>
                             </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn dark btn-outline submit_form_2" data-dismiss="modal">Close</button>
+                            </div>
                         </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn dark btn-outline submit_form_2" data-dismiss="modal">Close</button>
-                        </div>
+                        <!-- /.modal-content -->
                     </div>
-                    <!-- /.modal-content -->
+                    <!-- /.modal-dialog -->
                 </div>
-                <!-- /.modal-dialog -->
-            </div>
             @endif
         </div>
         <!-- END PAGE CONTENT BODY -->
@@ -553,9 +616,8 @@
 
         $.validator.addMethod("datePickerDate",function(value, element) {
             // put your own logic here, this is just a (crappy) example
-            return value.match(/^\d\d?-\d\d?-\d\d\d\d$/);
-        },"Please enter a date in the format dd/mm/yyyy.");
-
+            return value.match(/^\d\d\d\d-\d\d?-\d\d?$/);
+        },"Please enter a date in the format yyyy/mm/dd.");
         $.validator.addMethod('filesize',function(value, element, param) {
             // param = size (in bytes)
             // element = element to validate (<input>)
@@ -573,52 +635,65 @@
 
         var Login = function() {
             var handleLogin = function() {
-
                 $('.login-form').validate({
-                    errorElement: 'span', //default input error message container
-                    errorClass: 'help-block', // default input error message class
+                    //errorElement: 'span', //default input error message container
+                    //errorClass: 'help-block', // default input error message class
+                    //  focusCleanup: true,
                     focusInvalid: false, // do not focus the last invalid input
                     rules: {
                         username: {
-                            required: true
+                            required: {
+                                depends:function(){
+                                    $(this).val($.trim($(this).val()));
+                                    return true;
+                                }
+                            },
+                            email: true,
                         },
                         password: {
-                            required: true
+                            required: true,
+                            minlength: 8
                         },
-                        remember: {
-                            required: false
-                        }
                     },
-
                     messages: {
                         username: {
-                            required: "Username is required."
+                            required: " Email is required. ",
+                            email: " Email not valid. ",
                         },
                         password: {
-                            required: "Password is required."
+                            required: " Password is required. ",
+                            minlength : " Min 8 symbol. "
                         }
                     },
-
-                    invalidHandler: function(event, validator) { //display error alert on form submit
-                        $('.alert-danger', $('.login-form')).show();
+                    showErrors: function(errorMap, errorList) {
+                        var errors = this.numberOfInvalids();
+                        if (errors) {
+                            $('.alert-danger').show();
+                        }
+                        else {
+                            $('.alert-danger').hide();
+                        }
+                        this.defaultShowErrors();
                     },
-
                     highlight: function(element) { // hightlight error inputs
-                        $(element)
-                                .closest('.form-group').addClass('has-error'); // set error class to the control group
+                        $(element).closest('.form-group').addClass('has-error'); // set error class to the control group
                     },
-
+                    unhighlight  : function(element) { // hightlight error inputs
+                        $(element).closest('.form-group').removeClass('has-error'); // set error class to the control group
+                    },
                     success: function(label) {
-                        label.closest('.form-group').removeClass('has-error');
-                        label.remove();
-                    },
 
+                    },
                     errorPlacement: function(error, element) {
-                        error.insertAfter(element.closest('.input-icon'));
+                        $('.alert-danger span').append(error);
                     },
-
                     submitHandler: function(form) {
-                        form.submit(); // form validation success, call ajax form submit
+                        var data = {
+                            username : $(form).find('input[name="username"]').val(),
+                            password : $(form).find('input[name="password"]').val(),
+                        };
+                        blockContent('.content');
+                        auth_autorize(data);
                     }
                 });
 
@@ -685,10 +760,11 @@
                     }
                 });
 
-                jQuery('#forget-password').click(function() {
+                jQuery('.login').on('click','#forget-password', function (){
                     jQuery('.login-form').hide();
+                    jQuery('.pre-register-form').hide();
                     jQuery('.forget-form').show();
-                });
+                })
 
                 jQuery('#back-btn').click(function() {
                     jQuery('.login-form').show();
@@ -709,6 +785,116 @@
                 });
             }
 
+            var handlePreRegister = function() {
+                jQuery('#pre-register-btn').click(function() {
+                    jQuery('.login-form').hide();
+                    jQuery('.login .alert span').html('');
+                    jQuery('.login .alert').hide();
+                    jQuery('#user_preregistration_form').show();
+                });
+
+                jQuery('.login').on('click','#pre-back-btn', function (){
+                    jQuery('.login-form').show();
+                    jQuery('.pre-register-form').hide();
+                    jQuery('.register-form').hide();
+                });
+
+                $('#user_preregistration_form').validate({
+                    errorElement: 'span', //default input error message container
+                    errorClass: 'help-block', // default input error message class
+                    focusInvalid: false, // do not focus the last invalid input
+                    ignore: "",
+                    rules: {
+                        email: {
+                            required: true,
+                            email: true,
+                        }
+                    },
+                    messages: {
+                        email: {
+                            required: "Email is required.",
+                            email: "Email not valid"
+                        }
+                    },
+                    invalidHandler: function(event, validator) { //display error alert on form submit
+                    },
+
+                    highlight: function(element) { // hightlight error inputs
+                        $(element)
+                                .closest('.form-group').addClass('has-error'); // set error class to the control group
+                    },
+                    success: function(label) {
+                        label.closest('.form-group').removeClass('has-error');
+                        label.remove();
+                    },
+
+                    errorPlacement: function(error, element) {
+                        error.insertAfter(element.closest('.form-control'));
+                    },
+
+                    submitHandler: function(form) {
+                        blockContent('.content');
+                        auth_chek_email($(form).find('input[name="email"]').val());
+                    }
+                });
+
+                $('#user_preregistration_password_form').validate({
+                    errorElement: 'span', //default input error message container
+                    errorClass: 'help-block', // default input error message class
+                    focusInvalid: false, // do not focus the last invalid input
+                    ignore: "",
+                    rules: {
+                        password: {
+                            required: true,
+                            minlength: 8
+                        }
+                    },
+                    messages: {
+                        password: {
+                            required: "Password is required.",
+                            minlength: "Min 8 symbol"
+                        }
+                    },
+                    invalidHandler: function(event, validator) { //display error alert on form submit
+                    },
+
+                    highlight: function(element) { // hightlight error inputs
+                        $(element)
+                                .closest('.form-group').addClass('has-error'); // set error class to the control group
+                    },
+                    success: function(label) {
+                        label.closest('.form-group').removeClass('has-error');
+                        label.remove();
+                    },
+
+                    errorPlacement: function(error, element) {
+                        error.insertAfter(element.closest('.form-control'));
+                    },
+
+                    submitHandler: function(form) {
+                        var data = {
+                            email : $(form).find('input[name="email"]').val(),
+                            password : $(form).find('input[name="password"]').val(),
+                            type : $(form).find('input[name="type"]').val()
+                        };
+                        blockContent('.content');
+                        auth_check_password(data);
+                    }
+                });
+
+
+            }
+
+            var handleDatePickers = function () {
+                if (jQuery().datepicker) {
+                    $('.date-picker').datepicker({
+                        rtl: App.isRTL(),
+                        orientation: "right",
+                        autoclose: true
+                    });
+                }
+            }
+
             return {
                 //main function to initiate the module
                 init: function() {
@@ -716,38 +902,40 @@
                     handleLogin();
                     handleForgetPassword();
                     handleRegister();
-
+                    handlePreRegister();
+                    handleDatePickers();
                 }
             };
         }();
 
-        {{--var UIDatepaginator = function () {--}}
+        var UIDatepaginator = function () {
 
-            {{--return {--}}
-                {{--//main function to initiate the module--}}
-                {{--init: function () {--}}
-                    {{--//sample #3--}}
-                    {{--var options_sample3 = {--}}
-                        {{--startDate:'{{ \Carbon\Carbon::today()->format('Y-m-d') }}',--}}
-                        {{--endDate: '{{ \Carbon\Carbon::today()->addDays(7)->format('Y-m-d') }}',--}}
-                        {{--showOffDays:false,--}}
-                        {{--size:'large',--}}
-                        {{--itemWidth:45,--}}
-                        {{--selectedDateFormat:  'Do, MMM YYYY',--}}
-                        {{--onSelectedDateChanged: function(event, date) {--}}
-                            {{--//alert("Selected date: " + moment(date).format("YYYY-MM-DD"));--}}
-                            {{--$('input[name=selected_date]').val(moment(date).format("YYYY-MM-DD"));--}}
-                            {{--get_booking_hours(moment(date).format("YYYY-MM-DD"));--}}
-                        {{--}--}}
-                    {{--}--}}
+            return {
+                //main function to initiate the module
+                init: function () {
+                    //sample #3
+                    var options_sample3 = {
+                        /*selectedDate: '{{ \Carbon\Carbon::today()->format('Y-m-d') }}',*/
+                        startDate:'{{ \Carbon\Carbon::today()->format('Y-m-d') }}',
+                        endDate: '{{ \Carbon\Carbon::today()->addDays(7)->format('Y-m-d') }}',
+                        showOffDays:false,
+                        size:'large',
+                        itemWidth:45,
+                        selectedDateFormat:  'Do, MMM YYYY',
+                        onSelectedDateChanged: function(event, date) {
+                            //alert("Selected date: " + moment(date).format("YYYY-MM-DD"));
+                            $('input[name=selected_date]').val(moment(date).format("YYYY-MM-DD"));
+                            get_booking_hours(moment(date).format("YYYY-MM-DD"));
+                        }
+                    }
 
-                    {{--$('#datepaginator_sample_4').datepaginator(options_sample3);--}}
+                    $('#datepaginator_sample_4').datepaginator(options_sample3);
 
-                {{--} // end init--}}
+                } // end init
 
-            {{--};--}}
+            };
 
-        {{--}();--}}
+        }();
 
         var FormValidation = function () {
             var handleValidation1 = function() {
@@ -804,10 +992,9 @@
                 });
             }
 
-            $.validator.addMethod("terms_conditions", function(value, element) {
-                console.log(value);
-                console.log(element);
-                return false;
+            $.validator.addMethod("terms_and_conditions", function(value, element) {
+                var check = $(element).prop("checked");
+                return check;
             }, "Please accept the terms and conditions");
 
             var handleValidation2 = function() {
@@ -834,8 +1021,8 @@
                         phone: {
                             number: true,
                             required: true,
-                            minlength:8,
-                            maxlength:13,
+                            minlength: 8,
+                            maxlength: 20,
                             remote: {
                                 url: "{{ route('ajax/check_phone_for_member_registration') }}",
                                 type: "post",
@@ -860,6 +1047,18 @@
                                 }
                             }
                         },
+                        DOB: {
+                            required: true,
+                            datePickerDate:true
+                        },
+                        gender: {
+                            required: true,
+                            minlength:1
+                        },
+                        country: {
+                            required: true,
+                            minlength:1
+                        },
                         rpassword: {
                             required:true,
                             minlength: 8,
@@ -872,8 +1071,7 @@
                             equalTo:"#rpassword"
                         },
                         tnc: {
-                            //terms_conditions: true
-                            //required: true,
+                            terms_and_conditions: true
                         }
                     },
 
@@ -884,8 +1082,42 @@
                     },
 
                     invalidHandler: function (event, validator) { //display error alert on form submit
+
+
+
                         success2.hide();
-                        error2.show();
+                        error2.hide();
+                        $(".terms_and_conditions").hide();
+                        $(".checker").removeClass("check_terms");
+                        var check = true,
+                                count = 0;
+
+                        for(var i in validator.invalid)
+                        {
+                            if ('tnc' == i)
+                            {
+                                check = false;
+                            }
+                            count ++;
+                        }
+
+                        if ( ! check && count == 1)
+                        {
+                            $(".terms_and_conditions").show();
+                            $(".checker").addClass("check_terms");
+                        }
+                        else
+                        {
+                            error2.show();
+                        }
+
+                        $("input[name='tnc']").click(function(){
+                            if ( $(".checker").hasClass("check_terms"))
+                            {
+                                $(".checker").removeClass("check_terms");
+                            }
+                        });
+
                         App.scrollTo(error2, -200);
                     },
 
@@ -911,8 +1143,10 @@
                     },
 
                     submitHandler: function (form) {
+                        $(".terms_and_conditions").hide();
                         success2.show();
                         error2.hide();
+                        blockContent('.content');
                         register_member(); // submit the form
                     }
                 });
@@ -930,8 +1164,9 @@
         jQuery(document).ready(function() {
             // initialize login/register/forgot password part
             Login.init();
+
             // initialize the date pagination part
-//            UIDatepaginator.init();
+            UIDatepaginator.init();
 
             // initialize the forms validation part
             FormValidation.init();
@@ -948,16 +1183,29 @@
                     'email': $('input[name="reg_email"]').val(),
                     'phone_number': $('input[name="phone"]').val(),
                     'password': $('input[name="rpassword"]').val(),
+                    'middle_name': $('input[name="middlename"]').val(),
+                    'dob': $('input[name="DOB"]').val(),
+                    'gender': $('select[name=gender]').val(),
+                    'country': $('select[name=country]').val(),
                 },
                 success: function (data) {
+                    $('.content').unblock();
                     if (data.success==1) {
                         show_notification('You are now registered', 'After page reload, use the email/password combination you used for registration and login', 'lemon', 3500, 0);
+                        $('#user_registration_form').hide();
+                        $('#user_result_registration_form .caption-subject').html('account registered');
+                        $('#user_result_registration_form').show();
                         setTimeout(function(){
                             window.location.reload(true);
                         },2500);
                     }
                     else{
-                        show_notification('User registration ERROR', 'Something went wrong with the registration. Try changing the email/phone number or try reloading the page', 'lemon', 3500, 0);
+                        if (data.errors.length > 0){
+                            show_notification(data.title, data.errors, 'lemon', 3500, 0);
+                        }
+                        else{
+                            show_notification('User registration ERROR', 'Something went wrong with the registration. Try changing the email/phone number or try reloading the page', 'lemon', 3500, 0);
+                        }
                     }
                 }
             });
@@ -974,6 +1222,8 @@
                 success: function (data) {
                     if (data.success==1) {
                         show_notification(data.title, data.message, 'lime', 5000, 0);
+                        $('#password_reset_form').hide();
+                        $('#user_result_forget_form').show();
                         setTimeout(function(){
                             window.location.reload(true);
                         },5500);
@@ -985,19 +1235,117 @@
             });
         }
 
-//        $(document).on('click', '.is_resource', function(){
-//            $('.is_resource').removeClass('active');
-//            $(this).addClass('active');
-//
-//            $('input[name=selected_category]').val($(this).attr('data-id'));
-//            get_booking_hours();
-//            get_rooms_per_location();
-//        });
+
+        function auth_chek_email(email){
+            $.ajax({
+                url: '{{ route('ajax/auth_chek_email') }}',
+                type: "post",
+                cache: false,
+                data: {
+                    'email': email,
+                },
+                success: function (data) {
+                    $('.content').unblock();
+                    if (data.success == true){
+                        if (typeof data.show !== 'undefined'){
+                            $(data.show).show();
+                        }
+                        if (typeof data.hide !== 'undefined'){
+                            $(data.hide).hide();
+                        }
+                        if (typeof data.fieldValue !== 'undefined'){
+                            for (var i in data.fieldValue){
+                                $(data.fieldValue[i].selector).val(data.fieldValue[i].value);
+                            }
+                        }
+                        if (typeof data.fieldHtml !== 'undefined'){
+                            for (var i in data.fieldHtml){
+                                $(data.fieldHtml[i].selector).html(data.fieldHtml[i].value);
+                            }
+                        }
+                        show_notification(data.title, data.errors, 'lime', 5000, 0);
+                    }
+                    else{
+                        show_notification(data.title, data.errors, 'lemon', 5000, 0);
+                    }
+                }
+            });
+        }
+
+        function auth_check_password(data){
+            $.ajax({
+                url: '{{ route('ajax/auth_check_password') }}',
+                type: "post",
+                cache: false,
+                data: {
+                    'data': data,
+                },
+                success: function (data) {
+                    $('.content').unblock();
+                    if (data.success == true){
+                        $('#user_preregistration_password_form').hide();
+                        $('#user_result_registration_form .caption-subject').html('email already registered');
+                        $('#user_result_registration_form').show();
+                        show_notification(data.title, data.errors, 'lime', 5000, 0);
+                        window.location.reload(true);
+                    }
+                    else{
+                        show_notification(data.title, data.errors, 'lemon', 5000, 0);
+                    }
+                }
+            });
+        }
+
+        function auth_autorize(data){
+            $.ajax({
+                url: '{{ route('ajax/auth_autorize') }}',
+                type: "post",
+                cache: false,
+                data: {
+                    'data': data,
+                },
+                success: function (data) {
+                    //console.log(data);
+                    $('.content').unblock();
+                    if (data.success == true){
+                        window.location.reload();
+                    }
+                    else{
+                        $('.alert-danger').show();
+                        $('.alert-danger span').html(data.errors);
+                    }
+                }
+            });
+        }
+
+        function blockContent(selector){
+            var message =  "<div class='loading-message loading-message-boxed'>	<img src='/assets/global/img/loading-spinner-grey.gif' align=''><span>&nbsp;&nbsp;Processing...</span></div>";
+            $(selector).block({
+                message: message,
+                overlayCSS: {
+                    backgroundColor: '#555555',
+                    opacity : '0.05'
+                },
+                css: {
+                    border: 'none',
+                    backgroundColor: 'none'
+                }
+            });
+        }
+
+        $(document).on('click', '.is_resource', function(){
+            $('.is_resource').removeClass('active');
+            $(this).addClass('active');
+
+            $('input[name=selected_category]').val($(this).attr('data-id'));
+            get_booking_hours();
+            get_rooms_per_location();
+        });
 
         var timeinterval = ''; /* Interval timer */
         $(document).on('click', '.book_step', function(){
-        @if (Auth::check() && Auth::user()->is_front_user())
-            $('.pre_book_time').html( $.trim($(this).html()) );
+            @if (Auth::check() && Auth::user()->is_front_user())
+                $('.pre_book_time').html( $.trim($(this).html()) );
             $('input[name=selected_time]').val($(this).html());
             $('.pre_book_date').html($('.dp-selected').attr('title'));
 
@@ -1013,23 +1361,23 @@
             initializeClock('countdown_60', deadline);
 
             $('#booking_modal_end_time').modal('show');
-        @else
-            jQuery('.forget-form').hide();
+            @else
+                jQuery('.forget-form').hide();
             jQuery('.register-form').hide();
             jQuery('.login-form').show();
 
             $('#username_focus').focus();
             show_notification('Please login', 'You need to login in order to use the booking', 'lemon', 3500, 0);
-        @endif
-        });
+            @endif
+            });
 
-//        $(document).on('click', '.location_btn', function(){
-//            $('.location_btn').removeClass('blue-steel');
-//            $(this).addClass('blue-steel');
-//
-//            $('input[name=selected_location]').val($(this).attr('data-id'));
-//            get_booking_hours();
-//        });
+        $(document).on('click', '.location_btn', function(){
+            $('.location_btn').removeClass('blue-steel');
+            $(this).addClass('blue-steel');
+
+            $('input[name=selected_location]').val($(this).attr('data-id'));
+            get_booking_hours();
+        });
 
         $(document).on('click', '.booking_step_next', function(){
             var own_box = $(this).parents('.form-group').first();
@@ -1090,40 +1438,40 @@
             own_next.find('.booking_step_content').first().show();
         });
 
-        {{--function get_booking_hours(selectedDate){--}}
-            {{--App.blockUI({--}}
-                {{--target: '#tasks-widget',--}}
-                {{--boxed: true,--}}
-                {{--message: 'Processing...'--}}
-            {{--});--}}
-            {{--App.blockUI({--}}
-                {{--target: '#activities-widget',--}}
-                {{--boxed: true,--}}
-                {{--message: 'Refreshing...'--}}
-            {{--});--}}
+        function get_booking_hours(selectedDate){
+            App.blockUI({
+                target: '#tasks-widget',
+                boxed: true,
+                message: 'Processing...'
+            });
+            App.blockUI({
+                target: '#activities-widget',
+                boxed: true,
+                message: 'Refreshing...'
+            });
 
-            {{--selectedDate = typeof selectedDate !== 'undefined' ? selectedDate : $('input[name=selected_date]').val();--}}
-            {{--$('.pre_book_date').html($('.dp-selected').attr('title'));--}}
-            {{--var randUI = Math.floor((Math.random() * 100000000000000000) + 1);--}}
+            selectedDate = typeof selectedDate !== 'undefined' ? selectedDate : $('input[name=selected_date]').val();
+            $('.pre_book_date').html($('.dp-selected').attr('title'));
+            var randUI = Math.floor((Math.random() * 100000000000000000) + 1);
 
-            {{--$.ajax({--}}
-                {{--url: '{{route('ajax/get_booking_hours')}}',--}}
-                {{--type: "post",--}}
-                {{--cache: false,--}}
-                {{--data: {--}}
-                    {{--'location_selected':    $('input[name=selected_location]').val(),--}}
-                    {{--'date_selected':        selectedDate,--}}
-                    {{--'selected_category':    $('input[name=selected_category]').val(),--}}
-                    {{--'randUI':               randUI--}}
-                {{--},--}}
-                {{--success: function(data){--}}
-                    {{--hide_unavailable_activities(data.available_activities);--}}
-                    {{--time_of_booking_format_hours(data.hours);--}}
-                    {{--place_of_booking_format_rooms(data.shopResources);--}}
-                    {{--App.unblockUI('#tasks-widget');--}}
-                {{--}--}}
-            {{--});--}}
-        {{--}--}}
+            $.ajax({
+                url: '{{route('ajax/get_booking_hours')}}',
+                type: "post",
+                cache: false,
+                data: {
+                    'location_selected':    $('input[name=selected_location]').val(),
+                    'date_selected':        selectedDate,
+                    'selected_category':    $('input[name=selected_category]').val(),
+                    'randUI':               randUI
+                },
+                success: function(data){
+                    hide_unavailable_activities(data.available_activities);
+                    time_of_booking_format_hours(data.hours);
+                    place_of_booking_format_rooms(data.shopResources);
+                    App.unblockUI('#tasks-widget');
+                }
+            });
+        }
 
         function hide_unavailable_activities(activities){
             $('.is_resource').hide();
@@ -1153,26 +1501,26 @@
             });
         }
 
-        {{--function get_friends_list(){--}}
-            {{--App.blockUI({--}}
-                {{--target: '#all_friends_men',--}}
-                {{--boxed: true,--}}
-                {{--message: 'Processing...'--}}
-            {{--});--}}
+        function get_friends_list(){
+            App.blockUI({
+                target: '#all_friends_men',
+                boxed: true,
+                message: 'Processing...'
+            });
 
-            {{--$.ajax({--}}
-                {{--url: '{{route('ajax/get_friends_list')}}',--}}
-                {{--type: "post",--}}
-                {{--cache: false,--}}
-                {{--data: {--}}
-                    {{--'limit': 5,--}}
-                {{--},--}}
-                {{--success: function(data){--}}
-                    {{--all_friends_format(data);--}}
-                    {{--App.unblockUI('#all_friends_men');--}}
-                {{--}--}}
-            {{--});--}}
-        {{--}--}}
+            $.ajax({
+                url: '{{route('ajax/get_friends_list')}}',
+                type: "post",
+                cache: false,
+                data: {
+                    'limit': 5,
+                },
+                success: function(data){
+                    all_friends_format(data);
+                    App.unblockUI('#all_friends_men');
+                }
+            });
+        }
 
         function get_players_list(container){
             App.blockUI({
@@ -1225,22 +1573,22 @@
 
             for (var i=1; i<=friends_nr; i++){
                 append_to +=
-                    '<div class="form-group note note-info friend_booking" style="padding-top:0px; padding-bottom:0px; margin-bottom:2px;">' +
+                        '<div class="form-group note note-info friend_booking" style="padding-top:0px; padding-bottom:0px; margin-bottom:2px;">' +
                         '<input type="hidden" name="time_book_hour" value="' + time_interval[i] + '" />' +
                         '<input type="hidden" name="time_book_key" value="" />' +
                         '<p class="form-control-static"><strong><span data-id="booking_name">Next Booking</span> <span data-id="start_time"> - ' + time_interval[i] + '</span> <span data-id="room_booked"></span></strong></p>' +
                         '<div style="float:right;" class="form-control-static fa-item booking_payment_type"></div>' +
                         '<div class="booking_step_content" style="display:none;">' +
-                            '<label><small>Select Player</small></label>' +
-                            '<select class="form-control margin-bottom-10 input-sm" name="friend_booking"></select>' +
-                            '<label><small>Select Room</small></label>' +
-                            '<select class="form-control input-sm" name="resources_room"></select>' +
-                            '<div class="form-actions right" style="padding-top:5px; padding-bottom:5px;">' +
-                                '<a class="btn blue-hoki booking_step_back" style="padding-top:4px; padding-bottom:4px;">Back</a> ' +
-                                '<a class="btn blue-hoki booking_step_next" style="padding-top:4px; padding-bottom:4px;">Next</a>' +
-                            '</div>' +
+                        '<label><small>Select Player</small></label>' +
+                        '<select class="form-control margin-bottom-10 input-sm" name="friend_booking"></select>' +
+                        '<label><small>Select Room</small></label>' +
+                        '<select class="form-control input-sm" name="resources_room"></select>' +
+                        '<div class="form-actions right" style="padding-top:5px; padding-bottom:5px;">' +
+                        '<a class="btn blue-hoki booking_step_back" style="padding-top:4px; padding-bottom:4px;">Back</a> ' +
+                        '<a class="btn blue-hoki booking_step_next" style="padding-top:4px; padding-bottom:4px;">Next</a>' +
                         '</div>' +
-                    '</div>';
+                        '</div>' +
+                        '</div>';
             }
 
             $('.is_own_booking').after(append_to);
@@ -1259,9 +1607,9 @@
 
             if (all_hours==''){
                 all_hours = '<div class="note note-warning">'+
-                                '<h4 class="block">No available hours</h4>'+
-                                '<p> There are no more available intervals for today or the selected location is closed for the selected date. </p>'+
-                            '</div>';
+                        '<h4 class="block">No available hours</h4>'+
+                        '<p> There are no more available intervals for today or the selected location is closed for the selected date. </p>'+
+                        '</div>';
             }
 
             $("#booking_hours").html(all_hours);
@@ -1338,232 +1686,7 @@
             });
         }
 
-        {{--function save_booking(field, resource_for_hour, players_list_select, own_box, own_next){--}}
-            {{--field = typeof field !== 'undefined' ? field : "";--}}
-            {{--if (field.hasClass('is_own_booking') || field.hasClass('friend_booking')){--}}
-                {{--var sel_time     = field.find('input[name="time_book_hour"]').val();--}}
-                {{--var sel_resource = field.find('select[name="resources_room"]');--}}
-                    {{--sel_resource = sel_resource.find(":selected").val();--}}
-                {{--var sel_key = field.find('input[name="time_book_key"]').val();--}}
-                {{--var player  = field.find('select[name="friend_booking"]');--}}
-                    {{--player = player.find(":selected").val();--}}
-            {{--}--}}
-            {{--else{--}}
-                {{--//var sel_time     = $('input[name=selected_time]').val();--}}
-                {{--//var sel_resource = $('select[name=resources_rooms]').val();--}}
 
-                {{--return false;--}}
-            {{--}--}}
-            {{--var sel_location = $('input[name=selected_location]').val();--}}
-            {{--var sel_activity = $('input[name=selected_category]').val();--}}
-            {{--var sel_date     = $('input[name=selected_date]').val();--}}
-            {{--//var sel_payment  = $('input[name=payment_method]:radio:checked').val();--}}
-            {{--var sel_payment  = 'cash';--}}
-
-            {{--$.ajax({--}}
-                {{--url: '{{route('booking.store')}}',--}}
-                {{--type: "post",--}}
-                {{--cache: false,--}}
-                {{--data: {--}}
-                    {{--'selected_location':    sel_location,--}}
-                    {{--'selected_activity':    sel_activity,--}}
-                    {{--'selected_date':        sel_date,--}}
-                    {{--'selected_time':        sel_time,--}}
-                    {{--'selected_resource':    sel_resource,--}}
-                    {{--'selected_payment':     sel_payment,--}}
-                    {{--'book_key':             sel_key,--}}
-                    {{--'player':               player,--}}
-                {{--},--}}
-                {{--success: function(data){--}}
-                    {{--if (data.booking_key==''){--}}
-                        {{--// something went wrong, reload resources for the window--}}
-                    {{--}--}}
-                    {{--else{--}}
-                        {{--field.find('input[name="time_book_key"]').val(data.booking_key);--}}
-
-                        {{--if (resource_for_hour==0 || resource_for_hour==0){--}}
-
-                        {{--}--}}
-                        {{--else{--}}
-                            {{--get_players_list(players_list_select);--}}
-                            {{--get_resources_for_hour(resource_for_hour.book_friend_time, resource_for_hour.resource_room);--}}
-                        {{--}--}}
-
-                        {{--var payment_type_book = own_box.find('.booking_payment_type');--}}
-                        {{--if (data.booking_type == 'membership'){--}}
-                            {{--payment_type_book.html('<i class="fa fa-thumbs-o-up"></i>');--}}
-                        {{--}--}}
-                        {{--else{--}}
-                            {{--payment_type_book.html('<i class="fa fa-credit-card"></i>');--}}
-                        {{--}--}}
-
-                        {{--get_booking_hours();--}}
-
-                        {{--if (own_next.hasClass('booking_summary_box')){--}}
-                            {{--get_booking_summary(own_next);--}}
-                        {{--}--}}
-
-                        {{--own_box.find('.booking_step_content').first().hide();--}}
-                        {{--own_next.find('.booking_step_content').first().show();--}}
-                    {{--}--}}
-                {{--}--}}
-            {{--});--}}
-        {{--}--}}
-
-        {{--function get_booking_summary(place){--}}
-            {{--var all_bookings = '';--}}
-            {{--$('input[name="time_book_key"]').each(function(){--}}
-                {{--//console.log($(this).val());--}}
-                {{--if ( $(this).val().length > 4 ) {--}}
-                    {{--all_bookings += $(this).val() + ',';--}}
-                {{--}--}}
-            {{--});--}}
-
-            {{--$.ajax({--}}
-                {{--url: '{{route('ajax/get_bookings_summary')}}',--}}
-                {{--type: "post",--}}
-                {{--cache: false,--}}
-                {{--data: {--}}
-                    {{--'all_bookings': all_bookings,--}}
-                {{--},--}}
-                {{--success: function(data){--}}
-                    {{--if (data.success=='true') {--}}
-                        {{--if (data.membership_nr == 0){--}}
-                            {{--var membership_bookings = '<h5>Membership included bookings : <span id="membership_bookings_nr"> None </span></h5>';--}}
-                        {{--}--}}
-                        {{--else{--}}
-                            {{--var membership_bookings = '<h5>Membership included bookings : <span id="membership_bookings_nr">' + data.membership_nr + '</span></h5>';--}}
-                        {{--}--}}
-
-                        {{--if (data.cash_nr == 0){--}}
-                            {{--var cash_bookings = '<h5>Paid bookings : <span id="membership_bookings_nr"> None </span></h5>';--}}
-                        {{--}--}}
-                        {{--else{--}}
-                            {{--var cash_bookings = '<h5>Paid bookings : <span id="membership_bookings_nr">' + data.cash_nr + '</span> - <span>' + data.cash_amount + '{{ Config::get('constants.finance.currency') }}</span> in total</h5>';--}}
-                        {{--}--}}
-
-                        {{--$('.booking_summary_price_membership').html(membership_bookings + ' ' + cash_bookings);--}}
-                    {{--}--}}
-                    {{--else {--}}
-                        {{--show_notification(data.error.title, data.error.message, 'lemon', 3500, 0);--}}
-                    {{--}--}}
-                {{--}--}}
-            {{--});--}}
-        {{--}--}}
-
-        {{--function confirm_booking(){--}}
-            {{--var all_bookings = '';--}}
-            {{--$('input[name="time_book_key"]').each(function(){--}}
-                {{--if ( $(this).val().length > 4 ) {--}}
-                    {{--all_bookings += $(this).val() + ',';--}}
-                {{--}--}}
-            {{--});--}}
-
-            {{--$.ajax({--}}
-                {{--url: '{{route('ajax/confirm_bookings')}}',--}}
-                {{--type: "post",--}}
-                {{--cache: false,--}}
-                {{--data: {--}}
-                    {{--'selected_bookings': all_bookings,--}}
-                {{--},--}}
-                {{--success: function(data){--}}
-                    {{--// clean book keys--}}
-                    {{--$('input[name="time_book_key"]').val('');--}}
-                    {{--$('input[name="time_book_hour"]').val('');--}}
-
-                    {{--$('#booking_modal_end_time').modal('hide');--}}
-                    {{--show_notification('Booking Confirmed', 'Your booking is now confirmed. You can see it in your list of bookings.', 'lemon', 3500, 0);--}}
-
-                    {{--get_booking_hours();--}}
-                    {{--clean_booking_popup();--}}
-                {{--}--}}
-            {{--});--}}
-        {{--}--}}
-
-        {{--function cancel_booking(opt1, opt2){--}}
-            {{--var all_bookings = '';--}}
-            {{--$('input[name="time_book_key"]').each(function(){--}}
-                {{--if ( $(this).val().length > 4 ) {--}}
-                    {{--all_bookings += $(this).val() + ',';--}}
-                {{--}--}}
-            {{--});--}}
-
-            {{--$.ajax({--}}
-                {{--url: '{{route('ajax/cancel_bookings')}}',--}}
-                {{--type: "post",--}}
-                {{--cache: false,--}}
-                {{--data: {--}}
-                    {{--'selected_bookings': all_bookings,--}}
-                {{--},--}}
-                {{--success: function(data){--}}
-                    {{--$('#booking_modal_end_time').modal('hide');--}}
-                    {{--if (opt2==1) {--}}
-                        {{--show_notification('Bookings Canceled', 'The pending bookings were canceled. You can do another booking at any time.', 'lemon', 3500, 0);--}}
-                    {{--}--}}
-
-                    {{--get_booking_hours();--}}
-
-                    {{--if (opt1==1) {--}}
-                        {{--clean_booking_popup();--}}
-                    {{--}--}}
-                {{--}--}}
-            {{--});--}}
-        {{--}--}}
-
-//        $('.cancel_booking_popup_btn').on('click', function(){
-//            cancel_booking(1,1);
-//        });
-
-//        function clean_booking_popup(){
-//            $('#booking_end_time').html('');
-//
-//            var nr = 1;
-//            $('#booking-step-one > div > div.form-group').each(function(){
-//                if (nr==1){
-//                    $(this).find('.booking_step_content').first().show();
-//                }
-//                else{
-//                    $(this).find('.booking_step_content').first().hide();
-//                }
-//
-//                if ($(this).hasClass('is_own_booking')){
-//                    $(this).find('span[data-id="start_time"]').html('');
-//                    $(this).find('span[data-id="room_booked"]').html('');
-//                    $(this).find('.booking_payment_type').html('');
-//                }
-//                else if ($(this).hasClass('friend_booking')){
-//                    $(this).remove();
-//                }
-//                nr++;
-//            });
-//
-//            if(typeof timeinterval !== "undefined"){
-//                clearInterval(timeinterval);
-//            }
-//        }
-
-//        $('#booking_modal_end_time').on('hidden.bs.modal', function () {
-//            if ($('#booking_end_time').html()!=''){
-//                show_notification('Booking Operation Was Broken', 'You closed the popup window before the booking was finished. You can always try again.', 'lemon', 3500, 0);
-//
-//                cancel_booking(1,0);
-//                //clean_booking_popup();
-//            }
-//        });
-
-//        function booking_step_two(){
-//            jQuery('#booking-step-one').hide();
-//            jQuery('.submit_form_2').hide();
-//            jQuery('#booking-step-two').show();
-//            jQuery('.submit_form_3').show();
-//        }
-//
-//        function booking_step_one(){
-//            jQuery('#booking-step-one').show();
-//            jQuery('.submit_form_2').show();
-//            jQuery('#booking-step-two').hide();
-//            jQuery('.submit_form_3').hide();
-//        }
 
         function add_new_friend_popup(){
             $('#new_friend_modal').modal('show');
@@ -1607,30 +1730,30 @@
             };
         }
 
-//        function initializeClock(id, endtime) {
-//            var clock = document.getElementById(id);
-//            //var daysSpan = clock.querySelector('.days');
-//            //var hoursSpan = clock.querySelector('.hours');
-//            var minutesSpan = clock.querySelector('.minutes');
-//            var secondsSpan = clock.querySelector('.seconds');
-//
-//            function updateClock() {
-//                var t = getTimeRemaining(endtime);
-//
-//                //daysSpan.innerHTML = t.days;
-//                //hoursSpan.innerHTML = ('0' + t.hours).slice(-2);
-//                minutesSpan.innerHTML = ('0' + t.minutes).slice(-2);
-//                secondsSpan.innerHTML = ('0' + t.seconds).slice(-2);
-//
-//                if (t.total <= 0) {
-//                    //clearInterval(timeinterval);
-//                    $('#booking_modal_end_time').modal('hide');
-//                }
-//            }
-//
-//            updateClock();
-//            timeinterval = setInterval(updateClock, 1000);
-//        }
+        function initializeClock(id, endtime) {
+            var clock = document.getElementById(id);
+            //var daysSpan = clock.querySelector('.days');
+            //var hoursSpan = clock.querySelector('.hours');
+            var minutesSpan = clock.querySelector('.minutes');
+            var secondsSpan = clock.querySelector('.seconds');
+
+            function updateClock() {
+                var t = getTimeRemaining(endtime);
+
+                //daysSpan.innerHTML = t.days;
+                //hoursSpan.innerHTML = ('0' + t.hours).slice(-2);
+                minutesSpan.innerHTML = ('0' + t.minutes).slice(-2);
+                secondsSpan.innerHTML = ('0' + t.seconds).slice(-2);
+
+                if (t.total <= 0) {
+                    //clearInterval(timeinterval);
+                    $('#booking_modal_end_time').modal('hide');
+                }
+            }
+
+            updateClock();
+            timeinterval = setInterval(updateClock, 1000);
+        }
 
         function refreshAt(hours, minutes, seconds) {
             var now  = new Date();
@@ -1658,7 +1781,7 @@
             $('.location_btn[data-id="{{ isset($settings['settings_preferred_location'])?$settings['settings_preferred_location']:4 }}"]').click();
 
             //get_booking_hours();
-//            get_friends_list();
+            get_friends_list();
         });
 
         @if($errors->has('email') || $errors->has('password'))

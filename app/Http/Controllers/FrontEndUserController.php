@@ -2974,7 +2974,7 @@ class FrontEndUserController extends Controller
                 'bank_acc_no'   => 0,
                 'social_sec_no' => 0,
                 'about_info'    => '',
-                'customer_number'   => $user->get_next_customer_number()
+                'customer_number'   => User::get_next_customer_number()
             ];
             $validator = Validator::make($personalData, PersonalDetail::rules('POST'), PersonalDetail::$messages, PersonalDetail::$attributeNames);
             if ($validator->fails()){
@@ -3208,7 +3208,12 @@ class FrontEndUserController extends Controller
 
     public function validate_phone_for_member(Request $request){
         $vars = $request->only('phone','user_id');
-        $user = PersonalDetail::where([['mobile_number','=',$vars['phone']],['user_id','<>',$vars['user_id']]])->get()->first();
+        if (isset($vars['user_id'])) {
+            $user = PersonalDetail::where([['mobile_number','=',$vars['phone']],['user_id','<>',$vars['user_id']]])->first();
+        } else {
+            $user = PersonalDetail::where('mobile_number',$vars['phone'])->first();
+        }
+
         if ($user){
             return 'false';
         }

@@ -687,7 +687,7 @@ class User extends Authenticatable
         }
     }
 
-    public function get_next_customer_number($requested_number = 0){
+    public static function get_next_customer_number($requested_number = 0){
         if (is_numeric($requested_number)){
             $requested_number = intval($requested_number);
         }

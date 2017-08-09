@@ -121,6 +121,17 @@ Route::group(['middleware' => 'web'], function () {
         'uses'  => 'Federation\FrontPageController@index'
     ]);
 
+
+    Route::get('terms_of_service', [
+        'as' => 'terms_of_service',
+        'uses' => 'Federation\FrontPageController@terms_of_service'
+    ]);
+
+    Route::get('privacy_policy', [
+        'as' => 'privacy_policy',
+        'uses' => 'Federation\FrontPageController@privacy_policy'
+    ]);
+
     Route::post('login',[
         'as'    => 'front_login',
         'uses'  => 'FrontPageController@authenticate'
@@ -1039,6 +1050,21 @@ Route::group(['prefix'=>'ajax', 'middleware' => 'web'], function(){
     Route::post('settings/personal/remove_avatar', [
         'as' => 'settings/personal/remove_avatar',
         'uses' => 'Federation\FrontEndUserController@settings_personal_remove_avatar'
+    ]);
+
+    Route::post('auth_chek_email', [
+        'as' => 'ajax/auth_chek_email',
+        'uses' => 'Federation\FrontEndUserController@auth_chek_email'
+    ]);
+
+    Route::post('auth_check_password', [
+        'as' => 'ajax/auth_check_password',
+        'uses' => 'Federation\FrontEndUserController@auth_check_password'
+    ]);
+
+    Route::post('auth_autorize', [
+        'as'    => 'ajax/auth_autorize',
+        'uses'  => 'Federation\FrontEndUserController@auth_autorize'
     ]);
 
     Route::post('save_setting_application', [
