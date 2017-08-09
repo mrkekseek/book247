@@ -196,12 +196,12 @@
                                     <div class="row">
                                         <div class="col-md-12 col-sm-12 text-right">
                                             @if (strlen($paypal_email)>=6)
-                                            <button id="pay_with_paypal" class="btn btn-primary">Pay with paypal</button>
+                                            <button id="pay_with_paypal" class="btn blue">Pay with paypal</button>
                                             @endif
                                             @if (isset($stripe_account))
-                                            <button class="btn btn-success">Pay with strype</button>
+                                            <button class="btn green-meadow">Pay with credit card</button>
                                             @endif
-                                            <a href="{{ route('homepage') }}" class="btn btn-success">Return Home</a>
+                                            <a href="{{ route('homepage') }}" class="btn grey-cascade">Return Home</a>
                                         </div>
                                     </div>
                                 </div>
