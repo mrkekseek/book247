@@ -21,6 +21,7 @@ use DateTime;
 use DateInterval;
 use DatePeriod;
 use Carbon\CarbonInterval;
+use Webpatser\Countries\Countries;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\MessageBag;
 use App\Http\Controllers\BookingController;
@@ -54,7 +55,7 @@ class FrontPageController extends Base
         }
 
         $unreadNotes= [];
-        if (isset($user) && $user != false) {
+        if (isset($user) && $user!=false) {
             $own_friends_bookings = $this::get_own_and_friends_bookings($user->id);
             $settings   = UserSettings::get_general_settings($user->id, ['settings_preferred_location','settings_preferred_activity']);
 
@@ -83,6 +84,7 @@ class FrontPageController extends Base
             'table_head_text1' => 'Dashboard Summary'
         ];
         $sidebar_link= 'front-homepage';
+        $countries = Countries::orderBy('name', 'asc')->get();
 
         return view('front/home_page_federation',[
             'breadcrumbs' => $breadcrumbs,
@@ -90,6 +92,7 @@ class FrontPageController extends Base
             'in_sidebar'  => $sidebar_link,
             'user'  => $user,
             'shops' => $shopLocations,
+            'countries' => $countries,
             'resourceCategories' => $resourceCategories,
             'meAndFriendsBookings' => @$own_friends_bookings,
             'settings'  => @$settings,

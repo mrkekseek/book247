@@ -1609,7 +1609,7 @@ class FrontEndUserController extends Base
 
         $userPersonal = $user->PersonalDetail;
         if (isset($userPersonal)) {
-            $userPersonal->dob_format = Carbon::createFromFormat('Y-m-d', $userPersonal->date_of_birth)->format('d-m-Y');
+            $userPersonal->dob_format = Carbon::createFromFormat('Y-m-d', $userPersonal->date_of_birth)->format('Y-m-d');
             $userPersonal->dob_to_show = Carbon::createFromFormat('Y-m-d', $userPersonal->date_of_birth)->format('d M Y');
         }
         else{
@@ -1621,7 +1621,7 @@ class FrontEndUserController extends Base
             $personalAddress = new Address();
         }*/
 
-        $countries = Countries::orderBy('name')->get();
+        $countries = Countries::orderBy('name', 'asc')->get();
         //$userCountry = Countries::find($user->country_id);
 
         $avatar = $user->get_avatar_image();
@@ -1903,6 +1903,44 @@ class FrontEndUserController extends Base
             'financial_profile' =>  json_decode($invoice->payee_info),
             'country' => $country,
             'currency' => $currency
+        ]);
+    }
+
+    public function member_active_membership(){
+        $user = Auth::user();
+        if (!$user || !$user->is_front_user()) {
+            return redirect()->intended(route('homepage'));
+        }
+
+        $my_plan = UserMembership::where('user_id','=',$user->id)->whereIn('status',['active','suspended'])->get()->first();
+        if ($my_plan){
+            $restrictions = $my_plan->get_plan_restrictions();
+            $plan_details = $my_plan->get_plan_details();
+        }
+        else {
+            //$my_plan = MembershipPlan::where('id','=',1)->get()->first();
+        }
+
+        $breadcrumbs = [
+            'Home'      => route('admin'),
+            'Dashboard' => '',
+        ];
+        $text_parts  = [
+            'title'     => 'Home',
+            'subtitle'  => 'users dashboard',
+            'table_head_text1' => 'Dashboard Summary'
+        ];
+        $sidebar_link= 'front-finance_active_membership';
+
+        return view('front/finance/federation/active_membership',[
+            'breadcrumbs' => $breadcrumbs,
+            'text_parts'  => $text_parts,
+            'in_sidebar'  => $sidebar_link,
+            'membership_plan'   => $my_plan,
+            //'activities'    => $activities,
+            'restrictions'  => @$restrictions,
+            'plan_details'  => @$plan_details,
+            'user'          => $user
         ]);
     }
 
