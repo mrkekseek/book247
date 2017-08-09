@@ -5478,7 +5478,7 @@ class FrontEndUserController extends Controller
         ]);
     }
 
-    public function pay_with_stripe(Int $id)
+    public function pay_with_stripe($id)
     {
         $result = [
             'success' => false,
