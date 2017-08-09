@@ -13,71 +13,50 @@ use Carbon\Carbon;
 
 class StripeController extends Controller
 {
-    /**
-     * Charge a Stripe customer.
-     *
-     * @var Stripe\Customer $customer
-     * @param integer $product_id
-     * @param integer $product_price
-     * @param string $product_name
-     * @param string $token
-     * @return createStripeCharge()
-     */
-     static public function chargeCustomer(Request $request)
-     {
-         Stripe::setApiKey(env('STRIPE_SECRET'));
-         $response = [
-             'success' => FALSE
-         ];
+    static public function chargeCustomer(Request $request)
+    {
+        Stripe::setApiKey(env('STRIPE_SECRET'));
+        $response = [
+            'success' => FALSE
+        ];
 
-         $data = $request->only('token');
-         if ($request->input("token"))
-         {
-             if ( ! self::isStripeCustomer())
-             {
-                 $customer = self::createStripeCustomer($data["token"]);
-             }
-             else
-             {
-                 $customer = Customer::retrieve(Auth::user()->stripe_id);
-             }
-             $response["success"] = TRUE;
-         }
+        $data = $request->only('token');
+        if ($request->input("token"))
+        {
+            if ( ! self::isStripeCustomer())
+            {
+                $customer = self::createStripeCustomer($data["token"]);
+            }
+            else
+            {
+                $customer = Customer::retrieve(Auth::user()->stripe_id);
+            }
+            $response["success"] = TRUE;
+        }
 
-         return $response;
-     }
+        return $response;
+    }
 
-    /**
-     * Create a Stripe charge.
-     *
-     * @var Stripe\Charge $charge
-     * @var Stripe\Error\Card $e
-     * @param integer $product_id
-     * @param integer $product_price
-     * @param string $product_name
-     * @param Stripe\Customer $customer
-     * @return postStoreOrder()
-     */
-     static public function createStripeCharge($customer, $amount = 50)
-     {
-         $charge = Charge::create(array(
-             "amount" => $amount,
-             "currency" => "usd",
-             "customer" => $customer->id
-         ));
-         return $charge;
-     }
+    static public function retrieveCustomer($stripe_id)
+    {
+        Stripe::setApiKey(env('STRIPE_SECRET'));
+        return Customer::retrieve($stripe_id);
+    }
 
 
-    /**
-     * Create a new Stripe customer for a given user.
-     *
-     * @var Stripe\Customer $customer
-     * @param string $token
-     * @return Stripe\Customer $customer
-     */
-     static public function createStripeCustomer($token)
-     {
+    static public function createStripeCharge($customer, $amount = 50, $currency = "usd")
+    {
+        Stripe::setApiKey(env('STRIPE_SECRET'));
+        $charge = Charge::create(array(
+            "amount" => $amount,
+            "currency" => $currency,
+            "customer" => $customer->id
+        ));
+        return $charge;
+    }
+
+    static public function createStripeCustomer($token)
+    {
         Stripe::setApiKey(env('STRIPE_SECRET'));
 
         $customer = Customer::create([
@@ -88,15 +67,10 @@ class StripeController extends Controller
         $card = end($customer->sources->data);
         User::where("id", "=", Auth::user()->id)->update(["stripe_id" => $customer->id, "card_brand" => strtolower($card->brand), "card_last_four" => $card->last4, "trial_ends_at" => Carbon::createFromFormat("m/d/Y", $card->exp_month . "/1/" . $card->exp_year)]);
         return $customer;
-     }
+    }
 
-    /**
-     * Check if the Stripe customer exists.
-     *
-     * @return boolean
-     */
-     static public function isStripeCustomer()
-     {
-         return User::where('id', '=', Auth::user()->id)->where('stripe_id', '!=', '')->first();
-     }
+    static public function isStripeCustomer()
+    {
+        return User::where('id', '=', Auth::user()->id)->where('stripe_id', '!=', '')->first();
+    }
 }

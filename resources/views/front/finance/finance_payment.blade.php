@@ -198,9 +198,11 @@
                                             @if (strlen($paypal_email)>=6)
                                             <button id="pay_with_paypal" class="btn btn-primary">Pay with paypal</button>
                                             @endif
-                                            @if (isset($stripe_account))
-                                            <button class="btn btn-success">Pay with strype</button>
+                                            
+                                            @if ( ! empty($stripe_account))
+                                            <button class="btn btn-success" data-toggle="modal" data-target="#confirm-modal">Pay with strype</button>
                                             @endif
+                                            
                                             <a href="{{ route('homepage') }}" class="btn btn-success">Return Home</a>
                                         </div>
                                     </div>
@@ -241,6 +243,33 @@
     </form>
     @endif
     <!-- END PAGE CONTENT INNER -->
+    <!-- MODAL -->
+    <div class="modal fade" id="confirm-modal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Modal Confirm</h4>
+                </div>
+                <div class="modal-body">
+                    <p>
+                        Your credit card data is saved on Paysera service for future purchases 
+                    </p>
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" id="confirm-terms-condition">
+                            Confirm
+                        </label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" disabled="disabled" id="confirm-stripe">Yes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- END MODAL -->
 </div>
 @endsection
 
@@ -281,6 +310,63 @@
         $(function() {
             $('.payer_payee_boxes').matchHeight(options);
         });
+
+        $(function(){
+
+            $("#confirm-terms-condition").change(function(){
+                if ($(this).prop("checked"))
+                {
+                    $("#confirm-stripe").removeAttr('disabled', 'disabled');
+                }
+                else
+                {
+                   $("#confirm-stripe").attr('disabled', 'disabled');
+                }
+            });
+
+            $("#confirm-stripe").click(function(){
+                $(this).attr('disabled', 'disabled');
+                $.ajax({
+                    url : "{{ route('pay_with_stripe', ['id' => $invoice->id]) }}",
+                    method : "post",
+                    data : {
+                        '_token' : '{{ csrf_token() }}'
+                    },
+                    success : function(data)
+                    {
+                        if (data.success)
+                        {
+                            show_notification(data.title, data.errors, 'lime', 3500, 0);
+                        }
+                        else
+                        {
+                            show_notification(data.title, data.errors, 'lime', 3500, 0); 
+                        }
+
+                        setTimeout(function(){
+                            location.href =  data.redirect;
+                        }, 2000);
+                    }
+                });
+            });               
+        });
+
+        function show_notification(title_heading, message, theme, life, sticky) {
+            var settings = {
+                theme: theme,
+                sticky: sticky,
+                horizontalEdge: 'top',
+                verticalEdge: 'right',
+                life : life,
+            };
+
+            if ($.trim(title_heading) != '') {
+                settings.heading = title_heading;
+            }
+
+            $.notific8('zindex', 11500);
+            $.notific8($.trim(message), settings);
+        }
     </script>
 @endsection
 
