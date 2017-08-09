@@ -1036,6 +1036,11 @@ Route::group(['prefix'=>'ajax', 'middleware' => 'web'], function(){
         'uses' => 'Federation\AppSettings@update_settings'
     ]);
 
+    Route::post('settings/personal/remove_avatar', [
+        'as' => 'settings/personal/remove_avatar',
+        'uses' => 'Federation\FrontEndUserController@settings_personal_remove_avatar'
+    ]);
+
     Route::post('save_setting_application', [
         'as' => 'ajax/save_setting_application',
         'uses' => 'Federation\AppSettings@save_setting_application'
