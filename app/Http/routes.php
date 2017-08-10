@@ -280,6 +280,11 @@ if (env('FEDERATION',false)){
             'as' => 'charge_customer',
             'uses' => 'StripeController@chargeCustomer']
         );
+
+        Route::post('pay_with_stripe/{id}', [
+            'as' => 'pay_with_stripe',
+            'uses' => 'FrontEndUserController@pay_with_stripe']
+        );
         /* End - Stripe routes */
 
         //** Start - Back end users route */
