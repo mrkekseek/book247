@@ -164,6 +164,20 @@
         }
     },"Please enter a valid Email.");
 
+    function ui_block(selector) {
+        var message =  "<div class='loading-message loading-message-boxed'>	<img src='{{ asset('assets/global/img/loading-spinner-grey.gif') }}' align=''><span>&nbsp;&nbsp;Processing...</span></div>";
+        selector.block({
+            message: message,
+            overlayCSS: {
+                backgroundColor: '#555555',
+                opacity : '0.05'
+            },
+            css: {
+                border: 'none',
+                backgroundColor: 'none'
+            }
+        });
+    }
     var Login = function() {
 
         var handleLogin = function() {
@@ -212,6 +226,7 @@
                 },
 
                 submitHandler: function(form) {
+                    ui_block($('.login-form'));
 //                    form.submit(); // form validation success, call ajax form submit
                 }
             });
@@ -239,6 +254,7 @@
                                 show_notification(data.title,  data.errors, 'ruby', 5000, true);
                             }
                         }
+                        $('.login-form').unblock();
                     }
                 });
             });
@@ -342,6 +358,7 @@
                 else{
                     show_notification(data.title, data.errors, 'lemon', 5000, 0);
                 }
+                $('#form_forgot_passwd').unblock();
             }
         });
     }
@@ -396,6 +413,7 @@
                 submitHandler: function (form1) {
                     success1.show();
                     error1.hide();
+                    ui_block($('#form_forgot_passwd'));
                     request_reset_email($('input[name=forgot_email]').val()); // submit the form
                 }
             });
