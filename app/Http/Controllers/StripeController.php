@@ -34,6 +34,9 @@ class StripeController extends Controller
             $response["success"] = TRUE;
         }
 
+        $response['user'] = Auth::user();
+        $response['user']->trial_month = Carbon::parse($response['user']->trial_ends_at)->format('m');
+        $response['user']->trial_year = Carbon::parse($response['user']->trial_ends_at)->format('y');
         return $response;
     }
 

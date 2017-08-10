@@ -199,8 +199,8 @@
                                             <button id="pay_with_paypal" class="btn btn-primary">Pay with paypal</button>
                                             @endif
                                             
-                                            @if ( ! empty($stripe_account))
-                                            <button class="btn btn-success" data-toggle="modal" data-target="#confirm-modal">Pay with strype</button>
+                                            @if ( ! empty($show_stripe))
+                                            <button class="btn btn-success" id="stripe_peyment">Pay with strype</button>
                                             @endif
                                             
                                             <a href="{{ route('homepage') }}" class="btn btn-success">Return Home</a>
@@ -251,20 +251,57 @@
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                     <h4 class="modal-title">Modal Confirm</h4>
                 </div>
-                <div class="modal-body">
-                    <p>
-                        Your credit card data is saved on Paysera service for future purchases 
-                    </p>
-                    <div class="checkbox">
-                        <label>
-                            <input type="checkbox" id="confirm-terms-condition">
-                            Confirm
-                        </label>
-                    </div>
+                <div class="modal-body text-center">
+                    <div class="row">
+                        <div class="col-xs-8 col-xs-offset-2">
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    <h3 class="panel-title">
+                                        Payment Details
+                                    </h3>
+                                    
+                                </div>
+                                <div class="panel-body">
+                                    <form>
+                                        <div class="form-group">
+                                            <label for="cardNumber">CARD NUMBER</label>
+                                            <div class="input-group">
+                                                <input type="text" readonly="readonly" value="{{ Auth::user()->card_last_four ? '***********' . Auth::user()->card_last_four : '' }}" class="form-control" id="cardNumber" placeholder="Valid Card Number"
+                                                required autofocus />
+                                                <span class="input-group-addon">
+                                                    <span class="glyphicon glyphicon-lock"></span>
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-xs-8 col-xs-offset-2">
+                                                <div class="form-group">
+                                                    <div class="col-xs-12">
+                                                        <label for="expityMonth">EXPIRY DATE</label>
+                                                    </div>
+                                                    <div class="col-xs-6">
+                                                        <input type="text" readonly="readonly" value="{{ Carbon\Carbon::parse(Auth::user()->trial_ends_at)->format('m') }}" class="form-control" id="expityMonth" placeholder="MM" required />
+                                                    </div>
+                                                    <div class="col-xs-6">
+                                                        <input type="text" readonly="readonly" value="{{ Carbon\Carbon::parse(Auth::user()->trial_ends_at)->format('y') }}" class="form-control" id="expityYear" placeholder="YY" required />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" name="save_card" checked="checked" />
+                                    Save the card for later use
+                                </label>
+                            </div>
+                        </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" disabled="disabled" id="confirm-stripe">Yes</button>
+                    <button type="button" class="btn btn-primary" id="confirm-stripe">Pay {{ number_format($grand_total, 2) }}</button>
                 </div>
             </div>
         </div>
@@ -301,6 +338,7 @@
 @endsection
 
 @section('pageCustomJScripts')
+    <script src="https://checkout.stripe.com/checkout.js" type="text/javascript"></script>
     <script type="text/javascript">
         $(document).on('click','#pay_with_paypal',function(){
             $('#paypal-form').submit();
@@ -312,25 +350,54 @@
         });
 
         $(function(){
-
-            $("#confirm-terms-condition").change(function(){
-                if ($(this).prop("checked"))
+            $('#stripe_peyment').click(function(){
+                if ('{{ Auth::user()->stripe_id }}')
                 {
-                    $("#confirm-stripe").removeAttr('disabled', 'disabled');
+                    $("#confirm-modal").modal("show");
                 }
                 else
                 {
-                   $("#confirm-stripe").attr('disabled', 'disabled');
+                    var handler = StripeCheckout.configure({
+                        key : '{{ env('STRIPE_KEY') }}',
+                        image : '{{ asset('assets/global/img/sqf-logo.png') }}',
+                        email : '{{ Auth::user()->email }}',
+                        token: function(token, args) {
+
+                            $.ajax({
+                                url : "{{ route('charge_customer') }}",
+                                data : {
+                                    '_token' : '{{ csrf_token() }}',
+                                    'token' : token.id,
+                                    'args'  : args
+                                },
+                                method : 'post',
+                                success : function(data)
+                                {
+                                    $("#cardNumber").val("***********" + data.user.card_last_four);
+                                    $("#expityMonth").val(data.user.trial_month);
+                                    $("#expityYear").val(data.user.trial_year);
+                                    $("#confirm-modal").modal("show");
+                                }
+                            });
+                        }
+                    });
+
+                    handler.open({
+                        name: 'Book 247',
+                        description: 'Sport Booking System'
+                    });
                 }
             });
 
             $("#confirm-stripe").click(function(){
                 $(this).attr('disabled', 'disabled');
                 $.ajax({
-                    url : "{{ route('pay_with_stripe', ['id' => $invoice->id]) }}",
+                    url : "{{ route('pay_with_stripe') }}",
                     method : "post",
                     data : {
-                        '_token' : '{{ csrf_token() }}'
+                        '_token' : '{{ csrf_token() }}',
+                        'id' : {{ $invoice->id }},
+                        'save_card' : $("input[name=save_card]").prop("checked") ? 1 : 0
                     },
                     success : function(data)
                     {
@@ -348,8 +415,9 @@
                         }, 2000);
                     }
                 });
-            });               
-        });
+            });  
+
+        })
 
         function show_notification(title_heading, message, theme, life, sticky) {
             var settings = {
