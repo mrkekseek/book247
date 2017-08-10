@@ -281,7 +281,7 @@ if (env('FEDERATION',false)){
             'uses' => 'StripeController@chargeCustomer']
         );
 
-        Route::post('pay_with_stripe/{id}', [
+        Route::post('pay_with_stripe', [
             'as' => 'pay_with_stripe',
             'uses' => 'FrontEndUserController@pay_with_stripe']
         );

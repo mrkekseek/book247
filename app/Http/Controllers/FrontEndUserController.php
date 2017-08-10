@@ -5474,11 +5474,11 @@ class FrontEndUserController extends Controller
             'paypal_email' => AppSettings::get_setting_value_by_name('finance_simple_paypal_payment_account'),
             'country' => $country,
             'payee_country' => $payee_country,
-            'stripe_account' => $user->stripe_id
+            'show_stripe' => env("STRIPE_KEY")
         ]);
     }
 
-    public function pay_with_stripe($id)
+    public function pay_with_stripe(Request $request)
     {
         $result = [
             'success' => false,
@@ -5488,7 +5488,7 @@ class FrontEndUserController extends Controller
         ];
 
         $amount = 0;
-        $invoice = Invoice::where("id", $id)->first();
+        $invoice = Invoice::where("id", $request->input('id'))->first();
         foreach($invoice->items as $row)
         {
             $amount += $row->total_price;
@@ -5512,6 +5512,13 @@ class FrontEndUserController extends Controller
 
             $result['success'] = true;
             $result['errors'] = 'Payment successfully completed';
+        }
+       
+
+        if ( ! $request->input('save_card') * 1)
+        {
+            
+            User::where("id", Auth::user()->id)->update(['stripe_id' => '', 'card_brand' => '', 'card_last_four' => '']);
         }
 
         return $result;
