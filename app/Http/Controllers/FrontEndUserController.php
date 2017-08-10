@@ -2976,7 +2976,7 @@ class FrontEndUserController extends Controller
                 'bank_acc_no'   => 0,
                 'social_sec_no' => 0,
                 'about_info'    => '',
-                'customer_number'   => $user->get_next_customer_number()
+                'customer_number'   => User::get_next_customer_number()
             ];
             $validator = Validator::make($personalData, PersonalDetail::rules('POST'), PersonalDetail::$messages, PersonalDetail::$attributeNames);
             if ($validator->fails()){
