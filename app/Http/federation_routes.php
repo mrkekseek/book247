@@ -25,6 +25,11 @@ Route::get('api/federation_list_of_licenses', [
     'uses'  => 'Federation\FederationApi@federation_list_of_licenses'
 ]);
 
+Route::get('api/members_growth', [
+    'as'    => 'api/members_growth',
+    'uses'  => 'Federation\FederationApi@get_members_growth'
+]);
+
 Route::get('api/federation_buy_license', [
     'as'    => 'api/federation_buy_license',
     'uses'  => 'Federation\FederationApi@federation_buy_license'

@@ -3,6 +3,7 @@ namespace App\Http\Controllers\Federation;
 
 use App\Http\Controllers\Controller;
 use App\User;
+use App\UserMembership;
 use Illuminate\Http\Request;
 use App\Http\Controllers\RequestValidator;
 use App\User as UserModel;
@@ -40,7 +41,6 @@ class FederationApi extends Controller {
                 'version' => "Permission denied"
             ]);
         }
-
     }
 
     /**
@@ -392,5 +392,27 @@ class FederationApi extends Controller {
                 'message' => 'Permission denied.'
             ),JSON_FORCE_OBJECT);
         }
+    }
+
+    public function get_members_growth()
+    {
+        $active_memberships = UserMembership::where('status','active')->get();
+        $data = [];
+        for ($i = 0 ;$i < 30;$i++) {
+            $date = date('Y-m-d 0:0:0', strtotime("-" . (string)(30 - $i) . " days"));
+            $count = 0;
+
+            foreach ($active_memberships as $membership) {
+                if ($membership->created_at < $date) {
+                    $count++;
+                }
+            }
+            $potential_memberships = UserMembership::where([['created_at', '<', $date], ['updated_at', '>', $date], ['status', '<>', 'active']])->get();
+            $count += sizeof($potential_memberships);
+            $data[30-$i] = $count;
+
+        }
+
+        return json_encode(array_reverse($data));
     }
 }
