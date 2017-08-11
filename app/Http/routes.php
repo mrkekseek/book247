@@ -120,6 +120,11 @@ if (env('FEDERATION',false)){
             'uses' => 'FrontEndUserController@activate_user_by_token'
         ]);
 
+        Route::get('resend_activation_email/{id}', [
+            'as' => 'resend_activation_email',
+            'uses' => 'FrontEndUserController@resend_activation_email'
+        ]);
+
         Route::post('login', [
             'as' => 'front_login',
             'uses' => 'FrontPageController@authenticate'

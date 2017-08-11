@@ -4501,6 +4501,66 @@ class FrontEndUserController extends Controller
         ]);
     }
 
+    public function resend_activation_email(Request $request, $id) {
+
+        $user = User::find($id);
+        $personalDetails = PersonalDetail::where('user_id',$user->id)->first();
+        $data = [
+            'first_name'            => $user->first_name,
+            'last_name'             => $user->last_name,
+            'middle_name'           => $user->middle_name,
+            'company_name'          => AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title'),
+            'member_login_link'     => '<a href="' . route('homepage') . '" target="_blank">login here</a>',
+            'username'              => $user->username
+        ];
+        if(env('EMAIL_VALIDATION_VALIDATION')) {
+            $user->status = 'pending';
+            $user->setRememberToken(str_random(64));
+            $user->save();
+            $template = EmailsController::build('New front member registration with validation', $data);
+
+            if ($template)
+            {
+                $main_message = $template["message"];
+                $subject = AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title') . ' - Online Booking System - You are registered!';
+            }
+            else
+            {
+                $main_message = 'SQF/Book247 is the official booking system for Drammen & Økern. Thank you for registering to our website. <a href="' . route('activate_user',['token' => $user->getRememberToken()]) . '" target="_blank">Click here to activate you account.</a> ' . PHP_EOL . ' <br /><br /> '.
+                    ' Username : ' . $user->username .  PHP_EOL . ' <br /><br /> ' .
+                    'Your phone : <strong>' . $personalDetails->mobile_number . '</strong> that is registered in the system can be used to send you alerts when you create a booking or when a booking is created on your behalf. <br /><br />';
+            }
+
+        } else {
+            $template = EmailsController::build('New front member registration', $data);
+
+            if ($template)
+            {
+                $main_message = $template["message"];
+                $subject = AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title') . ' - Online Booking System - You are registered!';
+            }
+            else
+            {
+                $main_message = 'SQF/Book247 is the official booking system for Drammen & Økern. Within approximately 30 days time Book 247 will be used for all SquashFitness locations. Please log in and "add your friends" (playing partners). By doing this you and your playing partners can book on behalf of each other and according to the booking rules. This will make the booking procedure faster for you, your partners and our receptionists.' . PHP_EOL . ' <br /><br /> '.
+                    'You registered to the Booking System platform with the following credentials, credentials that you can use to <a href="' . route('homepage') . '" target="_blank">login here</a> :' . PHP_EOL . ' <br /><br /> '.
+                    ' Username : ' . $user->username . PHP_EOL . ' <br /><br /> ' .
+                    'Your phone : <strong>' . $personalDetails->mobile_number . '</strong> that is registered in the system can be used to send you alerts when you create a booking or when a booking is created on your behalf. <br /><br />';
+            }
+        }
+
+
+        $beauty_mail = app()->make(Beautymail::class);
+        $beauty_mail->send('emails.email_default_v2',
+            ['body_message' => $main_message, 'user' => $user],
+            function($message) use ($user) {
+                $message
+                    ->from(AppSettings::get_setting_value_by_name('globalWebsite_system_email'))
+                    ->to($user->email, $user->first_name.' '.$user->middle_name.' '.$user->last_name)
+                    ->subject(AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title').' - Online Booking System - You are registered!');
+            });
+
+        return redirect()->route('homepage');
+    }
 
     public function password_reset_action(Request $request, $token){
 
@@ -5409,7 +5469,7 @@ class FrontEndUserController extends Controller
             return  [
                 'success' => false,
                 'title'   => 'User not active',
-                'errors'  => 'Please activate your account.' // api error, no Cyrillic
+                'errors'  => 'Please activate your account. <a href="'.route('resend_activation_email',['id' => $u->id]).'"">&nbsp;Resend activation email.</a>' // api error, no Cyrillic
             ];
         }
 

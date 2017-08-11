@@ -126,14 +126,15 @@ Route::group(['middleware' => 'web'], function () {
         'uses'  => 'Federation\FrontPageController@index'
     ]);
 
-    Route::get('activate_user/{token}', [
-        'as' => 'activate_user',
-        'uses' => 'Federation\FrontPageController@activate_user_by_token'
-    ]);
 
     Route::get('activate_user/{token}', [
         'as' => 'activate_user',
         'uses' => 'Federation\FrontEndUserController@activate_user_by_token'
+    ]);
+
+    Route::get('resend_activation_email/{id}', [
+        'as' => 'resend_activation_email',
+        'uses' => 'Federation\FrontEndUserController@resend_activation_email'
     ]);
 
     Route::get('terms_of_service', [
