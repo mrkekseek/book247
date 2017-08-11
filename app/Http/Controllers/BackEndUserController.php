@@ -1309,7 +1309,7 @@ class BackEndUserController extends Controller
     public function registrationStepsIndex()
     {
         $status = AppSettings::get_setting_value_by_name('globalWebsite_registration_finished');
-        if ( $status == 0 )
+        if ( $status == 1 )
         {
             return redirect('/admin');
         }
