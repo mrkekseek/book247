@@ -3227,6 +3227,7 @@ class FrontEndUserController extends Controller
         } else {
             $user = PersonalDetail::where('mobile_number',$vars['phone'])->first();
         }
+
         if ($user){
             return 'false';
         }

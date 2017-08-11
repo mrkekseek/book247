@@ -311,15 +311,13 @@ class BookingController extends Controller
                         $info = "";
                         $date = "";
 
-                        if ( ! isset($booking_details['bookingDate']))
-                        {
+                        if ( ! isset($booking_details['bookingDate'])) {
                             foreach($booking_details as $var)
                             {
                                 $info .= ' - ' . $var['bookingDate'] . ', from ' . $var['timeStart'] . ' to ' . $var['timeStop'] . ', location ' . $var['location'] . ' - ' . $var['room'] . '; <br />';
                             }
                         }
-                        else
-                        {
+                        else {
                             $info = $booking_details['bookingDate'];
                         }
                         
@@ -1114,26 +1112,18 @@ class BookingController extends Controller
                 $email_confirm[$booking->for_user_id][] = $booking_details;
             }
 
-            foreach($email_confirm as $player_id => $booking_details)
-            {
+            foreach($email_confirm as $player_id => $booking_details) {
                 // send_email_to_user
                 $player = User::where('id', '=', $player_id)->get()->first();
-                $template = "";
-
-
                 $details = "";
                 $date = "";
 
-                if ( ! isset($booking_details['bookingDate']))
-                {
-                    foreach ($booking_details as $var)
-                    {
+                if ( ! isset($booking_details['bookingDate'])) {
+                    foreach ($booking_details as $var) {
                         $details .= '- ' . $var['bookingDate'] . ', from ' . $var['timeStart'] . ' to ' . $var['timeStop'] . ', location ' . $var['location'] . ' - ' . $var['room'] . '; <br />';
                     }
                 }
-                else
-                {
-
+                else {
                     $details .= 'Your booking for ' . $booking_details['bookingDate'] . ' - ' . $booking_details['timeStart'] . ' to ' . $booking_details['timeStop'] . ' was created. <br /><br />' .
                             'Below you can check the full booking summary :<br />';
                     $details .= 'Booking Date : ' . $booking_details['bookingDate'] . ' <br />';
@@ -1146,16 +1136,13 @@ class BookingController extends Controller
 
                 }
 
-
-
-                if (sizeof($booking_details) > 1)
-                {
+                if (sizeof($booking_details) > 1) {
                     $email_title = AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title').' - Several bookings were created';
 
                     $data = [
-                        'first_name'            => $user->first_name,
-                        'middle_name'           => $user->middle_name,
-                        'last_name'             => $user->last_name,
+                        'first_name'            => $player->first_name,
+                        'middle_name'           => $player->middle_name,
+                        'last_name'             => $player->last_name,
                         'booking_details'       => $details,
                         'my_booking_link'       => route("front/my_bookings")
                     ];
@@ -1168,9 +1155,9 @@ class BookingController extends Controller
                     $email_title = AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title').' - Your booking for ' . $booking_details["bookingDate"] . ' was created';
 
                     $data = [
-                        'first_name'            => $user->first_name,
-                        'middle_name'           => $user->middle_name,
-                        'last_name'             => $user->last_name,
+                        'first_name'            => $player->first_name,
+                        'middle_name'           => $player->middle_name,
+                        'last_name'             => $player->last_name,
                         'my_booking_link'       => route("front/my_bookings"),
                         'booking_details'       => $details,
                         'booking_date'          => $date
@@ -1190,7 +1177,7 @@ class BookingController extends Controller
                         $main_message = 'The following bookings were created on your name :';
                         foreach ($booking_details as $var)
                         {
-                            $main_message .= '- ' . $var['bookingDate'] . ', from ' . $var['timeStart'] . ' to ' . $var['timeStop'] . ', location ' . $var['location'] . ' - ' . $var['room'] . '; <br />';
+                            $main_message .= '<br />- ' . $var['bookingDate'] . ', from ' . $var['timeStart'] . ' to ' . $var['timeStop'] . ', location ' . $var['location'] . ' - ' . $var['room'] . ';';
                         }
                     }
                     else
@@ -1201,14 +1188,14 @@ class BookingController extends Controller
                         $main_message .= 'Time of booking : ' . $booking_details['timeStart'] . ' - ' . $booking_details['timeStop'] . ' <br />';
                         $main_message .= 'Booking Location : '. $booking_details['location'] . ' - ' . $booking_details['room'] . ' <br />';
                         $main_message .= 'Activity : ' . $booking_details['category'] . ' <br />';
-                        $main_message .= 'Player : ' . $booking_details['forUserName'] . ' <br />';
+                        $main_message .= 'Player : ' . $booking_details['forUserName'];
                     }
                 }
 
                 $beauty_mail = app()->make(Beautymail::class);
                 $beauty_mail->send('emails.email_default_v2',
-                    ['body_message' => $main_message, 'user' => $user],
-                    function($message) use ($user, $email_title, $player) {
+                    ['body_message' => $main_message, 'user' => $player],
+                    function($message) use ($email_title, $player) {
                          $message
                             ->from(AppSettings::get_setting_value_by_name('globalWebsite_system_email'))
                             ->to($player->email, $player->first_name . ' ' . $player->middle_name . ' ' . $player->last_name)
