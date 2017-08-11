@@ -155,6 +155,7 @@ class AdminController extends Base
             $data = $r->all();
             unset($data['method']);
             $response = Api::send_curl($data, $method, $r->method());
+
             if ($response->code == 1) {
                 return json_encode(array(
                         'success' => true ,

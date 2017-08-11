@@ -115,6 +115,11 @@ if (env('FEDERATION',false)){
             'uses' => 'FrontPageController@index'
         ]);
 
+        Route::get('activate_user/{token}', [
+            'as' => 'activate_user',
+            'uses' => 'FrontEndUserController@activate_user_by_token'
+        ]);
+
         Route::post('login', [
             'as' => 'front_login',
             'uses' => 'FrontPageController@authenticate'

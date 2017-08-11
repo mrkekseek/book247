@@ -2176,6 +2176,7 @@
                                     var members_growth = JSON.parse(res.data);
                                     var visitors = $.map(members_growth.visitors, function(el) { return [$.map(el,function(e){ return e })]});
                                     var pageviews = $.map(members_growth.pageviews, function(el) { return [$.map(el,function(e){ return e })]});
+                                    var all_members = $.map(members_growth.all_members, function(el) { return [$.map(el,function(e){ return e })]});
 
 
                                     var plot = $.plot($("#chart_2"), [{
@@ -2193,6 +2194,13 @@
                                             lineWidth: 1,
                                         },
                                         shadowSize: 0
+                                    },{
+                                        data: all_members,
+                                        label: "All members",
+                                        lines: {
+                                            lineWidth: 1,
+                                        },
+                                        shadowSize: 0
                                     }], {
                                         series: {
                                             lines: {
@@ -2203,6 +2211,8 @@
                                                     colors: [{
                                                         opacity: 0.05
                                                     }, {
+                                                        opacity: 0.01
+                                                    },{
                                                         opacity: 0.01
                                                     }]
                                                 }
@@ -2221,7 +2231,7 @@
                                             borderColor: "#eee",
                                             borderWidth: 1
                                         },
-                                        colors: ["#d12610", "#37b7f3", "#52e136"],
+                                        colors: ["#d12610", "#37b7f3", "#44b6ae"],
                                         xaxis: {
                                             ticks: 11,
                                             tickDecimals: 0,
@@ -2231,7 +2241,11 @@
                                             ticks: 11,
                                             tickDecimals: 0,
                                             tickColor: "#eee",
+                                        },
+                                        legend: {
+                                            position: "nw"
                                         }
+
                                     });
                                     function showTooltip(x, y, contents) {
                                         $('<div id="tooltip">' + contents + '</div>').css({

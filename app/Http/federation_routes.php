@@ -126,6 +126,15 @@ Route::group(['middleware' => 'web'], function () {
         'uses'  => 'Federation\FrontPageController@index'
     ]);
 
+    Route::get('activate_user/{token}', [
+        'as' => 'activate_user',
+        'uses' => 'Federation\FrontPageController@activate_user_by_token'
+    ]);
+
+    Route::get('activate_user/{token}', [
+        'as' => 'activate_user',
+        'uses' => 'Federation\FrontEndUserController@activate_user_by_token'
+    ]);
 
     Route::get('terms_of_service', [
         'as' => 'terms_of_service',
@@ -139,7 +148,7 @@ Route::group(['middleware' => 'web'], function () {
 
     Route::post('login',[
         'as'    => 'front_login',
-        'uses'  => 'FrontPageController@authenticate'
+        'uses'  => 'Federation\FrontPageController@authenticate'
     ]);
 
     Route::get('login-new', function(){

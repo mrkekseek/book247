@@ -1713,7 +1713,7 @@ class FrontEndUserController extends Controller
             $dataForApi['mobile_number'] = trim($vars['mobile_number']);
 
             // we only update SSO_API if the user is in the sso
-            if ($user->sso_user_id!=null){
+            if ($user->sso_user_id != null){
                 $api_user = Auth::update_api_user($dataForApi);
                 if ( ! $api_user)
                 {
@@ -3031,20 +3031,41 @@ class FrontEndUserController extends Controller
                 'password'              => $text_psw
             ];
 
-            $template = EmailsController::build('New front member registration', $data);
+            if(env('EMAIL_VALIDATION_VALIDATION')) {
+                $user->status = 'pending';
+                $user->setRememberToken(str_random(64));
+                $user->save();
+                $template = EmailsController::build('New front member registration with validation', $data);
 
-            if ($template)
-            {
-                $main_message = $template["message"];
-                $subject = AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title') . ' - Online Booking System - You are registered!';
+                if ($template)
+                {
+                    $main_message = $template["message"];
+                    $subject = AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title') . ' - Online Booking System - You are registered!';
+                }
+                else
+                {
+                    $main_message = 'SQF/Book247 is the official booking system for Drammen & Økern. Thank you for registering to our website. <a href="' . route('activate_user',['token' => $user->getRememberToken()]) . '" target="_blank">Click here to activate you account.</a> ' . PHP_EOL . ' <br /><br /> '.
+                        ' Username : ' . $user->username . ' <br /> Password : ' . $text_psw . ' ' . PHP_EOL . ' <br /><br /> ' .
+                        'Your phone : <strong>' . $personalDetails->mobile_number . '</strong> that is registered in the system can be used to send you alerts when you create a booking or when a booking is created on your behalf. <br /><br />';
+                }
+
+            } else {
+                $template = EmailsController::build('New front member registration', $data);
+
+                if ($template)
+                {
+                    $main_message = $template["message"];
+                    $subject = AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title') . ' - Online Booking System - You are registered!';
+                }
+                else
+                {
+                    $main_message = 'SQF/Book247 is the official booking system for Drammen & Økern. Within approximately 30 days time Book 247 will be used for all SquashFitness locations. Please log in and "add your friends" (playing partners). By doing this you and your playing partners can book on behalf of each other and according to the booking rules. This will make the booking procedure faster for you, your partners and our receptionists.' . PHP_EOL . ' <br /><br /> '.
+                        'You registered to the Booking System platform with the following credentials, credentials that you can use to <a href="' . route('homepage') . '" target="_blank">login here</a> :' . PHP_EOL . ' <br /><br /> '.
+                        ' Username : ' . $user->username . ' <br /> Password : ' . $text_psw . ' ' . PHP_EOL . ' <br /><br /> ' .
+                        'Your phone : <strong>' . $personalDetails->mobile_number . '</strong> that is registered in the system can be used to send you alerts when you create a booking or when a booking is created on your behalf. <br /><br />';
+                }
             }
-            else
-            {
-                $main_message = 'SQF/Book247 is the official booking system for Drammen & Økern. Within approximately 30 days time Book 247 will be used for all SquashFitness locations. Please log in and "add your friends" (playing partners). By doing this you and your playing partners can book on behalf of each other and according to the booking rules. This will make the booking procedure faster for you, your partners and our receptionists.' . PHP_EOL . ' <br /><br /> '.
-                                'You registered to the Booking System platform with the following credentials, credentials that you can use to <a href="' . route('homepage') . '" target="_blank">login here</a> :' . PHP_EOL . ' <br /><br /> '.
-                                ' Username : ' . $user->username . ' <br /> Password : ' . $text_psw . ' ' . PHP_EOL . ' <br /><br /> ' .
-                                'Your phone : <strong>' . $personalDetails->mobile_number . '</strong> that is registered in the system can be used to send you alerts when you create a booking or when a booking is created on your behalf. <br /><br />';
-            }
+
 
             $beauty_mail = app()->make(Beautymail::class);
             $beauty_mail->send('emails.email_default_v2',
@@ -4447,6 +4468,40 @@ class FrontEndUserController extends Controller
         ]);
     }
 
+    public function activate_user_by_token(Request $request, $token){
+        $breadcrumbs = [
+            'Home'      => route('admin'),
+            'Dashboard' => '',
+        ];
+
+        $text_parts  = [
+            'title'     => 'Home',
+            'subtitle'  => 'users dashboard',
+            'table_head_text1' => 'Dashboard Summary'
+        ];
+
+        $sidebar_link= 'front-password_reset';
+
+        $user = User::where('remember_token',$token)->first();
+
+        if($user->status == 'active') {
+            return redirect()->route('homepage');
+        }
+
+        if ($user) {
+            $user->status = 'active';
+            $user->save();
+        }
+
+        return view('front/activate_user/activate_user',[
+            'breadcrumbs' => $breadcrumbs,
+            'text_parts'  => $text_parts,
+            'in_sidebar'  => $sidebar_link,
+            'token'       => $token
+        ]);
+    }
+
+
     public function password_reset_action(Request $request, $token){
 
         $this->check_expired_password_requests();
@@ -5347,6 +5402,17 @@ class FrontEndUserController extends Controller
 
     public function auth_autorize(Request $request){
         $data = $request->input('data');
+
+        $u = User::where('email',$data['username'])->first();
+
+        if ($u && $u->status != 'active' ) {
+            return  [
+                'success' => false,
+                'title'   => 'User not active',
+                'errors'  => 'Please activate your account.' // api error, no Cyrillic
+            ];
+        }
+
         if (Auth::attempt(['email' => $data['username'], 'password' => $request->data['password']])) {
             $user = Auth::user();
 
