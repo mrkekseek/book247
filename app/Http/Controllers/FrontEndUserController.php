@@ -1685,6 +1685,14 @@ class FrontEndUserController extends Controller
             'email'         => trim($vars['personal_email']),
             'username'      => trim($vars['personal_email'])
         ];
+
+        if (Auth::user()->id!=$user->id || $user->sso_user_id!=null){
+            // only user can change his email address
+            // or
+            // employees when sso_user_id is not set up
+            $userVars['email'] = $user->email;
+        }
+
         $validator = Validator::make($userVars, User::rules('PUT', $user->id), User::$messages, User::$attributeNames);
 
         if ($validator->fails()){
@@ -1703,21 +1711,25 @@ class FrontEndUserController extends Controller
             $user->username    = $userVars["username"];
             $dataForApi = $user->toArray() + $userVars;
             $dataForApi['mobile_number'] = trim($vars['mobile_number']);
-            $api_user = Auth::update_api_user($dataForApi);
 
-//$aaa = ApiAuth::accounts_get($user->sso_user_id);
-//xdebug_var_dump($dataForApi);
-//xdebug_var_dump($aaa);
-//exit;
-
-            if ( ! $api_user)
-            {
-                return [
-                    'success'   => false,
-                    'title'     => 'Api error',
-                    'errors'    => [''=>[Auth::$error]]
-                ];
+            // we only update SSO_API if the user is in the sso
+            if ($user->sso_user_id!=null){
+                $api_user = Auth::update_api_user($dataForApi);
+                if ( ! $api_user)
+                {
+                    return [
+                        'success'   => false,
+                        'title'     => 'Api error',
+                        'errors'    => [''=>[Auth::$error]]
+                    ];
+                }
             }
+
+            //$aaa = ApiAuth::accounts_get($user->sso_user_id);
+            //xdebug_var_dump($dataForApi);
+            //xdebug_var_dump($aaa);
+            //exit;
+
             $user->save();
         }
 
@@ -3209,8 +3221,12 @@ class FrontEndUserController extends Controller
     }
 
     public function validate_phone_for_member(Request $request){
-        $vars = $request->only('phone');
-        $user = PersonalDetail::where('mobile_number','=',$vars['phone'])->get()->first();
+        $vars = $request->only('phone','user_id');
+        if (isset($vars['user_id'])) {
+            $user = PersonalDetail::where([['mobile_number','=',$vars['phone']],['user_id','<>',$vars['user_id']]])->first();
+        } else {
+            $user = PersonalDetail::where('mobile_number',$vars['phone'])->first();
+        }
         if ($user){
             return 'false';
         }

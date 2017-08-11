@@ -809,9 +809,9 @@
                     'preferred_location':$('select[name=preferredLocation]').val(),
                 },
                 success: function(data){
+                    $('.profile-content').unblock();
                     if (data.success) {
                         show_notification(data.title, data.message, 'lime', 3500, 0);
-                        $('.profile-content').unblock();
                         $('#form_acc_personal .alert-success').hide();
                     }
                     else{
