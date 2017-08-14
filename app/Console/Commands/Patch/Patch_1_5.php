@@ -4,6 +4,7 @@ namespace App\Console\Commands\Patch;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class Patch_1_5 extends Command
 {
