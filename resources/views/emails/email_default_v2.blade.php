@@ -383,7 +383,7 @@
                                 </div>
                             </td>
                             <td width="35%" align="right" class="innerthree" style="min-width:80px;">
-                                <div class="viewwebsite"><a href="https://www.book247.net/" class="viewwebsite"><span style="font-size:12px;">▸</span>&nbsp;View website</a></div>
+                                <div class="viewwebsite"><a href="https://www.book247.com/" class="viewwebsite"><span style="font-size:12px;">▸</span>&nbsp;View website</a></div>
                             </td>
                         </tr>
                     </table>
@@ -411,7 +411,7 @@
                     <![endif]-->
                     <table class="mainwidthbox" align="center" style="background-color:#0277bd;" bgcolor="#0277bd">
                         <tr>
-                            <td width="60%" align="left" class="logo-top inner" valign="middle" style="vertical-align:middle;"><a href="https://www.book247.net/"><img src="{{ asset('assets/emails/images/top-logo.jpg') }}" width="190" alt="" style="max-width:190px;" /></a>
+                            <td width="60%" align="left" class="logo-top inner" valign="middle" style="vertical-align:middle;"><a href="https://www.book247.com/"><img src="{{ asset('assets/emails/images/top-logo.jpg') }}" width="190" alt="" style="max-width:190px;" /></a>
                             </td>
                             <td width="40%" align="right" class="inner" valign="middle" style="vertical-align:middle;">
                                 <div class="topdate">{{ \Carbon\Carbon::now()->format('F Y') }}</div>
@@ -487,7 +487,7 @@
                                 <table class="mainwidthbox" align="center">
                                     <tr>
                                         <td width="50%" class="inner full-width-logo" align="center" valign="middle"
-                                            style="vertical-align:middle; border-right:1px solid #c8c8c8;"><a href="https://www.book247.net/"><img src="{{ asset('assets/emails/images/book_logo.jpg') }}" width="245" alt="" style="max-width:245px;" /></a>
+                                            style="vertical-align:middle; border-right:1px solid #c8c8c8;"><a href="https://www.book247.com/"><img src="{{ asset('assets/emails/images/book_logo.jpg') }}" width="245" alt="" style="max-width:245px;" /></a>
                                         </td>
                                         <td width="50%" class="inner full-width-logo" align="center" valign="middle" style="vertical-align:middle;"><a href="https://www.rankedin.com/"><img src="{{ asset('assets/emails/images/ranked_logo.jpg') }}" width="245" alt="" style="max-width:245px;" editable /></a>
                                         </td>
@@ -532,10 +532,8 @@
                         <tr>
                             <td align="left" valign="top" class="inner">
                                 <div class="footertxt">
-                                    2017 © Copyright Book247, All rights reserved<br />
-                                    Er du interessert i å jobbe med squash og trening? Da kan det hende du passer til<br />
-                                    våre jobber. <br /><br />
-                                    If you don’t want to hear from us <unsubscribe>anymore</unsubscribe> <a href="#" class="footertxt">click here</a>. </div>
+                                    2017 © Copyright Book247.com, All rights reserved<br />
+                                    If you don’t want to hear from us <unsubscribe>anymore</unsubscribe>&nbsp;<a href="#" class="footertxt">click here</a>. </div>
                             </td>
                         </tr>
 

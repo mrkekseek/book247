@@ -396,19 +396,23 @@ class EmailsController extends Controller
         }
     }
 
-    static function build($name, $data = array())
+    static function build($name, $data = array(), $default_message='', $default_subject='')
     {
         $template = EmailTemplate::where('hook', $name)->first();
 
-        if (!$template){
+        if ($template){
+            $subject  = $template->title;
+            $messages = $template->description;
+        }
+        elseif($default_message!='' && $default_subject!=''){
+            $subject = $default_subject;
+            $messages= $default_message;
+        }
+        else{
             return false;
         }
 
-        $subject  = $template->title;
-        $messages = $template->description;
-
-        foreach ($data as $key => $value)
-        {
+        foreach ($data as $key => $value) {
             $subject = str_replace("[[" . $key . "]]", $value, $subject);
             $messages = str_replace("[[" . $key . "]]", $value, $messages);
         }

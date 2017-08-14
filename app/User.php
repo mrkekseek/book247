@@ -38,6 +38,7 @@ class User extends Authenticatable
         'country_id',
         'status',
         'sso_user_id',
+        'remember_token'
     ];
 
     public static $messages = [
