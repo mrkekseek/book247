@@ -306,8 +306,54 @@
             </div>
         </div>
     </div>
-    <!-- END MODAL -->
 </div>
+
+
+<div class="modal fade" id="modal-stripe">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Stripe Payment</h4>
+            </div>
+            <form  method="post" id="payment-form">
+                <div class="modal-body text-center">
+                    <div class="row">
+                        <div class="col-xs-8 col-xs-offset-2">
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    <h3 class="panel-title">
+                                        Payment Stripe
+                                    </h3>
+                                </div>
+                                <div class="panel-body">
+                                    <label for="card-element">
+                                        Credit or debit card
+                                    </label>
+                                    <div id="card-element">
+                                    <!-- a Stripe Element will be inserted here. -->
+                                    </div>
+
+                                    <!-- Used to display form errors -->
+                                    <div id="card-errors" role="alert"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary submit-payment">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- END MODAL -->
+
 @endsection
 
 
@@ -339,6 +385,7 @@
 
 @section('pageCustomJScripts')
     <script src="https://checkout.stripe.com/checkout.js" type="text/javascript"></script>
+    <script src="https://js.stripe.com/v3/"></script>
     <script type="text/javascript">
         $(document).on('click','#pay_with_paypal',function(){
             $('#paypal-form').submit();
@@ -350,6 +397,7 @@
         });
 
         $(function(){
+
             $('#stripe_peyment').click(function(){
                 if ('{{ Auth::user()->stripe_id }}')
                 {
@@ -357,37 +405,87 @@
                 }
                 else
                 {
-                    var handler = StripeCheckout.configure({
-                        key : '{{ env('STRIPE_KEY') }}',
-                        image : '{{ asset('assets/global/img/sqf-logo.png') }}',
-                        email : '{{ Auth::user()->email }}',
-                        token: function(token, args) {
+                    var stripe = Stripe('{{ env('STRIPE_KEY') }}');
+                    var elements = stripe.elements();
 
-                            $.ajax({
-                                url : "{{ route('charge_customer') }}",
-                                data : {
-                                    '_token' : '{{ csrf_token() }}',
-                                    'token' : token.id,
-                                    'args'  : args
-                                },
-                                method : 'post',
-                                success : function(data)
-                                {
-                                    $("#cardNumber").val("***********" + data.user.card_last_four);
-                                    $("#expityMonth").val(data.user.trial_month);
-                                    $("#expityYear").val(data.user.trial_year);
-                                    $("#confirm-modal").modal("show");
-                                }
-                            });
+                    var style = {
+                        base: {
+                            color: '#32325d',
+                            lineHeight: '24px',
+                            fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
+                            fontSmoothing: 'antialiased',
+                            fontSize: '16px',
+                            '::placeholder': {
+                                color: '#aab7c4'
+                            }
+                        },
+                        invalid: {
+                            color: '#fa755a',
+                            iconColor: '#fa755a'
+                        }
+                    };
+
+                    var card = elements.create('card', {style: style});
+                    card.mount('#card-element');
+
+                    card.addEventListener('change', function(event) {
+                        var displayError = document.getElementById('card-errors');
+                        if (event.error) 
+                        {
+                            displayError.textContent = event.error.message;
+                        }
+                        else 
+                        {
+                            displayError.textContent = '';
                         }
                     });
 
-                    handler.open({
-                        name: 'Book 247',
-                        description: 'Sport Booking System'
+                    // Handle form submission
+                    var form = document.getElementById('payment-form');
+                    form.addEventListener('submit', function(event) {
+                        event.preventDefault();
+                        $('.submit-payment').attr('disabled', 'disabled');
+                        stripe.createToken(card).then(function(result) 
+                        {
+                            if (result.error)
+                            {
+                                // Inform the user if there was an error
+                                var errorElement = document.getElementById('card-errors');
+                                errorElement.textContent = result.error.message;
+                                 $('.submit-payment').removeAttr('disabled', 'disabled');
+                            }
+                            else 
+                            {
+                                // Send the token to your server
+                                stripeTokenHandler(result.token);
+                            }
+                        });
                     });
+                   
+                    $("#modal-stripe").modal("show");
                 }
             });
+
+            function stripeTokenHandler(token)
+            {
+                $.ajax({
+                    url : "{{ route('charge_customer') }}",
+                    data : {
+                        '_token' : '{{ csrf_token() }}',
+                        'token' : token.id
+                    },
+                    method : 'post',
+                    success : function(data)
+                    {
+                        $("#modal-stripe").modal("hide");
+
+                        $("#cardNumber").val("***********" + data.user.card_last_four);
+                        $("#expityMonth").val(data.user.trial_month);
+                        $("#expityYear").val(data.user.trial_year);
+                        $("#confirm-modal").modal("show");
+                    }
+                });
+            }
 
             $("#confirm-stripe").click(function(){
                 $(this).attr('disabled', 'disabled');
