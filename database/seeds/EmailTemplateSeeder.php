@@ -12,157 +12,36 @@ class EmailTemplateSeeder extends Seeder
      */
     public function run()
     {
-        $settingsInsertValues = [
-        	[
-        		'title' => '[[company_name]] - Your booking for [[booking_date]] was canceled',
-        		'content'      => 'Booking cancellation - multiple (recurring bookings)',
-        		'variables'      => '["booking_date","login_details","cancel_booking_details","first_name","middle_name","last_name","company_name","my_booking_link"]',
-        		'description'      => '<p>Hi [[first_name]] [[middle_name]] [[last_name]],</p><p>The following bookings were canceled:</p><p>[[cancel_booking_details]]</p><p>You can view this information in your account by accessing&nbsp;[[my_booking_link]]<br></p>',
-        		'hook'      => 'Booking cancellation - multiple',
-        		'is_default'      => 0,
-        		'country_id'      => 578,
-        		'created_at'      => Carbon::now()->format('Y-m-d H:i:s'),
-        	],
-        	[
-        		'title' => '[[company_name]] - Your booking for [[booking_date]] was canceled',
-        		'content'      => 'Booking cancellation - single',
-        		'variables'      => '["company_name","middle_name","last_name","booking_date","booking_details","cancel_booking_details","first_name","my_booking_link"]',
-        		'description'      => '<p>Hi [[first_name]] [[middle-name]]&nbsp;[[last-name]],</p><p>The following booking was canceled:</p><p>[[cancel_booking_details]]</p><p>You can view this information in your account by accessing&nbsp;[[my_booking_link]]</p>',
-        		'hook'      => 'Booking cancellation - single',
-        		'is_default'      => 0,
-        		'country_id'      => 578,
-        		'created_at'      => Carbon::now()->format('Y-m-d H:i:s'),
-        	],
-        	[
-        		'title' => '[[company_name]] - Several bookings were created',
-        		'content'      => 'Booking confirmation – multiple',
-        		'variables'      => '["first_name","last_name","middle_name","company_name","booking_date","login_details","booking_details","my_booking_link"]',
-        		'description'      => '<p>Hi&nbsp;[[first_name]]&nbsp;[[middle_name]]&nbsp;[[last_name]],</p><p>Several bookings were created:</p><p>[[booking_details]]</p><p>You can view this information in your account by accessing&nbsp;[[my_booking_link]]<br></p>',
-        		'hook' => 'Booking confirmation – multiple',
-        		'is_default'      => 0,
-        		'country_id'      => 578,
-        		'created_at'      => Carbon::now()->format('Y-m-d H:i:s'),
-        	],
-        	[
-        		'title' => '[[company_name]] - Your booking for [[booking_date]] was created',
-        		'content'      => 'Booking Confirmation – single',
-        		'variables'      => '["middle_name","last_name","company_name","booking_date","booking_details","first_name","my_booking_link"]',
-        		'description'      => '<p>Hi [[first_name]]&nbsp;[[middle_name]]&nbsp;[[last_name]],</p><p>This is your booking confirmation for the following date and time:</p><p>[[booking_details]]</p><p>You can view this information in your account by accessing&nbsp;[[my_booking_link]]<br></p>',
-        		'hook' => 'Booking Confirmation – single',
-        		'is_default'      => 0,
-        		'country_id'      => 578,
-        		'created_at'      => Carbon::now()->format('Y-m-d H:i:s'),
-        	],
-        	[
-        		'title' => '[[company_name]] - You got a new friend',
-        		'content'      => 'Add friend by phone number in frontend – no approval needed',
-        		'variables'      => '["first_name","middle_name","last_name","company_name","friend\u00b4s_list_link"]',
-        		'description'      => '<p>Hi&nbsp;[[first_name]]&nbsp;[[middle_name]]&nbsp;[[last_name]],</p><p>You have a new friend - [[first_name]] [[middle_name]] [[last_name]]
-</p><p>To manage your friends, go to your [[friend´s_list_link]].&nbsp;You can
-remove the ones you don´t want by clicking <strong>Remove</strong> button.&nbsp;<br></p>',
-        		'hook'      => 'Add friend by phone number in frontend – no approval needed',
-        		'is_default'      => 0,
-        		'country_id'      => 578,
-        		'created_at'      => Carbon::now()->format('Y-m-d H:i:s'),
-        	],
-        	[
-        		'title' => '[[company_name]] - You got a new friend request that needs approval',
-        		'content'      => 'Add friend by phone number in frontend – approval needed',
-        		'variables'      => '["first_name","middle_name","last_name","company_name","friend\u00b4s_list_link"]',
-        		'description'      => '<p>Hi&nbsp;[[first_name]]&nbsp;[[middle_name]]&nbsp;[[last_name]],</p><p>You have a new friend request - [[first_name]] [[middle_name]] [[last_name]]</p><p>To manage your friends, go to your [[friend´s_list_link]]&nbsp;.&nbsp;You can remove the ones you don´t want by clicking&nbsp;<span style="font-weight: 700;">Remove</span>&nbsp;button.&nbsp;</p>',
-        		'hook'      => 'Add friend by phone number in frontend – approval needed',
-        		'is_default'      => 0,
-        		'country_id'      => 578,
-        		'created_at'      => Carbon::now()->format('Y-m-d H:i:s'),
-        	],
-        	[
-        		'title' => '[[company_name]] - Online Booking System - You are registered!',
-        		'content'      => 'New front member registration',
-        		'variables'      => '["first_name","middle_name","last_name","company_name","login_details","member_login_link","username","password","mobil_number"]',
-        		'description'      => '<p>Hi&nbsp;[[first_name]]&nbsp;[[middle_name]]&nbsp;[[last_name]],</p><p>You are now registered in Book 24/7 which is the official booking system for&nbsp;[[company_name]].</p><p>You can use the&nbsp;[[member_login_link]] to log in with the following credentials:</p><p>Username: [[username]]</p><p>Password: [[password]]</p><p><br></p><p><br></p>',
-        		'hook'      => 'New front member registration',
-        		'is_default'      => 0,
-        		'country_id'      => 578,
-        		'created_at'      => Carbon::now()->format('Y-m-d H:i:s'),
-        	],
-        	[
-        		'title' => '[[company_name]] - Password reset request',
-        		'content'      => 'Password reset – first step after reset password request',
-        		'variables'      => '["first_name","middle_name","company_name","last_name","reset_password_link"]',
-        		'description'      => '<p>Hi&nbsp;[[first_name]]&nbsp;[[middle_name]]&nbsp;[[last_name]],</p><p>This is a password reset request email sent by Booking System Agent. If you did not request a password</p><p>reset, ignore this email.</p><p>If this request was initiated by you, click the following link to [[reset_password_link]].</p><p>The link will be available for the next 60 minutes, after that you will need to request another password</p><p>reset request.</p><p>Once the password is reset you will get a new email with the outcome of your action, then you can login</p><p>to the system with your newly created password.</p><p>&lt;b&gt;Remember this link is active for the next 60 minutes.&lt;/b</p>',
-        		'hook'      => 'Password reset – first step after reset password ',
-        		'is_default'      => 0,
-        		'country_id'      => 578,
-        		'created_at'      => Carbon::now()->format('Y-m-d H:i:s'),
-        	],
-        	[
-        		'title' => '[[company_name]] - Password successfully changed',
-        		'content'      => 'Password reset – second step after reset link accessed',
-        		'variables'      => '["first_name","middle_name","last_name","company_name"]',
-        		'description'      => '<p>Hi&nbsp;[[first_name]]&nbsp;[[middle_name]]&nbsp;[[last_name]],</p><p>You have successfully updated your password using the reset password link we sent. Now you can login
-using your new password.
-If this was not done by you, please contact the Booking System administrator and report this issue.<br></p>',
-        		'hook'      => 'Password reset – second step after reset link accessed',
-        		'is_default'      => 0,
-        		'country_id'      => 578,
-        		'created_at'      => Carbon::now()->format('Y-m-d H:i:s'),
-        	],
-        	[
-        		'title' => '[[company_name]] - Your friend has booked on your behalf',
-        		'content'      => 'booking confirmation when a friend has book on behalf of a friend',
-        		'variables'      => '["first_name","middle_name","last_name","company_name","booking_details","my_bookings_link","friend\u00b4s_first_name","friend\u00b4s_last_name"]',
-        		'description'      => '<p>Hi&nbsp;[[first_name]]&nbsp;[[middle_name]]&nbsp;[[last_name]],</p><p>Your friend&nbsp;[[friend´s_first_name]]&nbsp;[[friend´s_last_name]] has made the following booking on your behalf:</p><p>[[booking_details]]</p><p>You can view and edit your bookings at&nbsp;[[my_bookings_link]]</p><p><br></p>',
-        		'hook'      => 'booking confirmation when a friend has book on behalf of a friend',
-        		'is_default'      => 0,
-        		'country_id'      => 578,
-        		'created_at'      => Carbon::now()->format('Y-m-d H:i:s'),
-        	],
-        	[
-        		'title' => '[[company_name]] - Your court has been canceled',
-        		'content'      => 'Cancellation email when completed by friend',
-        		'variables'      => '["first_name","last_name","middle_name","company_name","my_bookings_link","booking_details","friend\u00b4s_first_name","friend\u00b4s_last_name"]',
-        		'description'      => '<p>Hi&nbsp;[[first_name]]&nbsp;[[middle_name]]&nbsp;[[last_name]],</p><p>Your friend&nbsp;[[friend´s_first_name]]&nbsp;[[friend´s_last_name]] has canceled a booking on your behalf:&nbsp;</p><p>[[booking_details]]&nbsp;<br></p>',
-        		'hook'      => 'Cancellation email when completed by friend',
-        		'is_default'      => 0,
-        		'country_id'      => 578,
-        		'created_at'      => Carbon::now()->format('Y-m-d H:i:s'),
-        	],
-            [
-                'title' => 'Hello [[first_name]] [[last_name]]!',
-                'content'      => 'Template when registering a new owner',
-                'variables'      => '["club_name","email","password","first_name","last_name"]',
-                'description'      => "<p><span>You have succesfully registered at book247.net.</span><br>Your club's name is [[club_name]].<br><span>Now you have your own subdomain for your club:&nbsp;</span>[[club_name]]<span>.book247.net</span><br><span>Your data for login:</span><br>Username: [[email]]<br>Password&nbsp;[[password]]<br></p><p><span>Sincerely,&nbsp;</span><span>Team book247!</span></p>",
-                'hook'      => 'Registration of new owner',
-                'is_default'      => 0,
-                'country_id'      => 578,
-                'created_at'      => Carbon::now()->format('Y-m-d H:i:s'),
-            ],
-            [
-                'title' => 'Hello [[first_name]] [[last_name]]!',
-                'content'      => 'Template when registering an existing owner',
-                'variables'      => '["club_name","email","first_name","last_name"]',
-                'description'      => "<p><span>You have succesfully registered at book247.net.</span><br>Your club's name is [[club_name]].<br><span>Now you have your own subdomain for your club:&nbsp;</span>[[club_name]]<span>.book247.net</span><br><span>Your data for login:</span><br>Username: [[email]]<br>Password: use password you have created before.<br></p><p><span>Sincerely,&nbsp;</span><span>Team book247!</span></p>",
-                'hook'      => 'Registering an existing owner',
-                'is_default'      => 0,
-                'country_id'      => 578,
-                'created_at'      => Carbon::now()->format('Y-m-d H:i:s'),
-            ]
-
+        $emailValues = [
+            ['Your booking for [[booking_date]] was canceled', 'Booking cancellation - multiple (recurring bookings)', '["booking_date","login_details","cancel_booking_details","first_name","middle_name","last_name","company_name","my_booking_link"]', 'The following bookings were canceled: [[cancel_booking_details]]<br><br>You can view this information in your account by accessing&nbsp;[[my_booking_link]] .<br><br>Sincerely,<br>Book247 Team. <br><br><small><strong>***** Email confidentiality notice *****</strong><br>This message is private and confidential. If you have received this message in error, please notify us and remove it from your system.</small>', 'Booking cancellation - multiple', '0', 578, '2017-07-05 09:57:00', '2017-08-14 07:04:08'],
+            ['Your booking for [[booking_date]] was canceled', 'Booking cancellation - single', '["company_name","middle_name","last_name","booking_date","booking_details","cancel_booking_details","first_name","my_booking_link"]', 'The following booking was canceled: [[cancel_booking_details]] <br><br> You can view this information in your account by accessing&nbsp;[[my_booking_link]] <br><br>Sincerely,<br>Book247 Team. <br><br><small><strong>***** Email confidentiality notice *****</strong><br>This message is private and confidential. If you have received this message in error, please notify us and remove it from your system.</small>', 'Booking cancellation - single', '0', 578, '2017-07-05 09:57:00', '2017-08-14 06:58:33'],
+            ['Several bookings were created', 'Booking confirmation – multiple', '["first_name","last_name","middle_name","company_name","booking_date","login_details","booking_details","my_booking_link"]', 'Several bookings were created: [[booking_details]] <br><br> You can view this information in your account by accessing [[my_booking_link]] <br><br>Sincerely,<br>Book247 Team. <br><br><small><strong>***** Email confidentiality notice *****</strong><br>This message is private and confidential. If you have received this message in error, please notify us and remove it from your system.</small>', 'Booking confirmation – multiple', '0', 578, '2017-07-05 09:57:00', '2017-08-14 06:58:52'],
+            ['Your booking for [[booking_date]] was created', 'Booking Confirmation – single', '["middle_name","last_name","company_name","booking_date","booking_details","first_name","my_booking_link"]', 'This is your booking confirmation for the following date and time: [[booking_details]] <br><br> You can view this information in your account by accessing [[my_booking_link]] <br><br>Sincerely,<br>Book247 Team. <br><br><small><strong>***** Email confidentiality notice *****</strong><br>This message is private and confidential. If you have received this message in error, please notify us and remove it from your system.</small>', 'Booking Confirmation – single', '0', 578, '2017-07-05 09:57:00', '2017-08-14 07:02:58'],
+            ['You got a new friend', 'Add friend by phone number in frontend – no approval needed', '["first_name","middle_name","last_name","company_name","friends_list_link"]', 'You have a new friend - [[first_name]] [[middle_name]] [[last_name]] . <br> To manage your friends, go to your [[friends_list_link]]. You can remove the ones you don\'t want by clicking <strong>Remove</strong> button. <br><br>Sincerely,<br>Book247 Team. <br><br><small><strong>***** Email confidentiality notice *****</strong><br>This message is private and confidential. If you have received this message in error, please notify us and remove it from your system.</small>', 'Add friend by phone number in frontend – no approval needed', '0', 578, '2017-07-05 09:57:00', '2017-08-14 07:04:57'],
+            ['Booking System - You got a new friend request that needs approval', 'Add friend by phone number in frontend – approval needed', '["first_name","middle_name","last_name","company_name","friends_list_link"]', 'You have a new friend request - [[first_name]] [[middle_name]] [[last_name]] .<br> To manage your friends, go to your [[friends_list_link]]&nbsp;.&nbsp; You can remove the ones you don\'t want by clicking <strong>Remove</strong> button. <br><br>Sincerely,<br>Book247 Team. <br><br><small><strong>***** Email confidentiality notice *****</strong><br>This message is private and confidential. If you have received this message in error, please notify us and remove it from your system.</small>', 'Add friend by phone number in frontend – approval needed', '0', 578, '2017-07-05 09:57:00', '2017-08-13 12:16:24'],
+            ['Online Booking System - You are registered!', 'New front member registration no validation', '["first_name","middle_name","last_name","company_name","login_details","member_login_link","username","password","mobil_number"]', 'You are now registered in Book 24/7 which is the official booking system for [[company_name]]. <br> You can use the [[member_login_link]] to log in with the following credentials:<br> Username: [[username]]<br> Password: [[password]] <br><br> Your phone : <strong>[[phone_number]]</strong> that is registered in the system can be used to send you alerts when you create a booking or when a booking is created on your behalf. <br><br>Sincerely,<br>Book247 Team. <br><br><small><strong>***** Email confidentiality notice *****</strong><br>This message is private and confidential. If you have received this message in error, please notify us and remove it from your system.</small>', 'New front member registration', '0', 578, '2017-07-05 09:57:00', '2017-08-14 07:05:34'],
+            ['Password reset request', 'Password reset – first step after reset password request', '["first_name","middle_name","company_name","last_name","reset_password_link"]', 'This is a password reset request email sent by Booking System Agent. If you did not request a password reset, ignore this email.<br><br>If this request was initiated by you, click the following link to [[reset_password_link]]. The link will be available for the next 60 minutes, after that you will need to request another password reset request.<br><br>Once the password is reset you will get a new email with the outcome of your action, then you can login to the system with your newly created password. <b>Remember this link is active for the next 60 minutes.</b><br><br>Sincerely,<br>Book247 Team. <br><br><small><strong>***** Email confidentiality notice *****</strong><br>This message is private and confidential. If you have received this message in error, please notify us and remove it from your system.</small>', 'Password reset – first step after reset password ', '0', 578, '2017-07-05 09:57:00', '2017-08-14 07:05:48'],
+            ['Password successfully changed', 'Password reset – second step after reset link accessed', '["first_name","middle_name","last_name","company_name"]', 'You have successfully updated your password using the reset password link we sent. Now you can login using your new password. If this was not done by you, please contact the Booking System administrator and report this situation. <br><br>Sincerely,<br>Book247 Team. <br><br><small><strong>***** Email confidentiality notice *****</strong><br>This message is private and confidential. If you have received this message in error, please notify us and remove it from your system.</small>', 'Password reset – second step after reset link accessed', '0', 578, '2017-07-05 09:57:00', '2017-08-14 06:22:57'],
+            ['[[company_name]] - Your friend has booked on your behalf', 'booking confirmation when a friend has book on behalf of a friend', '["first_name","middle_name","last_name","company_name","booking_details","my_bookings_link","friends_first_name","friends_last_name"]', 'Your friend&nbsp;[[friends_first_name]]&nbsp;[[friends_last_name]] has made the following booking on your behalf: <br> [[booking_details]] <br><br> You can view and edit your bookings at&nbsp;[[my_bookings_link]]. <br><br>Sincerely,<br>Book247 Team. <br><br><small><strong>***** Email confidentiality notice *****</strong><br>This message is private and confidential. If you have received this message in error, please notify us and remove it from your system.</small>', 'booking confirmation when a friend has book on behalf of a friend', '0', 578, '2017-07-05 09:57:00', '2017-08-11 12:55:25'],
+            ['[[company_name]] - Your court has been canceled', 'Cancellation email when completed by friend', '["first_name","last_name","middle_name","company_name","my_bookings_link","booking_details","friend_first_name","friend_last_name"]', 'Your friend&nbsp;[[friend_first_name]]&nbsp;[[friend_last_name]] has canceled a booking on your behalf:&nbsp; <br> [[booking_details]] <br><br>Sincerely,<br>Book247 Team. <br><br><small><strong>***** Email confidentiality notice *****</strong><br>This message is private and confidential. If you have received this message in error, please notify us and remove it from your system.</small>', 'Cancellation email when completed by friend', '0', 578, '2017-07-05 09:57:00', '2017-08-11 12:57:01'],
+            ['One step away from registration', 'This email is sent to new front member registration when account verification by email is set to yes', '["first_name","last_name","middle_name","activation_link","username","password","company_name","phone_number","member_login_link"]', '<p>Book247 is the official booking system for [[company_name]]. Thank you for registering to our online booking system. To finish the registration process, pleace click the following link to  [[activation_link]].<br><br> After your account is active, you can <strong>[[member_login_link]]</strong> using these credentials: <br> Username :  [[username]]<br> Password :  [[password]]<br><br>Your phone : <strong>[[phone_number]]</strong> that is registered in the system can be used to send you alerts when you create a booking or when a booking is created on your behalf.<br><br>Sincerely,<br>Book247 Team. <br><br><small><strong>***** Email confidentiality notice *****</strong><br>This message is private and confidential. If you have received this message in error, please notify us and remove it from your system.</small></p>', 'New front member registration with validation', '0', 578, '2017-08-13 09:39:19', '2017-08-13 12:00:54'],
+            ['Activate your Book247 account', 'This email is sent to new front member registration when account verification by email is set to yes and user requested the account validation once more', '["first_name","last_name","middle_name","activation_link","username","password","company_name","phone_number","member_login_link"]', '<p>Book247 is the official booking system for [[company_name]]. Thank you for registering to our online booking system. To finish the registration process, pleace click the following link to&nbsp; [[activation_link]].<br><br> After your account is active, you can <strong>[[member_login_link]]</strong> using these credentials: <br> Username :  [[username]]<br> Password : <i>the one used at registration</i> <br><br>Your phone : <strong>[[phone_number]]</strong> that is registered in the system can be used to send you alerts when you create a booking or when a booking is created on your behalf.<br><br>Sincerely,<br>Book247 Team. <br><br><small><strong>***** Email confidentiality notice *****</strong><br>This message is private and confidential. If you have received this message in error, please notify us and remove it from your system.</small></p>', 'Resend front member registration with validation', '0', 578, '2017-08-13 09:39:19', '2017-08-13 20:07:25']
         ];
 
         DB::table('email_templates')->truncate();
 
-        foreach ($settingsInsertValues as $single)
+        foreach ($emailValues as $single)
         {
             DB::table('email_templates')->insert([
-				'title' => $single['title'],
-				'content' => $single['content'],
-				'variables' => $single['variables'],
-				'description' => $single['description'],
-				'hook' => $single['hook'],
-				'is_default' => $single['is_default'],
-				'country_id' => $single['country_id'],
-				'created_at' => $single['created_at']
+				'title'         => $single[0],
+				'content'       => $single[1],
+				'variables'     => $single[2],
+				'description'   => $single[3],
+				'hook'          => $single[4],
+				'is_default'    => $single[5],
+				'country_id'    => $single[6],
+				'created_at'    => Carbon::now()->format('Y-m-d H:i:s'),
+                'updated_at'    => Carbon::now()->format('Y-m-d H:i:s')
 			]);
         }
     }

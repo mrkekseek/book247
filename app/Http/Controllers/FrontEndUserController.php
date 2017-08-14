@@ -1713,7 +1713,7 @@ class FrontEndUserController extends Controller
             $dataForApi['mobile_number'] = trim($vars['mobile_number']);
 
             // we only update SSO_API if the user is in the sso
-            if ($user->sso_user_id!=null){
+            if ($user->sso_user_id != null){
                 $api_user = Auth::update_api_user($dataForApi);
                 if ( ! $api_user)
                 {
@@ -2627,40 +2627,25 @@ class FrontEndUserController extends Controller
                     $friend = User::where('id', '=', $friends->user_id)->get()->first();
                     $user   = User::where('id', '=', Auth::user()->id)->get()->first();
 
-                    if ($friend_approval_status == 'pending')
-                    {
+                    if ($friend_approval_status == 'pending') {
                         $data = [
                             'first_name'            => $user->first_name,
                             'middle_name'           => $user->middle_name,
                             'last_name'             => $user->last_name,
-                            'friend´s_list_link'    => route("front/member_friend_list")
+                            'friends_list_link'    => route("front/member_friend_list")
                         ];
 
-                        $template = EmailsController::build('Add friend by phone number in frontend – no approval needed', $data);
+                        $default_message = 'You have a new friend - [[first_name]] [[middle_name]] [[last_name]] . <br> 
+To manage your friends, go to your [[friends_list_link]]. You can remove the ones you don\'t want by clicking <strong>Remove</strong> button. 
+<br><br>Sincerely,<br>Book247 Team. <br><br><small><strong>***** Email confidentiality notice *****</strong><br>
+This message is private and confidential. If you have received this message in error, please notify us and remove it from your system.</small>';
+                        $default_subject = 'Booking System - You got a new friend';
+                        $template = EmailsController::build('Add friend by phone number in frontend – no approval needed', $data, $default_message, $default_subject);
 
-                        if ($template)
-                        {
-                            $main_message = $template["message"];
-                        }
-                        else
-                        {
-                            $main_message = 'You got a friend request from '.$user->first_name.' '.$user->middle_name.' '.$user->last_name.'<br /><br />';
-                            $main_message .= 'Please go to your backend account->Friends List and answer to this friend request, by <strong>approving</strong> or <strong>rejecting</strong> it. <br /><br />'.
-                                    'Sincerely,<br />Book247 Team.';
-                            $subject = AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title') . ' - You got a new friend request that needs approval';
-                        }
-
-                        $subject = "";
-                        if (AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title'))
-                        {
-                            $subject = AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title') . ' - You have a new friend';
-                        }
-                        else
-                        {
-                            $subject = "You have a new friend";
-                        }
-
-
+                        $main_message = $template["message"];
+                        $subject = AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title') ?
+                            AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title') . ' - '.$template['subject'] :
+                            $template['subject'];
 
                         $beauty_mail = app()->make(Beautymail::class);
                         $beauty_mail->send('emails.email_default_v2',
@@ -2674,38 +2659,24 @@ class FrontEndUserController extends Controller
                     }
                     else
                     {
-
                         $data = [
                             'first_name'            => $user->first_name,
                             'middle_name'           => $user->middle_name,
                             'last_name'             => $user->last_name,
-                            'friend´s_list_link'    => route("front/member_friend_list")
+                            'friends_list_link'    => route("front/member_friend_list")
                         ];
 
-                        $template = EmailsController::build('Add friend by phone number in frontend – approval needed', $data);
+                        $default_subject = 'Booking System - You got a new friend request that needs approval';
+                        $default_message = 'You have a new friend request - [[first_name]] [[middle_name]] [[last_name]] .<br> 
+To manage your friends, go to your [[friends_list_link]]. You can remove the ones you don\'t want by clicking <strong>Remove</strong> button. <br><br>
+Sincerely,<br>Book247 Team. <br><br><small><strong>***** Email confidentiality notice *****</strong><br>
+This message is private and confidential. If you have received this message in error, please notify us and remove it from your system.</small>';
+                        $template = EmailsController::build('Add friend by phone number in frontend – approval needed', $data, $default_message, $default_subject);
 
-                        if ($template)
-                        {
-                            $main_message = $template["message"];
-                        }
-                        else
-                        {
-                            $main_message  = 'You have a new friend - ' . $user->first_name.' '.$user->middle_name.' '.$user->last_name.'<br /><br />';
-                            $main_message .= 'To manage your friends, go to your Backend Account -> Friends List and see the entire list. You can remove the ones you don\'t want by clicking <strong>Remove</strong> button. <br /><br />'.
-                            'Sincerely,<br />Book247 Team.';
-                        }
-
-                        $subject = "";
-                        if (AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title'))
-                        {
-                            $subject = AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title') . ' - You have a new friend';
-                        }
-                        else
-                        {
-                            $subject = "You have a new friend";
-                        }
-
-
+                        $main_message = $template["message"];
+                        $subject = AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title') ?
+                            AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title') . ' - '.$template['subject'] :
+                            $template['subject'];
 
                         $beauty_mail = app()->make(Beautymail::class);
                         $beauty_mail->send('emails.email_default_v2',
@@ -3002,7 +2973,6 @@ class FrontEndUserController extends Controller
                 $dataForApi = $credentials + $personalData;
                 $api_user = Auth::create_api_user($dataForApi, $password_api);
                 if ( ! $api_user)
-
                 {
                     return [
                         'success'   => false,
@@ -3020,42 +2990,60 @@ class FrontEndUserController extends Controller
                 $personalDetails->save();
             }
 
-
             $data = [
                 'first_name'            => $user->first_name,
                 'last_name'             => $user->last_name,
                 'middle_name'           => $user->middle_name,
+                'phone_number'          => $personalData['mobile_number'],
                 'company_name'          => AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title'),
                 'member_login_link'     => '<a href="' . route('homepage') . '" target="_blank">login here</a>',
+                'activation_link'       => '',
                 'username'              => $user->username,
                 'password'              => $text_psw
             ];
 
-            $template = EmailsController::build('New front member registration', $data);
+            if(AppSettings::get_setting_value_by_name('globalWebsite_registration_email_validation')==1) {
+                $user->status = 'pending';
+                $user->setRememberToken(str_random(64));
+                $user->save();
 
-            if ($template)
-            {
-                $main_message = $template["message"];
-                $subject = AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title') . ' - Online Booking System - You are registered!';
+                $data['activation_link'] = '<a href="' . route('activate_user',['token' => $user->getRememberToken()]) . '" target="_blank">activate account</a>';
+
+                $default_subject = 'One step away from registration';
+                $default_message = 'Book247 is the official booking system for [[company_name]]. Thank you for registering to our online booking system. 
+To finish the registration process, please click the following link to&nbsp; [[activation_link]].<br><br>
+After your account is active, you can <strong>[[member_login_link]]</strong> using these credentials: <br> Username :  [[username]]<br> Password :  [[password]]<br><br>
+Your phone : <strong>[[phone_number]]</strong> that is registered in the system can be used to send you alerts when you create a booking or when a booking is created on your behalf.<br><br>
+Sincerely,<br>Book247 Team. <br><br><small><strong>***** Email confidentiality notice *****</strong><br>
+This message is private and confidential. If you have received this message in error, please notify us and remove it from your system.</small>';
+
+                $template = EmailsController::build('New front member registration with validation', $data, $default_message, $default_subject);
             }
-            else
-            {
-                $main_message = 'SQF/Book247 is the official booking system for Drammen & Økern. Within approximately 30 days time Book 247 will be used for all SquashFitness locations. Please log in and "add your friends" (playing partners). By doing this you and your playing partners can book on behalf of each other and according to the booking rules. This will make the booking procedure faster for you, your partners and our receptionists.' . PHP_EOL . ' <br /><br /> '.
-                                'You registered to the Booking System platform with the following credentials, credentials that you can use to <a href="' . route('homepage') . '" target="_blank">login here</a> :' . PHP_EOL . ' <br /><br /> '.
-                                ' Username : ' . $user->username . ' <br /> Password : ' . $text_psw . ' ' . PHP_EOL . ' <br /><br /> ' .
-                                'Your phone : <strong>' . $personalDetails->mobile_number . '</strong> that is registered in the system can be used to send you alerts when you create a booking or when a booking is created on your behalf. <br /><br />';
+            else {
+                $default_subject = 'Online Booking System - You are registered!';
+                $default_message = 'You are now registered in Book 24/7 which is the official booking system for [[company_name]]. <br> 
+You can use the&nbsp;[[member_login_link]] to log in with the following credentials:<br> Username: [[username]]<br> Password: [[password]] <br><br> 
+Your phone : <strong>[[phone_number]]</strong> that is registered in the system can be used to send you alerts when you create a booking or when a booking is created on your behalf. <br><br>
+Sincerely,<br>Book247 Team. <br><br><small><strong>***** Email confidentiality notice *****</strong><br> 
+This message is private and confidential. If you have received this message in error, please notify us and remove it from your system.</small>';
+
+                $template = EmailsController::build('New front member registration no validation', $data, $default_message, $default_subject);
             }
+
+            $main_message = $template["message"];
+            $subject = AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title') ?
+                AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title') . ' - '.$template['subject'] :
+                $template['subject'];
 
             $beauty_mail = app()->make(Beautymail::class);
             $beauty_mail->send('emails.email_default_v2',
                 ['body_message' => $main_message, 'user' => $user],
-                function($message) use ($user) {
+                function($message) use ($user, $subject) {
                     $message
                             ->from(AppSettings::get_setting_value_by_name('globalWebsite_system_email'))
                             ->to($user->email, $user->first_name.' '.$user->middle_name.' '.$user->last_name)
-                            ->subject(AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title').' - Online Booking System - You are registered!');
+                            ->subject($subject);
                 });
-
 
             $addressFill = [
                 'user_id'       => $user->id,
@@ -3227,6 +3215,7 @@ class FrontEndUserController extends Controller
         } else {
             $user = PersonalDetail::where('mobile_number',$vars['phone'])->first();
         }
+
         if ($user){
             return 'false';
         }
@@ -3830,25 +3819,6 @@ class FrontEndUserController extends Controller
             $vat = [];
 
             $itemNames = [];
-            foreach($invoice->items as $item){
-                // base price minus the discount
-                $item_one_price = $item->price - (($item->price*$item->discount)/100);
-                // apply the vat to the price
-                $item_vat = $item_one_price * ($item->vat/100);
-
-                if (isset($vat[$item->vat])){
-                    $vat[$item->vat]+= $item_vat*$item->quantity;
-                }
-                else{
-                    $vat[$item->vat] = $item_vat*$item->quantity;
-                }
-
-                $discount+= (($item->price*$item->discount)/100)*$item->quantity;
-                $subtotal+= $item->price * $item->quantity;
-                $total+= ($item_one_price + $item_vat)*$item->quantity;
-
-                $itemNames[$item->id] = $item->item_name;
-            }
 
             foreach($invoice->transactions as &$transaction){
                 $innerItems = json_decode($transaction->invoice_items);
@@ -3858,8 +3828,6 @@ class FrontEndUserController extends Controller
                         $transactionItemNames[] = $itemNames[$single];
                     }
                 }
-
-
                 $transaction->names = $transactionItemNames;
             }
             $transactions = $invoice->transactions;
@@ -3880,14 +3848,10 @@ class FrontEndUserController extends Controller
 
                 $discount+= (($item->price*$item->discount)/100)*$item->quantity;
                 $subtotal+= $item->price * $item->quantity;
-
                 $total+= ($item_one_price + $item_vat)*$item->quantity;
             }
-
-
-
             $member = json_decode($invoice->payer_info);
-            $member_professional = isset($member->professional_detail) ? $member->professional_detail : false;
+            //$member_professional = isset($member->professional_detail) ? $member->professional_detail : false;
             $member_personal = isset($member->personal_detail) ? $member->personal_detail : false;
 
             if (isset($member->country_id) && $member->country_id==0)
@@ -4447,6 +4411,90 @@ class FrontEndUserController extends Controller
         ]);
     }
 
+    public function activate_user_by_token(Request $request, $token){
+        $breadcrumbs = [
+            'Home'      => route('admin'),
+            'Dashboard' => '',
+        ];
+
+        $text_parts  = [
+            'title'     => 'Home',
+            'subtitle'  => 'users dashboard',
+            'table_head_text1' => 'Dashboard Summary'
+        ];
+
+        $sidebar_link= 'front-password_reset';
+
+        $user = User::where('remember_token',$token)->first();
+
+        if($user->status == 'active') {
+            return redirect()->route('homepage');
+        }
+
+        if ($user) {
+            $user->status = 'active';
+            $user->save();
+        }
+
+        return view('front/activate_user/activate_user',[
+            'breadcrumbs' => $breadcrumbs,
+            'text_parts'  => $text_parts,
+            'in_sidebar'  => $sidebar_link,
+            'token'       => $token
+        ]);
+    }
+
+    public function resend_activation_email(Request $request, $id) {
+
+        $user = User::where('id','=',$id)->where('status','=','pending')->first();
+        if (!$user){
+            return [
+                'success'   => false,
+                'title'     => 'Something went wrong',
+                'errors'    => 'You already activated your account'
+            ];
+        }
+
+        $personalDetails = PersonalDetail::where('user_id',$user->id)->first();
+        $data = [
+            'first_name'            => $user->first_name,
+            'last_name'             => $user->last_name,
+            'middle_name'           => $user->middle_name,
+            'company_name'          => AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title'),
+            'member_login_link'     => '<a href="' . route('homepage') . '" target="_blank">login here</a>',
+            'username'              => $user->username,
+            'activation_link'       => '<a href="' . route('activate_user',['token' => $user->getRememberToken()]) . '" target="_blank">activate account</a>',
+            'phone_number'          => $personalDetails->mobile_number
+        ];
+
+        $default_message = '<p>Book247 is the official booking system for [[company_name]]. Thank you for registering to our online booking system. 
+To finish the registration process, please click the following link to [[activation_link]].<br><br> 
+After your account is active, you can <strong>[[member_login_link]]</strong> using these credentials: <br> 
+Username :  [[username]]<br> Password : <i>the one used at registration</i> <br><br>
+Your phone : <strong>[[phone_number]]</strong> that is registered in the system can be used to send you alerts when you create a booking or when a booking is created on your behalf.<br><br>
+Sincerely,<br>Book247 Team. <br><br><small><strong>***** Email confidentiality notice *****</strong><br>
+This message is private and confidential. If you have received this message in error, please notify us and remove it from your system.</small></p>';
+        $default_subject = 'Activate your Book247 account';
+        $template = EmailsController::build('Resend front member registration with validation', $data, $default_message, $default_subject);
+
+        $main_message = $template["message"];
+        $subject = AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title') ?
+            AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title') . ' - '.$template['subject'] :
+            $template['subject'];
+
+        $beauty_mail = app()->make(Beautymail::class);
+        $beauty_mail->send('emails.email_default_v2',
+            ['body_message' => $main_message, 'user' => $user],
+            function($message) use ($user, $subject) {
+                $message
+                    ->from(AppSettings::get_setting_value_by_name('globalWebsite_system_email'))
+                    ->to($user->email, $user->first_name.' '.$user->middle_name.' '.$user->last_name)
+                    ->subject($subject);
+            });
+
+        return redirect()->route('homepage');
+    }
+
     public function password_reset_action(Request $request, $token){
 
         $this->check_expired_password_requests();
@@ -4523,18 +4571,17 @@ class FrontEndUserController extends Controller
             'reset_password_link'   => ''
         ];
 
-        $template = EmailsController::build('Password reset – second step after reset link accessed', $data);
+        $default_message = 'You have successfully updated your password using the reset password link we sent. Now you can login using your new password. 
+If this was not done by you, please contact the Booking System administrator and report this situation. <br><br>
+Sincerely,<br>Book247 Team. <br><br><small><strong>***** Email confidentiality notice *****</strong><br>
+This message is private and confidential. If you have received this message in error, please notify us and remove it from your system.</small>';
+        $default_subject = 'Password successfully changed';
+        $template = EmailsController::build('Password reset – second step after reset link accessed', $data, $default_message, $default_subject);
 
-        if ($template)
-        {
-            $main_message = $template["message"];
-            $subject = AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title') . ' - Password reset request';
-        }
-        else
-        {
-            $main_message = '<p>You have successfully updated your password using the reset password link we sent. Now you can login using your new password. If this was not done by you, please contact the Booking System administrator and report this issue.<br></p>';
-            $subject = AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title').' - Password reset request';
-        }
+        $main_message = $template["message"];
+        $subject = AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title') ?
+            AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title') . ' - '.$template['subject'] :
+            $template['subject'];
 
         $beauty_mail = app()->make(Beautymail::class);
         $beauty_mail->send('emails.email_default_v2',
@@ -4601,22 +4648,18 @@ class FrontEndUserController extends Controller
             'reset_password_link'   => '<a href="' . route('reset_password', ['token'=>$generateKey]) . '" target="_blank">reset your password</a>'
         ];
 
-        $template = EmailsController::build('Password reset – first step after reset password', $data);
+        $default_message = 'This is a password reset request email sent by Booking System Agent. If you did not request a password reset, ignore this email.<br><br>
+If this request was initiated by you, click the following link to [[reset_password_link]]. The link will be available for the next 60 minutes, after that you will need to request another password reset request.<br><br>
+Once the password is reset you will get a new email with the outcome of your action, then you can login to the system with your newly created password. 
+<b>Remember this link is active for the next 60 minutes.</b><br><br>Sincerely,<br>Book247 Team. <br><br><small><strong>***** Email confidentiality notice *****</strong><br>
+This message is private and confidential. If you have received this message in error, please notify us and remove it from your system.</small>';
+        $default_subject = 'Password reset request';
+        $template = EmailsController::build('Password reset – first step after reset password', $data, $default_message, $default_subject);
 
-        if ($template)
-        {
-            $main_message = $template["message"];
-            $subject = AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title').' - Password reset request';
-        }
-        else
-        {
-            $main_message = 'This is a password reset request email sent by Booking System Agent. If you did not request a password reset, ignore this email.<br /><br />'.
-                            'If this request was initiated by you, click the following link to <a href="'.route('reset_password', ['token'=>$generateKey]).'" target="_blank">reset your password</a>.'.
-                            'The link will be available for the next 60 minutes, after that you will need to request another password reset request.<br /><br />';
-            $main_message.= 'Once the password is reset you will get a new email with the outcome of your action, then you can login to the system with your newly created password.<br />'.
-                            '<b>Remember this link is active for the next 60 minutes.</b>';
-            $subject = AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title').' - Password reset request';
-        }
+        $main_message = $template["message"];
+        $subject = AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title') ?
+            AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title') . ' - '.$template['subject'] :
+            $template['subject'];
 
         $beauty_mail = app()->make(Beautymail::class);
         $beauty_mail->send('emails.email_default_v2',
@@ -5347,6 +5390,17 @@ class FrontEndUserController extends Controller
 
     public function auth_autorize(Request $request){
         $data = $request->input('data');
+
+        $u = User::where('email',$data['username'])->first();
+
+        if ($u && $u->status != 'active' ) {
+            return  [
+                'success' => false,
+                'title'   => 'User not active',
+                'errors'  => 'Please activate your account. <a href="'.route('resend_activation_email',['id' => $u->id]).'"">&nbsp;Resend activation email.</a>' // api error, no Cyrillic
+            ];
+        }
+
         if (Auth::attempt(['email' => $data['username'], 'password' => $request->data['password']])) {
             $user = Auth::user();
 

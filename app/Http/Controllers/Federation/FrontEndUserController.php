@@ -1944,5 +1944,39 @@ class FrontEndUserController extends Base
         ]);
     }
 
+    public function activate_user_by_token(Request $request, $token){
+        $breadcrumbs = [
+            'Home'      => route('admin'),
+            'Dashboard' => '',
+        ];
+
+        $text_parts  = [
+            'title'     => 'Home',
+            'subtitle'  => 'users dashboard',
+            'table_head_text1' => 'Dashboard Summary'
+        ];
+
+        $sidebar_link= 'front-password_reset';
+
+        $user = User::where('remember_token',$token)->first();
+
+        if($user->status == 'active') {
+//            dd('why dafuq');
+            return redirect()->route('homepage');
+        }
+
+        if ($user) {
+            $user->status = 'active';
+            $user->save();
+        }
+
+        return view('front/activate_user/federation/activate_user',[
+            'breadcrumbs' => $breadcrumbs,
+            'text_parts'  => $text_parts,
+            'in_sidebar'  => $sidebar_link,
+            'token'       => $token
+        ]);
+    }
+
     // Stop - Store credit add - backend add store credit to member
 }

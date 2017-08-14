@@ -572,7 +572,6 @@ class ApicController extends Controller
         return $response;
     }
 
-    
     private function send_mail_exist_owner($owner)
     {
         $shop_location = ShopLocations::first();

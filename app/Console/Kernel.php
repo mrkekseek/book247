@@ -26,7 +26,8 @@ class Kernel extends ConsoleKernel
         Commands\SyncronizeActivitiesWithSSO::class,
         Commands\ClearMemberships::class,
         Commands\Patch_1_3::class,
-        Commands\Patch_1_4::class
+        Commands\Patch_1_4::class,
+        Commands\Patch\Patch_1_5::class,
     ];
 
     /**
