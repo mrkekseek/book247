@@ -3,6 +3,7 @@
 namespace App\Console\Commands\Patch;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Artisan;
 
 class Patch_1_5 extends Command
 {
@@ -37,11 +38,13 @@ class Patch_1_5 extends Command
      */
     public function handle()
     {
-        /*
-         * General settings addition START
-         */
+        // seed emails again - updated and changed
+        $seeder = new \EmailTemplateSeeder();
+        $seeder->run();
+
+        // add new general settings values - Start
         $settingsInsertValues = [
-            [2, 'Finance Paypal Account Key', 'finance_paypal_account_key', 'Advanced PayPal integration - this is your account key', 0, 'string', 15, 60, 0],
+            [32, 'Finance Paypal Account Key', 'finance_paypal_account_key', 'Advanced PayPal integration - this is your account key', 0, 'string', 15, 60, 0],
             [33, 'Finance Paypal Account Secret', 'finance_paypal_account_secret', 'Advanced PayPal integration - account secret. This is paired with PayPal Key.', 0, 'string', 2, 60, 0],
             [34, 'Finance Stripe Account Key', 'finance_stripe_account_key', 'Stripe payment integration - Account key', 0, 'string', 5, 60, 0],
             [35, 'Finance Stripe Account Secret', 'finance_stripe_account_secret', 'Stripe payment integration - Account Secret', 0, 'string', 5, 60, 0],
@@ -89,19 +92,7 @@ class Patch_1_5 extends Command
         //DB::insert($query, [1,  NULL, env('URL'),   1]);
 
         // confined values
-        //DB::insert($query, [5,  2,  NULL, 1]);
-
-        /*
-         * General settings addition STOP
-         */
-
-        /*
-         * Email content update - START
-         */
-
-
-        /*
-         * Email content update - STOP
-         */
+        DB::insert($query, [36,  25,  NULL, 1]);
+        // Add new general settings values - Stop
     }
 }
