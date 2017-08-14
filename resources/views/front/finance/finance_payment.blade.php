@@ -327,9 +327,6 @@
                                     </h3>
                                 </div>
                                 <div class="panel-body">
-                                    <label for="card-element">
-                                        Credit or debit card
-                                    </label>
                                     <div id="card-element">
                                     <!-- a Stripe Element will be inserted here. -->
                                     </div>
@@ -343,9 +340,27 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary submit-payment">Submit</button>
+                    <button type="submit" class="btn btn-primary submit-payment">Pay {{ number_format($grand_total, 2) }}</button>
                 </div>
             </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modal-stripe-question">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Payment Stripe</h4>
+            </div>
+            <div class="modal-body text-center">
+                <div class="form-group">
+                    You want to pay the same card ?
+                </div>
+                <button class="btn btn-success" data-target="#confirm-modal" data-toggle="modal">Yes</button>
+                <button class="btn btn-default" data-target="#modal-stripe" data-toggle="modal">No</button>
+            </div>
         </div>
     </div>
 </div>
@@ -401,69 +416,75 @@
             $('#stripe_peyment').click(function(){
                 if ('{{ Auth::user()->stripe_id }}')
                 {
-                    $("#confirm-modal").modal("show");
+                    $('#modal-stripe-question').modal("show");
                 }
                 else
                 {
-                    var stripe = Stripe('{{ env('STRIPE_KEY') }}');
-                    var elements = stripe.elements();
+                    $("#modal-stripe").modal("show");
+                }
+            });
 
-                    var style = {
-                        base: {
-                            color: '#32325d',
-                            lineHeight: '24px',
-                            fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
-                            fontSmoothing: 'antialiased',
-                            fontSize: '16px',
-                            '::placeholder': {
-                                color: '#aab7c4'
-                            }
-                        },
-                        invalid: {
-                            color: '#fa755a',
-                            iconColor: '#fa755a'
+             $('#confirm-modal, #modal-stripe').on('show.bs.modal', function(){
+                $("#modal-stripe-question").modal("hide");
+             });
+
+            $('#modal-stripe').on('show.bs.modal', function(){
+                var stripe = Stripe('{{ env('STRIPE_KEY') }}');
+                var elements = stripe.elements();
+
+                var style = {
+                    base: {
+                        color: '#32325d',
+                        lineHeight: '24px',
+                        fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
+                        fontSmoothing: 'antialiased',
+                        fontSize: '16px',
+                        '::placeholder': {
+                            color: '#aab7c4'
                         }
-                    };
+                    },
+                    invalid: {
+                        color: '#fa755a',
+                        iconColor: '#fa755a'
+                    }
+                };
 
-                    var card = elements.create('card', {style: style});
-                    card.mount('#card-element');
+                var card = elements.create('card', {style: style});
+                card.mount('#card-element');
 
-                    card.addEventListener('change', function(event) {
-                        var displayError = document.getElementById('card-errors');
-                        if (event.error) 
+                card.addEventListener('change', function(event) {
+                    var displayError = document.getElementById('card-errors');
+                    if (event.error) 
+                    {
+                        displayError.textContent = event.error.message;
+                    }
+                    else 
+                    {
+                        displayError.textContent = '';
+                    }
+                });
+
+                // Handle form submission
+                var form = document.getElementById('payment-form');
+                form.addEventListener('submit', function(event) {
+                    event.preventDefault();
+                    $('.submit-payment').attr('disabled', 'disabled');
+                    stripe.createToken(card).then(function(result) 
+                    {
+                        if (result.error)
                         {
-                            displayError.textContent = event.error.message;
+                            // Inform the user if there was an error
+                            var errorElement = document.getElementById('card-errors');
+                            errorElement.textContent = result.error.message;
+                             $('.submit-payment').removeAttr('disabled', 'disabled');
                         }
                         else 
                         {
-                            displayError.textContent = '';
+                            // Send the token to your server
+                            stripeTokenHandler(result.token);
                         }
                     });
-
-                    // Handle form submission
-                    var form = document.getElementById('payment-form');
-                    form.addEventListener('submit', function(event) {
-                        event.preventDefault();
-                        $('.submit-payment').attr('disabled', 'disabled');
-                        stripe.createToken(card).then(function(result) 
-                        {
-                            if (result.error)
-                            {
-                                // Inform the user if there was an error
-                                var errorElement = document.getElementById('card-errors');
-                                errorElement.textContent = result.error.message;
-                                 $('.submit-payment').removeAttr('disabled', 'disabled');
-                            }
-                            else 
-                            {
-                                // Send the token to your server
-                                stripeTokenHandler(result.token);
-                            }
-                        });
-                    });
-                   
-                    $("#modal-stripe").modal("show");
-                }
+                });
             });
 
             function stripeTokenHandler(token)
@@ -477,12 +498,30 @@
                     method : 'post',
                     success : function(data)
                     {
-                        $("#modal-stripe").modal("hide");
+                        $.ajax({
+                            url : "{{ route('pay_with_stripe') }}",
+                            method : "post",
+                            data : {
+                                '_token' : '{{ csrf_token() }}',
+                                'id' : {{ $invoice->id }},
+                                'save_card' : $("input[name=save_card]").prop("checked") ? 1 : 0
+                            },
+                            success : function(data)
+                            {
+                                if (data.success)
+                                {
+                                    show_notification(data.title, data.errors, 'lime', 3500, 0);
+                                }
+                                else
+                                {
+                                    show_notification(data.title, data.errors, 'lime', 3500, 0); 
+                                }
 
-                        $("#cardNumber").val("***********" + data.user.card_last_four);
-                        $("#expityMonth").val(data.user.trial_month);
-                        $("#expityYear").val(data.user.trial_year);
-                        $("#confirm-modal").modal("show");
+                                setTimeout(function(){
+                                    location.href =  data.redirect;
+                                }, 2000);
+                            }
+                        });
                     }
                 });
             }
