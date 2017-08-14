@@ -3,7 +3,7 @@
 namespace App\Console\Commands\Patch;
 
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\DB;
 
 class Patch_1_5 extends Command
 {
