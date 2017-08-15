@@ -10,12 +10,13 @@ use Stripe\Customer;
 use Stripe\Charge;
 use Auth;
 use Carbon\Carbon;
-
+use Config;
 class StripeController extends Controller
 {
+
     static public function chargeCustomer(Request $request)
     {
-        Stripe::setApiKey(env('STRIPE_SECRET'));
+        Stripe::setApiKey(Config::get("stripe.stripe_secret"));
         $response = [
             'success' => FALSE
         ];
@@ -42,26 +43,24 @@ class StripeController extends Controller
 
     static public function retrieveCustomer($stripe_id)
     {
-        Stripe::setApiKey(env('STRIPE_SECRET'));
+        Stripe::setApiKey(Config::get("stripe.stripe_secret"));
         return Customer::retrieve($stripe_id);
     }
 
 
-    static public function createStripeCharge($customer, $amount = 50, $currency = "usd")
+    static public function createStripeCharge($stripe_id, $amount = 50, $currency = "usd")
     {
-        Stripe::setApiKey(env('STRIPE_SECRET'));
+        Stripe::setApiKey(Config::get("stripe.stripe_secret"));
         $charge = Charge::create(array(
             "amount" => $amount,
             "currency" => $currency,
-            "customer" => $customer->id
+            "customer" => $stripe_id
         ));
         return $charge;
     }
 
     static public function createStripeCustomer($token)
     {
-        Stripe::setApiKey(env('STRIPE_SECRET'));
-
         $customer = Customer::create([
             "description" => Auth::user()->email,
             "source" => $token
