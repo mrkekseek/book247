@@ -5187,6 +5187,7 @@ This message is private and confidential. If you have received this message in e
         $email = $request->input('email');
         $existLocal = User::where('email', $email)->first();
         $existApi = Auth::check_exist_api_user($email);
+
         switch (TRUE){
             case (empty($existLocal) && empty($existApi)) :
                 return [
@@ -5289,11 +5290,13 @@ This message is private and confidential. If you have received this message in e
 
     public function auth_check_password(Request $request){
         $data = $request->input('data');
+        $data['username'] = $data['email'];
+
         switch ($data['type']){
             case ('only_api'):
-                if (ApiAuth::autorize($data)['success'])
+                if (ApiAuth::authorize(['username'=>$data['username'],'password'=>$data['password']])['success'])
                 {
-                    $api_user = ApiAuth::accounts_get_by_username($data['email'])['data'];
+                    $api_user = ApiAuth::accounts_get_by_username($data['username'])['data'];
                     $local_user = [
                         'sso_user_id'=>$api_user->id,
                         'username'=>$api_user->username,
@@ -5319,80 +5322,79 @@ This message is private and confidential. If you have received this message in e
                         $searchMembers->add_missing_members([$user->id]);
                         return [
                             'success' => true,
-                            'title'   => 'Autorization',
-                            'errors'  => 'You log in successfully'
+                            'title'   => 'Authorization',
+                            'errors'  => 'You logged in successfully'
                         ];
                     }
                 }
                 return [
                     'success' => false,
                     'title'   => 'Error',
-                    'errors'  => 'Inorect password'
+                    'errors'  => 'Incorrect password'
                 ];
                 break;
-                case('local_and_api'):
-                     if (ApiAuth::autorize($data)['success'])
+            case('local_and_api'):
+                if (ApiAuth::authorize(['username'=>$data['username'],'password'=>$data['password']])['success'])
+                {
+                        $api_user = ApiAuth::accounts_get_by_username($data['username'])['data'];
+                        Auth::set_local_user($api_user->id);
+                        Auth::set_cookie_session($api_user->id);
+                        return [
+                            'success' => true,
+                            'title'   => 'Authorization',
+                            'errors'  => 'You logged in successfully'
+                        ];
+                }
+                return [
+                    'success' => false,
+                    'title'   => 'Error',
+                    'errors'  => 'Incorrect password'
+                ];
+                break;
+            case ('only_local'):
+                if (AuthLocal::once(['username' => $data['username'], 'password' => $data['password']])){
+                    $local_id = AuthLocal::user()->id;
+                    $user = User::find($local_id)->toArray();
+                    $personalData = PersonalDetail::where('user_id', $local_id)->first();
+                    $personalData = ! empty($personalData) ? $personalData->toArray() : [];
+                    $dataForApi = $user + $personalData;
+                    $api_user = Auth::create_api_user($dataForApi, $data['password']);
+                    if ( ! $api_user)
                     {
-                            $api_user = ApiAuth::accounts_get_by_username($data['email'])['data'];
-                            Auth::set_local_user($api_user->id);
-                            Auth::set_cookie_session($api_user->id);
-                            return [
-                                'success' => true,
-                                'title'   => 'Autorization',
-                                'errors'  => 'You log in successfully'
-                            ];
+                        return [
+                            'success'   => false,
+                            'title'     => 'Api error',
+                            'errors'    => Auth::$error
+                        ];
                     }
-                    return [
-                        'success' => false,
-                        'title'   => 'Error',
-                        'errors'  => 'Inorect password'
-                    ];
-                    break;
-                case ('only_local'):
-                    if (AuthLocal::once(['username' => $data['email'], 'password' => $data['password']]) || AuthLocal::once(['email' => $data['email'], 'password' => $data['password']])){
-                        $local_id = AuthLocal::user()->id;
-                        $user = User::find($local_id)->toArray();
-                        $personalData = PersonalDetail::where('user_id', $local_id)->first();
-                        $personalData = ! empty($personalData) ? $personalData->toArray() : [];
-                        $dataForApi = $user + $personalData;
-                        $api_user = Auth::create_api_user($dataForApi, $data['password']);
-                        if ( ! $api_user)
+                    else
+                    {
+                        $update_user = User::find($local_id);
+                        $update_user->sso_user_id = $api_user;
+                        if ($update_user->save())
                         {
-                            return [
-                                'success'   => false,
-                                'title'     => 'Api error',
-                                'errors'    => Auth::$error
+                            Auth::set_cookie_session($update_user->sso_user_id);
+                                return [
+                                    'success' => true,
+                                    'title'   => 'Authorization',
+                                    'errors'  => 'You logged in successfully'
                             ];
                         }
-                        else
-                        {
-                            $update_user = User::find($local_id);
-                            $update_user->sso_user_id = $api_user;
-                            if ($update_user->save())
-                            {
-                                Auth::set_cookie_session($update_user->sso_user_id);
-                                    return [
-                                        'success' => true,
-                                        'title'   => 'Autorization',
-                                        'errors'  => 'You log in successfully'
-                                ];
-                            }
-                        }
                     }
-                    return [
-                        'success' => false,
-                        'title'   => 'Error',
-                        'errors'  => 'Inorect password'
-                    ];
-                    break;
+                }
+                return [
+                    'success' => false,
+                    'title'   => 'Error',
+                    'errors'  => 'Incorrect password'
+                ];
+                break;
         }
     }
 
     public function auth_autorize(Request $request){
         $data = $request->input('data');
 
-        $u = User::where('email',$data['username'])->first();
-
+        $u = User::where('username',$data['username'])->first();
         if ($u && $u->status != 'active' ) {
             return  [
                 'success' => false,
@@ -5401,7 +5403,7 @@ This message is private and confidential. If you have received this message in e
             ];
         }
 
-        if (Auth::attempt(['email' => $data['username'], 'password' => $request->data['password']])) {
+        if (Auth::attempt(['username' => $data['username'], 'password' => $request->data['password']])) {
             $user = Auth::user();
 
             Activity::log([
@@ -5409,7 +5411,7 @@ This message is private and confidential. If you have received this message in e
                 'contentType'   => 'login',
                 'action'        => 'Front end login',
                 'description'   => 'Successful login for '.$user->first_name.' '.$user->middle_name.' '.$user->last_name,
-                'details'       => 'User Email : '.$user->email,
+                'details'       => 'Username/Email : '.$user->email,
                 'updated'       => false,
             ]);
             return [

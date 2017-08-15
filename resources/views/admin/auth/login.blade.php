@@ -59,7 +59,7 @@
                     {!! csrf_field() !!}
                     <div class="row">
                         <div class="col-xs-6">
-                            <input class="form-control form-control-solid placeholder-no-fix form-group{{ $errors->has('username') ? ' has-error' : '' }}" type="email" value="{{ old('username') }}" autocomplete="off" placeholder="Email" name="email" required/> </div>
+                            <input class="form-control form-control-solid placeholder-no-fix form-group{{ $errors->has('username') ? ' has-error' : '' }}" type="email" value="{{ old('username') }}" autocomplete="off" placeholder="Email" name="username" required/> </div>
                         <div class="col-xs-6">
                             <input class="form-control form-control-solid placeholder-no-fix form-group{{ $errors->has('password') ? ' has-error' : '' }}" type="password" autocomplete="off" placeholder="Password" name="password" required/> </div>
                     </div>
@@ -238,7 +238,7 @@
                     type: "post",
                     cache: false,
                     data: {
-                        'email': $('.login-form').find('input[name=email]').val(),
+                        'username': $('.login-form').find('input[name=username]').val(),
                         'password': $('.login-form').find('input[name=password]').val(),
                         '_token': '{{ csrf_token() }}'
                     },
