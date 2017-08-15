@@ -271,8 +271,6 @@ class IPN extends Controller{
 
         }
 
-
-
         return view($blade,[
             'breadcrumbs' => $breadcrumbs,
             'text_parts'  => $text_parts,
@@ -309,8 +307,8 @@ class IPN extends Controller{
 
         } else {
             // not successful
-            $default_message = '<p>Thank you for '.($invoice->invoice_type == 'booking_invoice' ? 'booking' : 'purchasing').' [[product]].</p>';
-            $default_subject = 'Your '.( $invoice->invoice_type == 'booking_invoice' ? 'booking' : 'purchase' ). ' is successful!';
+            $default_message = '<p>The '.($invoice->invoice_type == 'booking_invoice' ? 'booking' : 'purchasing').' of [[product]] was unsuccessful.</p>';
+            $default_subject = 'Your '.( $invoice->invoice_type == 'booking_invoice' ? 'booking' : 'purchase' ). ' is unsuccessful!';
             $template = EmailsController::build('Purchase unsuccessful', $data, $default_message, $default_subject);
 
             $main_message = $template["message"];
@@ -373,6 +371,9 @@ class IPN extends Controller{
                 $iv = substr($key,0,16);
             }
             $custom = json_decode(openssl_decrypt(base64_decode($url),'AES-256-CBC',$key,0 ,$iv));
+            if (isset($custom->invoice_id)) {
+                self::send_mail($custom->invoice_id,false);
+            }
         }
 
         return view($blade,[
