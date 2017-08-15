@@ -462,7 +462,7 @@
 
     $(document).ready(function(){
         var handler = StripeCheckout.configure({
-            key : '{{ env('STRIPE_KEY') }}',
+            key : '{{ Config::get("stripe.stripe_key") }}',
             image : '{{ asset('assets/global/img/sqf-logo.png') }}',
             email : '{{ Auth::user()->email }}',
             token: function(token, args) {

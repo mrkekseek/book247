@@ -12,11 +12,11 @@
 @section('pageLevelPlugins')
     <link href="{{ asset('assets/global/plugins/datatables/datatables.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('assets/global/plugins/datatables/plugins/bootstrap/datatables.bootstrap.css') }}" rel="stylesheet" type="text/css" />
-
     <link href="{{ asset('assets/global/plugins/jquery-notific8/jquery.notific8.min.css') }}" rel="stylesheet" type="text/css" />
 @endsection
 
 @section('themeGlobalStyle')
+    <link href="{{ asset('assets/apps/css/front_custom.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('assets/global/css/components-rounded.min.css') }}" rel="stylesheet" id="style_components" type="text/css" />
     <link href="{{ asset('assets/global/css/plugins.min.css') }}" rel="stylesheet" type="text/css" />
 @endsection
@@ -244,7 +244,7 @@
     @endif
     <!-- END PAGE CONTENT INNER -->
     <!-- MODAL -->
-    <div class="modal fade" id="confirm-modal">
+    <div class="modal-payment modal fade" id="confirm-modal">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -254,54 +254,37 @@
                 <div class="modal-body text-center">
                     <div class="row">
                         <div class="col-xs-8 col-xs-offset-2">
-                            <div class="panel panel-default">
-                                <div class="panel-heading">
-                                    <h3 class="panel-title">
-                                        Payment Details
-                                    </h3>
-                                    
-                                </div>
-                                <div class="panel-body">
-                                    <form>
-                                        <div class="form-group">
-                                            <label for="cardNumber">CARD NUMBER</label>
-                                            <div class="input-group">
-                                                <input type="text" readonly="readonly" value="{{ Auth::user()->card_last_four ? '***********' . Auth::user()->card_last_four : '' }}" class="form-control" id="cardNumber" placeholder="Valid Card Number"
-                                                required autofocus />
-                                                <span class="input-group-addon">
-                                                    <span class="glyphicon glyphicon-lock"></span>
-                                                </span>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-xs-8 col-xs-offset-2">
-                                                <div class="form-group">
-                                                    <div class="col-xs-12">
-                                                        <label for="expityMonth">EXPIRY DATE</label>
-                                                    </div>
-                                                    <div class="col-xs-6">
-                                                        <input type="text" readonly="readonly" value="{{ Carbon\Carbon::parse(Auth::user()->trial_ends_at)->format('m') }}" class="form-control" id="expityMonth" placeholder="MM" required />
-                                                    </div>
-                                                    <div class="col-xs-6">
-                                                        <input type="text" readonly="readonly" value="{{ Carbon\Carbon::parse(Auth::user()->trial_ends_at)->format('y') }}" class="form-control" id="expityYear" placeholder="YY" required />
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </form>
+                            <div class="form-group">
+                                <label for="cardNumber">CARD NUMBER</label>
+                                <div class="input-group">
+                                    <input type="text" readonly="readonly" value="{{ Auth::user()->card_last_four ? '***********' . Auth::user()->card_last_four : '' }}" class="form-control" id="cardNumber" placeholder="Valid Card Number"
+                                    required autofocus />
+                                    <span class="input-group-addon">
+                                        <span class="glyphicon glyphicon-lock"></span>
+                                    </span>
                                 </div>
                             </div>
-                            <div class="checkbox">
-                                <label>
-                                    <input type="checkbox" name="save_card" checked="checked" />
-                                    Save the card for later use
-                                </label>
+                            <div class="row">
+                                <div class="col-xs-8 col-xs-offset-2">
+                                    <div class="form-group">
+                                        <div class="col-xs-12">
+                                            <label for="expityMonth">EXPIRY DATE</label>
+                                        </div>
+                                        <div class="col-xs-6">
+                                            <input type="text" readonly="readonly" value="{{ Carbon\Carbon::parse(Auth::user()->trial_ends_at)->format('m') }}" class="form-control" id="expityMonth" placeholder="MM" required />
+                                        </div>
+                                        <div class="col-xs-6">
+                                            <input type="text" readonly="readonly" value="{{ Carbon\Carbon::parse(Auth::user()->trial_ends_at)->format('y') }}" class="form-control" id="expityYear" placeholder="YY" required />
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" id="confirm-stripe">Pay {{ number_format($grand_total, 2) }}</button>
+                    <button type="button" class="btn btn-success" id="confirm-stripe">Pay {{ number_format($grand_total, 2) }}</button>
                 </div>
             </div>
         </div>
@@ -309,7 +292,7 @@
 </div>
 
 
-<div class="modal fade" id="modal-stripe">
+<div class="modal-payment modal fade" id="modal-stripe">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -319,37 +302,63 @@
             <form  method="post" id="payment-form">
                 <div class="modal-body text-center">
                     <div class="row">
-                        <div class="col-xs-8 col-xs-offset-2">
-                            <div class="panel panel-default">
-                                <div class="panel-heading">
-                                    <h3 class="panel-title">
-                                        Payment Stripe
-                                    </h3>
-                                </div>
-                                <div class="panel-body">
-                                    <label for="card-element">
-                                        Credit or debit card
-                                    </label>
-                                    <div id="card-element">
-                                    <!-- a Stripe Element will be inserted here. -->
-                                    </div>
+                        <div class="col-xs-10 col-xs-offset-1">
 
-                                    <!-- Used to display form errors -->
-                                    <div id="card-errors" role="alert"></div>
-                                </div>
+                                <label>
+                                    <input class="field" readonly="readonly" type="text" value="{{ Auth::user()->first_name }}" placeholder="Name" />
+                                    <span></span>
+                                </label>
+
+                                <label>
+                                    <input class="field" readonly="readonly" type="tel" value="{{ $personal_detail->mobile_number }}" placeholder="Phone number" />
+                                    <span></span>
+                                </label>
+                                
+                                <label>
+                                    <div id="card-element" class="field"></div>
+                                    <span></span>
+                                 </label>
+                                
+                                <!-- Used to display form errors -->
+                                <div id="card-errors" role="alert"></div>
+                          
+                          
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" name="save_card" checked="checked" />
+                                    Save the card for later user
+                                </label>
                             </div>
-                        </div>
+                     </div>
                     </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary submit-payment">Submit</button>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-success submit-payment">Pay {{ number_format($grand_total, 2) }}</button>
+                    </div>
                 </div>
             </form>
         </div>
     </div>
 </div>
 
+<div class="modal-payment modal fade" id="modal-stripe-question">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Payment Stripe</h4>
+            </div>
+            <div class="modal-body text-center">
+                <div class="form-group">
+                    Would you like to use the card you've already had?
+                </div>
+
+                <button class="btn btn-success" data-target="#confirm-modal" data-toggle="modal">Yes</button>
+                <button class="btn btn-default" data-target="#modal-stripe" data-toggle="modal">No</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 
 <!-- END MODAL -->
@@ -401,69 +410,85 @@
             $('#stripe_peyment').click(function(){
                 if ('{{ Auth::user()->stripe_id }}')
                 {
-                    $("#confirm-modal").modal("show");
+                    $('#modal-stripe-question').modal("show");
                 }
                 else
                 {
-                    var stripe = Stripe('{{ env('STRIPE_KEY') }}');
-                    var elements = stripe.elements();
+                    $("#modal-stripe").modal("show");
+                }
+            });
 
-                    var style = {
+             $('#confirm-modal, #modal-stripe').on('show.bs.modal', function(){
+                $("#modal-stripe-question").modal("hide");
+             });
+
+            $('#modal-stripe').on('show.bs.modal', function(){
+                var stripe = Stripe('{{ Config::get("stripe.stripe_key") }}');
+                var elements = stripe.elements();
+
+                var style = {
+                    iconStyle: 'solid',
+                    color: 'white',
+                    style: {
                         base: {
-                            color: '#32325d',
-                            lineHeight: '24px',
-                            fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
-                            fontSmoothing: 'antialiased',
-                            fontSize: '16px',
-                            '::placeholder': {
-                                color: '#aab7c4'
-                            }
+                          iconColor: '#8898AA',
+                          color: 'white',
+                          lineHeight: '36px',
+                          fontWeight: 300,
+                          fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
+                          fontSize: '19px',
+
+                          '::placeholder': {
+                            color: '#8898AA',
+                          },
                         },
                         invalid: {
-                            color: '#fa755a',
-                            iconColor: '#fa755a'
+                          iconColor: '#e85746',
+                          color: '#e85746',
                         }
-                    };
+                    },
+                    classes: {
+                        focus: 'is-focused',
+                        empty: 'is-empty',
+                    },
+                };
 
-                    var card = elements.create('card', {style: style});
-                    card.mount('#card-element');
+                var card = elements.create('card', style);
+                card.mount('#card-element');
 
-                    card.addEventListener('change', function(event) {
-                        var displayError = document.getElementById('card-errors');
-                        if (event.error) 
+                card.addEventListener('change', function(event) {
+                    var displayError = document.getElementById('card-errors');
+                    if (event.error) 
+                    {
+                        displayError.textContent = event.error.message;
+                    }
+                    else 
+                    {
+                        displayError.textContent = '';
+                    }
+                });
+
+                // Handle form submission
+                var form = document.getElementById('payment-form');
+                form.addEventListener('submit', function(event) {
+                    event.preventDefault();
+                    $('.submit-payment').attr('disabled', 'disabled');
+                    stripe.createToken(card).then(function(result) 
+                    {
+                        if (result.error)
                         {
-                            displayError.textContent = event.error.message;
+                            // Inform the user if there was an error
+                            var errorElement = document.getElementById('card-errors');
+                            errorElement.textContent = result.error.message;
+                             $('.submit-payment').removeAttr('disabled', 'disabled');
                         }
                         else 
                         {
-                            displayError.textContent = '';
+                            // Send the token to your server
+                            stripeTokenHandler(result.token);
                         }
                     });
-
-                    // Handle form submission
-                    var form = document.getElementById('payment-form');
-                    form.addEventListener('submit', function(event) {
-                        event.preventDefault();
-                        $('.submit-payment').attr('disabled', 'disabled');
-                        stripe.createToken(card).then(function(result) 
-                        {
-                            if (result.error)
-                            {
-                                // Inform the user if there was an error
-                                var errorElement = document.getElementById('card-errors');
-                                errorElement.textContent = result.error.message;
-                                 $('.submit-payment').removeAttr('disabled', 'disabled');
-                            }
-                            else 
-                            {
-                                // Send the token to your server
-                                stripeTokenHandler(result.token);
-                            }
-                        });
-                    });
-                   
-                    $("#modal-stripe").modal("show");
-                }
+                });
             });
 
             function stripeTokenHandler(token)
@@ -477,12 +502,30 @@
                     method : 'post',
                     success : function(data)
                     {
-                        $("#modal-stripe").modal("hide");
+                        $.ajax({
+                            url : "{{ route('pay_with_stripe') }}",
+                            method : "post",
+                            data : {
+                                '_token' : '{{ csrf_token() }}',
+                                'id' : {{ $invoice->id }},
+                                'save_card' : $("input[name=save_card]").prop("checked") ? 1 : 0
+                            },
+                            success : function(data)
+                            {
+                                if (data.success)
+                                {
+                                    show_notification(data.title, data.errors, 'lime', 3500, 0);
+                                }
+                                else
+                                {
+                                    show_notification(data.title, data.errors, 'lime', 3500, 0); 
+                                }
 
-                        $("#cardNumber").val("***********" + data.user.card_last_four);
-                        $("#expityMonth").val(data.user.trial_month);
-                        $("#expityYear").val(data.user.trial_year);
-                        $("#confirm-modal").modal("show");
+                                setTimeout(function(){
+                                    location.href =  data.redirect;
+                                }, 2000);
+                            }
+                        });
                     }
                 });
             }
