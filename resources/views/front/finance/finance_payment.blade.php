@@ -291,12 +291,6 @@
                                     </form>
                                 </div>
                             </div>
-                            <div class="checkbox">
-                                <label>
-                                    <input type="checkbox" name="save_card" checked="checked" />
-                                    Save the card for later use
-                                </label>
-                            </div>
                         </div>
                 </div>
                 <div class="modal-footer">
@@ -335,6 +329,12 @@
                                     <div id="card-errors" role="alert"></div>
                                 </div>
                             </div>
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" name="save_card" checked="checked" />
+                                    Save the card for later use
+                                </label>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -358,6 +358,7 @@
                 <div class="form-group">
                     Would you like to use the card you've already had?
                 </div>
+
                 <button class="btn btn-success" data-target="#confirm-modal" data-toggle="modal">Yes</button>
                 <button class="btn btn-default" data-target="#modal-stripe" data-toggle="modal">No</button>
             </div>
