@@ -356,7 +356,7 @@
             </div>
             <div class="modal-body text-center">
                 <div class="form-group">
-                    You want to pay the same card ?
+                    Would you like to use the card you've already had?
                 </div>
                 <button class="btn btn-success" data-target="#confirm-modal" data-toggle="modal">Yes</button>
                 <button class="btn btn-default" data-target="#modal-stripe" data-toggle="modal">No</button>
