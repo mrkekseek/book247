@@ -19,6 +19,12 @@ class StoreCreditProductsController extends Controller
      */
     public function index()
     {
+        $user = Auth::user();
+        if ( ! $user || ! $user->is_back_user())
+        {
+            return redirect()->intended(route('admin/login'));
+        }
+
     	$breadcrumbs = [
             'Home'              => route('admin'),
             'Administration'    => route('admin'),
@@ -56,6 +62,12 @@ class StoreCreditProductsController extends Controller
      */
     public function create()
     {
+        $user = Auth::user();
+        if ( ! $user || ! $user->is_back_user())
+        {
+            return redirect()->intended(route('admin/login'));
+        }
+
     	$breadcrumbs = [
             'Home'              => route('admin'),
             'Administration'    => route('admin'),
@@ -161,7 +173,6 @@ class StoreCreditProductsController extends Controller
         {
             return redirect()->intended(route('admin/login'));
         }
-
 
         $product = StoreCreditProducts::where('id', '=', $id)->get()->first();
         if ( ! $product)
@@ -338,7 +349,7 @@ class StoreCreditProductsController extends Controller
      */
     public function destroy($id)
     {
-
+        return redirect()->intended(route('admin/login'));
     }
 
     public function store_credit_change_status(Request $request)
