@@ -199,6 +199,11 @@ Route::group(['middleware' => 'web'], function () {
         'uses'  => 'Federation\AdminController@front_api_call'
     ]);
 
+    Route::post('/admin/call/members_growth', [
+        'as'    => 'admin/members_growth',
+        'uses'  => 'Federation\AdminController@members_growth'
+    ]);
+
     Route::get('/api_call', [
         'as'    => 'api_call',
         'uses'  => 'Federation\AdminController@front_api_call'
