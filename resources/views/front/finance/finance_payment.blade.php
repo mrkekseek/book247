@@ -313,34 +313,39 @@
             <form  method="post" id="payment-form">
                 <div class="modal-body text-center">
                     <div class="row">
-                        <div class="col-xs-8 col-xs-offset-2">
-                            <div class="panel panel-default">
-                                <div class="panel-heading">
-                                    <h3 class="panel-title">
-                                        Payment Stripe
-                                    </h3>
-                                </div>
-                                <div class="panel-body">
-                                    <div id="card-element">
-                                    <!-- a Stripe Element will be inserted here. -->
-                                    </div>
+                        <div class="col-xs-10 col-xs-offset-1">
 
-                                    <!-- Used to display form errors -->
-                                    <div id="card-errors" role="alert"></div>
-                                </div>
-                            </div>
+                                <label>
+                                    <input class="field" readonly="readonly" type="text" value="{{ Auth::user()->first_name }}" placeholder="Name" />
+                                    <span></span>
+                                </label>
+
+                                <label>
+                                    <input class="field" readonly="readonly" type="tel" value="{{ Auth::user()->phone }}" placeholder="Phone number" />
+                                    <span></span>
+                                </label>
+                                
+                                <label>
+                                    <div id="card-element" class="field"></div>
+                                    <span></span>
+                                 </label>
+                                
+                                <!-- Used to display form errors -->
+                                <div id="card-errors" role="alert"></div>
+                          
+                          
                             <div class="checkbox">
                                 <label>
                                     <input type="checkbox" name="save_card" checked="checked" />
-                                    Save the card for later use
+                                    Save the card for later user
                                 </label>
                             </div>
-                        </div>
+                     </div>
                     </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary submit-payment">Pay {{ number_format($grand_total, 2) }}</button>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-success submit-payment">Pay {{ number_format($grand_total, 2) }}</button>
+                    </div>
                 </div>
             </form>
         </div>
@@ -366,6 +371,120 @@
     </div>
 </div>
 
+<style>
+
+    .modal-content {
+        background: #424770;
+        color: #fff;
+    }
+
+
+    label {
+        height: 35px;
+        position: relative;
+        color: #8798AB;
+        display: block;
+        margin-top: 30px;
+        margin-bottom: 20px;
+    }
+
+    label > span {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        font-weight: 300;
+        line-height: 32px;
+        color: #8798AB;
+        border-bottom: 1px solid #586A82;
+        transition: border-bottom-color 200ms ease-in-out;
+        cursor: text;
+        pointer-events: none;
+    }
+
+    label > span span {
+        position: absolute;
+        top: 0;
+        left: 0;
+        transform-origin: 0% 50%;
+        transition: transform 200ms ease-in-out;
+        cursor: text;
+    }
+
+    label .field.is-focused + span span,
+    label .field:not(.is-empty) + span span {
+        transform: scale(0.68) translateY(-36px);
+        cursor: default;
+    }
+
+    label .field.is-focused + span {
+        border-bottom-color: #34D08C;
+    }
+
+    .field {
+        background: transparent;
+        font-weight: 300;
+        border: 0;
+        color: white;
+        outline: none;
+        cursor: text;
+        display: block;
+        width: 100%;
+        line-height: 32px;
+        padding-bottom: 3px;
+        transition: opacity 200ms ease-in-out;
+    }
+
+    .field::-webkit-input-placeholder { color: #8898AA; }
+    .field::-moz-placeholder { color: #8898AA; }
+
+    /* IE doesn't show placeholders when empty+focused */
+    .field:-ms-input-placeholder { color: #424770; }
+
+    .field.is-empty:not(.is-focused) {
+        opacity: 0;
+    }
+
+    
+    button:focus {
+    background: #24B47E;
+    }
+
+    button:active {
+    background: #159570;
+    }
+
+    .outcome {
+        float: left;
+        width: 100%;
+        padding-top: 8px;
+        min-height: 20px;
+        text-align: center;
+    }
+
+    .success, .error {
+        display: none;
+        font-size: 15px;
+    }
+
+    .success.visible, .error.visible {
+        display: inline;
+    }
+
+    .error {
+        color: #E4584C;
+    }
+
+    .success {
+        color: #34D08C;
+    }
+
+    .success .token {
+        font-weight: 500;
+        font-size: 15px;
+    }
+</style>
 
 
 <!-- END MODAL -->
@@ -434,20 +553,29 @@
                 var elements = stripe.elements();
 
                 var style = {
+                    iconStyle: 'solid',
+                    style: {
                     base: {
-                        color: '#32325d',
-                        lineHeight: '24px',
-                        fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
-                        fontSmoothing: 'antialiased',
-                        fontSize: '16px',
-                        '::placeholder': {
-                            color: '#aab7c4'
-                        }
+                      iconColor: '#8898AA',
+                      color: 'white',
+                      lineHeight: '36px',
+                      fontWeight: 300,
+                      fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
+                      fontSize: '19px',
+
+                      '::placeholder': {
+                        color: '#8898AA',
+                      },
                     },
                     invalid: {
-                        color: '#fa755a',
-                        iconColor: '#fa755a'
+                      iconColor: '#e85746',
+                      color: '#e85746',
                     }
+                    },
+                    classes: {
+                        focus: 'is-focused',
+                        empty: 'is-empty',
+                    },
                 };
 
                 var card = elements.create('card', {style: style});
