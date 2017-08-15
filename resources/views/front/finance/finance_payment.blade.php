@@ -423,7 +423,7 @@
              });
 
             $('#modal-stripe').on('show.bs.modal', function(){
-                var stripe = Stripe('{{ env('STRIPE_KEY') }}');
+                var stripe = Stripe('{{ Config::get("stripe.stripe_key") }}');
                 var elements = stripe.elements();
 
                 var style = {
