@@ -12,11 +12,11 @@
 @section('pageLevelPlugins')
     <link href="{{ asset('assets/global/plugins/datatables/datatables.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('assets/global/plugins/datatables/plugins/bootstrap/datatables.bootstrap.css') }}" rel="stylesheet" type="text/css" />
-
     <link href="{{ asset('assets/global/plugins/jquery-notific8/jquery.notific8.min.css') }}" rel="stylesheet" type="text/css" />
 @endsection
 
 @section('themeGlobalStyle')
+    <link href="{{ asset('assets/apps/css/front_custom.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('assets/global/css/components-rounded.min.css') }}" rel="stylesheet" id="style_components" type="text/css" />
     <link href="{{ asset('assets/global/css/plugins.min.css') }}" rel="stylesheet" type="text/css" />
 @endsection
@@ -244,7 +244,7 @@
     @endif
     <!-- END PAGE CONTENT INNER -->
     <!-- MODAL -->
-    <div class="modal fade" id="confirm-modal">
+    <div class="modal-payment modal fade" id="confirm-modal">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -254,48 +254,37 @@
                 <div class="modal-body text-center">
                     <div class="row">
                         <div class="col-xs-8 col-xs-offset-2">
-                            <div class="panel panel-default">
-                                <div class="panel-heading">
-                                    <h3 class="panel-title">
-                                        Payment Details
-                                    </h3>
-                                    
+                            <div class="form-group">
+                                <label for="cardNumber">CARD NUMBER</label>
+                                <div class="input-group">
+                                    <input type="text" readonly="readonly" value="{{ Auth::user()->card_last_four ? '***********' . Auth::user()->card_last_four : '' }}" class="form-control" id="cardNumber" placeholder="Valid Card Number"
+                                    required autofocus />
+                                    <span class="input-group-addon">
+                                        <span class="glyphicon glyphicon-lock"></span>
+                                    </span>
                                 </div>
-                                <div class="panel-body">
-                                    <form>
-                                        <div class="form-group">
-                                            <label for="cardNumber">CARD NUMBER</label>
-                                            <div class="input-group">
-                                                <input type="text" readonly="readonly" value="{{ Auth::user()->card_last_four ? '***********' . Auth::user()->card_last_four : '' }}" class="form-control" id="cardNumber" placeholder="Valid Card Number"
-                                                required autofocus />
-                                                <span class="input-group-addon">
-                                                    <span class="glyphicon glyphicon-lock"></span>
-                                                </span>
-                                            </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-8 col-xs-offset-2">
+                                    <div class="form-group">
+                                        <div class="col-xs-12">
+                                            <label for="expityMonth">EXPIRY DATE</label>
                                         </div>
-                                        <div class="row">
-                                            <div class="col-xs-8 col-xs-offset-2">
-                                                <div class="form-group">
-                                                    <div class="col-xs-12">
-                                                        <label for="expityMonth">EXPIRY DATE</label>
-                                                    </div>
-                                                    <div class="col-xs-6">
-                                                        <input type="text" readonly="readonly" value="{{ Carbon\Carbon::parse(Auth::user()->trial_ends_at)->format('m') }}" class="form-control" id="expityMonth" placeholder="MM" required />
-                                                    </div>
-                                                    <div class="col-xs-6">
-                                                        <input type="text" readonly="readonly" value="{{ Carbon\Carbon::parse(Auth::user()->trial_ends_at)->format('y') }}" class="form-control" id="expityYear" placeholder="YY" required />
-                                                    </div>
-                                                </div>
-                                            </div>
+                                        <div class="col-xs-6">
+                                            <input type="text" readonly="readonly" value="{{ Carbon\Carbon::parse(Auth::user()->trial_ends_at)->format('m') }}" class="form-control" id="expityMonth" placeholder="MM" required />
                                         </div>
-                                    </form>
+                                        <div class="col-xs-6">
+                                            <input type="text" readonly="readonly" value="{{ Carbon\Carbon::parse(Auth::user()->trial_ends_at)->format('y') }}" class="form-control" id="expityYear" placeholder="YY" required />
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" id="confirm-stripe">Pay {{ number_format($grand_total, 2) }}</button>
+                    <button type="button" class="btn btn-success" id="confirm-stripe">Pay {{ number_format($grand_total, 2) }}</button>
                 </div>
             </div>
         </div>
@@ -303,7 +292,7 @@
 </div>
 
 
-<div class="modal fade" id="modal-stripe">
+<div class="modal-payment modal fade" id="modal-stripe">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -321,7 +310,7 @@
                                 </label>
 
                                 <label>
-                                    <input class="field" readonly="readonly" type="tel" value="{{ Auth::user()->phone }}" placeholder="Phone number" />
+                                    <input class="field" readonly="readonly" type="tel" value="{{ $personal_detail->mobile_number }}" placeholder="Phone number" />
                                     <span></span>
                                 </label>
                                 
@@ -352,7 +341,7 @@
     </div>
 </div>
 
-<div class="modal fade" id="modal-stripe-question">
+<div class="modal-payment modal fade" id="modal-stripe-question">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -370,121 +359,6 @@
         </div>
     </div>
 </div>
-
-<style>
-
-    .modal-content {
-        background: #424770;
-        color: #fff;
-    }
-
-
-    label {
-        height: 35px;
-        position: relative;
-        color: #8798AB;
-        display: block;
-        margin-top: 30px;
-        margin-bottom: 20px;
-    }
-
-    label > span {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        font-weight: 300;
-        line-height: 32px;
-        color: #8798AB;
-        border-bottom: 1px solid #586A82;
-        transition: border-bottom-color 200ms ease-in-out;
-        cursor: text;
-        pointer-events: none;
-    }
-
-    label > span span {
-        position: absolute;
-        top: 0;
-        left: 0;
-        transform-origin: 0% 50%;
-        transition: transform 200ms ease-in-out;
-        cursor: text;
-    }
-
-    label .field.is-focused + span span,
-    label .field:not(.is-empty) + span span {
-        transform: scale(0.68) translateY(-36px);
-        cursor: default;
-    }
-
-    label .field.is-focused + span {
-        border-bottom-color: #34D08C;
-    }
-
-    .field {
-        background: transparent;
-        font-weight: 300;
-        border: 0;
-        color: white;
-        outline: none;
-        cursor: text;
-        display: block;
-        width: 100%;
-        line-height: 32px;
-        padding-bottom: 3px;
-        transition: opacity 200ms ease-in-out;
-    }
-
-    .field::-webkit-input-placeholder { color: #8898AA; }
-    .field::-moz-placeholder { color: #8898AA; }
-
-    /* IE doesn't show placeholders when empty+focused */
-    .field:-ms-input-placeholder { color: #424770; }
-
-    .field.is-empty:not(.is-focused) {
-        opacity: 0;
-    }
-
-    
-    button:focus {
-    background: #24B47E;
-    }
-
-    button:active {
-    background: #159570;
-    }
-
-    .outcome {
-        float: left;
-        width: 100%;
-        padding-top: 8px;
-        min-height: 20px;
-        text-align: center;
-    }
-
-    .success, .error {
-        display: none;
-        font-size: 15px;
-    }
-
-    .success.visible, .error.visible {
-        display: inline;
-    }
-
-    .error {
-        color: #E4584C;
-    }
-
-    .success {
-        color: #34D08C;
-    }
-
-    .success .token {
-        font-weight: 500;
-        font-size: 15px;
-    }
-</style>
 
 
 <!-- END MODAL -->
@@ -554,23 +428,24 @@
 
                 var style = {
                     iconStyle: 'solid',
+                    color: 'white',
                     style: {
-                    base: {
-                      iconColor: '#8898AA',
-                      color: 'white',
-                      lineHeight: '36px',
-                      fontWeight: 300,
-                      fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
-                      fontSize: '19px',
+                        base: {
+                          iconColor: '#8898AA',
+                          color: 'white',
+                          lineHeight: '36px',
+                          fontWeight: 300,
+                          fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
+                          fontSize: '19px',
 
-                      '::placeholder': {
-                        color: '#8898AA',
-                      },
-                    },
-                    invalid: {
-                      iconColor: '#e85746',
-                      color: '#e85746',
-                    }
+                          '::placeholder': {
+                            color: '#8898AA',
+                          },
+                        },
+                        invalid: {
+                          iconColor: '#e85746',
+                          color: '#e85746',
+                        }
                     },
                     classes: {
                         focus: 'is-focused',
@@ -578,7 +453,7 @@
                     },
                 };
 
-                var card = elements.create('card', {style: style});
+                var card = elements.create('card', style);
                 card.mount('#card-element');
 
                 card.addEventListener('change', function(event) {

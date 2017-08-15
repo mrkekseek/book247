@@ -5527,6 +5527,7 @@ This message is private and confidential. If you have received this message in e
         } else {
             $payee_country = '-';
         }
+
         $sidebar_link = 'admin-backend-shops-invoices-payment';
         return view('front/finance/finance_payment', [
             'custom' => $this->get_custom($invoice->id),
@@ -5535,6 +5536,7 @@ This message is private and confidential. If you have received this message in e
             'in_sidebar' => $sidebar_link,
             'invoice' => $invoice,
             'invoice_items' => @$items,
+            'personal_detail' => @User::with('PersonalDetail')->where('id', '=', $user->id)->first()->PersonalDetail,
             'member' => $member,
             'sub_total' => $subtotal,
             'discount' => $discount,
