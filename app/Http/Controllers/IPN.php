@@ -2,6 +2,10 @@
 namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Invoice;
+use App\InvoiceItem;
+use App\User;
+use App\PersonalDetail;
+use Snowfire\Beautymail\Beautymail;
 use App\InvoiceFinancialTransaction;
 use App\Paypal;
 use App\UserMembership;
@@ -197,13 +201,14 @@ class IPN extends Controller{
                     // invoice items and amount are correct
                 }
                 else{
+                    self::send_mail($invoice->id);
                     return view($blade,[
                         'breadcrumbs' => $breadcrumbs,
                         'text_parts'  => $text_parts,
                         'in_sidebar'  => $sidebar_link,
                         'text' => 'Payment successful!',
                         'status' => 'Success',
-                        'link' => ' '
+                        'link' => $custom->redirect_url
                     ]);
                 }
 
@@ -257,7 +262,7 @@ class IPN extends Controller{
                     'paypal_response' => json_encode($r->all())
                 ])->save();
             }
-
+            self::send_mail($invoice->id);
             $status = "Success";
         }
         else{
@@ -276,7 +281,56 @@ class IPN extends Controller{
             'link'      => isset($custom->redirect_url)?$custom->redirect_url:$link
         ]);
     }
-    
+
+    public static function send_mail($invoice_id, $status = true)
+    {
+        $invoice = Invoice::find($invoice_id);
+        $invoice_item = InvoiceItem::where('invoice_id',$invoice->id)->first();
+        $user = User::find($invoice->user_id);
+        $personalDetails = PersonalDetail::where('user_id',$user->id)->first();
+        $data = [
+            'first_name'            => $user->first_name,
+            'last_name'             => $user->last_name,
+            'middle_name'           => $user->middle_name,
+            'username'              => $user->username,
+            'product'               => $invoice_item->item_name
+        ];
+
+        if ($status) {
+
+            $default_message = '<p>Thank you for '.($invoice->invoice_type == 'booking_invoice' ? 'booking' : 'purchasing').' [[product]].</p>';
+            $default_subject = 'Your '.( $invoice->invoice_type == 'booking_invoice' ? 'booking' : 'purchase') . ' is successful!';
+            $template = EmailsController::build('Purchase successful', $data, $default_message, $default_subject);
+
+            $main_message = $template["message"];
+            $subject = AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title') ?
+                AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title') . ' - '.$template['subject'] :
+                $template['subject'];
+
+        } else {
+            // not successful
+            $default_message = '<p>Thank you for '.($invoice->invoice_type == 'booking_invoice' ? 'booking' : 'purchasing').' [[product]].</p>';
+            $default_subject = 'Your '.( $invoice->invoice_type == 'booking_invoice' ? 'booking' : 'purchase' ). ' is successful!';
+            $template = EmailsController::build('Purchase unsuccessful', $data, $default_message, $default_subject);
+
+            $main_message = $template["message"];
+            $subject = AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title') ?
+                AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title') . ' - '.$template['subject'] :
+                $template['subject'];
+
+        }
+
+        $beauty_mail = app()->make(Beautymail::class);
+        $beauty_mail->send('emails.email_default_v2',
+            ['body_message' => $main_message, 'user' => $user],
+            function($message) use ($user, $subject) {
+                $message
+                    ->from(AppSettings::get_setting_value_by_name('globalWebsite_system_email'))
+                    ->to($user->email, $user->first_name.' '.$user->middle_name.' '.$user->last_name)
+                    ->subject($subject);
+            });
+    }
+
     public function membership_paypal_cancel(Request $request){
 
         if (env('FEDERATION',false)){

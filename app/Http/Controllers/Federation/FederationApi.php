@@ -394,54 +394,59 @@ class FederationApi extends Controller {
         }
     }
 
-    public function get_members_growth(Request $r)
+    public static function local_get_members_growth()
     {
-        if(RequestValidator::validate($r)){
-            $active_memberships = UserMembership::where('status','active')->get();
-            $data_paying = [];
-            $data_non_paying = [];
-            $all_members = [];
-            $members_data = User::all();
-            $members = [];
-            foreach ($members_data as $member) {
-                if ($member->hasRole('front-member')) {
-                    $members[$member->id] = $member;
-                }
+        $active_memberships = UserMembership::where('status','active')->get();
+        $data_paying = [];
+        $data_non_paying = [];
+        $all_members = [];
+        $members_data = User::all();
+        $members = [];
+        foreach ($members_data as $member) {
+            if ($member->hasRole('front-member')) {
+                $members[$member->id] = $member;
             }
-            for ($i = 0 ;$i < 30;$i++) {
-                $index = 30 - $i;
-                $date = date('Y-m-d 0:0:0', strtotime("-" . (string)($index) . " days"));
-                $memory = [];
-                foreach ($active_memberships as $membership) {
-                    if ($membership->created_at < $date && !isset($memory[$membership->user_id])) {
-                        if (isset($members[$membership->user_id])) {
-                            $memory[$membership->user_id] = true;
-                        }
-                    }
-                }
-                $potential_memberships = UserMembership::where([['created_at', '<', $date], ['updated_at', '>', $date], ['status', '<>', 'active']])->get();
-                foreach ($potential_memberships as $membership) {
-                    if (!isset($memory[$membership->user_id]) && isset($members[$membership->user_id])) {
+        }
+        for ($i = 0 ;$i < 30;$i++) {
+            $index = 30 - $i;
+            $date = date('Y-m-d 0:0:0', strtotime("-" . (string)($index) . " days"));
+            $memory = [];
+            foreach ($active_memberships as $membership) {
+                if ($membership->created_at < $date && !isset($memory[$membership->user_id])) {
+                    if (isset($members[$membership->user_id])) {
                         $memory[$membership->user_id] = true;
                     }
                 }
-                $data_paying[$i + 1] = sizeof($memory);
-                $non_paying_members = User::where('created_at','<',$date)->get();
-                $non_p = 0;
-                foreach ($non_paying_members as $member) {
-                    if (isset($members[$member->id])) {
-                        $non_p++;
-                    }
-                }
-                $all_members[$i + 1] = $non_p;
-                $data_non_paying[$i + 1] = $non_p - sizeof($memory);
             }
+            $potential_memberships = UserMembership::where([['created_at', '<', $date], ['updated_at', '>', $date], ['status', '<>', 'active']])->get();
+            foreach ($potential_memberships as $membership) {
+                if (!isset($memory[$membership->user_id]) && isset($members[$membership->user_id])) {
+                    $memory[$membership->user_id] = true;
+                }
+            }
+            $data_paying[$i + 1] = sizeof($memory);
+            $non_paying_members = User::where('created_at','<',$date)->get();
+            $non_p = 0;
+            foreach ($non_paying_members as $member) {
+                if (isset($members[$member->id])) {
+                    $non_p++;
+                }
+            }
+            $all_members[$i + 1] = $non_p;
+            $data_non_paying[$i + 1] = $non_p - sizeof($memory);
+        }
 
-            return json_encode(array(
-                'paying_members' => $data_paying,
-                'non_paying_members' => $data_non_paying,
-                'all_members' => $all_members
-            ));
+        return json_encode(array(
+            'paying_members' => $data_paying,
+            'non_paying_members' => $data_non_paying,
+            'all_members' => $all_members
+        ));
+    }
+
+    public function get_members_growth(Request $r)
+    {
+        if(RequestValidator::validate($r)){
+            return self::local_get_members_growth($r);
         } else {
             return json_encode(array(
                 'code' => 2,

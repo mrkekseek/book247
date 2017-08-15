@@ -2165,15 +2165,14 @@
                             return (Math.floor(Math.random() * (1 + 40 - 20))) + 20;
                         }
                         $.ajax({
-                            url: '/api_call',
+                            url: '{{ route("admin/members_growth") }}',
                             type: 'POST',
                             dataType: 'json',
-                            data: { 'method' : 'members_growth',
-                                    'cache' : $('#chart_2').attr('data-cached')
-                                },
+                            data: {},
                             success: function(res){
                                 if (res.success) {
-                                    var members_growth = JSON.parse(res.data);
+                                    console.log(res.data);
+                                    var members_growth = res.data;
                                     var visitors = $.map(members_growth.visitors, function(el) { return [$.map(el,function(e){ return e })]});
                                     var pageviews = $.map(members_growth.pageviews, function(el) { return [$.map(el,function(e){ return e })]});
                                     var all_members = $.map(members_growth.all_members, function(el) { return [$.map(el,function(e){ return e })]});

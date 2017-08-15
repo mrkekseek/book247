@@ -46,7 +46,7 @@ class AdminController extends Base
 //            return json_encode($r->all());
 //        }
         $result =  Api::send_curl([
-            'memberSSOid' => 165 ,
+            'memberSSOid' => 166 ,
             'membership_id' => null,
             'account_key' => '41422-65673-68269-90561-57420',
             'return_url' => "https://rankedin.com/Tournament/Index/408" ],
@@ -147,6 +147,36 @@ class AdminController extends Base
             'text_parts'  => $text_parts,
             'in_sidebar'  => $sidebar_link,
         ]);
+    }
+
+    public function members_growth() {
+        $response =  json_decode(FederationApi::local_get_members_growth());
+        $paying_members = $response->paying_members;
+        $paying_members_return = [];
+        foreach($paying_members as $key => $members) {
+            $paying_members_return[] = [$key,$members];
+        }
+
+        $non_paying_members = $response->non_paying_members;
+        $non_paying_members_return = [];
+        foreach($non_paying_members as $key => $members) {
+            $non_paying_members_return[] = [$key,$members];
+        }
+
+        $all_members = $response->all_members;
+        $all_members_return = [];
+        foreach( $all_members as $key => $members) {
+            $all_members_return[] = [$key,$members];
+        }
+
+        return json_encode([
+            'success' => true,
+            'data' => [
+                'visitors' => $non_paying_members_return,
+                'pageviews' => $paying_members_return,
+                'all_members' => $all_members_return
+            ]
+        ], JSON_FORCE_OBJECT);
     }
 
     public function front_api_call(Request $r){
