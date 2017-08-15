@@ -21,6 +21,7 @@ class Auth
     {
         
     }
+
     public static function user()
     {   
         self::set_session();
@@ -50,8 +51,10 @@ class Auth
 
     public static function attempt($data = [])
     {
-        if (AuthLocal::once(['username' => $data['email'], 'password' => $data['password'], 'sso_user_id' => NULL]) || AuthLocal::once(['email' => $data['email'], 'password' => $data['password'], 'sso_user_id' => NULL]))
+        // first we check users without sso_user_id against local database
+        if (AuthLocal::once(['username' => $data['username'], 'password' => $data['password'], 'sso_user_id' => NULL]))
         {
+            // since the user was authenticated locally, we search him
             $local_id = AuthLocal::user()->id;
             $user = User::find($local_id)->toArray();
 
@@ -78,24 +81,34 @@ class Auth
                     self::set_cookie_session($new_sso_id);
                     return true;
                 }
+                else{
+                    // something is wrong with the new account registration in SSO_API
+                    return false;
+                }
             }
         }
 
-        if (ApiAuth::autorize($data)['success'])
+        // we check users against SSO_API using username/passwords
+        if (ApiAuth::authorize($data)['success'])
         {
-            $sso_user = ApiAuth::accounts_get_by_username($data['email']);
+            // the user is authorized using username/password against SSO_API data and he already has a sso_user_id
+            $sso_user = ApiAuth::accounts_get_by_username($data['username']);
             $sso_user_id = $sso_user['data']->id;
+
             $exist = User::where('sso_user_id',$sso_user_id)->first();
             if ( ! empty($exist) )
             {
-                self::set_local_user($sso_user_id);
+                self::set_cookie_session($sso_user_id);
+                //self::set_local_user($sso_user_id);
                 return true;
             }
-            return false;
+            else{
+                return false;
+            }
         }
         else
         {            
-            self::$error .= ApiAuth::autorize($data)['message'];
+            self::$error .= ApiAuth::authorize($data)['message'];
             return false;        
         }
     }
@@ -167,7 +180,7 @@ class Auth
         $user = User::find($id);
         if ($user) {
             if (self::check_exist_api_user($user['username'])) {
-                $sso_user = ApiAuth::accounts_get_by_username($user['email']);
+                $sso_user = ApiAuth::accounts_get_by_username($user['username']);
                 if (isset($sso_user['data'])) {
                     AuthLocal::loginUsingId($user->id);
                     self::set_cookie_session($sso_user['data']->id);
@@ -188,6 +201,7 @@ class Auth
         {            
             $session_sso = false;
         }
+
         if (!empty($cookie_sso) && empty($session_sso))
         {
             $sso_user_id = $cookie_sso;
@@ -219,14 +233,14 @@ class Auth
             'email'=>$api_user->email,
             'first_name'=>$api_user->firstName,
             'last_name'=>$api_user->lastName,
-            'middle_name'=>$api_user->middleName,            
+            'middle_name'=>$api_user->middleName,
             ];
         switch ($api_user->gender)
         {
             case (1): $local_user['gender'] = 'M'; break;
             case (2): $local_user['gender'] = 'F'; break;
         }
-        
+
         $user = User::firstOrNew(['username'=>$api_user->username]);
         $user = ( ! $user->exists) ? User::firstOrNew(['email'=>$api_user->username]): $user;
         $country = Countries::find( $user->country_id);
@@ -234,7 +248,7 @@ class Auth
             $user->country_id = AppSettings::get_setting_value_by_name('globalWebsite_defaultCountryId');
         }
         $local_user['country_id'] = ! $user->exists ? AppSettings::get_setting_value_by_name('globalWebsite_defaultCountryId') : $user->country_id;
-        $user->fill($local_user);        
+        $user->fill($local_user);
         if (!$user->exists)
         {
             $user->save();
@@ -246,11 +260,11 @@ class Auth
             return true;
         }
         else
-        {   
+        {
             if ($user->isDirty())
             {
-                $user->save();                                            
-            } 
+                $user->save();
+            }
             self::set_personal_details($user->id, $api_user);
             self::set_cookie_session($sso_user_id);
             return true;

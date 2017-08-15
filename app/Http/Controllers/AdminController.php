@@ -26,8 +26,6 @@ class AdminController extends Controller
         //$this->middleware('auth');
     }
 
-
-
     /**
      * Show the application dashboard.
      *
@@ -233,9 +231,11 @@ class AdminController extends Controller
 
     public function authenticate(Request $request)
     {
-        if (Auth::attempt(['email' => $request->input('email'), 'password' => $request->input('password')])) {
+        if (Auth::attempt(['username' => $request->input('username'), 'password' => $request->input('password')])) {
             // Authentication passed...
-            $user = Auth::user(); return redirect()->intended('admin');
+            $user = Auth::user();
+            return redirect()->intended('admin');
+
             // check user status
             switch ($user->status){
                 case 'active' :
@@ -277,7 +277,6 @@ class AdminController extends Controller
                         ->with('message', 'Login Failed');
                         break;
             }
-
         }
         else {
             $errors = new MessageBag([
@@ -303,7 +302,7 @@ class AdminController extends Controller
 
     public function ajax_authenticate(Request $request)
     {
-        if (Auth::attempt(['email' => $request->input('email'), 'password' => $request->input('password')])) {
+        if (Auth::attempt(['username' => $request->input('username'), 'password' => $request->input('password')])) {
             // Authentication passed...
             $user = Auth::user();
             // check user status

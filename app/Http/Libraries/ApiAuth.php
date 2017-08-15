@@ -208,7 +208,6 @@ class ApiAuth
         return $result;
     }
 
-
     public static function checkExist($username)
     {
         $get = '?username=' . $username;
@@ -222,12 +221,12 @@ class ApiAuth
         return $result;
     }
 
-    public static function autorize($data = [])
+    public static function authorize($data = [])
     {
         $apiData = [];
         foreach ($data as $key => $value) {
             switch ($key) {
-                case 'email':
+                case 'username':
                     $apiData['Username'] = $value;
                     break;
                 case 'password':
@@ -344,7 +343,6 @@ class ApiAuth
                 $e->getCode(), $e->getMessage()),
                 E_USER_ERROR);
         }
-
         $result = json_decode($curl_results);
         if (!empty(json_last_error())) {
             $result = $curl_results;
