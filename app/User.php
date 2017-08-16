@@ -816,6 +816,46 @@ class User extends Authenticatable
         }
     }
 
+    public function trusted_paypal_add_store_credit($invoice_id, $amount, $expiration_date)
+    {
+        $store_credit_fill = [
+            'member_id'     => $this->id,
+            'back_user_id'  => '-1',
+            'title'         => 'Store Credit',
+            'value'         => intval($amount),
+            'total_amount'  => intval($amount) + $this->get_available_store_credit(),
+            'invoice_id'    => $invoice_id,
+            'expiration_date'   => $expiration_date,
+            'status'        => 'active',
+        ];
+        $credit_validity = AppSettings::get_setting_value_by_name('finance_store_credit_validity');
+        if ($store_credit_fill['value']>=0){
+            $store_credit_fill['expiration_date'] = Carbon::today()->addMonthsNoOverflow($credit_validity)->format('Y-m-d');
+        }
+        else{
+            $store_credit_fill['expiration_date'] = Carbon::today()->format('Y-m-d');
+        }
+
+        $validator = Validator::make($store_credit_fill, UserStoreCredits::rules('POST'), UserStoreCredits::$message, UserStoreCredits::$attributeNames);
+        if ($validator->fails()){
+            return [
+                'success' => false
+//                'title'   => 'Could not add store credit',
+//                'errors'  => 'There is something wrong with the validity of the access card you want to add!'
+            ];
+        }
+
+        $storeCredit = UserStoreCredits::create($store_credit_fill);
+
+        return [
+            'success'   => true,
+//            'title'     => 'Store Credit Added',
+//            'message'   => 'User received the store credit',
+//            'storeCredit'   => $storeCredit
+        ];
+    }
+
+
     private function add_store_credit($store_credit_fill){
         $user = Auth::user();
         if (!$user) {
