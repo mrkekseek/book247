@@ -5575,8 +5575,7 @@ This message is private and confidential. If you have received this message in e
         $transaction->status = 'pending';
         $transaction->save();
 
-        \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
-        $response = StripeController::createStripeCharge(StripeController::retrieveCustomer(Auth::user()->stripe_id), $amount * 100, "usd");
+        $response = StripeController::createStripeCharge(Auth::user()->stripe_id, $amount * 100, "usd");
 
         if ($response->paid)
         {

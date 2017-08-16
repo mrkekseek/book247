@@ -249,34 +249,34 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h4 class="modal-title">Modal Confirm</h4>
+                    <h4 class="modal-title">Stripe Payment Form</h4>
                 </div>
                 <div class="modal-body text-center">
                     <div class="row">
-                        <div class="col-xs-8 col-xs-offset-2">
-                            <div class="form-group">
-                                <label for="cardNumber">CARD NUMBER</label>
-                                <div class="input-group">
-                                    <input type="text" readonly="readonly" value="{{ Auth::user()->card_last_four ? '***********' . Auth::user()->card_last_four : '' }}" class="form-control" id="cardNumber" placeholder="Valid Card Number"
-                                    required autofocus />
-                                    <span class="input-group-addon">
-                                        <span class="glyphicon glyphicon-lock"></span>
-                                    </span>
+                        <div class="col-xs-10 col-xs-offset-1">
+                            <div class="form-group clearfix">
+                                <div class="col-xs-4">
+                                    <span>CARD NUMBER</span>
+                                </div>
+                                <div class="col-xs-8">
+                                    <div class="input-group">
+                                        <input type="text" readonly="readonly" value="{{ Auth::user()->card_last_four ? '***********' . Auth::user()->card_last_four : '' }}" class="form-control" id="cardNumber" placeholder="Valid Card Number"
+                                        required autofocus />
+                                        <span class="input-group-addon">
+                                            <span class="glyphicon glyphicon-lock"></span>
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="row">
-                                <div class="col-xs-8 col-xs-offset-2">
-                                    <div class="form-group">
-                                        <div class="col-xs-12">
-                                            <label for="expityMonth">EXPIRY DATE</label>
-                                        </div>
-                                        <div class="col-xs-6">
-                                            <input type="text" readonly="readonly" value="{{ Carbon\Carbon::parse(Auth::user()->trial_ends_at)->format('m') }}" class="form-control" id="expityMonth" placeholder="MM" required />
-                                        </div>
-                                        <div class="col-xs-6">
-                                            <input type="text" readonly="readonly" value="{{ Carbon\Carbon::parse(Auth::user()->trial_ends_at)->format('y') }}" class="form-control" id="expityYear" placeholder="YY" required />
-                                        </div>
-                                    </div>
+                            <div class="clearfix">
+                                <div class="col-xs-4">
+                                    <span>EXPIRY DATE</span>
+                                </div>
+                                <div class="col-xs-4">
+                                    <input type="text" readonly="readonly" value="{{ Carbon\Carbon::parse(Auth::user()->trial_ends_at)->format('m') }}" class="form-control" id="expityMonth" placeholder="MM" required />
+                                </div>
+                                <div class="col-xs-4">
+                                    <input type="text" readonly="readonly" value="{{ Carbon\Carbon::parse(Auth::user()->trial_ends_at)->format('y') }}" class="form-control" id="expityYear" placeholder="YY" required />
                                 </div>
                             </div>
                         </div>
@@ -305,7 +305,7 @@
                         <div class="col-xs-10 col-xs-offset-1">
 
                                 <label>
-                                    <input class="field" readonly="readonly" type="text" value="{{ Auth::user()->first_name }}" placeholder="Name" />
+                                    <input class="field" readonly="readonly" type="text" value="{{ Auth::user()->first_name }} {{ Auth::user()->last_name }} {{ Auth::user()->middle_name }}" placeholder="Name" />
                                     <span></span>
                                 </label>
 
@@ -346,11 +346,11 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title">Payment Stripe</h4>
+                <h4 class="modal-title">Stripe Payment</h4>
             </div>
             <div class="modal-body text-center">
                 <div class="form-group">
-                    Would you like to use the card you've already had?
+                    You have a saved card from a previous purchase. Do you want to use the same card to process this payment also?
                 </div>
 
                 <button class="btn btn-success" data-target="#confirm-modal" data-toggle="modal">Yes</button>
@@ -362,6 +362,11 @@
 
 
 <!-- END MODAL -->
+
+<div class="loader-wrapper">
+   <div class="loader"></div>
+   <p>Please wait...</p>
+</div>
 
 @endsection
 
@@ -437,7 +442,6 @@
                           fontWeight: 300,
                           fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
                           fontSize: '19px',
-
                           '::placeholder': {
                             color: '#8898AA',
                           },
@@ -472,6 +476,7 @@
                 var form = document.getElementById('payment-form');
                 form.addEventListener('submit', function(event) {
                     event.preventDefault();
+                    spiner(true);
                     $('.submit-payment').attr('disabled', 'disabled');
                     stripe.createToken(card).then(function(result) 
                     {
@@ -502,6 +507,7 @@
                     method : 'post',
                     success : function(data)
                     {
+                        
                         $.ajax({
                             url : "{{ route('pay_with_stripe') }}",
                             method : "post",
@@ -512,6 +518,7 @@
                             },
                             success : function(data)
                             {
+                                 spiner(false);
                                 if (data.success)
                                 {
                                     show_notification(data.title, data.errors, 'lime', 3500, 0);
@@ -532,6 +539,7 @@
 
             $("#confirm-stripe").click(function(){
                 $(this).attr('disabled', 'disabled');
+                spiner(true);
                 $.ajax({
                     url : "{{ route('pay_with_stripe') }}",
                     method : "post",
@@ -542,6 +550,7 @@
                     },
                     success : function(data)
                     {
+                        spiner(false);
                         if (data.success)
                         {
                             show_notification(data.title, data.errors, 'lime', 3500, 0);
@@ -576,6 +585,18 @@
             $.notific8('zindex', 11500);
             $.notific8($.trim(message), settings);
         }
+
+        function spiner(mode)
+        {
+            if (mode)
+            {
+                $(".loader-wrapper").show();
+                return;
+            }
+
+            $(".loader-wrapper").hide();
+        }
+
     </script>
 @endsection
 
