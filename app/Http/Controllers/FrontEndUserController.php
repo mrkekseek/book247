@@ -5546,7 +5546,7 @@ This message is private and confidential. If you have received this message in e
             'paypal_email' => AppSettings::get_setting_value_by_name('finance_simple_paypal_payment_account'),
             'country' => $country,
             'payee_country' => $payee_country,
-            'show_stripe' => env("STRIPE_KEY")
+            'show_stripe' => \Config::get("stripe.stripe_secret")
         ]);
     }
 
