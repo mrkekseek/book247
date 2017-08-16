@@ -5465,8 +5465,15 @@ This message is private and confidential. If you have received this message in e
                 'errors'  => 'Please activate your account. <a href="'.route('resend_activation_email',['id' => $u->id]).'"">&nbsp;Resend activation email.</a>' // api error, no Cyrillic
             ];
         }
+        elseif (!$u){
+            return [
+                'success' => false,
+                'title'   => 'Error',
+                'errors'  => 'Incorrect username and/or password.'
+            ];
+        }
 
-        if (Auth::attempt(['username' => $data['username'], 'password' => $request->data['password']])) {
+        if (Auth::attempt(['username' => $data['username'], 'password' => $data['password']])) {
             $user = Auth::user();
 
             Activity::log([
