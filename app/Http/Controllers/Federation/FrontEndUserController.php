@@ -503,6 +503,33 @@ class FrontEndUserController extends Base
         ]);
     }
 
+    public function type_of_memberships(){
+        if (AppSettings::get_setting_value_by_name('globalWebsite_show_memberships_on_frontend')!=1){
+            return redirect()->intended(route('homepage'));
+        }
+
+        $membership_plans = MembershipPlan::with('price')->where('name','!=','Drop-in')->where('status','=','active')->orderBy('name')->get();
+
+        $breadcrumbs = [
+            'Home'      => route('homepage'),
+            'Dashboard' => '',
+        ];
+        $text_parts  = [
+            'title'     => 'Home',
+            'subtitle'  => 'users dashboard',
+            'table_head_text1' => 'Dashboard Summary'
+        ];
+        $sidebar_link= 'front-type_of_memberships';
+
+        return view('front/federation/type_of_memberships',[
+            'breadcrumbs' => $breadcrumbs,
+            'text_parts'  => $text_parts,
+            'in_sidebar'  => $sidebar_link,
+            'plans'       => $membership_plans
+        ]);
+    }
+
+
     public function front_invoice_list()
     {
         $user = Auth::user();
@@ -1772,7 +1799,7 @@ class FrontEndUserController extends Base
         } else {
             $payee_country = '-';
         }
-
+        $paypal_currency = AppSettings::get_setting_value_by_name('finance_currency');
         $sidebar_link = 'admin-backend-shops-invoices-payment';
         return view('front/finance/federation/finance_peyment', [
             'custom' => $this->get_custom($invoice->id),
@@ -1789,7 +1816,8 @@ class FrontEndUserController extends Base
             'customer' => $payee,
             'paypal_email' => AppSettings::get_setting_value_by_name('finance_simple_paypal_payment_account'),
             'country' => $country,
-            'payee_country' => $payee_country
+            'payee_country' => $payee_country,
+            'paypal_currency' => $paypal_currency
         ]);
     }
 

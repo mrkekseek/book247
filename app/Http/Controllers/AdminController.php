@@ -310,15 +310,19 @@ class AdminController extends Controller
                 case 'active' :
                     // all good
                     \Cache::forget('globalWebsite_registration_finished');
-                    $status = AppSettings::get_setting_value_by_name('globalWebsite_registration_finished');
-                    if ( $status==0 && $user->hasRole('owner') ){
-                        $redirect_url = route('admin/registration');
-                    }
-                    elseif ($user->hasRole(['manager','employee'])){
-                        $redirect_url = route('bookings/location_calendar_day_view',['day' => \Carbon\Carbon::now()->format('d-m-Y')]);
-                    }
-                    else{
+                    if (env('FEDERATION',false)) {
                         $redirect_url = route('admin');
+                    } else {
+                        $status = AppSettings::get_setting_value_by_name('globalWebsite_registration_finished');
+                        if ( $status==0 && $user->hasRole('owner') ){
+                            $redirect_url = route('admin/registration');
+                        }
+                        elseif ($user->hasRole(['manager','employee'])){
+                            $redirect_url = route('bookings/location_calendar_day_view',['day' => \Carbon\Carbon::now()->format('d-m-Y')]);
+                        }
+                        else{
+                            $redirect_url = route('admin');
+                        }
                     }
 
                     return [

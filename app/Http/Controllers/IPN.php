@@ -1,5 +1,6 @@
 <?php
 namespace App\Http\Controllers;
+use App\StoreCreditProducts;
 use Illuminate\Http\Request;
 use App\Invoice;
 use App\InvoiceItem;
@@ -118,6 +119,34 @@ class IPN extends Controller{
                 // this is the result of buying store credit from frontend or backend, added by the admin/employees
 
                 break;
+            case 'store_credit_pack_invoice' :
+
+
+                switch ($r->get('payment_status')) {
+                    case 'Completed':
+                        $invoice->status = 'completed';
+                        $invoice->save();
+                        $invoice_item = InvoiceItem::where('invoice_id',$invoice->id)->first();
+                        if($invoice_item->item_type == 'store_credit_pack') {
+                            $pack = StoreCreditProducts::find($invoice_item->item_reference_id);
+                            $user = User::find($invoice->user_id);
+                            $status = $user->trusted_paypal_add_store_credit($invoice->id, $pack->store_credit_value, $pack->valid_to);
+                        }
+                        break;
+                    case 'Processed' || 'Pending' :
+                        $invoice->status = 'pending';
+                        $invoice->save();
+                        break;
+                    case 'Pending' :
+                        $invoice->status = 'pending';
+                        $invoice->save();
+                        break;
+                    default:
+                        $invoice->status = 'pending';
+                        $invoice->save();
+                }
+
+
             default:
 
                 break;
