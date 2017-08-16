@@ -5,6 +5,8 @@ namespace App\Http\Libraries;
 use App\PersonalDetail;
 use App\User;
 use App\Http\Libraries\Auth;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 use Validator;
 use Webpatser\Countries\Countries;
 use App\Http\Controllers\AppSettings;
@@ -299,10 +301,16 @@ class ApiAuth
 
     private static function send_curl($data, $api_url, $method = 'GET')
     {
+        $toLog['title'] = 'ApiAuth::send_curl - '.$api_url;
+
         if ($method == 'GET') {
             $api_url .= (string)$data;
         }
         $ApiKey = self::generateApiKey($data);
+
+        $toLog['api_url'] = $api_url;
+        $toLog['data'] = $data;
+        $toLog['api_key'] = $ApiKey;
 
         try {
             $curl = curl_init(env('SSO_API',false) . $api_url);
@@ -343,11 +351,15 @@ class ApiAuth
                 $e->getCode(), $e->getMessage()),
                 E_USER_ERROR);
         }
+
         $result = json_decode($curl_results);
+        $toLog['curl_result'] = $curl_results;
+
         if (!empty(json_last_error())) {
             $result = $curl_results;
         }
         curl_close($curl);
+        self::log_actions($toLog);
 
         if ($result && !isset($result->Code)) {
             return $result;
@@ -368,10 +380,16 @@ class ApiAuth
 
     public static function send($data, $api_url, $method = 'GET')
     {
+        $toLog['title'] = 'ApiAuth::send - '.$api_url;
+
         if ($method == 'GET') {
             $api_url .= (string)$data;
         }
         $ApiKey = self::generateApiKey($data);
+
+        $toLog['api_url'] = $api_url;
+        $toLog['data'] = $data;
+        $toLog['api_key'] = $ApiKey;
 
         $curl = curl_init(env('SSO_API',false) . $api_url);
         curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $method);
@@ -383,7 +401,8 @@ class ApiAuth
         if (in_array($method, ['POST', 'PUT']) && is_array($data)) {
             curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($data));
             $headers[] = 'Accept: application/json';
-        } else {
+        }
+        else {
             $headers[] = 'Accept: text/plain';
         }
 
@@ -395,11 +414,15 @@ class ApiAuth
         }
 
         $curl_results = curl_exec($curl);
+        $toLog['curl_result'] = $curl_results;
+
         $result = json_decode($curl_results);
         if (!empty(json_last_error())) {
             $result = $curl_results;
         }
+
         curl_close($curl);
+        self::log_actions($toLog);
 
         if ($result && !isset($result->Code)) {
             return $result;
@@ -492,5 +515,17 @@ class ApiAuth
             $result['message'] = self::$error;
         }
         return $result;
+    }
+
+    public static function log_actions($info){
+        Log::useDailyFiles(storage_path().'/logs/apiAuth.log');
+
+        $textToWrite = 'New API call' .PHP_EOL;
+        foreach($info as $key=>$val){
+            $textToWrite.= $key . ' - ' . stripslashes(json_encode($val)).PHP_EOL;
+        }
+
+        $textToWrite.=PHP_EOL;
+        Log::info($textToWrite);
     }
 }
