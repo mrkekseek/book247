@@ -770,8 +770,8 @@ class User extends Authenticatable
     /** Store Credit functions - START */
     public function buy_store_credit($store_credit_fill, $price = 0, $discount = 0){
         // adds the store credit
-        $storeCredit = $this->add_store_credit($store_credit_fill);
 
+        $storeCredit = $this->add_store_credit($store_credit_fill);
         // check if all went well with adding store credit
         if ($storeCredit['success']==true){
             $storeCredit = $storeCredit['storeCredit'];
@@ -805,6 +805,7 @@ class User extends Authenticatable
 
             return [
                 'success' => true,
+                'invoice_number' => $member_invoice->invoice_number,
                 'title'   => 'Store credit added',
                 'message' => 'Page will reload and the store credit will be visible on this page'];
         }
@@ -816,44 +817,6 @@ class User extends Authenticatable
         }
     }
 
-    public function trusted_paypal_add_store_credit($invoice_id, $amount, $expiration_date)
-    {
-        $store_credit_fill = [
-            'member_id'     => $this->id,
-            'back_user_id'  => '-1',
-            'title'         => 'Store Credit',
-            'value'         => intval($amount),
-            'total_amount'  => intval($amount) + $this->get_available_store_credit(),
-            'invoice_id'    => $invoice_id,
-            'expiration_date'   => $expiration_date,
-            'status'        => 'active',
-        ];
-        $credit_validity = AppSettings::get_setting_value_by_name('finance_store_credit_validity');
-        if ($store_credit_fill['value']>=0){
-            $store_credit_fill['expiration_date'] = Carbon::today()->addMonthsNoOverflow($credit_validity)->format('Y-m-d');
-        }
-        else{
-            $store_credit_fill['expiration_date'] = Carbon::today()->format('Y-m-d');
-        }
-
-        $validator = Validator::make($store_credit_fill, UserStoreCredits::rules('POST'), UserStoreCredits::$message, UserStoreCredits::$attributeNames);
-        if ($validator->fails()){
-            return [
-                'success' => false
-//                'title'   => 'Could not add store credit',
-//                'errors'  => 'There is something wrong with the validity of the access card you want to add!'
-            ];
-        }
-
-        $storeCredit = UserStoreCredits::create($store_credit_fill);
-
-        return [
-            'success'   => true,
-//            'title'     => 'Store Credit Added',
-//            'message'   => 'User received the store credit',
-//            'storeCredit'   => $storeCredit
-        ];
-    }
 
 
     private function add_store_credit($store_credit_fill){
@@ -873,9 +836,10 @@ class User extends Authenticatable
             $store_credit_fill['expiration_date'] = Carbon::today()->format('Y-m-d');
         }
 
+
         $validator = Validator::make($store_credit_fill, UserStoreCredits::rules('POST'), UserStoreCredits::$message, UserStoreCredits::$attributeNames);
         if ($validator->fails()){
-            //xdebug_var_dump($validator->errors());
+//            xdebug_var_dump($validator->errors());
             // note could not be created
             return [
                 'success' => false,

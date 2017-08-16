@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 use App\StoreCreditProducts;
+use App\UserStoreCredits;
 use Illuminate\Http\Request;
 use App\Invoice;
 use App\InvoiceItem;
@@ -122,30 +123,29 @@ class IPN extends Controller{
             case 'store_credit_pack_invoice' :
 
 
-                switch ($r->get('payment_status')) {
-                    case 'Completed':
-                        $invoice->status = 'completed';
-                        $invoice->save();
-                        $invoice_item = InvoiceItem::where('invoice_id',$invoice->id)->first();
-                        if($invoice_item->item_type == 'store_credit_pack') {
-                            $pack = StoreCreditProducts::find($invoice_item->item_reference_id);
-                            $user = User::find($invoice->user_id);
-                            $status = $user->trusted_paypal_add_store_credit($invoice->id, $pack->store_credit_value, $pack->valid_to);
-                        }
-                        break;
-                    case 'Processed' || 'Pending' :
-                        $invoice->status = 'pending';
-                        $invoice->save();
-                        break;
-                    case 'Pending' :
-                        $invoice->status = 'pending';
-                        $invoice->save();
-                        break;
-                    default:
-                        $invoice->status = 'pending';
-                        $invoice->save();
-                }
-
+//                switch ($r->get('payment_status')) {
+//                    case 'Completed':
+//                        $invoice->status = 'completed';
+//                        $invoice->save();
+//                        $invoice_item = InvoiceItem::where('invoice_id',$invoice->id)->first();
+//                        if($invoice_item->item_type == 'store_credit_pack') {
+//                            $pack = StoreCreditProducts::find($invoice_item->item_reference_id);
+//                            $user = User::find($invoice->user_id);
+//                            $status = $user->trusted_add_store_credit($invoice->id, $pack->store_credit_value, $pack->valid_to);
+//                        }
+//                        break;
+//                    case 'Processed' || 'Pending' :
+//                        $invoice->status = 'pending';
+//                        $invoice->save();
+//                        break;
+//                    case 'Pending' :
+//                        $invoice->status = 'pending';
+//                        $invoice->save();
+//                        break;
+//                    default:
+//                        $invoice->status = 'pending';
+//                        $invoice->save();
+//                }
 
             default:
 
@@ -223,14 +223,12 @@ class IPN extends Controller{
             $invoice = Invoice::find($custom->invoice_id);
             if ($invoice) {
                 $transaction = new InvoiceFinancialTransaction();
-
                 $outstandingAmount = $invoice->get_outstanding_amount();
                 $unpaidItems = $invoice->get_unpaid_invoice_items();
-                if (number_format($outstandingAmount,2) == number_format($amount,2) && isset($vars['quantity'.sizeof($unpaidItems)])){
-                    // invoice items and amount are correct
+                if (number_format($outstandingAmount,2) == number_format($amount,2)){
+                    // amount is correct
                 }
                 else{
-                    self::send_mail($invoice->id);
                     return view($blade,[
                         'breadcrumbs' => $breadcrumbs,
                         'text_parts'  => $text_parts,
@@ -248,11 +246,13 @@ class IPN extends Controller{
                     'transaction_amount' => $amount,
                     'transaction_currency' => $currency,
                     'transaction_type' => 'paypal',
-                    'transaction_date' => $vars['payment_date'],
+                    'transaction_date' => date('Y-m-d'),
                     'status' => 'pending',
                     'other_details' => $transactionId
                 ])->save();
 
+
+                self::send_mail($invoice->id);
                 switch ($invoice->invoice_type){
                     case 'booking_invoice' :
                         $invoice->status = 'processing';
@@ -277,6 +277,10 @@ class IPN extends Controller{
                         // this is the result of buying store credit from frontend or backend, added by the admin/employees
                         $invoice->status = 'processing';
                         $invoice->save();
+                        $credits = UserStoreCredits::find($invoice->invoice_reference_id);
+                        $credits->status = 'active';
+                        $credits->save();
+                        break;
                         break;
                     default:
                         $invoice->status = 'processing';

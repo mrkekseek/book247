@@ -166,7 +166,6 @@ class FrontEndUserController extends Controller
 
     public function buy_store_credit_ajax_call(Request $request)
     {
-        $check = true;
         $user = Auth::user();
         if ( ! $user || ! $user->is_front_user())
         {
@@ -177,39 +176,20 @@ class FrontEndUserController extends Controller
         }
 
         $pack = StoreCreditProducts::find($request->input("store_credits_id"));
-        $invoice = new Invoice;
-        $invoice->user_id = $user->id;
-        $invoice->employee_id = 1;
-        $invoice->invoice_reference_id = $pack->id;
-        $invoice->invoice_number = Invoice::next_invoice_number();
-        $invoice->invoice_type = "store_credit_pack_invoice";
-        $invoice->status = 'pending';
-        $invoice->save();
-        $check = ! empty($invoice->id)  ? $check : true;
 
-        $discount = $pack->store_credit_discount_percentage ? $pack->store_credit_discount_percentage : ($pack->store_credit_discount_fixed ? ($pack->store_credit_discount_fixed * 100 / $pack->store_credit_value) : 0);
-
-        $invoice_item = [
-            'item_name'         => $pack->name,
-            'item_type'         => 'store_credit_pack',
-            'item_reference_id' => $pack->id,
-            'quantity'          => 1,
-            'price'             => $pack->store_credit_value,
-            'vat'               => 0,
-            'discount'          => $discount
+        $store_credit_fill = [
+            'member_id'     => $user->id,
+            'back_user_id'  => $user->id,
+            'title'         => $pack->name,
+            'value'         => intval($pack->store_credit_value),
+            'total_amount'  => intval($pack->store_credit_value) + $user->get_available_store_credit(),
+            'expiration_date'   => 0,
+            'status'        => 'pending',
         ];
 
-        $invoice->add_invoice_item($invoice_item);
+        $status = $user->buy_store_credit($store_credit_fill);
 
-        $store_pack = new StoreCreditPurchases;
-        $store_pack->user_id = Auth::user()->id;
-        $store_pack->invoice_id = $invoice->id;
-        $store_pack->store_credit_pack_id = $request->input("store_credits_id");
-        $store_pack->status = 'pending';
-        $store_pack->save();
-        $check = ! empty($store_pack->id)  ? $check : true;
-
-        if ( ! $check)
+        if ( ! $status['success'])
         {
             return [
                 'success' => false,
@@ -217,12 +197,11 @@ class FrontEndUserController extends Controller
                 'title'   => 'Store Credit Packs Error'
             ];
         }
-
         return [
             'success' => true,
             'errors'  => 'Your purchase is successful.',
             'title'   => 'Store Credit Packs',
-            'redirect'=> route('front/finance/invoice/id', ['id' => $invoice->invoice_number])
+            'redirect'=> route('front/finance/invoice/id', ['id' => $status['invoice_number']])
         ];
     }
 
@@ -3804,6 +3783,8 @@ This message is private and confidential. If you have received this message in e
         ]);
     }
 
+
+
     public function front_show_invoice($id)
     {
         $user = Auth::user();
@@ -4035,6 +4016,50 @@ This message is private and confidential. If you have received this message in e
         return $bookings;
     }
 
+
+
+    public function get_user_transaction_list($userID = -1){
+        if (Auth::check()) {
+            $user = Auth::user();
+        }
+        else{
+            return [];
+        }
+
+        if ($userID == -1){
+            $userID = $user->id;
+        }
+
+        $transactionList = [];
+        $generalTransactions = InvoiceFinancialTransaction::where('user_id','=',$userID)->get();
+        if (sizeof($generalTransactions)>0){
+            $buttons = [];
+            $colorStatus = '#fff';
+            foreach ($generalTransactions as $key => $single_transaction){
+                switch ($single_transaction->status){
+
+                }
+                $invoiceItem = InvoiceItem::find(json_decode($single_transaction->invoice_items)[0]);
+                dd($invoiceItem);
+                $invoicesList[] = [
+                    '<div class="'.$colorStatus.'"></div><a href="javascript:;"> #'.$key.' </a>',
+                    $invoiceItem->item_name,
+                    $single_transaction->amount . $single_transaction->currency,
+                    $single_transaction->transaction_type,
+                    $single_transaction->status,
+                    $single_transaction->transaction_date
+
+                ];
+            }
+        }
+
+        return [
+            "data" => $transactionList
+        ];
+    }
+
+
+
     public function type_of_memberships(){
         if (AppSettings::get_setting_value_by_name('globalWebsite_show_memberships_on_frontend')!=1){
             return redirect()->intended(route('homepage'));
@@ -4061,7 +4086,16 @@ This message is private and confidential. If you have received this message in e
         ]);
     }
 
-    public function type_of_store_credit(){
+    public function type_of_store_credit()
+    {
+
+        if (Auth::check()) {
+            $user = Auth::user();
+        }
+        else{
+            return redirect('homepage');
+        }
+
         $breadcrumbs = [
             'Home'      => route('admin'),
             'Dashboard' => '',
@@ -4096,6 +4130,35 @@ This message is private and confidential. If you have received this message in e
             'store_credit_purchases' => $products
         ]);
     }
+
+    public function current_credit_status()
+    {
+        if (Auth::check()) {
+            $user = Auth::user();
+        }
+        else{
+            return redirect('homepage');
+        }
+
+        $breadcrumbs = [
+            'Home'      => route('admin'),
+            'Dashboard' => '',
+        ];
+        $text_parts  = [
+            'title'     => 'Home',
+            'subtitle'  => 'users dashboard',
+            'table_head_text1' => 'Dashboard Summary'
+        ];
+        $sidebar_link= 'front-type_of_store_credit';
+
+        return view('front/current_status',[
+            'breadcrumbs' => $breadcrumbs,
+            'text_parts'  => $text_parts,
+            'in_sidebar'  => $sidebar_link,
+        ]);
+
+    }
+
 
     public function contact_locations(){
         $breadcrumbs = [

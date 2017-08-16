@@ -404,10 +404,10 @@
                         </a>
                         <ul class="dropdown-menu pull-left">
                             <li class=" {{ $in_sidebar=='front-finance_invoice_list'?'active':'' }}">
-                                <a href="{{ route('front/store_credit') }}" class="nav-link  "> Buy Pack </a>
+                                <a href="{{ route('front/store_credit') }}" class="nav-link"> Buy Pack </a>
                             </li>
                             <li class=" {{ $in_sidebar=='front-finance_active_membership'?'active':'' }}">
-                                <a href=""> Current Status </a>
+                                <a href="{{ route('front/credit_status') }}" class="nav-link"> Current Status </a>
                             </li>
                         </ul>
                     </li>
