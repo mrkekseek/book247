@@ -48,7 +48,7 @@ class AdminController extends Base
         $result =  Api::send_curl([
             'memberSSOid' => 166 ,
             'membership_id' => null,
-            'account_key' => '41422-65673-68269-90561-57420',
+            'account_key' => '45788-52757-20554-64471-70259',
             'return_url' => "https://rankedin.com/Tournament/Index/408" ],
             'federation_buy_license',
             'POST');

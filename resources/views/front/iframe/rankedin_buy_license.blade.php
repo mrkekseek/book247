@@ -7,7 +7,7 @@
     <meta name="description" content="">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ env('MY_SERVER_URL') }}</title>
+    <title>{{ \App\Http\Controllers\AppSettings::get_setting_value_by_name('globalWebsite_url') }}</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
@@ -271,8 +271,8 @@
     <form id="paypal-form" action="{{ App::environment('production')?env('PAYPAL_LINK'):env('PAYPAL_SANDBOX') }}"  target="_parent" method="post" style="display: none;">
         <input type="hidden" name="cmd" value="_cart">
         <input type="hidden" name="business" value="{{ $paypal_email }}">
-        <input type="hidden" name="return" value="{{ env('MY_SERVER_URL') }}/membership/paypal_success">
-        <input type="hidden" name="cancel_url" value="{{ env('MY_SERVER_URL') }}/membership/paypal_cancel">
+        <input type="hidden" name="return" value="{{ route('payment/paypal_success')}}">
+        <input type="hidden" name="cancel_url" value="{{ route('payment/paypal_cancel')}}">
         <input type="hidden" name="notify_url" value="{{ route('payment/paypal-ipn') }}">
         <input type="hidden" name="rm" value="2">
         <input type="hidden" name="upload" value="1">
