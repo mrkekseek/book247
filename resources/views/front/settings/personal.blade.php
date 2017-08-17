@@ -36,9 +36,10 @@
                             <!-- BEGIN PROFILE SIDEBAR -->
                             <div class="profile-sidebar">
                                 <!-- PORTLET MAIN -->
-                                <div class="portlet light profile-sidebar-portlet ">
+                                <div class="portlet light profile-sidebar-portlet update-user-wrap">
+                                     <button type="button" class="update-user-images">update</button>
                                     <!-- SIDEBAR USERPIC -->
-                                    <div class="profile-userpic" style="background-image: url('{{ $avatar }}'); ">
+                                    <div class="profile-userpic profile-userimages" style="background-image: url('{{ $avatar }}'); ">
                                        <!-- <img src="{{ $avatar }}" class="img-responsive" alt="" /> -->
                                     </div>
                                     <!-- END SIDEBAR USERPIC -->

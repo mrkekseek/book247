@@ -9,6 +9,37 @@
 	background-position: center center;
 }
 
+.update-user-wrap {
+	position: relative;
+}
+
+.profile-userpic.profile-userimages {
+	width: 200px;
+	height: 200px;
+	position: relative;
+}
+
+.update-user-images {
+	border:none;
+	outline:none;
+	position: absolute;
+	right: 0;
+	top: 0;
+	left:auto;
+	width: 64px;
+	height: 30px;
+	line-height: 30px;
+	color:#fff;
+	background-color:#444d58;
+	-webkit-transition: all 0.4s;
+	-o-transition: all 0.4s;
+	transition: all 0.4s;
+}
+
+.update-user-images:hover {
+	opacity: 0.6;
+}
+
 .menu-user-avatar {
 	width: 35px;
 	height: 35px;

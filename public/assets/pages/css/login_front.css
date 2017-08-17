@@ -14,10 +14,6 @@ Login page
 
 .login .content {
     background-color: #eceef1;
-    -webkit-border-radius: 7px;
-    -moz-border-radius: 7px;
-    -ms-border-radius: 7px;
-    -o-border-radius: 7px;
     border-radius: 7px;
     /*width: 400px;*/
     margin: 40px auto 10px auto;
@@ -169,10 +165,6 @@ Login page
     background-color: #6c7a8d;
     font-size: 16px;
     border-top: 1px solid #eee;
-    -webkit-border-radius: 0 0 7px 7px;
-    -moz-border-radius: 0 0 7px 7px;
-    -ms-border-radius: 0 0 7px 7px;
-    -o-border-radius: 0 0 7px 7px;
     border-radius: 0 0 7px 7px; }
 .login .content .create-account > p {
     margin: 0; }
@@ -310,7 +302,7 @@ Login page
         width: 100%;
     }
     .login .powered{
-        width: 90%;
+        width: 100%;
     }
     .login .book_step_link{
         font-size: 12px;
@@ -346,7 +338,8 @@ Login page
 }
 
  .check_terms {
-    box-shadow: inset 0 0 0 1px #e73d4a;
+    -webkit-box-shadow: inset 0 0 0 1px #e73d4a;
+            box-shadow: inset 0 0 0 1px #e73d4a;
 }
 
 @media (min-width: 441px) and (max-width: 767px) {
@@ -365,6 +358,7 @@ Login page
     }
     .login .powered{
         width: 75%;
+        text-align: center;
     }
     .page-footer{
         text-align: center;
