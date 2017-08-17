@@ -871,7 +871,7 @@ class User extends Authenticatable
         $a = $this->calculate_available_store_credit();
 //        xdebug_var_dump($a); exit;
         $storeCredit = UserStoreCredits::where('member_id','=',$this->id)->orderBy('created_at','DESC')->first();
-        $storeCredit->total_amount = $a;
+        $storeCredit->total_amount = (int)$a;
         return $storeCredit->save();
     }
 

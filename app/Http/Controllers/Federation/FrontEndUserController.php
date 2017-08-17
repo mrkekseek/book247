@@ -1821,6 +1821,24 @@ class FrontEndUserController extends Base
         ]);
     }
 
+    public function contact_locations(){
+        $breadcrumbs = [
+            'Home'      => route('admin'),
+            'Dashboard' => '',
+        ];
+        $text_parts  = [
+            'title'     => 'Home',
+            'subtitle'  => 'users dashboard',
+            'table_head_text1' => 'Dashboard Summary'
+        ];
+        $sidebar_link= 'front-contact_or_locations';
+
+        return view('front/federation/contact_locations',[
+            'breadcrumbs' => $breadcrumbs,
+            'text_parts'  => $text_parts,
+            'in_sidebar'  => $sidebar_link,
+        ]);
+    }
 
     public function front_show_invoice($id)
     {
