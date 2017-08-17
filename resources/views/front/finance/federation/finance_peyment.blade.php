@@ -89,7 +89,7 @@
                                             <div class="portlet red-sunglo box">
                                                 <div class="portlet-title">
                                                     <div class="caption">
-                                                        <i class="fa fa-cogs"></i>Company Information 
+                                                        <i class="fa fa-cogs"></i>Company Information
                                                     </div>
                                                 </div>
                                                 <div class="portlet-body">
@@ -137,7 +137,7 @@
                                                                 </tr>
                                                             </thead>
                                                             <tbody>
-                                                                
+
                                                                 @foreach($invoice_items as $item)
                                                                     <tr>
                                                                         <td>
@@ -200,7 +200,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                
+
                             </div>
                         </div>
                     </div>
@@ -214,7 +214,7 @@
         <input type="hidden" name="business" value="{{ $paypal_email }}">
         <input type="hidden" name="return" value="{{ env('MY_SERVER_URL') }}/membership/paypal_success">
         <input type="hidden" name="cancel_url" value="{{ env('MY_SERVER_URL') }}/membership/paypal_cancel">
-        <input type="hidden" name="notify_url" value="{{ route('payment/paypal-ipn) }}">
+        <input type="hidden" name="notify_url" value="{{ route('payment/paypal-ipn') }}">
         <input type="hidden" name="rm" value="2">
         <input type="hidden" name="upload" value="1">
 
@@ -223,7 +223,7 @@
             <input type="hidden" name="amount_{{ $key+1 }}" value="{{ $item->price - (($item->discount * $item->price) / 100) }}">
             <input type="hidden" name="quantity_{{ $key+1 }}" value="{{ $item->quantity }}">
         @endforeach
-        <input type="hidden" name="currency_code" value="{{\App\Http\Controllers\AppSettings::get_setting_value_by_name('finance_currency')}}">
+        <input type="hidden" name="currency_code" value="{{ $paypal_currency }}">
 
         <input type="hidden" name="first_name" value="{{ $member->first_name }}">
         <input type="hidden" name="last_name" value="{{ $member->last_name }}">
@@ -239,16 +239,6 @@
 @endsection
 
 
-@section('pageBelowCorePlugins')
-    <script src="{{ asset('assets/global/plugins/jquery.min.js') }}" type="text/javascript"></script>
-    <script src="{{ asset('assets/global/plugins/bootstrap/js/bootstrap.min.js') }}" type="text/javascript"></script>
-    <script src="{{ asset('assets/global/plugins/js.cookie.min.js') }}" type="text/javascript"></script>
-    <script src="{{ asset('assets/global/plugins/bootstrap-hover-dropdown/bootstrap-hover-dropdown.min.js') }}" type="text/javascript"></script>
-    <script src="{{ asset('assets/global/plugins/jquery-slimscroll/jquery.slimscroll.min.js') }}" type="text/javascript"></script>
-    <script src="{{ asset('assets/global/plugins/jquery.blockui.min.js') }}" type="text/javascript"></script>
-    <script src="{{ asset('assets/global/plugins/uniform/jquery.uniform.min.js') }}" type="text/javascript"></script>
-    <script src="{{ asset('assets/global/plugins/bootstrap-switch/js/bootstrap-switch.min.js') }}" type="text/javascript"></script>
-@endsection
 
 @section('pageBelowLevelPlugins')
     <script src="{{ asset('assets/global/plugins/jquery-validation/js/jquery.validate.min.js') }}" type="text/javascript"></script>
