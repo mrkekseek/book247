@@ -399,9 +399,17 @@
                     @endif
                     @if (\App\Http\Controllers\AppSettings::get_setting_value_by_name('globalWebsite_show_store_credit_packs_on_frontend') == 1)
                     <li class="menu-dropdown mega-menu-dropdown {{ $in_sidebar == "front-type_of_store_credit" ? "active" : ""}}">
-                        <a href="{{ route('front/store_credit') }}"> Store Credits
+                        <a href="javascript:;"> Store Credits
                             <span class="arrow"></span>
                         </a>
+                        <ul class="dropdown-menu pull-left">
+                            <li class=" {{ $in_sidebar=='front-finance_invoice_list'?'active':'' }}">
+                                <a href="{{ route('front/store_credit') }}" class="nav-link"> Buy Pack </a>
+                            </li>
+                            <li class=" {{ $in_sidebar=='front-finance_active_membership'?'active':'' }}">
+                                <a href="{{ route('front/credit_status') }}" class="nav-link"> Current Status </a>
+                            </li>
+                        </ul>
                     </li>
                     @endif
                     <li class="menu-dropdown mega-menu-dropdown {{$in_sidebar=="front-bookings_list"?"active":""}}">

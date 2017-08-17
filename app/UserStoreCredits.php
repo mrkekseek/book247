@@ -49,7 +49,7 @@ class UserStoreCredits extends Model
                     'total_amount'      => 'integer',
                     'invoice_id'        => 'exists:invoices,id',
                     'expiration_date'   => 'date',
-                    'status'            => 'in:active,expired,deleted,spent',
+                    'status'            => 'in:active,expired,deleted,spent,pending',
                 ];
             }
             case 'PUT':
@@ -63,7 +63,7 @@ class UserStoreCredits extends Model
                     'total_amount'      => 'integer',
                     'invoice_id'        => 'required|exists:invoices,id',
                     'expiration_date'   => 'date',
-                    'status'            => 'in:active,expired,deleted,spent',
+                    'status'            => 'in:active,expired,deleted,spent,pending',
                 ];
             }
             default:break;
