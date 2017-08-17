@@ -5546,7 +5546,7 @@ This message is private and confidential. If you have received this message in e
     {
         $user = Auth::user();
         if (!$user || !$user->is_front_user()) {
-            return redirect()->intended(route('admin/login'));
+            return redirect()->intended(route('homepage'));
         }
 
         $invoice = Invoice::where('invoice_number', '=', $id)->get()->first();
