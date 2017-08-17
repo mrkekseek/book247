@@ -432,6 +432,7 @@
                 var elements = stripe.elements();
 
                 var style = {
+                    hidePostalCode: true,
                     iconStyle: 'solid',
                     color: 'white',
                     style: {
@@ -443,7 +444,7 @@
                           fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
                           fontSize: '19px',
                           '::placeholder': {
-                            color: '#8898AA',
+                            color: '#8898AA', 
                           },
                         },
                         invalid: {
