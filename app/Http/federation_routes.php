@@ -74,30 +74,46 @@ Route::post('membership/paypal_payment', [
 ]);
 
 
+
 Route::post('payment/paypal-ipn', [
     'as'    => 'payment/paypal-ipn',
     'uses'  => 'IPN@membership_ipn'
 ]);
 
-Route::get('membership/paypal_success', [
-    'as'    => 'membership/paypal_success',
+Route::get('payment/paypal_success', [
+    'as'    => 'payment/paypal_success',
     'uses'  => 'IPN@membership_paypal_success'
 ]);
 
-Route::post('membership/paypal_success', [
-    'as'    => 'membership/paypal_success',
+Route::post('payment/paypal_success', [
+    'as'    => 'payment/paypal_success',
     'uses'  => 'IPN@membership_paypal_success'
 ]);
 
-Route::get('membership/paypal_cancel', [
-    'as'    => 'membership/paypal_cancel',
+Route::get('payment/paypal_cancel', [
+    'as'    => 'payment/paypal_cancel',
     'uses'  => 'IPN@membership_paypal_cancel'
 ]);
 
-Route::post('membership/paypal_cancel', [
-    'as'    => 'membership/paypal_cancel',
-    'uses'  => 'IPN@membership_paypal_cancel'
-]);
+//Route::get('membership/paypal_success', [
+//    'as'    => 'membership/paypal_success',
+//    'uses'  => 'IPN@membership_paypal_success'
+//]);
+//
+//Route::post('membership/paypal_success', [
+//    'as'    => 'membership/paypal_success',
+//    'uses'  => 'IPN@membership_paypal_success'
+//]);
+//
+//Route::get('membership/paypal_cancel', [
+//    'as'    => 'membership/paypal_cancel',
+//    'uses'  => 'IPN@membership_paypal_cancel'
+//]);
+//
+//Route::post('membership/paypal_cancel', [
+//    'as'    => 'membership/paypal_cancel',
+//    'uses'  => 'IPN@membership_paypal_cancel'
+//]);
 
 /*Route::post('invoice/ipn', [
     'as'    => 'membership/ipn',
