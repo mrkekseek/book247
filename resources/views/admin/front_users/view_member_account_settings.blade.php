@@ -1650,7 +1650,7 @@
                         show_notification(data.title, data.message, 'lime', 3500, 0);
                         if (data.invoice_number) {
                             setTimeout(function() {
-                                window.location.href = '/admin/invoices/' + data.invoice_number + '/view'
+                                window.location.href = data.redirect_url;
                             },3000);
                         } else {
                             location.reload();

@@ -643,8 +643,6 @@ class FrontEndUserController extends Controller
             return redirect(route('admin/error/not_found'));
         }
 
-        $member->update_available_store_credit();
-
         $text_parts  = [
             'title'     => 'Back-End Users',
             'subtitle'  => 'view all users',
@@ -5254,12 +5252,11 @@ This message is private and confidential. If you have received this message in e
             'status'        => 'pending',
         ];
 
-//        if(isset($vars['issue_invoice'])){
-            return $member->buy_store_credit($store_credit_fillable);
-//        }
-//        else{
-//            return $member->add_store_credit($store_credit_fillable);
-//        }
+
+        $result = $member->buy_store_credit($store_credit_fillable);
+        $result['redirect_url'] = route('admin/invoices/view',['id' => $result['invoice_number']]);
+        return $result;
+
     }
     // Stop - Store credit add - backend add store credit to member
 

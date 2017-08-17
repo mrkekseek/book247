@@ -173,9 +173,9 @@
 
 
 
-<form id="paypal-form" action="https://www.paypal.com/cgi-bin/webscr" method="post" style="display: none;">
+<form id="paypal-form" action="{{ App::environment('production')?env('PAYPAL_LINK'):env('PAYPAL_SANDBOX') }}" method="post" style="display: none;">
     <input type="hidden" name="cmd" value="_xclick">
-    <input type="hidden" name="business" value="{{ env('PAYPAL_EMAIL') }}">
+    <input type="hidden" name="business" value="{{ \App\Http\Controllers\AppSettings::get_setting_value_by_name('finance_simple_paypal_payment_account') }}">
     <input type="hidden" name="return" value="">
     <input type="hidden" name="item_name" value="">
     <input type="hidden" name="amount" value="">
