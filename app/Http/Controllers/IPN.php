@@ -278,9 +278,12 @@ class IPN extends Controller{
                         $invoice->status = 'processing';
                         $invoice->save();
                         $credits = UserStoreCredits::find($invoice->invoice_reference_id);
-                        $credits->status = 'active';
-                        $credits->save();
-                        break;
+                        $credits->activate_user_credits();
+                        $user = User::find($invoice->user_id);
+                        if (!isset($user)) {
+                            return false;
+                        }
+                        $user->update_available_store_credit();
                         break;
                     default:
                         $invoice->status = 'processing';

@@ -108,7 +108,7 @@
                                             </div>
                                             <div class="arrow-down arrow-grey"></div>
                                             <div class="price-table-footer">
-                                                <a href="javascript:void(0);" type="button" class="btn price-button sbold uppercase btn-signup" data-id="{{ $p->id }}" style="background-color: {{ $p->plan_calendar_color }}; color: #fff">Sign Up</a>
+                                                <a href="javascript:void(0);" type="button" class="btn price-button sbold uppercase {{ $is_logged ? 'btn-signup' : 'btn-must-be-logged' }}" data-id="{{ $p->id }}" style="background-color: {{ $p->plan_calendar_color }}; color: #fff">Sign Up</a>
                                             </div>
                                         </div>
                                     </div>
@@ -154,6 +154,29 @@
           </div>
         </div>
       </div>
+    </div>
+
+    <div class="modal fade" id="must_be_logged" tabindex="-1" role="dialog" aria-labelledby="" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="membership_name">You must be logged!</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-12 form-group">
+                            You must log in to sign up to a membership!&nbsp;
+                            <a href="{{ route('homepage') }}"> Login </a>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
     </div>
     <!-- END MODAL -->
 @endsection
@@ -240,6 +263,11 @@
                     $("#btn-pay").data("id", plan.id);
                     $("#signup_membership").modal("show");
                 }
+            });
+
+            $(".btn-must-be-logged").click(function(){
+                $("#must_be_logged").modal("show");
+
             });
 
             $("input[name=terms_and_condition]").change(function(){

@@ -174,6 +174,13 @@ class InvoiceController extends Controller
             // make manual payment
             switch ($vars['method']){
                 case 'credit' :
+
+                    if ($invoice->invoice_type == 'store_credit_invoice' || $invoice->invoice_type == 'store_credit_pack_invoice') {
+                        return [
+                            'success' => false,
+                            'title'   => 'You cannot do that!',
+                            'errors'  => 'You cannot buy store credits with store credits.'];
+                    }
                     $otherDetails = 'Backend - paid with store credit';
                     // we check if the amount of store credit that is needed for this transaction is available
                     $member = User::where('id','=',$invoice->user_id)->get()->first();

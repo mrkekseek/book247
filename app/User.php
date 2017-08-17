@@ -807,7 +807,7 @@ class User extends Authenticatable
                 'success' => true,
                 'invoice_number' => $member_invoice->invoice_number,
                 'title'   => 'Store credit added',
-                'message' => 'Page will reload and the store credit will be visible on this page'];
+                'message' => 'You will be redirected to the payment.'];
         }
         else{
             return [
@@ -858,9 +858,6 @@ class User extends Authenticatable
     }
 
     public function get_available_store_credit(){
-        $a = $this->calculate_available_store_credit();
-        //xdebug_var_dump($a); exit;
-
         $storeCredit = UserStoreCredits::where('member_id','=',$this->id)->orderBy('created_at','DESC')->first();
         if ($storeCredit){
             return $storeCredit->total_amount;
@@ -870,6 +867,16 @@ class User extends Authenticatable
         }
     }
 
+    public function update_available_store_credit() {
+        $a = $this->calculate_available_store_credit();
+//        xdebug_var_dump($a); exit;
+        $storeCredit = UserStoreCredits::where('member_id','=',$this->id)->orderBy('created_at','DESC')->first();
+        $storeCredit->total_amount = $a;
+        return $storeCredit->save();
+    }
+
+
+
     public function calculate_available_store_credit(){
         ini_set('max_execution_time',5);
 
@@ -877,7 +884,7 @@ class User extends Authenticatable
         $creditIn   = [];
         $startKey   = 0;
 
-        $storeCreditActivities = UserStoreCredits::where('member_id','=',$this->id)->where('value','>=',0)->orderBy('created_at','ASC')->get();
+        $storeCreditActivities = UserStoreCredits::where('member_id','=',$this->id)->where('value','>=',0)->whereNotIn('status',['deleted','pending'])->orderBy('created_at','ASC')->get();
         foreach($storeCreditActivities as $activity){
             $creditIn[$startKey++] = ['id' => $activity->id,
                 'amount'        => $activity->value,
@@ -888,7 +895,7 @@ class User extends Authenticatable
 
         //xdebug_var_dump($creditIn);
         //echo 'Real value : '.$realValue.'<br />';
-        $storeCreditActivities = UserStoreCredits::where('member_id','=',$this->id)->where('value','<',0)->orderBy('created_at','ASC')->get();
+        $storeCreditActivities = UserStoreCredits::where('member_id','=',$this->id)->where('value','<',0)->where('status','<>','expired')->orderBy('created_at','ASC')->get();
         foreach($storeCreditActivities as $activity){
             $spent = (-1)*$activity->value;
             //echo 'Spent : '.$spent.'<br />';

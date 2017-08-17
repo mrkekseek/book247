@@ -34,14 +34,15 @@
                             <div class="actions">
                             </div>
                         </div>
+                        {{ $credit }}
                         <div class="portlet-body">
                             <table class="table table-striped table-bordered table-hover table-advance order-column " id="sample_1">
                                 <thead>
                                 <tr>
                                     <th> Number </th>
                                     <th> Name </th>
-                                    <th> Price </th>
-                                    <th> Type </th>
+                                    <th> Credit </th>
+                                    <th> Added by </th>
                                     <th> Status </th>
                                     <th> Date </th>
                                 </tr>
@@ -123,6 +124,13 @@
             }
         });
 
+        {{--$.ajax({--}}
+            {{--"url" : "{{ route('front/member_transaction_list') }}",--}}
+            {{--"type" : "POST",--}}
+            {{--"success": function(response) {--}}
+                {{--console.log(response);--}}
+            {{--}--}}
+        {{--});--}}
         var TableDatatablesManaged = function () {
 
             var initTable1 = function () {
