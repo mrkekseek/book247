@@ -5571,8 +5571,9 @@ This message is private and confidential. If you have received this message in e
         $transaction = new InvoiceFinancialTransaction;
         $transaction->invoice_id = $invoice->id;
         $transaction->user_id = Auth::user()->id;
+        $transaction->transaction_type = 'card';
         $transaction->transaction_amount = $amount;
-        $transaction->transaction_currency = "usd";
+        //$transaction->transaction_currency = "usd";
         $transaction->transaction_date = Carbon::now();
         $transaction->status = 'pending';
         $transaction->save();
@@ -5587,11 +5588,15 @@ This message is private and confidential. If you have received this message in e
             $result['success'] = true;
             $result['errors'] = 'Payment successfully completed';
         }
-       
+        else
+        {
+            $transaction->update(['status' => 'declined']);
+        }
 
+        $transaction->update(['other_details' => json_encode($response)]);
+       
         if ( ! $request->input('save_card') * 1)
         {
-            
             User::where("id", Auth::user()->id)->update(['stripe_id' => '', 'card_brand' => '', 'card_last_four' => '']);
         }
 
