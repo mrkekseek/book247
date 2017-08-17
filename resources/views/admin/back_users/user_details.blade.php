@@ -175,15 +175,15 @@
                                             <div class="portlet-body">
                                                 <ul class="list-unstyled">
                                                     <li>
-                                                                    <span class="sale-info"> This Week
-                                                                        <i class="fa fa-img-up"></i>
-                                                                    </span>
+                                                        <span class="sale-info"> This Week
+                                                            <i class="fa fa-img-up"></i>
+                                                        </span>
                                                         <span class="sale-num"> 23 </span>
                                                     </li>
                                                     <li>
-                                                                    <span class="sale-info"> This Month
-                                                                        <i class="fa fa-img-down"></i>
-                                                                    </span>
+                                                        <span class="sale-info"> This Month
+                                                            <i class="fa fa-img-down"></i>
+                                                        </span>
                                                         <span class="sale-num"> 87 </span>
                                                     </li>
                                                     <li>

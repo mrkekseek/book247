@@ -19,7 +19,7 @@
 	position: relative;
 }
 
-.update-user-images {
+.update-user-images.profile-edit {
 	border:none;
 	outline:none;
 	position: absolute;
@@ -34,10 +34,17 @@
 	-webkit-transition: all 0.4s;
 	-o-transition: all 0.4s;
 	transition: all 0.4s;
+	text-align: center;
 }
 
-.update-user-images:hover {
+.update-user-images.profile-edit:focus {
+	text-decoration: none;
+}
+
+.update-user-images.profile-edit:hover {
 	opacity: 0.6;
+	text-decoration: none;
+	color:#fff;
 }
 
 .menu-user-avatar {
