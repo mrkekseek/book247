@@ -1648,7 +1648,13 @@
                     if (data.success) {
                         $('#change_member_status').modal('hide');
                         show_notification(data.title, data.message, 'lime', 3500, 0);
-                        location.reload();
+                        if (data.invoice_number) {
+                            setTimeout(function() {
+                                window.location.href = '/admin/invoices/' + data.invoice_number + '/view'
+                            },3000);
+                        } else {
+                            location.reload();
+                        }
                     }
                     else{
                         show_notification(data.title, data.errors, 'ruby', 3500, 0);

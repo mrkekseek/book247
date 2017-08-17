@@ -637,10 +637,13 @@ class FrontEndUserController extends Controller
             return redirect()->intended(route('admin/login'));
         }
 
+
         $member = User::with('roles')->find($id);
         if (!$member || !$member->is_front_user()){
             return redirect(route('admin/error/not_found'));
         }
+
+        $member->update_available_store_credit();
 
         $text_parts  = [
             'title'     => 'Back-End Users',
@@ -1353,7 +1356,7 @@ class FrontEndUserController extends Controller
                             $bookingItem = BookingInvoiceItem::where('id','=',$invItem->item_reference_id)->get()->first();
                             $display_name = 'Booking - '.@$bookingItem->location_name;
                         }
-                        elseif ($display_name=='-' && $invItem->item_type=='store_credit_item'){
+                        elseif ($display_name=='-' && ( $invItem->item_type=='store_credit_item' || $invItem->item_type=='store_credit_pack')){
                             $bookingItem = BookingInvoiceItem::where('id','=',$invItem->item_reference_id)->get()->first();
                             $display_name = 'Store Credit - '.@$bookingItem->location_name;
                         }
@@ -1392,7 +1395,7 @@ class FrontEndUserController extends Controller
                 $is_first = 0;
 
                 $invoiceItems = InvoiceItem::where('invoice_id','=',$invoice['invoice_id'])->get();
-                $invType = ['store_credit_item'=>'Store Credit','user_memberships'=>'Membership Plan','booking_invoice_item'=>'Booking Item'];
+                $invType = ['store_credit_item'=>'Store Credit','user_memberships'=>'Membership Plan','booking_invoice_item'=>'Booking Item','store_credit_pack' => 'Store Credit Pack'];
                 if (sizeof($invoiceItems)>0){
                     foreach($invoiceItems as $item){
                         $new_set = [
@@ -2826,7 +2829,7 @@ This message is private and confidential. If you have received this message in e
         $vars = $request->only('membership_id', 'terms_and_condition');
         $plan = MembershipPlan::where('id', '=', $vars['membership_id'])->first();
 
-        if( ! $user->attach_membership_plan($plan, $user, Carbon::today()->format('Y-m-d'), 0, 'active', 'panding'))
+        if( ! $user->attach_membership_plan($plan, $user, Carbon::today()->format('Y-m-d'), 0, 'pending'))
         {
             return [
                 'success'   => false,
@@ -3981,7 +3984,7 @@ This message is private and confidential. If you have received this message in e
                         if ($display_name=='-' && $invItem->item_type=='user_memberships'){
                             $display_name = 'Membership - '.$invItem->item_name;
                         }
-                        elseif ($display_name=='-' && $invItem->item_type=='store_credit_item'){
+                        elseif ($display_name=='-' && ( $invItem->item_type=='store_credit_item' || $invItem->item_type=='store_credit_pack')){
                             $display_name = 'Store Credit';
                         }
                         elseif ($display_name=='-' && $invItem->item_type=='booking_invoice_item'){
@@ -4031,24 +4034,28 @@ This message is private and confidential. If you have received this message in e
         }
 
         $transactionList = [];
-        $generalTransactions = InvoiceFinancialTransaction::where('user_id','=',$userID)->get();
+        $generalTransactions = UserStoreCredits::where('member_id','=',$userID)->get();
         if (sizeof($generalTransactions)>0){
-            $buttons = [];
             $colorStatus = '#fff';
             foreach ($generalTransactions as $key => $single_transaction){
                 switch ($single_transaction->status){
 
                 }
-                $invoiceItem = InvoiceItem::find(json_decode($single_transaction->invoice_items)[0]);
-                dd($invoiceItem);
-                $invoicesList[] = [
-                    '<div class="'.$colorStatus.'"></div><a href="javascript:;"> #'.$key.' </a>',
-                    $invoiceItem->item_name,
-                    $single_transaction->amount . $single_transaction->currency,
-                    $single_transaction->transaction_type,
-                    $single_transaction->status,
-                    $single_transaction->transaction_date
 
+                if ($single_transaction->member_id == $single_transaction->back_user_id) {
+                    $added_by = 'yourself';
+                } else {
+                    $backend_user = User::find($single_transaction->back_user_id);
+                    $added_by = $backend_user->first_name . ' ' . $backend_user->last_name;
+                }
+
+                $transactionList[] = [
+                    '<div class="'.$colorStatus.'"></div><a href="javascript:;"> #'.($key + 1).' </a>',
+                    $single_transaction->title,
+                    ($single_transaction->value) > 0 ? '+'. $single_transaction->value : $single_transaction->value,
+                    $added_by,
+                    $single_transaction->status,
+                    (string)$single_transaction->created_at
                 ];
             }
         }
@@ -4078,11 +4085,18 @@ This message is private and confidential. If you have received this message in e
         ];
         $sidebar_link= 'front-type_of_memberships';
 
+        if (Auth::check()) {
+            $is_logged = true;
+        } else{
+            $is_logged = false;
+        }
+
         return view('front/type_of_memberships',[
             'breadcrumbs' => $breadcrumbs,
             'text_parts'  => $text_parts,
             'in_sidebar'  => $sidebar_link,
-            'plans'       => $membership_plans
+            'plans'       => $membership_plans,
+            'is_logged'   => $is_logged
         ]);
     }
 
@@ -4151,10 +4165,13 @@ This message is private and confidential. If you have received this message in e
         ];
         $sidebar_link= 'front-type_of_store_credit';
 
+//        $u = User::find(43);
+
         return view('front/current_status',[
             'breadcrumbs' => $breadcrumbs,
             'text_parts'  => $text_parts,
             'in_sidebar'  => $sidebar_link,
+            'credit'      => $user->calculate_available_store_credit()
         ]);
 
     }
@@ -5229,20 +5246,20 @@ This message is private and confidential. If you have received this message in e
         $store_credit_fillable = [
             'member_id'     => $member->id,
             'back_user_id'  => $user->id,
-            'title'         => 'Store Credit',
+            'title'         => $package->name,
             'value'         => intval($package->store_credit_value),
             'total_amount'  => intval($package->store_credit_value)+$member->get_available_store_credit(),
             //'invoice_id'    => -1,
             'expiration_date'   => 0,
-            'status'        => 'active',
+            'status'        => 'pending',
         ];
 
-        if(isset($vars['issue_invoice'])){
+//        if(isset($vars['issue_invoice'])){
             return $member->buy_store_credit($store_credit_fillable);
-        }
-        else{
-            return $member->add_store_credit($store_credit_fillable);
-        }
+//        }
+//        else{
+//            return $member->add_store_credit($store_credit_fillable);
+//        }
     }
     // Stop - Store credit add - backend add store credit to member
 

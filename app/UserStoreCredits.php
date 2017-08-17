@@ -3,6 +3,8 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Http\Controllers\AppSettings;
+use Carbon\Carbon;
 
 class UserStoreCredits extends Model
 {
@@ -68,5 +70,18 @@ class UserStoreCredits extends Model
             }
             default:break;
         }
+    }
+
+    public function activate_user_credits() {
+        $credit_validity = AppSettings::get_setting_value_by_name('finance_store_credit_validity');
+        if ($this->value>=0){
+            $expiration_date = Carbon::today()->addMonthsNoOverflow($credit_validity)->format('Y-m-d');
+        }
+        else{
+            $expiration_date  = Carbon::today()->format('Y-m-d');
+        }
+        $this->expiration_date = $expiration_date;
+        $this->status = 'active';
+        return $this->save();
     }
 }
