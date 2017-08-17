@@ -37,7 +37,7 @@
                             <div class="profile-sidebar">
                                 <!-- PORTLET MAIN -->
                                 <div class="portlet light profile-sidebar-portlet update-user-wrap">
-                                     <button type="button" class="update-user-images">update</button>
+                                     <a data-toggle="modal" href="#draggable" class="update-user-images profile-edit">update</a>
                                     <!-- SIDEBAR USERPIC -->
                                     <div class="profile-userpic profile-userimages" style="background-image: url('{{ $avatar }}'); ">
                                        <!-- <img src="{{ $avatar }}" class="img-responsive" alt="" /> -->
@@ -271,6 +271,60 @@
             </div>
         </div>
     </div>
+
+        <div class="modal fade draggable-modal" id="draggable" tabindex="-1" role="basic" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                        <h4 class="modal-title">Update user avatar picture</h4>
+                    </div>
+                    <div class="modal-body">
+                        <form action="{{ route('settings/personal/avatar') }}" id="user_picture_upload2" class="form-horizontal" method="post" enctype="multipart/form-data">
+                            <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                            <div class="form-body">
+                                <div class="alert alert-danger display-hide">
+                                    <button class="close" data-close="alert"></button> You have some form errors. Please check below. </div>
+                                <div class="alert alert-success display-hide">
+                                    <button class="close" data-close="alert"></button> Your form validation is successful! </div>
+                                <div class="form-group last">
+                                    <label class="control-label col-md-3">User Avatar</label>
+                                    <div class="col-md-9">
+                                        <div class="fileinput fileinput-{{ (strlen($avatar)>10) ? 'exists':'new' }} " data-provides="fileinput">
+                                            <div class="fileinput-new thumbnail" style="width: 200px; height: 244px;">
+                                                <img src="{{ asset('assets/global/img/default-notext-text.png') }}" alt="" /> </div>
+                                            <div class="fileinput-preview fileinput-exists thumbnail" style="max-width: 200px; max-height: 240px;">
+                                                @if ( strlen($avatar)>10 )
+                                                    <img src="{{ $avatar }}" />
+                                                @endif
+                                            </div>
+                                            <div>
+                                                <span class="btn default btn-file">
+                                                    <span class="fileinput-new"> Select image </span>
+                                                    <span class="fileinput-exists"> Change </span>
+                                                    <input type="file" name="user_avatar" class="user_avatar_select_btn1" /> </span>
+                                                <a href="javascript:;" class="btn red fileinput-exists remove-avatar" data-dismiss="fileinput"> Remove </a>
+                                            </div>
+                                        </div>
+                                        <div class="clearfix margin-top-10">
+                                            <div class="note note-warning margin-bottom-5">
+                                                <p> Image preview only works in IE10+, FF3.6+, Safari6.0+, Chrome6.0+ and Opera11.1+. In older browsers the filename is shown instead. </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn dark btn-outline" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn green submit_form_2" onclick="javascript: $('#user_picture_upload2').submit();">Save changes</button>
+                    </div>
+                </div>
+                <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+        </div>
 
 @endsection
 
@@ -694,6 +748,61 @@
                 });
             }
 
+            var handleValidation6 = function() {
+                var form6 = $('#user_picture_upload2');
+                var error6 = $('.alert-danger', form6);
+                var success6 = $('.alert-success', form6);
+                 console.log('1');
+
+                form6.validate({
+                    errorElement: 'span', //default input error message container
+                    errorClass: 'help-block help-block-error', // default input error message class
+                    focusInvalid: false, // do not focus the last invalid input
+                    ignore: "",  // validate all fields including form hidden input
+                    rules: {
+                        user_avatar: {
+                            required: true,
+                            accept: "image/*",
+                            filesize: 1048576,
+                        },
+                    },
+                    messages: {
+                        user_avatar: {
+                            required: "We need your avatar before submitting the form",
+                            accept: "The uploaded file must be an image",
+                            filesize: "File must be JPG, GIF or PNG, less than 1MB",
+                        }
+                    },
+
+                    invalidHandler: function (event, validator) { //display error alert on form submit
+                        success6.hide();
+                        error6.show();
+                        App.scrollTo(error6, -200);
+                    },
+
+                    highlight: function (element) { // hightlight error inputs
+                        $(element)
+                                .closest('.form-group').addClass('has-error'); // set error class to the control group
+                    },
+
+                    unhighlight: function (element) { // revert the change done by hightlight
+                        $(element)
+                                .closest('.form-group').removeClass('has-error'); // set error class to the control group
+                    },
+
+                    success: function (label) {
+                        label
+                                .closest('.form-group').removeClass('has-error'); // set success class to the control group
+                    },
+
+                    submitHandler: function (form) {
+                        success6.show();
+                        error6.hide();
+                        form.submit();
+                    }
+                });
+            };
+
             return {
                 //main function to initiate the module
                 init: function () {
@@ -702,6 +811,7 @@
                     handleValidation3();
                     handleValidation4();
                     handleValidation5();
+                    handleValidation6();
                 }
             };
         }();

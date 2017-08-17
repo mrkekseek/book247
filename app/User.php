@@ -770,8 +770,8 @@ class User extends Authenticatable
     /** Store Credit functions - START */
     public function buy_store_credit($store_credit_fill, $price = 0, $discount = 0){
         // adds the store credit
-        $storeCredit = $this->add_store_credit($store_credit_fill);
 
+        $storeCredit = $this->add_store_credit($store_credit_fill);
         // check if all went well with adding store credit
         if ($storeCredit['success']==true){
             $storeCredit = $storeCredit['storeCredit'];
@@ -805,6 +805,7 @@ class User extends Authenticatable
 
             return [
                 'success' => true,
+                'invoice_number' => $member_invoice->invoice_number,
                 'title'   => 'Store credit added',
                 'message' => 'Page will reload and the store credit will be visible on this page'];
         }
@@ -815,6 +816,8 @@ class User extends Authenticatable
                 'errors'  => 'Could not add the store credit to this member'];
         }
     }
+
+
 
     private function add_store_credit($store_credit_fill){
         $user = Auth::user();
@@ -833,9 +836,10 @@ class User extends Authenticatable
             $store_credit_fill['expiration_date'] = Carbon::today()->format('Y-m-d');
         }
 
+
         $validator = Validator::make($store_credit_fill, UserStoreCredits::rules('POST'), UserStoreCredits::$message, UserStoreCredits::$attributeNames);
         if ($validator->fails()){
-            //xdebug_var_dump($validator->errors());
+//            xdebug_var_dump($validator->errors());
             // note could not be created
             return [
                 'success' => false,

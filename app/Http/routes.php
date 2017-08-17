@@ -981,6 +981,14 @@ if (env('FEDERATION',false)){
             'uses' => 'FrontEndUserController@get_user_invoice_list'
         ]);
 
+        Route::post('transaction_list', [
+            'as' => 'front/member_transaction_list',
+            'uses' => 'FrontEndUserController@get_user_transaction_list'
+        ]);
+
+
+
+
         Route::get('view_invoice/{id}', [
             'as' => 'front/view_invoice/',
             'uses' => 'FrontEndUserController@front_show_invoice'
@@ -994,6 +1002,11 @@ if (env('FEDERATION',false)){
         Route::get('list_of_store_credit', [
             'as' => 'front/store_credit',
             'uses' => 'FrontEndUserController@type_of_store_credit'
+        ]);
+
+        Route::get('credit_status', [
+            'as' => 'front/credit_status',
+            'uses' => 'FrontEndUserController@current_credit_status'
         ]);
 
         Route::get('contact', [
