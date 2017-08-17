@@ -8,6 +8,7 @@ use App\User;
 use Stripe\Stripe;
 use Stripe\Customer;
 use Stripe\Charge;
+use Stripe\StripeBilling;
 use Auth;
 use Carbon\Carbon;
 use Config;
@@ -51,6 +52,7 @@ class StripeController extends Controller
     static public function createStripeCharge($stripe_id, $amount = 50, $currency = "usd")
     {
         Stripe::setApiKey(Config::get("stripe.stripe_secret"));
+
         $charge = Charge::create(array(
             "amount" => $amount,
             "currency" => $currency,
