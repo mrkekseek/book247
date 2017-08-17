@@ -212,8 +212,8 @@
     <form id="paypal-form" action="{{ App::environment('production')?env('PAYPAL_LINK'):env('PAYPAL_SANDBOX') }}"  target="_blank" method="post" style="display: none;">
         <input type="hidden" name="cmd" value="_cart">
         <input type="hidden" name="business" value="{{ $paypal_email }}">
-        <input type="hidden" name="return" value="{{ env('MY_SERVER_URL') }}/membership/paypal_success">
-        <input type="hidden" name="cancel_url" value="{{ env('MY_SERVER_URL') }}/membership/paypal_cancel">
+        <input type="hidden" name="return" value="{{ route('payment/paypal_success')}}">
+        <input type="hidden" name="cancel_url" value="{{ route('payment/paypal_cancel')}}">
         <input type="hidden" name="notify_url" value="{{ route('payment/paypal-ipn') }}">
         <input type="hidden" name="rm" value="2">
         <input type="hidden" name="upload" value="1">
