@@ -767,6 +767,8 @@ Route::group(['middleware' => 'web'], function () {
 //        'uses' => 'Federation\AppSettings@reset_application_cache_settings'
 //    ]);
 
+
+
     Route::get('admin/settings/account_key', [
         'as'    => 'admin/settings/account_key',
         'uses'  => 'Federation\AppSettings@rankedin_app_key_integration'
@@ -817,6 +819,9 @@ Route::group(['middleware'=>'web', 'prefix'=>'admin'], function(){
     //GET 	        /membership_plan/{id}/edit 	edit 	    admin.membership_plan.edit
     //PUT/PATCH 	/membership_plan/{id} 	    update 	    admin.membership_plan.update
     //DELETE 	    /membership_plan/{id} 	    destroy 	admin.membership_plan.destroy
+
+    Route::resource('store_credit_products', 'StoreCreditProductsController');
+
 
     Route::post('membership_plan/add_restriction', [
         'as'    => 'membership_plan-add_restriction',
