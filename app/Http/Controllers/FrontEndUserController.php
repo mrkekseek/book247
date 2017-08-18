@@ -5646,23 +5646,28 @@ This message is private and confidential. If you have received this message in e
         ];
 
         $amount = 0;
+        $ids_invoice = [];
+
         $invoice = Invoice::where("id", $request->input('id'))->first();
         foreach($invoice->items as $row)
         {
             $amount += $row->total_price;
+            $ids_invoice[] = $row->id;
         }
+
+        $currency = AppSettings::get_setting_value_by_name('finance_currency');
 
         $transaction = new InvoiceFinancialTransaction;
         $transaction->invoice_id = $invoice->id;
         $transaction->user_id = Auth::user()->id;
         $transaction->transaction_type = 'card';
         $transaction->transaction_amount = $amount;
-        //$transaction->transaction_currency = "usd";
+        $transaction->transaction_currency = $currency;
         $transaction->transaction_date = Carbon::now();
         $transaction->status = 'pending';
         $transaction->save();
 
-        $response = StripeController::createStripeCharge(Auth::user()->stripe_id, $amount * 100, "usd");
+        $response = StripeController::createStripeCharge(Auth::user()->stripe_id, $amount * 100, $currency);
 
         if ($response->paid)
         {
@@ -5677,7 +5682,7 @@ This message is private and confidential. If you have received this message in e
             $transaction->update(['status' => 'declined']);
         }
 
-        $transaction->update(['other_details' => json_encode($response)]);
+        $transaction->update(['invoice_items' => json_encode($ids_invoice), 'other_details' => json_encode($response)]);
        
         if ( ! $request->input('save_card') * 1)
         {
