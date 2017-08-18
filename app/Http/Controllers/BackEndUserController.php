@@ -2,13 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\BookingInvoiceItem;
+use App\FinancialProfile;
 use App\OptimizeSearchMembers;
 use App\Permission;
 use App\PersonalDetail;
 use App\ProfessionalDetail;
 use App\Address;
+use App\Booking;
 use App\ShopLocations;
 use App\ShopResourceCategory;
+use App\StoreCreditProducts;
 use App\UserMembership;
 use App\UserSettings;
 use App\UserAvatars;
@@ -36,6 +40,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Config;
 use App\Http\Controllers\AppSettings;
 use App\Http\Controllers\StripeController;
+use Regulus\ActivityLog\Models\Activity;
 
 class BackEndUserController extends Controller
 {
@@ -419,6 +424,69 @@ class BackEndUserController extends Controller
             $back_user->first_name.' '.$back_user->middle_name.' '.$back_user->last_name => '',
         ];
 
+        $activity_log = Activity::where('user_id',$id)->get();
+        $system_logs = [];
+        $user_logs = [];
+        foreach ($activity_log as $key => $log) {
+            if ($log->content_type == 'login') {
+                unset($activity_log[$key]);
+            } else {
+                if (in_array($log->content_type,['financial_profile','membership_plan','store_credit_products'])) {
+                    switch ($log->content_type) {
+                        case 'financial_profile':
+                            $description = explode(':',$log->description);
+                            $profile = FinancialProfile::find(trim($description[1]));
+                            if ($profile) {
+                                $log->description = str_replace(trim($description[1]),'<a href="'.route('admin/settings_financial_profiles/edit',['id' => $profile->id]).'">' . $profile->profile_name . '</a>',$log->description);
+                            }
+                            break;
+                        case 'membership_plan':
+                            $description = explode(':',$log->description);
+                            $plan = MembershipPlan::find(trim($description[1]));
+                            if ($plan) {
+                                $log->description = str_replace(trim($description[1]),'<a href="'.route('admin.membership_plan.edit',['id' => $plan->id]).'">'.$plan->name. '</a>',$log->description);
+                            }
+                            break;
+                        case 'store_credit_products':
+                            $description = explode(':',$log->description);
+                            $product = StoreCreditProducts::find(trim($description[1]));
+                            if ($product) {
+                                $log->description = str_replace(trim($description[1]),'<a href="'.route('admin.store_credit_products.show',['id' => $product->id]).'">'.$product->name. '</a>',$log->description);
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+                    $system_logs[] = $log;
+                } else {
+                    switch ($log->content_type) {
+                        case 'bookings':
+                            $description = explode(':', $log->description);
+                            $booking_item = BookingInvoiceItem::where('booking_id', trim($description[1]))->first();
+                            if ($booking_item) {
+                                $log->description = str_replace(trim($description[1]), $booking_item->resource_name . ' at ' . $booking_item->location_name, $log->description);
+                                $booking = Booking::find($booking_item->booking_id);
+                                if ($booking) {
+                                    $u = User::find($booking->for_user_id);
+                                    $log->description .= ' for <a href="'.route('admin/front_users/view_user',['id' => $u->id]).'">' . $u->first_name . ' ' . $u->last_name .'</a>';
+                                }
+                            }
+                            break;
+                        case 'user_membership':
+                            $description = explode(':',$log->description);
+                            $u = User::find(trim($description[1]));
+                            if ($u) {
+                                $log->description = str_replace(trim($description[1]),'<a href="'.route('admin/front_users/view_user',['id' => $u->id]).'">' . $u->first_name . ' ' . $u->last_name .'</a>',$log->description);
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+                    $user_logs[] = $log;
+                }
+            }
+        }
+
         return view('admin/back_users/user_details', [
             'user'      => $back_user,
             'userRole'  => $userRole,
@@ -436,7 +504,9 @@ class BackEndUserController extends Controller
             'documents'   => $userDocuments,
             'locations'     => $locations,
             'activities'    => $activities,
-            'settings'      => $settings
+            'settings'      => $settings,
+            'system_logs'  => $system_logs,
+            'user_logs'    => $user_logs
         ]);
     }
 

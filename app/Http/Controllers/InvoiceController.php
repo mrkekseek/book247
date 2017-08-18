@@ -6,6 +6,7 @@ use App\Invoice;
 use App\Address;
 use App\InvoiceFinancialTransaction;
 use App\InvoiceItem;
+use App\UserStoreCredits;
 use Illuminate\Http\Request;
 use Auth;
 use App\User;
@@ -203,9 +204,35 @@ class InvoiceController extends Controller
                     }
                     break;
                 case 'card' :
+
+                    if ($invoice->invoice_type == 'store_credit_invoice' || $invoice->invoice_type == 'store_credit+pack_invoice') {
+                        $user_store_credits = UserStoreCredits::find($invoice->invoice_reference_id);
+                        $user_store_credits->activate_user_credits();
+                        $member = User::where('id','=',$invoice->user_id)->get()->first();
+                        if (!$member){
+                            return [
+                                'success'   => false,
+                                'errors'    => 'Could not find invoiced member'];
+                        }
+                        $member->update_available_store_credit();
+                    }
+
                     $otherDetails = 'Backend - manual credit card payment';
                     break;
                 case 'cash' :
+
+                    if ($invoice->invoice_type == 'store_credit_invoice' || $invoice->invoice_type == 'store_credit+pack_invoice') {
+                        $user_store_credits = UserStoreCredits::find($invoice->invoice_reference_id);
+                        $user_store_credits->activate_user_credits();
+                        $member = User::where('id','=',$invoice->user_id)->get()->first();
+                        if (!$member){
+                            return [
+                                'success'   => false,
+                                'errors'    => 'Could not find invoiced member'];
+                        }
+                        $member->update_available_store_credit();
+                    }
+
                     $otherDetails = 'Backend - manual cash payment';
                     break;
                 default:

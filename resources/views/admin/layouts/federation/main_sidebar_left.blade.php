@@ -101,7 +101,22 @@
                 </ul>
             </li>
         @endif
-
+        @if (Auth::user()->can('view-general-settings-menu'))
+        <li class="nav-item  {{ in_array($in_sidebar, ['admin-activity-log'])?'active open':'' }}">
+            <a href="javascript:;" class="nav-link nav-toggle">
+                <i class="icon-feed"></i>
+                <span class="title"> Reports </span>
+                <span class="arrow"></span>
+            </a>
+            <ul class="sub-menu">
+                <li class="nav-item {{ $in_sidebar == 'admin-activity-log' ? 'active open' : '' }}">
+                    <a href="{{route('admin/activity_log')}}" class="nav-link ">
+                        <span class="title">Activity Log</span>
+                    </a>
+                </li>
+            </ul>
+        </li>
+        @endif
         @if (Auth::user()->can('view-general-settings-menu'))
             <li class="nav-item {{ in_array($in_sidebar, ['admin-settings-all_list','admin-settings-financial_profiles-add_new','admin-settings-financial_profiles-list_all','admin-settings-financial_profiles-view_edit', 'admin-templates_email-list_all', 'admin-settings-manage_settings', 'admin-settings-rankedin_integration_app_key'])?'active open':'' }} ">
                 <a href="javascript:;" class="nav-link nav-toggle">

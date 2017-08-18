@@ -182,7 +182,7 @@ class FrontEndUserController extends Controller
             'back_user_id'  => $user->id,
             'title'         => $pack->name,
             'value'         => intval($pack->store_credit_value),
-            'total_amount'  => intval($pack->store_credit_value) + $user->get_available_store_credit(),
+            'total_amount'  => $user->calculate_available_store_credit(),
             'expiration_date'   => 0,
             'status'        => 'pending',
         ];
@@ -5246,7 +5246,7 @@ This message is private and confidential. If you have received this message in e
             'back_user_id'  => $user->id,
             'title'         => $package->name,
             'value'         => intval($package->store_credit_value),
-            'total_amount'  => intval($package->store_credit_value)+$member->get_available_store_credit(),
+            'total_amount'  => $member->calculate_available_store_credit(),
             //'invoice_id'    => -1,
             'expiration_date'   => 0,
             'status'        => 'pending',

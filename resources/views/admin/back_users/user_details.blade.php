@@ -200,7 +200,10 @@
                                 <div class="tabbable-line tabbable-custom-profile">
                                     <ul class="nav nav-tabs">
                                         <li class="active">
-                                            <a href="#tab_1_11" data-toggle="tab"> Latest Customers </a>
+                                            <a href="#tab_1_11" data-toggle="tab"> System Activity Log </a>
+                                        </li>
+                                        <li>
+                                            <a href="#tab_1_33" data-toggle="tab"> User Activity Log </a>
                                         </li>
                                         <li>
                                             <a href="#tab_1_22" data-toggle="tab"> Feeds </a>
@@ -213,51 +216,52 @@
                                                     <thead>
                                                     <tr>
                                                         <th>
-                                                            <i class="fa fa-briefcase"></i> Company </th>
+                                                            <i class="fa fa-briefcase"></i> Action type </th>
                                                         <th class="hidden-xs">
-                                                            <i class="fa fa-question"></i> Descrition </th>
+                                                            <i class="fa fa-question"></i> Description </th>
                                                         <th>
-                                                            <i class="fa fa-bookmark"></i> Amount </th>
-                                                        <th> </th>
+                                                            <i class="fa fa-bookmark"></i> IP Address </th>
+                                                        <th> Date </th>
+
                                                     </tr>
                                                     </thead>
                                                     <tbody>
+                                                    @foreach($system_logs as $log)
+                                                        <tr>
+                                                            <td class="hidden-xs">{{ ucwords(str_replace('_',' ',$log->content_type)) }}</td>
+                                                            <td> <?= $log->description ?> </td>
+                                                            <td class="hidden-xs"> {{ $log->ip_address }}</td>
+                                                            <td> {{ $log->created_at }} </td>
+                                                        </tr>
+                                                    @endforeach
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+
+                                        <div class="tab-pane" id="tab_1_33">
+                                            <div class="portlet-body">
+                                                <table class="table table-striped table-bordered table-advance table-hover">
+                                                    <thead>
                                                     <tr>
-                                                        <td>
-                                                            <a href="javascript:;"> Pixel Ltd </a>
-                                                        </td>
-                                                        <td class="hidden-xs"> Server hardware purchase </td>
-                                                        <td> 52560.10$
-                                                            <span class="label label-success label-sm"> Paid </span>
-                                                        </td>
-                                                        <td>
-                                                            <a class="btn btn-sm grey-salsa btn-outline" href="javascript:;"> View </a>
-                                                        </td>
+                                                        <th>
+                                                            <i class="fa fa-briefcase"></i> Action type </th>
+                                                        <th class="hidden-xs">
+                                                            <i class="fa fa-question"></i> Description </th>
+                                                        <th>
+                                                            <i class="fa fa-bookmark"></i> IP Address </th>
+                                                        <th> Date </th>
                                                     </tr>
-                                                    <tr>
-                                                        <td>
-                                                            <a href="javascript:;"> Smart House </a>
-                                                        </td>
-                                                        <td class="hidden-xs"> Office furniture purchase </td>
-                                                        <td> 5760.00$
-                                                            <span class="label label-warning label-sm"> Pending </span>
-                                                        </td>
-                                                        <td>
-                                                            <a class="btn btn-sm grey-salsa btn-outline" href="javascript:;"> View </a>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>
-                                                            <a href="javascript:;"> FoodMaster Ltd </a>
-                                                        </td>
-                                                        <td class="hidden-xs"> Company Anual Dinner Catering </td>
-                                                        <td> 12400.00$
-                                                            <span class="label label-success label-sm"> Paid </span>
-                                                        </td>
-                                                        <td>
-                                                            <a class="btn btn-sm grey-salsa btn-outline" href="javascript:;"> View </a>
-                                                        </td>
-                                                    </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    @foreach($user_logs as $log)
+                                                        <tr>
+                                                            <td class="hidden-xs">{{ ucwords(str_replace('_',' ',$log->content_type)) }} </td>
+                                                            <td> <?= $log->description ?> </td>
+                                                            <td class="hidden-xs"> {{ $log->ip_address }}</td>
+                                                            <td> {{ $log->created_at }} </td>
+                                                        </tr>
+                                                    @endforeach
                                                     </tbody>
                                                 </table>
                                             </div>

@@ -741,6 +741,16 @@ Route::group(['middleware' => 'web'], function () {
     ]);
     /** Stop Finance Part */
 
+    Route::get('admin/activity_log', [
+        'as' => 'admin/activity_log',
+        'uses' => 'Federation\ActivityLog@show_activity_log'
+    ]);
+
+    Route::post('back_end_user/get_activity_log', [
+        'as' => 'ajax/get_activity_log',
+        'uses' => 'Federation\ActivityLog@get_activity_log'
+    ]);
+
     /* Start General Settings Part */
     Route::get('admin/settings/list_all', [
         'as' => 'admin/settings/list_all',
