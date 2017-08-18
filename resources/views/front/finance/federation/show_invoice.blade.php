@@ -150,7 +150,7 @@
                                     {{--<i class="fa fa-print"></i>--}}
                                 {{--</a>--}}
                                 @if ($invoice->status=='pending')
-                                    <a id="make_payment" onclick="make_payment()" href="{{ route('front/finance/invoice', ['id' => $invoice->invoice_number]) }}" hidden class="btn green hidden-print margin-bottom-5"> Make Payment
+                                    <a id="make_payment"  href="{{ route('front/finance/invoice/id', ['id' => $invoice->invoice_number]) }}" hidden class="btn green hidden-print margin-bottom-5"> Make Payment
                                         <i class="fa fa-check"></i>
                                     </a>
                                 @elseif ($invoice->status=='processing')

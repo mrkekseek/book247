@@ -1893,7 +1893,7 @@ class FrontEndUserController extends Controller
                 ];
             }
             else{
-                if (Auth::attempt(['email' => Auth::user()->email, 'password' => $userVars['old_password']])) {
+                if (Auth::attempt(['username' => Auth::user()->email, 'password' => $userVars['old_password']])) {
                     $token = \App\Http\Libraries\ApiAuth::resetPassword(Auth::user()->email)['data'];
                     $apiData = [
                         "Credentials" => [

@@ -927,6 +927,7 @@ Route::group(['prefix'=>'front', 'middleware'=>'web'], function(){
         'uses' => 'Federation\FrontEndUserController@singup_membership_plan_ajax_call'
     ]);
 
+
     Route::get('finance/invoice/{id}', [
         'as' => 'front/finance/invoice/id',
         'uses' => 'Federation\FrontEndUserController@invoice_payment'

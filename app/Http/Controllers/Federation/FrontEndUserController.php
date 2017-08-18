@@ -1731,7 +1731,7 @@ class FrontEndUserController extends Base
     {
         $user = Auth::user();
         if (!$user || !$user->is_front_user()) {
-            return redirect()->intended(route('admin/login'));
+            return redirect()->intended(route('homepage'));
         }
 
         $invoice = Invoice::where('invoice_number', '=', $id)->get()->first();
@@ -1788,7 +1788,6 @@ class FrontEndUserController extends Base
         ];
 
         $payee = json_decode($invoice->payee_info);
-
         if ($payee) {
             if ($payee->country_id == 0) {
                 $payee_country = '-';
@@ -1799,7 +1798,7 @@ class FrontEndUserController extends Base
         } else {
             $payee_country = '-';
         }
-        $paypal_currency = AppSettings::get_setting_value_by_name('finance_currency');
+
         $sidebar_link = 'admin-backend-shops-invoices-payment';
         return view('front/finance/federation/finance_peyment', [
             'custom' => $this->get_custom($invoice->id),
@@ -1808,6 +1807,7 @@ class FrontEndUserController extends Base
             'in_sidebar' => $sidebar_link,
             'invoice' => $invoice,
             'invoice_items' => @$items,
+            'personal_detail' => @User::with('PersonalDetail')->where('id', '=', $user->id)->first()->PersonalDetail,
             'member' => $member,
             'sub_total' => $subtotal,
             'discount' => $discount,
@@ -1817,7 +1817,7 @@ class FrontEndUserController extends Base
             'paypal_email' => AppSettings::get_setting_value_by_name('finance_simple_paypal_payment_account'),
             'country' => $country,
             'payee_country' => $payee_country,
-            'paypal_currency' => $paypal_currency
+            'show_stripe' => \Config::get("stripe.stripe_secret")
         ]);
     }
 

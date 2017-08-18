@@ -52,7 +52,8 @@ class Auth
     public static function attempt($data = [])
     {
         // first we check users without sso_user_id against local database
-        if (AuthLocal::once(['username' => $data['username'], 'password' => $data['password'], 'sso_user_id' => NULL]))
+
+        if (AuthLocal::once(['username' => isset($data['username']) ? $data['username'] : $data['email'], 'password' => $data['password'], 'sso_user_id' => NULL]))
         {
             // since the user was authenticated locally, we search him
             $local_id = AuthLocal::user()->id;
