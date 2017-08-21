@@ -173,7 +173,7 @@ class Auth
         $domain = self::get_domain();
         Session::flash('new_auth', TRUE);            
         Session::put('sso_user_id',$sso_user_id);
-        Cookie::queue(Cookie::forever('sso_user_id', $sso_user_id, '/', $domain));
+        Cookie::queue(Cookie::make('sso_user_id', $sso_user_id, 720 ,'/', $domain));
     }
 
     public static function loginUsingId($id)
