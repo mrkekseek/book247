@@ -112,7 +112,7 @@
                                 <div class="portlet-title tabbable-line">
                                     <div class="caption caption-md">
                                         <i class="icon-globe theme-font hide"></i>
-                                        <span class="caption-subject font-blue-madison bold uppercase">User Bookings</span>
+                                        <span class="caption-subject font-blue-madison bold uppercase">Registered events</span>
                                     </div>
                                     {{--<ul class="nav nav-tabs">--}}
                                         {{--<!--<li class="active"><a href="#tab_2_1" data-toggle="tab"> This Week </a></li>-->--}}
@@ -127,109 +127,82 @@
                                         {{--</li>--}}
                                     {{--</ul>--}}
                                 </div>
-                                {{--<div class="portlet-body tab-content">--}}
-                                    {{--<div class="row number-stats margin-bottom-30">--}}
-                                        {{--<div class="col-md-6 col-sm-6 col-xs-6">--}}
-                                            {{--<div class="stat-left">--}}
-                                                {{--<div class="stat-chart">--}}
-                                                    {{--<!-- do not line break "sparkline_bar" div. sparkline chart has an issue when the container div has line break -->--}}
-                                                    {{--<div id="sparkline_bar"></div>--}}
-                                                {{--</div>--}}
-                                                {{--<div class="stat-number">--}}
-                                                    {{--<div class="title"> All Payments </div>--}}
-                                                    {{--<div class="number"> {{ $finance_total }} </div>--}}
-                                                {{--</div>--}}
-                                            {{--</div>--}}
-                                        {{--</div>--}}
-                                        {{--<div class="col-md-6 col-sm-6 col-xs-6">--}}
-                                            {{--<div class="stat-right">--}}
-                                                {{--<div class="stat-chart">--}}
-                                                    {{--<!-- do not line break "sparkline_bar" div. sparkline chart has an issue when the container div has line break -->--}}
-                                                    {{--<div id="sparkline_bar2"></div>--}}
-                                                {{--</div>--}}
-                                                {{--<div class="stat-number">--}}
-                                                    {{--<div class="title"> DropIns </div>--}}
-                                                    {{--<div class="number"> {{ $bookings_total }} </div>--}}
-                                                {{--</div>--}}
-                                            {{--</div>--}}
-                                        {{--</div>--}}
-                                    {{--</div>--}}
-
-                                    {{--@foreach ($top_stats as $stat)--}}
-                                        {{--<div class="table-scrollable table-scrollable-borderless tab-pane {{ $stat['ord']==2?'active':'' }}" id="tab_2_{{ $stat['ord'] }}">--}}
-                                            {{--<table class="table table-hover table-light">--}}
-                                                {{--<thead>--}}
-                                                {{--<tr class="uppercase">--}}
-                                                    {{--<th> Bookings </th>--}}
-                                                    {{--<th style="text-align:center"> NUMBER </th>--}}
-                                                    {{--<th> MONEY </th>--}}
-                                                    {{--<th> RATE </th>--}}
-                                                {{--</tr>--}}
-                                                {{--</thead>--}}
-                                                {{--<tr>--}}
-                                                    {{--<td>--}}
-                                                        {{--<a href="javascript:;" class="primary-link">Calendar Products</a>--}}
-                                                    {{--</td>--}}
-                                                    {{--<td align="center"> {{ $stat['drop_ins']['nr'] }} </td>--}}
-                                                    {{--<td> {{ $stat['drop_ins']['money'] }} {{ Config::get('constants.finance.currency') }} </td>--}}
-                                                    {{--<td>--}}
-                                                        {{--<span class="bold theme-font">{{ $stat['drop_ins']['rate']=='-'?'-':$stat['drop_ins']['rate'].'%' }}</span>--}}
-                                                    {{--</td>--}}
-                                                {{--</tr>--}}
-                                                {{--<tr>--}}
-                                                    {{--<td>--}}
-                                                        {{--<a href="javascript:;" class="primary-link">Membership</a>--}}
-                                                    {{--</td>--}}
-                                                    {{--<td align="center"> {{ $stat['membership']['nr'] }} </td>--}}
-                                                    {{--<td> {{ $stat['membership']['money'] }} {{ Config::get('constants.finance.currency') }} </td>--}}
-                                                    {{--<td>--}}
-                                                        {{--<span class="bold theme-font">{{ $stat['membership']['rate']=='-'?'-':$stat['membership']['rate'].'%' }}</span>--}}
-                                                    {{--</td>--}}
-                                                {{--</tr>--}}
-                                                {{--<tr>--}}
-                                                    {{--<td>--}}
-                                                        {{--<a href="javascript:;" class="primary-link">Active</a>--}}
-                                                    {{--</td>--}}
-                                                    {{--<td align="center"> {{ $stat['active']['nr'] }} </td>--}}
-                                                    {{--<td> {{ $stat['active']['money'] }} {{ Config::get('constants.finance.currency') }} </td>--}}
-                                                    {{--<td>--}}
-                                                        {{--<span class="bold theme-font">{{ $stat['active']['rate']=='-'?'-':$stat['active']['rate'].'%' }}</span>--}}
-                                                    {{--</td>--}}
-                                                {{--</tr>--}}
-                                                {{--<tr>--}}
-                                                    {{--<td>--}}
-                                                        {{--<a href="javascript:;" class="primary-link">Show</a>--}}
-                                                    {{--</td>--}}
-                                                    {{--<td align="center"> {{ $stat['show']['nr'] }} </td>--}}
-                                                    {{--<td> {{ $stat['show']['money'] }} {{ Config::get('constants.finance.currency') }} </td>--}}
-                                                    {{--<td>--}}
-                                                        {{--<span class="bold theme-font">{{ $stat['show']['rate']=='-'?'-':$stat['show']['rate'].'%' }}</span>--}}
-                                                    {{--</td>--}}
-                                                {{--</tr>--}}
-                                                {{--<tr>--}}
-                                                    {{--<td>--}}
-                                                        {{--<a href="javascript:;" class="primary-link">No Show</a>--}}
-                                                    {{--</td>--}}
-                                                    {{--<td align="center"> {{ $stat['no_show']['nr'] }} </td>--}}
-                                                    {{--<td> {{ $stat['no_show']['money'] }} {{ Config::get('constants.finance.currency') }} </td>--}}
-                                                    {{--<td>--}}
-                                                        {{--<span class="bold theme-font">{{ $stat['no_show']['rate']=='-'?'-':$stat['no_show']['rate'].'%' }}</span>--}}
-                                                    {{--</td>--}}
-                                                {{--</tr>--}}
-                                                {{--<tr>--}}
-                                                    {{--<td>--}}
-                                                        {{--<a href="javascript:;" class="primary-link">Cancelled</a>--}}
-                                                    {{--</td>--}}
-                                                    {{--<td align="center"> {{ $stat['canceled']['nr'] }} </td>--}}
-                                                    {{--<td> {{ $stat['canceled']['money'] }} {{ Config::get('constants.finance.currency') }} </td>--}}
-                                                    {{--<td>--}}
-                                                        {{--<span class="bold theme-font">{{ $stat['canceled']['rate']=='-'?'-':$stat['canceled']['rate'].'%' }}</span>--}}
-                                                    {{--</td>--}}
-                                                {{--</tr>--}}
-                                            {{--</table>--}}
-                                        {{--</div>--}}
-                                    {{--@endforeach--}}
-                                {{--</div>--}}
+                                <div class="portlet-body tab-content">
+                                    @foreach ($top_stats as $stat)
+                                        <div class="table-scrollable table-scrollable-borderless tab-pane {{ $stat['ord']==2?'active':'' }}" id="tab_2_{{ $stat['ord'] }}">
+                                            <table class="table table-hover table-light">
+                                                <thead>
+                                                <tr class="uppercase">
+                                                    <th> Bookings </th>
+                                                    <th style="text-align:center"> NUMBER </th>
+                                                    <th> MONEY </th>
+                                                    <th> RATE </th>
+                                                </tr>
+                                                </thead>
+                                                <tr>
+                                                    <td>
+                                                        <a href="javascript:;" class="primary-link">Calendar Products</a>
+                                                    </td>
+                                                    <td align="center"> {{ $stat['drop_ins']['nr'] }} </td>
+                                                    <td> {{ $stat['drop_ins']['money'] }} {{ Config::get('constants.finance.currency') }} </td>
+                                                    <td>
+                                                        <span class="bold theme-font">{{ $stat['drop_ins']['rate']=='-'?'-':$stat['drop_ins']['rate'].'%' }}</span>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <a href="javascript:;" class="primary-link">Membership</a>
+                                                    </td>
+                                                    <td align="center"> {{ $stat['membership']['nr'] }} </td>
+                                                    <td> {{ $stat['membership']['money'] }} {{ Config::get('constants.finance.currency') }} </td>
+                                                    <td>
+                                                        <span class="bold theme-font">{{ $stat['membership']['rate']=='-'?'-':$stat['membership']['rate'].'%' }}</span>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <a href="javascript:;" class="primary-link">Active</a>
+                                                    </td>
+                                                    <td align="center"> {{ $stat['active']['nr'] }} </td>
+                                                    <td> {{ $stat['active']['money'] }} {{ Config::get('constants.finance.currency') }} </td>
+                                                    <td>
+                                                        <span class="bold theme-font">{{ $stat['active']['rate']=='-'?'-':$stat['active']['rate'].'%' }}</span>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <a href="javascript:;" class="primary-link">Show</a>
+                                                    </td>
+                                                    <td align="center"> {{ $stat['show']['nr'] }} </td>
+                                                    <td> {{ $stat['show']['money'] }} {{ Config::get('constants.finance.currency') }} </td>
+                                                    <td>
+                                                        <span class="bold theme-font">{{ $stat['show']['rate']=='-'?'-':$stat['show']['rate'].'%' }}</span>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <a href="javascript:;" class="primary-link">No Show</a>
+                                                    </td>
+                                                    <td align="center"> {{ $stat['no_show']['nr'] }} </td>
+                                                    <td> {{ $stat['no_show']['money'] }} {{ Config::get('constants.finance.currency') }} </td>
+                                                    <td>
+                                                        <span class="bold theme-font">{{ $stat['no_show']['rate']=='-'?'-':$stat['no_show']['rate'].'%' }}</span>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <a href="javascript:;" class="primary-link">Cancelled</a>
+                                                    </td>
+                                                    <td align="center"> {{ $stat['canceled']['nr'] }} </td>
+                                                    <td> {{ $stat['canceled']['money'] }} {{ Config::get('constants.finance.currency') }} </td>
+                                                    <td>
+                                                        <span class="bold theme-font">{{ $stat['canceled']['rate']=='-'?'-':$stat['canceled']['rate'].'%' }}</span>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                    @endforeach
+                                </div>
                             </div>
                             <!-- END PORTLET -->
                         </div>
@@ -250,76 +223,76 @@
                                         {{--</li>--}}
                                     {{--</ul>--}}
                                 </div>
-                                {{--<div class="portlet-body">--}}
-                                    {{--<!--BEGIN TABS-->--}}
-                                    {{--<div class="tab-content">--}}
-                                        {{--<div class="tab-pane {!! sizeof($redFlagLog)==0?' active':'' !!}" id="tab_1_1">--}}
-                                            {{--<div class="scroller" style="height: 355px;" data-always-visible="1" data-rail-visible1="0" data-handle-color="#D7DCE2">--}}
-                                                {{--@if (sizeof($activityLog)>0)--}}
-                                                    {{--<ul class="feeds">--}}
-                                                    {{--@foreach($activityLog as $logView)--}}
-                                                        {{--<li>--}}
-                                                            {{--<div class="col1">--}}
-                                                                {{--<div class="cont">--}}
-                                                                    {{--<div class="cont-col1">--}}
-                                                                        {{--<div class="label label-sm label-success">--}}
-                                                                            {{--<i class="fa fa-bell-o"></i>--}}
-                                                                        {{--</div>--}}
-                                                                    {{--</div>--}}
-                                                                    {{--<div class="cont-col2">--}}
-                                                                        {{--<div class="desc">--}}
-                                                                            {{--{{ $logView['logDate'] }} - <span class="font-blue-soft">{{ $logView['description'] }}</span>--}}
-                                                                        {{--</div>--}}
-                                                                    {{--</div>--}}
-                                                                {{--</div>--}}
-                                                            {{--</div>--}}
-                                                            {{--<div class="col2" style="width:100px; margin-left:-100px;">--}}
-                                                                {{--<div class="date"> <small style="font-size:10px;" class="font-purple-studio">{{ $logView['ip_address'] }}</small> </div>--}}
-                                                            {{--</div>--}}
-                                                        {{--</li>--}}
-                                                    {{--@endforeach--}}
-                                                {{--</ul>--}}
-                                                {{--@else--}}
-                                                    {{--<div class="note note-info">--}}
-                                                        {{--<p>There is no member activity now. Once the member starts using his account, all his activity will be placed here.</p>--}}
-                                                    {{--</div>--}}
-                                                {{--@endif--}}
-                                            {{--</div>--}}
-                                        {{--</div>--}}
-                                        {{--<div class="tab-pane {!! sizeof($redFlagLog)>0?' active':'' !!}" id="tab_1_2">--}}
-                                            {{--<div class="scroller" style="height: 355px;" data-always-visible="1" data-rail-visible1="0" data-handle-color="#D7DCE2">--}}
-                                                {{--@if (sizeof($redFlagLog)>0)--}}
-                                                    {{--<ul class="feeds">--}}
-                                                        {{--@foreach($redFlagLog as $logView)--}}
-                                                            {{--<li>--}}
-                                                                {{--<div class="col1">--}}
-                                                                    {{--<div class="cont">--}}
-                                                                        {{--<div class="cont-col1">--}}
-                                                                            {{--<div class="label label-sm label-success">--}}
-                                                                                {{--<i class="fa fa-bell-o"></i>--}}
-                                                                            {{--</div>--}}
-                                                                        {{--</div>--}}
-                                                                        {{--<div class="cont-col2">--}}
-                                                                            {{--<div class="desc"> {{ $logView['description'] }} - {{ $logView['action'] }} </div>--}}
-                                                                        {{--</div>--}}
-                                                                    {{--</div>--}}
-                                                                {{--</div>--}}
-                                                                {{--<div class="col2" style="width:100px; margin-left:-100px;">--}}
-                                                                    {{--<div class="date"> {{ $logView['addedOn'] }} </div>--}}
-                                                                {{--</div>--}}
-                                                            {{--</li>--}}
-                                                        {{--@endforeach--}}
-                                                    {{--</ul>--}}
-                                                {{--@else--}}
-                                                    {{--<div class="note note-warning">--}}
-                                                        {{--<p> There are no red flags raised for this member. </p>--}}
-                                                    {{--</div>--}}
-                                                {{--@endif--}}
-                                            {{--</div>--}}
-                                        {{--</div>--}}
-                                    {{--</div>--}}
-                                    {{--<!--END TABS-->--}}
-                                {{--</div>--}}
+                                <div class="portlet-body">
+                                    <!--BEGIN TABS-->
+                                    <div class="tab-content">
+                                        <div class="tab-pane {!! sizeof($redFlagLog)==0?' active':'' !!}" id="tab_1_1">
+                                            <div class="scroller" style="height: 277px;" data-always-visible="1" data-rail-visible1="0" data-handle-color="#D7DCE2">
+                                                @if (sizeof($activityLog)>0)
+                                                    <ul class="feeds">
+                                                    @foreach($activityLog as $logView)
+                                                        <li>
+                                                            <div class="col1">
+                                                                <div class="cont">
+                                                                    <div class="cont-col1">
+                                                                        <div class="label label-sm label-success">
+                                                                            <i class="fa fa-bell-o"></i>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="cont-col2">
+                                                                        <div class="desc">
+                                                                            {{ $logView['logDate'] }} - <span class="font-blue-soft">{{ $logView['description'] }}</span>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col2" style="width:100px; margin-left:-100px;">
+                                                                <div class="date"> <small style="font-size:10px;" class="font-purple-studio">{{ $logView['ip_address'] }}</small> </div>
+                                                            </div>
+                                                        </li>
+                                                    @endforeach
+                                                </ul>
+                                                @else
+                                                    <div class="note note-info">
+                                                        <p>There is no member activity now. Once the member starts using his account, all his activity will be placed here.</p>
+                                                    </div>
+                                                @endif
+                                            </div>
+                                        </div>
+                                        <div class="tab-pane {!! sizeof($redFlagLog)>0?' active':'' !!}" id="tab_1_2">
+                                            <div class="scroller" style="height: 355px;" data-always-visible="1" data-rail-visible1="0" data-handle-color="#D7DCE2">
+                                                @if (sizeof($redFlagLog)>0)
+                                                    <ul class="feeds">
+                                                        @foreach($redFlagLog as $logView)
+                                                            <li>
+                                                                <div class="col1">
+                                                                    <div class="cont">
+                                                                        <div class="cont-col1">
+                                                                            <div class="label label-sm label-success">
+                                                                                <i class="fa fa-bell-o"></i>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="cont-col2">
+                                                                            <div class="desc"> {{ $logView['description'] }} - {{ $logView['action'] }} </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col2" style="width:100px; margin-left:-100px;">
+                                                                    <div class="date"> {{ $logView['addedOn'] }} </div>
+                                                                </div>
+                                                            </li>
+                                                        @endforeach
+                                                    </ul>
+                                                @else
+                                                    <div class="note note-warning">
+                                                        <p> There are no red flags raised for this member. </p>
+                                                    </div>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!--END TABS-->
+                                </div>
                             </div>
                             <!-- END PORTLET -->
                         </div>
@@ -334,32 +307,32 @@
                                         <span class="caption-subject font-green-soft bold uppercase">User Messages</span>
                                     </div>
                                 </div>
-                                {{--<div class="portlet-body">--}}
-                                    {{--<div class="scroller" style="height: 282px;" data-always-visible="1" data-rail-visible1="0" data-handle-color="#D7DCE2">--}}
-                                        {{--<div class="general-item-list">--}}
-                                            {{--@if (sizeof($publicNote)>0)--}}
-                                                {{--@foreach($publicNote as $note)--}}
-                                                    {{--<div class="item">--}}
-                                                        {{--<div class="item-head">--}}
-                                                            {{--<div class="item-details">--}}
-                                                                {{--<img class="item-pic" src="../assets/pages/media/users/avatar4.jpg">--}}
-                                                                {{--<a href="" class="item-name primary-link">{{ $note['by_user'] }}</a>--}}
-                                                                {{--<span class="item-label">{{ $note['addedOn'] }}</span>--}}
-                                                            {{--</div>--}}
-                                                            {{--<span class="item-status">--}}
-                                                                {{--<span class="badge badge-empty badge-success"></span> {{ $note['status'] }}</span>--}}
-                                                        {{--</div>--}}
-                                                        {{--<div class="item-body"> {{ $note['note_body'] }} </div>--}}
-                                                    {{--</div>--}}
-                                                {{--@endforeach--}}
-                                            {{--@else--}}
-                                                {{--<div class="note note-info">--}}
-                                                    {{--<p>There is no user messages sent to this member. Once the member starts receiving messages from the system or backend users they will be shown here.</p>--}}
-                                                {{--</div>--}}
-                                            {{--@endif--}}
-                                        {{--</div>--}}
-                                    {{--</div>--}}
-                                {{--</div>--}}
+                                <div class="portlet-body">
+                                    <div class="scroller" style="height: 282px;" data-always-visible="1" data-rail-visible1="0" data-handle-color="#D7DCE2">
+                                        <div class="general-item-list">
+                                            @if (sizeof($publicNote)>0)
+                                                @foreach($publicNote as $note)
+                                                    <div class="item">
+                                                        <div class="item-head">
+                                                            <div class="item-details">
+                                                                <img class="item-pic" src="../assets/pages/media/users/avatar4.jpg">
+                                                                <a href="" class="item-name primary-link">{{ $note['by_user'] }}</a>
+                                                                <span class="item-label">{{ $note['addedOn'] }}</span>
+                                                            </div>
+                                                            <span class="item-status">
+                                                                <span class="badge badge-empty badge-success"></span> {{ $note['status'] }}</span>
+                                                        </div>
+                                                        <div class="item-body"> {{ $note['note_body'] }} </div>
+                                                    </div>
+                                                @endforeach
+                                            @else
+                                                <div class="note note-info">
+                                                    <p>There is no user messages sent to this member. Once the member starts receiving messages from the system or backend users they will be shown here.</p>
+                                                </div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             <!-- END PORTLET -->
                         </div>
@@ -372,60 +345,60 @@
                                         <span class="caption-subject font-yellow-gold bold uppercase">Internal Messages</span>
                                     </div>
                                 </div>
-                                {{--<div class="portlet-body">--}}
-                                    {{--<div class="task-content">--}}
-                                        {{--<div class="scroller" style="height: 282px;" data-always-visible="1" data-rail-visible1="0" data-handle-color="#D7DCE2">--}}
-                                            {{--@if (sizeof($privateNote)>0)--}}
-                                                {{--<ul class="task-list">--}}
-                                                {{--@foreach($privateNote as $note)--}}
-                                                    {{--<li>--}}
-                                                        {{--<div class="task-checkbox">--}}
-                                                            {{--<input type="hidden" value="1" name="test" />--}}
-                                                        {{--</div>--}}
-                                                        {{--<div class="task-title">--}}
-                                                            {{--<span class="task-title-sp">  <span class="font-blue-dark">{{ $note['note_body'] }} by </span> {{ $note['by_user'] }} {{ $note['addedOn'] }}  </span>--}}
-                                                            {{--@if($note['status']=='pending')--}}
-                                                            {{--<span class="label label-sm label-danger">{{ $note['status'] }}</span>--}}
-                                                            {{--<span class="task-bell"><i class="fa fa-bell-o"></i></span>--}}
-                                                            {{--@elseif($note['status']=='completed')--}}
-                                                            {{--<span class="label label-sm label-info">{{ $note['status'] }}</span>--}}
-                                                            {{--@elseif($note['status']=='deleted')--}}
-                                                            {{--<span class="label label-sm label-default">{{ $note['status'] }}</span>--}}
-                                                            {{--@elseif ($note['status']=='unread')--}}
-                                                            {{--<span class="label label-sm label-success mark_note_as_read" data-id="{{ $note['id'] }}" is-general="{{ $note['is_general'] }}" style="cursor:pointer;">{{ $note['status'] }}</span>--}}
-                                                            {{--@endif--}}
-                                                        {{--</div>--}}
-                                                        {{--@if ($note['status']=='pending')--}}
-                                                        {{--<div class="task-config">--}}
-                                                            {{--<div class="task-config-btn btn-group">--}}
-                                                                {{--<a class="btn btn-sm default" href="javascript:;" data-toggle="dropdown" data-hover="dropdown" data-close-others="true">--}}
-                                                                    {{--<i class="fa fa-cog"></i>--}}
-                                                                    {{--<i class="fa fa-angle-down"></i>--}}
-                                                                {{--</a>--}}
-                                                                {{--<ul class="dropdown-menu pull-right">--}}
-                                                                    {{--<li>--}}
-                                                                        {{--<a href="javascript:;" class="note_mark_complete" data-id="{{ $note['id'] }}" is-general="{{ $note['is_general'] }}">--}}
-                                                                            {{--<i class="fa fa-check"></i> Complete </a>--}}
-                                                                    {{--</li>--}}
-                                                                    {{--<li>--}}
-                                                                        {{--<a href="javascript:;" data-id="{{ $note['id'] }}"  is-general="{{ $note['is_general'] }}" class="note_mark_cancel">--}}
-                                                                            {{--<i class="fa fa-trash-o"></i> Cancel/Delete </a>--}}
-                                                                    {{--</li>--}}
-                                                                {{--</ul>--}}
-                                                            {{--</div>--}}
-                                                        {{--</div>--}}
-                                                        {{--@endif--}}
-                                                    {{--</li>--}}
-                                                {{--@endforeach--}}
-                                                {{--</ul>--}}
-                                            {{--@else--}}
-                                                {{--<div class="note note-info">--}}
-                                                    {{--<p>There is no user messages sent to this member. Once the member starts receiving messages from the system or backend users they will be shown here.</p>--}}
-                                                {{--</div>--}}
-                                            {{--@endif--}}
-                                        {{--</div>--}}
-                                    {{--</div>--}}
-                                {{--</div>--}}
+                                <div class="portlet-body">
+                                    <div class="task-content">
+                                        <div class="scroller" style="height: 282px;" data-always-visible="1" data-rail-visible1="0" data-handle-color="#D7DCE2">
+                                            @if (sizeof($privateNote)>0)
+                                                <ul class="task-list">
+                                                @foreach($privateNote as $note)
+                                                    <li>
+                                                        <div class="task-checkbox">
+                                                            <input type="hidden" value="1" name="test" />
+                                                        </div>
+                                                        <div class="task-title">
+                                                            <span class="task-title-sp">  <span class="font-blue-dark">{{ $note['note_body'] }} by </span> {{ $note['by_user'] }} {{ $note['addedOn'] }}  </span>
+                                                            @if($note['status']=='pending')
+                                                            <span class="label label-sm label-danger">{{ $note['status'] }}</span>
+                                                            <span class="task-bell"><i class="fa fa-bell-o"></i></span>
+                                                            @elseif($note['status']=='completed')
+                                                            <span class="label label-sm label-info">{{ $note['status'] }}</span>
+                                                            @elseif($note['status']=='deleted')
+                                                            <span class="label label-sm label-default">{{ $note['status'] }}</span>
+                                                            @elseif ($note['status']=='unread')
+                                                            <span class="label label-sm label-success mark_note_as_read" data-id="{{ $note['id'] }}" is-general="{{ $note['is_general'] }}" style="cursor:pointer;">{{ $note['status'] }}</span>
+                                                            @endif
+                                                        </div>
+                                                        @if ($note['status']=='pending')
+                                                        <div class="task-config">
+                                                            <div class="task-config-btn btn-group">
+                                                                <a class="btn btn-sm default" href="javascript:;" data-toggle="dropdown" data-hover="dropdown" data-close-others="true">
+                                                                    <i class="fa fa-cog"></i>
+                                                                    <i class="fa fa-angle-down"></i>
+                                                                </a>
+                                                                <ul class="dropdown-menu pull-right">
+                                                                    <li>
+                                                                        <a href="javascript:;" class="note_mark_complete" data-id="{{ $note['id'] }}" is-general="{{ $note['is_general'] }}">
+                                                                            <i class="fa fa-check"></i> Complete </a>
+                                                                    </li>
+                                                                    <li>
+                                                                        <a href="javascript:;" data-id="{{ $note['id'] }}"  is-general="{{ $note['is_general'] }}" class="note_mark_cancel">
+                                                                            <i class="fa fa-trash-o"></i> Cancel/Delete </a>
+                                                                    </li>
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+                                                        @endif
+                                                    </li>
+                                                @endforeach
+                                                </ul>
+                                            @else
+                                                <div class="note note-info">
+                                                    <p>There is no user messages sent to this member. Once the member starts receiving messages from the system or backend users they will be shown here.</p>
+                                                </div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             <!-- END PORTLET -->
                         </div>

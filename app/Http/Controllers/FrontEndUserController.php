@@ -3801,11 +3801,15 @@ This message is private and confidential. If you have received this message in e
             $vat = [];
 
             $itemNames = [];
+            foreach($invoice->items as $item){
+                $itemNames[$item->id] = $item->item_name;
+            }
 
             foreach($invoice->transactions as &$transaction){
                 $innerItems = json_decode($transaction->invoice_items);
                 $transactionItemNames = [];
                 if ($innerItems) {
+                    xdebug_var_dump($innerItems);
                     foreach($innerItems as $single){
                         $transactionItemNames[] = $itemNames[$single];
                     }
@@ -3866,31 +3870,30 @@ This message is private and confidential. If you have received this message in e
             ];
         }
 
+        $payee = json_decode($invoice->payee_info);
+        if (isset($payee->country_id) && $payee->country_id == 0) {
+            $country = '-';
+            $currency = '' ;
+        } else {
+            $member = User::where('id','=',$invoice->user_id)->get()->first();
+
+            $get_country = Countries::where('id', '=', $member->country_id)->get()->first();
+            $country = $get_country->name;
+            $currency = $get_country->currency_code;
+        }
+
         $breadcrumbs = [
             'Home'              => route('admin'),
             'Administration'    => route('admin'),
             'Back End User'     => route('admin'),
             'All Backend Users' => '',
         ];
-
         $text_parts  = [
             'title'     => 'Back-End Users',
             'subtitle'  => 'view all users',
             'table_head_text1' => 'Backend User List'
         ];
-
         $sidebar_link= 'admin-backend-shop-new_order';
-
-
-        $payee = json_decode($invoice->payee_info);
-        if (isset($payee->country_id) && $payee->country_id == 0) {
-            $country = '-';
-            $currency = '' ;
-        } else {
-            $get_country = Countries::where('id', '=', $member->country_id)->get()->first();
-            $country = $get_country->name;
-            $currency = $get_country->currency_code;
-        }
 
         return view('front/finance/show_invoice', [
             'breadcrumbs'   => $breadcrumbs,

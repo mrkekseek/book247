@@ -84,7 +84,7 @@
                                                 <a href="#" data-id="membership" data-value="{{ $m->id }}" class="form-choice carusel-button steps-button" style="background: {{ $m->plan_calendar_color }}">BUY MEMBERSHIP</a>
                                                 <div class="checkbox-chek checkbox-chek-mobile">
                                                     <input type="checkbox" class="chek-page">
-                                                    <p class="mobile-accept">Accept our <a href="#">Terms & Conditions </a> </p>
+                                                    <p class="mobile-accept">Accept our <a href="{{ \App\Http\Controllers\AppSettings::get_setting_value_by_name('globalWebsite_custom_terms_and_agreements') ? \App\Http\Controllers\AppSettings::get_setting_value_by_name('globalWebsite_custom_terms_and_agreements') : route('terms_of_service') }}">Terms & Conditions </a> </p>
                                                 </div>
                                             </div>
 

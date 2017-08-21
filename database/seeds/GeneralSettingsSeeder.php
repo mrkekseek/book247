@@ -54,7 +54,12 @@ class GeneralSettingsSeeder extends Seeder
             [28, 'Social Media Frontend Footer YpuTube', 'social_media_frontend_footer_youtube', 'If a link is present here then this link will be shown on frontend footer part - YouTube icon. Please use http/https when entering the link and test if after you set it up here.', 0, 'string', 5, 255,0],
             [29, 'Social Media Frontend Footer Vimeo', 'social_media_frontend_footer_vimeo', 'If a link is present here then this link will be shown on frontend footer part - Vimeo icon. Please use http/https when entering the link and test if after you set it up here.', 0, 'string', 5, 255,0],
             [30, 'Global Website Registration Finished', 'globalWebsite_registration_finished', 'This variable will show if the registration is finished or not', 1, '', 0, 0,1],
-            [31, 'Global Website Show Store Credit Packs on Front End', 'globalWebsite_show_store_credit_packs_on_frontend', 'This settign will show or hide the page from where store credit package can be bought.', 1, '', 0, 0, 0]
+            [31, 'Global Website Show Store Credit Packs on Front End', 'globalWebsite_show_store_credit_packs_on_frontend', 'This settign will show or hide the page from where store credit package can be bought.', 1, '', 0, 0, 0],
+            [32, 'Finance Paypal Account Key', 'finance_paypal_account_key', 'Advanced PayPal integration - this is your account key', 0, 'string', 15, 60, 0],
+            [33, 'Finance Paypal Account Secret', 'finance_paypal_account_secret', 'Advanced PayPal integration - account secret. This is paired with PayPal Key.', 0, 'string', 2, 60, 0],
+            [34, 'Finance Stripe Account Key', 'finance_stripe_account_key', 'Stripe payment integration - Account key', 0, 'string', 5, 60, 0],
+            [35, 'Finance Stripe Account Secret', 'finance_stripe_account_secret', 'Stripe payment integration - Account Secret', 0, 'string', 5, 60, 0],
+            [36, 'Global Website Registration Email Validation', 'globalWebsite_registration_email_validation', 'If set to yes, all new member registration will require email verification : an email will be sent to them to activate their accounts.', 1, '', 0, 0, 0]
         ];
 
         // insert values into settings table
@@ -96,7 +101,9 @@ class GeneralSettingsSeeder extends Seeder
             [19, 30, 'Yes',  '1'],
             [20, 30, 'No',  '0'],
             [21, 31, 'Yes',  '1'],
-            [22, 31, 'No',  '0']
+            [22, 31, 'No',  '0'],
+            [24, 36, 'Yes',  '1'],
+            [25, 36, 'No',  '0']
         ];
 
         // insert values into allowed_setting_values
@@ -140,6 +147,7 @@ class GeneralSettingsSeeder extends Seeder
         DB::insert($query, [18, 17, NULL, 1]);
         DB::insert($query, [30, 20, NULL, 1]);
         DB::insert($query, [31, 21, NULL, 1]);
+        DB::insert($query, [36,  25,  NULL, 1]);
 
 
         DB::unprepared('ALTER TABLE settings AUTO_INCREMENT=10000;');

@@ -101,7 +101,7 @@
                 </ul>
             </li>
         @endif
-        @if (Auth::user()->can('view-general-settings-menu'))
+        @if (Auth::user()->can('view-reports-menu'))
         <li class="nav-item  {{ in_array($in_sidebar, ['admin-activity-log'])?'active open':'' }}">
             <a href="javascript:;" class="nav-link nav-toggle">
                 <i class="icon-feed"></i>
