@@ -273,6 +273,11 @@
                             <span class="title">Activity Log</span>
                         </a>
                     </li>
+                    <li class="nav-item {{ $in_sidebar == 'admin-invoices-log' ? 'active open' : '' }}">
+                        <a href="{{route('admin/invoices_log')}}" class="nav-link ">
+                            <span class="title">Invoices Log</span>
+                        </a>
+                    </li>
                 </ul>
             </li>
         @endif

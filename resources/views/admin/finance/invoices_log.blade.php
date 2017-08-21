@@ -45,32 +45,55 @@
                             <table class="table table-striped table-bordered table-hover table-checkable" id="datatable_ajax">
                                 <thead>
                                 <tr role="row" class="heading">
-                                    <th width="5%"></th>
-                                    <th width="10%"> Name </th>
-                                    <th width="10%"> Action </th>
-                                    <th width="35%"> Description </th>
-                                    <th width="15%"> Ip Address </th>
-                                    <th width="10%"> Date </th>
+                                    <th width="5%"> Id </th>
+                                    <th width="15%"> User </th>
+                                    <th width="15%"> Employee </th>
+                                    <th width="15%"> Invoice type </th>
+                                    <th width="15%"> Invoice number </th>
+                                    <th width="15%"> Status </th>
+                                    <th width="15%"> Date </th>
+                                    <th width="15%">Action</th>
                                 </tr>
                                 <tr role="row" class="filter">
                                     <td> </td>
-                                    <td> </td>
-                                    <td>
-                                        <select name="membership" class="select-action form-control form-filter input-sm">
-                                            <option value="">All</option>
-                                            @foreach ($action_list as $key => $action)
-                                                <option value="{{ $key }}"> {{ $action }} </option>
+                                    <td> 
+                                        <select name="user_id" class="form-control form-filter input-sm">
+                                            <option value="">All users</option>
+                                            @foreach($users as $item)
+                                                <option value="{{$item->id}}">{{$item->first_name.' '. $item->last_name}}</option>
                                             @endforeach
                                         </select>
-                                    <td>
-
                                     </td>
                                     <td>
-                                        <input type="text" class="form-control form-filter input-sm" name="ip"> </td>
+                                        <select name="employee_id" class="form-control form-filter input-sm">
+                                            <option value="">All employee</option>
+                                            @foreach($employees as $item)
+                                                <option value="{{$item->id}}">{{$item->first_name.' '. $item->last_name}}</option>
+                                            @endforeach
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <select name="type" class="form-control form-filter input-sm">
+                                            <option value="">All types</option>
+                                            @foreach($types as $item)
+                                                <option value="{{$item->invoice_type}}">{{ucfirst($item->invoice_type)}}</option>
+                                            @endforeach
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control form-filter input-sm" name="number"> 
+                                    </td>
+                                    <td>
+                                        <select name="status" class="form-control form-filter input-sm">
+                                            <option value="">All status</option>
+                                            @foreach($statuses as $item)
+                                                <option value="{{$item->status}}">{{ucfirst($item->status)}}</option>
+                                            @endforeach
+                                        </select>
                                     </td>
                                     <td>
                                         <div class="input-group date date-picker margin-bottom-5" data-date-format="dd/mm/yyyy">
-                                            <input type="text" class="form-control form-filter input-sm" readonly name="user_date_from" placeholder="From">
+                                            <input type="text" class="form-control form-filter input-sm" readonly name="date_from" placeholder="From">
                                             <span class="input-group-btn">
                                                     <button class="btn btn-sm default" type="button">
                                                         <i class="fa fa-calendar"></i>
@@ -78,7 +101,7 @@
                                                 </span>
                                         </div>
                                         <div class="input-group date date-picker" data-date-format="dd/mm/yyyy">
-                                            <input type="text" class="form-control form-filter input-sm" readonly name="user_date_to" placeholder="To">
+                                            <input type="text" class="form-control form-filter input-sm" readonly name="date_to" placeholder="To">
                                             <span class="input-group-btn">
                                                     <button class="btn btn-sm default" type="button">
                                                         <i class="fa fa-calendar"></i>
@@ -86,7 +109,14 @@
                                                 </span>
                                         </div>
                                     </td>
-
+                                    <td>
+                                        <div class="margin-bottom-5">
+                                            <button class="btn btn-sm green btn-outline filter-submit margin-bottom">
+                                                <i class="fa fa-search"></i> Search</button>
+                                        </div>
+                                        <button class="btn btn-sm red btn-outline filter-cancel">
+                                            <i class="fa fa-times"></i> Reset</button>
+                                    </td>
                                 </tr>
                                 </thead>
                                 <tbody> </tbody>
@@ -151,8 +181,6 @@
 
                 var grid = new Datatable();
 
-                var clock ;
-
                 grid.init({
                     src: $("#datatable_ajax"),
                     onSuccess: function (grid, response) {
@@ -177,13 +205,13 @@
                         "bStateSave": true, // save datatable state(pagination, sort, etc) in cookie.
 
                         "lengthMenu": [
-                            [15, 25, 50, 100, 150, -1],
-                            [15, 25, 50, 100, 150, "All"] // change per page values here
+                            [5 ,15, 25, 50, 100, 150, -1],
+                            [5, 15, 25, 50, 100, 150, "All"] // change per page values here
                         ],
                         "paging": true,
                         "pageLength": 15, // default record count per page
                         "ajax": {
-                            "url": "{{ route('ajax/get_activity_log') }}", // ajax source
+                            "url": "{{ route('ajax/get_invoices_log') }}", // ajax source
                         },
                         "order": [
                             [1, "asc"]
@@ -192,53 +220,6 @@
                 });
 
                 // handle group actionsubmit button click
-                grid.getTableWrapper().on('change', '.select-action', function (e) {
-                    e.preventDefault();
-                    grid.setAjaxParam("action", $(this).val());
-                    grid.setAjaxParam("ip",grid.getTableWrapper().find('input[name=ip]').val());
-                    grid.setAjaxParam("from_date",grid.getTableWrapper().find('input[name=user_date_from]').val());
-                    grid.setAjaxParam("to_date",grid.getTableWrapper().find('input[name=user_date_to]').val());
-                    grid.getDataTable().ajax.reload();
-                });
-
-                grid.getTableWrapper().on('keyup', 'input[name=ip]', function (e) {
-                    clearTimeout(clock);
-                    clock = setTimeout(function(){
-//                        console.log($(this).val());
-                        grid.setAjaxParam("action", grid.getTableWrapper().find('.select-action').val());
-                        grid.setAjaxParam("ip", grid.getTableWrapper().find('input[name=ip]').val());
-                        grid.setAjaxParam("from_date",grid.getTableWrapper().find('input[name=user_date_from]').val());
-                        grid.setAjaxParam("to_date",grid.getTableWrapper().find('input[name=user_date_to]').val());
-                        grid.getDataTable().ajax.reload();
-                    },1000);
-                });
-
-                grid.getTableWrapper().on('change', 'input[name=user_date_from]', function (e) {
-                    clearTimeout(clock);
-                    clock = setTimeout(function(){
-//                        console.log($(this).val());
-                        grid.setAjaxParam("action", grid.getTableWrapper().find('.select-action').val());
-                        grid.setAjaxParam("ip", grid.getTableWrapper().find('input[name=ip]').val());
-                        grid.setAjaxParam("from_date",grid.getTableWrapper().find('input[name=user_date_from]').val());
-                        grid.setAjaxParam("to_date",grid.getTableWrapper().find('input[name=user_date_to]').val());
-                        grid.getDataTable().ajax.reload();
-                    },1000);
-                });
-
-                grid.getTableWrapper().on('change', 'input[name=user_date_to]', function (e) {
-                    clearTimeout(clock);
-                    clock = setTimeout(function(){
-//                        console.log($(this).val());
-                        grid.setAjaxParam("action", grid.getTableWrapper().find('.select-action').val());
-                        grid.setAjaxParam("ip", grid.getTableWrapper().find('input[name=ip]').val());
-                        grid.setAjaxParam("from_date",grid.getTableWrapper().find('input[name=user_date_from]').val());
-                        grid.setAjaxParam("to_date",grid.getTableWrapper().find('input[name=user_date_to]').val());
-                        grid.getDataTable().ajax.reload();
-                    },1000);
-                });
-
-
-
                 grid.getTableWrapper().on('click', '.table-group-action-submit', function (e) {
                     e.preventDefault();
                     var action = $(".table-group-action-input", grid.getTableWrapper());

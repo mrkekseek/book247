@@ -80,6 +80,16 @@ class Invoice extends Model
     public function transactions(){
         return $this->hasMany('App\InvoiceFinancialTransaction', 'invoice_id', 'id')->orderBy('invoice_financial_transactions.created_at','asc');
     }
+    
+    public function user()
+    {
+        return $this->belongsTo('App\User');
+    }
+    
+    public function employee()
+    {
+        return $this->belongsTo('App\User','employee_id');
+    }
 
     public static function next_invoice_number(){
         $invoice = Invoice::select('invoice_number')->orderBy('invoice_number', 'desc')->take(1)->get()->first();
