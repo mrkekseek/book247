@@ -1394,6 +1394,7 @@ class BackEndUserController extends Controller
             'shopLocation'=>$shopLocation,
             'shopResourceCategories'=>$shopResourceCategories,
             'user'=>$user,
+            'personal_detail' => @User::with('PersonalDetail')->where('id', '=', $user->id)->first()->PersonalDetail
         ]);
     }
 
