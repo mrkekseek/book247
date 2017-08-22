@@ -42,7 +42,7 @@
 <div class="user-login-5">
     <div class="row bs-reset">
         <div class="col-md-6 bs-reset">
-            <div class="login-bg" style="background-image:url(../assets/pages/img/login/bg1.jpg)">
+            <div class="login-bg" style="background-image:url(../assets/pages/img/login/bg-header.jpg)">
                 <img class="login-logo" src="../assets/pages/img/login/logo_sqf.png" /> </div>
         </div>
         <div class="col-md-6 login-container bs-reset">
@@ -99,27 +99,11 @@
             <div class="login-footer">
                 <div class="row bs-reset">
                     <div class="col-xs-5 bs-reset">
-                        <ul class="login-social">
-                            <li>
-                                <a href="javascript:;">
-                                    <i class="icon-social-facebook"></i>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="javascript:;">
-                                    <i class="icon-social-twitter"></i>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="javascript:;">
-                                    <i class="icon-social-dribbble"></i>
-                                </a>
-                            </li>
-                        </ul>
+
                     </div>
                     <div class="col-xs-7 bs-reset">
                         <div class="login-copyright text-right">
-                            <p>Copyright &copy; BookingSystem 2016</p>
+                            <p>Copyright &copy; Book247.com 2017</p>
                         </div>
                     </div>
                 </div>
@@ -295,9 +279,9 @@
 
                 // init background slide images
                 $('.login-bg').backstretch([
-                        "../assets/pages/img/login/bg1.jpg",
-                        "../assets/pages/img/login/bg2.jpg",
-                        "../assets/pages/img/login/bg3.jpg"
+                        "../assets/pages/img/login/bg-header.jpg",
+                        "../assets/pages/img/login/bg-header.jpg",
+                        "../assets/pages/img/login/bg-header.jpg"
                     ], {
                         fade: 1000,
                         duration: 8000

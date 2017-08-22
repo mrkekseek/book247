@@ -372,13 +372,13 @@
             <ul class="nav navbar-nav">
                 @if (Auth::check() && Auth::user()->is_front_user())
                     <li class="menu-dropdown classic-menu-dropdown {{in_array($in_sidebar, ['front-homepage','front-calendar_view'])?"active":""}}">
-                        <a href="javascript:;"> Make Booking
+                        <a href="javascript:;"> Calendar
                             <span class="arrow"></span>
                         </a>
                         <ul class="dropdown-menu pull-left">
                             <li class=" {{$in_sidebar=="front-homepage"?"active":""}}">
                                 <a href="{{ route('homepage') }}" class="nav-link  ">
-                                    <i class="icon-bar-chart"></i> Booking Homepage
+                                    <i class="icon-bar-chart"></i> Booking Mobile
                                     <!--<span class="badge badge-success">1</span>-->
                                 </a>
                             </li>
@@ -480,7 +480,7 @@
                 @else
                     <li class="menu-dropdown classic-menu-dropdown ">
                         <a href="{{ route('homepage') }}" class="nav-link  ">
-                            <i class="icon-bar-chart"></i> Booking
+                            <i class="icon-bar-chart"></i> Calendar
                         </a>
                     </li>
                     @if (\App\Http\Controllers\AppSettings::get_setting_value_by_name('globalWebsite_show_memberships_on_frontend')==1)
