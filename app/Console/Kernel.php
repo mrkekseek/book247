@@ -28,6 +28,7 @@ class Kernel extends ConsoleKernel
         Commands\Patch_1_3::class,
         Commands\Patch_1_4::class,
         Commands\Patch\Patch_1_5::class,
+        Commands\Patch\Patch_1_6::class
     ];
 
     /**
