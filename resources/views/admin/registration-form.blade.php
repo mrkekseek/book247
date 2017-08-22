@@ -453,6 +453,7 @@
     }
 
     $(document).ready(function(){
+
         var stripe = Stripe('{{ Config::get("stripe.stripe_key") }}');
         var elements = stripe.elements();
 
@@ -495,7 +496,7 @@
 
         var card = elements.create('card', style);
         card.mount('#card-element');
-
+       
         card.addEventListener('change', function(event) {
             var displayError = document.getElementById('card-errors');
             if (event.error) 
@@ -511,8 +512,7 @@
         var form = document.getElementById('payment-form');
         form.addEventListener('submit', function(event) {
             event.preventDefault();
-            spiner(true);
-            $('.submit-payment').attr('disabled', 'disabled');
+            
             stripe.createToken(card).then(function(result) 
             {
                 if (result.error)
@@ -523,6 +523,8 @@
                 }
                 else 
                 {
+                    spiner(true);
+                    $('.submit-payment').attr('disabled', 'disabled');
                     stripeTokenHandler(result.token);
                 }
             });
@@ -583,12 +585,12 @@
             <div class="modal-header">
                 <h4 class="modal-title">Stripe Payment</h4>
             </div>
-            <form  method="post" id="payment-form">
+            <form  method="post" id="payment-form" novalidate="novalidate">
                 <div class="modal-body text-center">
                     <div class="row">
                         <div class="col-xs-10 col-xs-offset-1">
                             <label>
-                                <input class="field" readonly="readonly" type="text" value="{{ Auth::user()->first_name }} {{ Auth::user()->last_name }} {{ Auth::user()->middle_name }}" placeholder="Name" />
+                                <input class="field" readonly="readonly" type="text" value="{{ Auth::user()->first_name }} {{ Auth::user()->last_name }} {{ Auth::user()->middle_name }}" placeholder="Name"  />
                                 <span></span>
                             </label>
 
