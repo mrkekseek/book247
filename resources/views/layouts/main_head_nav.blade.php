@@ -371,7 +371,7 @@
         <div class="hor-menu ">
             <ul class="nav navbar-nav">
                 @if (Auth::check() && Auth::user()->is_front_user())
-                    <li class="menu-dropdown classic-menu-dropdown {{in_array($in_sidebar, ['front-homepage','front-calendar_view'])?"active":""}}">
+                    <li class="menu-dropdown classic-menu-dropdown hidden-xs {{in_array($in_sidebar, ['front-homepage','front-calendar_view'])?"active":""}}">
                         <a href="javascript:;"> Calendar
                             <span class="arrow"></span>
                         </a>
@@ -390,11 +390,12 @@
                             </li>
                         </ul>
                     </li>
+                    <li class="menu-dropdown mega-menu-dropdown visible-xs {{$in_sidebar=="front-type_of_memberships"?"active":""}}">
+                        <a href="{{ route('homepage') }}"> Calendar </a>
+                    </li>
                     @if (\App\Http\Controllers\AppSettings::get_setting_value_by_name('globalWebsite_show_memberships_on_frontend')==1)
                     <li class="menu-dropdown mega-menu-dropdown {{$in_sidebar=="front-type_of_memberships"?"active":""}}">
-                        <a href="{{ route('front/membership_types') }}"> Membership Types
-                            <span class="arrow"></span>
-                        </a>
+                        <a href="{{ route('front/membership_types') }}"> Membership Types </a>
                     </li>
                     @endif
                     @if (\App\Http\Controllers\AppSettings::get_setting_value_by_name('globalWebsite_show_store_credit_packs_on_frontend') == 1)
