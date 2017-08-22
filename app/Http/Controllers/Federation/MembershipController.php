@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Federation;
 
 use App\Http\Controllers\MembershipController as Base;
-use App\Http\Controllers\Optimizations;
+use App\OptimizeSearchMembers;
 use App\MembershipPlan;
 use App\MembershipPlanPrice;
 use App\IframePermission;
@@ -54,7 +54,8 @@ class MembershipController extends Base
         $user = User::where('sso_user_id',$sso_id)->first();
         if($user) {
             // let's update optimize table
-            \App\Http\Controllers\Optimizations::add_new_members_to_table();
+            $searchMembers = new OptimizeSearchMembers();
+            $searchMembers->add_missing_members([$user->id]);
 
             $m = $user->get_active_membership();
             if( $m ) {
