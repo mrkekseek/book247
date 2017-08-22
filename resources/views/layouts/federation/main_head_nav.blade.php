@@ -370,23 +370,9 @@
             <ul class="nav navbar-nav">
                 @if (Auth::check() && Auth::user()->is_front_user())
                 <li class="menu-dropdown classic-menu-dropdown {{in_array($in_sidebar, ['front-homepage','front-calendar_view'])?"active":""}}">
-                    <a href="javascript:;"> Squash Fitness
+                    <a href="javascript:;"> Homepage
                         <span class="arrow"></span>
                     </a>
-                    {{--<ul class="dropdown-menu pull-left">--}}
-                        {{--<li class=" {{$in_sidebar=="front-homepage"?"active":""}}">--}}
-                            {{--<a href="{{ route('homepage') }}" class="nav-link  ">--}}
-                                {{--<i class="icon-bar-chart"></i> Booking Homepage--}}
-                                {{--<!--<span class="badge badge-success">1</span>-->--}}
-                            {{--</a>--}}
-                        {{--</li>--}}
-                        {{--<li class=" {{$in_sidebar=="front-calendar_view"?"active":""}}">--}}
-                            {{--<a href="{{ route('front_calendar_booking',['day'=>\Carbon\Carbon::now()->format('d-m-Y')]) }}" class="nav-link  ">--}}
-                                {{--<i class="icon-bar-chart"></i> Booking Calendar--}}
-                                {{--<!--<span class="badge badge-success">1</span>-->--}}
-                            {{--</a>--}}
-                        {{--</li>--}}
-                    {{--</ul>--}}
                 </li>
                 {{--@if (isset($show_membership_types))--}}
                 {{--<li class="menu-dropdown mega-menu-dropdown {{$in_sidebar=="front-type_of_memberships"?"active":""}}">--}}
@@ -478,7 +464,7 @@
                 @else
                 <li class="menu-dropdown classic-menu-dropdown ">
                     <a href="{{ route('homepage') }}" class="nav-link  ">
-                        <i class="icon-bar-chart"></i> Squash Fitness Homepage
+                        <i class="icon-bar-chart"></i> Homepage
                     </a>
                 </li>
                 @if (isset($show_membership_types))
