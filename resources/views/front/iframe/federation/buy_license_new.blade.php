@@ -164,7 +164,7 @@
                         </ul>
                         <p>Can not book squash</p>
                         <div class="button-box">
-                            <a href="#" data-id="payment_method" data-value="card" class="steps-button pay-but pay-with-card form-choice" style="display:none; background: {{ $membership->plan_calendar_color }}">PAY WITH A CARD</a>
+                            <a href="#" data-id="payment_method" data-value="card" class="steps-button pay-but pay-with-card form-choice" style="display:none !important; background: {{ $membership->plan_calendar_color }}">PAY WITH A CARD</a>
                             @if($paypal_email)
                                 <a href="#" data-id="payment_method" data-value="paypal" class="steps-button pay-but pay-with-paypal form-choice">
                                     <span>PAY WITH</span>
@@ -177,7 +177,7 @@
                     <div class="box-item membership-replacer">
 
                         <div class="button-box">
-                            <a href="#" data-id="payment_method" data-value="card" class="steps-button pay-but pay-with-card form-choice" style="display:none;">PAY WITH A CARD</a>
+                            <a href="#" data-id="payment_method" data-value="card" class="steps-button pay-but pay-with-card form-choice" style="display:none !important;">PAY WITH A CARD</a>
                             @if($paypal_email)
                                 <a href="#" data-id="payment_method" data-value="paypal" class="steps-button pay-but pay-with-paypal form-choice">
                                     <span>PAY WITH</span>
