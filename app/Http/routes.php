@@ -711,6 +711,16 @@ if (env('FEDERATION',false)){
             'as' => 'ajax/get_activity_log',
             'uses' => 'ActivityLog@get_activity_log'
         ]);
+        
+        Route::get('admin/invoices_log', [
+            'as' => 'admin/invoices_log',
+            'uses' => 'InvoiceController@show_invoices_log'
+        ]);
+
+        Route::post('admin/invoices_log', [
+            'as' => 'ajax/get_invoices_log',
+            'uses' => 'InvoiceController@get_invoices_log'
+        ]);
 
         /* Start General Settings Part */
         Route::get('admin/settings/list_all', [
