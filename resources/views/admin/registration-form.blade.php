@@ -1,13 +1,11 @@
 @extends('login_header')
 
-@section('themeLayoutStyle')
-    <link href="{{ asset('assets/apps/css/front_custom.css') }}" rel="stylesheet" type="text/css" />
-    <link href="{{ asset('assets/global/plugins/jquery-notific8/jquery.notific8.min.css') }}" rel="stylesheet" type="text/css" />
-@endsection
 
 @section('main_content')
-
-
+    <link href="{{ asset('assets/apps/css/front_custom.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/global/plugins/jquery-notific8/jquery.notific8.min.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/global/plugins/jquery-notific8/jquery.notific8.min.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/global/css/plugins.min.css') }}" rel="stylesheet" type="text/css" />
 <!-- BEGIN REGISTRATION -->
     <div class="container">
         <div class="row">
@@ -429,63 +427,14 @@
 <!-- BEGIN PAGE LEVEL SCRIPTS -->
 <script src="{{ asset('assets/layouts/layout4/scripts/layout.min.js') }}" type="text/javascript"></script>
 <script src="{{ asset('assets/pages/scripts/login-4.min.js') }}" type="text/javascript"></script>
+<script src="{{ asset('assets/global/plugins/jquery-notific8/jquery.notific8.min.js') }}"></script>
 
 <!-- END PAGE LEVEL SCRIPTS -->
 <!-- BEGIN THEME LAYOUT SCRIPTS -->
 <!-- END THEME LAYOUT SCRIPTS -->
-
-<!-- MODAL -->
-<div class="modal-payment modal fade" id="modal-stripe" data-backdrop="static">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title">Stripe Payment</h4>
-            </div>
-            <form  method="post" id="payment-form">
-                <div class="modal-body text-center">
-                    <div class="row">
-                        <div class="col-xs-10 col-xs-offset-1">
-                            <label>
-                                <input class="field" readonly="readonly" type="text" value="{{ Auth::user()->first_name }} {{ Auth::user()->last_name }} {{ Auth::user()->middle_name }}" placeholder="Name" />
-                                <span></span>
-                            </label>
-
-                            <label>
-                                <input class="field" readonly="readonly" type="tel" value="{{ $personal_detail->mobile_number }}" placeholder="Phone number" />
-                                <span></span>
-                            </label>
-
-                            <label>
-                                <div id="card-element" class="field"></div>
-                                <span></span>
-                            </label>
-
-                            <!-- Used to display form errors -->
-                            <div id="card-errors" role="alert"></div>
-
-                            <div class="checkbox">
-                                <label>
-                                    Your card will be saved and used only if you continue with our services after the first month
-                                </label>
-                            </div>
-
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-success submit-payment">Save Card</button>
-                    </div>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-<!-- END MODAL -->
-<div class="loader-wrapper">
-   <div class="loader"></div>
-   <p>Please wait...</p>
-</div>
-
+<script src="https://js.stripe.com/v3/"></script>
 <script>
+
     $(document).ready(function(){
         $('input[type=text]').val('asdf');
         $('input[name=email]').val('asdf@asdf');
@@ -493,18 +442,30 @@
             $(this).val($(value).find('option').last().attr('value'));
         });
     });
-</script>
 
-
-@stop
-
-<script src="https://js.stripe.com/v3/"></script>
-<script src="{{ asset('assets/pages/scripts/ui-notific8.min.js') }}" type="text/javascript"></script>
-<script>
+    var current = 0;
+    function check_finish()
+    {
+        if (current == 3)
+        {
+            $('#modal-stripe').modal('show');
+            $(".btn-finish").show();
+        }
+    }
 
     $(document).ready(function(){
         var stripe = Stripe('{{ Config::get("stripe.stripe_key") }}');
         var elements = stripe.elements();
+
+        $(".button-next").click(function(){
+            current ++;
+            check_finish();
+        });
+
+        $(".button-previous").click(function(){
+            current --;
+            check_finish();
+        });
 
         var style = {
             hidePostalCode: true,
@@ -567,9 +528,6 @@
                 }
             });
         });
-
-        $('#modal-stripe').modal('show');
-
     });
 
     function show_notification(title_heading, message, theme, life, sticky) {
@@ -601,14 +559,8 @@
             success : function(data)
             {
                 spiner(false);
-                if (data.success)
-                {
-                    show_notification(data.title, data.errors, 'lime', 3500, 0);
-                }
-                else
-                {
-                    show_notification(data.title, data.errors, 'lime', 3500, 0); 
-                }
+                show_notification("Strip Info", "Success add card", 'lime', 3500, 0);
+                $('#modal-stripe').modal('hide');
             }
         });
     }
@@ -624,3 +576,56 @@
         $(".loader-wrapper").hide();
     }
 </script>
+
+<!-- MODAL -->
+<div class="modal-payment modal fade" id="modal-stripe" data-backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Stripe Payment</h4>
+            </div>
+            <form  method="post" id="payment-form">
+                <div class="modal-body text-center">
+                    <div class="row">
+                        <div class="col-xs-10 col-xs-offset-1">
+                            <label>
+                                <input class="field" readonly="readonly" type="text" value="{{ Auth::user()->first_name }} {{ Auth::user()->last_name }} {{ Auth::user()->middle_name }}" placeholder="Name" />
+                                <span></span>
+                            </label>
+
+                            <label>
+                                <input class="field" readonly="readonly" type="tel" value="{{ $personal_detail->mobile_number }}" placeholder="Phone number" />
+                                <span></span>
+                            </label>
+
+                            <label>
+                                <div id="card-element" class="field"></div>
+                                <span></span>
+                            </label>
+
+                            <!-- Used to display form errors -->
+                            <div id="card-errors" role="alert"></div>
+
+                            <div class="checkbox">
+                                <label>
+                                    Your card will be saved and used only if you continue with our services after the first month
+                                </label>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-success submit-payment">Save Card</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- END MODAL -->
+<div class="loader-wrapper">
+   <div class="loader"></div>
+   <p>Please wait...</p>
+</div>
+
+@stop
