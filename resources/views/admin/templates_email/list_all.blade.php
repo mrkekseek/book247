@@ -31,6 +31,7 @@
             <div class="col-md-12">
                 <div class="portlet light bordered">
                     <div class="portlet-body">
+                        @if (env('DebugSettings',0)==1)
                         <div class="row form-group">
                             <div class="col-md-12">
                                 <div class="btn-group">
@@ -38,6 +39,7 @@
                                 </div>
                             </div>
                         </div>
+                        @endif
 
                         <table class="table table-striped table-bordered table-hover table-checkable order-column" id="all_permissions">
                             <thead>
@@ -162,8 +164,6 @@
                 });
             });
         });
-
-
 
     </script>
 @endsection

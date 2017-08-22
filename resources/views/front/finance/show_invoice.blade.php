@@ -37,7 +37,7 @@
                     <div class="invoice">
                         <div class="row invoice-logo">
                             <div class="col-xs-6 invoice-logo-space">
-                                <img src="{{ asset('assets/global/img/sqf-logo.png') }}" class="img-responsive" alt="" /> </div>
+                                <img src="{{ \App\Http\Controllers\AppSettings::get_setting_value_by_name('globalWebsite_account_logo_image')?\App\Http\Controllers\AppSettings::get_setting_value_by_name('globalWebsite_account_logo_image'):asset('assets/global/img/logo.png') }}" class="img-responsive" alt="" /> </div>
                             <div class="col-xs-6">
                                 <p> #{{ $invoice->invoice_number }} / {{ \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $invoice->created_at)->format('d M Y') }}
                                     <span class="muted"> {{ $invoice->invoice_type }} </span>

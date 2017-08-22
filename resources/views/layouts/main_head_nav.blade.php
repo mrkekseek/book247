@@ -4,7 +4,7 @@
         <!-- BEGIN LOGO -->
         <div class="page-logo">
             <a href="{{ route('homepage') }}">
-                <img height="65" style="height: 65px;margin-bottom: 4px;margin-top: 6px;" src="{{ asset('assets/global/img/sqf-logo.png') }}" alt="logo" class="logo-default">
+                <img height="65" style="height: 65px;margin-bottom: 4px;margin-top: 6px;" src="{{ \App\Http\Controllers\AppSettings::get_setting_value_by_name('globalWebsite_account_logo_image')?\App\Http\Controllers\AppSettings::get_setting_value_by_name('globalWebsite_account_logo_image'):asset('assets/global/img/logo.png') }}" alt="logo" class="logo-default">
             </a>
         </div>
         <!-- END LOGO -->
@@ -372,7 +372,7 @@
             <ul class="nav navbar-nav">
                 @if (Auth::check() && Auth::user()->is_front_user())
                     <li class="menu-dropdown classic-menu-dropdown {{in_array($in_sidebar, ['front-homepage','front-calendar_view'])?"active":""}}">
-                        <a href="javascript:;"> Squash Fitness
+                        <a href="javascript:;"> Make Booking
                             <span class="arrow"></span>
                         </a>
                         <ul class="dropdown-menu pull-left">
@@ -480,7 +480,7 @@
                 @else
                     <li class="menu-dropdown classic-menu-dropdown ">
                         <a href="{{ route('homepage') }}" class="nav-link  ">
-                            <i class="icon-bar-chart"></i> Squash Fitness Homepage
+                            <i class="icon-bar-chart"></i> Booking
                         </a>
                     </li>
                     @if (\App\Http\Controllers\AppSettings::get_setting_value_by_name('globalWebsite_show_memberships_on_frontend')==1)

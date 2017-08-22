@@ -5,7 +5,7 @@
     <!-- BEGIN LOGO -->
     <div class="page-logo">
         <a href="{{ route('admin') }}">
-            <img height="55" style="height: 55px;margin-bottom: 4px;margin-top: 11px;"  src="{{ asset('assets/global/img/sqf-logo.png') }}" alt="logo" class="logo-default" /> </a>
+            <img height="55" style="height: 55px;margin-bottom: 4px;margin-top: 11px;"  src="{{ \App\Http\Controllers\AppSettings::get_setting_value_by_name('globalWebsite_account_logo_image')?\App\Http\Controllers\AppSettings::get_setting_value_by_name('globalWebsite_account_logo_image'):asset('assets/global/img/logo.png') }}" alt="logo" class="logo-default" /> </a>
         <div class="menu-toggler sidebar-toggler">
             <!-- DOC: Remove the above "hide" to enable the sidebar toggler button on header -->
         </div>

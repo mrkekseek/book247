@@ -463,7 +463,7 @@
     $(document).ready(function(){
         var handler = StripeCheckout.configure({
             key : '{{ Config::get("stripe.stripe_key") }}',
-            image : '{{ asset('assets/global/img/sqf-logo.png') }}',
+            image : '{{ \App\Http\Controllers\AppSettings::get_setting_value_by_name('globalWebsite_account_logo_image')?\App\Http\Controllers\AppSettings::get_setting_value_by_name('globalWebsite_account_logo_image'):asset('assets/global/img/logo.png') }}',
             email : '{{ Auth::user()->email }}',
             token: function(token, args) {
 

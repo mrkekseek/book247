@@ -59,7 +59,10 @@ class GeneralSettingsSeeder extends Seeder
             [33, 'Finance Paypal Account Secret', 'finance_paypal_account_secret', 'Advanced PayPal integration - account secret. This is paired with PayPal Key.', 0, 'string', 2, 60, 0],
             [34, 'Finance Stripe Account Key', 'finance_stripe_account_key', 'Stripe payment integration - Account key', 0, 'string', 5, 60, 0],
             [35, 'Finance Stripe Account Secret', 'finance_stripe_account_secret', 'Stripe payment integration - Account Secret', 0, 'string', 5, 60, 0],
-            [36, 'Global Website Registration Email Validation', 'globalWebsite_registration_email_validation', 'If set to yes, all new member registration will require email verification : an email will be sent to them to activate their accounts.', 1, '', 0, 0, 0]
+            [36, 'Global Website Registration Email Validation', 'globalWebsite_registration_email_validation', 'If set to yes, all new member registration will require email verification : an email will be sent to them to activate their accounts.', 1, '', 0, 0, 0],
+            [37, 'Global Website Custm Terms and Agreements', 'globalWebsite_custom_terms_and_agreements', 'In this field you can place the terms and agreements from your own website for buying memberships and other financial packages.', 0, 'string', 5, 200, 0],
+            [38, 'Global Website Facebook FeedLink', 'globalWebsite_facebook_feedLink', 'Facebook account link for showing homepage Facebook embeded feed from facebook page', 0, 'string', 5, 220, 0],
+            [39, 'Global Website Account Logo Image', 'globalWebsite_account_logo_image', 'This is the image that will be used as logo in all the application places', 0, 'string', 5, 255, 0]
         ];
 
         // insert values into settings table

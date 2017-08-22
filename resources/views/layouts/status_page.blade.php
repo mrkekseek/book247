@@ -28,7 +28,7 @@
                 <div class="container">
                     <div class="page-logo">
                         <a href="{{ route('homepage') }}">
-                            <img height="65" style="height: 65px;margin-bottom: 4px;margin-top: 6px;" src="{{ asset('assets/global/img/sqf-logo.png') }}" alt="logo" class="logo-default">
+                            <img height="65" style="height: 65px;margin-bottom: 4px;margin-top: 6px;" src="{{ \App\Http\Controllers\AppSettings::get_setting_value_by_name('globalWebsite_account_logo_image')?\App\Http\Controllers\AppSettings::get_setting_value_by_name('globalWebsite_account_logo_image'):asset('assets/global/img/logo.png') }}" alt="logo" class="logo-default">
                         </a>
                     </div>
                 </div>
