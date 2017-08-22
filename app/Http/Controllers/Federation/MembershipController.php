@@ -54,7 +54,7 @@ class MembershipController extends Base
         $user = User::where('sso_user_id',$sso_id)->first();
         if($user) {
             // let's update optimize table
-            Optimizations::add_new_members_to_table();
+            \App\Http\Controllers\Optimizations::add_new_members_to_table();
 
             $m = $user->get_active_membership();
             if( $m ) {
