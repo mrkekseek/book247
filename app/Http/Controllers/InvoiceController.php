@@ -330,8 +330,8 @@ class InvoiceController extends Controller
         ! empty ($filter['date_from']) ? $query->whereDate('created_at', '>=', \Carbon\Carbon::createFromFormat('d/m/Y',$filter['date_from'])->format('Y-m-d')) : FALSE;
         ! empty ($filter['date_to']) ? $query->whereDate('created_at', '<=', \Carbon\Carbon::createFromFormat('d/m/Y',$filter['date_to'])->format('Y-m-d')) : FALSE;
         $recordsTotal = $query->count();
-        $query->offset($offset);
-        $query->limit($limit);
+        ($limit != -1) ? $query->offset($offset) : FALSE; 
+        ($limit != -1) ? $query->limit($limit) : FALSE; 
         $invoices = $query->get();
         $data = [];
         $k = 0;
