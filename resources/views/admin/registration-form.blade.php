@@ -366,7 +366,14 @@
                                         <!--END STEP 3-->
                                         <!--STEP 4-->
                                         <div class="tab-pane clearfix text-center" id="tab4">
-                                            
+                                            <div class="col-md-offset-4 col-md-4">
+                                                <button class="close" data-dismiss="alert"></button>
+                                                <p><strong>Finish:</strong> Click submit to finish your registration! But don`t worry if you want to make changes. Every setting can be changed in "General settings".</p>
+                                            </div>
+
+                                            <div class="col-md-12">
+                                                <h3 class="text-center text-success">Congrats! You can now start using Book247!</h3>
+                                            </div>
                                         </div>
                                         <!--END STEP 4-->
                                     </div>
@@ -434,14 +441,6 @@
 <!-- END THEME LAYOUT SCRIPTS -->
 <script src="https://js.stripe.com/v3/"></script>
 <script>
-
-    $(document).ready(function(){
-        $('input[type=text]').val('asdf');
-        $('input[name=email]').val('asdf@asdf');
-        $('select').each(function(key, value){
-            $(this).val($(value).find('option').last().attr('value'));
-        });
-    });
 
     var current = 0;
     function check_finish()
