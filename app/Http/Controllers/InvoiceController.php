@@ -278,4 +278,82 @@ class InvoiceController extends Controller
             }
         }
     }
+    
+    public function show_invoices_log()
+    {
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
+            return redirect()->intended(route('admin/login'));
+        }
+        $breadcrumbs = [
+            'Home'              => route('admin'),
+            'Administration'    => route('admin'),
+            'Reports'     => route('admin'),
+            'Invoices Logs' => '',
+        ];
+        $text_parts  = [
+            'title'     => 'Invoices log',
+            'subtitle'  => 'view invoices log',
+            'table_head_text1' => 'Invoices Log'
+        ];
+        $sidebar_link= 'admin-invoices-log';
+        
+        $statuses = Invoice::select('status')->distinct('status')->get();
+        $types = Invoice::select('invoice_type')->distinct('invoice_type')->get();
+        $users = User::select('id','first_name','last_name')->has('invoices')->get();
+        $employees = User::select('id','first_name','last_name')->has('invoices_employee')->get();
+        
+        return view('admin/finance/invoices_log', [
+            'breadcrumbs' => $breadcrumbs,
+            'text_parts'  => $text_parts,
+            'in_sidebar'  => $sidebar_link,
+            'statuses'=> $statuses,
+            'types' => $types,
+            'users' => $users,
+            'employees' => $employees,
+        ]);
+    }
+    
+    public function get_invoices_log(Request $request)
+    {
+        $in = $request->only('start','length');
+        $filter = $request->only('status', 'user_id', 'employee_id','type','number','date_from','date_to');
+        $offset = ! empty($in['start']) ? $in['start'] : 0;
+        $limit = ! empty($in['length']) ? $in['length'] : 15;
+        $query = Invoice::query();
+        $query->with('user','employee');
+        ! empty ($filter['status']) ? $query->where('status', $filter['status']) : $query;
+        ! empty ($filter['type']) ? $query->where('invoice_type', $filter['type']) : $query;
+        ! empty ($filter['user_id']) ? $query->where('user_id', $filter['user_id']) : $query;
+        ! empty ($filter['employee_id']) ? $query->where('employee_id', $filter['employee_id']) : $query;
+        ! empty ($filter['number']) ? $query->where('invoice_number', 'LIKE', '%'.$filter['number'].'%') : $query;
+        ! empty ($filter['date_from']) ? $query->whereDate('created_at', '>=', \Carbon\Carbon::createFromFormat('d/m/Y',$filter['date_from'])->format('Y-m-d')) : FALSE;
+        ! empty ($filter['date_to']) ? $query->whereDate('created_at', '<=', \Carbon\Carbon::createFromFormat('d/m/Y',$filter['date_to'])->format('Y-m-d')) : FALSE;
+        $recordsTotal = $query->count();
+        ($limit != -1) ? $query->offset($offset) : FALSE; 
+        ($limit != -1) ? $query->limit($limit) : FALSE; 
+        $invoices = $query->get();
+        $data = [];
+        $k = 0;
+        foreach ($invoices as $item)
+        {
+            $data[$k][] = $item->id;
+            $data[$k][] = $item->user->first_name.' '.$item->user->last_name;
+            $data[$k][] = $item->employee->first_name.' '.$item->employee->last_name;
+            $data[$k][] = $item->invoice_type;
+            $data[$k][] = $item->invoice_number;
+            $data[$k][] = '<span class="label label-sm label-info"> '.ucfirst($item->status).' </span>';
+            $data[$k][] = \Carbon\Carbon::parse($item->created_at)->format('Y-m-d');
+            $data[$k][] = '';
+            $k++;
+        }
+        $result = [
+            'data' => $data,
+            'start' => $offset,
+            'length' => $limit,
+            'recordsTotal' => $recordsTotal,
+            'recordsFiltered' => $recordsTotal,
+        ];
+        return $result;
+    }
 }

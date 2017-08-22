@@ -176,6 +176,14 @@ class User extends Authenticatable
     public function membership(){
         return $this->hasMany('App\UserMembership');
     }
+    
+    public function invoices(){
+        return $this->hasMany('App\Invoice');
+    }
+    
+    public function invoices_employee(){
+        return $this->hasMany('App\Invoice','employee_id');
+    }
 
     public function get_active_membership(){
         $membership = UserMembership::where('user_id','=',$this->id)->whereIn('status',['active','suspended'])->get()->first();

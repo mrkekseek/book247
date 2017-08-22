@@ -304,23 +304,23 @@
                     <div class="row">
                         <div class="col-xs-10 col-xs-offset-1">
 
-                                <label>
-                                    <input class="field" readonly="readonly" type="text" value="{{ Auth::user()->first_name }} {{ Auth::user()->last_name }} {{ Auth::user()->middle_name }}" placeholder="Name" />
-                                    <span></span>
-                                </label>
+                            <label>
+                                <input class="field" readonly="readonly" type="text" value="{{ Auth::user()->first_name }} {{ Auth::user()->last_name }} {{ Auth::user()->middle_name }}" placeholder="Name" />
+                                <span></span>
+                            </label>
 
-                                <label>
-                                    <input class="field" readonly="readonly" type="tel" value="{{ $personal_detail->mobile_number }}" placeholder="Phone number" />
-                                    <span></span>
-                                </label>
-                                
-                                <label>
-                                    <div id="card-element" class="field"></div>
-                                    <span></span>
-                                 </label>
-                                
-                                <!-- Used to display form errors -->
-                                <div id="card-errors" role="alert"></div>
+                            <label>
+                                <input class="field" readonly="readonly" type="tel" value="{{ $personal_detail->mobile_number }}" placeholder="Phone number" />
+                                <span></span>
+                            </label>
+                            
+                            <label>
+                                <div id="card-element" class="field"></div>
+                                <span></span>
+                             </label>
+                            
+                            <!-- Used to display form errors -->
+                            <div id="card-errors" role="alert"></div>
                           
                           
                             <div class="checkbox">
