@@ -77,7 +77,7 @@
                                                 @endif
                                             </h3>
                                             <p>{{ $m->administration_fee_name .' '. $m->administration_fee_amount }} {{\App\Http\Controllers\AppSettings::get_setting_value_by_name('finance_currency') }}</p>
-                                            <p style="height:185px; overflow:hidden;" class="after-cap">
+                                            <p style="height:191px; overflow:hidden;" class="after-cap">
                                             {{ $m->short_description  }}
                                             </p>
                                             <div class="carousel-button-wrap">
@@ -94,7 +94,7 @@
                             @endforeach
                         </div>
                     </div>
-                    <div class="checkbox-chek checkbox-chek-desktop">
+                    <div class="checkbox-chek checkbox-chek-desktop" style="padding-top:20px; padding-bottom:15px;">
                         <input type="checkbox" class="chek-page">
                         <p class="desktop-accept">Accept our <a href="{{ \App\Http\Controllers\AppSettings::get_setting_value_by_name('globalWebsite_custom_terms_and_agreements') ? \App\Http\Controllers\AppSettings::get_setting_value_by_name('globalWebsite_custom_terms_and_agreements') : route('terms_of_service') }}" target="_blank">Terms & Conditions </a> </p>
                     </div>
