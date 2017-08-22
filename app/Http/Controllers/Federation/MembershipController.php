@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Federation;
 
 use App\Http\Controllers\MembershipController as Base;
+use App\Http\Controllers\Optimizations;
 use App\MembershipPlan;
 use App\MembershipPlanPrice;
 use App\IframePermission;
@@ -52,6 +53,9 @@ class MembershipController extends Base
         $redirect_url = Input::get('redirect_url',false);
         $user = User::where('sso_user_id',$sso_id)->first();
         if($user) {
+            // let's update optimize table
+            Optimizations::add_new_members_to_table();
+
             $m = $user->get_active_membership();
             if( $m ) {
                 if ($m->status = 'active'){
