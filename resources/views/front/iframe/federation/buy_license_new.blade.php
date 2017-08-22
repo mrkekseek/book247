@@ -77,7 +77,7 @@
                                                 @endif
                                             </h3>
                                             <p>{{ $m->administration_fee_name .' '. $m->administration_fee_amount }} {{\App\Http\Controllers\AppSettings::get_setting_value_by_name('finance_currency') }}</p>
-                                            <p style="height:116px" class="after-cap">
+                                            <p style="height:185px; overflow:hidden;" class="after-cap">
                                             {{ $m->short_description  }}
                                             </p>
                                             <div class="carousel-button-wrap">
@@ -96,7 +96,7 @@
                     </div>
                     <div class="checkbox-chek checkbox-chek-desktop">
                         <input type="checkbox" class="chek-page">
-                        <p class="desktop-accept">Accept our <a href="#">Terms & Conditions </a> </p>
+                        <p class="desktop-accept">Accept our <a href="{{ \App\Http\Controllers\AppSettings::get_setting_value_by_name('globalWebsite_custom_terms_and_agreements') ? \App\Http\Controllers\AppSettings::get_setting_value_by_name('globalWebsite_custom_terms_and_agreements') : route('terms_of_service') }}" target="_blank">Terms & Conditions </a> </p>
                     </div>
                 </div>
             </div>
@@ -177,7 +177,7 @@
                     <div class="box-item membership-replacer">
 
                         <div class="button-box">
-                            <a href="#" data-id="payment_method" data-value="card" class="steps-button pay-but pay-with-card form-choice">PAY WITH A CARD</a>
+                            <a href="#" data-id="payment_method" data-value="card" class="steps-button pay-but pay-with-card form-choice" style="display:none;">PAY WITH A CARD</a>
                             @if($paypal_email)
                                 <a href="#" data-id="payment_method" data-value="paypal" class="steps-button pay-but pay-with-paypal form-choice">
                                     <span>PAY WITH</span>
