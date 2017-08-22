@@ -4,7 +4,7 @@
         <!-- BEGIN LOGO -->
         <div class="page-logo">
             <a href="{{ route('homepage') }}">
-                <img height="65" style="height: 65px;margin-bottom: 4px;margin-top: 6px;" src="{{ asset('assets/global/img/sqf-logo.png') }}" alt="logo" class="logo-default">
+                <img height="65" style="height: 65px;margin-bottom: 4px;margin-top: 6px;" src="{{ \App\Http\Controllers\AppSettings::get_setting_value_by_name('globalWebsite_account_logo_image')?\App\Http\Controllers\AppSettings::get_setting_value_by_name('globalWebsite_account_logo_image'):asset('assets/global/img/logo.png') }}" alt="logo" class="logo-default">
             </a>
         </div>
         <!-- END LOGO -->
@@ -371,14 +371,14 @@
         <div class="hor-menu ">
             <ul class="nav navbar-nav">
                 @if (Auth::check() && Auth::user()->is_front_user())
-                    <li class="menu-dropdown classic-menu-dropdown {{in_array($in_sidebar, ['front-homepage','front-calendar_view'])?"active":""}}">
-                        <a href="javascript:;"> Squash Fitness
+                    <li class="menu-dropdown classic-menu-dropdown hidden-xs {{in_array($in_sidebar, ['front-homepage','front-calendar_view'])?"active":""}}">
+                        <a href="javascript:;"> Calendar
                             <span class="arrow"></span>
                         </a>
                         <ul class="dropdown-menu pull-left">
                             <li class=" {{$in_sidebar=="front-homepage"?"active":""}}">
                                 <a href="{{ route('homepage') }}" class="nav-link  ">
-                                    <i class="icon-bar-chart"></i> Booking Homepage
+                                    <i class="icon-bar-chart"></i> Booking Mobile
                                     <!--<span class="badge badge-success">1</span>-->
                                 </a>
                             </li>
@@ -390,11 +390,12 @@
                             </li>
                         </ul>
                     </li>
+                    <li class="menu-dropdown mega-menu-dropdown visible-xs {{$in_sidebar=="front-type_of_memberships"?"active":""}}">
+                        <a href="{{ route('homepage') }}"> Calendar </a>
+                    </li>
                     @if (\App\Http\Controllers\AppSettings::get_setting_value_by_name('globalWebsite_show_memberships_on_frontend')==1)
                     <li class="menu-dropdown mega-menu-dropdown {{$in_sidebar=="front-type_of_memberships"?"active":""}}">
-                        <a href="{{ route('front/membership_types') }}"> Membership Types
-                            <span class="arrow"></span>
-                        </a>
+                        <a href="{{ route('front/membership_types') }}"> Membership Types </a>
                     </li>
                     @endif
                     @if (\App\Http\Controllers\AppSettings::get_setting_value_by_name('globalWebsite_show_store_credit_packs_on_frontend') == 1)
@@ -480,7 +481,7 @@
                 @else
                     <li class="menu-dropdown classic-menu-dropdown ">
                         <a href="{{ route('homepage') }}" class="nav-link  ">
-                            <i class="icon-bar-chart"></i> Squash Fitness Homepage
+                            <i class="icon-bar-chart"></i> Calendar
                         </a>
                     </li>
                     @if (\App\Http\Controllers\AppSettings::get_setting_value_by_name('globalWebsite_show_memberships_on_frontend')==1)

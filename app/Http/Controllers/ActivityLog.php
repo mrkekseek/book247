@@ -40,7 +40,7 @@ class ActivityLog extends Controller{
         ];
         $sidebar_link= 'admin-activity-log';
         $action_list = [];
-        foreach (Activity::all() as $activity) {
+        foreach (Activity::take(1000)->get() as $activity) {
             $action_list[$activity->content_type] =  ucwords(str_replace('_',' ',$activity->content_type));
         }
 

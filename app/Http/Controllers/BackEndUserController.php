@@ -424,7 +424,7 @@ class BackEndUserController extends Controller
             $back_user->first_name.' '.$back_user->middle_name.' '.$back_user->last_name => '',
         ];
 
-        $activity_log = Activity::where('user_id',$id)->get();
+        $activity_log = Activity::where('user_id',$id)->orderBy('created_at','desc')->take(150)->get();
         $system_logs = [];
         $user_logs = [];
         foreach ($activity_log as $key => $log) {
@@ -462,13 +462,17 @@ class BackEndUserController extends Controller
                     switch ($log->content_type) {
                         case 'bookings':
                             $description = explode(':', $log->description);
-                            $booking_item = BookingInvoiceItem::where('booking_id', trim($description[1]))->first();
-                            if ($booking_item) {
-                                $log->description = str_replace(trim($description[1]), $booking_item->resource_name . ' at ' . $booking_item->location_name, $log->description);
-                                $booking = Booking::find($booking_item->booking_id);
-                                if ($booking) {
-                                    $u = User::find($booking->for_user_id);
-                                    $log->description .= ' for <a href="'.route('admin/front_users/view_user',['id' => $u->id]).'">' . $u->first_name . ' ' . $u->last_name .'</a>';
+                            //xdebug_var_dump($description);
+                            //$booking_item = false;
+                            if (isset($description[1])) {
+                                $booking_item = BookingInvoiceItem::where('booking_id', trim($description[1]))->first();
+                                if ($booking_item) {
+                                    $log->description = str_replace(trim($description[1]), $booking_item->resource_name . ' at ' . $booking_item->location_name, $log->description);
+                                    $booking = Booking::find($booking_item->booking_id);
+                                    if ($booking) {
+                                        $u = User::find($booking->for_user_id);
+                                        $log->description .= ' for <a href="' . route('admin/front_users/view_user', ['id' => $u->id]) . '">' . $u->first_name . ' ' . $u->last_name . '</a>';
+                                    }
                                 }
                             }
                             break;

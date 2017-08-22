@@ -125,7 +125,6 @@
         </div>
     </div>
 
-
     <div class="modal fade" id="confirm-exit-without-save">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -261,7 +260,6 @@
                 }
             };
         }();
-
 
         function add_new_template()
         {

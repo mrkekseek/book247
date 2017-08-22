@@ -339,6 +339,8 @@
                                     </div>
                                 </div>
                             @endif
+
+                            @if (\App\Http\Controllers\Federation\AppSettings::get_setting_value_by_name('globalWebsite_facebook_feedLink'))
                             <div class="portlet light search-page search-content-1 hidden-xs hidden-sm">
                                 <div class="search-container " style="text-align: center;">
                                     <div id="fb-root"></div>
@@ -349,9 +351,10 @@
                                             js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.7&appId=480248068784470";
                                             fjs.parentNode.insertBefore(js, fjs);
                                         }(document, 'script', 'facebook-jssdk'));</script>
-                                    <div class="fb-page" data-href="https://www.facebook.com/squashandfitness/?fref=ts" data-tabs="timeline" data-width="535" data-height="460" data-small-header="false" data-adapt-container-width="true" data-hide-cover="false" data-show-facepile="true"><blockquote cite="https://www.facebook.com/squashandfitness/?fref=ts" class="fb-xfbml-parse-ignore"><a href="https://www.facebook.com/squashandfitness/?fref=ts">SQF.no - Squash &amp; Fitness</a></blockquote></div>
+                                    <div class="fb-page" data-href="{{\App\Http\Controllers\Federation\AppSettings::get_setting_value_by_name('globalWebsite_facebook_feedLink')}}" data-tabs="timeline" data-width="535" data-height="460" data-small-header="false" data-adapt-container-width="true" data-hide-cover="false" data-show-facepile="true"></div>
                                 </div>
                             </div>
+                            @endif
                         </div>
                         <div class="col-md-6 ">
                             <div class="portlet light margin-bottom-15">
