@@ -114,94 +114,49 @@
                                         <i class="icon-globe theme-font hide"></i>
                                         <span class="caption-subject font-blue-madison bold uppercase">Registered events</span>
                                     </div>
-                                    {{--<ul class="nav nav-tabs">--}}
-                                        {{--<!--<li class="active"><a href="#tab_2_1" data-toggle="tab"> This Week </a></li>-->--}}
-                                        {{--<li class="active">--}}
-                                            {{--<a href="#tab_2_2" data-toggle="tab"> This Month </a>--}}
-                                        {{--</li>--}}
-                                        {{--<li>--}}
-                                            {{--<a href="#tab_2_3" data-toggle="tab"> Last 3 Months </a>--}}
-                                        {{--</li>--}}
-                                        {{--<li>--}}
-                                            {{--<a href="#tab_2_4" data-toggle="tab"> All Time </a>--}}
-                                        {{--</li>--}}
-                                    {{--</ul>--}}
+                                    <ul class="nav nav-tabs">
+                                        <!--<li class="active"><a href="#tab_2_1" data-toggle="tab"> This Week </a></li>-->
+                                        <li class="active">
+                                            <a href="#tab_2_2" data-toggle="tab"> Upcomming </a>
+                                        </li>
+                                        <li>
+                                            <a href="#tab_2_3" data-toggle="tab"> Finished </a>
+                                        </li>
+                                        <li>
+                                            <a href="#tab_2_4" data-toggle="tab"> All List </a>
+                                        </li>
+                                    </ul>
                                 </div>
                                 <div class="portlet-body tab-content">
-                                    @foreach ($top_stats as $stat)
-                                        <div class="table-scrollable table-scrollable-borderless tab-pane {{ $stat['ord']==2?'active':'' }}" id="tab_2_{{ $stat['ord'] }}">
-                                            <table class="table table-hover table-light">
-                                                <thead>
-                                                <tr class="uppercase">
-                                                    <th> Bookings </th>
-                                                    <th style="text-align:center"> NUMBER </th>
-                                                    <th> MONEY </th>
-                                                    <th> RATE </th>
-                                                </tr>
-                                                </thead>
-                                                <tr>
-                                                    <td>
-                                                        <a href="javascript:;" class="primary-link">Calendar Products</a>
-                                                    </td>
-                                                    <td align="center"> {{ $stat['drop_ins']['nr'] }} </td>
-                                                    <td> {{ $stat['drop_ins']['money'] }} {{ Config::get('constants.finance.currency') }} </td>
-                                                    <td>
-                                                        <span class="bold theme-font">{{ $stat['drop_ins']['rate']=='-'?'-':$stat['drop_ins']['rate'].'%' }}</span>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <a href="javascript:;" class="primary-link">Membership</a>
-                                                    </td>
-                                                    <td align="center"> {{ $stat['membership']['nr'] }} </td>
-                                                    <td> {{ $stat['membership']['money'] }} {{ Config::get('constants.finance.currency') }} </td>
-                                                    <td>
-                                                        <span class="bold theme-font">{{ $stat['membership']['rate']=='-'?'-':$stat['membership']['rate'].'%' }}</span>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <a href="javascript:;" class="primary-link">Active</a>
-                                                    </td>
-                                                    <td align="center"> {{ $stat['active']['nr'] }} </td>
-                                                    <td> {{ $stat['active']['money'] }} {{ Config::get('constants.finance.currency') }} </td>
-                                                    <td>
-                                                        <span class="bold theme-font">{{ $stat['active']['rate']=='-'?'-':$stat['active']['rate'].'%' }}</span>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <a href="javascript:;" class="primary-link">Show</a>
-                                                    </td>
-                                                    <td align="center"> {{ $stat['show']['nr'] }} </td>
-                                                    <td> {{ $stat['show']['money'] }} {{ Config::get('constants.finance.currency') }} </td>
-                                                    <td>
-                                                        <span class="bold theme-font">{{ $stat['show']['rate']=='-'?'-':$stat['show']['rate'].'%' }}</span>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <a href="javascript:;" class="primary-link">No Show</a>
-                                                    </td>
-                                                    <td align="center"> {{ $stat['no_show']['nr'] }} </td>
-                                                    <td> {{ $stat['no_show']['money'] }} {{ Config::get('constants.finance.currency') }} </td>
-                                                    <td>
-                                                        <span class="bold theme-font">{{ $stat['no_show']['rate']=='-'?'-':$stat['no_show']['rate'].'%' }}</span>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <a href="javascript:;" class="primary-link">Cancelled</a>
-                                                    </td>
-                                                    <td align="center"> {{ $stat['canceled']['nr'] }} </td>
-                                                    <td> {{ $stat['canceled']['money'] }} {{ Config::get('constants.finance.currency') }} </td>
-                                                    <td>
-                                                        <span class="bold theme-font">{{ $stat['canceled']['rate']=='-'?'-':$stat['canceled']['rate'].'%' }}</span>
-                                                    </td>
-                                                </tr>
-                                            </table>
-                                        </div>
-                                    @endforeach
+                                    <div class="table-scrollable table-scrollable-borderless tab-pane active" id="tab_2_2" style="height:255px;">
+                                        <table class="table table-hover table-light">
+                                            <tr>
+                                                <td>
+                                                    There are no registered upcomming events for this user
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+
+                                    <div class="table-scrollable table-scrollable-borderless tab-pane" id="tab_2_3" style="height:255px;">
+                                        <table class="table table-hover table-light">
+                                            <tr>
+                                                <td>
+                                                    There are no registered old events for this user
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+
+                                    <div class="table-scrollable table-scrollable-borderless tab-pane" id="tab_2_4" style="height:255px;">
+                                        <table class="table table-hover table-light">
+                                            <tr>
+                                                <td>
+                                                    There are no upcomming or past registered events for this user
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
                             <!-- END PORTLET -->

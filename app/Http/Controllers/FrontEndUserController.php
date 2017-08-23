@@ -1530,7 +1530,6 @@ class FrontEndUserController extends Controller
         return redirect()->intended(route('admin/front_users/view_personal_settings', ['id' => $id]));
     }
 
-
     /**
      * Update member/user personal details - needs updated
      * @param Request $request
@@ -1606,8 +1605,6 @@ class FrontEndUserController extends Controller
             'message' => 'Member/user information successfully updated'
         ];
     }
-
-
 
     /**
      * Update member/user personal details - needs updated
@@ -3784,8 +3781,6 @@ This message is private and confidential. If you have received this message in e
         ]);
     }
 
-
-
     public function front_show_invoice($id)
     {
         $user = Auth::user();
@@ -4020,8 +4015,6 @@ This message is private and confidential. If you have received this message in e
         return $bookings;
     }
 
-
-
     public function get_user_transaction_list($userID = -1){
         if (Auth::check()) {
             $user = Auth::user();
@@ -4065,8 +4058,6 @@ This message is private and confidential. If you have received this message in e
             "data" => $transactionList
         ];
     }
-
-
 
     public function type_of_memberships(){
         if (AppSettings::get_setting_value_by_name('globalWebsite_show_memberships_on_frontend')!=1){
@@ -4176,7 +4167,6 @@ This message is private and confidential. If you have received this message in e
         ]);
 
     }
-
 
     public function contact_locations(){
         $breadcrumbs = [
@@ -4839,7 +4829,6 @@ This message is private and confidential. If you have received this message in e
                 'errors'  => 'The member you want to suspend/reactivate was not found in the system'];
         }
     }
-
 
     public function update_access_card(Request $request){
         $user = Auth::user();
@@ -5694,7 +5683,6 @@ This message is private and confidential. If you have received this message in e
 
         return $result;
     }
-       
 
     public function logout()
     {
