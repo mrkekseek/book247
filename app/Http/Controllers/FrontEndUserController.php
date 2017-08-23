@@ -64,6 +64,7 @@ use App\StoreCreditProducts;
 use App\StoreCreditPurchases;
 use App\Http\Controllers\StripeController;
 use App\InvoiceFinancialTransaction;
+use App\UserSubscribeLists;
 
 class FrontEndUserController extends Controller
 {
@@ -5700,5 +5701,59 @@ This message is private and confidential. If you have received this message in e
     {
         Auth::logout();
         return redirect('');
+    }
+    
+    public function unsubscribe_form($token)
+    {
+        $sidebar_link= 'front-unsubscribe';
+
+        return view('front/unsubscribe/unsubscribe',[
+            'in_sidebar'  => $sidebar_link,
+            'token'       => $token
+        ]);
+    }
+    
+    public function unsubscribe_action(Request $request)
+    {
+        $data = $request->only('email','token');
+        $subscribe = UserSubscribeLists::where('email_address', $data['email'])->first();
+        if ( ! empty($subscribe))
+        {
+            $md5_token = base64_decode($data['token']);
+            if (md5($subscribe->email_address) == $md5_token)
+            {
+                if ($subscribe->status === 'unsubscribed')
+                {
+                    return [
+                        'success' => TRUE,
+                        'title' => 'Unsubscribed',
+                        'message' => 'You are already unsubscribed from our list',
+                    ];
+                }
+                $subscribe->status = 'unsubscribed';
+                $subscribe->save();
+                return [
+                        'success' => TRUE,
+                        'title' => 'Unsubscribed',
+                        'message' => 'You were unsubscribed from the list',
+                    ];
+            }
+            else
+            {
+                return [
+                    'success' => FALSE,
+                    'title' => 'Url error',
+                    'errors' => 'Bad url',
+                ];
+            }
+        }
+        else
+        {
+            return [
+                'success' => FALSE,
+                'title' => 'Email error',
+                'errors' => 'User with current email not subscribed to our newsletters',
+            ];
+        }
     }
 }
