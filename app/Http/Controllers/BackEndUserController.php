@@ -28,6 +28,7 @@ use App\Http\Controllers\Controller;
 use App\User;
 use Validator;
 use Auth;
+use App\Http\Libraries\ApiAuth;
 use Hash;
 use Storage;
 use DB;
@@ -274,6 +275,7 @@ class BackEndUserController extends Controller
             'email'         => $vars['email'],
             'password'      => $vars['password'],
             'country_id'    => $vars['country_id'],
+            'gender'        => $vars['gender'],
             'status'        => 'active',
             'user_type'     => $vars['user_type']
         ];
@@ -306,16 +308,36 @@ class BackEndUserController extends Controller
         $credentials['password'] = bcrypt($credentials['password']);
         try {
             $dataForApi = $credentials + $personalData;
-            $api_user = Auth::create_api_user($dataForApi, $password_api);
-            if ( ! $api_user)
+            if (ApiAuth::checkExist($dataForApi['username'])['success'])
             {
-                return [
-                    'success'   => false,
-                    'title'     => 'Api error',
-                    'errors'    => Auth::$error
-                ];
+                $api_user = ApiAuth::accounts_get_by_username($dataForApi['username'])['data'];
+                $dataForApi['sso_user_id'] = $api_user->id;
+                if (Auth::update_api_user($dataForApi))
+                {
+                    $credentials['sso_user_id'] = $api_user->id;
+                }
+                else
+                {
+                    return [
+                        'success'   => false,
+                        'title'     => 'Api error',
+                        'errors'    => 'API SSO return: '.Auth::$error,
+                    ];
+                }
             }
-            $credentials['sso_user_id'] = $api_user;
+            else
+            {
+                $api_user = Auth::create_api_user($dataForApi, $password_api);
+                if ( ! $api_user)
+                {
+                    return [
+                        'success'   => false,
+                        'title'     => 'Api error',
+                        'errors'    => Auth::$error
+                    ];
+                }
+                $credentials['sso_user_id'] = $api_user;
+            }
             $user = User::create($credentials);
             // attach the roles to the new created user
             $user->attachRole($vars['user_type']);
