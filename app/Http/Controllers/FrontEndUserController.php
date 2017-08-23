@@ -3804,7 +3804,6 @@ This message is private and confidential. If you have received this message in e
                 $innerItems = json_decode($transaction->invoice_items);
                 $transactionItemNames = [];
                 if ($innerItems) {
-                    xdebug_var_dump($innerItems);
                     foreach($innerItems as $single){
                         $transactionItemNames[] = $itemNames[$single];
                     }
