@@ -486,8 +486,8 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <div class="control-label">
-                                                <div class="input-group date date-picker"  data-date-format="yyyy-mm-dd" data-date-end-date="-0d" data-date-start-view="decades">
-                                                    <input type="text" class="form-control" name="DOB" id="DOB" placeholder="Date of Birth" value="" readonly>
+                                                <div class="input-group date date-picker"   data-date-format="yyyy-mm-dd" data-date-end-date="-0d" data-date-start-view="decades">
+                                                    <input type="text" class="form-control" name="DOB" id="DOB" placeholder="Date of Birth" value="{{ \Carbon\Carbon::today()->toDateString('yyyy-mm-dd') }}" readonly>
                                                     <span class="input-group-btn">
                                                         <button class="btn default" type="button">
                                                             <i class="fa fa-calendar"></i>
@@ -513,7 +513,7 @@
                                             <select name="country" id="country" class="form-control">
                                                 <option value="">Select Citizenship</option>
                                                 @foreach ($countries as $country)
-                                                    <option value="{{ $country->id }}">{{ $country->name }}</option>
+                                                    <option value="{{ $country->id }}" {!! $country->id==\App\Http\Controllers\AppSettings::get_setting_value_by_name('globalWebsite_defaultCountryId')?'selected="selected"':'' !!}>{{ $country->name }}</option>
                                                 @endforeach
                                             </select>
                                         </div>
