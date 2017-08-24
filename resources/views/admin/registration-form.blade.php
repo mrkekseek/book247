@@ -1,7 +1,11 @@
 @extends('login_header')
 
-@section('main_content')
 
+@section('main_content')
+    <link href="{{ asset('assets/apps/css/front_custom.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/global/plugins/jquery-notific8/jquery.notific8.min.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/global/plugins/jquery-notific8/jquery.notific8.min.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/global/css/plugins.min.css') }}" rel="stylesheet" type="text/css" />
 <!-- BEGIN REGISTRATION -->
     <div class="container">
         <div class="row">
@@ -362,18 +366,9 @@
                                         <!--END STEP 3-->
                                         <!--STEP 4-->
                                         <div class="tab-pane clearfix text-center" id="tab4">
-                                            <div class="col-md-offset-4 col-md-4 well">
-                                                <button class="btn btn-success btnPay">Pay with Card</button>
-                                            </div>
-
                                             <div class="col-md-offset-4 col-md-4">
-                                                <div class="alert alert-danger display-none">
-                                                    <button class="close" data-dismiss="alert"></button>
-                                                    <p><strong>Finish:</strong> Click submit to finish your registration! But don`t worry if you want to make changes. Every setting can be changed in "General settings".</p>
-                                                </div>
-                                                <div class="alert alert-success display-none">
-                                                    <button class="close" data-dismiss="alert"></button> Your card is successful!
-                                                </div>
+                                                <button class="close" data-dismiss="alert"></button>
+                                                <p><strong>Finish:</strong> Click submit to finish your registration! But don`t worry if you want to make changes. Every setting can be changed in "General settings".</p>
                                             </div>
 
                                             <div class="col-md-12">
@@ -406,21 +401,7 @@
         </div>
     </div>
 <!-- END REGISTRATION -->
-<!-- BEGIN MODEL -->
-<div class="modal fade" id="thank_messages" tabindex="-1">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" >&times;</button>
-        <h4 class="modal-title">Thank you message!</h4>
-      </div>
-      <div class="modal-body">
-        <p>Thank you message!</p>
-      </div>
-    </div>
-  </div>
-</div>
-<!-- END MODEL -->
+
 <!-- BEGIN COPYRIGHT -->
 <div class="copyright"> 2017 © BookingSystem by SQF. Squash Fitness! </div>
 <!-- END COPYRIGHT -->
@@ -453,51 +434,199 @@
 <!-- BEGIN PAGE LEVEL SCRIPTS -->
 <script src="{{ asset('assets/layouts/layout4/scripts/layout.min.js') }}" type="text/javascript"></script>
 <script src="{{ asset('assets/pages/scripts/login-4.min.js') }}" type="text/javascript"></script>
+<script src="{{ asset('assets/global/plugins/jquery-notific8/jquery.notific8.min.js') }}"></script>
+
 <!-- END PAGE LEVEL SCRIPTS -->
 <!-- BEGIN THEME LAYOUT SCRIPTS -->
 <!-- END THEME LAYOUT SCRIPTS -->
-
-<script src="https://checkout.stripe.com/checkout.js" type="text/javascript"></script>
+<script src="https://js.stripe.com/v3/"></script>
 <script>
 
-    $(document).ready(function(){
-        var handler = StripeCheckout.configure({
-            key : '{{ Config::get("stripe.stripe_key") }}',
-            image : '{{ \App\Http\Controllers\AppSettings::get_setting_value_by_name('globalWebsite_account_logo_image')?\App\Http\Controllers\AppSettings::get_setting_value_by_name('globalWebsite_account_logo_image'):asset('assets/global/img/logo.png') }}',
-            email : '{{ Auth::user()->email }}',
-            token: function(token, args) {
+    var current = 0;
+    function check_finish()
+    {
+        if (current == 3)
+        {
+            $('#modal-stripe').modal('show');
+            $(".btn-finish").show();
+        }
+    }
 
-                $.ajax({
-                    url : "{{ route('charge_customer') }}",
-                    data : {
-                        '_token' : '{{ csrf_token() }}',
-                        'token' : token.id,
-                        'args'  : args
-                    },
-                    method : 'post',
-                    success : function(data)
-                    {
-                        if (data.success)
-                        {
-                            $("#tab4 .alert-success").show();
-                            $(".btn-finish").show();
-                        }
-                        else
-                        {
-                            $("#tab4 .alert-errors").show();
-                        }
-                    }
-                });
+    $(document).ready(function(){
+
+        var stripe = Stripe('{{ Config::get("stripe.stripe_key") }}');
+        var elements = stripe.elements();
+
+        $(".button-next").click(function(){
+            current ++;
+            check_finish();
+        });
+
+        $(".button-previous").click(function(){
+            current --;
+            check_finish();
+        });
+
+        var style = {
+            hidePostalCode: true,
+            iconStyle: 'solid',
+            color: 'white',
+            style: {
+                base: {
+                  iconColor: '#8898AA',
+                  color: 'white',
+                  lineHeight: '36px',
+                  fontWeight: 300,
+                  fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
+                  fontSize: '19px',
+                  '::placeholder': {
+                    color: '#8898AA', 
+                  },
+                },
+                invalid: {
+                  iconColor: '#e85746',
+                  color: '#e85746',
+                }
+            },
+            classes: {
+                focus: 'is-focused',
+                empty: 'is-empty',
+            },
+        };
+
+        var card = elements.create('card', style);
+        card.mount('#card-element');
+       
+        card.addEventListener('change', function(event) {
+            var displayError = document.getElementById('card-errors');
+            if (event.error) 
+            {
+                displayError.textContent = event.error.message;
+            }
+            else 
+            {
+                displayError.textContent = '';
             }
         });
 
-        $(".btnPay").click(function(e) {
-            handler.open({
-                name: 'Book 247',
-                description: 'Sport Booking System'
+        var form = document.getElementById('payment-form');
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            stripe.createToken(card).then(function(result) 
+            {
+                if (result.error)
+                {
+                    var errorElement = document.getElementById('card-errors');
+                    errorElement.textContent = result.error.message;
+                     $('.submit-payment').removeAttr('disabled', 'disabled');
+                }
+                else 
+                {
+                    spiner(true);
+                    $('.submit-payment').attr('disabled', 'disabled');
+                    stripeTokenHandler(result.token);
+                }
             });
-            e.preventDefault();
         });
     });
+
+    function show_notification(title_heading, message, theme, life, sticky) {
+        var settings = {
+            theme: theme,
+            sticky: sticky,
+            horizontalEdge: 'top',
+            verticalEdge: 'right',
+            life : life,
+        };
+
+        if ($.trim(title_heading) != '') {
+            settings.heading = title_heading;
+        }
+
+        $.notific8('zindex', 11500);
+        $.notific8($.trim(message), settings);
+    }
+
+    function stripeTokenHandler(token)
+    {
+        $.ajax({
+            url : "{{ route('charge_customer') }}",
+            data : {
+                '_token' : '{{ csrf_token() }}',
+                'token' : token.id
+            },
+            method : 'post',
+            success : function(data)
+            {
+                spiner(false);
+                show_notification("Strip Info", "Success add card", 'lime', 3500, 0);
+                $('#modal-stripe').modal('hide');
+            }
+        });
+    }
+
+    function spiner(mode)
+    {
+        if (mode)
+        {
+            $(".loader-wrapper").show();
+            return;
+        }
+
+        $(".loader-wrapper").hide();
+    }
 </script>
+
+<!-- MODAL -->
+<div class="modal-payment modal fade" id="modal-stripe" data-backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Stripe Payment</h4>
+            </div>
+            <form  method="post" id="payment-form" novalidate="novalidate">
+                <div class="modal-body text-center">
+                    <div class="row">
+                        <div class="col-xs-10 col-xs-offset-1">
+                            <label>
+                                <input class="field" readonly="readonly" type="text" value="{{ Auth::user()->first_name }} {{ Auth::user()->last_name }} {{ Auth::user()->middle_name }}" placeholder="Name"  />
+                                <span></span>
+                            </label>
+
+                            <label>
+                                <input class="field" readonly="readonly" type="tel" value="{{ $personal_detail->mobile_number }}" placeholder="Phone number" />
+                                <span></span>
+                            </label>
+
+                            <label>
+                                <div id="card-element" class="field"></div>
+                                <span></span>
+                            </label>
+
+                            <!-- Used to display form errors -->
+                            <div id="card-errors" role="alert"></div>
+
+                            <div class="checkbox">
+                                <label>
+                                    Your card will be saved and used only if you continue with our services after the first month
+                                </label>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-success submit-payment">Save Card</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- END MODAL -->
+<div class="loader-wrapper">
+   <div class="loader"></div>
+   <p>Please wait...</p>
+</div>
+
 @stop
