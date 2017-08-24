@@ -2087,8 +2087,16 @@
         /* Timer function - Stop */
 
         jQuery(document).ready(function() {
-            $('.is_resource[data-id="{{ isset($settings['settings_preferred_activity'])?$settings['settings_preferred_activity']:2 }}"]').click();
-            $('.location_btn[data-id="{{ isset($settings['settings_preferred_location'])?$settings['settings_preferred_location']:4 }}"]').click();
+            var defLocation = '{{ isset($settings['settings_preferred_location'])?$settings['settings_preferred_location']:-1 }}';
+            var defResource = '{{ isset($settings['settings_preferred_activity'])?$settings['settings_preferred_activity']:-1 }}';
+
+            if (defLocation=='-1' || defResource=='-1'){
+                defLocation = $(".location_btn").first().attr('data-id');
+                defResource = $(".is_resource").first().attr('data-id');
+            }
+
+            $('.is_resource[data-id="' + defResource +'"]').click();
+            $('.location_btn[data-id="'+ defLocation +'"]').click();
 
             //get_booking_hours();
             get_friends_list();
