@@ -48,15 +48,16 @@
                                     <th width="5%"></th>
                                     <th width="10%"> Name </th>
                                     <th width="10%"> Action </th>
-                                    <th width="35%"> Description </th>
+                                    <th width="25%"> Description </th>
                                     <th width="15%"> Ip Address </th>
                                     <th width="10%"> Date </th>
+                                    <th width="10%">Action</th>
                                 </tr>
                                 <tr role="row" class="filter">
                                     <td> </td>
                                     <td> </td>
                                     <td>
-                                        <select name="membership" class="select-action form-control form-filter input-sm">
+                                        <select name="content_type" class="select-action form-control form-filter input-sm">
                                             <option value="">All</option>
                                             @foreach ($action_list as $key => $action)
                                                 <option value="{{ $key }}"> {{ $action }} </option>
@@ -70,7 +71,7 @@
                                     </td>
                                     <td>
                                         <div class="input-group date date-picker margin-bottom-5" data-date-format="dd/mm/yyyy">
-                                            <input type="text" class="form-control form-filter input-sm" readonly name="user_date_from" placeholder="From">
+                                            <input type="text" class="form-control form-filter input-sm" readonly name="from_date" placeholder="From">
                                             <span class="input-group-btn">
                                                     <button class="btn btn-sm default" type="button">
                                                         <i class="fa fa-calendar"></i>
@@ -78,13 +79,21 @@
                                                 </span>
                                         </div>
                                         <div class="input-group date date-picker" data-date-format="dd/mm/yyyy">
-                                            <input type="text" class="form-control form-filter input-sm" readonly name="user_date_to" placeholder="To">
+                                            <input type="text" class="form-control form-filter input-sm" readonly name="to_date" placeholder="To">
                                             <span class="input-group-btn">
                                                     <button class="btn btn-sm default" type="button">
                                                         <i class="fa fa-calendar"></i>
                                                     </button>
                                                 </span>
                                         </div>
+                                    </td>
+                                    <td>
+                                        <div class="margin-bottom-5">
+                                            <button class="btn btn-sm green btn-outline filter-submit margin-bottom">
+                                                <i class="fa fa-search"></i> Search</button>
+                                        </div>
+                                        <button class="btn btn-sm red btn-outline filter-cancel">
+                                            <i class="fa fa-times"></i> Reset</button>
                                     </td>
 
                                 </tr>
@@ -190,55 +199,6 @@
                         ]// set first column as a default sort by asc
                     }
                 });
-
-                // handle group actionsubmit button click
-                grid.getTableWrapper().on('change', '.select-action', function (e) {
-                    e.preventDefault();
-                    grid.setAjaxParam("action", $(this).val());
-                    grid.setAjaxParam("ip",grid.getTableWrapper().find('input[name=ip]').val());
-                    grid.setAjaxParam("from_date",grid.getTableWrapper().find('input[name=user_date_from]').val());
-                    grid.setAjaxParam("to_date",grid.getTableWrapper().find('input[name=user_date_to]').val());
-                    grid.getDataTable().ajax.reload();
-                });
-
-                grid.getTableWrapper().on('keyup', 'input[name=ip]', function (e) {
-                    clearTimeout(clock);
-                    clock = setTimeout(function(){
-//                        console.log($(this).val());
-                        grid.setAjaxParam("action", grid.getTableWrapper().find('.select-action').val());
-                        grid.setAjaxParam("ip", grid.getTableWrapper().find('input[name=ip]').val());
-                        grid.setAjaxParam("from_date",grid.getTableWrapper().find('input[name=user_date_from]').val());
-                        grid.setAjaxParam("to_date",grid.getTableWrapper().find('input[name=user_date_to]').val());
-                        grid.getDataTable().ajax.reload();
-                    },1000);
-                });
-
-                grid.getTableWrapper().on('change', 'input[name=user_date_from]', function (e) {
-                    clearTimeout(clock);
-                    clock = setTimeout(function(){
-//                        console.log($(this).val());
-                        grid.setAjaxParam("action", grid.getTableWrapper().find('.select-action').val());
-                        grid.setAjaxParam("ip", grid.getTableWrapper().find('input[name=ip]').val());
-                        grid.setAjaxParam("from_date",grid.getTableWrapper().find('input[name=user_date_from]').val());
-                        grid.setAjaxParam("to_date",grid.getTableWrapper().find('input[name=user_date_to]').val());
-                        grid.getDataTable().ajax.reload();
-                    },1000);
-                });
-
-                grid.getTableWrapper().on('change', 'input[name=user_date_to]', function (e) {
-                    clearTimeout(clock);
-                    clock = setTimeout(function(){
-//                        console.log($(this).val());
-                        grid.setAjaxParam("action", grid.getTableWrapper().find('.select-action').val());
-                        grid.setAjaxParam("ip", grid.getTableWrapper().find('input[name=ip]').val());
-                        grid.setAjaxParam("from_date",grid.getTableWrapper().find('input[name=user_date_from]').val());
-                        grid.setAjaxParam("to_date",grid.getTableWrapper().find('input[name=user_date_to]').val());
-                        grid.getDataTable().ajax.reload();
-                    },1000);
-                });
-
-
-
                 grid.getTableWrapper().on('click', '.table-group-action-submit', function (e) {
                     e.preventDefault();
                     var action = $(".table-group-action-input", grid.getTableWrapper());

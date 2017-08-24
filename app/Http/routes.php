@@ -1126,6 +1126,16 @@ if (env('FEDERATION',false)){
             'as' => 'privacy_policy',
             'uses' => 'FrontPageController@privacy_policy'
         ]);
+        
+        Route::get('unsubscribe/{token}', [
+            'as' => 'unsubscribe_form',
+            'uses' => 'FrontEndUserController@unsubscribe_form'
+        ]);
+        
+        Route::post('unsubscribe/{token}', [
+            'as' => 'unsubscribe_action',
+            'uses' => 'FrontEndUserController@unsubscribe_action'
+        ]);
 
     });
     /** Stop Routes for front end */
