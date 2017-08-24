@@ -1431,7 +1431,7 @@ class BackEndUserController extends Controller
             'success' => FALSE,
         ];
 
-        if ( $status != 0 )
+        if ( $status != 1 )
         {
             $user = Auth::user();
             $data = $request->only('stripeToken', 'clubname','email','phone','fax','addressline1','addressline2','city','region','postalcode','country','currency','sport','time','members','pay','resource','day','limit');
