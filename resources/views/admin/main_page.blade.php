@@ -47,7 +47,7 @@
         <!-- END PAGE BREADCRUMB -->
         <!-- BEGIN PAGE BASE CONTENT -->
         @if (Auth::user()->hasRole('owner'))
-            @if (sizeof($stats)>0)
+            @if (sizeof($stats)>0 && $showStats==true)
                 @foreach ($stats as $single)
                     <div class="m-heading-1 border-green m-bordered">
                         <h3 style="margin-bottom:0px;">{{ $single['location_name'] }}</h3>
@@ -144,30 +144,31 @@
                 @endforeach
             @else
                 <div class="m-heading-1 border-green m-bordered">
-                    <h3 style="margin-bottom:0px;">{{ $single['location_name'] }} - non existing statistics</h3>
+                    <h3 style="margin-bottom:0px;">No active location with booking history - non existing statistics</h3>
                 </div>
             @endif
 
-            <div class="m-heading-1 border-green m-bordered">
-                <h3 style="margin-bottom:0px;">Last 7 days statistics</h3>
-            </div>
-            <div class="row">
-                @if (sizeof($stats)>0)
-                    @foreach ($stats as $key=>$single)
-                        <div class="col-md-6 col-sm-6">
-                            <div class="portlet light bordered">
-                                <div class="portlet-title">
-                                    <div class="caption font-red">
-                                        <span class="caption-subject bold uppercase">{{ $single['location_name'] }}</span>
-                                        <span class="caption-helper">bookings</span>
-                                    </div>
-                                </div>
-                                <div class="portlet-body">
-                                    <div id="dashboard_amchart_3_{{$key+1}}" class="CSSAnimationChart"></div>
+            @if (sizeof($stats)>0  && $showStats==true)
+                <div class="m-heading-1 border-green m-bordered">
+                    <h3 style="margin-bottom:0px;">Last 7 days statistics</h3>
+                </div>
+
+                <div class="row">
+                @foreach ($stats as $key=>$single)
+                    <div class="col-md-6 col-sm-6">
+                        <div class="portlet light bordered">
+                            <div class="portlet-title">
+                                <div class="caption font-red">
+                                    <span class="caption-subject bold uppercase">{{ $single['location_name'] }}</span>
+                                    <span class="caption-helper">bookings</span>
                                 </div>
                             </div>
+                            <div class="portlet-body">
+                                <div id="dashboard_amchart_3_{{$key+1}}" class="CSSAnimationChart"></div>
+                            </div>
                         </div>
-                    @endforeach
+                    </div>
+                @endforeach
 
                     <div class="col-md-6 col-sm-12">
                         <div class="portlet light bordered">
@@ -195,12 +196,12 @@
                             </div>
                         </div>
                     </div>
-                @else
-                    <div class="m-heading-1 border-green m-bordered">
-                        <h3 style="margin-bottom:0px;">There are no last 7 days statistics</h3>
-                    </div>
-                @endif
-            </div>
+                </div>
+            @else
+                <div class="m-heading-1 border-green m-bordered col-md-12">
+                    <h3 style="margin-bottom:0px;">There are no last 7 days statistics</h3>
+                </div>
+            @endif
         @else
             <div class="m-heading-1 border-green m-bordered">
                 <h3 style="margin-bottom:0px;">Welcome to backend admin for bookings</h3>

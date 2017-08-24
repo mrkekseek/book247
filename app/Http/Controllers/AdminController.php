@@ -38,6 +38,7 @@ class AdminController extends Controller
             return redirect()->intended(route('admin/login'));
         }
 
+        $showStats = true;
         $homeStats = [];
         $requestedDate = Carbon::now();
         $lastSevenDays = [];
@@ -45,7 +46,7 @@ class AdminController extends Controller
         for ($i=7; $i>0; $i--){
             $lastSevenDays[] = Carbon::today()->addDays(-$i)->format('Y-m-d');
         }
-        //xdebug_var_dump($lastSevenDays);
+
         $totalBookingsLocationsToday = [];
         $totalBookingTypeToday = [];
 
@@ -173,6 +174,9 @@ class AdminController extends Controller
                 ];
             }
         }
+        else{
+            $showStats = false;
+        }
         //xdebug_var_dump($homeStats); //exit;
         //xdebug_var_dump($totalBookingsLocationsToday); //exit;
         //xdebug_var_dump($totalBookingTypeToday); //exit;
@@ -195,7 +199,8 @@ class AdminController extends Controller
             'stats'         => $homeStats,
             'membersToday'  => $total_memberships_today,
             'totalToday'    => $totalBookingsLocationsToday,
-            'totalPerType'  => $totalBookingTypeToday
+            'totalPerType'  => $totalBookingTypeToday,
+            'showStats'     => $showStats
         ]);
     }
 
