@@ -63,33 +63,25 @@ class ActivityLog extends Controller{
                 'errors'    => 'You must be logged!'
             ];
         }
-
-        $vars = $r->only('action','ip','from_date','to_date');
-
-        if($vars['action'] || $vars['ip'] || $vars['from_date'] || $vars['to_date']) {
-            $filters = [];
-            if ($vars['action']) {
-                $filters[] = ['content_type','=',$vars['action']];
-            }
-
-            if ($vars['ip']) {
-                $filters[] = ['ip_address', 'LIKE', '%'.$vars['ip'].'%'];
-            }
-
-            if ($vars['from_date']) {
-                $filters[] = ['created_at', '>', Carbon::createFromFormat('d/m/Y', $vars['from_date'])->format('Y-m-d 0:0:0')];
-            }
-
-            if ($vars['to_date']) {
-                $filters[] = ['created_at', '<', Carbon::createFromFormat('d/m/Y', $vars['to_date'])->format('Y-m-d 0:0:0')];
-            }
-
-
-            $activity_log = Activity::where($filters)->get();
-        } else {
-            $activity_log = Activity::all();
-        }
-
+        
+        $in = $r->only('start','length');
+        $vars = $r->only('content_type','ip','from_date','to_date');
+        
+        $offset = ! empty($in['start']) ? $in['start'] : 0;
+        $limit = ! empty($in['length']) ? $in['length'] : 15;
+        
+        $query = Activity::query();
+        
+        ! empty ($vars['content_type']) ? $query->where('content_type', $vars['content_type']) : FAlSE;
+        ! empty ($vars['ip']) ? $query->where('ip_address', 'LIKE', '%'.$vars['ip'].'%') : FAlSE;
+        ! empty ($vars['from_date']) ? $query->where('created_at', '>', Carbon::createFromFormat('d/m/Y', $vars['from_date'])->format('Y-m-d 0:0:0')) : FAlSE;
+        ! empty ($vars['to_date']) ? $query->where('created_at', '<', Carbon::createFromFormat('d/m/Y', $vars['to_date'])->format('Y-m-d 0:0:0')) : FAlSE;
+        
+        $recordsTotal = $query->count();
+        ($limit != -1) ? $query->offset($offset) : FALSE; 
+        ($limit != -1) ? $query->limit($limit) : FALSE; 
+        $activity_log = $query->get();
+        
         $iTotalRecords = sizeof($activity_log);
         $iDisplayLength = intval($_REQUEST['length']);
         $iDisplayLength = $iDisplayLength < 0 ? $iTotalRecords : $iDisplayLength;
@@ -170,6 +162,7 @@ class ActivityLog extends Controller{
                     $log->description,
                     $log->ip_address,
                     (string)$log->created_at,
+                    '',
                 );
             }
         }
@@ -180,9 +173,10 @@ class ActivityLog extends Controller{
         }
 
         $records["draw"] = intval($_REQUEST['draw']);
-        $records["recordsTotal"] = sizeof($activity_log);
-        $records["recordsFiltered"] = sizeof($activity_log);
-
+        $records["start"] = $offset;
+        $records["length"] = $limit;
+        $records["recordsTotal"] = $recordsTotal;
+        $records["recordsFiltered"] = $recordsTotal;
         return $records;
 
     }
