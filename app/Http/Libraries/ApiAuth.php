@@ -334,7 +334,7 @@ class ApiAuth
             curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
             curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
 
-            if (App::environment('local') || env('VerifyCert',false)){
+            if (App::environment('local') || env('NoVerifyCert',false)){
                 curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 0);
                 curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
             }
