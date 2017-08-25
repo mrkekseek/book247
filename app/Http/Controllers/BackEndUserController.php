@@ -1346,7 +1346,7 @@ class BackEndUserController extends Controller
         }
         else
         {
-            return redirect('/');
+            return redirect()->intended(route('admin/error/not_found'));
         }
 
 

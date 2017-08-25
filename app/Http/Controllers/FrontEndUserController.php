@@ -5565,7 +5565,7 @@ This message is private and confidential. If you have received this message in e
                 $total += ($item_one_price + $item_vat) * $item->quantity;
             }
         } else {
-            return redirect('/');
+            return redirect()->intended(route('admin/error/not_found'));
         }
 
 
