@@ -733,7 +733,7 @@ class BookingController extends Controller
                         $booking_date_time = Carbon::createFromFormat('Y-m-d H:i:s', $fillable['date_of_booking'] . ' ' . $fillable['booking_time_start']);
                     }
                     $closest_booking_date_time = Carbon::now()->addHours($hours_from_now);
-                    $farthest_booking_date_time = Carbon::now()->addHours($hours_until_booking);
+                    $farthest_booking_date_time = Carbon::now()->addHours($hours_until_booking)->endOfDay();
 
                     if (!$booking_date_time->gte($closest_booking_date_time) || !$booking_date_time->lt($farthest_booking_date_time)){
                     //if (!$booking_date_time->gte($closest_booking_date_time) || !$booking_date_time->lt($farthest_booking_date_time)){
@@ -1970,7 +1970,7 @@ class BookingController extends Controller
                         $booking_date_time = Carbon::createFromFormat('Y-m-d H:i:s', $date . ' ' . $time_start);
                     }
                     $closest_booking_date_time = Carbon::now()->addHours($hours_from_now);
-                    $farthest_booking_date_time = Carbon::now()->addHours($hours_until_booking);
+                    $farthest_booking_date_time = Carbon::now()->addHours($hours_until_booking)->endOfDay();
 
                     if (!$booking_date_time->gte($closest_booking_date_time) || !$booking_date_time->lt($farthest_booking_date_time)){
                         //if (!$booking_date_time->gte($closest_booking_date_time) || !$booking_date_time->lt($farthest_booking_date_time)){
