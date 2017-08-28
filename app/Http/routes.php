@@ -1049,6 +1049,11 @@ if (env('FEDERATION',false)){
             'uses' => 'FrontEndUserController@contact_locations'
         ]);
 
+        Route::post('contact', [
+            'as' => 'front/post_contact_locations',
+            'uses' => 'FrontEndUserController@post_contact_locations'
+        ]);
+
         Route::get('active_membership', [
             'as' => 'front/active_membership',
             'uses' => 'FrontEndUserController@member_active_membership'

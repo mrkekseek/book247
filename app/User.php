@@ -998,4 +998,13 @@ class User extends Authenticatable
         ];
     }
     /** Store Credit functions - STOP */
+
+    public static function get_owners() {
+        $user_ids = DB::table('role_user')->where('role_id', 1)->get();
+        $users = [];
+        foreach ($user_ids as $id) {
+            $users[] = User::find($id->user_id);
+        }
+        return $users;
+    }
 }

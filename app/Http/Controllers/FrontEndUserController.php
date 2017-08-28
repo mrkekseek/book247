@@ -178,11 +178,17 @@ class FrontEndUserController extends Controller
 
         $pack = StoreCreditProducts::find($request->input("store_credits_id"));
 
+        if ($pack->store_credit_discount_fixed) {
+            $price = $pack->store_credit_price - $pack->store_credit_discount_fixed;
+        } else {
+            $price = $pack->store_credit_price - ($pack->store_credit_discount_percentage / 100) * $pack->store_credit_price;
+        }
+
         $store_credit_fill = [
             'member_id'     => $user->id,
             'back_user_id'  => $user->id,
             'title'         => $pack->name,
-            'value'         => intval($pack->store_credit_value),
+            'value'         => intval($price),
             'total_amount'  => $user->calculate_available_store_credit(),
             'expiration_date'   => 0,
             'status'        => 'pending',
@@ -4185,6 +4191,33 @@ This message is private and confidential. If you have received this message in e
         ]);
     }
 
+    public function post_contact_locations(Request $r){
+
+        $subject = 'Contact message from '.$r->get('name');
+        $beauty_mail = app()->make(Beautymail::class);
+        $users = User::get_owners();
+        if (sizeof($users)) {
+            foreach ($users as $user) {
+                $beauty_mail->send('emails.email_default_v2',
+                    ['body_message' => $r->get('message'), 'user' => $user],
+                    function($message) use ($user, $subject, $r) {
+                        $message
+                            ->from($r->get('email'))
+                            ->to($user->email, $user->first_name.' '.$user->middle_name.' '.$user->last_name)
+                            ->subject($subject);
+                    });
+            }
+        } else {
+            return [
+                'success' => false
+            ];
+        }
+        return [
+            'success' => true
+        ];
+    }
+
+
     public function member_active_membership(){
         $user = Auth::user();
         if (!$user || !$user->is_front_user()) {
@@ -5229,13 +5262,19 @@ This message is private and confidential. If you have received this message in e
                 'title'   => 'Could not add credit',
                 'errors'  => 'The member you are trying to add the store credit does not exist or something went wrong'];
         }
-        $package = StoreCreditProducts::find($vars['package_id']);
+        $pack = StoreCreditProducts::find($vars['package_id']);
+
+        if ($pack->store_credit_discount_fixed) {
+            $price = $pack->store_credit_price - $pack->store_credit_discount_fixed;
+        } else {
+            $price = $pack->store_credit_price - ($pack->store_credit_discount_percentage / 100) * $pack->store_credit_price;
+        }
 
         $store_credit_fillable = [
             'member_id'     => $member->id,
             'back_user_id'  => $user->id,
-            'title'         => $package->name,
-            'value'         => intval($package->store_credit_value),
+            'title'         => $pack->name,
+            'value'         => intval($price),
             'total_amount'  => $member->calculate_available_store_credit(),
             //'invoice_id'    => -1,
             'expiration_date'   => 0,

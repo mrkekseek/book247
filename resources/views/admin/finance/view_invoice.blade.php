@@ -92,7 +92,7 @@
                                                 <td> {{$key+1}} </td>
                                                 <td> {{ $item->item_name }} </td>
                                                 <td class="hidden-xs"> {{ $item->quantity }} </td>
-                                                <td class="hidden-xs"> {{ $item->price }} </td>
+                                                <td class="hidden-xs"> {{ $item->price  }} </td>
                                                 <td class="hidden-xs"> {{ $item->discount }}% </td>
                                                 <td class="hidden-xs"> {{ $item->vat }}% </td>
                                                 <td> {{ $item->total_price }} </td>

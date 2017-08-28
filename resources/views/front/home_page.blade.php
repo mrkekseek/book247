@@ -751,20 +751,20 @@
                         var errors = this.numberOfInvalids();
                         if (errors) {
                             $('.alert-danger').show();
-                        } 
+                        }
                         else {
                             $('.alert-danger').hide();
                         }
                         this.defaultShowErrors();
                     },
-                   highlight: function(element) { // hightlight error inputs
+                    highlight: function(element) { // hightlight error inputs
                         $(element).closest('.form-group').addClass('has-error'); // set error class to the control group
                     },
                     unhighlight  : function(element) { // hightlight error inputs
                         $(element).closest('.form-group').removeClass('has-error'); // set error class to the control group
                     },
                     success: function(label) {
-                       
+
                     },
                     errorPlacement: function(error, element) {
                         $('.alert-danger span').append(error);
