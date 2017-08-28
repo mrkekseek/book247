@@ -65,7 +65,7 @@ class ActivityLog extends Controller{
         }
         
         $in = $r->only('start','length');
-        $vars = $r->only('content_type','ip','from_date','to_date');
+        $vars = $r->only('username','description','content_type','ip','from_date','to_date');
         
         $offset = ! empty($in['start']) ? $in['start'] : 0;
         $limit = ! empty($in['length']) ? $in['length'] : 15;
@@ -165,6 +165,38 @@ class ActivityLog extends Controller{
                     '',
                 );
             }
+        }
+
+        if ($vars['description'] || $vars['username']) {
+            foreach ($records['data'] as $key => $record) {
+                if ($vars['description'] && $vars['username']) {
+                    if (strpos(strtolower(strip_tags($record[1])), strtolower($vars['username'])) === false || strpos(strtolower(strip_tags($record[3])), strtolower($vars['description'])) === false) {
+                        unset($records['data'][$key]);
+                    }
+                } else if ($vars['description']) {
+                    if (strpos(strtolower($record[3]), strtolower($vars['description'])) === false) {
+                        unset($records['data'][$key]);
+                    }
+                } else if ($vars['username']) {
+                    if (strpos(strtolower(strip_tags($record[1])), strtolower($vars['username'])) === false) {
+                        unset($records['data'][$key]);
+                    }
+                }
+//                dd(strpos(strtolower($record[3]), strtolower($vars['description'])));
+
+            }
+            $increment = 0;
+            foreach ($records['data'] as $key => $record) {
+                $records['data'][$increment] = $records['data'][$key] ;
+                $records['data'][$increment][0] = $increment + 1;
+                if($key != $increment) {
+                    unset($records['data'][$key]);
+                }
+                $increment++;
+            }
+
+            $recordsTotal = sizeof($records['data']);
+
         }
 
         if (isset($_REQUEST["customActionType"]) && $_REQUEST["customActionType"] == "group_action") {

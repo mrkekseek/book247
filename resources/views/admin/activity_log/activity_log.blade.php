@@ -55,7 +55,9 @@
                                 </tr>
                                 <tr role="row" class="filter">
                                     <td> </td>
-                                    <td> </td>
+                                    <td>
+                                        <input type="text" class="form-control form-filter input-sm" name="username">
+                                    </td>
                                     <td>
                                         <select name="content_type" class="select-action form-control form-filter input-sm">
                                             <option value="">All</option>
@@ -64,7 +66,7 @@
                                             @endforeach
                                         </select>
                                     <td>
-
+                                        <input type="text" class="form-control form-filter input-sm" name="description">
                                     </td>
                                     <td>
                                         <input type="text" class="form-control form-filter input-sm" name="ip"> </td>
