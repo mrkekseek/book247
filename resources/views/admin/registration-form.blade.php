@@ -447,12 +447,20 @@
     {
         if (current == 3)
         {
+            $("#payment-form input[type=tel]").val($("input[name=phone]").val());
+
             $('#modal-stripe').modal('show');
             $(".btn-finish").show();
         }
     }
 
     $(document).ready(function(){
+
+        $("input[name=phone]").val()
+
+        $("#payment-form input[type=tel]").change(function(){
+            $("input[name=phone]").val($(this).val());
+        });
 
         var stripe = Stripe('{{ Config::get("stripe.stripe_key") }}');
         var elements = stripe.elements();
@@ -519,7 +527,7 @@
                 {
                     var errorElement = document.getElementById('card-errors');
                     errorElement.textContent = result.error.message;
-                     $('.submit-payment').removeAttr('disabled', 'disabled');
+                    $('.submit-payment').removeAttr('disabled', 'disabled');
                 }
                 else 
                 {
@@ -531,7 +539,8 @@
         });
     });
 
-    function show_notification(title_heading, message, theme, life, sticky) {
+    function show_notification(title_heading, message, theme, life, sticky)
+    {
         var settings = {
             theme: theme,
             sticky: sticky,
@@ -554,7 +563,9 @@
             url : "{{ route('charge_customer') }}",
             data : {
                 '_token' : '{{ csrf_token() }}',
-                'token' : token.id
+                'token' : token.id,
+                'name' : $("#payment-form [type='text']").val(),
+                'phone' : $("#payment-form [type='tel']").val()
             },
             method : 'post',
             success : function(data)
@@ -590,12 +601,12 @@
                     <div class="row">
                         <div class="col-xs-10 col-xs-offset-1">
                             <label>
-                                <input class="field" readonly="readonly" type="text" value="{{ Auth::user()->first_name }} {{ Auth::user()->last_name }} {{ Auth::user()->middle_name }}" placeholder="Name"  />
+                                <input class="field" type="text" value="{{ Auth::user()->first_name }} {{ Auth::user()->last_name }} {{ Auth::user()->middle_name }}" placeholder="Name"  />
                                 <span></span>
                             </label>
 
                             <label>
-                                <input class="field" readonly="readonly" type="tel" value="{{ $personal_detail->mobile_number }}" placeholder="Phone number" />
+                                <input class="field" type="tel"  placeholder="Phone number" />
                                 <span></span>
                             </label>
 

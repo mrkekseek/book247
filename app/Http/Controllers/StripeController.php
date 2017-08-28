@@ -22,7 +22,7 @@ class StripeController extends Controller
             'success' => FALSE
         ];
 
-        $data = $request->only('token');
+        $data = $request->only('token', 'phone', 'name');
         if ($request->input("token"))
         {
             if ( ! self::isStripeCustomer())
@@ -34,6 +34,14 @@ class StripeController extends Controller
                 $customer = Customer::retrieve(Auth::user()->stripe_id);
             }
             $response["success"] = TRUE;
+        }
+
+        if ( ! empty($request->input("phone")) ||
+             ! empty($request->input("first_name")) ||
+             ! empty($request->input("last_name")))
+        {
+            list($first_name, $last_name, $middle_name) = explode(" ", $request->input("name"));
+            Auth::user()->update(['first_name' => $first_name, 'last_name' => $last_name, 'middle_name' => $middle_name]);
         }
 
         $response['user'] = Auth::user();
