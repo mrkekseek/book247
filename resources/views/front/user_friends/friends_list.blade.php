@@ -109,9 +109,19 @@
                                     and that's it.<br /><br />
                                     Use the "Add Friend" button to add a new friend, friend that will be found using his/her registration phone number.
                                 </p>
-                                <div class="form">
-                                    <div class="form-actions right" style="border-top:none; padding:10px 0 0;">
-                                        <button class="btn green" type="submit"  onclick="javascript:add_new_friend_popup();">Add Friend</button>
+                                <div class="row">
+                                    <div class="form-group col-md-9" style="margin-top:17px; margin-bottom:0px; font-size:13px;">
+                                        <div class="mt-checkbox-inline">
+                                            <label class="mt-checkbox">
+                                                <input id="auto_approve_friends" name="auto_approve_friends" value="yes" type="checkbox" {{$user->get_general_setting('auto_approve_friends')=='0'?'':'checked="checked"'}}> Check the checkbox if you want all your friend requests to be automatically approved.
+                                                <span></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="form col-md-3">
+                                        <div class="form-actions right" style="border-top:none; padding:10px 0 0;">
+                                            <button class="btn green" type="submit"  onclick="javascript:add_new_friend_popup();">Add Friend</button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -185,7 +195,7 @@
                                                         <button type="submit" class="btn red">Get Friend!</button>
                                                     </span>
                                                         </div>
-                                                        <small class="help-block"> numeric field between 8 and 10 digits </small>
+                                                        <small class="help-block"> numeric field between 8 and 16 digits </small>
                                                     </div>
                                                 </div>
                                             </form>
@@ -264,7 +274,7 @@
                     rules: {
                         friend_phone_no: {
                             minlength: 8,
-                            maxlength: 10,
+                            maxlength: 16,
                             number:true,
                             required: true
                         },
@@ -331,7 +341,7 @@
                 success: function(data){
                     $('.modal-dialog').unblock();
                     if (data.success=='true') {
-                        show_notification('Friend Added', 'Your have added ' + data.full_name + ' as a friend. You can now book an activity and include him.', 'lemon', 3500, 0);
+                        show_notification('Friend Added', 'Your have added ' + data.full_name + ' as a friend. You can now include him in your bookings.', 'lemon', 3500, 0);
                         $('input[name=friend_phone_no]').val('')
                         $('#new_friend_modal').modal('hide');
 

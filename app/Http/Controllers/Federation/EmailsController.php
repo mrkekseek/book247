@@ -18,7 +18,7 @@ class EmailsController extends Base {
         $user = Auth::user();
         if ( ! $user || ! $user->is_back_user())
         {
-            return redirect('/');
+            return redirect()->intended(route('admin/login'));
         }
 
         $templates = array();
@@ -63,7 +63,7 @@ class EmailsController extends Base {
         $user = Auth::user();
         if ( ! $user || ! $user->is_back_user())
         {
-            return redirect('/');
+            return redirect()->intended(route('admin/login'));
         }
 
         $breadcrumbs = [
@@ -95,7 +95,7 @@ class EmailsController extends Base {
         $user = Auth::user();
         if ( ! $user || ! $user->is_back_user())
         {
-            return redirect('/');
+            return redirect()->intended(route('admin/login'));
         }
 
         $breadcrumbs = [

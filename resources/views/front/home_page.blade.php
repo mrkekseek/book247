@@ -147,7 +147,7 @@
                                         <div class="alert alert-successs display-hide">
                                             <button class="close" data-close="alert"></button> Information is valid, please wait! </div>
                                         <div class="form-group">
-                                            <input class="form-control placeholder-no-fix" type="text" autocomplete="off" placeholder="Enter you email adress" name="email" /> </div>
+                                            <input class="form-control placeholder-no-fix" type="text" autocomplete="off" placeholder="Enter you email adress" name="reset_email" /> </div>
                                         <div class="form-actions">
                                             <button type="button" class="btn grey btn-block uppercase" onClick="javascript: $('#password_reset_form').submit();">next</button>
                                         </div>
@@ -179,7 +179,6 @@
                                                 <span class="separator-header"></span>
                                                 <span class="caption-subject bold uppercase hidden-sm hidden-xs">register an unique user on our platform</span>
                                                 <span class="caption-subject bold uppercase hidden-md hidden-lg">register an unique user</span>
-
                                             </div>
                                         </div>
                                         <div class="alert alert-danger display-hide">
@@ -189,7 +188,7 @@
                                         <!--p class="hint"> Enter your email address: </p-->
                                         <div class="form-group">
                                             <label class="control-label visible-ie8 visible-ie9">Email</label>
-                                            <input class="form-control placeholder-no-fix" type="text" placeholder="Enter your email address:" name="email" /> </div>
+                                            <input class="form-control placeholder-no-fix" type="text" placeholder="Enter your email address:" name="sso_email" /> </div>
                                         <div class="form-actions">
                                             <button type="submit" id="preregister-btn" class="btn grey btn-block uppercase">Next</button>
                                         </div>
@@ -889,13 +888,13 @@
                     focusInvalid: false, // do not focus the last invalid input
                     ignore: "",
                     rules: {
-                        email: {
+                        sso_email: {
                             required: true,
                             email: true,
                         }
                     },
                     messages: {
-                        email: {
+                        sso_email: {
                             required: "Email is required.",
                             email: "Email not valid"
                         }
@@ -918,7 +917,7 @@
 
                     submitHandler: function(form) {
                         blockContent('.content');
-                        auth_chek_email($(form).find('input[name="email"]').val());
+                        auth_chek_email($(form).find('input[name="sso_email"]').val());
                     }
                 });
                 
@@ -1301,7 +1300,7 @@
                 type: "post",
                 cache: false,
                 data: {
-                    'email': $('input[name="email"]').val(),
+                    'email': $('input[name="reset_email"]').val(),
                 },
                 success: function (data) {
                     $('.content').unblock();

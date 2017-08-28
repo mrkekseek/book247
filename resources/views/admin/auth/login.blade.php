@@ -43,7 +43,7 @@
     <div class="row bs-reset">
         <div class="col-md-6 bs-reset">
             <div class="login-bg" style="background-image:url(../assets/pages/img/login/bg-header.jpg)">
-                <img class="login-logo" src="../assets/pages/img/login/logo_sqf.png" /> </div>
+                <img class="login-logo" style="height:40px;" src="{{ asset('assets/pages/img/login/book247-admin-logo.png') }}" /> </div>
         </div>
         <div class="col-md-6 login-container bs-reset">
             <div class="login-content">

@@ -255,12 +255,11 @@ var FormWizard = function () {
                             }, 2000)
                         }
                         else{
-                            window.location.href = '/';
+                            //window.location.href = '/';
                         }
                     }
                 });
             }
-
 
             $('#form_wizard_1').find('.button-previous').hide();
             $('#form_wizard_1 .btn-finish').click(function () {

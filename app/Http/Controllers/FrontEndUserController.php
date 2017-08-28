@@ -638,7 +638,6 @@ class FrontEndUserController extends Controller
             return redirect()->intended(route('admin/login'));
         }
 
-
         $member = User::with('roles')->find($id);
         if (!$member || !$member->is_front_user()){
             return redirect(route('admin/error/not_found'));
@@ -2509,55 +2508,57 @@ class FrontEndUserController extends Controller
 
     public function add_friend_by_phone(Request $request, $id=-1){
 
-        if ( ! Auth::check())
-        {
-            $msg = ['success'=>'false', 'error'=> ['title'=>'An error occured', 'message'=>'Please check the number and add it again. You have a limited number of attempts']];
-            return $msg;
+        if ( ! Auth::check()) {
+            return [
+                'success'   => 'false',
+                'error'     => [
+                    'title'     =>'An error occured',
+                    'message'   =>'Please check the number and add it again. You have a limited number of attempts']
+            ];
         }
-        else
-        {
+        else {
             $user = Auth::user();
         }
 
         $vars = $request->only('phone_no');
 
-        if ($id == -1)
-        {
+        if ($id == -1) {
             $user_id = $user->id;
         }
-        else
-        {
+        else {
             $user_id = $id;
         }
 
+        // check phone number against self
         $user_personal_details = PersonalDetail::where('user_id',$user->id)->get()->first();
         if ($user_personal_details->mobile_number == $vars['phone_no']) {
             return [
-                'success'=>'false',
-                'error'=> [
-                    'title'=>'An error occurred',
-                    'message'=>'You cannot add yourself as a friend.'
+                'success'   =>'false',
+                'error'     => [
+                    'title'     =>'An error occurred',
+                    'message'   =>'You cannot add yourself as a friend.'
                 ]
             ];
         }
 
-        $user_friends_ids = UserFriends::where('user_id',$user->id)->get();
-        foreach ($user_friends_ids as $friend_id) {
-            if (User::get_phone_number_by_id($friend_id->friend_id) == $vars['phone_no']) {
+        // check phone number against existing friends
+        $user_friends_ids = UserFriends::where('user_id',$user->id)->orWhere('friend_id',$user->id)->get();
+        foreach ($user_friends_ids as $single) {
+            $friendID = $single->friend_id==$user->id?$single->user_id:$single->friend_id;
+
+            if (User::get_phone_number_by_id($friendID) == $vars['phone_no']) {
                 return [
-                    'success'=>'false',
-                    'error'=> [
-                        'title'=>'An error occurred',
-                        'message'=>'You already have this friend.'
+                    'success' =>'false',
+                    'error'   => [
+                        'title'     => 'An error occurred',
+                        'message'   => 'You already have this friend.'
                     ]
                 ];
             }
         }
 
-
         $friends = PersonalDetail::where('mobile_number','=',$vars['phone_no'])->get()->first();
-        if (sizeof($friends) == 0)
-        {
+        if (sizeof($friends) == 0) {
             $msg = [
                 'success'=>'false',
                 'error'=> [
@@ -2566,11 +2567,9 @@ class FrontEndUserController extends Controller
                 ]
             ];
         }
-        else
-        {
+        else {
             $newFriend = User::where('id','=',$friends->user_id)->get()->first();
-            if ($newFriend->is_back_user())
-            {
+            if ($newFriend->is_back_user()) {
                 $msg = [
                     'success'=>'false',
                     'error'=> [
@@ -2579,15 +2578,13 @@ class FrontEndUserController extends Controller
                     ]
                 ];
             }
-            else
-            {
-                $friend_approval_status = $newFriend->get_general_setting('auto_approve_friends')==='0'?'pending':'active';
+            else {
+                $friend_approval_status = $newFriend->get_general_setting('auto_approve_friends')==1?'active':'pending';
 
                 $friend_fill = ['user_id'=>$user_id, 'friend_id'=>$friends->user_id, 'status' => $friend_approval_status];
                 $validator = Validator::make($friend_fill, UserFriends::rules('POST'), UserFriends::$message, UserFriends::$attributeNames);
 
-                if ($validator->fails())
-                {
+                if ($validator->fails()) {
                     $msg = array(
                         'success' => 'false',
                         'error' => [
@@ -2597,8 +2594,7 @@ class FrontEndUserController extends Controller
                         ]
                     );
                 }
-                else
-                {
+                else {
                     $new_friend = UserFriends::firstOrCreate($friend_fill);
                     $new_friend->save();
 
@@ -2613,42 +2609,12 @@ class FrontEndUserController extends Controller
                             'friends_list_link'    => route("front/member_friend_list")
                         ];
 
-                        $default_message = 'You have a new friend - [[first_name]] [[middle_name]] [[last_name]] . <br> 
-To manage your friends, go to your [[friends_list_link]]. You can remove the ones you don\'t want by clicking <strong>Remove</strong> button. 
+                        $default_message = 'You have a new friend request - <strong>[[first_name]] [[middle_name]] [[last_name]]</strong> - that is waiting your approval. 
+If you know this person you can accept the request, otherwise decide to accept or reject it.<br><br> 
+To manage your friends and friends approval option, go to your [[friends_list_link]]. You can remove the ones you don\'t want by clicking <strong>Remove</strong> button. 
 <br><br>Sincerely,<br>Book247 Team. <br><br><small><strong>***** Email confidentiality notice *****</strong><br>
 This message is private and confidential. If you have received this message in error, please notify us and remove it from your system.</small>';
-                        $default_subject = 'Booking System - You got a new friend';
-                        $template = EmailsController::build('Add friend by phone number in frontend – no approval needed', $data, $default_message, $default_subject);
-
-                        $main_message = $template["message"];
-                        $subject = AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title') ?
-                            AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title') . ' - '.$template['subject'] :
-                            $template['subject'];
-
-                        $beauty_mail = app()->make(Beautymail::class);
-                        $beauty_mail->send('emails.email_default_v2',
-                            ['body_message' => $main_message, 'user'=>$friend],
-                            function($message) use ($user, $subject, $friend) {
-                                $message
-                                ->from(AppSettings::get_setting_value_by_name('globalWebsite_system_email'))
-                                ->to($friend->email, $friend->first_name.' '.$friend->middle_name.' '.$friend->last_name)
-                                ->subject($subject);
-                            });
-                    }
-                    else
-                    {
-                        $data = [
-                            'first_name'            => $user->first_name,
-                            'middle_name'           => $user->middle_name,
-                            'last_name'             => $user->last_name,
-                            'friends_list_link'    => route("front/member_friend_list")
-                        ];
-
-                        $default_subject = 'Booking System - You got a new friend request that needs approval';
-                        $default_message = 'You have a new friend request - [[first_name]] [[middle_name]] [[last_name]] .<br> 
-To manage your friends, go to your [[friends_list_link]]. You can remove the ones you don\'t want by clicking <strong>Remove</strong> button. <br><br>
-Sincerely,<br>Book247 Team. <br><br><small><strong>***** Email confidentiality notice *****</strong><br>
-This message is private and confidential. If you have received this message in error, please notify us and remove it from your system.</small>';
+                        $default_subject = 'You got a new friend request';
                         $template = EmailsController::build('Add friend by phone number in frontend – approval needed', $data, $default_message, $default_subject);
 
                         $main_message = $template["message"];
@@ -2665,9 +2631,41 @@ This message is private and confidential. If you have received this message in e
                                 ->to($friend->email, $friend->first_name.' '.$friend->middle_name.' '.$friend->last_name)
                                 ->subject($subject);
                             });
-                    }
 
-                    $msg = ['success'=>'true', 'message' => 'You have a new friend', 'full_name' => $friend->first_name.' '.$friend->middle_name.' '.$friend->last_name ];
+                        $msg = ['success'=>'true', 'message' => 'Friend request sent', 'full_name' => $friend->first_name.' '.$friend->middle_name.' '.$friend->last_name ];
+                    }
+                    else {
+                        $data = [
+                            'first_name'            => $user->first_name,
+                            'middle_name'           => $user->middle_name,
+                            'last_name'             => $user->last_name,
+                            'friends_list_link'    => route("front/member_friend_list")
+                        ];
+
+                        $default_subject = 'You have a new friend';
+                        $default_message = 'You have a new friend request - [[first_name]] [[middle_name]] [[last_name]] - that was automatically approved.<br><br>
+To manage your friends and friends approval option, go to your [[friends_list_link]]. You can remove the ones you don\'t want by clicking <strong>Remove</strong> button.<br><br>
+Sincerely,<br>Book247 Team. <br><br><small><strong>***** Email confidentiality notice *****</strong><br>
+This message is private and confidential. If you have received this message in error, please notify us and remove it from your system.</small>';
+                        $template = EmailsController::build('Add friend by phone number in frontend – no approval needed', $data, $default_message, $default_subject);
+
+                        $main_message = $template["message"];
+                        $subject = AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title') ?
+                            AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title') . ' - '.$template['subject'] :
+                            $template['subject'];
+
+                        $beauty_mail = app()->make(Beautymail::class);
+                        $beauty_mail->send('emails.email_default_v2',
+                            ['body_message' => $main_message, 'user'=>$friend],
+                            function($message) use ($user, $subject, $friend) {
+                                $message
+                                ->from(AppSettings::get_setting_value_by_name('globalWebsite_system_email'))
+                                ->to($friend->email, $friend->first_name.' '.$friend->middle_name.' '.$friend->last_name)
+                                ->subject($subject);
+                            });
+
+                        $msg = ['success'=>'true', 'message' => 'You have a new friend', 'full_name' => $friend->first_name.' '.$friend->middle_name.' '.$friend->last_name ];
+                    }
                 }
             }
         }
@@ -3805,7 +3803,6 @@ This message is private and confidential. If you have received this message in e
                 $innerItems = json_decode($transaction->invoice_items);
                 $transactionItemNames = [];
                 if ($innerItems) {
-                    xdebug_var_dump($innerItems);
                     foreach($innerItems as $single){
                         $transactionItemNames[] = $itemNames[$single];
                     }
@@ -5567,7 +5564,7 @@ This message is private and confidential. If you have received this message in e
                 $total += ($item_one_price + $item_vat) * $item->quantity;
             }
         } else {
-            return redirect('/');
+            return redirect()->intended(route('admin/error/not_found'));
         }
 
 

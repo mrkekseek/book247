@@ -188,6 +188,9 @@ class UserMembershipAction extends Model
                         $userID->attachRole($userRole);
                     }
 
+                    $searchMembers = new OptimizeSearchMembers();
+                    $searchMembers->add_missing_members([$userID->id]);
+
                     //echo '- Cancelled today - membership ID '.$userMembership->id.PHP_EOL;
                 }
                 else{
@@ -214,6 +217,9 @@ class UserMembershipAction extends Model
                     $this->processed = 1;
                     $this->status = 'old';
                     $this->save();
+
+                    $searchMembers = new OptimizeSearchMembers();
+                    $searchMembers->add_missing_members([$userMembership->user_id]);
 
                     //echo '- updated today - membership ID '.$userMembership->id.PHP_EOL;
                 }
