@@ -92,7 +92,7 @@ class ActivityLog extends Controller{
 
         $end = $iDisplayStart + $iDisplayLength;
         $end = $end > $iTotalRecords ? $iTotalRecords : $end;
-        for($i = $iDisplayStart; $i < $end; $i++) {
+        for($i = 0; $i < count($activity_log); $i++) {
             $log = $activity_log[$i];
             switch ($log->content_type) {
                 case 'financial_profile':
@@ -156,7 +156,7 @@ class ActivityLog extends Controller{
             $u = User::find($log->user_id);
             if ($u) {
                 $records["data"][] = array(
-                    $i + 1,
+                    $log->id,
                     '<a href="'.route('admin/front_users/view_user',['id' => $u->id]).'">' . $u->first_name . ' ' . $u->last_name .'</a>',
                     ucwords(str_replace('_',' ',$log->content_type)),
                     $log->description,
