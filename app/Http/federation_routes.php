@@ -973,6 +973,11 @@ Route::group(['prefix'=>'front', 'middleware'=>'web'], function(){
         'uses'  => 'Federation\FrontEndUserController@contact_locations'
     ]);
 
+    Route::post('contact', [
+        'as' => 'front/post_contact_locations',
+        'uses' => 'Federation\FrontEndUserController@post_contact_locations'
+    ]);
+
     Route::get('active_membership', [
         'as'    => 'front/active_membership',
         'uses'  => 'Federation\FrontEndUserController@member_active_membership'

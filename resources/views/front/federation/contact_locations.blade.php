@@ -111,17 +111,17 @@
                                         <div class="c-line-left bg-dark"></div>
                                         <p class="c-font-lowercase">Our helpline is always open to receive any inquiry or feedback. Please feel free to drop us an email from the form below and we will get back to you as soon as we can.</p>
                                     </div>
-                                    <form action="#">
+                                    <form action="#" class="contact-form" method="post">
                                         <div class="form-group">
-                                            <input type="text" placeholder="Your Name" class="form-control input-md"> </div>
+                                            <input type="text" placeholder="Your Name" name="name" class="form-control input-md"> </div>
                                         <div class="form-group">
-                                            <input type="text" placeholder="Your Email" class="form-control input-md"> </div>
+                                            <input type="text" placeholder="Your Email" name="email" class="form-control input-md"> </div>
                                         <div class="form-group">
-                                            <input type="text" placeholder="Contact Phone" class="form-control input-md"> </div>
+                                            <input type="text" placeholder="Contact Phone" name="phone" class="form-control input-md"> </div>
                                         <div class="form-group">
                                             <textarea rows="8" name="message" placeholder="Write comment here ..." class="form-control input-md"></textarea>
                                         </div>
-                                        <button type="submit" class="btn grey">Submit</button>
+                                        <button class="btn grey">Submit</button>
                                     </form>
                                 </div>
                             </div>
@@ -255,9 +255,110 @@
 
         }();
 
+        var ContactForm = function() {
+            var formValidation = function () {
+                $('.contact-form').validate({
+                    focusInvalid: false, // do not focus the last invalid input
+                    rules: {
+                        name: {
+                            required: true
+                        },
+                        email: {
+                            required: true,
+                            email: true,
+                            minlength: 6
+                        },
+                        phone: {
+                            number: true
+                        },
+                        message: {
+                            required: true,
+                            minlength: 10
+                        }
+                    },
+                    messages: {
+                        username: {
+                            required: " Email is required."
+                        },
+                        email: {
+                            required: " Email is required. ",
+                            email: " Not a valid email. ",
+                            minlength: " Not a valid email. "
+                        },
+                        message: {
+                            required: "A message is required.",
+                            minlength: "The message is not log enough"
+                        }
+
+                    },
+                    showErrors: function (errorMap, errorList) {
+                        var errors = this.numberOfInvalids();
+                        if (errors) {
+                            $('.alert-danger').show();
+                        }
+                        else {
+                            $('.alert-danger').hide();
+                        }
+                        this.defaultShowErrors();
+                    },
+                    highlight: function (element) { // hightlight error inputs
+                        $(element).closest('.form-group').addClass('has-error'); // set error class to the control group
+                    },
+                    unhighlight: function (element) { // hightlight error inputs
+                        $(element).closest('.form-group').removeClass('has-error'); // set error class to the control group
+                    },
+                    success: function (label) {
+
+                    },
+                    errorPlacement: function (error, element) {
+                        $('.alert-danger span').append(error);
+                    },
+                    submitHandler: function (form) {
+                        var data = {
+                            name: $(form).find('input[name="name"]').val(),
+                            email: $(form).find('input[name="email"]').val(),
+                            phone: $(form).find('input[name="phone"]').val(),
+                            message: $(form).find('textarea[name="message"]').val()
+                        };
+                        contact(data);
+                    }
+                });
+
+            };
+            return {
+                init: function() {
+                    formValidation();
+                }
+            }
+        }();
+
+
         jQuery(document).ready(function() {
             Contact.init();
+            ContactForm.init();
         });
+
+        function contact(data) {
+            $.ajax({
+                url: '{{ route('front/post_contact_locations') }}',
+                type: "post",
+                cache: false,
+                data: data,
+                success: function(response) {
+                    if(response.success) {
+                        show_notification('Message sent.', 'Your message was sent to the admin. Check your email for his response.', 'lime', 3500, 0);
+                        setTimeout(function(){
+                            window.location.reload(true);
+                        },2500);
+                    } else {
+                        show_notification('Failure', 'Error contacting the admin.', 'ruby', 3500, 0);
+                    }
+                },
+                error: function() {
+
+                }
+            });
+        }
 
         function show_notification(title_heading, message, theme, life, sticky) {
             var settings = {
