@@ -357,6 +357,14 @@
                         </div>
                         <div class="col-md-6 ">
                             <div class="portlet light margin-bottom-15">
+                                <dt>Select date of booking</dt>
+                                <div class="portlet-body">
+                                    <div id="datepaginator_sample_4"> </div>
+                                </div>
+                                <input type="hidden" name="selected_date" value="{{ \Carbon\Carbon::now()->format('Y-m-d') }}" />
+                            </div>
+
+                            <div class="portlet light margin-bottom-15">
                                 <dt>Select Location</dt>
                                 <div class="portlet-body">
                                     @foreach($shops as $shop)
@@ -384,14 +392,6 @@
                                         <input type="hidden" name="selected_category" value="{{ isset($settings['settings_preferred_activity'])?$settings['settings_preferred_activity']:2 }}" />
                                     </div>
                                 </div>
-                            </div>
-
-                            <div class="portlet light margin-bottom-15">
-                                <dt>Select date of booking</dt>
-                                <div class="portlet-body">
-                                    <div id="datepaginator_sample_4"> </div>
-                                </div>
-                                <input type="hidden" name="selected_date" value="{{ \Carbon\Carbon::now()->format('Y-m-d') }}" />
                             </div>
 
                             @if (Auth::check() && Auth::user()->is_front_user())
