@@ -975,7 +975,7 @@ class User extends Authenticatable
             'total_amount'  => $this->get_available_store_credit() - intval($amount),
             'invoice_id'    => $invoiceId,
             'expiration_date'   => Carbon::today()->format('Y-m-d'),
-            'status'        => 'expired',
+            'status'        => 'active',
         ];
 
         $validator = Validator::make($store_credit_fill, UserStoreCredits::rules('POST'), UserStoreCredits::$message, UserStoreCredits::$attributeNames);
@@ -992,8 +992,8 @@ class User extends Authenticatable
 
         return [
             'success'   => true,
-            'title'     => 'Store Credit Added',
-            'message'   => 'User received the store credit',
+            'title'     => 'Store Credit Spent',
+            'message'   => 'User payed with store credit',
             'storeCredit'   => $storeCredit
         ];
     }

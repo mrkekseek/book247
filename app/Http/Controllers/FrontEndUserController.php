@@ -5610,6 +5610,9 @@ This message is private and confidential. If you have received this message in e
         $member = json_decode($invoice->payer_info);
         $member->country = Countries::where('id', $member->country_id)->get()->first();
 
+        $member_account = User::find($member->id);
+        $credits = isset($member_account) ? $member_account->get_available_store_credit() : 0;
+
         if ($member->country_id==0){
             $country = '-';
         }
@@ -5661,7 +5664,8 @@ This message is private and confidential. If you have received this message in e
             'paypal_email' => AppSettings::get_setting_value_by_name('finance_simple_paypal_payment_account'),
             'country' => $country,
             'payee_country' => $payee_country,
-            'show_stripe' => \Config::get("stripe.stripe_secret")
+            'show_stripe' => \Config::get("stripe.stripe_secret"),
+            'credit' => $credits
         ]);
     }
 
@@ -5779,5 +5783,69 @@ This message is private and confidential. If you have received this message in e
                 'errors' => 'User with current email not subscribed to our newsletters',
             ];
         }
+    }
+
+    public function pay_invoice_with_credit(Request $r)
+    {
+        $user = Auth::user();
+        if (!$user || !$user->is_front_user()) {
+            return redirect()->intended(route('homepage'));
+        }
+        $invoice = Invoice::find($r->get('invoice_id'));
+        if ($invoice->user_id != $user->id) {
+            return redirect()->intended(route('homepage'));
+        }
+        if ($invoice) {
+            $subtotal = 0;
+            $total = 0;
+            $discount = 0;
+            $vat = [];
+
+            $items = InvoiceItem::where('invoice_id', '=', $invoice->id)->get();
+
+            foreach ($items as $item) {
+                $item_one_price = $item->price - (($item->price * $item->discount) / 100);
+                $item_vat = $item_one_price * ($item->vat / 100);
+
+                if (isset($vat[$item->vat])) {
+                    $vat[$item->vat] += $item_vat * $item->quantity;
+                } else {
+                    $vat[$item->vat] = $item_vat * $item->quantity;
+                }
+
+                $discount += (($item->price * $item->discount) / 100) * $item->quantity;
+                $subtotal += $item->price * $item->quantity;
+
+                $total += ($item_one_price + $item_vat) * $item->quantity;
+            }
+        } else {
+            return redirect()->intended(route('admin/error/not_found'));
+        }
+        if ($user->get_available_store_credit() > $total) {
+            $status = $user->spend_store_credit($invoice->id, $total);
+            if ($status['success']) {
+                $user->update_available_store_credit();
+                $invoice->status = 'completed';
+                $invoice->save();
+                return [
+                    'success' => TRUE,
+                    'title' => 'Invoice paid.',
+                    'message' => $status['message'],
+                ];
+            } else {
+                return [
+                    'success' => FALSE,
+                    'title' => 'Error spending credit.',
+                    'errors' => $status['message'],
+                ];
+            }
+        } else {
+            return [
+                'success' => FALSE,
+                'title' => 'Error spending credit.',
+                'errors' => 'Not enough store credit.',
+            ];
+        }
+
     }
 }

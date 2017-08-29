@@ -1044,6 +1044,7 @@ if (env('FEDERATION',false)){
             'uses' => 'FrontEndUserController@current_credit_status'
         ]);
 
+
         Route::get('contact', [
             'as' => 'front/contact_locations',
             'uses' => 'FrontEndUserController@contact_locations'
@@ -1180,6 +1181,11 @@ if (env('FEDERATION',false)){
         Route::post('resources_available_for_date_time', [
             'as' => 'ajax/get_resource_date_time',
             'uses' => 'FrontPageController@get_resource_list_for_date_time'
+        ]);
+
+        Route::post('pay_invoice_with_credit', [
+            'as' => 'pay_invoice_with_credit',
+            'uses' => 'FrontEndUserController@pay_invoice_with_credit'
         ]);
 
         Route::post('booking_confirmed', [
