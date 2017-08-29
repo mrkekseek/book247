@@ -72,7 +72,7 @@ class AdminController extends Base
 
     public function localMemberships(Request $r) {
         $user = Auth::user();
-        if (!$user || !$user->is_back_user()) {
+        if (!$user || !$user->is_front_user()) {
             return redirect()->intended(route('admin/login'));
         }
         $r->request->add(['memberSSOid' => $user->sso_user_id ,'return_url' => route('homepage')]);
