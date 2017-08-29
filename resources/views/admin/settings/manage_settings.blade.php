@@ -55,7 +55,7 @@
                                     <a href="javascript:;" class="collapse" data-original-title="" title=""> </a>
                                 </div>
                             </div>
-                            <div class="portlet-body" style="display: none;">
+                            <div class="portlet-body" >
                                 <div class="table-scrollable">
                                     <table class="table table-striped table-hover table-manage">
                                         <thead>
