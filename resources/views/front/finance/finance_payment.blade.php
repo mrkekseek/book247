@@ -195,6 +195,10 @@
                                     </div>
                                     <div class="row">
                                         <div class="col-md-12 col-sm-12 text-right">
+                                            @if ($credit > 0)
+                                                <button id="pay_with_credit" class="btn btn-primary">Pay with credit</button>
+                                            @endif
+
                                             @if (strlen($paypal_email)>=6)
                                             <button id="pay_with_paypal" class="btn btn-primary">Pay with paypal</button>
                                             @endif
@@ -285,6 +289,31 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                     <button type="button" class="btn btn-success" id="confirm-stripe">Pay {{ number_format($grand_total, 2) }}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-credit-payment modal fade" id="credit-modal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Credit Payment</h4>
+                </div>
+                <div class="modal-body text-center">
+                    <div class="row">
+                        <div class="col-xs-10 col-xs-offset-1">
+                            <div>
+                                <span><b>AVAILABLE CREDIT <h2>{{ $credit }}</h2></b></span></br>
+                                <span> Are you sure you want to pay the invoice with credit? </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-success" id="confirm-credit-pay">Pay with {{ number_format($grand_total, 0) }} credit</button>
                 </div>
             </div>
         </div>
@@ -423,6 +452,13 @@
                 }
             });
 
+            $('#pay_with_credit').click(function(){
+                if (Number('{{ $credit }}') > 0)
+                {
+                    $('#credit-modal').modal("show");
+                }
+            });
+
              $('#confirm-modal, #modal-stripe').on('show.bs.modal', function(){
                 $("#modal-stripe-question").modal("hide");
              });
@@ -494,6 +530,34 @@
                             stripeTokenHandler(result.token);
                         }
                     });
+                });
+            });
+
+
+            $('#confirm-credit-pay').click(function(){
+                $.ajax({
+                    url: '{{ route('pay_invoice_with_credit') }}',
+                    method: 'post',
+                    data : {
+                        '_token' : '{{ csrf_token() }}',
+                        'invoice_id' : '{{ $invoice->id }}',
+                    },
+                    success: function(data) {
+                        if (data.success)
+                        {
+                            show_notification(data.title, data.message, 'lime', 3500, 0);
+                            setTimeout(function(){
+                                window.location.reload();
+                            },3500);
+                        }
+                        else
+                        {
+                            show_notification(data.title, data.errors, 'ruby', 3500, 0);
+                        }
+                    },
+                    error: function() {
+
+                    }
                 });
             });
 

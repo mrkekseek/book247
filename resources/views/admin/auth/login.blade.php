@@ -234,11 +234,12 @@
                             window.location.href = data.redirect_url;
                         }
                         else {
+                            $('.login-form').unblock();
                             if (data.title.length) {
                                 show_notification(data.title,  data.errors, 'ruby', 5000, true);
                             }
                         }
-                        $('.login-form').unblock();
+
                     }
                 });
             });
@@ -340,9 +341,10 @@
                     },5500);
                 }
                 else{
+                    $('#form_forgot_passwd').unblock();
                     show_notification(data.title, data.errors, 'lemon', 5000, 0);
                 }
-                $('#form_forgot_passwd').unblock();
+
             }
         });
     }

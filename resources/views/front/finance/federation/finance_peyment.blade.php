@@ -195,6 +195,10 @@
                                         </div>
                                         <div class="row">
                                             <div class="col-md-12 col-sm-12 text-right">
+                                                @if ($credit > 0)
+                                                    <button id="pay_with_credit" class="btn btn-primary">Pay with credit</button>
+                                                @endif
+
                                                 @if (strlen($paypal_email)>=6)
                                                     <button id="pay_with_paypal" class="btn btn-primary">Pay with paypal</button>
                                                 @endif

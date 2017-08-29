@@ -1766,6 +1766,9 @@ class FrontEndUserController extends Base
         $member = json_decode($invoice->payer_info);
         $member->country = Countries::where('id', $member->country_id)->get()->first();
 
+        $member_account = User::find($member->id);
+        $credits = isset($member_account) ? $member_account->get_available_store_credit() : 0;
+
         if ($member->country_id==0){
             $country = '-';
         }
@@ -1817,7 +1820,8 @@ class FrontEndUserController extends Base
             'paypal_email' => AppSettings::get_setting_value_by_name('finance_simple_paypal_payment_account'),
             'country' => $country,
             'payee_country' => $payee_country,
-            'show_stripe' => \Config::get("stripe.stripe_secret")
+            'show_stripe' => \Config::get("stripe.stripe_secret"),
+            'credit' => $credits
         ]);
     }
 

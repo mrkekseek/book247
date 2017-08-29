@@ -763,7 +763,7 @@
                     unhighlight  : function(element) { // hightlight error inputs
                         $(element).closest('.form-group').removeClass('has-error'); // set error class to the control group
                     },
-                    success: function(label) {
+                    success: function() {
 
                     },
                     errorPlacement: function(error, element) {
@@ -1379,7 +1379,6 @@
                 }
             });
         }
-        
         function auth_autorize(data){
             $.ajax({
                 url: '{{ route('ajax/auth_autorize') }}',
@@ -1390,11 +1389,13 @@
                 },
                 success: function (data) {
                     //console.log(data);
-                    $('.content').unblock();
+
                     if (data.success == true){
+                        $('.alert-danger').removeClass('display-hide').removeClass('alert-danger').addClass('alert-success').show().find('span').html('Login successful! Wait until the page reloads ...');
                         window.location.reload();
                    }
                    else{
+                        $('.content').unblock();
                        $('.alert-danger').show();
                        $('.alert-danger span').html(data.errors);
                     }
