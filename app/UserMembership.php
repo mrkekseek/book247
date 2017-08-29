@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Validator;
 use Regulus\ActivityLog\Models\Activity;
+use App\OptimizeSearchMembers;
 
 class UserMembership extends Model
 {
@@ -279,6 +280,9 @@ class UserMembership extends Model
             }
 
             $the_membership->generate_invoices_plan();
+
+            $searchMembers = new OptimizeSearchMembers();
+            $searchMembers->add_missing_members([$user->id]);
 
             return $the_membership;
         }

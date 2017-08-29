@@ -644,7 +644,6 @@ class FrontEndUserController extends Controller
             return redirect()->intended(route('admin/login'));
         }
 
-
         $member = User::with('roles')->find($id);
         if (!$member || !$member->is_front_user()){
             return redirect(route('admin/error/not_found'));
