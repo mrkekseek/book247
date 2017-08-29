@@ -231,6 +231,11 @@ Route::group(['middleware' => 'web'], function () {
         'uses'  => 'Federation\AdminController@testRoute'
     ]);
 
+    Route::get('admin/local_memberships', [
+        'as'    => 'local_memberships',
+        'uses'  => 'Federation\AdminController@localMemberships'
+    ]);
+
 
 
     Route::get('/admin/error/permission_denied', [
