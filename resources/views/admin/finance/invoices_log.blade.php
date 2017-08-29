@@ -57,12 +57,7 @@
                                 <tr role="row" class="filter">
                                     <td> </td>
                                     <td> 
-                                        <select name="user_id" class="form-control form-filter input-sm">
-                                            <option value="">All users</option>
-                                            @foreach($users as $item)
-                                                <option value="{{$item->id}}">{{$item->first_name.' '. $item->last_name}}</option>
-                                            @endforeach
-                                        </select>
+                                        <input type="text" class="form-control form-filter input-sm" name="user">
                                     </td>
                                     <td>
                                         <select name="employee_id" class="form-control form-filter input-sm">

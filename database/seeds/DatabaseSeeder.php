@@ -43,6 +43,9 @@ class DatabaseSeeder extends Seeder
         $this->call(EmailTemplateSeeder::class);
         $this->command->info('Seeded : Email Templates');
 
+        $this->call(SettingsGroupsSeeder::class);
+        $this->command->info('Seeded : Settings Groups');
+
         DB::statement('SET FOREIGN_KEY_CHECKS=1');
     }
 }
