@@ -300,16 +300,15 @@ class InvoiceController extends Controller
         
         $statuses = Invoice::select('status')->distinct('status')->get();
         $types = Invoice::select('invoice_type')->distinct('invoice_type')->get();
-        $users = User::select('id','first_name','last_name')->has('invoices')->get();
-        $employees = User::select('id','first_name','last_name')->has('invoices_employee')->get();
-        
+        $employees = User::select('id','first_name','last_name')->has('invoices_employee')->whereHas('roles', function ($q){
+            $q->whereNotIn('name',['front-user','front-member']);
+        })->get();
         return view('admin/finance/invoices_log', [
             'breadcrumbs' => $breadcrumbs,
             'text_parts'  => $text_parts,
             'in_sidebar'  => $sidebar_link,
             'statuses'=> $statuses,
             'types' => $types,
-            'users' => $users,
             'employees' => $employees,
         ]);
     }
@@ -317,14 +316,16 @@ class InvoiceController extends Controller
     public function get_invoices_log(Request $request)
     {
         $in = $request->only('start','length');
-        $filter = $request->only('status', 'user_id', 'employee_id','type','number','date_from','date_to');
+        $filter = $request->only('status', 'user', 'employee_id','type','number','date_from','date_to');
         $offset = ! empty($in['start']) ? $in['start'] : 0;
         $limit = ! empty($in['length']) ? $in['length'] : 15;
         $query = Invoice::query();
         $query->with('user','employee');
         ! empty ($filter['status']) ? $query->where('status', $filter['status']) : $query;
         ! empty ($filter['type']) ? $query->where('invoice_type', $filter['type']) : $query;
-        ! empty ($filter['user_id']) ? $query->where('user_id', $filter['user_id']) : $query;
+        ! empty ($filter['user']) ? $query->whereHas('user', function($q) use ($filter){
+            $q->where('first_name','LIKE','%'.$filter['user'].'%')->orWhere('last_name','LIKE','%'.$filter['user'].'%');
+        }) : $query;
         ! empty ($filter['employee_id']) ? $query->where('employee_id', $filter['employee_id']) : $query;
         ! empty ($filter['number']) ? $query->where('invoice_number', 'LIKE', '%'.$filter['number'].'%') : $query;
         ! empty ($filter['date_from']) ? $query->whereDate('created_at', '>=', \Carbon\Carbon::createFromFormat('d/m/Y',$filter['date_from'])->format('Y-m-d')) : FALSE;

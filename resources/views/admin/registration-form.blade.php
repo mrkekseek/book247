@@ -458,9 +458,9 @@
 
         $("input[name=phone]").val()
 
-        $("#payment-form input[type=tel]").change(function(){
-            $("input[name=phone]").val($(this).val());
-        });
+        //$("#payment-form input[type=tel]").change(function(){
+        //    $("input[name=phone]").val($(this).val());
+        //});
 
         var stripe = Stripe('{{ Config::get("stripe.stripe_key") }}');
         var elements = stripe.elements();

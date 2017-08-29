@@ -62,7 +62,8 @@ class GeneralSettingsSeeder extends Seeder
             [36, 'Global Website Registration Email Validation', 'globalWebsite_registration_email_validation', 'If set to yes, all new member registration will require email verification : an email will be sent to them to activate their accounts.', 1, '', 0, 0, 0],
             [37, 'Global Website Custm Terms and Agreements', 'globalWebsite_custom_terms_and_agreements', 'In this field you can place the terms and agreements from your own website for buying memberships and other financial packages.', 0, 'string', 5, 200, 0],
             [38, 'Global Website Facebook FeedLink', 'globalWebsite_facebook_feedLink', 'Facebook account link for showing homepage Facebook embeded feed from facebook page', 0, 'string', 5, 220, 0],
-            [39, 'Global Website Account Logo Image', 'globalWebsite_account_logo_image', 'This is the image that will be used as logo in all the application places', 0, 'string', 5, 255, 0]
+            [39, 'Global Website Account Logo Image', 'globalWebsite_account_logo_image', 'This is the image that will be used as logo in all the application places', 0, 'string', 5, 255, 0],
+            [40, 'Global Website Contact Gmaps Points', 'globalWebsite_contact_gmaps_points', 'This value holds the google maps points for the google maps available in the contact form part.', 0, 'text', 1, 9999, 0]
         ];
 
         // insert values into settings table
@@ -151,6 +152,7 @@ class GeneralSettingsSeeder extends Seeder
         DB::insert($query, [30, 20, NULL, 1]);
         DB::insert($query, [31, 21, NULL, 1]);
         DB::insert($query, [36,  25,  NULL, 1]);
+        DB::insert($query, [40,  NULL,  json_encode([]), 1]);
 
 
         DB::unprepared('ALTER TABLE settings AUTO_INCREMENT=10000;');
