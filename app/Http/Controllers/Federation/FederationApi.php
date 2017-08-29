@@ -378,14 +378,18 @@ class FederationApi extends Controller {
         }
     }
 
+    public static function get_buy_url(Request $r) {
+        $token = IframePermission::createPermission($r->memberSSOid);
+        return json_encode(array(
+            'code' => 1,
+            'iFrameUrl' => route('buy_license',[ 'token' => $token , 'sso_id' => $r->memberSSOid,'membership_id' => isset($r->membership_id) ? $r->membership_id : -1 ]).'?redirect_url='.$r->get('return_url')
+        ),JSON_FORCE_OBJECT);
+    }
+
     public function federation_buy_license(Request $r)
     {
         if(RequestValidator::validate($r)){
-            $token = IframePermission::createPermission($r->memberSSOid);
-            return json_encode(array(
-                'code' => 1,
-                'iFrameUrl' => route('buy_license',[ 'token' => $token , 'sso_id' => $r->memberSSOid,'membership_id' => isset($r->membership_id) ? $r->membership_id : -1 ]).'?redirect_url='.$r->get('return_url')
-            ),JSON_FORCE_OBJECT);
+            return self::get_buy_url($r);
         } else {
             return json_encode(array(
                 'code' => 2,
