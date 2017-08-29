@@ -86,7 +86,7 @@
                             </div>
                             <!-- END PORTLET -->
                             @else
-                            <div class="content" style="background-color:#ffffff; margin-top:0px;">
+                                <div class="content" style="background-color:#ffffff; margin-top:0px;">
                                     <!-- BEGIN LOGIN FORM -->
                                     <form class="login-form portlet light " action="{{ url('/login') }}" method="post" name="user_login_form" id="user_login_form">
                                         {!! csrf_field() !!}
@@ -426,12 +426,8 @@
                                     <a href="javascript:;" class="btn default yellow-saffron-stripe" style="padding:5px 10px; font-size:14px; cursor:default; margin-bottom:5px;"> Less courts available </a>
                                     <a href="javascript:;" class="btn default red-stripe btn-lg" style="padding:5px 10px; font-size:14px; cursor:default; margin-bottom:5px;"> All courts are booked </a>
                                     <a href="javascript:;" class="btn default purple-stripe btn-lg" style="padding:5px 10px; font-size:14px; cursor:default; margin-bottom:5px;"> Outside membership rules </a>
-                                    <a href="{{ route('front/active_membership') }}" class="btn default btn-lg" style="padding: 1px 5px 0px; cursor: pointer; margin-bottom: 5px; font-size: 21px;">
-                                        <span class="item-box">
-                                            <span class="item">
-                                                <span aria-hidden="true" class="icon-question"></span>
-                                            </span>
-                                        </span>
+                                    <a href="#membership_restrictions_explained" data-toggle="modal" class="btn blue-sharp btn-lg" style="padding: 1px 5px 0px; cursor: pointer; margin-bottom: 5px; font-size: 21px;">
+                                        <span class="item-box"><span class="item"><span aria-hidden="true" class="icon-question"></span></span></span>
                                     </a>
                                 @else
                                     <a href="javascript:;" class="btn default dark-stripe btn-lg book_step book_step_link" style="padding:5px 10px; font-size:14px; cursor:default;"> You need to be logged in to view availability </a>
@@ -452,7 +448,7 @@
                                 <div class="portlet-title form-group">
                                     <div class="caption">
                                         <i class="icon-social-dribbble font-green"></i>
-                                        <span class="caption-subject font-green bold uppercase">Booking Details</span>
+                                        <span class="caption-subject font-green bold uppercase popup_location_name"></span>
                                     </div>
                                     <div style="float:right;" class="caption" id="countdown_60"><span class="minutes"></span>:<span class="seconds"></span></div>
                                 </div>
@@ -461,7 +457,7 @@
                                     <form action="#" id="booking-step-one" role="form" name="new_booking1">
                                         <div class="form-body" style="padding-top:0px; padding-bottom:0px;">
                                             <div class="form-group note note-info" style="padding-top:0px; padding-bottom:0px; margin-bottom:2px;">
-                                                <p class="form-control-static"><strong>Select End Time</strong></p>
+                                                <p class="form-control-static">Start time: <span class="start_time_select"></span>, <strong>Select End Time</strong></p>
 
                                                 <div class="booking_step_content" style="display:block;">
                                                     <select class="form-control" name="booking_end_time" id="booking_end_time"> </select>
@@ -470,11 +466,11 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="form-group note note-info is_own_booking" style="padding-top:0px; padding-bottom:0px; margin-bottom:2px;">
+                                            <div class="form-group note note-info is_own_booking" style="padding-top:0px; padding-bottom:0px; margin-bottom:2px; display:none;">
                                                 <input type="hidden" autocomplete="off" value="" name="time_book_key" />
                                                 <input type="hidden" autocomplete="off" value="" name="time_book_hour" />
                                                 <p class="form-control-static"><strong>
-                                                        <span data-id="booking_name"> </span>
+                                                        <span data-id="booking_name"> Select Player </span>
                                                         <span data-id="start_time"> </span>
                                                         <span data-id="room_booked"> </span></strong></p>
                                                 <div class="form-control-static fa-item booking_payment_type" style="float:right;"></div>
@@ -486,7 +482,7 @@
                                                     <select class="form-control input-sm" name="resources_room" id="resources_rooms"></select>
 
                                                     <div class="form-actions right" style="padding-top:5px; padding-bottom:5px;">
-                                                        <a class="btn blue-hoki booking_step_back" style="padding-top:4px; padding-bottom:4px;">Back</a>
+                                                        <a class="btn blue-hoki booking_step_back" style="padding-top:4px; padding-bottom:4px; display:none;">Back</a>
                                                         <a class="btn blue-hoki booking_step_next" style="padding-top:4px; padding-bottom:4px;">Next</a>
                                                     </div>
                                                 </div>
@@ -497,6 +493,7 @@
                                                 <div class="booking_step_content" style="display:none;">
                                                     <div class="booking_summary_price_membership"></div>
                                                     <div class="form-actions right" style="padding-top:5px; padding-bottom:5px;">
+                                                        <a class="btn blue-hoki " style="padding-top:4px; padding-bottom:4px;" href="#summary_payment_explained" data-toggle="modal">Help</a>
                                                         <a class="btn blue-hoki booking_step_back" style="padding-top:4px; padding-bottom:4px;">Back</a>
                                                         <a class="btn blue-hoki cancel_booking_popup_btn" style="padding-top:4px; padding-bottom:4px;">Cancel</a>
                                                         <a class="btn blue-hoki " style="padding-top:4px; padding-bottom:4px;" onclick="confirm_booking()">Confirm</a>
@@ -646,6 +643,73 @@
                 <!-- /.modal-dialog -->
             </div>
             @endif
+
+            <div class="modal fade draggable-modal" id="membership_restrictions_explained" tabindex="-1" role="basic" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-body form-horizontal">
+                            <div class="portlet light " style="padding-bottom:0px;margin-bottom:0px;">
+                                <div class="portlet-title form-group">
+                                    <div class="caption">
+                                        <i class="icon-social-dribbble font-blue-steel"></i>
+                                        <span class="caption-subject font-blue-steel bold uppercase">Why are the courts unclickable? Possible reasons</span>
+                                    </div>
+                                </div>
+                                <div class="portlet-body form-group">
+                                    <blockquote  style="font-size:16px;">
+                                        <p> You have a product/membership which does not include these booking hours. </p>
+                                    </blockquote>
+                                    <blockquote style="padding-bottom:0px; margin-bottom:0px; font-size:16px;">
+                                        <p> These booking hours may be available at a specific time (for instance you can only book these hours 1 day ahead and not many days ahead),
+                                            or they are permanently unavailable at all time. Please ask your club if this text did not help. </p>
+                                    </blockquote>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn dark btn-outline submit_form_2" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                    <!-- /.modal-content -->
+                </div>
+                <!-- /.modal-dialog -->
+            </div>
+
+            <div class="modal fade draggable-modal" id="summary_payment_explained" tabindex="-1" role="basic" aria-hidden="true">
+                <div class="modal-dialog" style="margin-top:92px;">
+                    <div class="modal-content">
+                        <div class="modal-body form-horizontal">
+                            <div class="portlet light " style="padding-bottom:0px;margin-bottom:0px;">
+                                <div class="portlet-title form-group">
+                                    <div class="caption">
+                                        <i class="icon-social-dribbble font-blue-steel"></i>
+                                        <span class="caption-subject font-blue-steel bold">Why am I being asked to pay for a booking? Possible reasons</span>
+                                    </div>
+                                </div>
+                                <div class="portlet-body form-group">
+                                    <blockquote  style="font-size:15px;margin-bottom:5px; padding:5px 15px;">
+                                        <p> You don't have a membership plan </p>
+                                    </blockquote>
+                                    <blockquote  style="font-size:15px;margin-bottom:5px; padding:5px 15px;">
+                                        <p> You already have a booking in the system. </p>
+                                    </blockquote>
+                                    <blockquote  style="font-size:15px;margin-bottom:5px; padding:5px 15px;">
+                                        <p> You are trying to book more than what is covered by your membership. Remember to add your playing partners as “friends” so you can book on behalf of them. </p>
+                                    </blockquote>
+                                    <blockquote style="font-size:15px;margin-bottom:0px; padding:5px 15px 0;">
+                                        <p> If your friend is not showing in your list, then he already has a booking in the system. </p>
+                                    </blockquote>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn dark btn-outline submit_form_2" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                    <!-- /.modal-content -->
+                </div>
+                <!-- /.modal-dialog -->
+            </div>
         </div>
         <!-- END PAGE CONTENT BODY -->
         <!-- END CONTENT BODY -->
@@ -1434,6 +1498,11 @@
             $('input[name=selected_time]').val($(this).html());
             $('.pre_book_date').html($('.dp-selected').attr('title'));
 
+            var location_name = $('.location_btn.blue-steel').html().trim();
+            location_name = location_name.substring(0,location_name.indexOf(" <span") + 1);
+            $('.popup_location_name').html('Location: '+location_name);
+            $('span.start_time_select').html($(this).html().trim())
+
             $('span[data-id="start_time"]').html(' - ' + $(this).html());
             $('.is_own_booking').find('input[name="time_book_hour"]').val($.trim($(this).html()));
 
@@ -1468,6 +1537,10 @@
             var own_box = $(this).parents('.form-group').first();
 
             if ($(this).attr('data-id')=="to_own_booking"){
+                // we hide select end time box
+                $('#booking-step-one').find('div.form-body>.form-group').first().hide();
+
+                $(".is_own_booking").show();
                 var first_players_list = $(".is_own_booking").find('div>select[name="friend_booking"]');
                 get_players_list(first_players_list);
 
