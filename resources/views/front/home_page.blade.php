@@ -455,7 +455,7 @@
                                 <div class="portlet-body form">
                                     <!-- Booking first step Start -->
                                     <form action="#" id="booking-step-one" role="form" name="new_booking1">
-                                        <div class="form-body" style="padding-top:0px; padding-bottom:0px;">
+                                        <div class="form-body booking-step-one-box" style="padding-top:0px; padding-bottom:0px;">
                                             <div class="form-group note note-info" style="padding-top:0px; padding-bottom:0px; margin-bottom:2px;">
                                                 <p class="form-control-static">Start time: <span class="start_time_select"></span>, <strong>Select End Time</strong></p>
 
@@ -493,7 +493,7 @@
                                                 <div class="booking_step_content" style="display:none;">
                                                     <div class="booking_summary_price_membership"></div>
                                                     <div class="form-actions right" style="padding-top:5px; padding-bottom:5px;">
-                                                        <a class="btn blue-hoki " style="padding-top:4px; padding-bottom:4px;" href="#summary_payment_explained" data-toggle="modal">Help</a>
+                                                        <a class="btn green " style="padding-top:4px; padding-bottom:4px;" href="#summary_payment_explained" data-toggle="modal">Help</a>
                                                         <a class="btn blue-hoki booking_step_back" style="padding-top:4px; padding-bottom:4px;">Back</a>
                                                         <a class="btn blue-hoki cancel_booking_popup_btn" style="padding-top:4px; padding-bottom:4px;">Cancel</a>
                                                         <a class="btn blue-hoki " style="padding-top:4px; padding-bottom:4px;" onclick="confirm_booking()">Confirm</a>
@@ -1382,8 +1382,7 @@
                 }
             });
         }
-        
-        
+
         function auth_chek_email(email){
             $.ajax({
                 url: '{{ route('ajax/auth_chek_email') }}',
@@ -1801,6 +1800,8 @@
         }
 
         function get_resources_for_hour(bookTime, place) {
+            blockContent('.booking-step-one-box');
+
             bookDate = $('input[name=selected_date]').val();
             $("#booking_end_time").html('');
 
@@ -1820,6 +1821,8 @@
                     if ($('#booking_end_time').html().length < 5) {
                         end_time_interval_format(data.next_interval);
                     }
+
+                    $('.booking-step-one-box').unblock();
                 }
             });
         }
@@ -2045,6 +2048,8 @@
             if(typeof timeinterval !== "undefined"){
                 clearInterval(timeinterval);
             }
+
+            $('#booking-step-one').find('div.form-body>.form-group').first().show();
         }
 
         $('#booking_modal_end_time').on('hidden.bs.modal', function () {
