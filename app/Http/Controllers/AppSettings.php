@@ -504,4 +504,82 @@ class AppSettings extends Controller
         }
         return FALSE;
     }
+
+    public function update_point(Request $request)
+    {
+        $user = Auth::user();
+        if ( ! $user || ! $user->is_back_user())
+        {
+            return [
+                'success'   => false,
+                'title'     => 'Login Error',
+                'errors'    => 'You need to be logged in to access this function'
+            ];
+        }
+
+        $vars = $request->only('lat', 'lon', 'location', 'address');
+        $fillable = [
+            'lat' => $vars['lat'],
+            'lon'  =>  $vars['lon'],
+            'location' => $vars['location'],
+            'address' => $vars['address']
+        ];
+
+
+        $points = json_decode($this->get_setting_value_by_name('globalWebsite_contact_gmaps_points'), TRUE);
+        $points[] = $fillable;
+        if(Settings::where("system_internal_name", "globalWebsite_contact_gmaps_points")
+            ->first()
+            ->application_setting()
+            ->update(['unconstrained_value' => json_encode($points)]))
+        {
+            return [
+                'success'   => true ,
+                'message'   => 'Updated point - everything went well',
+                'title'     => 'Update point'
+            ];
+        }
+
+        return [
+            'success'   => false ,
+            'message'   => 'Updated point - error',
+            'title'     => 'Update point'
+        ];
+    }
+
+    public function get_point()
+    {
+        $this->clear_cache();
+        return $this->get_setting_value_by_name('globalWebsite_contact_gmaps_points');
+    }
+
+    public function remove_point(Request $request)
+    {
+        $points = json_decode($this->get_setting_value_by_name('globalWebsite_contact_gmaps_points'), TRUE);
+        foreach($points as $index => $value)
+        {
+            if ($index == $request->input("index"))
+            {
+                unset($points[$index]);
+            }
+        }
+
+         if(Settings::where("system_internal_name", "globalWebsite_contact_gmaps_points")
+            ->first()
+            ->application_setting()
+            ->update(['unconstrained_value' => json_encode($points)]))
+        {
+            return [
+                'success'   => true ,
+                'message'   => 'Remove point - everything went well',
+                'title'     => 'Remove point'
+            ];
+        }
+
+         return [
+            'success'   => false ,
+            'message'   => 'Remove point - error',
+            'title'     => 'Remove point'
+        ];
+    }
 }

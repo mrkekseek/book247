@@ -44,18 +44,18 @@
             <div class="col-md-12">
                 <!-- BEGIN SAMPLE FORM PORTLET-->
                 <div class="portlet light bordered">
-                    <div class="portlet-body">
+                    <div class="portlet-body"  >
                          <div class="portlet box green">
                             <div class="portlet-title">
-                                <div class="caption">
-                                    <i class="fa fa-cogs"></i>Manage Settings
+                                <div class="caption text-uppercase">
+                                    <i class="fa fa-cogs "></i>Manage General Settings
                                 </div>
                                 <div class="tools">
                                     <a href="javascript:;" onclick="clearCache()" class="reload" data-original-title="" title="Reset Application Cache"> </a>
                                     <a href="javascript:;" class="collapse" data-original-title="" title=""> </a>
                                 </div>
                             </div>
-                            <div class="portlet-body">
+                            <div class="portlet-body" style="display: none;">
                                 <div class="table-scrollable">
                                     <table class="table table-striped table-hover table-manage">
                                         <thead>
@@ -146,6 +146,75 @@
                     </div>
                 </div>
                 <!-- END SAMPLE FORM PORTLET-->
+                <div class="portlet light bordered">
+                    <div class="portlet-body">
+                        <div class="portlet box green">
+                            <div class="portlet-title">
+                                <div class="caption text-uppercase">
+                                    <i class="fa fa-cogs "></i>Manage Contact/Location Settings
+                                </div>
+                                <div class="tools">
+                                    <a href="javascript:;" onclick="clearCache()" class="reload" data-original-title="" title="Reset Application Cache"> </a>
+                                    <a href="javascript:;" class="collapse" data-original-title="" title=""> </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="portlet-body">
+                            <div class="row">
+                                <div class="col-xs-8 col-xs-offset-2">
+                                    <form novalidate="novalidate" name="form_point">
+                                        {{ csrf_field() }}
+                                        <div class="form-group">
+                                           <div class="row">
+                                                <label for="" class="col-xs-2">Latitude</label>
+                                                <div class="col-xs-10">
+                                                    <input type="text" class="form-control" name="lat" />
+                                                </div>
+                                           </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <label for="" class="col-xs-2">Longitude</label>
+                                                <div class="col-xs-10">
+                                                    <input type="text" class="form-control" name="lon"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <label for="" class="col-xs-2">Location name</label>
+                                                <div class="col-xs-10">
+                                                    <input type="text" class="form-control" name="location" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <label for="" class="col-xs-2">Location Address</label>
+                                                <div class="col-xs-10">
+                                                    <input type="text" class="form-control" name="address"  />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-xs-12 text-right">
+                                                    <button type="submit" class="btn btn-success">Add Point</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-xs-8 col-xs-offset-2">
+                                    <h3>Defined Points</h3>
+                                    <ul id="list_points">
+                                        <li> Empty list ! </li>
+                                    </ul>
+                                </div>
+                            </div>                           
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
         <!-- END PAGE BASE CONTENT -->
@@ -263,6 +332,76 @@
             };
         }();
 
+        var FormValidationPoint = function () {
+            var handleValidation = function() {
+
+                var form = $("form[name='form_point']");
+                var error = $('.alert-danger', form);
+                var success = $('.alert-success', form);
+
+                form.validate({
+                    errorElement: 'span',
+                    errorClass: 'help-block help-block-error',
+                    focusInvalid: false,
+                    ignore: "", 
+                    rules: {
+                        lat : {
+                            required : true,
+                            number : true
+                        },
+                        lon : {
+                            required : true,
+                            number : true
+                        },
+                        location : {
+                            required : true
+                        },
+                        address : {
+                            required : true
+                        }
+                    },
+
+                    invalidHandler: function (event, validator) {
+                        success.hide();
+                        error.show();
+                    },
+
+                    errorPlacement: function (error, element) {
+                        var icon = $(element).parent('.input-icon').children('i');
+                        icon.removeClass('fa-check').addClass("fa-warning");
+                        icon.attr("data-original-title", error.text()).tooltip({'container': 'body'});
+                    },
+
+                    highlight: function (element) {
+                        $(element)
+                                .closest('.form-group').removeClass("has-success").addClass('has-error');
+                    },
+
+                    unhighlight: function (element) {
+
+                    },
+
+                    success: function (label, element) {
+                        var icon = $(element).parent('.input-icon').children('i');
+                        $(element).closest('.form-group').removeClass('has-error').addClass('has-success');
+                        icon.removeClass("fa-warning").addClass("fa-check");
+                    },
+
+                    submitHandler: function (form) {
+                        success.show();
+                        error.hide();
+                        update_point(form); 
+                    }
+                });
+            }
+
+            return {
+                init: function () {
+                    handleValidation();
+                }
+            };
+        }();
+
         $.validator.addMethod('range',function(value, element, param) {
             value = value * 1;
             return (value >= $(element).data("min")) && (value <= $(element).data("max"));
@@ -348,7 +487,9 @@
         $(document).ready(function(){
             FormValidation.init();
             FormValidationUnconstrained.init();
-        })
+            FormValidationPoint.init();
+            get_point();
+        });
 
         function save_setting(form)
         {
@@ -391,6 +532,62 @@
                     else{
                         show_notification(data.title, data.errors,  'ruby', 3500, 0);
                     }
+                }
+            });
+        }
+
+        function update_point(form)
+        {
+            $.ajax({
+                url : "{{ route('admin/settings/update_point') }}",
+                method : "POST",
+                data : $(form).serialize(),
+                success: function(data){
+                    if(data.success){
+                        show_notification(data.title, data.message, 'lime', 3500, 0);
+                    }
+                    else{
+                        show_notification(data.title, data.errors,  'ruby', 3500, 0);
+                    }
+                    get_point();
+                }
+            });
+        }
+
+        function get_point()
+        {
+            $.ajax({
+                url : "{{ route('admin/settings/get_point') }}",
+                method : "POST",
+                success: function(data)
+                {
+                    data = JSON.parse(data);
+                    var list = "";
+                    for(var i in data)
+                    {
+                       list += "<li>" + JSON.stringify(data[i]) + "<a href='javascript:;' class='remove-point' data-id='" + i + "'><i class='fa fa-trash'></i></a></li>";
+                    }
+                    
+                    $("#list_points").html(list);
+                    $(".remove-point").click(function(){
+                          $.ajax({
+                            url : "{{ route('admin/settings/remove_point') }}",
+                            method : "POST",
+                            data : {
+                                index : $(this).data("id")
+                            },
+                            success: function(data)
+                            {
+                                if(data.success){
+                                    show_notification(data.title, data.message, 'lime', 3500, 0);
+                                }
+                                else{
+                                    show_notification(data.title, data.errors,  'ruby', 3500, 0);
+                                }
+                                get_point();
+                            }
+                        });
+                    })
                 }
             });
         }

@@ -742,6 +742,21 @@ if (env('FEDERATION',false)){
             'as'    => 'admin/settings/account_key',
             'uses'  => 'AppSettings@rankedin_app_key_integration'
         ]);
+
+        Route::post('admin/settings/update_point', [
+            'as'    => 'admin/settings/update_point',
+            'uses'  => 'AppSettings@update_point'
+        ]);
+
+        Route::post('admin/settings/get_point', [
+            'as'    => 'admin/settings/get_point',
+            'uses'  => 'AppSettings@get_point'
+        ]);
+
+        Route::post('admin/settings/remove_point', [
+            'as'    => 'admin/settings/remove_point',
+            'uses'  => 'AppSettings@remove_point'
+        ]);
         /* Stop General Settings Part */
 
         /* Start Finance Profiles Part */
