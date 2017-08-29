@@ -51,7 +51,7 @@
                 <h1>Password Reset Form</h1>
                 <p> Use your registration email, the email that you received the reset password link, in the "Email Address" field.
                     Use the same password in the two password fields, passwords must be at least 8 characters long.</p>
-                <form class="login-form" id="form_reset" method="post">
+                <form class="login-form" id="form_reset" method="post" style="margin-bottom:55px;">
                     {!! csrf_field() !!}
                     <h3 class="font-green">Forgot Password ?</h3>
                     <p> Enter your e-mail address below to reset your password. </p>
