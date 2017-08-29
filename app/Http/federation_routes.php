@@ -231,6 +231,11 @@ Route::group(['middleware' => 'web'], function () {
         'uses'  => 'Federation\AdminController@testRoute'
     ]);
 
+    Route::get('admin/local_memberships', [
+        'as'    => 'local_memberships',
+        'uses'  => 'Federation\AdminController@localMemberships'
+    ]);
+
 
 
     Route::get('/admin/error/permission_denied', [
@@ -971,6 +976,11 @@ Route::group(['prefix'=>'front', 'middleware'=>'web'], function(){
     Route::get('contact', [
         'as'    => 'front/contact_locations',
         'uses'  => 'Federation\FrontEndUserController@contact_locations'
+    ]);
+
+    Route::post('contact', [
+        'as' => 'front/post_contact_locations',
+        'uses' => 'Federation\FrontEndUserController@post_contact_locations'
     ]);
 
     Route::get('active_membership', [
