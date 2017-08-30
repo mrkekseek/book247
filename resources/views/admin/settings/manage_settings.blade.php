@@ -43,12 +43,13 @@
         <div class="row">
             <div class="col-md-12">
                 <!-- BEGIN SAMPLE FORM PORTLET-->
+                @foreach($settings_list as $index => $settings)
                 <div class="portlet light bordered">
                     <div class="portlet-body"  >
                          <div class="portlet box green">
                             <div class="portlet-title">
                                 <div class="caption text-uppercase">
-                                    <i class="fa fa-cogs "></i>Manage General Settings
+                                    <i class="fa fa-cogs "></i>Manage {{ $settings_groups[$index]->name }}
                                 </div>
                                 <div class="tools">
                                     <a href="javascript:;" onclick="clearCache()" class="reload" data-original-title="" title="Reset Application Cache"> </a>
@@ -145,6 +146,7 @@
                         </div>
                     </div>
                 </div>
+                @endforeach
                 <!-- END SAMPLE FORM PORTLET-->
                 <div class="portlet light bordered">
                     <div class="portlet-body">
@@ -157,61 +159,61 @@
                                     <a href="javascript:;" onclick="clearCache()" class="reload" data-original-title="" title="Reset Application Cache"> </a>
                                     <a href="javascript:;" class="collapse" data-original-title="" title=""> </a>
                                 </div>
+                            </div>           
+                            <div class="portlet-body">
+                                <div class="row">
+                                    <div class="col-xs-8 col-xs-offset-2">
+                                        <form novalidate="novalidate" name="form_point">
+                                            {{ csrf_field() }}
+                                            <div class="form-group">
+                                               <div class="row">
+                                                    <label for="" class="col-xs-2">Latitude</label>
+                                                    <div class="col-xs-10">
+                                                        <input type="text" class="form-control" name="lat" />
+                                                    </div>
+                                               </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <div class="row">
+                                                    <label for="" class="col-xs-2">Longitude</label>
+                                                    <div class="col-xs-10">
+                                                        <input type="text" class="form-control" name="lon"/>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <div class="row">
+                                                    <label for="" class="col-xs-2">Location name</label>
+                                                    <div class="col-xs-10">
+                                                        <input type="text" class="form-control" name="location" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <div class="row">
+                                                    <label for="" class="col-xs-2">Location Address</label>
+                                                    <div class="col-xs-10">
+                                                        <input type="text" class="form-control" name="address"  />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <div class="row">
+                                                    <div class="col-xs-12 text-right">
+                                                        <button type="submit" class="btn btn-success">Add Point</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="col-xs-8 col-xs-offset-2">
+                                        <h3>Defined Points</h3>
+                                        <ul id="list_points">
+                                            <li> Empty list ! </li>
+                                        </ul>
+                                    </div>
+                                </div>                           
                             </div>
-                        </div>
-                        <div class="portlet-body">
-                            <div class="row">
-                                <div class="col-xs-8 col-xs-offset-2">
-                                    <form novalidate="novalidate" name="form_point">
-                                        {{ csrf_field() }}
-                                        <div class="form-group">
-                                           <div class="row">
-                                                <label for="" class="col-xs-2">Latitude</label>
-                                                <div class="col-xs-10">
-                                                    <input type="text" class="form-control" name="lat" />
-                                                </div>
-                                           </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <div class="row">
-                                                <label for="" class="col-xs-2">Longitude</label>
-                                                <div class="col-xs-10">
-                                                    <input type="text" class="form-control" name="lon"/>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <div class="row">
-                                                <label for="" class="col-xs-2">Location name</label>
-                                                <div class="col-xs-10">
-                                                    <input type="text" class="form-control" name="location" />
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <div class="row">
-                                                <label for="" class="col-xs-2">Location Address</label>
-                                                <div class="col-xs-10">
-                                                    <input type="text" class="form-control" name="address"  />
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <div class="row">
-                                                <div class="col-xs-12 text-right">
-                                                    <button type="submit" class="btn btn-success">Add Point</button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </form>
-                                </div>
-                                <div class="col-xs-8 col-xs-offset-2">
-                                    <h3>Defined Points</h3>
-                                    <ul id="list_points">
-                                        <li> Empty list ! </li>
-                                    </ul>
-                                </div>
-                            </div>                           
                         </div>
                     </div>
                 </div>
