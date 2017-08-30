@@ -527,6 +527,10 @@ class AppSettings extends Controller
 
 
         $points = json_decode($this->get_setting_value_by_name('globalWebsite_contact_gmaps_points'), TRUE);
+        if (!$points){
+            $points = [];
+        }
+
         $points[] = $fillable;
         if(Settings::where("system_internal_name", "globalWebsite_contact_gmaps_points")
             ->first()

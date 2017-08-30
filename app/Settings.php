@@ -16,7 +16,10 @@ class Settings extends Model
         'constrained'   => 'Setting Constrained',
         'data_type'     => 'Data Type',
         'min_value'     => 'Min Value',
-        'max_value'     => 'Max Value'
+        'max_value'     => 'Max Value',
+        'is_protected'  => 'Is Protected',
+        'setting_group' => 'Setting Group',
+        'visibility'    => 'Visibility'
     );
 
     public static $validationMessages = array();
@@ -28,7 +31,10 @@ class Settings extends Model
         'constrained',
         'data_type',
         'min_value',
-        'max_value'
+        'max_value',
+        'is_protected',
+        'setting_group',
+        'visibility'
     ];
 
     public static function rules($method, $id = 0)
@@ -49,6 +55,9 @@ class Settings extends Model
                     //'data_type'     => 'required',
                     'min_value'     => 'numeric',
                     'max_value'     => 'numeric',
+                    'is_protected'  => 'in:0,1',
+                    'setting_group' => 'exists:settings_group,id',
+                    'visibility'    => 'in:all,club,federation'
                 ];
             }
             case 'UPDATE':
@@ -61,6 +70,9 @@ class Settings extends Model
                    // 'data_type'     => 'required',
                     'min_value'     => '',
                     'max_value'     => '',
+                    'is_protected'  => 'in:0,1',
+                    'setting_group' => 'exists:settings_group,id',
+                    'visibility'    => 'in:all,club,federation'
                 ];
             }
             case 'UPDATE':
@@ -73,6 +85,9 @@ class Settings extends Model
                     'data_type'     => 'required',
                     'min_value'     => '',
                     'max_value'     => '',
+                    'is_protected'  => 'in:0,1',
+                    'setting_group' => 'exists:settings_group,id',
+                    'visibility'    => 'in:all,club,federation'
                 ];
             }
             case 'PUT':
@@ -86,6 +101,9 @@ class Settings extends Model
                     'data_type'     => 'required',
                     'min_value'     => '',
                     'max_value'     => '',
+                    'is_protected'  => 'in:0,1',
+                    'setting_group' => 'exists:settings_group,id',
+                    'visibility'    => 'in:all,club,federation'
                 ];
             }
             default:break;

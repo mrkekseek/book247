@@ -903,7 +903,7 @@ class User extends Authenticatable
 
         //xdebug_var_dump($creditIn);
         //echo 'Real value : '.$realValue.'<br />';
-        $storeCreditActivities = UserStoreCredits::where('member_id','=',$this->id)->where('value','<',0)->where('status','<>','expired')->orderBy('created_at','ASC')->get();
+        $storeCreditActivities = UserStoreCredits::where('member_id','=',$this->id)->where('value','<',0)->orderBy('created_at','ASC')->get();
         foreach($storeCreditActivities as $activity){
             $spent = (-1)*$activity->value;
             //echo 'Spent : '.$spent.'<br />';
@@ -975,7 +975,7 @@ class User extends Authenticatable
             'total_amount'  => $this->get_available_store_credit() - intval($amount),
             'invoice_id'    => $invoiceId,
             'expiration_date'   => Carbon::today()->format('Y-m-d'),
-            'status'        => 'active',
+            'status'        => 'expired',
         ];
 
         $validator = Validator::make($store_credit_fill, UserStoreCredits::rules('POST'), UserStoreCredits::$message, UserStoreCredits::$attributeNames);
