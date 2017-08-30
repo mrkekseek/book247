@@ -188,13 +188,13 @@ class FrontEndUserController extends Controller
             'member_id'     => $user->id,
             'back_user_id'  => $user->id,
             'title'         => $pack->name,
-            'value'         => intval($price),
+            'value'         => intval($pack->store_credit_value),
             'total_amount'  => $user->calculate_available_store_credit(),
             'expiration_date'   => 0,
             'status'        => 'pending',
         ];
 
-        $status = $user->buy_store_credit($store_credit_fill);
+        $status = $user->buy_store_credit($store_credit_fill, $price);
 
         if ( ! $status['success'])
         {
@@ -5274,7 +5274,7 @@ This message is private and confidential. If you have received this message in e
             'member_id'     => $member->id,
             'back_user_id'  => $user->id,
             'title'         => $pack->name,
-            'value'         => intval($price),
+            'value'         => intval($pack->store_credit_value),
             'total_amount'  => $member->calculate_available_store_credit(),
             //'invoice_id'    => -1,
             'expiration_date'   => 0,
@@ -5282,7 +5282,7 @@ This message is private and confidential. If you have received this message in e
         ];
 
 
-        $result = $member->buy_store_credit($store_credit_fillable);
+        $result = $member->buy_store_credit($store_credit_fillable,$price);
         $result['redirect_url'] = route('admin/invoices/view',['id' => $result['invoice_number']]);
         return $result;
 
@@ -5795,6 +5795,13 @@ This message is private and confidential. If you have received this message in e
         if ($invoice->user_id != $user->id) {
             return redirect()->intended(route('homepage'));
         }
+        if ($invoice->invoice_type == 'store_credit_invoice' || $invoice->invoice_type == 'store_credit_pack_invoice') {
+            return [
+                'success' => FALSE,
+                'title' => 'Error spending credit.',
+                'errors' => 'You cannot buy credit with credit.',
+            ];
+        }
         if ($invoice) {
             $subtotal = 0;
             $total = 0;
@@ -5827,6 +5834,7 @@ This message is private and confidential. If you have received this message in e
                 $user->update_available_store_credit();
                 $invoice->status = 'completed';
                 $invoice->save();
+                $invoice->add_transaction($user->id, 'credit', 'completed', 'Frontend - ' . $invoice->invoice_type . ' paid with store credit');
                 return [
                     'success' => TRUE,
                     'title' => 'Invoice paid.',

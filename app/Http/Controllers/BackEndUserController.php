@@ -342,6 +342,28 @@ class BackEndUserController extends Controller
             // attach the roles to the new created user
             $user->attachRole($vars['user_type']);
 
+            $main_message = 'Your account was successfully created. You can log in using your email and your password.<br/>';
+            $main_message .= 'First Name: <b>' . (isset($user->first_name) ? $user->first_name : '-') . '</b><br/>';
+            $main_message .= 'Middle Name: <b>' . (isset($user->middle_name) ? $user->middle_name : '-') . '</b><br/>';
+            $main_message .= 'Last Name: <b>' . (isset($user->last_name) ? $user->last_name : '-') . '</b><br/>';
+            $main_message .= 'Username: <b>' . (isset($user->email) ? $user->email : '-') . '</b><br/>';
+            $main_message .= 'Email: <b>' . (isset($user->email) ? $user->email : '-') . '</b><br/>';
+            $main_message .= 'Password: <b>' . (isset($credentials['password']) ? $credentials['password'] : '-') . '</b><br/>';
+            $role = Role::where('id',$request->get('user_type'))->first();;
+            $main_message .= 'Role: <b>' . (isset($role->name) ? $role->name : '-') . '</b><br/>';
+            $subject = 'Your back-end account was created.';
+
+
+            $beauty_mail = app()->make(Beautymail::class);
+            $beauty_mail->send('emails.email_default_v2',
+                ['body_message' => $main_message, 'user'=>$user],
+                function($message) use ($user, $subject) {
+                    $message
+                        ->from(AppSettings::get_setting_value_by_name('globalWebsite_system_email'))
+                        ->to($user->email, $user->first_name.' '.$user->middle_name.' '.$user->last_name)
+                        ->subject($subject);
+                });
+
             return [
                 'success'   => true,
                 'title'     => 'User Created',

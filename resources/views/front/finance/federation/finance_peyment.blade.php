@@ -12,11 +12,11 @@
 @section('pageLevelPlugins')
     <link href="{{ asset('assets/global/plugins/datatables/datatables.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('assets/global/plugins/datatables/plugins/bootstrap/datatables.bootstrap.css') }}" rel="stylesheet" type="text/css" />
-
     <link href="{{ asset('assets/global/plugins/jquery-notific8/jquery.notific8.min.css') }}" rel="stylesheet" type="text/css" />
 @endsection
 
 @section('themeGlobalStyle')
+    <link href="{{ asset('assets/apps/css/front_custom.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('assets/global/css/components-rounded.min.css') }}" rel="stylesheet" id="style_components" type="text/css" />
     <link href="{{ asset('assets/global/css/plugins.min.css') }}" rel="stylesheet" type="text/css" />
 @endsection
@@ -195,7 +195,7 @@
                                         </div>
                                         <div class="row">
                                             <div class="col-md-12 col-sm-12 text-right">
-                                                @if ($credit > 0)
+                                                @if ($credit > 0 && $invoice->invoice_type != 'store_credit_invoice' && $invoice->invoice_type != 'store_credit_pack_invoice')
                                                     <button id="pay_with_credit" class="btn btn-primary">Pay with credit</button>
                                                 @endif
 
@@ -293,6 +293,31 @@
                     </div>
                 </div>
             </div>
+
+            <div class="modal-credit-payment modal fade" id="credit-modal">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                            <h4 class="modal-title">Credit Payment</h4>
+                        </div>
+                        <div class="modal-body text-center">
+                            <div class="row">
+                                <div class="col-xs-10 col-xs-offset-1">
+                                    <div>
+                                        <span><b>AVAILABLE CREDIT <h2>{{ $credit }}</h2></b></span></br>
+                                        <span> Are you sure you want to pay the invoice with credit? </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-success" id="confirm-credit-pay">Pay with {{ number_format($grand_total, 0) }} credit</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
     </div>
 
 
@@ -375,6 +400,16 @@
 @endsection
 
 
+@section('pageBelowCorePlugins')
+    <script src="{{ asset('assets/global/plugins/jquery.min.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('assets/global/plugins/bootstrap/js/bootstrap.min.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('assets/global/plugins/js.cookie.min.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('assets/global/plugins/bootstrap-hover-dropdown/bootstrap-hover-dropdown.min.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('assets/global/plugins/jquery-slimscroll/jquery.slimscroll.min.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('assets/global/plugins/jquery.blockui.min.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('assets/global/plugins/uniform/jquery.uniform.min.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('assets/global/plugins/bootstrap-switch/js/bootstrap-switch.min.js') }}" type="text/javascript"></script>
+@endsection
 
 @section('pageBelowLevelPlugins')
     <script src="{{ asset('assets/global/plugins/jquery-validation/js/jquery.validate.min.js') }}" type="text/javascript"></script>
@@ -383,7 +418,7 @@
     <script src="{{ asset('assets/global/scripts/datatable.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/global/plugins/datatables/datatables.min.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/global/plugins/datatables/plugins/bootstrap/datatables.bootstrap.js') }}" type="text/javascript"></script>
-
+    <script src="{{ asset('assets/global/scripts/jquery.matchHeight.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/global/plugins/jquery-notific8/jquery.notific8.min.js') }}" type="text/javascript"></script>
 @endsection
 
@@ -392,10 +427,253 @@
 @endsection
 
 @section('pageCustomJScripts')
+    <script src="https://checkout.stripe.com/checkout.js" type="text/javascript"></script>
+    <script src="https://js.stripe.com/v3/"></script>
     <script type="text/javascript">
         $(document).on('click','#pay_with_paypal',function(){
             $('#paypal-form').submit();
         });
+
+        var options = { byRow: true, property: 'height', target: null, remove: false};
+        $(function() {
+            $('.payer_payee_boxes').matchHeight(options);
+        });
+
+        $(function(){
+
+            $('#stripe_peyment').click(function(){
+                if ('{{ Auth::user()->stripe_id }}')
+                {
+                    $('#modal-stripe-question').modal("show");
+                }
+                else
+                {
+                    $("#modal-stripe").modal("show");
+                }
+            });
+
+            $('#pay_with_credit').click(function(){
+                if (Number('{{ $credit }}') > 0)
+                {
+                    $('#credit-modal').modal("show");
+                }
+            });
+
+            $('#confirm-modal, #modal-stripe').on('show.bs.modal', function(){
+                $("#modal-stripe-question").modal("hide");
+            });
+
+            $('#modal-stripe').on('show.bs.modal', function(){
+                var stripe = Stripe('{{ Config::get("stripe.stripe_key") }}');
+                var elements = stripe.elements();
+
+                var style = {
+                    hidePostalCode: true,
+                    iconStyle: 'solid',
+                    color: 'white',
+                    style: {
+                        base: {
+                            iconColor: '#8898AA',
+                            color: 'white',
+                            lineHeight: '36px',
+                            fontWeight: 300,
+                            fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
+                            fontSize: '19px',
+                            '::placeholder': {
+                                color: '#8898AA',
+                            },
+                        },
+                        invalid: {
+                            iconColor: '#e85746',
+                            color: '#e85746',
+                        }
+                    },
+                    classes: {
+                        focus: 'is-focused',
+                        empty: 'is-empty',
+                    },
+                };
+
+                var card = elements.create('card', style);
+                card.mount('#card-element');
+
+                card.addEventListener('change', function(event) {
+                    var displayError = document.getElementById('card-errors');
+                    if (event.error)
+                    {
+                        displayError.textContent = event.error.message;
+                    }
+                    else
+                    {
+                        displayError.textContent = '';
+                    }
+                });
+
+                // Handle form submission
+                var form = document.getElementById('payment-form');
+                form.addEventListener('submit', function(event) {
+                    event.preventDefault();
+                    spiner(true);
+                    $('.submit-payment').attr('disabled', 'disabled');
+                    stripe.createToken(card).then(function(result)
+                    {
+                        if (result.error)
+                        {
+                            // Inform the user if there was an error
+                            var errorElement = document.getElementById('card-errors');
+                            errorElement.textContent = result.error.message;
+                            $('.submit-payment').removeAttr('disabled', 'disabled');
+                        }
+                        else
+                        {
+                            // Send the token to your server
+                            stripeTokenHandler(result.token);
+                        }
+                    });
+                });
+            });
+
+
+            $('#confirm-credit-pay').click(function(){
+                $.ajax({
+                    url: '{{ route('pay_invoice_with_credit') }}',
+                    method: 'post',
+                    data : {
+                        '_token' : '{{ csrf_token() }}',
+                        'invoice_id' : '{{ $invoice->id }}',
+                    },
+                    success: function(data) {
+                        if (data.success)
+                        {
+                            var message =  "<div class='loading-message loading-message-boxed'>	<img src='{{ asset('assets/global/img/loading-spinner-grey.gif') }}' align=''><span>&nbsp;&nbsp;Processing...</span></div>";
+                            $('.page-content').block({
+                                message: message,
+                                overlayCSS: {
+                                    backgroundColor: '#555555',
+                                    opacity : '0.05'
+                                },
+                                css: {
+                                    border: 'none',
+                                    backgroundColor: 'none'
+                                }
+                            });
+                            $('#credit-modal').modal("hide");
+                            show_notification(data.title, data.message, 'lime', 3500, 0);
+                            setTimeout(function(){
+                                window.location.href = '{{ route('front/member_invoice_list') }}';
+                            },3500);
+                        }
+                        else
+                        {
+                            show_notification(data.title, data.errors, 'ruby', 3500, 0);
+                        }
+                    },
+                    error: function() {
+
+                    }
+                });
+            });
+
+            function stripeTokenHandler(token)
+            {
+                $.ajax({
+                    url : "{{ route('charge_customer') }}",
+                    data : {
+                        '_token' : '{{ csrf_token() }}',
+                        'token' : token.id
+                    },
+                    method : 'post',
+                    success : function(data)
+                    {
+
+                        $.ajax({
+                            url : "{{ route('pay_with_stripe') }}",
+                            method : "post",
+                            data : {
+                                '_token' : '{{ csrf_token() }}',
+                                'id': '{{ $invoice->id }}',
+                                'save_card' : $("input[name=save_card]").prop("checked") ? 1 : 0
+                            },
+                            success : function(data)
+                            {
+                                spiner(false);
+                                if (data.success)
+                                {
+                                    show_notification(data.title, data.errors, 'lime', 3500, 0);
+                                }
+                                else
+                                {
+                                    show_notification(data.title, data.errors, 'lime', 3500, 0);
+                                }
+
+                                setTimeout(function(){
+                                    location.href =  data.redirect;
+                                }, 2000);
+                            }
+                        });
+                    }
+                });
+            }
+
+            $("#confirm-stripe").click(function(){
+                $(this).attr('disabled', 'disabled');
+                spiner(true);
+                $.ajax({
+                    url : "{{ route('pay_with_stripe') }}",
+                    method : "post",
+                    data : {
+                        '_token' : '{{ csrf_token() }}',
+                        'id' : {{ $invoice->id }},
+                        'save_card' : $("input[name=save_card]").prop("checked") ? 1 : 0
+                    },
+                    success : function(data)
+                    {
+                        spiner(false);
+                        if (data.success)
+                        {
+                            show_notification(data.title, data.errors, 'lime', 3500, 0);
+                        }
+                        else
+                        {
+                            show_notification(data.title, data.errors, 'lime', 3500, 0);
+                        }
+
+                        setTimeout(function(){
+                            location.href =  data.redirect;
+                        }, 2000);
+                    }
+                });
+            });
+
+        })
+
+        function show_notification(title_heading, message, theme, life, sticky) {
+            var settings = {
+                theme: theme,
+                sticky: sticky,
+                horizontalEdge: 'top',
+                verticalEdge: 'right',
+                life : life,
+            };
+
+            if ($.trim(title_heading) != '') {
+                settings.heading = title_heading;
+            }
+
+            $.notific8('zindex', 11500);
+            $.notific8($.trim(message), settings);
+        }
+
+        function spiner(mode)
+        {
+            if (mode)
+            {
+                $(".loader-wrapper").show();
+                return;
+            }
+
+            $(".loader-wrapper").hide();
+        }
 
     </script>
 @endsection

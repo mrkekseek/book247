@@ -968,6 +968,16 @@ Route::group(['prefix'=>'front', 'middleware'=>'web'], function(){
         'uses'  => 'Federation\FrontEndUserController@front_show_invoice'
     ]);
 
+    Route::post('charge_customer', [
+            'as' => 'charge_customer',
+            'uses' => 'StripeController@chargeCustomer']
+    );
+
+    Route::post('pay_with_stripe', [
+            'as' => 'pay_with_stripe',
+            'uses' => 'FrontEndUserController@pay_with_stripe']
+    );
+
     Route::get('list_of_memberships', [
         'as'    => 'front/membership_types',
         'uses'  => 'Federation\FrontEndUserController@type_of_memberships'
@@ -1079,9 +1089,14 @@ Route::group(['prefix'=>'ajax', 'middleware' => 'web'], function(){
         'uses'  => 'Federation\FrontPageController@book_resource'
     ]);
 
+    Route::post('pay_invoice_with_credit', [
+        'as' => 'pay_invoice_with_credit',
+        'uses' => 'Federation\FrontEndUserController@pay_invoice_with_credit'
+    ]);
+
     Route::post('ajax/finance_action_invoice_paid', [
         'as' => 'ajax/finance_action_invoice_paid',
-        'uses' => 'InvoiceController@mark_as_paid'
+        'uses' => 'Federation\InvoiceController@mark_as_paid'
     ]);
 
     Route::post('resources_available_for_date_time',[
