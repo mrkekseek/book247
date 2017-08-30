@@ -451,6 +451,8 @@
             $('input[name="time_book_key"]').remove();
         }
 
+        console.log('{{ App\Http\Controllers\AppSettings::get_setting_value_by_name('bookings_online_payment_rule') }}');
+
         function confirm_booking(){
             var all_bookings = '';
             $('input[name="time_book_key"]').each(function(){
@@ -472,9 +474,13 @@
 
                     //clean_booking_popup();
                     $('input[name="booking_made_by"]').val(0);
-
                     setTimeout(function(){
-                        location.reload();
+                        if (Number('{{ App\Http\Controllers\AppSettings::get_setting_value_by_name('bookings_online_payment_rule') }}') && data.redirect_url) {
+                            window.location.href = data.redirect_url;
+                        } else {
+                            location.reload();
+                        }
+
                     },1500);
                 }
             });

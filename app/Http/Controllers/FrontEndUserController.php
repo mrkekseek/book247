@@ -5834,6 +5834,11 @@ This message is private and confidential. If you have received this message in e
                 $user->update_available_store_credit();
                 $invoice->status = 'completed';
                 $invoice->save();
+                if ($invoice->invoice_type == "booking_invoice") {
+                    $booking_invoice = BookingInvoice::find($invoice->invoice_reference_id);
+                    $booking_invoice->status = 'completed';
+                    $booking_invoice->save();
+                }
                 $invoice->add_transaction($user->id, 'credit', 'completed', 'Frontend - ' . $invoice->invoice_type . ' paid with store credit');
                 return [
                     'success' => TRUE,

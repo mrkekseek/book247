@@ -69,6 +69,8 @@
                                         <tr>
                                             <th> # </th>
                                             <th> Name </th>
+                                            <th> Setting group </th>
+                                            <th> Visibility </th>
                                             <th> Desctiption </th>
                                             <th> Type </th>
                                             <th class="text-center"> Min </th>
@@ -83,6 +85,14 @@
                                             <tr>
                                                 <td> {{ $s->id }} </td>
                                                 <td> {{ $s->system_internal_name }} </td>
+                                                <td>
+                                                    @foreach($settings_groups as $row) 
+                                                        @if ($row->id == $s->setting_group)
+                                                            {{ $row->name }} 
+                                                        @endif
+                                                    @endforeach
+                                                </th>
+                                                <td> {{ $s->visibility }} </td>
                                                 <td> {{ $s->description }} </td>
                                                 @if ( ! $s->constrained)
                                                     @if ( isset($data_types[$s->data_type]))
@@ -261,6 +271,24 @@
                             <div class="form-group">
                                 <label>Short Description</label>
                                 <textarea class="form-control input-sm" name="setting_description" rows="3"></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Setting groups</label>
+                                <select class="form-control" name="setting_group">
+                                    @foreach($settings_groups as $row)
+                                        <option value="{{ $row->id }}">{{ $row->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Visibility</label>
+                                <select class="form-control" name="visibility">
+                                    @foreach($visibility_list as $row)
+                                        <option value="{{ $row }}">{{ $row }}</option>
+                                    @endforeach
+                                </select>
                             </div>
 
                             <div class="form-group ">
@@ -719,7 +747,8 @@
                         $('#edit_setting_form input[name="setting_name"]').val(data.name);
                         $('#edit_setting_form input[name="setting_internal_name"]').val(data.system_internal_name);
                         $('#edit_setting_form textarea[name="setting_description"]').val(data.description);
-
+                        $('#edit_setting_form select[name="setting_group"] option[value="' + data.setting_group + '"]').prop("selected", true);
+                        $('#edit_setting_form select[name="visibility"] option[value="' + data.visibility + '"]').prop("selected", true);
 
                         $('#edit_setting_form select[name="setting_type"] option').each(function(index, value){
                             if( $(value).attr("value") == data.data_type)
@@ -982,7 +1011,9 @@
                     'contained'            : $("#edit_setting_form input[name='setting_constrained']").prop('checked'),
                     'data_type'            : $('#edit_setting_form select[name="setting_type"]').val(),
                     'min_value'            : $('#edit_setting_form input[name="setting_min_val"]').val(),
-                    'max_value'            : $('#edit_setting_form input[name="setting_max_val"]').val()
+                    'max_value'            : $('#edit_setting_form input[name="setting_max_val"]').val(),
+                    'setting_group'        : $('#edit_setting_form select[name="setting_group"]').val(),
+                    'visibility'           : $('#edit_setting_form select[name="visibility"]').val()
                 },
                 success: function (data) {
                     if (data.success) {
