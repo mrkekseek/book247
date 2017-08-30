@@ -1985,6 +1985,9 @@
 
                     get_booking_hours();
                     clean_booking_popup();
+                    if (Number('{{ App\Http\Controllers\AppSettings::get_setting_value_by_name('bookings_online_payment_rule') }}') && data.redirect_url) {
+                        window.location.href = data.redirect_url;
+                    }
                 }
             });
         }
