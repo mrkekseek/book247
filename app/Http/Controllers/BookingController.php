@@ -3022,24 +3022,28 @@ class BookingController extends Controller
                     ];
                 }
 
-                // check if the member that makes the booking exists
-                $by_user = User::where('id', '=', $vars['by_player'])->get()->first();
-                if (!$by_user) {
-                    $booking_return[] = [
-                        'booking_key'   => $key,
-                        'success'       => false,
-                        'errors'        => 'Member not found or can\'t have more bookings'];
-                    continue;
+                // check if the member that makes the booking exists - since is a recurring booking, only one player is present
+                if (!isset($by_user)){
+                    $by_user = User::where('id', '=', $vars['by_player'])->get()->first();
+                    if (!$by_user) {
+                        $booking_return[] = [
+                            'booking_key'   => $key,
+                            'success'       => false,
+                            'errors'        => 'Member not found or can\'t have more bookings'];
+                        continue;
+                    }
                 }
 
-                // check if the player that the booking is made for exists
-                $for_user = User::where('id', '=', $vars['for_player'])->get()->first();
-                if (!$for_user) {
-                    $booking_return[] = [
-                        'booking_key'   => $key,
-                        'success'       => false,
-                        'errors' => 'Player not found or can\'t book on behalf of him'];
-                    continue;
+                // check if the player that the booking is made for exists - since is a recurring booking, only one player is present
+                if (!isset($for_user)){
+                    $for_user = User::where('id', '=', $vars['for_player'])->get()->first();
+                    if (!$for_user) {
+                        $booking_return[] = [
+                            'booking_key'   => $key,
+                            'success'       => false,
+                            'errors' => 'Player not found or can\'t book on behalf of him'];
+                        continue;
+                    }
                 }
 
                 // interval duration
@@ -3048,14 +3052,6 @@ class BookingController extends Controller
                 $booking->by_user_id = $by_user->id;
                 $booking->for_user_id = $for_user->id;
                 $booking->save();
-                Activity::log([
-                    'contentId'     => $booking->for_user_id,
-                    'contentType'   => 'bookings',
-                    'action'        => 'Save Booking',
-                    'description'   => 'save player booking recurring membership',
-                    'details'       => 'User Email : '.$user->email,
-                    'updated'       => true,
-                ]);
 
                 /*
                 $theInvoice = BookingInvoice::where('id','=',$booking->invoice_id)->get()->first();
@@ -3218,6 +3214,15 @@ class BookingController extends Controller
                     }
                 }
             }
+
+            Activity::log([
+                'contentId'     => $booking->for_user_id,
+                'contentType'   => 'bookings',
+                'action'        => 'Save Booking',
+                'description'   => 'save player recurring bookings',
+                'details'       => 'User Email : '.$user->email.' with bookings : '.json_encode($keys),
+                'updated'       => true,
+            ]);
 
             return ['keys' => $booking_return, 'status_msg' => 'all OK - '.implode('@#@#',$keys)];
         }
