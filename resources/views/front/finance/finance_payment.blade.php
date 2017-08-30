@@ -195,7 +195,7 @@
                                     </div>
                                     <div class="row">
                                         <div class="col-md-12 col-sm-12 text-right">
-                                            @if ($credit > 0)
+                                            @if ($credit > 0 && $invoice->invoice_type != 'store_credit_invoice' && $invoice->invoice_type != 'store_credit_pack_invoice')
                                                 <button id="pay_with_credit" class="btn btn-primary">Pay with credit</button>
                                             @endif
 
@@ -545,9 +545,22 @@
                     success: function(data) {
                         if (data.success)
                         {
+                            var message =  "<div class='loading-message loading-message-boxed'>	<img src='{{ asset('assets/global/img/loading-spinner-grey.gif') }}' align=''><span>&nbsp;&nbsp;Processing...</span></div>";
+                            $('.page-content').block({
+                                message: message,
+                                overlayCSS: {
+                                    backgroundColor: '#555555',
+                                    opacity : '0.05'
+                                },
+                                css: {
+                                    border: 'none',
+                                    backgroundColor: 'none'
+                                }
+                            });
+                            $('#credit-modal').modal("hide");
                             show_notification(data.title, data.message, 'lime', 3500, 0);
                             setTimeout(function(){
-                                window.location.reload();
+                                window.location.href = '{{ route('front/member_invoice_list') }}';
                             },3500);
                         }
                         else
@@ -578,7 +591,7 @@
                             method : "post",
                             data : {
                                 '_token' : '{{ csrf_token() }}',
-                                'id' : {{ $invoice->id }},
+                                'id': '{{ $invoice->id }}',
                                 'save_card' : $("input[name=save_card]").prop("checked") ? 1 : 0
                             },
                             success : function(data)

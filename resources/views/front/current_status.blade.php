@@ -34,8 +34,8 @@
                             <div class="actions">
                             </div>
                         </div>
-                        {{ $credit }}
                         <div class="portlet-body">
+                            <h4><b> Available store credit: {{ $credit }}</b></h4>
                             <table class="table table-striped table-bordered table-hover table-advance order-column " id="sample_1">
                                 <thead>
                                 <tr>
