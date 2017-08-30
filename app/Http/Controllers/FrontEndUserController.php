@@ -5848,4 +5848,9 @@ This message is private and confidential. If you have received this message in e
         }
 
     }
+
+    function get_points()
+    {
+        return AppSettings::get_setting_value_by_name('globalWebsite_contact_gmaps_points');
+    }
 }

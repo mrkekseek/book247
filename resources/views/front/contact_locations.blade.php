@@ -151,7 +151,7 @@
 @section('pageBelowLevelPlugins')
     <script src="{{ asset('assets/global/plugins/jquery-validation/js/jquery.validate.min.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/global/plugins/jquery-validation/js/additional-methods.min.js') }}" type="text/javascript"></script>
-    <script src="http://maps.google.com/maps/api/js?sensor=false" type="text/javascript"></script>
+    <script src="http://maps.google.com/maps/api/js?sensor=false&key={{ config('services.google.key') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/global/plugins/gmaps/gmaps.min.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/global/plugins/jquery-notific8/jquery.notific8.min.js') }}" type="text/javascript"></script>
 @endsection
@@ -182,8 +182,9 @@
             return {
                 //main function to initiate the module
                 // use : http://www.latlong.net/ - to get lat, lng information
-                init: function () {
+                init: function (points) {
                     var map;
+
                     $(document).ready(function(){
                         map = new GMaps({
                             div: '#gmapbg',
@@ -191,63 +192,19 @@
                             lng: 10.700865,
                             zoom: 13
                         });
-                        map.addMarker({
-                            lat: 59.739949,
-                            lng: 10.212961,
-                            title: 'Drammen Squash (NYHET!)',
-                            infoWindow: {
-                                content: "Adresse: Dr. Hansteins Gate 26<br />3044 Drammen"
-                            }
-                        });
-                        map.addMarker({
-                            lat: 59.911891,
-                            lng: 10.637080,
-                            title: 'Lysaker Squash',
-                            infoWindow: {
-                                content: "Adresse: Lysaker Torg 8<br />1366 Lysaker<br />Telefon: 67591420<br />Epost: lysaker@sqf.no"
-                            }
-                        });
-                        map.addMarker({
-                            lat: 59.919937,
-                            lng: 10.746661,
-                            title: 'Sentrum Squash & Fitness',
-                            infoWindow: {
-                                content: "Adresse: Thor Olsens gate 5<br />0177 Oslo<br />Telefon: 22207060<br />Epost: sentrum@sqf.no"
-                            }
-                        });
-                        map.addMarker({
-                            lat: 59.913869,
-                            lng: 10.752245,
-                            title: 'Bærum Squash & Fitness',
-                            infoWindow: {
-                                content: "Adresse: Rudsletta 81 <br />1351 Rud<br />Telefon: 67135650<br />Epost: baerum@sqf.no"
-                            }
-                        });
-                        map.addMarker({
-                            lat: 59.930144,
-                            lng: 10.755846,
-                            title: 'Sagene Squashsenter',
-                            infoWindow: {
-                                content: "Adresse: Sagveien 21 <br />0459 Oslo<br />Telefon: 22355511<br />Epost: sagene@sqf.no"
-                            }
-                        });
-                        var marker_new =  map.addMarker({
-                            lat: 59.914624,
-                            lng: 10.749050,
-                            title: 'Skippern Squash',
-                            infoWindow: {
-                                content: "Adresse: Torggata 16 <br />0181 Oslo<br />Telefon: 22355511 (Før kl.15 i juli tlfnr. 22993140)<br />Epost: skippern@sqf.no"
-                            }
-                        });
-                        map.addMarker({
-                            lat: 59.920614,
-                            lng: 10.751460,
-                            title: 'Vulkan Squash',
-                            infoWindow: {
-                                content: "Adresse: Maridalsveien 17<br />0178 Oslo <br />Telefon: 22355511<br />Epost: vulkan@sqf.no"
-                            }
-                        });
 
+
+                        for(var i in points)
+                        {
+                            map.addMarker({
+                                lat: points[i].lat,
+                                lng: points[i].lon,
+                                title: points[i].location,
+                                infoWindow: {
+                                    content: points[i].address
+                                }
+                            });
+                        }
                         marker.infoWindow.open(map, marker_new);
                     });
                 }
@@ -332,10 +289,27 @@
             }
         }();
 
+        var GetPoints = function() {
+            function getPoints()
+            {
+                $.ajax({
+                    url : "{{ route('get_points') }}",
+                    success : function(request){
+                        Contact.init(JSON.parse(request ? request : "{}"));
+                    }
+                });
+            }
+
+            return {
+                init : function(){
+                    getPoints();
+                }
+            }
+        }();
 
         jQuery(document).ready(function() {
-            Contact.init();
             ContactForm.init();
+            GetPoints.init();
         });
 
         function contact(data) {

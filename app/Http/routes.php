@@ -893,7 +893,7 @@ if (env('FEDERATION',false)){
 
         Route::post('membership_plans/changed_active_plan', [
             'as' => 'admin/membership_plans/changed_active_plan',
-            'uses' => 'MembershipController@change_active_membership_for_member'
+            'uses' => 'MembershipController@change_active_membership_fr_member'
         ]);
 
         Route::post('membership_plans/freeze_member_plan', [
@@ -1156,6 +1156,11 @@ if (env('FEDERATION',false)){
         Route::post('unsubscribe/{token}', [
             'as' => 'unsubscribe_action',
             'uses' => 'FrontEndUserController@unsubscribe_action'
+        ]);
+
+        Route::get('get_points', [
+            'as' => 'get_points',
+            'uses' => 'FrontEndUserController@get_points'
         ]);
 
     });
