@@ -56,7 +56,7 @@ class Settings extends Model
                     'min_value'     => 'numeric',
                     'max_value'     => 'numeric',
                     'is_protected'  => 'in:0,1',
-                    'setting_group' => 'exists:settings_group,id',
+                    'setting_group' => 'exists:settings_groups,id',
                     'visibility'    => 'in:all,club,federation'
                 ];
             }
@@ -71,7 +71,7 @@ class Settings extends Model
                     'min_value'     => '',
                     'max_value'     => '',
                     'is_protected'  => 'in:0,1',
-                    'setting_group' => 'exists:settings_group,id',
+                    'setting_group' => 'exists:settings_groups,id',
                     'visibility'    => 'in:all,club,federation'
                 ];
             }
