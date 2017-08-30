@@ -1207,7 +1207,17 @@ class BookingController extends Controller
             return ['error' => 'No bookings found to confirm. Please make the booking process again. Remember you have 60 seconds to complete the booking before it expires.'];
         }
 
-        return $return_key;
+        if (isset($general_invoice)) {
+            return [
+                'keys' => $return_key,
+                'redirect_url' => route('front/finance/invoice/id',['id' => $general_invoice->invoice_number])
+            ];
+        } else {
+            return [
+                'keys' => $return_key,
+            ];
+        }
+
     }
 
     /**
