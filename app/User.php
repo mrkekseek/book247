@@ -827,7 +827,7 @@ class User extends Authenticatable
 
 
 
-    private function add_store_credit($store_credit_fill){
+    public function add_store_credit($store_credit_fill){
         $user = Auth::user();
         if (!$user) {
             return [

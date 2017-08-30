@@ -487,7 +487,31 @@ class Invoice extends Model
             'vat'       => $invoiceItem->vat
         ];
         $invoice->add_invoice_item($storeCreditItem);
+        if (AppSettings::get_setting_value_by_name('bookings_court_refund_rule')) {
+            $user = User::find($invoice->user_id);
+            $store_credit_fill = [
+                'member_id'     => $user->id,
+                'back_user_id'  => $user->id,
+                'title'         => 'Restored credit.',
+                'value'         => intval($invoiceItem->price),
+                'total_amount'  => $user->calculate_available_store_credit(),
+                'expiration_date'   => 0,
+                'status'        => 'active',
+                'invoice_id'    => $this->id
+            ];
+            $user->add_store_credit( $store_credit_fill);
+            $user->update_available_store_credit();
+        }
+
         return true;
+    }
+
+    public function process_payment_success() {
+
+    }
+
+    public function process_payment_failed() {
+
     }
 
     public function add_store_credit($invoiceId, $amount, $price, $discount, $details, $employeeId, $userId){

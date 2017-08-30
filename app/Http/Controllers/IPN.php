@@ -12,6 +12,7 @@ use App\InvoiceFinancialTransaction;
 use App\Paypal;
 use App\UserMembership;
 use App\UserMembershipInvoicePlanning;
+use App\BookingInvoice;
 use Auth;
 
 class IPN extends Controller{
@@ -70,7 +71,9 @@ class IPN extends Controller{
 
         switch ($invoice->invoice_type){
             case 'booking_invoice' :
-
+                $booking_invoice = BookingInvoice::find($invoice->invoice_reference_id);
+                $booking_invoice->status = 'completed';
+                $booking_invoice->save();
                 break;
             case 'membership_plan_assignment_invoice' :
             case 'membership_plan_invoice' :

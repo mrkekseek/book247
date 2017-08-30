@@ -270,7 +270,7 @@ class BookingController extends Controller
                                     $query->where('for_user_id','=',$user->id)->orWhere('by_user_id','=',$user->id);
                        })->get()->first();
         }
-
+        
         if ($booking){
             //if (in_array($booking->status,['active','pending'])){
             if ($this->can_cancel_booking($booking->id) || $user->is_back_user()){
@@ -1226,6 +1226,7 @@ class BookingController extends Controller
      * @return array
      */
     public function cancel_pending_bookings(Request $request){
+
         if (!Auth::check()) {
             //return redirect()->intended(route('admin/login'));
             return ['success'=>false, 'title'=>'Credentials error', 'errors' => 'Please refresh the page and try again'];
@@ -1233,13 +1234,11 @@ class BookingController extends Controller
         else{
             $user = Auth::user();
         }
-
         $is_staff = false;
         if (!$user->hasRole(['front-member','front-user'])){
             $is_staff = true;
         }
         $this->check_for_expired_pending_bookings();
-
         $vars = $request->only('selected_bookings');
         $keys = explode(',',$vars['selected_bookings']);
         if (sizeof($keys)>0){
