@@ -7,7 +7,7 @@ use App\applicationSetting;
 use App\Settings;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-
+use App\SettingsGroup;
 use DB;
 use App\Http\Requests;
 use Auth;
@@ -46,7 +46,9 @@ class AppSettings extends Controller
             'text_parts'  => $text_parts,
             'in_sidebar'  => $sidebar_link,
             'settings'    => Settings::all(),
-            'data_types'  => array("string" => "String / Alphanumeric Values", "text" => "Text", "numeric" => "Numeric Only", "date" => "Date / DateTime Value")
+            'data_types'  => array("string" => "String / Alphanumeric Values", "text" => "Text", "numeric" => "Numeric Only", "date" => "Date / DateTime Value"),
+            'settings_groups' => SettingsGroup::get(),
+            'visibility_list' => ['all', 'club', 'federation']
         ]);
     }
 
@@ -208,18 +210,24 @@ class AppSettings extends Controller
             $app_settings[$row->setting_id] = $row->unconstrained_value != '' ? $row->unconstrained_value : $row->allowed_setting_value_id;
         }
 
-        $settings = array();
-        if (env('DebugSettings',0)==0){
-            $allSettings = Settings::where('is_protected','=',0)->get();
-        }
-        else{
-            $allSettings = Settings::all();
-        }
+        $allSettings = ! env('DebugSettings', 0) ? Settings::where('is_protected','=',0)->get() : Settings::all();
+
+        $settings = [];
         foreach ($allSettings as $row)
         {
-            $row['value'] = isset($app_settings[$row->id]) ? $app_settings[$row->id] : "";
-            $row['allowed'] = isset($allowed[$row->id]) ? $allowed[$row->id] : FALSE;
-            $settings[] = $row;
+            $row['value'] = "";
+            $row['allowed'] = [];
+
+            if ( ! $row->constrained)
+            {
+                $row['value'] = isset($app_settings[$row->id]) ? $app_settings[$row->id] : $row['value'];
+            }
+            else
+            {
+                $row['allowed'] = isset($allowed[$row->id]) ? $allowed[$row->id] : $row['allowed'];
+            }
+
+            $settings[$row->setting_group ? : 1][] = $row;
         }
 
         $breadcrumbs = [
@@ -227,20 +235,29 @@ class AppSettings extends Controller
             'Administration'    => route('admin'),
             'Settings'          => '',
         ];
+
         $text_parts  = [
             'title'     => 'Manage settings',
             'subtitle'  => 'list all',
             'table_head_text1' => ''
         ];
+
+        $settings_groups = [];
+        foreach(SettingsGroup::get() as $row)
+        {
+            $settings_groups[$row->id] = $row;
+        }
+       
         $sidebar_link = 'admin-settings-manage_settings';
 
         return view('admin/settings/manage_settings', [
-            'breadcrumbs' => $breadcrumbs,
-            'text_parts'  => $text_parts,
-            'in_sidebar'  => $sidebar_link,
-            'settings'    => $settings,
-            'data_types'  => array("string" => "String / Alphanumeric Values", "text" => "Text", "numeric" => "Numeric Only", "date" => "Date / DateTime Value"),
-            'allowed'     => $allowed
+            'breadcrumbs'   => $breadcrumbs,
+            'text_parts'    => $text_parts,
+            'in_sidebar'    => $sidebar_link,
+            'settings_list' => $settings,
+            'data_types'    => array("string" => "String / Alphanumeric Values", "text" => "Text", "numeric" => "Numeric Only", "date" => "Date / DateTime Value"),
+            'allowed'       => $allowed,
+            'settings_groups' => $settings_groups
         ]);
     }
 
@@ -256,7 +273,7 @@ class AppSettings extends Controller
             ];
         }
 
-        $vars = $request->only('contained', 'data_type', 'description', 'max_value', 'min_value', 'name', 'system_internal_name', 'id');
+        $vars = $request->only('contained', 'data_type', 'description', 'max_value', 'min_value', 'name', 'system_internal_name', 'id', 'setting_group', 'visibility');
         $fillable = [
             'name'                  => $vars['name'],
             'system_internal_name'  => $vars['system_internal_name'],
@@ -264,7 +281,9 @@ class AppSettings extends Controller
             'constrained'           => $vars['contained'] == "true" ? 1 : 0,
             'data_type'             => $vars['data_type'],
             'min_value'             => $vars['min_value'] * 1 ? $vars['min_value'] : 0,
-            'max_value'             => $vars['max_value'] * 1 ? $vars['max_value'] : 0
+            'max_value'             => $vars['max_value'] * 1 ? $vars['max_value'] : 0,
+            'setting_group'         => $vars['setting_group'] ? $vars['setting_group'] : 0,
+            'visibility'            => $vars['visibility'] ? $vars['visibility'] : 'all'
         ];
 
         $settingValidator = Validator::make($fillable, Settings::rules('UPDATE'), Settings::$validationMessages, Settings::$attributeNames);
