@@ -387,6 +387,15 @@ class MembershipController extends Controller
                 }
 
                 $member->cancel_membership_plan($old_plan, $plannedInvoiceCancelled->issued_date, $plannedInvoiceCancelled->last_active_date);
+                Activity::log([
+                    'contentId'     => $user->id,
+                    'contentType'   => 'user_membership',
+                    'action'        => 'User membership cancellation',
+                    'description'   => 'Cancellation action was added by '.$user->first_name.' '.$user->middle_name.' '.$user->last_name.' for this membership plan : '.$plan->id.' of member '.$member->id,
+                    'details'       => 'Cancellation date : ',
+                    'updated'       => false,
+                ]);
+
                 return [
                     'success'   => true,
                     'message'   => 'Membership plan is set to cancel on the requested date.',

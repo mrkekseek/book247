@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\applicationSetting;
 use App\Booking;
 use App\BookingInvoice;
 use App\BookingInvoiceItem;
@@ -4221,6 +4222,11 @@ This message is private and confidential. If you have received this message in e
     public function member_active_membership(){
         $user = Auth::user();
         if (!$user || !$user->is_front_user()) {
+            return redirect()->intended(route('homepage'));
+        }
+
+        // protect page if the option to buy memberships from frontend is not active
+        if (AppSettings::get_setting_value_by_name('globalWebsite_show_memberships_on_frontend')==0){
             return redirect()->intended(route('homepage'));
         }
 

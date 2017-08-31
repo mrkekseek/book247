@@ -1070,6 +1070,11 @@ if (env('FEDERATION',false)){
             'uses' => 'FrontEndUserController@singup_membership_plan_ajax_call'
         ]);
 
+        Route::post('membership_plan/cancel_member_plan', [
+            'as' => 'front/membership_plan/cancel_member_plan',
+            'uses' => 'MembershipController@cancel_membership_for_member'
+        ]);
+
         Route::get('calendar_booking/{day}/', [
             'as' => 'front_calendar_booking',
             'uses' => 'BookingController@front_bookings_calendar_view'

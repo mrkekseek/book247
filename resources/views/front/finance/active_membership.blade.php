@@ -239,7 +239,7 @@
             var userID = '{{$user->id}}';
 
             $.ajax({
-                url: '{{route('admin/membership_plans/cancel_member_plan')}}',
+                url: '{{route('front/membership_plan/cancel_member_plan')}}',
                 type: "post",
                 data: {
                     'member_id':userID
