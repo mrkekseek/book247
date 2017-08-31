@@ -707,7 +707,7 @@
                 </div>
 
                 <!--  -->
-                <div class="modal fade" id="upgrade_downgrade_plan_box" tabindex="-1" role="dialog" aria-hidden="true">
+                <div class="modal fade" data-backdrop="static" id="upgrade_downgrade_plan_box" tabindex="-1" role="dialog" aria-hidden="true">
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header">
@@ -748,7 +748,7 @@
                     <!-- /.modal-dialog -->
                 </div>
 
-                <div class="modal fade" id="changeIt" tabindex="-1" role="dialog" aria-hidden="true">
+                <div class="modal fade" data-backdrop="static" id="changeIt" tabindex="-1" role="dialog" aria-hidden="true">
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header">
@@ -807,7 +807,7 @@
                     <!-- /.modal-dialog -->
                 </div>
 
-                <div class="modal fade bs-modal-sm" id="cancel_plan_box" tabindex="-1" role="dialog" aria-hidden="true">
+                <div class="modal fade bs-modal-sm" data-backdrop="static" id="cancel_plan_box" tabindex="-1" role="dialog" aria-hidden="true">
                     <div class="modal-dialog">
                         <div class="modal-content ">
                             <div class="modal-header">
@@ -856,7 +856,7 @@
                     <!-- /.modal-dialog -->
                 </div>
 
-                <div class="modal fade bs-modal-sm" id="cancel_plan_confirm_box" tabindex="-1" role="dialog" aria-hidden="true">
+                <div class="modal fade bs-modal-sm" data-backdrop="static" id="cancel_plan_confirm_box" tabindex="-1" role="dialog" aria-hidden="true">
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header">
@@ -876,7 +876,7 @@
                 </div>
 
                 <!-- BEGIN Booking No Show modal window -->
-                <div class="modal fade" id="freeze_plan_box" tabindex="-1" role="dialog" aria-hidden="true">
+                <div class="modal fade" data-backdrop="static" id="freeze_plan_box" tabindex="-1" role="dialog" aria-hidden="true">
                     <div class="modal-dialog" style="margin-top:45px;">
                         <div class="modal-content">
                             <div class="modal-header">
@@ -941,7 +941,7 @@
                 <!-- END No Show modal window -->
 
                 <!-- BEGIN Recurrent Cancel Confirm modal window show -->
-                <div class="modal fade" id="freeze_plan_confirm_box" tabindex="-1" role="dialog" aria-hidden="true">
+                <div class="modal fade" data-backdrop="static" id="freeze_plan_confirm_box" tabindex="-1" role="dialog" aria-hidden="true">
                     <div class="modal-dialog">
                         <div class="modal-content" style="margin-left:20px; margin-right:20px; margin-top:60px;">
                             <div class="modal-header">
@@ -965,7 +965,7 @@
                 </div>
                 <!-- END Recurrent Cancel Confirm modal window show -->
 
-                <div class="modal fade bs-modal-sm" id="cancel_planned_action_confirm_box" tabindex="-1" role="dialog" aria-hidden="true">
+                <div class="modal fade bs-modal-sm" data-backdrop="static" id="cancel_planned_action_confirm_box" tabindex="-1" role="dialog" aria-hidden="true">
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header">
@@ -984,7 +984,7 @@
                     <!-- /.modal-dialog -->
                 </div>
                 <!-- BEGIN General Message modal window -->
-                <div class="modal fade" id="general_message_box" tabindex="-1" role="dialog" aria-hidden="true">
+                <div class="modal fade" data-backdrop="static" id="general_message_box" tabindex="-1" role="dialog" aria-hidden="true">
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header">
@@ -1019,7 +1019,7 @@
                 </div>
                 <!-- END General Message modal window -->
                 <!-- BEGIN Status Change modal window -->
-                <div class="modal fade" id="change_member_status" tabindex="-1" role="dialog" aria-hidden="true">
+                <div class="modal fade" data-backdrop="static" id="change_member_status" tabindex="-1" role="dialog" aria-hidden="true">
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <form role="form" id="form_account_change_status" action="#">
@@ -1052,7 +1052,7 @@
                 </div>
                 <!-- END Status Change modal window -->
                 <!-- BEGIN Reset Restrictions modal window -->
-                <div class="modal fade bs-modal-sm" id="resync_confirm_box" tabindex="-1" role="dialog" aria-hidden="true">
+                <div class="modal fade bs-modal-sm" data-backdrop="static" id="resync_confirm_box" tabindex="-1" role="dialog" aria-hidden="true">
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header">
@@ -1123,6 +1123,8 @@
                 return false;
             }
         },"Please enter a valid Email.");
+
+
 
         var FormValidation = function () {
             /* Personal Info */

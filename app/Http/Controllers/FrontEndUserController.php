@@ -1669,11 +1669,12 @@ class FrontEndUserController extends Controller
             'username'      => trim($vars['personal_email'])
         ];
 
-        if (Auth::user()->id!=$user->id || $user->sso_user_id!=null){
+        if ($user->sso_user_id != null && Auth::user()->id != $user->id){
             // only user can change his email address
             // or
             // employees when sso_user_id is not set up
             $userVars['email'] = $user->email;
+            $userVars['username'] = $user->email;
         }
 
         $validator = Validator::make($userVars, User::rules('PUT', $user->id), User::$messages, User::$attributeNames);
@@ -4032,7 +4033,7 @@ This message is private and confidential. If you have received this message in e
         }
 
         $transactionList = [];
-        $generalTransactions = UserStoreCredits::where('member_id','=',$userID)->get();
+        $generalTransactions = UserStoreCredits::where('member_id','=',$userID)->orderBy('id', 'ASC')->get();
         if (sizeof($generalTransactions)>0){
             $colorStatus = '#fff';
             foreach ($generalTransactions as $key => $single_transaction){
@@ -4048,7 +4049,7 @@ This message is private and confidential. If you have received this message in e
                 }
 
                 $transactionList[] = [
-                    '<div class="'.$colorStatus.'"></div><a href="javascript:;"> #'.($key + 1).' </a>',
+                    '<div class="'.$colorStatus.'"></div><span"> '.($single_transaction->id).' </span>',
                     $single_transaction->title,
                     ($single_transaction->value) > 0 ? '+'. $single_transaction->value : $single_transaction->value,
                     $added_by,

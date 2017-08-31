@@ -240,10 +240,10 @@ class ActivityLog extends Controller{
 
         }
 
-        if (isset($_REQUEST["customActionType"]) && $_REQUEST["customActionType"] == "group_action") {
-            $records["customActionStatus"] = "OK"; // pass custom message(useful for getting status of group actions)
-            $records["customActionMessage"] = "Group action successfully has been completed. Well done!"; // pass custom message(useful for getting status of group actions)
-        }
+//        if (isset($_REQUEST["customActionType"]) && $_REQUEST["customActionType"] == "group_action") {
+//            $records["customActionStatus"] = "OK"; // pass custom message(useful for getting status of group actions)
+//            $records["customActionMessage"] = "Group action successfully has been completed. Well done!"; // pass custom message(useful for getting status of group actions)
+//        }
 
         $records["draw"] = intval($_REQUEST['draw']);
         $records["start"] = $offset;

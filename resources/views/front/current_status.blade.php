@@ -39,7 +39,7 @@
                             <table class="table table-striped table-bordered table-hover table-advance order-column " id="sample_1">
                                 <thead>
                                 <tr>
-                                    <th> Number </th>
+                                    <th> ID </th>
                                     <th> Name </th>
                                     <th> Credit </th>
                                     <th> Added by </th>
@@ -117,7 +117,6 @@
 
 @section('pageCustomJScripts')
     <script type="text/javascript">
-
         $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -166,7 +165,7 @@
                         "infoEmpty": "No records found",
                         "infoFiltered": "(filtered1 from _MAX_ total records)",
                         "lengthMenu": "Show _MENU_",
-                        "search": "Search:",
+                        "search": "Search: ",
                         "zeroRecords": "No matching records found",
                         "paginate": {
                             "previous":"Prev",
@@ -187,7 +186,7 @@
                     //"dom": "<'row'<'col-md-6 col-sm-12'l><'col-md-6 col-sm-12'f>r>t<'row'<'col-md-5 col-sm-12'i><'col-md-7 col-sm-12'p>>",
 
                     "bStateSave": true, // save datatable state(pagination, sort, etc) in cookie.
-
+                    "bFilter": false,
                     "lengthMenu": [
                         [7, 15, 25, 40, -1],
                         [7, 15, 25, 40, "All"] // change per page values here
