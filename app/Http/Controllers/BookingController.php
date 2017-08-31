@@ -2277,6 +2277,7 @@ class BookingController extends Controller
                                             break;
                                         case 'completed' :
                                             // payment was done successfully
+
                                             switch($transaction->transaction_type){
                                                 case 'cash' :
                                                     $formatted_booking['button_finance'] = 'is_paid_cash';

@@ -5838,6 +5838,11 @@ This message is private and confidential. If you have received this message in e
                     $booking_invoice = BookingInvoice::find($invoice->invoice_reference_id);
                     $booking_invoice->status = 'completed';
                     $booking_invoice->save();
+                    foreach ($booking_invoice->get_unpaid_invoice_items() as $item) {
+                        $booking_item = BookingInvoiceItem::find($item);
+                        $booking_invoice->add_transaction($user->id, $booking_item->id, $booking_item->price, 'credit', 'Frontend invoice manual payment', 'completed');
+                    }
+
                 }
                 $invoice->add_transaction($user->id, 'credit', 'completed', 'Frontend - ' . $invoice->invoice_type . ' paid with store credit');
                 return [
