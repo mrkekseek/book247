@@ -35,4 +35,8 @@ return [
         'secret' => env('STRIPE_SECRET'),
     ],
 
+    'google' => [
+        'key' => "AIzaSyDvKEFqtN2fF1litVvM_zjyXxPccn998sI"
+    ]
+
 ];

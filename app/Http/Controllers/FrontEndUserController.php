@@ -1670,11 +1670,12 @@ class FrontEndUserController extends Controller
             'username'      => trim($vars['personal_email'])
         ];
 
-        if (Auth::user()->id!=$user->id || $user->sso_user_id!=null){
+        if ($user->sso_user_id != null && Auth::user()->id != $user->id){
             // only user can change his email address
             // or
             // employees when sso_user_id is not set up
             $userVars['email'] = $user->email;
+            $userVars['username'] = $user->email;
         }
 
         $validator = Validator::make($userVars, User::rules('PUT', $user->id), User::$messages, User::$attributeNames);
@@ -4033,7 +4034,7 @@ This message is private and confidential. If you have received this message in e
         }
 
         $transactionList = [];
-        $generalTransactions = UserStoreCredits::where('member_id','=',$userID)->get();
+        $generalTransactions = UserStoreCredits::where('member_id','=',$userID)->orderBy('id', 'ASC')->get();
         if (sizeof($generalTransactions)>0){
             $colorStatus = '#fff';
             foreach ($generalTransactions as $key => $single_transaction){
@@ -4049,7 +4050,6 @@ This message is private and confidential. If you have received this message in e
                 }
 
                 $transactionList[] = [
-                    '<div class="'.$colorStatus.'"></div><a href="javascript:;"> #'.($key + 1).' </a>',
                     $single_transaction->title,
                     ($single_transaction->value) > 0 ? '+'. $single_transaction->value : $single_transaction->value,
                     $added_by,
@@ -5844,6 +5844,11 @@ This message is private and confidential. If you have received this message in e
                     $booking_invoice = BookingInvoice::find($invoice->invoice_reference_id);
                     $booking_invoice->status = 'completed';
                     $booking_invoice->save();
+                    foreach ($booking_invoice->get_unpaid_invoice_items() as $item) {
+                        $booking_item = BookingInvoiceItem::find($item);
+                        $booking_invoice->add_transaction($user->id, $booking_item->id, $booking_item->price, 'credit', 'Frontend invoice manual payment', 'completed');
+                    }
+
                 }
                 $invoice->add_transaction($user->id, 'credit', 'completed', 'Frontend - ' . $invoice->invoice_type . ' paid with store credit');
                 return [
@@ -5866,5 +5871,10 @@ This message is private and confidential. If you have received this message in e
             ];
         }
 
+    }
+
+    function get_points()
+    {
+        return AppSettings::get_setting_value_by_name('globalWebsite_contact_gmaps_points');
     }
 }

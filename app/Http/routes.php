@@ -1163,6 +1163,11 @@ if (env('FEDERATION',false)){
             'uses' => 'FrontEndUserController@unsubscribe_action'
         ]);
 
+        Route::get('get_points', [
+            'as' => 'get_points',
+            'uses' => 'FrontEndUserController@get_points'
+        ]);
+
     });
     /** Stop Routes for front end */
 
