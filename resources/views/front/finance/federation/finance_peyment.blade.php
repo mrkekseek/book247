@@ -187,7 +187,7 @@
                                                     </div>
                                                     <div class="row static-info align-reverse">
                                                         <div class="col-md-8 name"> VAT: </div>
-                                                        <div class="col-md-3 value"> {{ number_format(($item->vat/100) * $item->price,2) }} {{\App\Http\Controllers\AppSettings::get_setting_value_by_name('finance_currency')}}</div>
+                                                        <div class="col-md-3 value"> {{ number_format($total_vat,2) }} {{\App\Http\Controllers\AppSettings::get_setting_value_by_name('finance_currency')}}</div>
                                                     </div>
                                                     <div class="row static-info align-reverse">
                                                         <div class="col-md-8 name"> Grand Total: </div>

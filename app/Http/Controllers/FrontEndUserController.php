@@ -5590,13 +5590,13 @@ This message is private and confidential. If you have received this message in e
             $total = 0;
             $discount = 0;
             $vat = [];
-
+            $total_vat = 0;
             $items = InvoiceItem::where('invoice_id', '=', $invoice->id)->get();
 
             foreach ($items as $item) {
                 $item_one_price = $item->price - (($item->price * $item->discount) / 100);
                 $item_vat = $item_one_price * ($item->vat / 100);
-
+                $total_vat += $item_vat;
                 if (isset($vat[$item->vat])) {
                     $vat[$item->vat] += $item_vat * $item->quantity;
                 } else {
@@ -5671,7 +5671,8 @@ This message is private and confidential. If you have received this message in e
             'country' => $country,
             'payee_country' => $payee_country,
             'show_stripe' => \Config::get("stripe.stripe_secret"),
-            'credit' => $credits
+            'credit' => $credits,
+            'total_vat' => $total_vat
         ]);
     }
 
