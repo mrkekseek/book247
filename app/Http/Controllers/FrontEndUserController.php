@@ -4049,7 +4049,6 @@ This message is private and confidential. If you have received this message in e
                 }
 
                 $transactionList[] = [
-                    '<div class="'.$colorStatus.'"></div><span"> '.($single_transaction->id).' </span>',
                     $single_transaction->title,
                     ($single_transaction->value) > 0 ? '+'. $single_transaction->value : $single_transaction->value,
                     $added_by,

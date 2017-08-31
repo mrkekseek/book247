@@ -39,7 +39,6 @@
                             <table class="table table-striped table-bordered table-hover table-advance order-column " id="sample_1">
                                 <thead>
                                 <tr>
-                                    <th> ID </th>
                                     <th> Name </th>
                                     <th> Credit </th>
                                     <th> Added by </th>
