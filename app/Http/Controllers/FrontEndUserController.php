@@ -2955,7 +2955,14 @@ This message is private and confidential. If you have received this message in e
             }
             else{
                 $dataForApi = $credentials + $personalData;
-                $api_user = Auth::create_api_user($dataForApi, $password_api);
+                //
+                if(Auth::check_exist_api_user($dataForApi['email'])){
+                    $account = ApiAuth::accounts_get_by_username($dataForApi['email']);
+                    $api_user = $account['data']->id;
+                } else {
+                    $api_user = Auth::create_api_user($dataForApi, $password_api);
+                }
+
                 if ( ! $api_user)
                 {
                     return [
