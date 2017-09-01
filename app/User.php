@@ -256,6 +256,41 @@ class User extends Authenticatable
         }
     }
 
+    public function unfreeze_membership_plan(UserMembership $plan){
+        if ($plan) {
+            // insert a membership action related to this membership freeze
+            $date = Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d').' 00:00:00');
+            $fillable = [
+                'user_membership_id'    => $plan->id,
+                'action_type'   => 'unfreeze',
+                'start_date'    => $date->format('Y-m-d'),
+                'end_date'      => $date->format('Y-m-d'),
+                'added_by'      => Auth::user()->id,
+                'notes'         => json_encode([]),
+                'processed'     => 0,
+                'status'        => 'active'
+            ];
+
+            $userMembershipAction = Validator::make($fillable, UserMembershipAction::rules('POST'), UserMembershipAction::$message, UserMembershipAction::$attributeNames);
+            if ($userMembershipAction->fails()){
+                //return $validator->errors()->all();
+                return array(
+                    'success'   => false,
+                    'title'     => 'Error Validating Action',
+                    'errors'    => $userMembershipAction->getMessageBag()->toArray()
+                );
+            }
+
+            $unfreeze_action = UserMembershipAction::create($fillable);
+            return $unfreeze_action->process_action();
+            // get first next invoice and check if the start date is included there
+
+        }
+        else{
+            return false;
+        }
+    }
+
     public function cancel_membership_plan(UserMembership $old_plan, $cancel_date = '', $last_date = ''){
         if ($cancel_date == ''){
             $cancel_date = Carbon::today();
