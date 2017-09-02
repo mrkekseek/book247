@@ -193,7 +193,6 @@
                             zoom: 13
                         });
 
-
                         for(var i in points)
                         {
                             map.addMarker({

@@ -4345,7 +4345,7 @@ This message is private and confidential. If you have received this message in e
 
         $avatar = $user->get_avatar_image();
 
-        $userMembership = UserMembership::where('user_id','=',$user->id)->get()->first();
+        $userMembership = UserMembership::where('user_id','=',$user->id)->whereIn('status',['active','suspended'])->get()->first();
         if ($userMembership){
             $membershipName = $userMembership->membership_name;
         }

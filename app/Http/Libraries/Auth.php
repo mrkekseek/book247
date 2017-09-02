@@ -28,10 +28,9 @@ class Auth
         $session_sso = Session::get('sso_user_id');                       
         if (!empty($session_sso))
         {
-            $user_locale = User::where('sso_user_id',$session_sso)->first();            
-            if ($user_locale)
-            {
-                return $user_locale;
+            $user_locale = User::where('sso_user_id','=',$session_sso)->get();
+            if (sizeof($user_locale)==1) {
+                return $user_locale[0];
             }
         }        
         return false;
@@ -194,9 +193,9 @@ class Auth
 
     private static function set_session()
     {
-        $cookie_sso = Cookie::get('sso_user_id');                
-        $session_sso = Session::get('sso_user_id');
-        $new_auth = Session::get('new_auth');
+        $cookie_sso     = Cookie::get('sso_user_id');
+        $session_sso    = Session::get('sso_user_id');
+        $new_auth       = Session::get('new_auth');
         if (!empty($cookie_sso) && !empty($session_sso) && $session_sso !== $cookie_sso && empty($new_auth))
         {            
             $session_sso = false;
@@ -221,6 +220,9 @@ class Auth
         elseif (empty($cookie_sso) && !empty($session_sso) && empty($new_auth))
         {
             Session::put('sso_user_id','');
+        }
+        else{
+            //Session::put('sso_user_id','');
         }
     }
     

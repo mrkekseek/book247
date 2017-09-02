@@ -332,7 +332,7 @@
                         if(typeof timeinterval !== "undefined"){
                             clearInterval(timeinterval);
                         }
-                        var deadline = new Date(Date.parse(new Date()) + 60 * 1000);
+                        var deadline = new Date(Date.parse(new Date()) + 90 * 1000);
                         initializeClock('countdown_60', deadline);
 
                         show_play_with_friends();
