@@ -235,7 +235,8 @@ class User extends Authenticatable
                 );
             }
 
-            UserMembershipAction::create($fillable);
+            $action = UserMembershipAction::create($fillable);
+            //$action->process_action();
             // get first next invoice and check if the start date is included there
             $nextInvoice = UserMembershipInvoicePlanning::where('user_membership_id','=',$old_plan->id)->where('status','=','pending')->orderBy('issued_date','ASC')->get()->first();
             if ($nextInvoice){
