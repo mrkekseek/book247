@@ -860,6 +860,14 @@ class FrontEndUserController extends Controller
         $locations = ShopLocations::all();
 
         $store_credit_products = StoreCreditProducts::all();
+        $show_pending = false;
+
+
+        foreach ($plannedInvoicesAndActions as $action){
+            if (isset($action['object']['processed']) && $action['object']['processed'] == 0) {
+                $show_pending = true;
+            }
+        }
 
         return view('admin/front_users/view_member_account_settings', [
             'user'              => $member,
@@ -886,7 +894,8 @@ class FrontEndUserController extends Controller
             'InvoicesActionsPlanned'=> $plannedInvoicesAndActions,
             'storeCreditNotes'  => $storeCredit,
             'locations' => $locations,
-            'store_credit_products' => $store_credit_products
+            'store_credit_products' => $store_credit_products,
+            'show_pending'      => $show_pending
         ]);
     }
 
@@ -1093,7 +1102,8 @@ class FrontEndUserController extends Controller
             'invoiceFreeze'         => $invoiceFreeze,
             'canCancel'     => $canCancel,
             'canFreeze'     => $canFreeze,
-            'locations'     => $locations
+            'locations'     => $locations,
+            'unlink_sso'    => $user->hasRole('owner')
         ]);
     }
 
@@ -2913,8 +2923,8 @@ This message is private and confidential. If you have received this message in e
             'middle_name'   => trim($vars['middle_name']),
             'last_name'     => trim($vars['last_name']),
             'gender'        => $vars['gender'],
-            'username'      => trim($vars['username']),
-            'email'         => trim($vars['email']),
+            'username'      => trim(strtolower($vars['username'])),
+            'email'         => trim(strtolower($vars['email'])),
             'password'      => $vars['password'],
             'country_id'    => $vars['country_id'],
             'status'        => 'active',
@@ -2955,7 +2965,14 @@ This message is private and confidential. If you have received this message in e
             }
             else{
                 $dataForApi = $credentials + $personalData;
-                $api_user = Auth::create_api_user($dataForApi, $password_api);
+                //
+                if(Auth::check_exist_api_user($dataForApi['email'])){
+                    $account = ApiAuth::accounts_get_by_username($dataForApi['email']);
+                    $api_user = $account['data']->id;
+                } else {
+                    $api_user = Auth::create_api_user($dataForApi, $password_api);
+                }
+
                 if ( ! $api_user)
                 {
                     return [
@@ -3126,6 +3143,9 @@ This message is private and confidential. If you have received this message in e
                 'errors'    => $validator->getMessageBag()->toArray()
             ];
         }
+        // Normalization
+        $client_vars['email'] = trim(strtolower($client_vars['email']));
+        $client_vars['username'] = trim(strtolower($client_vars['username']));
 
         $credentials = $client_vars;
         $text_psw    = $client_vars['password'];
@@ -4517,6 +4537,61 @@ This message is private and confidential. If you have received this message in e
             'in_sidebar'  => $sidebar_link,
             'token'       => $token
         ]);
+    }
+
+    public function unlink_sso_account(Request $r)
+    {
+        $user = Auth::user();
+        if ( ! $user || !$user->hasRole('owner')) {
+            return [
+                'success' => false,
+                'title'   => 'Permission denied.',
+                'errors'  => 'You don\'t have permission to do that.'
+            ];
+        }
+
+        if (!$r->get('user_id')) {
+            return [
+                'success' => false,
+                'title'   => 'Invalid user.',
+                'errors'  => 'You don\'t have permission to do that.'
+            ];
+        }
+
+        $member = User::find($r->get('user_id'));
+        if (!$member->sso_user_id) {
+            return [
+                'success' => false,
+                'title'   => 'Invalid user.',
+                'errors'  => 'The user was not found on the sso.'
+            ];
+        }
+
+        if (Auth::check_exist_api_user($member->email)) {
+            $activity = Activity::where('user_id',$member->id)->where('content_type','login')->get();
+            if (sizeof($activity)) {
+                return [
+                    'success' => false,
+                    'title'   => 'User is active.',
+                    'errors'  => 'You cannot unlink an active user.'
+                ];
+            } else {
+                $member->sso_user_id = null;
+                $member->save();
+                return [
+                    'success' => true,
+                    'title'   => 'User unlinked.',
+                    'message'  => 'The user was unlinked.'
+                ];
+            }
+        } else {
+            return [
+                'success' => false,
+                'title'   => 'Invalid user.',
+                'errors'  => 'The user was not found on the sso.'
+            ];
+        }
+
     }
 
     public function activate_user_by_token(Request $request, $token){

@@ -255,6 +255,9 @@
                                                 </div>
                                                 <div class="margin-top-10">
                                                     <a href="javascript:;" class="btn green" onClick="javascript:request_reset_email() ;"> Forgot password </a>
+                                                    @if($unlink_sso)
+                                                        <a href="javascript:;" class="btn red" onClick="javascript: unlink_from_sso();"> SSO Unlink </a>
+                                                    @endif
                                                 </div>
                                             </form>
 
@@ -279,6 +282,7 @@
                                                     <div class="margin-top-10">
                                                         <a href="javascript:;" class="btn green" onClick="javascript: $('#form_password_update').submit();"> Change Password </a>
                                                         <a href="javascript:;" class="btn default"> Cancel </a>
+                                                        <span> &nbsp;User is not linked on sso. </span>
                                                     </div>
                                                 </form>
                                             @endif
@@ -906,6 +910,28 @@
                 }
             });
         }
+        @if($unlink_sso)
+            function unlink_from_sso() {
+                $.ajax({
+                    url: '{{ route('unlink_sso_account') }}',
+                    type: 'post',
+                    data: {
+                        user_id: '{{ $user->id }}'
+                    },
+                    success: function(data) {
+                        if (data.success) {
+                            show_notification(data.title, data.message, 'lime', 3500, 0);
+                            window.location.reload();
+                        }
+                        else{
+                            show_notification(data.title, data.errors, 'tangerine', 3500, 0);
+                        }
+                    }
+                });
+            }
+        @endif
+
+
 
         $(".user_avatar_select_btn1").on("click", function(){
             App.blockUI({

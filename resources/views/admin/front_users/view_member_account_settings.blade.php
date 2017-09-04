@@ -280,7 +280,7 @@
                                                                             @endif
                                                                             <br />
                                                                             @if ($membership_plan->status=='suspended')
-                                                                            <a href="#unfreeze_plan_box" class="btn bg-green-jungle bg-font-green-jungle input margin-bottom-10" onclick="javascript: ui_block($('#tab_1_5')) ;" data-toggle="modal" style="min-width:158px;">
+                                                                            <a href="#unfreeze_plan_box" class="btn bg-green-jungle bg-font-green-jungle input margin-bottom-10" onclick="javascript: unfreeze_membership() ;" data-toggle="modal" style="min-width:158px;">
                                                                                 <i class="fa fa-play"></i> Un-Freeze Plan</a>
                                                                             @elseif($canFreeze==true)
                                                                             <a href="#freeze_plan_box" class="btn bg-blue-sharp bg-font-blue-sharp input margin-bottom-10" data-toggle="modal" onclick="javascript: ui_block($('#tab_1_5')) ;" style="min-width:158px;">
@@ -307,7 +307,63 @@
                                                                     </div>
                                                                 </div>
                                                                 @endif
+                                                                @if ($show_pending)
+                                                                    <div class="table-scrollable">
+                                                                        <table class="table table-striped table-bordered table-advance table-hover">
+                                                                            <thead>
+                                                                            <tr>
+                                                                                <th>
+                                                                                    <i class="fa fa-calendar-minus-o"></i> Pending actions </th>
 
+                                                                                <!--<th> Options </th>-->
+                                                                            </tr>
+                                                                            </thead>
+                                                                            <tbody>
+                                                                            @foreach ($InvoicesActionsPlanned as $singlePlanned)
+                                                                                @if ($singlePlanned['type']=='cancel' && $singlePlanned['object']['processed']!='1')
+                                                                                    <tr>
+                                                                                        <td class="highlight" colspan="5">
+                                                                                            <div class="danger"></div> <a class="font-red-thunderbird"> Pending - </a>
+                                                                                            Membership cancellation starting with <b class="font-purple-studio">{{ \Carbon\Carbon::instance($singlePlanned['object']['end_date'])->addDay()->format('d M Y') }}</b>.
+                                                                                            Action added by <a style="margin-left:0px;" href="{{ $singlePlanned['object']['added_by_link'] }}" target="_blank">{{ $singlePlanned['object']['added_by_name'] }}</a>
+                                                                                            on {{ $singlePlanned['object']['created_at'] }}
+                                                                                            @if ($singlePlanned['object']['processed']=='0')
+                                                                                                | <a class="label label-sm label-danger remove_pending_action" data-id="{{ $singlePlanned['object']['id'] }}"> delete </a>
+                                                                                            @endif
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                @elseif ($singlePlanned['type']=='freeze' && $singlePlanned['object']['processed']!='1')
+                                                                                    <tr>
+                                                                                        <td class="highlight" colspan="5">
+                                                                                            <div class="danger"></div> <a class="font-red-thunderbird"> Pending - </a>
+                                                                                            Freeze membership between <b class="font-purple-studio">{{ $singlePlanned['object']['start_date']->format('d M Y') }}</b> and <b class="font-purple-studio">{{ $singlePlanned['object']['end_date']->format('d M Y') }}</b>.
+                                                                                            Action added by <a style="margin-left:0px;" href="{{ $singlePlanned['object']['added_by_link'] }}" target="_blank">{{ $singlePlanned['object']['added_by_name'] }}</a>
+                                                                                            on {{ $singlePlanned['object']['created_at'] }}
+                                                                                            @if ($singlePlanned['object']['processed']=='0')
+                                                                                                | <a class="label label-sm label-danger remove_pending_action" data-id="{{ $singlePlanned['object']['id'] }}"> delete </a>
+                                                                                            @endif
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                @elseif ($singlePlanned['type']=='update'  && $singlePlanned['object']['processed']!='1')
+                                                                                    <tr>
+                                                                                        <td class="highlight" colspan="5">
+                                                                                            <div class="danger"></div> <a class="font-red-thunderbird"> Pending - </a>
+                                                                                            Membership {{ $singlePlanned['object']['additional_values']->is_update===true?'upgraded':'downgraded' }}
+                                                                                            from <b>{{ $singlePlanned['object']['additional_values']->old_membership_plan_name }}</b> to <b>{{ $singlePlanned['object']['additional_values']->new_membership_plan_name }}</b>
+                                                                                            starting with <b class="font-purple-studio">{{ \Carbon\Carbon::instance($singlePlanned['object']['start_date'])->format('d M Y') }}</b>.
+                                                                                            Action added by <a style="margin-left:0px;" href="{{ $singlePlanned['object']['added_by_link'] }}" target="_blank">{{ $singlePlanned['object']['added_by_name'] }}</a>
+                                                                                            on {{ $singlePlanned['object']['created_at'] }}
+                                                                                            @if ($singlePlanned['object']['processed']=='0')
+                                                                                                | <a class="label label-sm label-danger remove_pending_action" data-id="{{ $singlePlanned['object']['id'] }}"> delete </a>
+                                                                                            @endif
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                @endif
+                                                                            @endforeach
+                                                                            </tbody>
+                                                                        </table>
+                                                                    </div>
+                                                                @endif
                                                                 @if (sizeof($memberships)>0 && !isset($membership_plan->membership_id))
                                                                 <div class="form-group">
                                                                         <label class="control-label col-md-3 inline"> Change Plan To </label>
@@ -711,7 +767,7 @@
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                                <button type="button" class="close" data-dismiss="modal" onclick="javascript: $('#tab_1_5').unblock() ;" aria-hidden="true"></button>
                                 <h4 class="modal-title"> Membership Plan Change [Upgrade / Downgrade] </h4>
                             </div>
                             <div class="modal-body form-horizontal" id="book_main_details_container">
@@ -752,7 +808,7 @@
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                                <button type="button" class="close" data-dismiss="modal" onclick="javascript: $('#tab_1_5').unblock() ;" aria-hidden="true"></button>
                                 <h4 class="modal-title"> Membership Plan Details </h4>
                             </div>
                             <div class="modal-body form-horizontal" id="book_main_details_container">
@@ -811,7 +867,7 @@
                     <div class="modal-dialog">
                         <div class="modal-content ">
                             <div class="modal-header">
-                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                                <button type="button" class="close" data-dismiss="modal" onclick="javascript: $('#tab_1_5').unblock() ;" aria-hidden="true"></button>
                                 <h4 class="modal-title">Do you want to cancel the current membership plan?</h4>
                             </div>
                             <div class="modal-body margin-top-10" style="margin-bottom:0px; padding-bottom:5px;"> Please select the first day with no plan, from the drop-down list below</div>
@@ -860,13 +916,13 @@
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                                <button type="button" class="close" data-dismiss="modal" onclick="javascript: $('#tab_1_5').unblock() ;" aria-hidden="true"></button>
                                 <h4 class="modal-title">Do you want to cancel the current membership plan?</h4>
                             </div>
                             <div class="modal-body margin-top-10 margin-bottom-10"> By clicking "Cancel Membership" the member will be switched to the default membership plan (the "No Membership Plan").
                                 After the cancellation you can apply another membership plan to this user from the same page.</div>
                             <div class="modal-footer">
-                                <button type="button" class="btn dark btn-outline"  data-dismiss="modal">No, Go Back</button>
+                                <button type="button" class="btn dark btn-outline"  onclick="javascript: $('#tab_1_5').unblock() ;" data-dismiss="modal">No, Go Back</button>
                                 <button type="button" class="btn green" onclick="javascript:cancel_membership();">Yes, Cancel</button>
                             </div>
                         </div>
@@ -880,7 +936,7 @@
                     <div class="modal-dialog" style="margin-top:45px;">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                                <button type="button" class="close" data-dismiss="modal" onclick="javascript: $('#tab_1_5').unblock() ;" aria-hidden="true"></button>
                                 <h4 class="modal-title"> Freeze membership plan </h4>
                             </div>
                             <div class="modal-body form-horizontal" id="recurring_details_container" style="min-height:200px;">
@@ -945,7 +1001,7 @@
                     <div class="modal-dialog">
                         <div class="modal-content" style="margin-left:20px; margin-right:20px; margin-top:60px;">
                             <div class="modal-header">
-                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                                <button type="button" class="close" data-dismiss="modal" onclick="javascript: $('#tab_1_5').unblock() ;" aria-hidden="true"></button>
                                 <h4 class="modal-title">Membership Freeze Confirmation?</h4>
                             </div>
                             <div class="modal-body">
@@ -1572,6 +1628,32 @@
                         show_notification(data.title, data.errors, 'tangerine', 3500, 0);
                     }
                     $('#tab_1_5').unblock();
+                }
+            });
+        }
+
+        function unfreeze_membership(){
+            var userID = '{{$user->id}}';
+            ui_block($('#tab_1_5'));
+            $.ajax({
+                url: '{{route('admin/membership_plans/unfreeze_member_plan')}}',
+                type: "post",
+                data: {
+                    'member_id':userID
+                },
+                success: function(data){
+                    if (data.success) {
+
+                        show_notification(data.title, data.message, 'lime', 3500, 0);
+                        setTimeout(function(){
+                            location.reload();
+                        },2000);
+                    }
+                    else{
+                        $('#tab_1_5').unblock();
+                        show_notification(data.title, data.errors, 'tangerine', 3500, 0);
+                    }
+
                 }
             });
         }

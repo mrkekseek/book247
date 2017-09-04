@@ -124,17 +124,11 @@
                                         </div>
                                         <div class="form-group">
                                             <label class="control-label col-md-3">Plan Color</label>
-                                            <div class="col-md-3">
-                                                <div class="input-group color colorpicker-default" data-color="{{$membership_plan->plan_calendar_color}}" data-color-format="rgba">
-                                                    <input type="text" class="form-control" name="membership_color" value="{{$membership_plan->plan_calendar_color}}" readonly>
-                                                        <span class="input-group-btn">
-                                                            <button class="btn default" type="button">
-                                                                <i style="background-color: {{$membership_plan->plan_calendar_color}}};"></i>&nbsp;</button>
-                                                        </span>
-                                                </div>
+                                            <div class="col-md-2">
+                                                <input data-color="{{$membership_plan->plan_calendar_color}}" type="text" class="form-control colorpicker-default" name="membership_color" value="{{$membership_plan->plan_calendar_color}}">
                                                 <!-- /input-group -->
                                             </div>
-                                            <div class="col-md-6">
+                                            <div class="col-md-7">
                                                 <span class="help-inline  block-inline"> Color to be displayed in calendar booking </span>
                                             </div>
                                         </div>
@@ -638,7 +632,7 @@
                     return;
                 }
                 $('.colorpicker-default').colorpicker({
-                    format: 'hex'
+                    format: 'hex',
                 });
                 $('.colorpicker-rgba').colorpicker();
             }

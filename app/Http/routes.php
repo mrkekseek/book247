@@ -655,6 +655,12 @@ if (env('FEDERATION',false)){
             'uses' => 'FrontEndUserController@show_account_settings'
         ]);
 
+        Route::post('admin/front_users/unlink_sso_account', [
+            'as' => 'unlink_sso_account',
+            'uses' => 'FrontEndUserController@unlink_sso_account'
+        ]);
+
+
         Route::get('admin/front_users/{id}/view_personal_settings', [
             'as' => 'admin/front_users/view_personal_settings',
             'uses' => 'FrontEndUserController@show_personal_settings'
@@ -899,6 +905,11 @@ if (env('FEDERATION',false)){
         Route::post('membership_plans/freeze_member_plan', [
             'as' => 'admin/membership_plans/freeze_member_plan',
             'uses' => 'MembershipController@freeze_membership_for_member'
+        ]);
+
+        Route::post('membership_plans/unfreeze_member_plan', [
+            'as' => 'admin/membership_plans/unfreeze_member_plan',
+            'uses' => 'MembershipController@unfreeze_membership_for_member'
         ]);
 
         Route::post('membership_plans/cancel_member_plan', [

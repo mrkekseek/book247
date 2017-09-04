@@ -475,6 +475,12 @@ class FrontEndUserController extends Base
 
         $locations = ShopLocations::all();
 
+        foreach ($plannedInvoicesAndActions as $action){
+            if (!$action['object']['processed']) {
+                $show_pending = true;
+            }
+        }
+
         return view('admin/front_users/federation/view_member_account_settings', [
             'user'              => $member,
             'personalAddress'   => $personalAddress,
@@ -499,7 +505,8 @@ class FrontEndUserController extends Base
             'accessCardNo'      => @$accessCardNo,
             'InvoicesActionsPlanned'=> $plannedInvoicesAndActions,
             'storeCreditNotes'  => $storeCredit,
-            'locations' => $locations
+            'locations' => $locations ,
+            'show_pending'      => $show_pending
         ]);
     }
 
@@ -757,7 +764,8 @@ class FrontEndUserController extends Base
             'invoiceFreeze'         => $invoiceFreeze,
             'canCancel'     => $canCancel,
             'canFreeze'     => $canFreeze,
-            'locations'     => $locations
+            'locations'     => $locations,
+            'unlink_sso'    => $user->hasRole('owner')
         ]);
     }
 
