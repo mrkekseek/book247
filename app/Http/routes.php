@@ -1032,9 +1032,6 @@ if (env('FEDERATION',false)){
             'uses' => 'FrontEndUserController@get_user_transaction_list'
         ]);
 
-
-
-
         Route::get('view_invoice/{id}', [
             'as' => 'front/view_invoice/',
             'uses' => 'FrontEndUserController@front_show_invoice'
