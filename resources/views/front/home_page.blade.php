@@ -126,7 +126,7 @@
                                                     <span class="caption-subject bold uppercase">don't have an account?</span>
                                                 </div>
                                             </div>
-                                            <button type="button" id="pre-register-btn" class="btn green-meadow center uppercase">create one now</button>
+                                            <button type="button" id="pre-register-btn" class="btn green-meadow center uppercase">create</button>
                                         </div>
                                     </form>
                                     <!-- END LOGIN FORM -->
@@ -160,7 +160,7 @@
                                                 <span class="caption-subject bold uppercase"> can't remember your password </span>
                                             </div>
                                         </div>
-                                        <p class="hint"> We've just send you an email. Folow the instructions to reset your password. Click "Next" if the system does not automatically redirect you. </p>
+                                        <p class="hint"> We've just send you an email. Follow the instructions to reset your password. Click "Next" if the system does not automatically redirect you. </p>
                                         <div class="form-actions">
                                             <a href="/">
                                                 <button type="button" class="btn grey btn-block uppercase">next</button>

@@ -98,6 +98,16 @@
                 @endif
                 <li class="nav-item {{ $in_sidebar=='admin-backend-memberships-all_plans'?'active open':'' }}">
                     <a href="{{ route('admin.membership_plan.index') }}" class="nav-link ">
+                        <span class="title">Drop-ins Bookings</span>
+                    </a>
+                </li>
+                <li class="nav-item {{ $in_sidebar=='admin-backend-memberships-all_plans'?'active open':'' }}">
+                    <a href="{{ route('admin.membership_plan.index') }}" class="nav-link ">
+                        <span class="title">Recurring Bookings</span>
+                    </a>
+                </li>
+                <li class="nav-item {{ $in_sidebar=='admin-backend-memberships-all_plans'?'active open':'' }}">
+                    <a href="{{ route('admin.membership_plan.index') }}" class="nav-link ">
                         <span class="title">List All Plans</span>
                     </a>
                 </li>
