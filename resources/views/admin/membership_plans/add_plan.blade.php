@@ -118,10 +118,13 @@
                                         <div class="form-group">
                                             <label class="control-label col-md-3">Plan Color</label>
                                             <div class="col-md-2">
-                                                <input data-color="#ff44ff" type="text" class="form-control colorpicker-default" name="membership_color" value="ff44ff">
+                                                <input data-color="#ff44ff" type="text" class="form-control colorpicker-default" data-target-id="color-picker-target" name="membership_color" value="ff44ff">
                                                 <!-- /input-group -->
                                             </div>
-                                            <div class="col-md-7">
+                                            <div class="col-md-2">
+                                                <input  type="text" id="color-picker-target" disabled class="form-control">
+                                            </div>
+                                            <div class="col-md-5">
                                                 <span class="help-inline  block-inline"> Color to be displayed in calendar booking </span>
                                             </div>
                                             <!-- /input-group -->
@@ -197,10 +200,16 @@
                     return;
                 }
                 $('.colorpicker-default').colorpicker({
-                    format: 'hex'
+                    format: 'hex',
+                }).on('changeColor',function(e){
+                    var selector = '#' + $(this).attr('data-target-id');
+                    $(selector).css({'background': e.color.toHex()});
                 });
-                $('.colorpicker-rgba').colorpicker();
-            }
+                $('.colorpicker-rgba').colorpicker().on('changeColor',function(e){
+                    var selector = '#' + $(this).attr('data-target-id');
+                    $(selector).css({'background': e.color.toHex()});
+                });
+            };
 
             return {
                 //main function to initiate the module

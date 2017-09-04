@@ -93,6 +93,7 @@ class UserMembershipAction extends Model
         switch ($this->action_type) {
             case 'freeze' : {
                 if ($this->processed == 0) {
+
                     // we need to recalculate invoices so we search for next pending invoice in the membership
                     $nextInvoice = UserMembershipInvoicePlanning::where('user_membership_id', '=', $userMembership->id)->where('status', '=', 'pending')->orderBy('issued_date', 'ASC')->first();
                     if ($nextInvoice) {

@@ -615,6 +615,11 @@ if (env('FEDERATION',false)){
             'uses' => 'FrontEndUserController@all_front_members_list'
         ]);
 
+        Route::get('admin/bookings/dropins-rules', [
+            'as' => 'admin/bookings/dropins-rules',
+            'uses' => 'MembershipPlansController@dropins_rules'
+        ]);
+
         Route::get('admin/front_users/view_all_members_new', [
             'as' => 'admin/front_users/view_all_members_new',
             'uses' => 'FrontEndUserController@all_front_members_list'
@@ -670,6 +675,8 @@ if (env('FEDERATION',false)){
             'as' => 'admin/front_users/view_bookings',
             'uses' => 'FrontEndUserController@show_bookings'
         ]);
+
+
 
         Route::get('admin/front_users/{id}/view_finance', [
             'as' => 'admin/front_users/view_finance',

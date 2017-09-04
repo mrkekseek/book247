@@ -82,7 +82,7 @@
         <li class="heading">
             <h3 class="uppercase">Administration</h3>
         </li>
-        <li class="nav-item {{ in_array($in_sidebar, array('admin-backend-memberships-all_plans','admin-backend-memberships-new_plans'))?'active open':'' }} ">
+        <li class="nav-item {{ in_array($in_sidebar, array('admin-backend-memberships-all_plans','admin-backend-memberships-new_plans','admin-bookings-dropins-rules'))?'active open':'' }} ">
             <a href="javascript:;" class="nav-link nav-toggle">
                 <i class="icon-shield"></i>
                 <span class="title"> Membership Plans </span>
@@ -96,8 +96,8 @@
                     </a>
                 </li>
                 @endif
-                <li class="nav-item {{ $in_sidebar=='admin-backend-memberships-all_plans'?'active open':'' }}">
-                    <a href="{{ route('admin.membership_plan.index') }}" class="nav-link ">
+                <li class="nav-item {{ $in_sidebar=='admin-bookings-dropins-rules'?'active open':'' }}">
+                    <a href="{{ route('admin/bookings/dropins-rules') }}" class="nav-link ">
                         <span class="title">Drop-ins Bookings</span>
                     </a>
                 </li>

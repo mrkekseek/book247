@@ -449,6 +449,69 @@ class MembershipPlansController extends Controller
         Cache::forget('membership_plans_table');
     }
 
+
+
+    public function dropins_rules(){
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
+            return redirect()->intended(route('admin/login'));
+        }
+
+
+        $the_plan = MembershipPlan::with('price')->with('restrictions')->where('id','=',1)->get()->first();
+        if (!$the_plan){
+            $the_plan = false;
+        }
+        $activities = ShopResourceCategory::all()->sortBy('name');
+        $restrictions = array();
+        $plan_restrictions = MembershipRestriction::with('restriction_title')->where('membership_id','=',$the_plan->id)->orderBy('restriction_id','asc')->get();
+        foreach($plan_restrictions as $restriction){
+            $formatted = $restriction->format_for_display_boxes();
+
+            $restrictions[] = [
+                'id'            => $restriction->id,
+                'title'         => $restriction->restriction_title->title,
+                'description'   => $formatted['description'],
+                'color'         => $formatted['color']
+            ];
+        }
+
+        $breadcrumbs = [
+            'Home'              => route('admin'),
+            'Administration'    => route('admin'),
+            'Back End User'     => route('admin'),
+            'Permissions'        => '',
+        ];
+        $text_parts  = [
+            'title'     => 'Edit Membership - '.$the_plan->name,
+            'subtitle'  => '',
+            'table_head_text1' => 'Backend Roles Permissions List'
+        ];
+        $sidebar_link= 'admin-bookings-dropins-rules';
+
+
+        if (!$user->can('manage-membership-plans')){
+
+            return view('admin/membership_plans/drop_ins_view_plan', [
+                'breadcrumbs'   => $breadcrumbs,
+                'text_parts'    => $text_parts,
+                'in_sidebar'    => $sidebar_link,
+                'membership_plan'   => $the_plan,
+                'activities'    => $activities,
+                'restrictions'  => $restrictions
+            ]);
+        }
+
+        return view('admin/membership_plans/drop_ins_edit_plan', [
+            'breadcrumbs'   => $breadcrumbs,
+            'text_parts'    => $text_parts,
+            'in_sidebar'    => $sidebar_link,
+            'membership_plan'   => $the_plan,
+            'activities'    => $activities,
+            'restrictions'  => $restrictions
+        ]);
+    }
+
     public function add_plan_restriction(Request $request){
         $user = Auth::user();
         if (!$user || !$user->is_back_user()) {

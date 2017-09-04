@@ -371,7 +371,7 @@ class MembershipController extends Controller
         // get freeze period from user_membership_invoice_planning that is unprocessed
         $freezePeriod = UserMembershipAction::where('user_membership_id','=',$membershipPlan->id)
             ->where('processed','=','0')
-            ->where('action_type','=','freeze')
+            ->where('action_type','=','unfreeze')
             ->orderBy('created_at','DESC')
             ->get()
             ->first();
@@ -384,9 +384,10 @@ class MembershipController extends Controller
         }
 
         $startDate  = Carbon::createFromFormat('Y-m-d',$freezePeriod->start_date);
-        $endDate    = Carbon::today()->format('Y-m-d');
+        $endDate    = Carbon::createFromFormat('Y-m-d',$freezePeriod->end_date);
 
         $invoicesDate = UserMembership::invoice_membership_period(Carbon::createFromFormat('Y-m-d',$membershipPlan->day_start), $membershipPlan->invoice_period);
+
         while (Carbon::today()->addMonths(28)->gte($invoicesDate['first_day'])){
             if ($endDate->between($invoicesDate['first_day'], $invoicesDate['last_day']) or $endDate->lt($invoicesDate['first_day'])) {
                 $allInvoicesDates[] = $invoicesDate;
@@ -398,11 +399,13 @@ class MembershipController extends Controller
         $nr = 0;
         $planned_invoices = UserMembershipInvoicePlanning::where('user_membership_id','=',$membershipPlan->id)->whereIn('status',['pending','last'])->orderBy('created_at','ASC')->get();
         if ($planned_invoices){
-            foreach($planned_invoices as $invoice){
+            foreach($planned_invoices as $key => $invoice){
                 $invoiceStart = Carbon::createFromFormat('Y-m-d', $invoice->issued_date);
                 $invoiceEnd = Carbon::createFromFormat('Y-m-d', $invoice->last_active_date);
                 // start freeze is in an invoice so we break it
                 if ($startDate->between($invoiceStart, $invoiceEnd)){
+
+
                     if ($startDate->eq($invoiceStart)){
                         $started = true;
                     }
