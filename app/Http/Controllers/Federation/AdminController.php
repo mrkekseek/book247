@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Federation;
 
 use App\Http\Controllers\AdminController as Base;
 use App\Booking;
+use App\Http\Controllers\ApicController;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use App\Role;
