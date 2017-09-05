@@ -627,7 +627,6 @@ class ApicController extends Controller
         }
     }
 
-
     private function validate_request($data, $rules, $mesagges = [])
     {
         $validator = Validator::make($data, $rules, $mesagges);
