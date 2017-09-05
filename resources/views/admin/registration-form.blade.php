@@ -83,15 +83,6 @@
                                                 </div>
                                             </div>
                                             <div class="form-group">
-                                                <label class="control-label col-md-3"> Fax
-                                                    <span class="required"> * </span>
-                                                </label>
-                                                <div class="col-md-9">
-                                                    <input type="text" class="form-control" name="fax" required />
-                                                    <span class="help-block"> Provide your Fax </span>
-                                                </div>
-                                            </div>
-                                            <div class="form-group">
                                                 <label class="control-label col-md-3"> Address Line1
                                                     <span class="required"> * </span>
                                                 </label>
@@ -163,6 +154,19 @@
                                                         @endforeach
                                                     </select>
                                                     <span class="help-block"> Provide your  Currency</span>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="control-label col-md-3">Confirm email
+                                                    <span class="required"> * </span>
+                                                </label>
+                                                <div class="col-md-9">
+                                                    <select name="mail_validation" id="mail_validation" class="form-control" required>
+                                                        <option value="">Please select</option>
+                                                        <option value="1">Yes</option>
+                                                        <option value="0">No</option>
+                                                    </select>
+                                                    <span class="help-block"> If 'yes' selected, all new registration will require email validation.</span>
                                                 </div>
                                             </div>
                                         </div>

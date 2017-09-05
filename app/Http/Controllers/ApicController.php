@@ -582,7 +582,7 @@ class ApicController extends Controller
             'club_name' => $shop_location->name,
         ];
 
-        $template = EmailsController::build('Registering an existing owner', $data);
+        $template = EmailsController::build('Registering - existing owner', $data);
         if ($template)
         {
             $main_message = $template["message"];
@@ -610,7 +610,7 @@ class ApicController extends Controller
             'password' => $password
         ];
 
-        $template = EmailsController::build('Registration of new owner', $data);
+        $template = EmailsController::build('Registration - new owner', $data);
         if ($template)
         {
             $main_message = $template["message"];
