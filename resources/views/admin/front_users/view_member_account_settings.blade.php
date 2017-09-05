@@ -390,7 +390,7 @@
                                                                 <div class="form-group">
                                                                     <label class="control-label col-md-3 inline"> Membership Start Date </label>
                                                                     <div class="col-md-8">
-                                                                        <div class="input-group input date date-picker" {{ Auth::user()->hasRole('owner')?'':'data-date-start-date="-30d"' }} data-date="{{ \Carbon\Carbon::today()->format('d-m-Y') }}" data-date-format="dd-mm-yyyy" data-date-viewmode="years" style="display:inline-flex; margin-top:2px; margin-right:40px;">
+                                                                        <div class="input-group input date date-picker" {{ Auth::user()->hasRole(['owner','manager'])?'':'data-date-start-date="-30d"' }} data-date="{{ \Carbon\Carbon::today()->format('d-m-Y') }}" data-date-format="dd-mm-yyyy" data-date-viewmode="years" style="display:inline-flex; margin-top:2px; margin-right:40px;">
                                                                             <input type="text" class="form-control" name="start_date" readonly style="background-color:#ffffff;" value="{{ \Carbon\Carbon::today()->format('d-m-Y') }}">
                                                                             <span class="input-group-btn">
                                                                                 <button class="btn default" type="button">

@@ -910,8 +910,9 @@
                 }
             });
         }
+
         @if($unlink_sso)
-            function unlink_from_sso() {
+        function unlink_from_sso() {
                 $.ajax({
                     url: '{{ route('unlink_sso_account') }}',
                     type: 'post',
@@ -930,8 +931,6 @@
                 });
             }
         @endif
-
-
 
         $(".user_avatar_select_btn1").on("click", function(){
             App.blockUI({

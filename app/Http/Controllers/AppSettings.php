@@ -247,7 +247,7 @@ class AppSettings extends Controller
         {
             $settings_groups[$row->id] = $row;
         }
-       
+
         $sidebar_link = 'admin-settings-manage_settings';
 
         return view('admin/settings/manage_settings', [

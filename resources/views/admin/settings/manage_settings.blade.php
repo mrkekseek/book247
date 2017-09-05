@@ -73,7 +73,7 @@
                                                     <td> {{ $key+1 }} </td>
                                                     <td> {{ $s->name }} </td>
                                                     <td> {{ $s->description }}</td>
-                                                    
+
                                                     @if ($s->constrained)
                                                         <td>
                                                             <form role="form" class="setting_unconstrained" data-id="{{ $s->id }}">
@@ -102,19 +102,19 @@
                                                                         <input {{ $s->is_protected && env('DebugSettings',1)==0?'readonly disabled':'' }} data-min="{{ $s->min_value }}" data-max="{{ $s->max_value }}" type="text" class="form-control" name="field_numeric" value="{{ $s->value }}" placeholder="{{ $s->min_value }} ... {{ $s->max_value }}"  />
                                                                     </div>
                                                                 @elseif ($s->data_type == 'string')
-                                                               
+
                                                                     <div class="col-sm-10 form-group">
                                                                         <input {{ $s->is_protected && env('DebugSettings',1)==0?'readonly disabled':'' }} type="text" class="form-control" value="{{ $s->value }}" name="field_string" placeholder="String"  />
                                                                     </div>
-                                                               
+
                                                                 @elseif ($s->data_type == 'text')
-                                                                
+
                                                                     <div class="col-sm-10 form-group">
                                                                         <textarea {{ $s->is_protected && env('DebugSettings',1)==0?'readonly disabled':'' }} type="text" class="form-control" name="field_text" placeholder="Text">{{ $s->value }}</textarea>
                                                                     </div>
-                                                                
+
                                                                  @elseif ($s->data_type == 'date')
-                                                               
+
                                                                     <div class="col-sm-10 form-group">
                                                                         <input {{ $s->is_protected && env('DebugSettings',1)==0?'readonly disabled':'' }} type="text" class="form-control" value="{{ $s->value }}" name="field_date" placeholder="Date"  />
                                                                     </div>

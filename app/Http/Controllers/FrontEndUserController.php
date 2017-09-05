@@ -1066,6 +1066,14 @@ class FrontEndUserController extends Controller
 
         $locations = ShopLocations::whereIn('visibility',['public','pending','suspended'])->orderBy('name','ASC')->get();
 
+        $loginLogs = DB::table('activity_log')->where('user_id','=',$member->id)->where('content_type','=','login')->orderBy('id','desc')->first();
+        if ($loginLogs){
+            $unlink_sso = false;
+        }
+        else{
+            $unlink_sso = true;
+        }
+
         $breadcrumbs = [
             'Home'              => route('admin'),
             'Administration'    => route('admin'),
@@ -1103,7 +1111,7 @@ class FrontEndUserController extends Controller
             'canCancel'     => $canCancel,
             'canFreeze'     => $canFreeze,
             'locations'     => $locations,
-            'unlink_sso'    => $user->hasRole('owner')
+            'unlink_sso'    => $unlink_sso
         ]);
     }
 
@@ -5581,8 +5589,9 @@ This message is private and confidential. If you have received this message in e
 
     public function auth_autorize(Request $request){
         $data = $request->input('data');
+        $data['username'] = trim(strtolower($data['username']));
 
-        $u = User::where('username',$data['username'])->first();
+        $u = User::where('username', $data['username'])->first();
         if ($u && $u->status != 'active' ) {
             return  [
                 'success' => false,

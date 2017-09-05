@@ -307,7 +307,10 @@ class AdminController extends Controller
 
     public function ajax_authenticate(Request $request)
     {
-        if (Auth::attempt(['username' => $request->input('username'), 'password' => $request->input('password')])) {
+        $vars = $request->only('username', 'password');
+        $vars['username'] = trim(strtolower($vars['username']));
+
+        if (Auth::attempt(['username' => $vars['username'], 'password' => $vars['password']])) {
             // Authentication passed...
             $user = Auth::user();
             // check user status

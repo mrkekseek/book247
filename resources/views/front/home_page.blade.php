@@ -1442,6 +1442,7 @@
                 }
             });
         }
+
         function auth_autorize(data){
             $.ajax({
                 url: '{{ route('ajax/auth_autorize') }}',
