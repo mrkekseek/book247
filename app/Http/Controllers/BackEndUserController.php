@@ -262,10 +262,9 @@ class BackEndUserController extends Controller
 
         if (!isset($vars['password']) || $vars['password']==""){
             $password = str_random(12);
-            $vars['password'] = Hash::make($password);
+            $vars['password'] = $password;
         } else {
             $password = $vars['password'];
-            $vars['password'] = Hash::make($password);
         }
 
         if (!isset($vars['country_id'])){
@@ -309,6 +308,7 @@ class BackEndUserController extends Controller
                     'errors'    => $validator->getMessageBag()->toArray()
                 );
             }
+        $credentials['password'] = bcrypt($credentials['password']);
         try {
             $dataForApi = $credentials + $personalData;
             if (ApiAuth::checkExist($dataForApi['username'])['success'])
