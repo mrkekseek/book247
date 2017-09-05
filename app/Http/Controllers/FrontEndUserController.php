@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\applicationSetting;
 use App\Booking;
 use App\BookingInvoice;
 use App\BookingInvoiceItem;
@@ -859,6 +860,14 @@ class FrontEndUserController extends Controller
         $locations = ShopLocations::all();
 
         $store_credit_products = StoreCreditProducts::all();
+        $show_pending = false;
+
+
+        foreach ($plannedInvoicesAndActions as $action){
+            if (isset($action['object']['processed']) && $action['object']['processed'] == 0) {
+                $show_pending = true;
+            }
+        }
 
         return view('admin/front_users/view_member_account_settings', [
             'user'              => $member,
@@ -885,7 +894,8 @@ class FrontEndUserController extends Controller
             'InvoicesActionsPlanned'=> $plannedInvoicesAndActions,
             'storeCreditNotes'  => $storeCredit,
             'locations' => $locations,
-            'store_credit_products' => $store_credit_products
+            'store_credit_products' => $store_credit_products,
+            'show_pending'      => $show_pending
         ]);
     }
 
@@ -1056,6 +1066,14 @@ class FrontEndUserController extends Controller
 
         $locations = ShopLocations::whereIn('visibility',['public','pending','suspended'])->orderBy('name','ASC')->get();
 
+        $loginLogs = DB::table('activity_log')->where('user_id','=',$member->id)->where('content_type','=','login')->orderBy('id','desc')->first();
+        if ($loginLogs){
+            $unlink_sso = false;
+        }
+        else{
+            $unlink_sso = true;
+        }
+
         $breadcrumbs = [
             'Home'              => route('admin'),
             'Administration'    => route('admin'),
@@ -1092,7 +1110,8 @@ class FrontEndUserController extends Controller
             'invoiceFreeze'         => $invoiceFreeze,
             'canCancel'     => $canCancel,
             'canFreeze'     => $canFreeze,
-            'locations'     => $locations
+            'locations'     => $locations,
+            'unlink_sso'    => $unlink_sso
         ]);
     }
 
@@ -1669,11 +1688,12 @@ class FrontEndUserController extends Controller
             'username'      => trim($vars['personal_email'])
         ];
 
-        if (Auth::user()->id!=$user->id || $user->sso_user_id!=null){
+        if ($user->sso_user_id != null && Auth::user()->id != $user->id){
             // only user can change his email address
             // or
             // employees when sso_user_id is not set up
             $userVars['email'] = $user->email;
+            $userVars['username'] = $user->email;
         }
 
         $validator = Validator::make($userVars, User::rules('PUT', $user->id), User::$messages, User::$attributeNames);
@@ -2911,8 +2931,8 @@ This message is private and confidential. If you have received this message in e
             'middle_name'   => trim($vars['middle_name']),
             'last_name'     => trim($vars['last_name']),
             'gender'        => $vars['gender'],
-            'username'      => trim($vars['username']),
-            'email'         => trim($vars['email']),
+            'username'      => trim(strtolower($vars['username'])),
+            'email'         => trim(strtolower($vars['email'])),
             'password'      => $vars['password'],
             'country_id'    => $vars['country_id'],
             'status'        => 'active',
@@ -2953,7 +2973,14 @@ This message is private and confidential. If you have received this message in e
             }
             else{
                 $dataForApi = $credentials + $personalData;
-                $api_user = Auth::create_api_user($dataForApi, $password_api);
+                //
+                if(Auth::check_exist_api_user($dataForApi['email'])){
+                    $account = ApiAuth::accounts_get_by_username($dataForApi['email']);
+                    $api_user = $account['data']->id;
+                } else {
+                    $api_user = Auth::create_api_user($dataForApi, $password_api);
+                }
+
                 if ( ! $api_user)
                 {
                     return [
@@ -3124,6 +3151,9 @@ This message is private and confidential. If you have received this message in e
                 'errors'    => $validator->getMessageBag()->toArray()
             ];
         }
+        // Normalization
+        $client_vars['email'] = trim(strtolower($client_vars['email']));
+        $client_vars['username'] = trim(strtolower($client_vars['username']));
 
         $credentials = $client_vars;
         $text_psw    = $client_vars['password'];
@@ -4019,6 +4049,7 @@ This message is private and confidential. If you have received this message in e
         return $bookings;
     }
 
+
     public function get_user_transaction_list($userID = -1){
         if (Auth::check()) {
             $user = Auth::user();
@@ -4032,7 +4063,7 @@ This message is private and confidential. If you have received this message in e
         }
 
         $transactionList = [];
-        $generalTransactions = UserStoreCredits::where('member_id','=',$userID)->get();
+        $generalTransactions = UserStoreCredits::where('member_id','=',$userID)->orderBy('id', 'ASC')->get();
         if (sizeof($generalTransactions)>0){
             $colorStatus = '#fff';
             foreach ($generalTransactions as $key => $single_transaction){
@@ -4048,7 +4079,6 @@ This message is private and confidential. If you have received this message in e
                 }
 
                 $transactionList[] = [
-                    '<div class="'.$colorStatus.'"></div><a href="javascript:;"> #'.($key + 1).' </a>',
                     $single_transaction->title,
                     ($single_transaction->value) > 0 ? '+'. $single_transaction->value : $single_transaction->value,
                     $added_by,
@@ -4224,6 +4254,11 @@ This message is private and confidential. If you have received this message in e
             return redirect()->intended(route('homepage'));
         }
 
+        // protect page if the option to buy memberships from frontend is not active
+        if (AppSettings::get_setting_value_by_name('globalWebsite_show_memberships_on_frontend')==0){
+            return redirect()->intended(route('homepage'));
+        }
+
         $my_plan = UserMembership::where('user_id','=',$user->id)->whereIn('status',['active','suspended'])->get()->first();
         if ($my_plan){
             $restrictions = $my_plan->get_plan_restrictions();
@@ -4339,7 +4374,7 @@ This message is private and confidential. If you have received this message in e
 
         $avatar = $user->get_avatar_image();
 
-        $userMembership = UserMembership::where('user_id','=',$user->id)->get()->first();
+        $userMembership = UserMembership::where('user_id','=',$user->id)->whereIn('status',['active','suspended'])->get()->first();
         if ($userMembership){
             $membershipName = $userMembership->membership_name;
         }
@@ -4511,6 +4546,61 @@ This message is private and confidential. If you have received this message in e
             'in_sidebar'  => $sidebar_link,
             'token'       => $token
         ]);
+    }
+
+    public function unlink_sso_account(Request $r)
+    {
+        $user = Auth::user();
+        if ( ! $user || !$user->hasRole('owner')) {
+            return [
+                'success' => false,
+                'title'   => 'Permission denied.',
+                'errors'  => 'You don\'t have permission to do that.'
+            ];
+        }
+
+        if (!$r->get('user_id')) {
+            return [
+                'success' => false,
+                'title'   => 'Invalid user.',
+                'errors'  => 'You don\'t have permission to do that.'
+            ];
+        }
+
+        $member = User::find($r->get('user_id'));
+        if (!$member->sso_user_id) {
+            return [
+                'success' => false,
+                'title'   => 'Invalid user.',
+                'errors'  => 'The user was not found on the sso.'
+            ];
+        }
+
+        if (Auth::check_exist_api_user($member->email)) {
+            $activity = Activity::where('user_id',$member->id)->where('content_type','login')->get();
+            if (sizeof($activity)) {
+                return [
+                    'success' => false,
+                    'title'   => 'User is active.',
+                    'errors'  => 'You cannot unlink an active user.'
+                ];
+            } else {
+                $member->sso_user_id = null;
+                $member->save();
+                return [
+                    'success' => true,
+                    'title'   => 'User unlinked.',
+                    'message'  => 'The user was unlinked.'
+                ];
+            }
+        } else {
+            return [
+                'success' => false,
+                'title'   => 'Invalid user.',
+                'errors'  => 'The user was not found on the sso.'
+            ];
+        }
+
     }
 
     public function activate_user_by_token(Request $request, $token){
@@ -5499,8 +5589,9 @@ This message is private and confidential. If you have received this message in e
 
     public function auth_autorize(Request $request){
         $data = $request->input('data');
+        $data['username'] = trim(strtolower($data['username']));
 
-        $u = User::where('username',$data['username'])->first();
+        $u = User::where('username', $data['username'])->first();
         if ($u && $u->status != 'active' ) {
             return  [
                 'success' => false,
@@ -5584,13 +5675,13 @@ This message is private and confidential. If you have received this message in e
             $total = 0;
             $discount = 0;
             $vat = [];
-
+            $total_vat = 0;
             $items = InvoiceItem::where('invoice_id', '=', $invoice->id)->get();
 
             foreach ($items as $item) {
                 $item_one_price = $item->price - (($item->price * $item->discount) / 100);
                 $item_vat = $item_one_price * ($item->vat / 100);
-
+                $total_vat += $item_vat;
                 if (isset($vat[$item->vat])) {
                     $vat[$item->vat] += $item_vat * $item->quantity;
                 } else {
@@ -5665,7 +5756,8 @@ This message is private and confidential. If you have received this message in e
             'country' => $country,
             'payee_country' => $payee_country,
             'show_stripe' => \Config::get("stripe.stripe_secret"),
-            'credit' => $credits
+            'credit' => $credits,
+            'total_vat' => $total_vat
         ]);
     }
 
@@ -5834,6 +5926,16 @@ This message is private and confidential. If you have received this message in e
                 $user->update_available_store_credit();
                 $invoice->status = 'completed';
                 $invoice->save();
+                if ($invoice->invoice_type == "booking_invoice") {
+                    $booking_invoice = BookingInvoice::find($invoice->invoice_reference_id);
+                    $booking_invoice->status = 'completed';
+                    $booking_invoice->save();
+                    foreach ($booking_invoice->get_unpaid_invoice_items() as $item) {
+                        $booking_item = BookingInvoiceItem::find($item);
+                        $booking_invoice->add_transaction($user->id, $booking_item->id, $booking_item->price, 'credit', 'Frontend invoice manual payment', 'completed');
+                    }
+
+                }
                 $invoice->add_transaction($user->id, 'credit', 'completed', 'Frontend - ' . $invoice->invoice_type . ' paid with store credit');
                 return [
                     'success' => TRUE,

@@ -139,7 +139,9 @@
                                                                 </thead>
                                                                 <tbody>
                                                                 @foreach ($bookings as $booking)
-                                                                    @if ($booking['status']=='active') { continue;} @endif
+                                                                    @if ($booking['status']=='active')
+                                                                        @continue;
+                                                                    @endif
                                                                     <tr>
                                                                         <td class="highlight">
                                                                             <div class="{{ $booking['color_status'] }}"></div>

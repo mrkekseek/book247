@@ -615,6 +615,11 @@ if (env('FEDERATION',false)){
             'uses' => 'FrontEndUserController@all_front_members_list'
         ]);
 
+        Route::get('admin/bookings/dropins-rules', [
+            'as' => 'admin/bookings/dropins-rules',
+            'uses' => 'MembershipPlansController@dropins_rules'
+        ]);
+
         Route::get('admin/front_users/view_all_members_new', [
             'as' => 'admin/front_users/view_all_members_new',
             'uses' => 'FrontEndUserController@all_front_members_list'
@@ -655,6 +660,12 @@ if (env('FEDERATION',false)){
             'uses' => 'FrontEndUserController@show_account_settings'
         ]);
 
+        Route::post('admin/front_users/unlink_sso_account', [
+            'as' => 'unlink_sso_account',
+            'uses' => 'FrontEndUserController@unlink_sso_account'
+        ]);
+
+
         Route::get('admin/front_users/{id}/view_personal_settings', [
             'as' => 'admin/front_users/view_personal_settings',
             'uses' => 'FrontEndUserController@show_personal_settings'
@@ -664,6 +675,8 @@ if (env('FEDERATION',false)){
             'as' => 'admin/front_users/view_bookings',
             'uses' => 'FrontEndUserController@show_bookings'
         ]);
+
+
 
         Route::get('admin/front_users/{id}/view_finance', [
             'as' => 'admin/front_users/view_finance',
@@ -893,12 +906,17 @@ if (env('FEDERATION',false)){
 
         Route::post('membership_plans/changed_active_plan', [
             'as' => 'admin/membership_plans/changed_active_plan',
-            'uses' => 'MembershipController@change_active_membership_fr_member'
+            'uses' => 'MembershipController@change_active_membership_for_member'
         ]);
 
         Route::post('membership_plans/freeze_member_plan', [
             'as' => 'admin/membership_plans/freeze_member_plan',
             'uses' => 'MembershipController@freeze_membership_for_member'
+        ]);
+
+        Route::post('membership_plans/unfreeze_member_plan', [
+            'as' => 'admin/membership_plans/unfreeze_member_plan',
+            'uses' => 'MembershipController@unfreeze_membership_for_member'
         ]);
 
         Route::post('membership_plans/cancel_member_plan', [
@@ -1021,9 +1039,6 @@ if (env('FEDERATION',false)){
             'uses' => 'FrontEndUserController@get_user_transaction_list'
         ]);
 
-
-
-
         Route::get('view_invoice/{id}', [
             'as' => 'front/view_invoice/',
             'uses' => 'FrontEndUserController@front_show_invoice'
@@ -1068,6 +1083,11 @@ if (env('FEDERATION',false)){
         Route::post('singup_membership_plan', [
             'as' => 'front/singup_membership_plan',
             'uses' => 'FrontEndUserController@singup_membership_plan_ajax_call'
+        ]);
+
+        Route::post('membership_plan/cancel_member_plan', [
+            'as' => 'front/membership_plan/cancel_member_plan',
+            'uses' => 'MembershipController@cancel_membership_for_member'
         ]);
 
         Route::get('calendar_booking/{day}/', [

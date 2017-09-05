@@ -60,9 +60,13 @@
                                         {{ $templates[$i]["hook"] }}
                                     </td>
                                     <td>
-                                        @foreach($templates[$i]["variables"] as $index => $var)
+                                        @if (isset($templates[$i]["variables"]) && is_array($templates[$i]["variables"]))
+                                            @foreach($templates[$i]["variables"] as $index => $var)
                                             <span class="label label-default label-var">{{ $var }}</span>
-                                        @endforeach
+                                            @endforeach
+                                        @else
+                                            -
+                                        @endif
                                     </td>
                                     <td>
                                         {{ $templates[$i]["country"]->name }}

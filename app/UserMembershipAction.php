@@ -50,7 +50,7 @@ class UserMembershipAction extends Model
             {
                 return [
                     'user_membership_id' => 'required|exists:user_memberships,id',
-                    'action_type'   => 'required|in:freeze,cancel,update,unknown',
+                    'action_type'   => 'required|in:freeze,cancel,update,unknown,unfreeze',
                     'additional_values'  => 'min:2|max:6000',
                     'start_date'    => 'required|date',
                     'end_date'  => 'required|date',
@@ -64,7 +64,7 @@ class UserMembershipAction extends Model
             {
                 return [
                     'user_membership_id' => 'required|exists:user_memberships,id',
-                    'action_type'   => 'required|in:freeze,cancel,update,unknown',
+                    'action_type'   => 'required|in:freeze,cancel,update,unknown,unfreeze',
                     'additional_values'  => 'min:2|max:6000',
                     'start_date'    => 'required|date',
                     'end_date'  => 'required|date',
@@ -93,6 +93,7 @@ class UserMembershipAction extends Model
         switch ($this->action_type) {
             case 'freeze' : {
                 if ($this->processed == 0) {
+
                     // we need to recalculate invoices so we search for next pending invoice in the membership
                     $nextInvoice = UserMembershipInvoicePlanning::where('user_membership_id', '=', $userMembership->id)->where('status', '=', 'pending')->orderBy('issued_date', 'ASC')->first();
                     if ($nextInvoice) {
@@ -228,6 +229,16 @@ class UserMembershipAction extends Model
                 }
                 break;
             }
+            case 'unfreeze':
+                $userMembership->status = 'active';
+                $userMembership->save();
+                MembershipController::unfreeze_membership_rebuild_invoices($userMembership);
+                $this->add_note('Membership unfrozen today : ' . time() . ' : by System User');
+                $this->status = 'old';
+                $this->processed = 1;
+                $this->save();
+                return true;
+                break;
             default : {
                 $this->processed = 1;
                 $this->status = 'old';

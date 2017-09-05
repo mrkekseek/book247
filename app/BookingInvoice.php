@@ -8,6 +8,7 @@ use Validator;
 use App\ShopLocations;
 use App\ShopResource;
 use App\VatRate;
+use App\BookingFinancialTransaction;
 use Carbon\Carbon;
 use Auth;
 use App\Http\Controllers\AppSettings;
@@ -233,6 +234,28 @@ class BookingInvoice extends Model
         }
 
         return true;
+    }
+
+    public function get_unpaid_invoice_items(){
+        // we get paid or pending transactions
+        $transactions = BookingFinancialTransaction::where('booking_invoice_id','=',$this->id)->whereIn('status',['pending','processing','completed'])->get();
+        $alreadyPaid = [];
+        foreach($transactions as $single){
+            $alreadyPaid = array_merge($alreadyPaid, $single->booking_invoice_item_id);
+        }
+
+        $unpaidItems = BookingInvoiceItem::where('booking_invoice_id','=',$this->id)->whereNotIn('id', $alreadyPaid)->get();
+        if ($unpaidItems){
+            $unpaid = [];
+            foreach($unpaidItems as $single){
+                $unpaid[] = $single->id;
+            }
+        }
+        else{
+            $unpaid = [];
+        }
+
+        return $unpaid;
     }
 
     public function check_if_paid(){

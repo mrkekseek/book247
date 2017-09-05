@@ -126,7 +126,6 @@
                                                             <thead>
                                                                 <tr>
                                                                     <th> Product </th>
-                                                                    <th> Original Price </th>
                                                                     <th> Price </th>
                                                                     <th> Quantity </th>
                                                                     <th> Tax Amount </th>
@@ -145,18 +144,18 @@
                                                                         <td>
                                                                            {{ number_format($item->price, 2) }}
                                                                         </td>
-                                                                        <td>
-                                                                            {{ number_format($item->price - (($item->discount * $item->price) / 100), 2) }}
-                                                                            
-                                                                        </td>
+                                                                        {{--<td>--}}
+                                                                            {{--{{ number_format($item->price - (($item->discount * $item->price) / 100), 2) }}--}}
+                                                                            {{----}}
+                                                                        {{--</td>--}}
                                                                         <td>
                                                                             {{ $item->quantity }}
                                                                         </td>
                                                                         <td>
-                                                                            -
+                                                                            {{ number_format(($item->vat/100) * $item->price,2) }}
                                                                         </td>
                                                                         <td>
-                                                                            -
+                                                                            {{ $item->vat }} %
                                                                         </td>
                                                                         <td>
                                                                             {{ number_format($item->discount, 2) }} %
@@ -185,6 +184,10 @@
                                                 <div class="row static-info align-reverse">
                                                     <div class="col-md-8 name"> Discount: </div>
                                                     <div class="col-md-3 value"> {{ number_format($discount, 2) }} {{\App\Http\Controllers\AppSettings::get_setting_value_by_name('finance_currency')}}</div>
+                                                </div>
+                                                <div class="row static-info align-reverse">
+                                                    <div class="col-md-8 name"> VAT: </div>
+                                                    <div class="col-md-3 value"> {{ number_format($total_vat,2) }} {{\App\Http\Controllers\AppSettings::get_setting_value_by_name('finance_currency')}}</div>
                                                 </div>
                                                 <div class="row static-info align-reverse">
                                                     <div class="col-md-8 name"> Grand Total: </div>
@@ -603,7 +606,7 @@
                                 }
                                 else
                                 {
-                                    show_notification(data.title, data.errors, 'lime', 3500, 0); 
+                                    show_notification(data.title, data.errors, 'ruby', 3500, 0);
                                 }
 
                                 setTimeout(function(){
@@ -635,7 +638,7 @@
                         }
                         else
                         {
-                            show_notification(data.title, data.errors, 'lime', 3500, 0); 
+                            show_notification(data.title, data.errors, 'ruby', 3500, 0);
                         }
 
                         setTimeout(function(){

@@ -11,7 +11,7 @@ use App\User;
 use App\UserSettings;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Auth;
+use App\Http\Libraries\Auth;
 use Regulus\ActivityLog\Models\Activity;
 use Session;
 use App\Http\Requests;
@@ -87,9 +87,6 @@ class FrontPageController extends Controller
      */
     public function index()
     {
-        $errors = Session::get('errors', new MessageBag);
-
-        //BookingController::check_for_passed_bookings();
         BookingController::check_for_expired_pending_bookings();
 
         $user = Auth::user();

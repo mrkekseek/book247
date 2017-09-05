@@ -3,6 +3,7 @@
 namespace App\Http\Libraries;
 
 use App\Http\Libraries\ApiAuth;
+use App\Http\Requests\Request;
 use App\User;
 use App\PersonalDetail;
 use App\OptimizeSearchMembers;
@@ -11,6 +12,7 @@ use Illuminate\Support\Facades\Session;
 use \Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Auth as AuthLocal;
 use App\Http\Controllers\AppSettings;
+use Illuminate\Support\Facades\Storage;
 use Webpatser\Countries\Countries;
 
 class Auth
@@ -25,13 +27,14 @@ class Auth
     public static function user()
     {   
         self::set_session();
-        $session_sso = Session::get('sso_user_id');                       
+        $session_sso = Session::get('sso_user_id');
+        self::log_actions(' Auth::user() - sessionSSO='.$session_sso);
         if (!empty($session_sso))
         {
-            $user_locale = User::where('sso_user_id',$session_sso)->first();            
-            if ($user_locale)
-            {
-                return $user_locale;
+            self::log_actions(' Auth::user() - sessionSSO='.$session_sso);
+            $user_locale = User::where('sso_user_id','=',$session_sso)->get();
+            if (sizeof($user_locale)==1) {
+                return $user_locale[0];
             }
         }        
         return false;
@@ -194,9 +197,9 @@ class Auth
 
     private static function set_session()
     {
-        $cookie_sso = Cookie::get('sso_user_id');                
-        $session_sso = Session::get('sso_user_id');
-        $new_auth = Session::get('new_auth');
+        $cookie_sso     = Cookie::get('sso_user_id');
+        $session_sso    = Session::get('sso_user_id');
+        $new_auth       = Session::get('new_auth');
         if (!empty($cookie_sso) && !empty($session_sso) && $session_sso !== $cookie_sso && empty($new_auth))
         {            
             $session_sso = false;
@@ -221,6 +224,9 @@ class Auth
         elseif (empty($cookie_sso) && !empty($session_sso) && empty($new_auth))
         {
             Session::put('sso_user_id','');
+        }
+        else{
+            //Session::put('sso_user_id','');
         }
     }
     
@@ -410,4 +416,15 @@ class Auth
         return FALSE;
     }
 
+    private static function log_actions($data){
+        $toWrite = Carbon::now()->toDateTimeString().' - '.\Request::ip().' : ';
+        if (is_array($data) || is_object($data)){
+            $toWrite.= json_encode($data);
+        }
+        else{
+            $toWrite.= $data;
+        }
+
+        Storage::append('logs/sso_calls.log', $toWrite);
+    }
 }

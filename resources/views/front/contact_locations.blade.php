@@ -151,7 +151,7 @@
 @section('pageBelowLevelPlugins')
     <script src="{{ asset('assets/global/plugins/jquery-validation/js/jquery.validate.min.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/global/plugins/jquery-validation/js/additional-methods.min.js') }}" type="text/javascript"></script>
-    <script src="http://maps.google.com/maps/api/js?sensor=false&key={{ config('services.google.key') }}" type="text/javascript"></script>
+    <script src="//maps.google.com/maps/api/js?sensor=false&key=AIzaSyAfNX0y-wPkY8pImKKS-pu6QY0i_eKKLa4" type="text/javascript"></script>
     <script src="{{ asset('assets/global/plugins/gmaps/gmaps.min.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/global/plugins/jquery-notific8/jquery.notific8.min.js') }}" type="text/javascript"></script>
 @endsection
@@ -192,7 +192,6 @@
                             lng: 10.700865,
                             zoom: 13
                         });
-
 
                         for(var i in points)
                         {

@@ -69,9 +69,44 @@ class ActivityLog extends Controller{
         
         $offset = ! empty($in['start']) ? $in['start'] : 0;
         $limit = ! empty($in['length']) ? $in['length'] : 15;
-        
+        $filters        = $r->only('columns','order');
+        $orderColumn = $filters['order'][0]['column'];
+        $orderDirection = $filters['order'][0]['dir'];
+        switch($orderColumn){
+            case 1 : // order by full name
+                $orderByFirst = 'username';
+                break;
+            case 2 : // order by email
+                $orderByFirst = 'description';
+                break;
+            case 3 : // order by phone number
+                $orderByFirst = 'content_type';
+                break;
+            case 4 : // order by membership_id
+                $orderByFirst = 'ip_address';
+                break;
+            case 5 : // order by signing_date
+                $orderByFirst = 'created_at';
+                break;
+            default : // order by status
+                $orderByFirst = 'created_at';
+                break;
+        }
+
+        switch($orderDirection){
+            case 'desc':
+            case 'DESC':
+                $orderBySecond = 'desc';
+                break;
+            default:
+                $orderBySecond = 'asc';
+                break;
+        }
+
+
         $query = Activity::query();
-        
+
+
         ! empty ($vars['content_type']) ? $query->where('content_type', $vars['content_type']) : FAlSE;
         ! empty ($vars['ip']) ? $query->where('ip_address', 'LIKE', '%'.$vars['ip'].'%') : FAlSE;
         ! empty ($vars['from_date']) ? $query->where('created_at', '>', Carbon::createFromFormat('d/m/Y', $vars['from_date'])->format('Y-m-d 0:0:0')) : FAlSE;
@@ -79,8 +114,14 @@ class ActivityLog extends Controller{
         
         $recordsTotal = $query->count();
         ($limit != -1) ? $query->offset($offset) : FALSE; 
-        ($limit != -1) ? $query->limit($limit) : FALSE; 
-        $activity_log = $query->get();
+        ($limit != -1) ? $query->limit($limit) : FALSE;
+        if ($orderByFirst == 'username') {
+            $activity_log = $query->join('users','user_id','=','users.id')->orderBy('users.first_name', $orderBySecond)->orderBy('users.last_name', $orderBySecond)->get();
+//            dd($activity_log);
+        } else {
+            $activity_log = $query->orderBy($orderByFirst, $orderBySecond)->get();
+        }
+
         
         $iTotalRecords = sizeof($activity_log);
         $iDisplayLength = intval($_REQUEST['length']);
@@ -199,10 +240,10 @@ class ActivityLog extends Controller{
 
         }
 
-        if (isset($_REQUEST["customActionType"]) && $_REQUEST["customActionType"] == "group_action") {
-            $records["customActionStatus"] = "OK"; // pass custom message(useful for getting status of group actions)
-            $records["customActionMessage"] = "Group action successfully has been completed. Well done!"; // pass custom message(useful for getting status of group actions)
-        }
+//        if (isset($_REQUEST["customActionType"]) && $_REQUEST["customActionType"] == "group_action") {
+//            $records["customActionStatus"] = "OK"; // pass custom message(useful for getting status of group actions)
+//            $records["customActionMessage"] = "Group action successfully has been completed. Well done!"; // pass custom message(useful for getting status of group actions)
+//        }
 
         $records["draw"] = intval($_REQUEST['draw']);
         $records["start"] = $offset;

@@ -235,7 +235,8 @@ class User extends Authenticatable
                 );
             }
 
-            UserMembershipAction::create($fillable);
+            $action = UserMembershipAction::create($fillable);
+            //$action->process_action();
             // get first next invoice and check if the start date is included there
             $nextInvoice = UserMembershipInvoicePlanning::where('user_membership_id','=',$old_plan->id)->where('status','=','pending')->orderBy('issued_date','ASC')->get()->first();
             if ($nextInvoice){
@@ -250,6 +251,41 @@ class User extends Authenticatable
             }
 
             return true;
+        }
+        else{
+            return false;
+        }
+    }
+
+    public function unfreeze_membership_plan(UserMembership $plan){
+        if ($plan) {
+            // insert a membership action related to this membership freeze
+            $date = Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d').' 00:00:00');
+            $fillable = [
+                'user_membership_id'    => $plan->id,
+                'action_type'   => 'unfreeze',
+                'start_date'    => $date->format('Y-m-d'),
+                'end_date'      => $date->format('Y-m-d'),
+                'added_by'      => Auth::user()->id,
+                'notes'         => json_encode([]),
+                'processed'     => 0,
+                'status'        => 'active'
+            ];
+
+            $userMembershipAction = Validator::make($fillable, UserMembershipAction::rules('POST'), UserMembershipAction::$message, UserMembershipAction::$attributeNames);
+            if ($userMembershipAction->fails()){
+                //return $validator->errors()->all();
+                return array(
+                    'success'   => false,
+                    'title'     => 'Error Validating Action',
+                    'errors'    => $userMembershipAction->getMessageBag()->toArray()
+                );
+            }
+
+            $unfreeze_action = UserMembershipAction::create($fillable);
+            return $unfreeze_action->process_action();
+            // get first next invoice and check if the start date is included there
+
         }
         else{
             return false;
@@ -827,7 +863,7 @@ class User extends Authenticatable
 
 
 
-    private function add_store_credit($store_credit_fill){
+    public function add_store_credit($store_credit_fill){
         $user = Auth::user();
         if (!$user) {
             return [
