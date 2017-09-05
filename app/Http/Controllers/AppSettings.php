@@ -198,34 +198,11 @@ class AppSettings extends Controller
             return redirect()->intended(route('admin/login'));
         }
 
-        $allowed = array();
-        foreach (DB::table("allowed_setting_values")->get() as $row)
+        $settings = array();
+        foreach ( ! env('DebugSettings', 0) ? Settings::with(['application_setting', 'constraint_values'])->where('is_protected','=',0)->get() : Settings::all() as $row) 
         {
-            $allowed[$row->setting_id][] = $row;
-        }
-
-        $app_settings = array();
-        foreach (DB::table("application_settings")->get() as $row)
-        {
-            $app_settings[$row->setting_id] = $row->unconstrained_value != '' ? $row->unconstrained_value : $row->allowed_setting_value_id;
-        }
-
-        $allSettings = ! env('DebugSettings', 0) ? Settings::where('is_protected','=',0)->get() : Settings::all();
-
-        $settings = [];
-        foreach ($allSettings as $row)
-        {
-            $row['value'] = "";
-            $row['allowed'] = [];
-
-            if ( ! $row->constrained)
-            {
-                $row['value'] = isset($app_settings[$row->id]) ? $app_settings[$row->id] : $row['value'];
-            }
-            else
-            {
-                $row['allowed'] = isset($allowed[$row->id]) ? $allowed[$row->id] : $row['allowed'];
-            }
+            $row['value'] =  ! empty($row->application_setting->unconstrained_value) ? $row->application_setting->unconstrained_value : ( ! empty($row->application_setting->allowed_setting_value_id) ? $row->application_setting->allowed_setting_value_id : FALSE );
+            $row['allowed'] = $row->constraint_values ? : [];
 
             $settings[$row->setting_group ? : 1][] = $row;
         }
@@ -256,7 +233,7 @@ class AppSettings extends Controller
             'in_sidebar'    => $sidebar_link,
             'settings_list' => $settings,
             'data_types'    => array("string" => "String / Alphanumeric Values", "text" => "Text", "numeric" => "Numeric Only", "date" => "Date / DateTime Value"),
-            'allowed'       => $allowed,
+            'allowed'       => allowedSettingValue::get(),
             'settings_groups' => $settings_groups
         ]);
     }
