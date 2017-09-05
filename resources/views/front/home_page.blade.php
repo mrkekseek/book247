@@ -1333,7 +1333,7 @@
                     'middle_name': $('input[name="middlename"]').val(),
                     'dob': $('input[name="DOB"]').val(),
                     'gender': $('select[name=gender]').val(),
-                    'country': $('select[name=country]').val(),
+                    'country_id': $('select[name=country]').val(),
                 },
                 success: function (data) {
                     $('.content').unblock();

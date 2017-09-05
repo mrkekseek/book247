@@ -248,6 +248,7 @@ class BackEndUserController extends Controller
                 'title'     => 'Permission Error'];
         }
         $vars = $request->only('first_name', 'middle_name', 'last_name', 'email', 'phone_number', 'dob', 'gender', 'country_id', 'user_type', 'user_type');
+
         if (!isset($vars['middle_name'])){
             $vars['middle_name'] = '';
         }
@@ -270,6 +271,9 @@ class BackEndUserController extends Controller
         if (!isset($vars['country_id'])){
             $vars['country_id'] = AppSettings::get_setting_value_by_name('globalWebsite_defaultCountryId');
         }
+
+        $countryModel = Countries::where('id','=',$vars['country_id'])->first();
+
         $credentials = [
             'first_name'    => $vars['first_name'],
             'middle_name'   => $vars['middle_name'],
@@ -283,6 +287,7 @@ class BackEndUserController extends Controller
             'user_type'     => $vars['user_type']
         ];
         $password_api = $vars['password'];
+
         $validator = Validator::make($credentials, User::rules('POST'), User::$messages, User::$attributeNames);
         if ($validator->fails()){
             return array(
@@ -291,6 +296,7 @@ class BackEndUserController extends Controller
                 'errors'    => $validator->getMessageBag()->toArray()
             );
         }
+
         $personalData = [
                 'personal_email'=> $vars['email'],
                 'mobile_number' => $vars['phone_number'],
@@ -298,16 +304,19 @@ class BackEndUserController extends Controller
                 'bank_acc_no'   => 0,
                 'social_sec_no' => 0,
                 'about_info'    => '',
-                'customer_number'   => $user->get_next_customer_number()
+                'customer_number'   => $user->get_next_customer_number(),
+                'country_iso_3166_2' => $countryModel->country_iso_3166_2
             ];
+
         $validator = Validator::make($personalData, PersonalDetail::rules('POST'), PersonalDetail::$messages, PersonalDetail::$attributeNames);
-            if ($validator->fails()){
-                return array(
-                    'success'   => false,
-                    'title'     => 'Error validating',
-                    'errors'    => $validator->getMessageBag()->toArray()
-                );
-            }
+        if ($validator->fails()){
+            return array(
+                'success'   => false,
+                'title'     => 'Error validating',
+                'errors'    => $validator->getMessageBag()->toArray()
+            );
+        }
+
         $credentials['password'] = bcrypt($credentials['password']);
         try {
             $dataForApi = $credentials + $personalData;
@@ -344,8 +353,6 @@ class BackEndUserController extends Controller
             $user = User::create($credentials);
             // attach the roles to the new created user
             $user->attachRole($vars['user_type']);
-
-
 
 
             $main_message = 'Your account was successfully created. You can log in using your email and your password.<br/>';

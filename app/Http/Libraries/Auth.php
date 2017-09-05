@@ -341,6 +341,7 @@ class Auth
         {
             $user['password_api'] = $password;
         }
+
         if (!self::check_exist_api_user($user['username']))
         {
             if (isset($user['gender']))
@@ -355,10 +356,12 @@ class Auth
             {
                 $user['gender'] = 1;
             }
+
             if (isset($user['date_of_birth']))
             {
                 $user['date_of_birth'] = date('Y-m-d', strtotime($user['date_of_birth'])).'T00:00:00';
             }
+
             $api_user = ApiAuth::account_create($user);
             if ($api_user['success'])
             {

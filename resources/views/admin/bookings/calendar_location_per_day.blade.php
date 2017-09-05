@@ -1164,7 +1164,7 @@
                     'membership_plan': $('select[name="membership_plans_list"]').val(),
                     'dob': $('input[name="DOB"]').val(),
                     'gender': $('select[name=gender]').val(),
-                    'country': $('select[name=country]').val()
+                    'country_id': $('select[name=country]').val()
                 },
                 success: function (data) {
                     if (data.success==1) {

@@ -2875,7 +2875,7 @@ This message is private and confidential. If you have received this message in e
         }
 
         $vars = $request->only('first_name', 'middle_name', 'last_name', 'gender', 'email', 'phone_number', 'dob', 'password', 'rpassword', 'username', 'user_type',
-            'address1', 'address2', 'city', 'adr_country_id', 'postal_code', 'region',
+            'address1', 'address2', 'city', 'adr_country_id', 'postal_code', 'region', 'country_id',
             'membership_plan', 'start_date', 'sign_location'); //exit;
 
         if (!isset($vars['middle_name'])){

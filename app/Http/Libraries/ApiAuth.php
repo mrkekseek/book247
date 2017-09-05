@@ -24,7 +24,8 @@ class ApiAuth
         if ($response) {
             $result['success'] = true;
             $result['data'] = $response;
-        } else {
+        }
+        else {
             $result['success'] = false;
             $result['message'] = self::$error;
         }
@@ -38,10 +39,12 @@ class ApiAuth
         if ($response) {
             $result['success'] = true;
             $result['data'] = $response;
-        } else {
+        }
+        else {
             $result['success'] = false;
             $result['message'] = self::$error;
         }
+
         return $result;
     }
 
@@ -55,6 +58,21 @@ class ApiAuth
 
     public static function accounts_update($data = [])
     {
+        $defaultCountry = Countries::where('id','=',$data['country_id'])->first();
+        if ($defaultCountry){
+            $defaultCountry = $defaultCountry->iso_3166_2;
+        }
+        elseif (AppSettings::get_setting_value_by_name('globalWebsite_defaultCountryId')){
+            $defaultCountry = Countries::where('id','=',AppSettings::get_setting_value_by_name('globalWebsite_defaultCountryId'))->first()->iso_3166_2;
+        }
+        else{
+            $defaultCountry = 'NO';
+        }
+
+        if (!isset($data['country_iso_3166_2'])){
+            $data['country_iso_3166_2'] = $defaultCountry;
+        }
+
         $sortingArray = [
             'Id' => 0,
             'Username' => '',
@@ -62,20 +80,20 @@ class ApiAuth
             'Email' => '',
             'Birthday' => '',
             'Gender' => 0,
-            'CountryCode' => '00',
+            'CountryCode' => $defaultCountry,
             'FirstName' => '',
             'MiddleName' => '',
             'LastName' => '',
             'ResetToken' => '',
             'ResetTokenDate' => null,
             'PhoneNumber' => ''
-
         ];
         $apiData = [
             'ResetToken' => '',
             'ResetTokenDate' => '',
-            "CountryCode" => '00',
+            "CountryCode" => $defaultCountry,
         ];
+
         foreach ($data as $key => $value) {
             switch ($key) {
                 case 'id':
@@ -110,6 +128,7 @@ class ApiAuth
                     break;
             }
         }
+
         foreach ($sortingArray as $key => $value) {
             if (!empty($apiData[$key])) {
                 $sortingArray[$key] = $apiData[$key];
@@ -120,11 +139,13 @@ class ApiAuth
             self::send_curl($sortingArray, 'api/Accounts', 'PUT');
             if (empty(self::$error)) {
                 $result['success'] = true;
-            } else {
+            }
+            else {
                 $result['success'] = false;
                 $result['message'] = self::$error;
             }
-        } else {
+        }
+        else {
             $result['success'] = false;
             $result['message'] = 'There is an user with same email on the single sign on.';
         }
@@ -133,6 +154,22 @@ class ApiAuth
 
     public static function account_create($data = [])
     {
+        $defaultCountry = Countries::where('id','=',$data['country_id'])->first();
+
+        if ($defaultCountry){
+            $defaultCountry = $defaultCountry->iso_3166_2;
+        }
+        elseif (AppSettings::get_setting_value_by_name('globalWebsite_defaultCountryId')){
+            $defaultCountry = Countries::where('id','=',AppSettings::get_setting_value_by_name('globalWebsite_defaultCountryId'))->first()->iso_3166_2;
+        }
+        else{
+            $defaultCountry = 'NO';
+        }
+
+        if (!isset($data['country_iso_3166_2'])){
+            $data['country_iso_3166_2'] = $defaultCountry;
+        }
+
         $sortingArray = [
             'Id' => 0,
             'Username' => '',
@@ -140,7 +177,7 @@ class ApiAuth
             'Email' => '',
             'Birthday' => '',
             'Gender' => 0,
-            'CountryCode' => '00',
+            'CountryCode' => $defaultCountry,
             'FirstName' => '',
             'MiddleName' => '',
             'LastName' => '',
@@ -155,8 +192,9 @@ class ApiAuth
             'ResetToken' => '',
             'ResetTokenDate' => '',
             'Gender' => 1,
-            "CountryCode" => '00'
+            "CountryCode" => $defaultCountry
         ];
+
         foreach ($data as $key => $value) {
             switch ($key) {
                 case 'username':
@@ -186,8 +224,12 @@ class ApiAuth
                 case 'date_of_birth':
                     $apiData['Birthday'] = $value;
                     break;
+                case 'country_iso_3166_2':
+                    $apiData['CountryCode'] = $value;
+                    break;
             }
         }
+
         foreach ($sortingArray as $key => $value) {
             if (!empty($apiData[$key])) {
                 $sortingArray[$key] = $apiData[$key];
@@ -203,10 +245,12 @@ class ApiAuth
         if ($response) {
             $result['success'] = true;
             $result['data'] = $response;
-        } else {
+        }
+        else {
             $result['success'] = false;
             $result['message'] = self::$error;
         }
+
         return $result;
     }
 
@@ -216,7 +260,8 @@ class ApiAuth
         $response = self::send_curl($get, 'api/Accounts/CheckIfExists', 'GET');
         if ($response) {
             $result['success'] = true;
-        } else {
+        }
+        else {
             $result['success'] = false;
             $result['message'] = self::$error;
         }
@@ -236,10 +281,12 @@ class ApiAuth
                     break;
             }
         }
+
         $response = self::send_curl($apiData, 'api/Accounts/Authorize', 'POST');
         if ($response) {
             $result['success'] = true;
-        } else {
+        }
+        else {
             $result['success'] = false;
             $result['message'] = self::$error;
         }
@@ -254,7 +301,8 @@ class ApiAuth
         if ($response) {
             $result['success'] = true;
             $result['data'] = $response;
-        } else {
+        }
+        else {
             $result['success'] = false;
             $result['message'] = self::$error;
         }
@@ -266,7 +314,8 @@ class ApiAuth
         self::send_curl($data, 'api/Accounts/PasswordUpdate', 'POST');
         if (empty(self::$error)) {
             $result['success'] = true;
-        } else {
+        }
+        else {
             $result['success'] = false;
             $result['message'] = self::$error;
         }
@@ -277,13 +326,11 @@ class ApiAuth
     {
         $get = '?phoneNumber='.$phone_number;
         $response = self::send_curl($get, 'api/Accounts/GetByPhoneNumber', 'GET');
-        if ($response) 
-        {
+        if ($response) {
             $result['success'] = true;
             $result['data'] = $response;
         } 
-        else 
-        {
+        else {
             $result['success'] = false;
             $result['message'] = self::$error;
         }
@@ -296,6 +343,7 @@ class ApiAuth
             $data = json_encode($data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
         }
         $hash = base64_encode(hash_hmac('sha256', $data, env('SSO_API_APIKEY',false), TRUE));
+
         return $hash;
     }
 
@@ -344,8 +392,8 @@ class ApiAuth
             if (FALSE === $curl_results)
                 throw new Exception(curl_error($curl), curl_errno($curl));
 
-        } catch(Exception $e) {
-
+        }
+        catch(Exception $e) {
             trigger_error(sprintf(
                 'Curl failed with error #%d: %s',
                 $e->getCode(), $e->getMessage()),
@@ -363,7 +411,8 @@ class ApiAuth
 
         if ($result && !isset($result->Code)) {
             return $result;
-        } else {
+        }
+        else {
             self::$error = isset($result->Message) ? $result->Message : '';
             return false;
         }
@@ -378,8 +427,7 @@ class ApiAuth
         return $hash;
     }
 
-    public static function send($data, $api_url, $method = 'GET')
-    {
+    public static function send($data, $api_url, $method = 'GET') {
         $toLog['title'] = 'ApiAuth::send - '.$api_url;
 
         if ($method == 'GET') {
@@ -426,22 +474,24 @@ class ApiAuth
 
         if ($result && !isset($result->Code)) {
             return $result;
-        } else {
+        }
+        else {
             self::$error = isset($result->Message) ? $result->Message : '';
             return false;
         }
     }
 
-    public static function synchronize($sso_id)
-    {
+    public static function synchronize($sso_id){
         $user = User::where('sso_user_id', $sso_id)->first();
         if (isset($user)) {
             return true;
         }
+
         $account = self::accounts_get($sso_id);
         if ($account['success'] == false) {
             return "User not found in SSO!";
         }
+
         $sso_user = $account['data'];
         $similar_user = User::where('username',$sso_user->username)->first();
         if (isset($similar_user)) {
@@ -450,7 +500,8 @@ class ApiAuth
                 return true;
             }
             return "User found locally! Cannot save this SSO!";
-        } else {
+        }
+        else {
             $country = Countries::where('iso_3166_2',$sso_user->countryCode)->first();
             $userType = Role::where('name','=','front-user')->first();
 
@@ -489,19 +540,20 @@ class ApiAuth
                 $number .= rand(0,9);
                 $i += 1;
             }
+
             $user_info->fill([
                 'user_id' => $user->id,
                 'personal_email' => $user->email,
                 'mobile_number' => $sso_user->phoneNumber ? $sso_user->phoneNumber : $number,
                 'date_of_birth' => $sso_user->birthday
             ]);
+
             if (!$user_info->save()){
                 return "User info cannot be saved locally!";
             }
 
             return true;
         }
-
     }
 
     public static function getActivities(){
@@ -510,7 +562,8 @@ class ApiAuth
         if ($response) {
             $result['success'] = true;
             $result['activities'] = $response;
-        } else {
+        }
+        else {
             $result['success'] = false;
             $result['message'] = self::$error;
         }
