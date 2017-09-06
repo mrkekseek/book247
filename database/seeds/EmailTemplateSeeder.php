@@ -31,6 +31,8 @@ class EmailTemplateSeeder extends Seeder
             ['Registration successful!', 'Registering - existing owner', '["first_name","last_name","email","club_name","password"]', 'Registration successful existing owner', 'Registering - existing owner', '0', 578, '2017-07-05 09:57:00', '2017-08-11 12:55:25'],
             ['Registration successful!', 'Registration - new owner', '["first_name","last_name","email","club_name","password"]', 'Registration successful new owner', 'Registration - new owner', '0', 578, '2017-07-05 09:57:00', '2017-08-11 12:55:25'],
             ['Hello [[first_name]] [[last_name]]. Your account was created.', 'Your account was successfully created.', '["first_name","last_name","email","middle_name","password","email","username","role"]', 'Your account was successfully created. You can log in using your email and your password.<br/>First Name: <b>[[first_name]]</b><br/>Middle Name: <b>[[middle_name]]</b><br/>Last Name: <b>[[last_name]]</b><br/>Username: <b>[[username]]</b><br/>Email: <b>[[email]]</b><br/>Password: <b>[[password]]</b><br/>Role: <b>[[role]]</b><br/>', 'New back end user registration', '0', 578, '2017-07-05 09:57:00', '2017-08-11 12:55:25'],
+            ['Email changed!', 'Email changed', '["new_email"]', 'Your email was successfully changed. It was changed to [[new_email]]</b>.', 'Email change new email', '0', 578, '2017-07-05 09:57:00', '2017-08-11 12:55:25'],
+            ['Email changed!', 'Email changed', '["new_email"]', 'Your email was successfully changed. It was changed to <b>[[new_email]]</b>.', 'Email change old email', '0', 578, '2017-07-05 09:57:00', '2017-08-11 12:55:25'],
 
         ];
 

@@ -4917,6 +4917,52 @@ This message is private and confidential. If you have received this message in e
                     $updatePassword = ApiAuth::updatePassword($apiData);
                     if ($updatePassword['success'])
                     {
+                        $old_email = $user->email;
+                        $new_email = $vars['new_email'];
+
+
+
+                        $data = ['new_email' => $new_email];
+
+                        $default_message = 'Your email was successfully changed. It was changed to <b>'.$new_email.'</b>.';
+                        $default_subject = 'Email changed!';
+
+                        $template = EmailsController::build('Email change old email', $data, $default_message, $default_subject);
+
+                        if (isset($template["message"])){
+                            $default_message = $template["message"];
+                        }
+
+                        $beauty_mail = app()->make(Beautymail::class);
+                        $beauty_mail->send('emails.email_default_v2',
+                            ['body_message' => $default_message, 'user'=>$user],
+                            function($message) use ($user, $default_subject, $user,$old_email) {
+                                $message
+                                    ->from(AppSettings::get_setting_value_by_name('globalWebsite_system_email'))
+                                    ->to($old_email, $user->first_name.' '.$user->middle_name.' '.$user->last_name)
+                                    ->subject($default_subject);
+                            });
+
+
+
+                        $template = EmailsController::build('Email change new email', $data, $default_message, $default_subject);
+
+                        if (isset($template["message"])){
+                            $default_message = $template["message"];
+                        }
+
+                        $beauty_mail = app()->make(Beautymail::class);
+                        $beauty_mail->send('emails.email_default_v2',
+                            ['body_message' => $default_message, 'user'=>$user],
+                            function($message) use ($user, $default_subject, $user,$new_email) {
+                                $message
+                                    ->from(AppSettings::get_setting_value_by_name('globalWebsite_system_email'))
+                                    ->to($new_email, $user->first_name.' '.$user->middle_name.' '.$user->last_name)
+                                    ->subject($default_subject);
+                            });
+
+
+
                         $personal_details->personal_email = $vars['new_email'];
                         $personal_details->save();
                         $user->email = $vars['new_email'];
