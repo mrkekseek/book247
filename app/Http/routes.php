@@ -1503,6 +1503,11 @@ if (env('FEDERATION',false)){
             'as'    => 'ajax/get_resource_intervals_matrix',
             'uses'  => 'AdminController@get_resource_intervals_matrix'
         ]);
+        
+        Route::post('get_activity_for_matrix', [
+            'as'    => 'ajax/get_activity_for_matrix',
+            'uses'  => 'AdminController@get_activity_for_matrix'
+        ]);
     });
 
     Route::group(['middleware' => 'web', 'prefix' => 'optimize'], function () {

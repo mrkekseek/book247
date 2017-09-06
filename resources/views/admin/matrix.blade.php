@@ -2,7 +2,7 @@
 @if (count($result))
     <tbody>
         @foreach($result['items'] as $int=>$statuses)
-            <tr role="row" class="odd">
+            <tr role="row" class="">
                 <td style="padding-right:0px;">
                     {{$int}}
                 </td>
@@ -20,7 +20,7 @@
                 Time
             </th>
             @foreach($result['resouses'] as $resourse)
-            <th style="width: 798px; min-width: 798px;" class="sorting_disabled" rowspan="1" colspan="1">
+            <th class="sorting_disabled" rowspan="1" colspan="1">
                 {{$resourse['resouse_name']}}
             </th>
             @endforeach
@@ -32,7 +32,7 @@
                 Time 
             </th>
             @foreach($result['resouses'] as $resourse)
-            <th style="width: 798px; min-width: 798px;" class="sorting_disabled" rowspan="1" colspan="1">
+            <th class="sorting_disabled" rowspan="1" colspan="1">
                 {{$resourse['resouse_name']}}
             </th>
             @endforeach

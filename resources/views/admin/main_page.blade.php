@@ -164,9 +164,6 @@
                                 </div>
                                 <div class="input-group input-medium">
                                     <select id="header_activity_selected" class="form-control reload_calendar_page" style="border-radius:4px;">
-                                        @foreach($dataForMatrix['cats'] as $item)
-                                            <option value='{{$item['id']}}'> {{$item['name']}} </option>
-                                        @endforeach
                                     </select>
                                 </div>
                                 <div class="input-group input-medium">
@@ -1117,8 +1114,32 @@
                     jQuery('#get_matrix').click(function(){
                         getMatrix();
                     });
-                    getMatrix();
+                    jQuery('#header_location_selected').on('change', function(){
+                        getMatrixActivities();
+                    });
+                    getMatrixActivities(loadMatrix = true);
                     
+                    function getMatrixActivities(loadMatrix){
+                        blockContent('.caption');
+                        jQuery('#header_activity_selected').html('');
+                        $.ajax({
+                            url: '{{route('ajax/get_activity_for_matrix')}}',
+                            type: "post",
+                            cache: false,
+                            data: {
+                                location: jQuery('#header_location_selected').val(),
+                            },
+                            success: function (data) {
+                                for(var i=0; i<data.cats.length; i++){
+                                    jQuery('#header_activity_selected').append("<option value='"+data.cats[i].id+"'>"+data.cats[i].name+"</option>");
+                                }
+                                if (loadMatrix == true){
+                                    getMatrix();
+                                } 
+                                jQuery('.caption').unblock();
+                           }
+                       });
+                    };
                     function getMatrix(){
                         blockContent('#matrix');
                         var data = {

@@ -8,6 +8,7 @@ use App\Role;
 use App\ShopLocations;
 use App\ShopResource;
 use App\ShopResourceCategory;
+use App\ShopLocationCategoryIntervals;
 use Illuminate\Http\Request;
 use Auth;
 use Illuminate\Support\Facades\DB;
@@ -177,21 +178,14 @@ class AdminController extends Controller
         else{
             $showStats = false;
         }
-        $queryForMatrix = ShopLocations::has('opening_hours')->with('location_category_intervals.activity')->get();
+        $forMatrix = ShopLocations::has('opening_hours')->get();
         $dataForMatrix = [];
-        foreach ($queryForMatrix as $item)
+        foreach ($forMatrix as $item)
         {
-            $dataForMatrix['shop_locations'][] = [
+            $dataForMatrix['shop_locations'][$item->id] = [
                 'id' => $item->id,
                 'name' => $item->name,
             ];
-            foreach ($item->location_category_intervals as $lci)
-            {
-                $dataForMatrix['cats'][] = [
-                    'id' => $lci->activity->id,
-                    'name' => $lci->activity->name,
-                ];
-            }
         }
         //xdebug_var_dump($homeStats); //exit;
         //xdebug_var_dump($totalBookingsLocationsToday); //exit;
@@ -515,5 +509,24 @@ class AdminController extends Controller
         return view('admin.matrix',[
             'result' => $result,
         ]);
+    }
+    
+    public function get_activity_for_matrix(Request $request)
+    {
+        $data = $request->only('location');
+        $location_id = $data['location'];
+        $slci = ShopLocationCategoryIntervals::where('location_id',$location_id)->with('activity')->get();
+        $result['cats'] = [];
+        foreach ($slci as $item)
+        {
+            if ( ! empty($item->activity))
+            {
+                $result['cats'][] = [
+                    'id' => $item->activity->id,
+                    'name' => $item->activity->name,
+                ];
+            }
+        }
+        return $result;
     }
 }
