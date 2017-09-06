@@ -984,6 +984,8 @@ class User extends Authenticatable
         return $realValue;
     }
 
+
+    // verific store credit adaugat care este activ si expira astazi sau in trecut si scad cronjob
     public function spend_store_credit($invoiceId, $amount){
         $user = Auth::user();
         if (!$user) {

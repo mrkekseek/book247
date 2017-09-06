@@ -93,7 +93,6 @@ class ApiAuth
             'ResetTokenDate' => '',
             "CountryCode" => $defaultCountry,
         ];
-
         foreach ($data as $key => $value) {
             switch ($key) {
                 case 'id':

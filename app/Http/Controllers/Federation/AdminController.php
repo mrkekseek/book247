@@ -21,6 +21,8 @@ use App\Http\Controllers\Api;
 use App\Http\Controllers\Federation\AnyApi;
 use App\Http\Libraries\ApiAuth;
 use App\User;
+use App\BookingInvoice;
+use App\BookingInvoiceItem;
 
 class AdminController extends Base
 {
@@ -66,6 +68,9 @@ class AdminController extends Base
 
 //        return view('development');
     }
+
+
+
 
     public function ajaxPay(Request $r) {
 

@@ -4870,6 +4870,93 @@ This message is private and confidential. If you have received this message in e
         ];
     }
 
+    public function change_email(Request $r)
+    {
+
+        $user = Auth::user();
+        $vars = $r->only('current_email', 'new_email', 'password');
+        if ( ! $user || !$user->is_front_user() || $user->email != $vars['current_email']) {
+            return [
+                'success' => false,
+                'title'   => 'Permission denied.',
+                'errors'  => 'You don\'t have permission to do that.'
+            ];
+        }
+
+        if(Auth::attempt(['username' => $vars['current_email'], 'password' => $vars['password']])) {
+            if(Auth::check_exist_api_user($vars['new_email'])) {
+                return [
+                    'success' => false,
+                    'title'   => 'Permission denied.',
+                    'errors'  => 'Email unavailable!'
+                ];
+            } else {
+                $personal_details = PersonalDetail::where('user_id',$user->id)->first();
+                $userVars = [
+                    'sso_user_id'   => $user->sso_user_id,
+                    'first_name'    => trim($user->first_name),
+                    'last_name'     => trim($user->last_name),
+                    'middle_name'   => trim($user->middle_name),
+                    'gender'        => $user->gender ,
+                    'country_id'    => $user->country_id,
+                    'date_of_birth' => $personal_details->date_of_birth,
+                    'email'         => trim($vars['new_email']),
+                    'username'      => trim($vars['new_email'])
+                ];
+                $status = Auth::update_api_user($userVars);
+                if ($status) {
+                    $token = ApiAuth::resetPassword($vars['new_email'])['data'];
+                    $apiData = [
+                        "Credentials" => [
+                            "Username" => $vars['new_email'],
+                            "Password" => ''
+                        ],
+                        "Token"=> $token,
+                        "NewPassword"=> $vars['password'],
+                    ];
+                    $updatePassword = ApiAuth::updatePassword($apiData);
+                    if ($updatePassword['success'])
+                    {
+                        $personal_details->personal_email = $vars['new_email'];
+                        $personal_details->save();
+                        $user->email = $vars['new_email'];
+                        $user->username = $vars['new_email'];
+                        $user->save();
+                        Auth::logout();
+                        return [
+                            'success' => true,
+                            'title' => 'Email updated',
+                            'message' => 'Page will reload and you will be signed out'
+                        ];
+                    }
+                    else
+                    {
+                        return [
+                            'success' => false,
+                            'title'  => 'Error updating email',
+                            'errors' => $updatePassword['message']
+                        ];
+                    }
+                } else {
+                    return [
+                        'success' => false,
+                        'title'  => 'Error updating email. (API)',
+                        'errors' => Auth::$error
+                    ];
+                }
+            }
+        } else {
+            return [
+                'success' => false,
+                'title'   => 'Permission denied.',
+                'errors'  => 'Wrong password!'
+            ];
+        }
+    }
+
+
+
+
     private function createNewToken()
     {
         return hash_hmac('sha256', Str::random(40), \Config::get('app.key'));
