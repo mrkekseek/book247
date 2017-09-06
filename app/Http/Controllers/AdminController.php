@@ -177,6 +177,22 @@ class AdminController extends Controller
         else{
             $showStats = false;
         }
+        $queryForMatrix = ShopLocations::has('opening_hours')->with('location_category_intervals.activity')->get();
+        $dataForMatrix = [];
+        foreach ($queryForMatrix as $item)
+        {
+            $dataForMatrix['shop_locations'][] = [
+                'id' => $item->id,
+                'name' => $item->name,
+            ];
+            foreach ($item->location_category_intervals as $lci)
+            {
+                $dataForMatrix['cats'][] = [
+                    'id' => $lci->activity->id,
+                    'name' => $lci->activity->name,
+                ];
+            }
+        }
         //xdebug_var_dump($homeStats); //exit;
         //xdebug_var_dump($totalBookingsLocationsToday); //exit;
         //xdebug_var_dump($totalBookingTypeToday); //exit;
@@ -200,7 +216,8 @@ class AdminController extends Controller
             'membersToday'  => $total_memberships_today,
             'totalToday'    => $totalBookingsLocationsToday,
             'totalPerType'  => $totalBookingTypeToday,
-            'showStats'     => $showStats
+            'showStats'     => $showStats,
+            'dataForMatrix'=> $dataForMatrix,
         ]);
     }
 
@@ -474,5 +491,29 @@ class AdminController extends Controller
             'in_sidebar'  => $sidebar_link,
         ]);
     }
-
+    
+    public function get_resource_intervals_matrix(Request $request)
+    {
+        $data = $request->only('date','activity','location');
+        $location = ShopLocations::find($data['location']);
+        $result = [];
+        if ( ! empty($location))
+        {
+            $matrix = $location->get_resource_intervals_matrix($data['date'],$data['activity']);
+            if (count($matrix))
+            {
+                $result['resouses'] = $matrix['resouses'];
+                foreach($matrix['items'] as $key=>$items)
+                {
+                    foreach ($items as $int=>$item)
+                    {
+                        $result['items'][$int][$key] = $item;
+                    }
+                }
+            }
+        }
+        return view('admin.matrix',[
+            'result' => $result,
+        ]);
+    }
 }

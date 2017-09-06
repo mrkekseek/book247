@@ -1498,6 +1498,11 @@ if (env('FEDERATION',false)){
             'as'    => 'ajax/location_get_activity_book_interval',
             'uses'  => 'ShopController@get_activity_time_interval'
         ]);
+        
+        Route::post('get_resource_intervals_matrix', [
+            'as'    => 'ajax/get_resource_intervals_matrix',
+            'uses'  => 'AdminController@get_resource_intervals_matrix'
+        ]);
     });
 
     Route::group(['middleware' => 'web', 'prefix' => 'optimize'], function () {
