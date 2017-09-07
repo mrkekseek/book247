@@ -51,6 +51,14 @@ class ShopLocations extends Model
     public function systemOptions(){
         return $this->hasMany('App\ShopSystemOption','shop_location_id','id');
     }
+    
+    public function location_category_intervals(){
+        return $this->hasMany('App\ShopLocationCategoryIntervals','location_id','id');
+    }
+    
+    public function bookings(){
+        return $this->hasMany('App\Booking','location_id','id');
+    }
 
     public static function rules($method, $id=0){
         switch($method){
@@ -238,5 +246,52 @@ class ShopLocations extends Model
 
     public function set_activity_time_interval($activityID){
 
+    }
+    
+    public function get_resource_intervals_matrix($date = FALSE, $category = FALSE){
+        $result = [];
+        $date = ! empty($date) ? Carbon::parse($date) : FALSE;
+        if ( ! empty($date) && ! empty($category))
+        {
+            $interval = $this->location_category_intervals()->where([
+                'category_id' => $category,
+            ])->first();
+            $time_start = $this->opening_hours()->whereDate('date_start','<',$date->format('Y-m-d'))->whereDate('date_stop','>',$date->format('Y-m-d'))->min('time_start');
+            $time_stop = $this->opening_hours()->whereDate('date_start','<',$date->format('Y-m-d'))->whereDate('date_stop','>',$date->format('Y-m-d'))->max('time_stop');
+            $resources = $this->resources()->get();
+            $booking = $this->bookings()->whereDate('date_of_booking','=', $date)->get();
+            
+            if ( ! empty($interval) && count($resources) && ! empty($time_start) && ! empty($time_stop))
+            {
+                while ($time_start !== $time_stop)
+                {
+                    $carbon_int_time_start = new Carbon($date->format('Y-m-d').$time_start);
+                    $int_time_start = $carbon_int_time_start->format('H:i:s');
+                    $carbon_int_time_next = $carbon_int_time_start->addMinutes($interval->time_interval);
+                    $int_time_next = $carbon_int_time_next->format('H:i:s');
+                    $carbon_time_stop = new Carbon($date->format('Y-m-d').$time_stop);
+                    foreach ($resources as $item)
+                    {
+                        $result['resouses'][$item->id]['resouse_id'] = $item->id;
+                        $result['resouses'][$item->id]['resouse_name'] = $item->name;
+                        
+                        $exists_booking = $booking->contains(function ($key, $value) use ($int_time_start,$int_time_next,$item){
+                            return ($value->booking_time_start == $int_time_start && $value->booking_time_stop == $int_time_next && $value->resource_id = $item->id) ? TRUE : FALSE;
+                        }
+                        );
+                        $status = ! empty($exists_booking) ? 'booked' : 'free';
+                        $result['items'][$item->id][$int_time_start] = [
+                            'status' => $status,
+                        ];
+                    }
+                    $time_start = $int_time_next;
+                    if ($carbon_int_time_next > $carbon_time_stop)
+                    {
+                        break;
+                    }
+                }
+            }
+        }
+        return $result;
     }
 }

@@ -317,7 +317,7 @@ class BackEndUserController extends Controller
             );
         }
 
-        $credentials['password'] = bcrypt($credentials['password']);
+        $credentials['password'] = Hash::make($credentials['password']);
         try {
             $dataForApi = $credentials + $personalData;
             if (ApiAuth::checkExist($dataForApi['username'])['success'])
