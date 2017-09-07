@@ -581,22 +581,23 @@ class ApicController extends Controller
             'email' => $owner->email,
             'club_name' => $shop_location->name,
         ];
-
-        $template = EmailsController::build('Registering an existing owner', $data);
+        $main_message = "Registration successful. ".$owner.first_name.' '.$owner->last_name.' you are are the owner of '.AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title');
+        $subject = AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title') . ' - Online Booking System - You are registered!';
+        $template = EmailsController::build('Registering - existing owner', $data,$main_message,$subject);
         if ($template)
         {
             $main_message = $template["message"];
-            $subject = AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title') . ' - Online Booking System - You are registered!';
-            $beauty_mail = app()->make(Beautymail::class);
-            $beauty_mail->send('emails.email_default_v2',
-                ['body_message' => $main_message, 'user' => $owner],
-                function($message) use ($owner) {
-                    $message
-                            ->from(AppSettings::get_setting_value_by_name('globalWebsite_system_email'))
-                            ->to($owner->email, $owner->first_name.' '.$owner->middle_name.' '.$owner->last_name)
-                            ->subject(AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title').' - Online Booking System - You are registered!');
-                });
         }
+
+        $beauty_mail = app()->make(Beautymail::class);
+        $beauty_mail->send('emails.email_default_v2',
+            ['body_message' => $main_message, 'user' => $owner],
+            function($message) use ($owner) {
+                $message
+                    ->from(AppSettings::get_setting_value_by_name('globalWebsite_system_email'))
+                    ->to($owner->email, $owner->first_name.' '.$owner->middle_name.' '.$owner->last_name)
+                    ->subject(AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title').' - Online Booking System - You are registered!');
+            });
     }
     
     private function send_mail_new_owner($owner, $password)
@@ -609,24 +610,23 @@ class ApicController extends Controller
             'club_name' => $shop_location->name,
             'password' => $password
         ];
-
-        $template = EmailsController::build('Registration of new owner', $data);
+        $main_message = "Registration successful. ".$owner.first_name.' '.$owner->last_name.' you are are the owner of '.AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title');
+        $subject = AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title') . ' - Online Booking System - You are registered!';
+        $template = EmailsController::build('Registration - new owner', $data,$main_message,$subject);
         if ($template)
         {
             $main_message = $template["message"];
-            $subject = AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title') . ' - Online Booking System - You are registered!';
-            $beauty_mail = app()->make(Beautymail::class);
-            $beauty_mail->send('emails.email_default_v2',
-                ['body_message' => $main_message, 'user' => $owner],
-                function($message) use ($owner) {
-                    $message
-                            ->from(AppSettings::get_setting_value_by_name('globalWebsite_system_email'))
-                            ->to($owner->email, $owner->first_name.' '.$owner->middle_name.' '.$owner->last_name)
-                            ->subject(AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title').' - Online Booking System - You are registered!');
-                });
         }
+        $beauty_mail = app()->make(Beautymail::class);
+        $beauty_mail->send('emails.email_default_v2',
+            ['body_message' => $main_message, 'user' => $owner],
+            function($message) use ($owner) {
+                $message
+                    ->from(AppSettings::get_setting_value_by_name('globalWebsite_system_email'))
+                    ->to($owner->email, $owner->first_name.' '.$owner->middle_name.' '.$owner->last_name)
+                    ->subject(AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title').' - Online Booking System - You are registered!');
+            });
     }
-
 
     private function validate_request($data, $rules, $mesagges = [])
     {

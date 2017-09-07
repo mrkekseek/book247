@@ -76,7 +76,15 @@
                                                         </button>
                                                     </span>
                                                 </div>
-                                            </div>       
+                                            </div>
+                                            <div class="form-group">
+                                                <select class="form-control" name="member_nationality" id="member_nationality">
+                                                    <option value="" selected="selected">Select Nationality</option>
+                                                    @foreach ($countries as $country)
+                                                        <option value="{{ $country->id }}" {!! \App\Http\Controllers\Federation\AppSettings::get_setting_value_by_name('globalWebsite_defaultCountryId')==$country->id?'selected':'' !!}>{{ $country->name }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
                                         </div>
                                     </div>
 
@@ -257,6 +265,11 @@
                                 }
                             }
                         },
+                        member_nationality: {
+                            required:true,
+                            digits: true,
+                            minlength:1
+                        },
                         reg_email: {
                             email: true,
                             validate_email: true,
@@ -398,6 +411,7 @@
                     'phone_number': $('input[name="phone"]').val(),
                     'gender': $('select[name="member_gender"]').val(),
                     'dob': $('input[name="date_of_birth"]').val(),
+                    'country_id': $('select[name="member_nationality"]').val(),
 
                     'email': $('input[name="reg_email"]').val(),
                     'password': $('input[name="password"]').val(),

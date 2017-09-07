@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Federation;
 
 use App\Http\Controllers\AdminController as Base;
 use App\Booking;
+use App\Http\Controllers\ApicController;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use App\Role;
@@ -20,6 +21,8 @@ use App\Http\Controllers\Api;
 use App\Http\Controllers\Federation\AnyApi;
 use App\Http\Libraries\ApiAuth;
 use App\User;
+use App\BookingInvoice;
+use App\BookingInvoiceItem;
 
 class AdminController extends Base
 {
@@ -65,6 +68,9 @@ class AdminController extends Base
 
 //        return view('development');
     }
+
+
+
 
     public function ajaxPay(Request $r) {
 

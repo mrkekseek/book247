@@ -144,7 +144,15 @@
                                                             </div>
                                                             <div class="form-group">
                                                                 <label class="control-label">Registration Email</label>
-                                                                <input type="text" name="personalEmail" id="personalEmail" placeholder="Personal Email Address" class="form-control" value="{{@$personal->personal_email}}" /> </div>
+                                                                <div class="row">
+                                                                    <div class="col-md-9">
+                                                                        <input type="text" name="personalEmail" id="personalEmail" placeholder="Personal Email Address" class="form-control" disabled value="{{@$personal->personal_email}}" />
+                                                                    </div>
+                                                                    <div class="col-md-3">
+                                                                        <a href="javascript:;" class="btn btn-block red change-email-modal" > Change email </a>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
                                                             <div class="form-group">
                                                                 <label class="control-label">Mobile Phone Number</label>
                                                                 <input type="text" name="personalPhone" id="personalPhone" placeholder="123456789" class="form-control" value="{{@$personal->mobile_number}}" /> </div>
@@ -267,6 +275,38 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default " data-dismiss="modal">No</button>
                     <button type="button" class="btn btn-danger remove-avatar">Yes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="change-email" data-backdrop="static">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true" onclick="javascript:$('.profile-content').unblock();">&times;</button>
+                    <h4 class="modal-title">Change email</h4>
+                </div>
+                <div class="modal-body">
+                    <form role="form" id="form_change_email" action="#">
+                        <div class="alert alert-danger display-hide">
+                            <button class="close" data-close="alert"></button> You have some form errors. Please check below. </div>
+                        <div class="alert alert-success display-hide">
+                            <button class="close" data-close="alert"></button> Your form validation is successful! </div>
+                        <div class="form-group">
+                            <label class="control-label">Current email</label>
+                            <input type="text" name="current_email" id="current_email" value="{{$user->email}}" disabled class="form-control" /> </div>
+                        <div class="form-group">
+                            <label class="control-label">New Email</label>
+                            <input type="text" name="new_email" placeholder="New email" class="form-control" /> </div>
+                        <div class="form-group">
+                            <label class="control-label">Password</label>
+                            <input type="password" name="email_password" placeholder="Password" class="form-control" /> </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default " onclick="javascript:$('.profile-content').unblock();" data-dismiss="modal">Return</button>
+                    <button type="button" class="btn btn-success" onclick="javascript:$('#form_change_email').submit();">Change Email</button>
                 </div>
             </div>
         </div>
@@ -752,7 +792,6 @@
                 var form6 = $('#user_picture_upload2');
                 var error6 = $('.alert-danger', form6);
                 var success6 = $('.alert-success', form6);
-                 console.log('1');
 
                 form6.validate({
                     errorElement: 'span', //default input error message container
@@ -803,6 +842,71 @@
                 });
             };
 
+            var handleValidation7 = function() {
+                var form7 = $('#form_change_email');
+                var error7 = $('.alert-danger', form7);
+                var success7 = $('.alert-success', form7);
+
+                form7.validate({
+                    errorElement: 'span', //default input error message container
+                    errorClass: 'help-block help-block-error', // default input error message class
+                    focusInvalid: false, // do not focus the last invalid input
+                    ignore: "",  // validate all fields including form hidden input
+                    rules: {
+                        current_email: {
+                            required: true
+                        },
+                        new_email: {
+                            required: true,
+                            minlength: 8,
+                            email: true,
+                            notEqualTo: '#current_email'
+                        },
+                        email_password: {
+                            required: true
+                        }
+                    },
+                    messages: {
+                        new_email: {
+                            notEqualTo: "The email is identical with the current one.",
+                            required: "You cannot let empty this filed.",
+                            minlength: "Email not long enough.",
+                            email: "Not a valid email."
+                        },
+                        email_password: {
+                            required: "You cannot let empty this filed."
+                        }
+                    },
+
+                    invalidHandler: function (event, validator) { //display error alert on form submit
+                        success7.hide();
+                        error7.show();
+                        App.scrollTo(error7, -200);
+                    },
+
+                    highlight: function (element) { // hightlight error inputs
+                        $(element)
+                                .closest('.form-group').addClass('has-error'); // set error class to the control group
+                    },
+
+                    unhighlight: function (element) { // revert the change done by hightlight
+                        $(element)
+                                .closest('.form-group').removeClass('has-error'); // set error class to the control group
+                    },
+
+                    success: function (label) {
+                        label
+                                .closest('.form-group').removeClass('has-error'); // set success class to the control group
+                    },
+
+                    submitHandler: function (form) {
+                        success7.show();
+                        error7.hide();
+                        change_email();
+                    }
+                });
+            };
+
             return {
                 //main function to initiate the module
                 init: function () {
@@ -812,6 +916,7 @@
                     handleValidation4();
                     handleValidation5();
                     handleValidation6();
+                    handleValidation7();
                 }
             };
         }();
@@ -901,6 +1006,12 @@
                 });
             });
 
+            $('.change-email-modal').click(function(){
+                $('#change-email').modal('show');
+                ui_block($('.profile-content'));
+
+            });
+
         });
 
         /* Done */
@@ -966,6 +1077,46 @@
                         $('#form_password_update .alert-danger').show();
                         show_notification(data.title, data.errors, 'tangerine', 3500, 0);
                     }
+                }
+            });
+        }
+
+        function change_email() {
+            console.log('is ok');
+            $.ajax({
+                url: '{{route('settings/personal/change_email')}}',
+                type: "post",
+                data: {
+                    'current_email': $('input[name=current_email]').val(),
+                    'new_email':    $('input[name=new_email]').val(),
+                    'password': $('input[name=email_password]').val()
+                },
+                success: function(data){
+                    if (data.success) {
+                        show_notification(data.title, data.message, 'lime', 3500, 0);
+                        $('#change-email').modal('hide');
+                        setTimeout(function() {
+                            window.location.reload();
+                        },3500);
+                    }
+                    else{
+                        show_notification(data.title, data.errors, 'tangerine', 3500, 0);
+                    }
+                }
+            });
+        }
+
+        function ui_block(selector) {
+            var message =  "<div class='loading-message loading-message-boxed'>	<img src='{{ asset('assets/global/img/loading-spinner-grey.gif') }}' align=''><span>&nbsp;&nbsp;Processing...</span></div>";
+            selector.block({
+                message: message,
+                overlayCSS: {
+                    backgroundColor: '#555555',
+                    opacity : '0.05'
+                },
+                css: {
+                    border: 'none',
+                    backgroundColor: 'none'
                 }
             });
         }

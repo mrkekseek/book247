@@ -1115,6 +1115,11 @@ if (env('FEDERATION',false)){
             'uses' => 'FrontEndUserController@settings_personal_info'
         ]);
 
+        Route::post('settings/personal/change_email', [
+            'as' => 'settings/personal/change_email',
+            'uses' => 'FrontEndUserController@change_email'
+        ]);
+
         Route::post('settings/personal/avatar', [
             'as' => 'settings/personal/avatar',
             'uses' => 'FrontEndUserController@settings_personal_avatar'

@@ -248,6 +248,7 @@ class BackEndUserController extends Controller
                 'title'     => 'Permission Error'];
         }
         $vars = $request->only('first_name', 'middle_name', 'last_name', 'email', 'phone_number', 'dob', 'gender', 'country_id', 'user_type', 'user_type');
+
         if (!isset($vars['middle_name'])){
             $vars['middle_name'] = '';
         }
@@ -261,12 +262,18 @@ class BackEndUserController extends Controller
         }
 
         if (!isset($vars['password']) || $vars['password']==""){
-            $vars['password'] = substr(bcrypt(str_random(12)),0,8);
+            $password = str_random(12);
+            $vars['password'] = $password;
+        } else {
+            $password = $vars['password'];
         }
 
         if (!isset($vars['country_id'])){
             $vars['country_id'] = AppSettings::get_setting_value_by_name('globalWebsite_defaultCountryId');
         }
+
+        $countryModel = Countries::where('id','=',$vars['country_id'])->first();
+
         $credentials = [
             'first_name'    => $vars['first_name'],
             'middle_name'   => $vars['middle_name'],
@@ -280,6 +287,7 @@ class BackEndUserController extends Controller
             'user_type'     => $vars['user_type']
         ];
         $password_api = $vars['password'];
+
         $validator = Validator::make($credentials, User::rules('POST'), User::$messages, User::$attributeNames);
         if ($validator->fails()){
             return array(
@@ -288,6 +296,7 @@ class BackEndUserController extends Controller
                 'errors'    => $validator->getMessageBag()->toArray()
             );
         }
+
         $personalData = [
                 'personal_email'=> $vars['email'],
                 'mobile_number' => $vars['phone_number'],
@@ -295,17 +304,20 @@ class BackEndUserController extends Controller
                 'bank_acc_no'   => 0,
                 'social_sec_no' => 0,
                 'about_info'    => '',
-                'customer_number'   => $user->get_next_customer_number()
+                'customer_number'   => $user->get_next_customer_number(),
+                'country_iso_3166_2' => $countryModel->country_iso_3166_2
             ];
+
         $validator = Validator::make($personalData, PersonalDetail::rules('POST'), PersonalDetail::$messages, PersonalDetail::$attributeNames);
-            if ($validator->fails()){
-                return array(
-                    'success'   => false,
-                    'title'     => 'Error validating',
-                    'errors'    => $validator->getMessageBag()->toArray()
-                );
-            }
-        $credentials['password'] = bcrypt($credentials['password']);
+        if ($validator->fails()){
+            return array(
+                'success'   => false,
+                'title'     => 'Error validating',
+                'errors'    => $validator->getMessageBag()->toArray()
+            );
+        }
+
+        $credentials['password'] = Hash::make($credentials['password']);
         try {
             $dataForApi = $credentials + $personalData;
             if (ApiAuth::checkExist($dataForApi['username'])['success'])
@@ -342,18 +354,32 @@ class BackEndUserController extends Controller
             // attach the roles to the new created user
             $user->attachRole($vars['user_type']);
 
+
             $main_message = 'Your account was successfully created. You can log in using your email and your password.<br/>';
             $main_message .= 'First Name: <b>' . (isset($user->first_name) ? $user->first_name : '-') . '</b><br/>';
             $main_message .= 'Middle Name: <b>' . (isset($user->middle_name) ? $user->middle_name : '-') . '</b><br/>';
             $main_message .= 'Last Name: <b>' . (isset($user->last_name) ? $user->last_name : '-') . '</b><br/>';
             $main_message .= 'Username: <b>' . (isset($user->email) ? $user->email : '-') . '</b><br/>';
             $main_message .= 'Email: <b>' . (isset($user->email) ? $user->email : '-') . '</b><br/>';
-            $main_message .= 'Password: <b>' . (isset($credentials['password']) ? $credentials['password'] : '-') . '</b><br/>';
-            $role = Role::where('id',$request->get('user_type'))->first();;
+            $main_message .= 'Password: <b>' . (isset($password) ? $password : '-') . '</b><br/>';
+            $role = Role::where('id',$request->get('user_type'))->first();
             $main_message .= 'Role: <b>' . (isset($role->name) ? $role->name : '-') . '</b><br/>';
             $subject = 'Your back-end account was created.';
 
+            $data = [
+                'first_name' => isset($user->first_name) ? $user->first_name : '-',
+                'middle_name' => isset($user->middle_name) ? $user->middle_name : '-',
+                'last_name' => isset($user->last_name) ? $user->last_name : '-',
+                'username' => isset($user->email) ? $user->email : '-',
+                'email' => isset($user->email) ? $user->email : '-',
+                'password' => $password,
+                'role' => isset($role->name) ? $role->name : '-',
+            ];
 
+            $template = EmailsController::build('New back end user registration', $data, $main_message,$subject);
+            if ($template) {
+               $main_message = $template['message'];
+            }
             $beauty_mail = app()->make(Beautymail::class);
             $beauty_mail->send('emails.email_default_v2',
                 ['body_message' => $main_message, 'user'=>$user],
@@ -1453,19 +1479,20 @@ class BackEndUserController extends Controller
             'success' => FALSE,
         ];
 
+
         if ( $status != 1 )
         {
             $user = Auth::user();
-            $data = $request->only('stripeToken', 'clubname','email','phone','fax','addressline1','addressline2','city','region','postalcode','country','currency','sport','time','members','pay','resource','day','limit');
-
+            $data = $request->only('stripeToken', 'clubname','email','phone','mail_validation','addressline1','addressline2','city','region','postalcode','country','currency','sport','time','members','pay','resource','day','limit');
             if ( ! empty($data['stripeToken']))
             {
                 $customer  = StripeController::chargeCustomer($data['stripeToken']);
             }
 
             $shopLocation = ShopLocations::first();
+            $shopLocation->name = $data['clubname'];
             $shopLocation->phone = $data['phone'];
-            $shopLocation->fax = $data['fax'];
+            $shopLocation->fax = $data['phone'];
             $shopLocation->email = $data['email'];
             $shopLocation->save();
 
@@ -1539,12 +1566,25 @@ class BackEndUserController extends Controller
                     $allowed_settings_id = 5;
                     break;
             }
+
+
             AppSettings::update_settings_value_by_name('show_calendar_availability_rule', $allowed_settings_id);
             $response = [
                 'success' => TRUE,
             ];
 
             AppSettings::update_settings_value_by_name('globalWebsite_registration_finished', 20);
+
+            switch ($data['mail_validation'])
+            {
+                case (0):
+                    $allowed_settings_id = 25;
+                    break;
+                case (1):
+                    $allowed_settings_id = 24;
+                    break;
+            }
+            AppSettings::update_settings_value_by_name('globalWebsite_registration_email_validation', $allowed_settings_id);
 
         }
 

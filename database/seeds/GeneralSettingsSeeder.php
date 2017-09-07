@@ -63,7 +63,7 @@ class GeneralSettingsSeeder extends Seeder
             [37, 'Global Website Custm Terms and Agreements', 'globalWebsite_custom_terms_and_agreements', 'In this field you can place the terms and agreements from your own website for buying memberships and other financial packages.', 0, 'string', 5, 200, 0],
             [38, 'Global Website Facebook FeedLink', 'globalWebsite_facebook_feedLink', 'Facebook account link for showing homepage Facebook embeded feed from facebook page', 0, 'string', 5, 220, 0],
             [39, 'Global Website Account Logo Image', 'globalWebsite_account_logo_image', 'This is the image that will be used as logo in all the application places', 0, 'string', 5, 255, 0],
-            [40, 'Global Website Contact Gmaps Points', 'globalWebsite_contact_gmaps_points', 'This value holds the google maps points for the google maps available in the contact form part.', 0, 'text', 1, 9999, 0]
+            [40, 'Global Website Contact Gmaps Points', 'globalWebsite_contact_gmaps_points', 'This value holds the google maps points for the google maps available in the contact form part.', 0, 'text', 1, 9999, 1]
         ];
 
         // insert values into settings table
