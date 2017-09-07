@@ -41,6 +41,7 @@ class ClearBookings extends Command
                 $bookings_array[$booking->id] = $booking;
                 $to_check[$booking->id] = true;
             }
+
             foreach ($bookings as $booking) {
                 if (isset($to_check[$booking->id])) {
                     //time check
