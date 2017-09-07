@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Federation\AppSettings;
 use App\Invoice;
 use App\Address;
 use App\InvoiceFinancialTransaction;
@@ -118,13 +119,12 @@ class InvoiceController extends Controller
 
         $payee = json_decode($invoice->payee_info);
 
+        $currency = AppSettings::get_setting_value_by_name('finance_currency');
         if (isset($payee->country_id) && $payee->country_id == 0) {
             $country = '-';
-            $currency = '' ;
         } else {
             $get_country = Countries::where('id', '=', $member->country_id)->get()->first();
             $country = $get_country->name;
-            $currency = $get_country->currency_code;
         }
 
 
