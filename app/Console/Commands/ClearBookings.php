@@ -48,7 +48,6 @@ class ClearBookings extends Command
                     $now = date("Y-m-d H:i:s");
                     $now = Carbon::createFromFormat("Y-m-d H:i:s",$now);
                     if ($booking_date->addMinutes(10)->lt($now) && User::find($booking->by_user_id)->is_front_user()) {
-                        echo $booking->id.'<br>';
                         $booking_invoice = BookingInvoice::where('booking_id',$booking->id)->first();
                         if ($booking_invoice) {;
                             $booking_invoice_items = BookingInvoiceItem::where('booking_invoice_id',$booking_invoice->id)->get();
