@@ -175,7 +175,8 @@ class Auth
         $domain = self::get_domain();
         Session::flash('new_auth', TRUE);            
         Session::put('sso_user_id',$sso_user_id);
-        Cookie::queue(Cookie::make('sso_user_id', $sso_user_id, 720 ,'/', $domain));
+        Cookie::queue(Cookie::make('sso_user_id', $sso_user_id, 60*24*14 ,'/', $domain));
+        Cookie::queue(Cookie::make('created_on', Carbon::now()->toDateTimeString(), 60*24*14 ,'/', $domain));
     }
 
     public static function loginUsingId($id)
@@ -200,6 +201,13 @@ class Auth
         $cookie_sso     = Cookie::get('sso_user_id');
         $session_sso    = Session::get('sso_user_id');
         $new_auth       = Session::get('new_auth');
+        $sessionCreation = Cookie::get('created_on');
+
+        if (empty($sessionCreation)){
+            Session::put('sso_user_id','');
+            return false;
+        }
+
         if (!empty($cookie_sso) && !empty($session_sso) && $session_sso !== $cookie_sso && empty($new_auth))
         {            
             $session_sso = false;
