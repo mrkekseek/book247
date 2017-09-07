@@ -142,6 +142,43 @@
                         @endforeach
                     </div>
                 @endforeach
+                @if (count($dataForMatrix))
+                <div class="portlet box green" id="matrix">
+                    <div class="portlet-title" style="height:1px !important; min-height:1px;">
+                        <div class="caption">
+                            <div class="form-inline margin-bottom-0">
+                                <div class="input-group input-small date date-picker" data-date="{{\Carbon\Carbon::now()->format('d-m-Y')}}" data-date-format="dd-mm-yyyy" data-date-viewmode="years">
+                                    <input type="text" id="header_date_selected" class="form-control reload_calendar_page" value="{{\Carbon\Carbon::now()->format('d-m-Y')}}" readonly="">
+                                    <span class="input-group-btn">
+                                        <button class="btn default" type="button">
+                                            <i class="fa fa-calendar"></i>
+                                        </button>
+                                    </span>
+                                </div>
+                                <div class="input-group input-medium">
+                                    <select id="header_location_selected" class="form-control reload_calendar_page" style="border-radius:4px;">
+                                    @foreach($dataForMatrix['shop_locations'] as $item)
+                                        <option value='{{$item['id']}}'> {{$item['name']}} </option>
+                                    @endforeach
+                                    </select>
+                                </div>
+                                <div class="input-group input-medium">
+                                    <select id="header_activity_selected" class="form-control reload_calendar_page" style="border-radius:4px;">
+                                    </select>
+                                </div>
+                                <div class="input-group input-medium">
+                                    <input type="button" value="Send" class="btn blue" id="get_matrix">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="portlet-body">
+                        <div id="matrix_table" class="dataTables_wrapper">
+                        
+                        </div>
+                    </div>
+                </div>
+                @endif
             @else
                 <div class="m-heading-1 border-green m-bordered">
                     <h3 style="margin-bottom:0px;">No active location with booking history - non existing statistics</h3>
@@ -1060,8 +1097,94 @@
                         negBarColor: '#e02222'
                     });
                 },
+                
+                handleDatePickers: function () {
+                    if (jQuery().datepicker) {
+                        $('.date-picker').datepicker({
+                            rtl: App.isRTL(),
+                            orientation: "left",
+                            autoclose: true,
+                            daysOfWeekHighlighted: "0",
+                            weekStart:1,
+                        });
+                    }
+                },
+                
+                initMatrix: function(){
+                    jQuery('#get_matrix').click(function(){
+                        getMatrix();
+                    });
+                    jQuery('#header_location_selected').on('change', function(){
+                        getMatrixActivities();
+                    });
+                    getMatrixActivities(loadMatrix = true);
+                    
+                    function getMatrixActivities(loadMatrix){
+                        blockContent('.caption');
+                        jQuery('#header_activity_selected').html('');
+                        $.ajax({
+                            url: '{{route('ajax/get_activity_for_matrix')}}',
+                            type: "post",
+                            cache: false,
+                            data: {
+                                location: jQuery('#header_location_selected').val(),
+                            },
+                            success: function (data) {
+                                for(var i=0; i<data.cats.length; i++){
+                                    jQuery('#header_activity_selected').append("<option value='"+data.cats[i].id+"'>"+data.cats[i].name+"</option>");
+                                }
+                                if (loadMatrix == true){
+                                    getMatrix();
+                                } 
+                                jQuery('.caption').unblock();
+                           }
+                       });
+                    };
+                    function getMatrix(){
+                        blockContent('#matrix');
+                        var data = {
+                            date: jQuery('#header_date_selected').val(),
+                            location: jQuery('#header_location_selected').val(),
+                            activity: jQuery('#header_activity_selected').val()
+                        };
+                        $.ajax({
+                           url: '{{route('ajax/get_resource_intervals_matrix')}}',
+                           type: "post",
+                           cache: false,
+                           data: data,
+                           success: function (data) {
+                               jQuery('#matrix_table').html(data);
+                               jQuery('#matrix').unblock();
+                           }
+                       });
+                    };
+                    
+                    
+                    function blockContent(selector){
+                        var message =  "<div class='loading-message loading-message-boxed'>	<img src='/assets/global/img/loading-spinner-grey.gif' align=''><span>&nbsp;&nbsp;Processing...</span></div>";
+                        $(selector).block({ 
+                            message: message, 
+                            overlayCSS: { 
+                                backgroundColor: '#555555',
+                                opacity : '0.05'
+                            },
+                            css: {
+                                border: 'none',
+                                backgroundColor: 'none'
+                            }
+                        });
+                    }
+                    
+                },
+                
+                getMatrix: function (){
+                    
+                },
+                
+                
 
                 init: function() {
+                    this.handleDatePickers();
                     this.initAmChart1();
                     this.initAmChart2();
                 @if (sizeof($stats)>0)
@@ -1071,6 +1194,7 @@
                 @endif
                     this.initAmChart4_1();
                     this.initAmChart4_2();
+                    this.initMatrix();
                 }
             };
         }();
