@@ -31,7 +31,8 @@ class Kernel extends ConsoleKernel
         Commands\Patch\Patch_1_6::class,
         Commands\Fixes\NormalizeUserData::class,
         Commands\ClearBookings::class,
-        Commands\CheckLocalAccountsAgainstSSO::class
+        Commands\CheckLocalAccountsAgainstSSO::class,
+        Commands\StoreCreditExpiration::class
     ];
 
     /**
