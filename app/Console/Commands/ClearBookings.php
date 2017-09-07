@@ -35,7 +35,7 @@ class ClearBookings extends Command
     {
         if (AppSettings::get_setting_value_by_name('bookings_online_payment_rule')) {
 
-            $bookings = Booking::where('status','active')->get();
+            $bookings = Booking::where('status','active')->with('invoice')->get();
 
             foreach ($bookings as $booking) {
                 //time check
