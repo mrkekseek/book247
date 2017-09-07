@@ -72,6 +72,7 @@ class AdminController extends Base
 
 
 
+
     public function ajaxPay(Request $r) {
 
     }
