@@ -28,8 +28,10 @@ class Auth
     {   
         self::set_session();
         $session_sso = Session::get('sso_user_id');
+        $session_created_at  = Session::get('created_on');
+
         self::log_actions(' Auth::user() - sessionSSO='.$session_sso);
-        if (!empty($session_sso))
+        if (!empty($session_sso) && !empty($session_created_at))
         {
             self::log_actions(' Auth::user() - sessionSSO='.$session_sso);
             $user_locale = User::where('sso_user_id','=',$session_sso)->get();
@@ -43,7 +45,8 @@ class Auth
     public static function check()
     {        
         $user_session = Session::get('sso_user_id');
-        return (!empty($user_session));
+        $session_created_at  = Session::get('created_on');
+        return (!empty($user_session) && !empty($session_created_at));
     }
     
     public static function guest()
@@ -167,16 +170,27 @@ class Auth
     {        
         $domain = self::get_domain();        
         Session::put('sso_user_id','');
-        Cookie::queue(Cookie::forget('sso_user_id', '/', $domain)); 
+        Session::put('created_on','');
+
+        $c1 = Cookie::forget('sso_user_id', '/', $domain);
+        $c2 = Cookie::forget('created_on', '/', $domain);
+
+        Cookie::queue($c1);
+        Cookie::queue($c2);
     }
     
     public static function set_cookie_session($sso_user_id)
     {   
         $domain = self::get_domain();
         Session::flash('new_auth', TRUE);            
-        Session::put('sso_user_id',$sso_user_id);
-        Cookie::queue(Cookie::make('sso_user_id', $sso_user_id, 60*24*14 ,'/', $domain));
-        Cookie::queue(Cookie::make('created_on', Carbon::now()->toDateTimeString(), 60*24*14 ,'/', $domain));
+        Session::put('sso_user_id'  , $sso_user_id);
+        Session::put('created_on'  , Carbon::now()->toDateTimeString());
+
+        $c1 = Cookie::make('sso_user_id', $sso_user_id, 60*24*14 ,'/', $domain);
+        $c2 = Cookie::make('created_on', Carbon::now()->toDateTimeString(), 60*24*14 ,'/', $domain);
+
+        Cookie::queue($c1);
+        Cookie::queue($c2);
     }
 
     public static function loginUsingId($id)
@@ -198,12 +212,13 @@ class Auth
 
     private static function set_session()
     {
-        $cookie_sso     = Cookie::get('sso_user_id');
-        $session_sso    = Session::get('sso_user_id');
-        $new_auth       = Session::get('new_auth');
-        $sessionCreation = Cookie::get('created_on');
+        $cookie_sso         = Cookie::get('sso_user_id');
+        $cookie_creation    = Cookie::get('created_on');
+        $session_sso        = Session::get('sso_user_id');
+        $session_creation   = Session::get('created_on');
+        $new_auth   = Session::get('new_auth');
 
-        if (empty($sessionCreation)){
+        if (empty($cookie_creation) && $session_creation==''){
             Session::put('sso_user_id','');
             return false;
         }
@@ -428,6 +443,8 @@ class Auth
     }
 
     private static function log_actions($data){
+        return true;
+
         $toWrite = Carbon::now()->toDateTimeString().' - '.\Request::ip().' : ';
         if (is_array($data) || is_object($data)){
             $toWrite.= json_encode($data);

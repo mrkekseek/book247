@@ -570,6 +570,8 @@ class ApiAuth
     }
 
     public static function log_actions($info){
+        return true;
+
         Log::useDailyFiles(storage_path().'/logs/apiAuth.log');
 
         $textToWrite = 'New API call' .PHP_EOL;
