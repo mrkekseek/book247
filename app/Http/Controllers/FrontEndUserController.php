@@ -1214,6 +1214,7 @@ class FrontEndUserController extends Controller
                 $categoryName = $category->name;
 
                 $bookingsList[] = [
+                    'id'            => $booking->id,
                     'dateShort'     => $dateSmall,
                     'date'          => $date,
                     'timeInterval'  => $timeInterval,
@@ -4936,7 +4937,7 @@ This message is private and confidential. If you have received this message in e
                         $beauty_mail = app()->make(Beautymail::class);
                         $beauty_mail->send('emails.email_default_v2',
                             ['body_message' => $default_message, 'user'=>$user],
-                            function($message) use ($user, $default_subject, $user,$old_email) {
+                            function($message) use ($user, $default_subject, $old_email) {
                                 $message
                                     ->from(AppSettings::get_setting_value_by_name('globalWebsite_system_email'))
                                     ->to($old_email, $user->first_name.' '.$user->middle_name.' '.$user->last_name)
@@ -4954,7 +4955,7 @@ This message is private and confidential. If you have received this message in e
                         $beauty_mail = app()->make(Beautymail::class);
                         $beauty_mail->send('emails.email_default_v2',
                             ['body_message' => $default_message, 'user'=>$user],
-                            function($message) use ($user, $default_subject, $user,$new_email) {
+                            function($message) use ($user, $default_subject,$new_email) {
                                 $message
                                     ->from(AppSettings::get_setting_value_by_name('globalWebsite_system_email'))
                                     ->to($new_email, $user->first_name.' '.$user->middle_name.' '.$user->last_name)
