@@ -1243,6 +1243,11 @@ if (env('FEDERATION',false)){
             'uses' => 'BookingController@confirm_bookings'
         ]);
 
+        Route::post('cancel_many_bookings', [
+            'as' => 'ajax/cancel_many_bookings',
+            'uses' => 'BookingController@cancel_many_bookings'
+        ]);
+
         Route::post('cancel_many', [
             'as' => 'ajax/cancel_bookings',
             'uses' => 'BookingController@cancel_pending_bookings'

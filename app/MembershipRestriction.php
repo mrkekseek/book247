@@ -66,7 +66,7 @@ class MembershipRestriction extends Model
     public function format_for_display_boxes(){
         switch($this->restriction_title->name){
             case 'time_of_day' :
-                $days_in = '';
+                $days_in = [];
                 $days = json_decode($this->value);
                 foreach ($days as $day){
                     $days_in[] = jddayofweek($day-1, 1);

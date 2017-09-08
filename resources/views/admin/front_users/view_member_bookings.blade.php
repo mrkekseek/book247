@@ -104,6 +104,12 @@
                                                 <div class="col-md-12">
                                                     <!-- BEGIN BORDERED TABLE PORTLET-->
                                                     @if (sizeof($upcomingBookings)>0)
+                                                    <div class="form-group">
+                                                        <button class="btn btn-primary form-group" disabled="disabled" id="btn-cancel-booking">
+                                                            Cancel Selected Bookings
+                                                        </button>
+                                                    </div>
+
                                                     <div class="portlet light portlet-fit bordered">
                                                         <div class="table-scrollable">
                                                             <table class="table table-bordered table-hover">
@@ -122,7 +128,9 @@
                                                                 <tbody>
                                                                 @foreach($upcomingBookings as $key=>$booking)
                                                                     <tr>
-                                                                        <td> {{ $key+1 }}</td>
+                                                                        <td>
+                                                                            <input type="checkbox" class="check-cancel" data-id="{{ $booking['id'] }}" />
+                                                                        </td>
                                                                         <td> <small>{{$booking['date']}} {{$booking['timeInterval']}}</small> </td>
                                                                         <td class="hidden-xs"> <small>{{$booking['location']}} {{$booking['room']}}</small> </td>
                                                                         <td class="hidden-xs"> <small>{{$booking['bookingByName']}}</small> </td>
@@ -430,6 +438,39 @@
         </div>
         <!-- END PAGE BASE CONTENT -->
     </div>
+    <!-- MODAL BEGIN -->
+    <div class="modal fade" id="modal-cancel-multy">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Do you want to cancel?</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <p>
+                                    By clicking "Canel Booking" this booking will be canceled and the player notified.
+                                </p>
+                            </div>
+                            <div class="form-group">
+                                <textarea id="comment_public" class="form-control" placeholder="Public Note"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <textarea id="comment_private" class="form-control" placeholder="Internal Note"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">No, Go Back</button>
+                    <button type="button" class="btn btn-primary" id="cancel_booking_multy">Yes, Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- MODAL END -->
 @endsection
 
 @section('pageBelowLevelPlugins')
@@ -601,7 +642,70 @@
 
         $(document).ready(function(){
             FormValidation.init();
+            
+            reset_cancel();
+
+            $(".check-cancel").click(function(){
+                var btn = $("#btn-cancel-booking");
+                if ( ! (check_canceled()).length)
+                {
+                    btn.attr('disabled', 'disabled');
+                    return ;
+                }
+                btn.removeAttr('disabled');
+            });
+
+            $("#btn-cancel-booking").click(function(){
+               $("#modal-cancel-multy").modal("show");
+            });
+
+            $("#cancel_booking_multy").click(function(){
+                $.ajax({
+                    method : 'post',
+                    url : '{{ route("ajax/cancel_many_bookings") }}',
+                    data : {
+                        bookings : check_canceled(),
+                        comment_public : $('#comment_public').val(),
+                        comment_private : $('#comment_private').val()
+                    },
+                    success : function(data)
+                    {
+                        if (data.success) {
+                            show_notification(data.title, data.message, 'lemon', 3500, 0);
+                        }
+                        else {
+                            show_notification(data.title, data.errors, 'ruby', 3500, 0);
+                        }
+
+                        setTimeout(function() {
+                            $("#modal-cancel-multy").modal("hide");
+                            window.location.reload();
+                        }, 1500);
+                        
+                    }
+                })
+            })
         });
+
+        function reset_cancel()
+        {
+            $(".check-cancel").each(function(index, value){
+                $(value).removeAttr("checked");
+                $(value).parent().removeClass("checked");
+            });
+        }
+
+        function check_canceled()
+        {
+            var cancel = [];
+            $(".check-cancel").each(function(index, value){
+                if ($(value).prop('checked'))
+                {
+                    cancel.push($(value).data('id'));
+                }
+            });
+            return cancel;
+        }
 
         $(document).on('click', '.booking_details_modal', function(){
             modify_booking_details($(this).attr('data-key'));
