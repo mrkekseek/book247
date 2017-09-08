@@ -1222,7 +1222,6 @@ class BookingController extends Controller
 
     public function cancel_many_bookings(Request $request)
     {
-        
         if ( ! Auth::check())
         {
             return [
@@ -1248,12 +1247,29 @@ class BookingController extends Controller
         
         if ($bookings->count())
         {
+            $data = [
+                'first_name'              => '',
+                'last-name'               => '',
+                'middle-name'             => '',
+                'booking_date'            => '',
+                'booking_details'         => '',
+                'cancel_booking_details'  => '',
+                'my_booking_link'         => '<a href="'.route("front/my_bookings").'" target="_blank">My Bookings</a>'
+            ];
+            
             $check = true;
             foreach($bookings as $booking)
             {
+                $player = User::where('id', '=', $booking->for_user_id)->get()->first();
+                $booking_details = $booking->get_summary_details(false);
+
+                $data['first_name'] = $player->first_name;
+                $data['last-name'] = $player->last_name;
+                $data['middle-name'] = $player->middle_name;
+                
                 $old_status = $booking->status;
                 if ($this->can_cancel_booking($booking->id) || $user->is_back_user())
-                { 
+                {
                     if ($booking->cancel_booking())
                     {
                         $fillable_note = [
@@ -1282,78 +1298,21 @@ class BookingController extends Controller
                     else
                     {
                         $check = false;
-                    }  
+                    }
 
                     if ($old_status == 'active')
                     {
-                         $player = User::where('id', '=', $booking->for_user_id)->get()->first();
-                         $booking_details = $booking->get_summary_details(false);
- 
-                         $info = "";
-                         $date = "";
- 
-                         if ( ! isset($booking_details['bookingDate'])) 
-                         {
-                             foreach($booking_details as $var)
-                             {
-                                 $info .= ' - ' . $var['bookingDate'] . ', from ' . $var['timeStart'] . ' to ' . $var['timeStop'] . ', location ' . $var['location'] . ' - ' . $var['room'] . '; <br />';
-                             }
-                         }
-                         else {
-                             $info = '<strong>'.$booking_details['bookingDate']. ', location ' . $booking_details['location'] . ' - ' . $booking_details['room'].'</strong>';
-                         }
-                         
-                         $data = [
-                             'first_name'              => $player->first_name,
-                             'last-name'               => $player->last_name,
-                             'middle-name'             => $player->middle_name,
-                             'booking_date'            => $date,
-                             'booking_details'         => $info,
-                             'cancel_booking_details'  => $info,
-                             'my_booking_link'         => '<a href="'.route("front/my_bookings").'" target="_blank">My Bookings</a>'
-                         ];
- 
-                         $template = EmailsController::build('Booking cancellation - multiple (recurring bookings)', $data);
-                         if ($template)
-                         {
-                             $main_message = $template["message"];
-                             $subject = AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title').' -  Your booking for '.$booking_details["bookingDate"].' was canceled';
-                         }
-                         else
-                         {
-                             $subject = AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title').' -  Your booking for '.$booking_details["bookingDate"].' was canceled';
- 
-                             if ( ! isset($booking_details['bookingDate']))
-                             {
-                                 $main_message = 'The following bookings were canceled :<br />';
-                                 foreach($booking_details as $var)
-                                 {
-                                     $main_message .= ' - ' . $var['bookingDate'] . ', from ' . $var['timeStart'] . ' to ' . $var['timeStop'] . ', location ' . $var['location'] . ' - ' . $var['room'] . '; <br />';
-                                 }
-                             }
-                             else 
-                             {
-                                 $main_message  = 'Your booking for '.$booking_details['bookingDate'].' - '.$booking_details['timeStart'].' to '.$booking_details['timeStop'].' was canceled. <br /><br />Below you can check the full booking summary :<br />';
-                                 $main_message .= 'Booking Date : '.$booking_details['bookingDate'].' <br />';
-                                 $main_message .= 'Time of booking : '.$booking_details['timeStart'].' - '.$booking_details['timeStop'].' <br />';
-                                 $main_message .= 'Booking Location : '.$booking_details['location'].' - '.$booking_details['room'].' <br />';
-                                 $main_message .= 'Activity : '.$booking_details['category'].' <br />';
-                                 $main_message .= 'Player : '.$booking_details['forUserName'].' <br />';
-                             }
-                             
-                             $main_message .= '<br />You can view this information in your account by accessing your <strong>Bookings > Booking Archive</strong> menu.';
-                         }
- 
- 
-                         $beauty_mail = app()->make(Beautymail::class);
-                         $beauty_mail->send('emails.email_default_v2',
-                             ['body_message' => $main_message, 'user' => $player],
-                             function($message) use ($user, $subject, $player, $booking_details) {
-                             $message
-                                 ->from(AppSettings::get_setting_value_by_name('globalWebsite_system_email'))
-                                 ->to($player->email, $player->first_name.' '.$player->middle_name.' '.$player->last_name)
-                                 ->subject($subject);
-                         });
+                        if ( ! isset($booking_details['bookingDate'])) 
+                        {
+                            foreach($booking_details as $var)
+                            {
+                                $data['cancel_booking_details'] .= ' - ' . $var['bookingDate'] . ', from ' . $var['timeStart'] . ' to ' . $var['timeStop'] . ', location ' . $var['location'] . ' - ' . $var['room'] . '; <br />';
+                            }
+                        }
+                        else 
+                        {
+                            $data['cancel_booking_details'] .= '<strong>'.$booking_details['bookingDate']. ', location ' . $booking_details['location'] . ' - ' . $booking_details['room'].'</strong>';
+                        }
                     }
 
                     Activity::log([
@@ -1364,13 +1323,54 @@ class BookingController extends Controller
                         'details'       => 'User Email : ' . $user->email,
                         'updated'       => true,
                     ]);
-
-                }
-                             
+                }         
             }
 
             if ($check)
             {
+                $template = EmailsController::build('Booking cancellation - multiple', $data);
+                $main_message = "";
+
+                if ($template)
+                {
+                    $main_message = $template["message"];
+                    $subject = AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title').' -  Your booking for '.$booking_details["bookingDate"].' was canceled';
+                }
+                else
+                {
+                    $subject = AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title').' -  Your booking for '.$booking_details["bookingDate"].' was canceled';
+
+                    if ( ! isset($booking_details['bookingDate']))
+                    {
+                        $main_message = 'The following bookings were canceled :<br />';
+                        foreach($booking_details as $var)
+                        {
+                            $main_message .= ' - ' . $var['bookingDate'] . ', from ' . $var['timeStart'] . ' to ' . $var['timeStop'] . ', location ' . $var['location'] . ' - ' . $var['room'] . '; <br />';
+                        }
+                    }
+                    else 
+                    {
+                        $main_message  = 'Your booking for '.$booking_details['bookingDate'].' - '.$booking_details['timeStart'].' to '.$booking_details['timeStop'].' was canceled. <br /><br />Below you can check the full booking summary :<br />';
+                        $main_message .= 'Booking Date : '.$booking_details['bookingDate'].' <br />';
+                        $main_message .= 'Time of booking : '.$booking_details['timeStart'].' - '.$booking_details['timeStop'].' <br />';
+                        $main_message .= 'Booking Location : '.$booking_details['location'].' - '.$booking_details['room'].' <br />';
+                        $main_message .= 'Activity : '.$booking_details['category'].' <br />';
+                        $main_message .= 'Player : '.$booking_details['forUserName'].' <br />';
+                    }
+                    
+                    $main_message .= '<br />You can view this information in your account by accessing your <strong>Bookings > Booking Archive</strong> menu.';
+                }
+
+                $beauty_mail = app()->make(Beautymail::class);
+                $beauty_mail->send('emails.email_default_v2',
+                    ['body_message' => $main_message, 'user' => $player],
+                    function($message) use ($user, $subject, $player, $booking_details) {
+                    $message
+                        ->from(AppSettings::get_setting_value_by_name('globalWebsite_system_email'))
+                        ->to($player->email, $player->first_name.' '.$player->middle_name.' '.$player->last_name)
+                        ->subject($subject);
+                });
+
                 return [
                     'success' => true,
                     'title'   => 'Booking canceled',

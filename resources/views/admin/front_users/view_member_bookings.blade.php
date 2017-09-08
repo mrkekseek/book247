@@ -642,10 +642,11 @@
 
         $(document).ready(function(){
             FormValidation.init();
+            
+            reset_cancel();
 
             $(".check-cancel").click(function(){
                 var btn = $("#btn-cancel-booking");
-                console.log(check_canceled());
                 if ( ! (check_canceled()).length)
                 {
                     btn.attr('disabled', 'disabled');
@@ -667,15 +668,16 @@
                         comment_public : $('#comment_public').val(),
                         comment_private : $('#comment_private').val()
                     },
-                    success : function(data){
+                    success : function(data)
+                    {
                         if (data.success) {
                             show_notification(data.title, data.message, 'lemon', 3500, 0);
                         }
-                        else{
+                        else {
                             show_notification(data.title, data.errors, 'ruby', 3500, 0);
                         }
 
-                        setTimeout(function(){
+                        setTimeout(function() {
                             $("#modal-cancel-multy").modal("hide");
                             window.location.reload();
                         }, 1500);
@@ -684,6 +686,14 @@
                 })
             })
         });
+
+        function reset_cancel()
+        {
+            $(".check-cancel").each(function(index, value){
+                $(value).removeAttr("checked");
+                $(value).parent().removeClass("checked");
+            });
+        }
 
         function check_canceled()
         {
