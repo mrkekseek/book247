@@ -78,6 +78,35 @@ class ShopController extends Controller
         ]);
     }
 
+    public function add_new_shop_location(Request $request){
+        $user = Auth::user();
+        if (!$user || !$user->is_back_user()) {
+            return redirect()->intended(route('admin/login'));
+        }
+
+        $resourceCategories = ShopResourceCategory::orderBy('name','asc')->get();
+        $countries = Countries::orderBy('name')->get();
+        $breadcrumbs = [
+            'Home'              => route('admin'),
+            'Administration'    => route('admin'),
+            'Add Shop'              => '',
+        ];
+        $text_parts  = [
+            'title'     => 'Add Shop Location',
+            'subtitle'  => 'Add new shop location'
+        ];
+        $sidebar_link= 'admin-backend-shops-add-club';
+
+        return view('admin/shops/new_location', [
+            'countries'     => $countries,
+            'breadcrumbs'   => $breadcrumbs,
+            'text_parts'    => $text_parts,
+            'in_sidebar'    => $sidebar_link,
+            'resourceCategory' => $resourceCategories
+        ]);
+    }
+
+
     public function add_shop_location(Request $request){
         if (!Auth::check()) {
             return [
@@ -136,12 +165,146 @@ class ShopController extends Controller
         /** Stop - Add shop location to database */
     }
 
+
+//    public function set_activity_time_interval(Request $request){
+//        $user = Auth::user();
+//        if (!$user || !$user->is_back_user()) {
+//            return [
+//                'success' => false,
+//                'errors'  => 'You need to be logged in to access this function',
+//                'title'   => 'Error authentication'
+//            ];
+//        }
+//        $vars = $request->only('location_id','activity_id','value');
+//
+//        // validate input data : activityID, locationID, value
+//        $fillable = [
+//            'location_id'   => $vars['location_id'],
+//            'category_id'   => $vars['activity_id'],
+//            'time_interval' => $vars['value'],
+//            'added_by'      => $user->id
+//        ];
+//
+//        $timeIntervalForActivity = Validator::make($fillable, ShopLocationCategoryIntervals::rules('POST'), ShopLocationCategoryIntervals::$validationMessages, ShopLocationCategoryIntervals::$attributeNames);
+//        if ($timeIntervalForActivity->fails()){
+//            return [
+//                'success' => false,
+//                'title'   => 'There is an error',
+//                'errors'  => $timeIntervalForActivity->getMessageBag()->toArray()
+//            ];
+//        }
+//        else{
+//            $shopActivityInterval = ShopLocationCategoryIntervals::where('location_id','=',$fillable['location_id'])->where('category_id','=',$fillable['category_id'])->first();
+//            if ($shopActivityInterval){
+//                return [
+//                    'success' => false,
+//                    'title'   => 'Activity already assigned',
+//                    'errors'  => 'The selected activity is already available in this location'
+//                ];
+//            }
+//            $shopActivityInterval = new ShopLocationCategoryIntervals();
+//            $shopActivityInterval->fill($fillable);
+//            $shopActivityInterval->save();
+//
+//            return [
+//                'success' => true,
+//                'title'   => 'Activity Added',
+//                'message' => 'The selected activity will be available from now on on this location'
+//            ];
+//        }
+//    }
+
+    public function add_shop_from_page(Request $request){
+        if (!Auth::check()) {
+            return [
+                'success'   => false,
+                'title'     => 'Login Error',
+                'errors'    => 'You need to be logged in to access this function'
+            ];
+        }
+        else{
+            $user = Auth::user();
+        }
+        $shop_vars = $request->only('name', 'phone', 'fax', 'email', 'visibility');
+        $address_vars = $request->only('address1', 'address2', 'city', 'country_id', 'postal_code', 'region');
+        $vars = $request->only('activity_id','value');
+
+        // validate input data : activityID, locationID, value
+
+        $addressValidator = Validator::make($address_vars, Address::rules('POST'), Address::$validationMessages, Address::$attributeNames);
+        if ($addressValidator->fails()){
+            return array(
+                'success'   => false,
+                'title'     => 'Error Shop Address',
+                'errors'    => $addressValidator->getMessageBag()->toArray()
+            );
+        }
+        else{
+            $shopAddress = new Address();
+            $shopAddress->fill($address_vars);
+            $shopAddress->save();
+
+            $shop_vars['address_id'] = $shopAddress->id;;
+        }
+
+        $shopValidator = Validator::make($shop_vars, ShopLocations::rules('POST'), ShopLocations::$validationMessages, ShopLocations::$attributeNames);
+        if ($shopValidator->fails()){
+            //return $validator->errors()->all();
+            return array(
+                'success'   => false,
+                'title'     => 'Error Shop Details',
+                'errors'    => $shopValidator->getMessageBag()->toArray()
+            );
+        }
+        else{
+            $shopLocation = new ShopLocations();
+            $shopLocation->fill($shop_vars);
+            $shopLocation->save();
+
+        }
+
+        $fillable = [
+            'location_id'   => $shopLocation->id,
+            'category_id'   => $vars['activity_id'],
+            'time_interval' => $vars['value'],
+            'added_by'      => $user->id
+        ];
+
+        $timeIntervalForActivity = Validator::make($fillable, ShopLocationCategoryIntervals::rules('POST'), ShopLocationCategoryIntervals::$validationMessages, ShopLocationCategoryIntervals::$attributeNames);
+        if ($timeIntervalForActivity->fails()){
+            return [
+                'success' => false,
+                'title'   => 'There is an error',
+                'errors'  => $timeIntervalForActivity->getMessageBag()->toArray()
+            ];
+        } else {
+            $shopActivityInterval = ShopLocationCategoryIntervals::where('location_id','=',$fillable['location_id'])->where('category_id','=',$fillable['category_id'])->first();
+            if ($shopActivityInterval){
+                return [
+                    'success' => false,
+                    'title'   => 'Activity already assigned',
+                    'errors'  => 'The selected activity is already available in this location'
+                ];
+            }
+            $shopActivityInterval = new ShopLocationCategoryIntervals();
+            $shopActivityInterval->fill($fillable);
+            $shopActivityInterval->save();
+
+        }
+        return [
+            'success'   => true,
+            'title'     => 'New Shop Added',
+            'message'   => 'A new shop location was added. Page will reload...',
+            'redirect_link' => route('admin/shops/locations/view',['id'=>$shopLocation->id]),
+        ];
+    }
+
+
     public function get_shop_location($id){
         $user = Auth::user();
         if (!$user || !$user->is_back_user()) {
             return redirect()->intended(route('admin/login'));
         }
-
         $shopDetails = ShopLocations::with('opening_hours')->with('systemOptions')->find($id);
         $shopAddress = Address::find($shopDetails->address_id);
 

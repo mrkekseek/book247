@@ -22,7 +22,7 @@
 @endsection
 
 @section('title', 'Back-end bookings - Calendar View per Location')
-@section('pageBodyClass','page-container-bg-solid page-header-fixed page-sidebar-closed-hide-logo page-sidebar-closed page-header-fixed')
+@section('pageBodyClass','page-container-bg-solid page-header-fixed'.(isset($is_close_menu) && !$is_close_menu ?' page-sidebar-closed-hide-logo page-sidebar-closed' : '') .' page-header-fixed')
 
 @section('pageContentBody')
     <div class="page-content fix_padding_top_0">
@@ -30,39 +30,44 @@
         <div class="row">
             <div class="col-md-12">
                 <!-- BEGIN SAMPLE TABLE PORTLET-->
+                @if($header_vals)
                 <div class="portlet box green">
                     <div class="portlet-title" style="height:1px !important; min-height:1px;">
                         <div class="caption">
+
                             <div class="form-inline margin-bottom-0">
-                                <div class="input-group input-small date date-picker" data-date="{{ $header_vals['date_selected'] }}" data-date-format="dd-mm-yyyy" data-date-viewmode="years">
-                                    <input type="text" id="header_date_selected" class="form-control reload_calendar_page" value="{{ $header_vals['date_selected'] }}" readonly>
-                                    <span class="input-group-btn">
-                                        <button class="btn default" type="button">
-                                            <i class="fa fa-calendar"></i>
-                                        </button>
-                                    </span>
-                                </div>
-                                <div class="input-group input-medium">
-                                    <select id="header_location_selected" class="form-control reload_calendar_page" style="border-radius:4px;">
-                                        @foreach($all_locations as $a_location)
-                                            <option value="{{ $a_location->id }}" {{ $a_location->id==$header_vals['selected_location']?" selected ":'' }} >{{ $a_location->name }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                                <div class="input-group input-medium">
-                                    <select id="header_activity_selected" class="form-control reload_calendar_page" style="border-radius:4px;">
-                                        @foreach($all_activities as $an_activity)
-                                            <option value="{{ $an_activity['id'] }}" {{ $an_activity['id']==$header_vals['selected_activity']?" selected ":'' }} >{{ $an_activity['name'] }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
+
+                                    <div class="input-group input-small date date-picker" data-date="{{ $header_vals['date_selected'] }}" data-date-format="dd-mm-yyyy" data-date-viewmode="years">
+                                        <input type="text" id="header_date_selected" class="form-control reload_calendar_page" value="{{ $header_vals['date_selected'] }}" readonly>
+                                        <span class="input-group-btn">
+                                            <button class="btn default" type="button">
+                                                <i class="fa fa-calendar"></i>
+                                            </button>
+                                        </span>
+                                    </div>
+                                    <div class="input-group input-medium">
+                                        <select id="header_location_selected" class="form-control reload_calendar_page" style="border-radius:4px;">
+                                            @foreach($all_locations as $a_location)
+                                                <option value="{{ $a_location->id }}" {{ $a_location->id==$header_vals['selected_location']?" selected ":'' }} >{{ $a_location->name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="input-group input-medium">
+                                        <select id="header_activity_selected" class="form-control reload_calendar_page" style="border-radius:4px;">
+                                            @foreach($all_activities as $an_activity)
+                                                <option value="{{ $an_activity['id'] }}" {{ $an_activity['id']==$header_vals['selected_activity']?" selected ":'' }} >{{ $an_activity['name'] }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+
                             </div>
-                        </div>
-                        <div class="tools margin-top-10">
-                            <a href="{{ route('bookings/location_calendar_day_view_all', ['day'=>$header_vals['prev_date'],'location'=>$header_vals['selected_location'],'activity'=>$header_vals['selected_activity']]) }}" class="bs-glyphicons font-white margin-bottom-0"> <span class="glyphicon glyphicon-chevron-left"> </span> Prev </a>
-                            <a href="javascript:;" class="bs-glyphicons font-white margin-bottom-0"> <span class="glyphicon glyphicon-repeat"> </span> Reload </a>
-                            <a href="{{ route('bookings/location_calendar_day_view_all', ['day'=>$header_vals['next_date'],'location'=>$header_vals['selected_location'],'activity'=>$header_vals['selected_activity']]) }}" class="bs-glyphicons font-white margin-bottom-0"> Next <span class="glyphicon glyphicon-chevron-right"> </span> </a>
-                        </div>
+                            </div>
+                            <div class="tools margin-top-10">
+                                <a href="{{ route('bookings/location_calendar_day_view_all', ['day'=>$header_vals['prev_date'],'location'=>$header_vals['selected_location'],'activity'=>$header_vals['selected_activity']]) }}" class="bs-glyphicons font-white margin-bottom-0"> <span class="glyphicon glyphicon-chevron-left"> </span> Prev </a>
+                                <a href="javascript:;" class="bs-glyphicons font-white margin-bottom-0"> <span class="glyphicon glyphicon-repeat"> </span> Reload </a>
+                                <a href="{{ route('bookings/location_calendar_day_view_all', ['day'=>$header_vals['next_date'],'location'=>$header_vals['selected_location'],'activity'=>$header_vals['selected_activity']]) }}" class="bs-glyphicons font-white margin-bottom-0"> Next <span class="glyphicon glyphicon-chevron-right"> </span> </a>
+                            </div>
+
                     </div>
                     <div class="portlet-body">
                         <div class="row legend-calendar-products">
@@ -157,6 +162,15 @@
                         </div>
                     </div>
                 </div>
+                @else
+                    <div class="portlet box green">
+                        <div class="portlet-title" style="min-height:1px;">
+                            <div class="caption">
+                                Calendar not available. Not enough date provided for system management.
+                            </div>
+                        </div>
+                    </div>
+                @endif
                 <!-- END SAMPLE TABLE PORTLET-->
             </div>
 

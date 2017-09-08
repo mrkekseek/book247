@@ -1480,21 +1480,40 @@ class BackEndUserController extends Controller
         ];
 
 
-        if ( $status != 1 )
-        {
+        if ( $status != 1 ) {
             $user = Auth::user();
-            $data = $request->only('stripeToken', 'clubname','email','phone','mail_validation','addressline1','addressline2','city','region','postalcode','country','currency','sport','time','members','pay','resource','day','limit');
-            if ( ! empty($data['stripeToken']))
-            {
-                $customer  = StripeController::chargeCustomer($data['stripeToken']);
+            $data = $request->only('stripeToken', 'clubname', 'email', 'phone', 'mail_validation', 'addressline1', 'addressline2', 'city', 'region', 'postalcode', 'country', 'currency', 'sport', 'time', 'members', 'pay', 'resource', 'day', 'limit');
+            if (!empty($data['stripeToken'])) {
+                $customer = StripeController::chargeCustomer($data['stripeToken']);
             }
 
             $shopLocation = ShopLocations::first();
-            $shopLocation->name = $data['clubname'];
-            $shopLocation->phone = $data['phone'];
-            $shopLocation->fax = $data['phone'];
-            $shopLocation->email = $data['email'];
-            $shopLocation->save();
+            if (!$shopLocation) {
+                $address = Address::create([
+                    'user_id' => $user->id,
+                    'address1' => $data['addressline1'],
+                    'address2' => $data['addressline2'],
+                    'city' => $data['city'],
+                    'region' => $data['region'],
+                    'postal_code' => $data['postalcode'],
+                    'country_id' => $data['country'],
+                ]);
+                $shopLocation = ShopLocations::create([
+                    'name' => $data['clubname'],
+                    'address_id' => $address->id,
+                    'phone' => $data['phone'],
+                    'fax' => $data['phone'],
+                    'email' => $data['email'],
+                    'visibility' => 'public'
+                ]);
+            } else {
+                $shopLocation->name = $data['clubname'];
+                $shopLocation->phone = $data['phone'];
+                $shopLocation->fax = $data['phone'];
+                $shopLocation->email = $data['email'];
+                $shopLocation->save();
+            }
+
 
             $address = Address::find($shopLocation->address_id);
             $address->user_id = $user->id;

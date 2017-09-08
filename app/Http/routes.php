@@ -378,9 +378,19 @@ if (env('FEDERATION',false)){
             'uses' => 'ShopController@get_shop_resource'
         ]);
 
+        Route::get('/admin/shops/location/add_new', [
+            'as' => 'admin/shops/location/add_new',
+            'uses' => 'ShopController@add_new_shop_location'
+        ]);
+
         Route::post('/admin/shops/locations/add', [
             'as' => 'admin/shops/locations/add',
             'uses' => 'ShopController@add_shop_location'
+        ]);
+
+        Route::post('/admin/shops/locations/add_from_page', [
+            'as' => 'admin/shops/locations/add_from_page',
+            'uses' => 'ShopController@add_shop_from_page'
         ]);
 
         Route::get('admin/shops/employee_work_plan', [

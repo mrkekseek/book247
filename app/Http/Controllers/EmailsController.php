@@ -73,6 +73,10 @@ class EmailsController extends Controller
             return redirect()->intended(route('admin/login'));
         }
 
+        if (!env('DebugSettings',false)) {
+            return redirect()->intended(route('admin/templates_email/list_all'));
+        }
+
         $breadcrumbs = [
             'Home'              => route('admin'),
             'Administration'    => route('admin'),
@@ -106,6 +110,13 @@ class EmailsController extends Controller
                 'success' => false,
                 'errors'  => 'Error while trying to authenticate. Login first then use this function.',
                 'title'   => 'Not logged in'];
+        }
+
+        if (!env('DebugSettings',false)) {
+            return [
+                'success' => false,
+                'errors'  => 'You are not able to do that.',
+                'title'   => 'Action not allowed.'];
         }
 
         $vars = $request->only('title', 'content', 'variables', 'hook', 'country_id', 'description');
@@ -274,6 +285,13 @@ class EmailsController extends Controller
         if ( ! $user || ! $user->is_back_user()) 
         {
             return redirect()->intended(route('admin/login'));
+        }
+
+        $template = TempalteEmail::where('id', $request->id)->get()->first();
+
+        if (isset($template) && $template->is_default) {
+            $actual_template = TempalteEmail::where('hook', $template->hook)->where('is_default', 0)->get()->first();
+            return redirect()->intended(route('admin/templates_email/edit/{id}',['id' => $actual_template->id]));
         }
 
         $breadcrumbs = [

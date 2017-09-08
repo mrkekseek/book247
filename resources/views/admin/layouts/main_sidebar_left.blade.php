@@ -6,7 +6,7 @@
     <!-- DOC: Set data-auto-scroll="false" to disable the sidebar from auto scrolling/focusing -->
     <!-- DOC: Set data-keep-expand="true" to keep the submenues expanded -->
     <!-- DOC: Set data-auto-speed="200" to adjust the sub menu slide up/down speed -->
-    <ul class="page-sidebar-menu {{isset($is_close_menu)?'page-sidebar-menu-closed':''}} " data-keep-expanded="false" data-auto-scroll="true" data-slide-speed="200">
+    <ul class="page-sidebar-menu{{isset($is_close_menu) && !$is_close_menu ?' page-sidebar-menu-closed':''}} " data-keep-expanded="false" data-auto-scroll="true" data-slide-speed="200">
         <li class="nav-item start {{ $in_sidebar=='admin-home_dashboard'?'active open':'' }}">
             <a href="javascript:;" class="nav-link nav-toggle ">
                 <i class="icon-home"></i>
@@ -196,7 +196,7 @@
         @endif
 
         @if (Auth::user()->can('view-shop-menu'))
-        <li class="nav-item {{ in_array($in_sidebar, ['admin-backend-inventory-and-transfers','admin-backend-shop-locations-list','admin-backend-shop-products-list','admin-backend-shop-products-inventory', 'admin-backend-shop-locations-details-view', 'admin-backend-product-details-view', 'admin-backend-all-products-inventory', 'admin-backend-shops-employees-work-plan', 'admin-backend-shops-add-invoice', 'admin-backend-shop-new_order', 'admin-backend-shop-all_orders', 'admin-backend-shops-cash_terminals', 'admin-backend-locations-resource-details-view', 'admin-backend-shop-new_order'])?'active open':'' }} ">
+        <li class="nav-item {{ in_array($in_sidebar, ['admin-backend-inventory-and-transfers','admin-backend-shops-add-club','admin-backend-shop-locations-list','admin-backend-shop-products-list','admin-backend-shop-products-inventory', 'admin-backend-shop-locations-details-view', 'admin-backend-product-details-view', 'admin-backend-all-products-inventory', 'admin-backend-shops-employees-work-plan', 'admin-backend-shops-add-invoice', 'admin-backend-shop-new_order', 'admin-backend-shop-all_orders', 'admin-backend-shops-cash_terminals', 'admin-backend-locations-resource-details-view', 'admin-backend-shop-new_order'])?'active open':'' }} ">
             <a href="javascript:;" class="nav-link nav-toggle">
                 <i class="icon-settings"></i>
                 <span class="title">Clubs</span>
@@ -264,6 +264,11 @@
                 <li class="nav-item {{ $in_sidebar=='admin-backend-shops-employees-work-plan'?'active open':'' }} ">
                     <a href="{{ route('admin/shops/employee_work_plan') }}" class="nav-link ">
                         <span class="title"> Working Schedule </span>
+                    </a>
+                </li>
+                <li class="nav-item {{ $in_sidebar=='admin-backend-shops-add-club'?'active open':'' }} ">
+                    <a href="{{ route('admin/shops/location/add_new') }}" class="nav-link ">
+                        <span class="title"> Add club </span>
                     </a>
                 </li>
             </ul>
