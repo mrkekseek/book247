@@ -1222,6 +1222,7 @@ class BookingController extends Controller
 
     public function cancel_many_bookings(Request $request)
     {
+        
         if ( ! Auth::check())
         {
             return [
@@ -1243,16 +1244,16 @@ class BookingController extends Controller
             ];
         }
         
-
         $bookings = Booking::whereIn('id', $vars['bookings'])->get();
         
         if ($bookings->count())
         {
+            $check = true;
             foreach($bookings as $booking)
             {
                 $old_status = $booking->status;
                 if ($this->can_cancel_booking($booking->id) || $user->is_back_user())
-                {   
+                { 
                     if ($booking->cancel_booking())
                     {
                         $fillable_note = [
@@ -1278,6 +1279,10 @@ class BookingController extends Controller
                             $booking->add_note($fillable_note);
                         }
                     }
+                    else
+                    {
+                        $check = false;
+                    }  
 
                     if ($old_status == 'active')
                     {
@@ -1360,12 +1365,17 @@ class BookingController extends Controller
                         'updated'       => true,
                     ]);
 
-                    return [
-                        'success' => true,
-                        'title'   => 'Booking canceled',
-                        'message' => 'Booking canceled and invoice updated accordingly [if it was a paid booking]'
-                    ];
-                }   
+                }
+                             
+            }
+
+            if ($check)
+            {
+                return [
+                    'success' => true,
+                    'title'   => 'Booking canceled',
+                    'message' => 'Booking canceled and invoice updated accordingly [if it was a paid booking]'
+                ];
             }
         }
         else

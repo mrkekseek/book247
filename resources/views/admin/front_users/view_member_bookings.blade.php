@@ -440,8 +440,8 @@
     </div>
     <!-- MODAL BEGIN -->
     <div class="modal fade" id="modal-cancel-multy">
-        <div class="modal-dialog">
-            <div class="modal-content modal-sm">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                     <h4 class="modal-title">Do you want to cancel?</h4>
@@ -674,7 +674,12 @@
                         else{
                             show_notification(data.title, data.errors, 'ruby', 3500, 0);
                         }
-                        $("#modal-cancel-multy").modal("hide");
+
+                        setTimeout(function(){
+                            $("#modal-cancel-multy").modal("hide");
+                            window.location.reload();
+                        }, 1500);
+                        
                     }
                 })
             })
