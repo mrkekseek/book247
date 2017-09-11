@@ -17,6 +17,7 @@ use Exception;
 class ApiAuth
 {
     static $error = '';
+    public static $debug = true;
 
     public static function accounts_get($id = 0)
     {
@@ -387,10 +388,14 @@ class ApiAuth
             }
 
             $curl_results = curl_exec($curl);
+            if (self::$debug) {
+                $info = curl_getinfo($curl);
+                $toLog['curl_time'] = 'Total time : '.$info['total_time'].' - '.$info['namelookup_time'].' - '.$info['connect_time'].' - '.$info['pretransfer_time'];
+            }
 
-            if (FALSE === $curl_results)
+            if (FALSE === $curl_results) {
                 throw new Exception(curl_error($curl), curl_errno($curl));
-
+            }
         }
         catch(Exception $e) {
             trigger_error(sprintf(
@@ -406,7 +411,10 @@ class ApiAuth
             $result = $curl_results;
         }
         curl_close($curl);
-        self::log_actions($toLog);
+
+        if (self::$debug) {
+            self::log_actions($toLog);
+        }
 
         if ($result && !isset($result->Code)) {
             return $result;
@@ -469,7 +477,9 @@ class ApiAuth
         }
 
         curl_close($curl);
-        self::log_actions($toLog);
+        if (self::$debug) {
+            self::log_actions($toLog);
+        }
 
         if ($result && !isset($result->Code)) {
             return $result;
@@ -570,8 +580,6 @@ class ApiAuth
     }
 
     public static function log_actions($info){
-        return true;
-
         Log::useDailyFiles(storage_path().'/logs/apiAuth.log');
 
         $textToWrite = 'New API call' .PHP_EOL;

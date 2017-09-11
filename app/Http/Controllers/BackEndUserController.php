@@ -354,18 +354,6 @@ class BackEndUserController extends Controller
             // attach the roles to the new created user
             $user->attachRole($vars['user_type']);
 
-
-            $main_message = 'Your account was successfully created. You can log in using your email and your password.<br/>';
-            $main_message .= 'First Name: <b>' . (isset($user->first_name) ? $user->first_name : '-') . '</b><br/>';
-            $main_message .= 'Middle Name: <b>' . (isset($user->middle_name) ? $user->middle_name : '-') . '</b><br/>';
-            $main_message .= 'Last Name: <b>' . (isset($user->last_name) ? $user->last_name : '-') . '</b><br/>';
-            $main_message .= 'Username: <b>' . (isset($user->email) ? $user->email : '-') . '</b><br/>';
-            $main_message .= 'Email: <b>' . (isset($user->email) ? $user->email : '-') . '</b><br/>';
-            $main_message .= 'Password: <b>' . (isset($password) ? $password : '-') . '</b><br/>';
-            $role = Role::where('id',$request->get('user_type'))->first();
-            $main_message .= 'Role: <b>' . (isset($role->name) ? $role->name : '-') . '</b><br/>';
-            $subject = 'Your back-end account was created.';
-
             $data = [
                 'first_name' => isset($user->first_name) ? $user->first_name : '-',
                 'middle_name' => isset($user->middle_name) ? $user->middle_name : '-',
@@ -376,10 +364,19 @@ class BackEndUserController extends Controller
                 'role' => isset($role->name) ? $role->name : '-',
             ];
 
-            $template = EmailsController::build('New back end user registration', $data, $main_message,$subject);
-            if ($template) {
-               $main_message = $template['message'];
-            }
+            $default_message = 'Your backend account was successfully created. Please check the details below and verify them.<br>
+First Name: <b>[[first_name]]</b><br>Middle Name: <b>[[middle_name]]</b><br>Last Name: <b>[[last_name]]</b><br>
+Email: <b>[[email]]</b><br>Password: <b>[[password]]</b><br>Role: <b>[[role]]</b><br><br>
+You can login to your account using [[login_link]].<br><br>Sincerely,<br>Book247 Team. <br><br>
+<small><strong>***** Email confidentiality notice *****</strong><br>This message is private and confidential. If you have received this message in error, please notify us and remove it from your system.</small>';
+            $default_subject = 'Booking System - backend account created';
+            $template = EmailsController::build('New back end user registration', $data, $default_message, $default_subject);
+
+            $main_message = $template["message"];
+            $subject = AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title') ?
+                AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title') . ' - '.$template['subject'] :
+                $template['subject'];
+
             $beauty_mail = app()->make(Beautymail::class);
             $beauty_mail->send('emails.email_default_v2',
                 ['body_message' => $main_message, 'user'=>$user],
