@@ -34,10 +34,8 @@ class EmailsController extends Controller
         {
             $templates[] = array(
                 "id" => $template["id"],
-                "title" => $template["title"],
-                "hook" => $template["hook"],
                 "content" => $template["content"],
-                "variables" => json_decode($template["variables"]),
+                "hook" => $template["hook"],
                 "country" => DB::table("countries")->where("id", $template["country_id"])->first()
             );
         }

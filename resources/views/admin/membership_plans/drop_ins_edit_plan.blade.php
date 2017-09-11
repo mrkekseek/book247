@@ -149,7 +149,7 @@
                                                     <textarea name="membership_long_description" style="height:100px;" class="form-control">{{$membership_plan->description}}</textarea>
                                                 </div>
                                             </div>
-                                            <div class="form-group">
+                                            <div class="form-group" style="display:none;">
                                                 <label class="control-label col-md-3 inline"> Membership Status </label>
                                                 <div class="col-md-7">
                                                     <select name="membership_status" class="form-control input-inline input-small  inline-block">

@@ -155,7 +155,7 @@
                                                     <p class="form-control-static form-control border-blue-steel" style="height:auto; min-height:90px;">{{$membership_plan->description}}</p>
                                                 </div>
                                             </div>
-                                            <div class="form-group">
+                                            <div class="form-group" style="display:none;">
                                                 <label class="control-label col-md-3 inline"> Membership Status </label>
                                                 <div class="col-md-9">
                                                     <p class="form-control-static form-control border-blue-steel">

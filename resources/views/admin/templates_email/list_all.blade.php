@@ -31,7 +31,7 @@
             <div class="col-md-12">
                 <div class="portlet light bordered">
                     <div class="portlet-body">
-                        @if (env('DebugSettings',0)==1)
+                        @if (env('DebugSettings',false)==true)
                         <div class="row form-group">
                             <div class="col-md-12">
                                 <div class="btn-group">
@@ -46,10 +46,13 @@
                             <tr>
                                 <th> № </th>
                                 <th> Hook </th>
-                                <th> Variables </th>
+                                <th> Description </th>
                                 <th> Country </th>
-                                <th> Edit </td>
-                                <th> Delete </th>
+                                @if (env('DebugSettings',false)==true)
+                                    <th colspan="2"> Actions </th>
+                                @else
+                                    <th> Edit </td>
+                                @endif
                             </tr>
                             </thead>
                             <tbody>
@@ -60,27 +63,22 @@
                                         {{ $templates[$i]["hook"] }}
                                     </td>
                                     <td>
-                                        @if (isset($templates[$i]["variables"]) && is_array($templates[$i]["variables"]))
-                                            @foreach($templates[$i]["variables"] as $index => $var)
-                                            <span class="label label-default label-var">{{ $var }}</span>
-                                            @endforeach
-                                        @else
-                                            -
-                                        @endif
+                                        {{ $templates[$i]["content"] }}
                                     </td>
                                     <td>
-                                        {{ $templates[$i]["country"]->name }}
+                                        {{ $templates[$i]["country"]->iso_3166_3 }}
                                     </td>
                                     <td class="text-center">
-                                        <a href="/admin/templates_email/edit/{{ $templates[$i]['id'] }}" class="edit">
+                                        <a href="{{route('admin/templates_email/edit/{id}', ['id'=>$templates[$i]['id']])}}" class="btn btn-sm blue">
+                                            <i class="fa fa-file-o"></i> View </a>
+                                    </td>
+                                    @if (env('DebugSettings',false)==true)
+                                    <td class="text-center">
+                                        <a href="javascript:;" class="btn btn-sm red delete" data-id="{{ $templates[$i]['id'] }}"> Delete
                                             <i class="fa fa-edit"></i>
                                         </a>
                                     </td>
-                                    <td class="text-center">
-                                        <a href="javascript:void(0);"  data-id="{{ $templates[$i]['id'] }}" class="delete">
-                                            <i class="fa fa-trash-o"></i>
-                                        </a>
-                                    </td>
+                                    @endif
                                 </tr>
                             @endfor
                             @if ( ! $templates)

@@ -1194,7 +1194,9 @@
                 @endif
                     this.initAmChart4_1();
                     this.initAmChart4_2();
+                @if (count($dataForMatrix))
                     this.initMatrix();
+                @endif
                 }
             };
         }();

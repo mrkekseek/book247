@@ -178,14 +178,20 @@ class AdminController extends Controller
         else{
             $showStats = false;
         }
-        $forMatrix = ShopLocations::has('opening_hours')->get();
-        $dataForMatrix = [];
-        foreach ($forMatrix as $item)
-        {
-            $dataForMatrix['shop_locations'][$item->id] = [
-                'id' => $item->id,
-                'name' => $item->name,
-            ];
+
+        if (env('DebugSettings',false)){
+            $forMatrix = ShopLocations::has('opening_hours')->get();
+            $dataForMatrix = [];
+            foreach ($forMatrix as $item)
+            {
+                $dataForMatrix['shop_locations'][$item->id] = [
+                    'id' => $item->id,
+                    'name' => $item->name,
+                ];
+            }
+        }
+        else {
+            $dataForMatrix = [];
         }
         //xdebug_var_dump($homeStats); //exit;
         //xdebug_var_dump($totalBookingsLocationsToday); //exit;

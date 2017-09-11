@@ -118,7 +118,7 @@
                                         <div class="form-group">
                                             <label class="control-label col-md-3">Plan Color</label>
                                             <div class="col-md-2">
-                                                <input data-color="#ff44ff" type="text" class="form-control colorpicker-default" data-target-id="color-picker-target" name="membership_color" value="ff44ff">
+                                                <input data-color="#ff0000" type="text" class="form-control colorpicker-default" data-target-id="color-picker-target" name="membership_color" value="#ff0000">
                                                 <!-- /input-group -->
                                             </div>
                                             <div class="col-md-2">
