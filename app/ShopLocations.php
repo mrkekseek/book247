@@ -256,8 +256,23 @@ class ShopLocations extends Model
             $interval = $this->location_category_intervals()->where([
                 'category_id' => $category,
             ])->first();
-            $time_start = $this->opening_hours()->whereDate('date_start','<',$date->format('Y-m-d'))->whereDate('date_stop','>',$date->format('Y-m-d'))->min('time_start');
-            $time_stop = $this->opening_hours()->whereDate('date_start','<',$date->format('Y-m-d'))->whereDate('date_stop','>',$date->format('Y-m-d'))->max('time_stop');
+            
+            $time_start = $this->opening_hours()->where([
+                ['date_start','<',$date->format('Y-m-d')],
+                ['date_stop','>',$date->format('Y-m-d')]
+            ])->orWhere([
+                ['date_start','=',NULL],
+                ['date_stop','=',NULL]
+            ])->min('time_start');
+            
+            $time_stop = $this->opening_hours()->where([
+                ['date_start','<',$date->format('Y-m-d')],
+                ['date_stop','>',$date->format('Y-m-d')]
+            ])->orWhere([
+                ['date_start','=',NULL],
+                ['date_stop','=',NULL]
+            ])->max('time_stop');
+            
             $resources = $this->resources()->get();
             $booking = $this->bookings()->whereDate('date_of_booking','=', $date)->get();
             
