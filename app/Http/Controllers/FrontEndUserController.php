@@ -5726,12 +5726,31 @@ This message is private and confidential. If you have received this message in e
         $data['username'] = trim(strtolower($data['username']));
 
         $u = User::where('username', $data['username'])->first();
-        if ($u && $u->status != 'active' ) {
-            return  [
-                'success' => false,
-                'title'   => 'User not active',
-                'errors'  => 'Please activate your account. <a href="'.route('resend_activation_email',['id' => $u->id]).'"">&nbsp;Resend activation email.</a>' // api error, no Cyrillic
-            ];
+        if ($u && $u->status != 'active') {
+            switch ($u->status){
+                case 'pending':
+                    $return =  [
+                        'success' => false,
+                        'title'   => 'User not active',
+                        'errors'  => 'Please activate your account. <a href="'.route('resend_activation_email',['id' => $u->id]).'"">&nbsp;Resend activation email.</a>' // api error, no Cyrillic
+                    ];
+                    break;
+                case 'suspended':
+                    $return =  [
+                        'success' => false,
+                        'title'   => 'User is suspended',
+                        'errors'  => 'Your account is suspended.' // api error, no Cyrillic
+                    ];
+                    break;
+                default :
+                    $return =  [
+                        'success' => false,
+                        'title'   => 'User is not active.',
+                        'errors'  => 'User is not active. Login error.' // api error, no Cyrillic
+                    ];
+                    break;
+            }
+            return $return;
         }
         elseif (!$u){
             return [
