@@ -1792,8 +1792,32 @@ class BookingController extends Controller
             return redirect()->intended(route('admin/login'));
         }
 
-        $settings = UserSettings::get_general_settings($user->id, ['settings_preferred_location','settings_preferred_activity']);
 
+        $buttons_color = [
+            'is_show'           => 'bg-green-jungle bg-font-green-jungle',
+            'is_no_show'        => 'bg-red-thunderbird bg-font-red-thunderbird',
+            'show_btn_active'   => 'btn-default',
+
+            'is_paid_cash'      => 'bg-blue bg-font-blue',
+            'is_paid_card'      => 'bg-purple bg-font-purple',
+            'is_paid_credit'    => 'bg-green-seagreen bg-font-green-seagreen',
+            'is_paid_online'    => 'bg-yellow-haze bg-font-yellow-haze',
+            'payment_issues'    => 'bg-red-thunderbird bg-font-red-thunderbird',
+            'payment_btn_active'=> 'btn-default',
+
+            'more_btn_active'   => 'btn-default',
+
+            'is_disabled'       => 'bg-default bg-font-default',
+        ];
+        $breadcrumbs = [
+            'Home'          => route('admin'),
+            'Bookings'      => route('admin'),
+            'Calendar view' => route('bookings/location_calendar_day_view', ['day'=>\Carbon\Carbon::now()->format('d-m-Y')]),
+        ];
+        $sidebar_link= 'admin-bookings-calendar_view';
+        $countries = Countries::orderBy('name', 'asc')->get();
+
+        $settings = UserSettings::get_general_settings($user->id, ['settings_preferred_location','settings_preferred_activity']);
         // Date validation and variables assignation
         if ($date_selected==0){
             $date_selected = Carbon::now()->format('Y-m-d');
@@ -1857,7 +1881,6 @@ class BookingController extends Controller
         }
         unset($location);
         $header_vals['selected_location'] = $default_location;
-
         $location = ShopLocations::select('id','name')->where('id','=',$default_location)->get()->first();
         if (!$location){
             // there is an error here with no location
@@ -1889,7 +1912,27 @@ class BookingController extends Controller
 
         if (!in_array($default_activity, $checkLocations)){
             // redirect to default first activity in the location
-            return redirect()->intended(route('bookings/location_calendar_day_view_all',['day'=>$header_vals['date_selected'], 'location'=>$location->id, 'activity'=>$first_line_activity]));
+            // fix when new db
+//            dd($first_line_activity);
+//            return redirect()->intended(route('bookings/location_calendar_day_view_all',['day'=>$header_vals['date_selected'], 'location'=>$location->id, 'activity'=>$first_line_activity]));
+            return view('admin/bookings/calendar_location_per_day', [
+                'breadcrumbs'   => $breadcrumbs,
+                'in_sidebar'    => $sidebar_link,
+                'time_intervals'    => [],
+                'location_bookings' => [],
+                'resources'     => [],
+                'button_color'  => $buttons_color,
+                'header_vals'   => [],
+                'all_locations' => $all_locations,
+                'all_activities'=> $locationActivities,
+                'is_close_menu' => true,
+                'memberships'   => [],
+                'membership_legend'   => [],
+                'membership_products' => [],
+                'defaultProductColor' => '',
+                'countries' => $countries,
+                'jump_to'       => []
+            ]);
         }
         else{
             // we update the default activity for this employee
@@ -1914,7 +1957,6 @@ class BookingController extends Controller
 
         $location = ShopLocations::select('id','name')->where('id','=',$default_location)->get()->first();
         $activity = ShopResourceCategory::where('id','=',$default_activity)->get()->first();
-
         $resources_ids = [];
         $resources = ShopResource::where('location_id','=',$location->id)->where('category_id','=',$activity->id)->get();
         if ($resources){
@@ -2004,29 +2046,6 @@ class BookingController extends Controller
             }
         }
 
-        $buttons_color = [
-            'is_show'           => 'bg-green-jungle bg-font-green-jungle',
-            'is_no_show'        => 'bg-red-thunderbird bg-font-red-thunderbird',
-            'show_btn_active'   => 'btn-default',
-
-            'is_paid_cash'      => 'bg-blue bg-font-blue',
-            'is_paid_card'      => 'bg-purple bg-font-purple',
-            'is_paid_credit'    => 'bg-green-seagreen bg-font-green-seagreen',
-            'is_paid_online'    => 'bg-yellow-haze bg-font-yellow-haze',
-            'payment_issues'    => 'bg-red-thunderbird bg-font-red-thunderbird',
-            'payment_btn_active'=> 'btn-default',
-
-            'more_btn_active'   => 'btn-default',
-
-            'is_disabled'       => 'bg-default bg-font-default',
-        ];
-        $breadcrumbs = [
-            'Home'          => route('admin'),
-            'Bookings'      => route('admin'),
-            'Calendar view' => route('bookings/location_calendar_day_view', ['day'=>\Carbon\Carbon::now()->format('d-m-Y')]),
-        ];
-        $sidebar_link= 'admin-bookings-calendar_view';
-        $countries = Countries::orderBy('name', 'asc')->get();
         
         return view('admin/bookings/calendar_location_per_day', [
             'breadcrumbs'   => $breadcrumbs,

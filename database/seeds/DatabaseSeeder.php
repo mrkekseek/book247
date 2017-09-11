@@ -28,11 +28,11 @@ class DatabaseSeeder extends Seeder
         $this->call(DiscountTypeSeeder::class);
         $this->command->info('Seeded : Discounts type Table');
 
-        $this->call(PermissionsTableSeeder::class);
-        $this->command->info('Seeded : Permissions Table');
-
         $this->call(RolesTableSeeder::class);
         $this->command->info('Seeded : Roles Table');
+
+        $this->call(PermissionsTableSeeder::class);
+        $this->command->info('Seeded : Permissions Table');
 
         $this->call(UserTableSeeder::class);
         $this->command->info('Seeded : User admin + role');

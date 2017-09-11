@@ -17,7 +17,8 @@ use Webpatser\Countries\Countries;
 
 class Auth
 {
-    public static $error = '';    
+    public static $error = '';
+    public static $debug = false;
     
     public function __construct() 
     {
@@ -28,10 +29,17 @@ class Auth
     {   
         self::set_session();
         $session_sso = Session::get('sso_user_id');
-        self::log_actions(' Auth::user() - sessionSSO='.$session_sso);
-        if (!empty($session_sso))
-        {
-            self::log_actions(' Auth::user() - sessionSSO='.$session_sso);
+        $session_created_at  = Session::get('created_on');
+
+        if (self::$debug) {
+            self::log_actions(' Auth::user() - sessionSSO=' . $session_sso);
+        }
+
+        if (!empty($session_sso) && !empty($session_created_at)) {
+            if (self::$debug) {
+                self::log_actions(' Auth::user() - sessionSSO=' . $session_sso);
+            }
+
             $user_locale = User::where('sso_user_id','=',$session_sso)->get();
             if (sizeof($user_locale)==1) {
                 return $user_locale[0];
@@ -43,7 +51,8 @@ class Auth
     public static function check()
     {        
         $user_session = Session::get('sso_user_id');
-        return (!empty($user_session));
+        $session_created_at  = Session::get('created_on');
+        return (!empty($user_session) && !empty($session_created_at));
     }
     
     public static function guest()
@@ -167,15 +176,27 @@ class Auth
     {        
         $domain = self::get_domain();        
         Session::put('sso_user_id','');
-        Cookie::queue(Cookie::forget('sso_user_id', '/', $domain)); 
+        Session::put('created_on','');
+
+        $c1 = Cookie::forget('sso_user_id', '/', $domain);
+        $c2 = Cookie::forget('created_on', '/', $domain);
+
+        Cookie::queue($c1);
+        Cookie::queue($c2);
     }
     
     public static function set_cookie_session($sso_user_id)
     {   
         $domain = self::get_domain();
         Session::flash('new_auth', TRUE);            
-        Session::put('sso_user_id',$sso_user_id);
-        Cookie::queue(Cookie::make('sso_user_id', $sso_user_id, 720 ,'/', $domain));
+        Session::put('sso_user_id'  , $sso_user_id);
+        Session::put('created_on'  , Carbon::now()->toDateTimeString());
+
+        $c1 = Cookie::make('sso_user_id', $sso_user_id, 60*24*14 ,'/', $domain);
+        $c2 = Cookie::make('created_on', Carbon::now()->toDateTimeString(), 60*24*14 ,'/', $domain);
+
+        Cookie::queue($c1);
+        Cookie::queue($c2);
     }
 
     public static function loginUsingId($id)
@@ -197,9 +218,17 @@ class Auth
 
     private static function set_session()
     {
-        $cookie_sso     = Cookie::get('sso_user_id');
-        $session_sso    = Session::get('sso_user_id');
-        $new_auth       = Session::get('new_auth');
+        $cookie_sso         = Cookie::get('sso_user_id');
+        $cookie_creation    = Cookie::get('created_on');
+        $session_sso        = Session::get('sso_user_id');
+        $session_creation   = Session::get('created_on');
+        $new_auth   = Session::get('new_auth');
+
+        if (empty($cookie_creation) && $session_creation==''){
+            Session::put('sso_user_id','');
+            return false;
+        }
+
         if (!empty($cookie_sso) && !empty($session_sso) && $session_sso !== $cookie_sso && empty($new_auth))
         {            
             $session_sso = false;
