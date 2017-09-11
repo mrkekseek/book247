@@ -5001,9 +5001,6 @@ This message is private and confidential. If you have received this message in e
         }
     }
 
-
-
-
     private function createNewToken()
     {
         return hash_hmac('sha256', Str::random(40), \Config::get('app.key'));

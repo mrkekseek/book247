@@ -106,7 +106,6 @@ class ShopController extends Controller
         ]);
     }
 
-
     public function add_shop_location(Request $request){
         if (!Auth::check()) {
             return [
@@ -164,55 +163,6 @@ class ShopController extends Controller
         }
         /** Stop - Add shop location to database */
     }
-
-
-//    public function set_activity_time_interval(Request $request){
-//        $user = Auth::user();
-//        if (!$user || !$user->is_back_user()) {
-//            return [
-//                'success' => false,
-//                'errors'  => 'You need to be logged in to access this function',
-//                'title'   => 'Error authentication'
-//            ];
-//        }
-//        $vars = $request->only('location_id','activity_id','value');
-//
-//        // validate input data : activityID, locationID, value
-//        $fillable = [
-//            'location_id'   => $vars['location_id'],
-//            'category_id'   => $vars['activity_id'],
-//            'time_interval' => $vars['value'],
-//            'added_by'      => $user->id
-//        ];
-//
-//        $timeIntervalForActivity = Validator::make($fillable, ShopLocationCategoryIntervals::rules('POST'), ShopLocationCategoryIntervals::$validationMessages, ShopLocationCategoryIntervals::$attributeNames);
-//        if ($timeIntervalForActivity->fails()){
-//            return [
-//                'success' => false,
-//                'title'   => 'There is an error',
-//                'errors'  => $timeIntervalForActivity->getMessageBag()->toArray()
-//            ];
-//        }
-//        else{
-//            $shopActivityInterval = ShopLocationCategoryIntervals::where('location_id','=',$fillable['location_id'])->where('category_id','=',$fillable['category_id'])->first();
-//            if ($shopActivityInterval){
-//                return [
-//                    'success' => false,
-//                    'title'   => 'Activity already assigned',
-//                    'errors'  => 'The selected activity is already available in this location'
-//                ];
-//            }
-//            $shopActivityInterval = new ShopLocationCategoryIntervals();
-//            $shopActivityInterval->fill($fillable);
-//            $shopActivityInterval->save();
-//
-//            return [
-//                'success' => true,
-//                'title'   => 'Activity Added',
-//                'message' => 'The selected activity will be available from now on on this location'
-//            ];
-//        }
-//    }
 
     public function add_shop_from_page(Request $request){
         if (!Auth::check()) {
@@ -298,7 +248,6 @@ class ShopController extends Controller
             'redirect_link' => route('admin/shops/locations/view',['id'=>$shopLocation->id]),
         ];
     }
-
 
     public function get_shop_location($id){
         $user = Auth::user();

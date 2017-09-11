@@ -17,7 +17,8 @@ use Webpatser\Countries\Countries;
 
 class Auth
 {
-    public static $error = '';    
+    public static $error = '';
+    public static $debug = false;
     
     public function __construct() 
     {
@@ -30,10 +31,15 @@ class Auth
         $session_sso = Session::get('sso_user_id');
         $session_created_at  = Session::get('created_on');
 
-        self::log_actions(' Auth::user() - sessionSSO='.$session_sso);
-        if (!empty($session_sso) && !empty($session_created_at))
-        {
-            self::log_actions(' Auth::user() - sessionSSO='.$session_sso);
+        if (self::$debug) {
+            self::log_actions(' Auth::user() - sessionSSO=' . $session_sso);
+        }
+
+        if (!empty($session_sso) && !empty($session_created_at)) {
+            if (self::$debug) {
+                self::log_actions(' Auth::user() - sessionSSO=' . $session_sso);
+            }
+
             $user_locale = User::where('sso_user_id','=',$session_sso)->get();
             if (sizeof($user_locale)==1) {
                 return $user_locale[0];
@@ -443,8 +449,6 @@ class Auth
     }
 
     private static function log_actions($data){
-        return true;
-
         $toWrite = Carbon::now()->toDateTimeString().' - '.\Request::ip().' : ';
         if (is_array($data) || is_object($data)){
             $toWrite.= json_encode($data);
