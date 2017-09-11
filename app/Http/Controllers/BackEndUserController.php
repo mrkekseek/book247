@@ -353,6 +353,7 @@ class BackEndUserController extends Controller
             $user = User::create($credentials);
             // attach the roles to the new created user
             $user->attachRole($vars['user_type']);
+            $role = Role::where('id','=',$vars['user_type'])->first();
 
             $data = [
                 'first_name' => isset($user->first_name) ? $user->first_name : '-',
@@ -362,6 +363,7 @@ class BackEndUserController extends Controller
                 'email' => isset($user->email) ? $user->email : '-',
                 'password' => $password,
                 'role' => isset($role->name) ? $role->name : '-',
+                'login_link' => "<a href='".route('admin/login')."' target='_blank'>login page</a>"
             ];
 
             $default_message = 'Your backend account was successfully created. Please check the details below and verify them.<br>

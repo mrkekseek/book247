@@ -4871,8 +4871,7 @@ This message is private and confidential. If you have received this message in e
         ];
     }
 
-    public function change_email(Request $r)
-    {
+    public function change_email(Request $r) {
 
         $user = Auth::user();
         $vars = $r->only('current_email', 'new_email', 'password');
@@ -4916,59 +4915,65 @@ This message is private and confidential. If you have received this message in e
                         "NewPassword"=> $vars['password'],
                     ];
                     $updatePassword = ApiAuth::updatePassword($apiData);
-                    if ($updatePassword['success'])
-                    {
+
+                    if ($updatePassword['success']) {
                         $old_email = $user->email;
                         $new_email = $vars['new_email'];
 
-
-
-                        $data = ['new_email' => $new_email];
-
-                        $default_message = 'Your email was successfully changed. It was changed to <b>'.$new_email.'</b>.';
-                        $default_subject = 'Email changed!';
-
+                        $data = ['new_email' => $new_email, 'old_email' => $old_email];
+                        // we send an email to the old email address to inform about the change in authentication email
+                        $default_message = 'Your Book247 authentication email was successfully changed. From now on, you will need to use <b>[[new_email]]</b> to login into your account instead of [[old_email]]. 
+Your old email, <i>[[old_email]]</i>, was removed from our systems.<br><br>If you did not initiate this change, please contact us about the situation so we can protect your account and reverse the change.<br><br>
+Sincerely,<br>Book247 Team. <br><br><small><strong>***** Email confidentiality notice *****</strong><br>
+This message is private and confidential. If you have received this message in error, please notify us and remove it from your system.</small>';
+                        $default_subject = 'Book247 account email updated - email removed';
                         $template = EmailsController::build('Email change old email', $data, $default_message, $default_subject);
 
-                        if (isset($template["message"])){
-                            $default_message = $template["message"];
-                        }
+                        $main_message = $template["message"];
+                        $subject = AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title') ?
+                            AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title') . ' - '.$template['subject'] :
+                            $template['subject'];
 
                         $beauty_mail = app()->make(Beautymail::class);
                         $beauty_mail->send('emails.email_default_v2',
-                            ['body_message' => $default_message, 'user'=>$user],
-                            function($message) use ($user, $default_subject, $old_email) {
+                            ['body_message' => $main_message, 'user'=>$user],
+                            function($message) use ($user, $subject) {
                                 $message
                                     ->from(AppSettings::get_setting_value_by_name('globalWebsite_system_email'))
-                                    ->to($old_email, $user->first_name.' '.$user->middle_name.' '.$user->last_name)
-                                    ->subject($default_subject);
+                                    ->to($user->email, $user->first_name.' '.$user->middle_name.' '.$user->last_name)
+                                    ->subject($subject);
                             });
 
-
-
+                        // we send an email to the new email address that is changing the old one
+                        $default_message = 'Your Book247 authentication email was successfully changed. From now on, you will need to use <b>[[new_email]]</b> to login into your account instead of [[old_email]].<br><br>
+If you did not initiate this change, please contact us about the situation so we can protect your account and reverse the change.<br><br>
+Sincerely,<br>Book247 Team. <br><br><small><strong>***** Email confidentiality notice *****</strong><br>
+This message is private and confidential. If you have received this message in error, please notify us and remove it from your system.</small>';
+                        $default_subject = 'Book247 account email updated - email changed';
                         $template = EmailsController::build('Email change new email', $data, $default_message, $default_subject);
 
-                        if (isset($template["message"])){
-                            $default_message = $template["message"];
-                        }
+                        $main_message = $template["message"];
+                        $subject = AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title') ?
+                            AppSettings::get_setting_value_by_name('globalWebsite_email_company_name_in_title') . ' - '.$template['subject'] :
+                            $template['subject'];
 
                         $beauty_mail = app()->make(Beautymail::class);
                         $beauty_mail->send('emails.email_default_v2',
-                            ['body_message' => $default_message, 'user'=>$user],
-                            function($message) use ($user, $default_subject,$new_email) {
+                            ['body_message' => $main_message, 'user'=>$user],
+                            function($message) use ($user, $subject) {
                                 $message
                                     ->from(AppSettings::get_setting_value_by_name('globalWebsite_system_email'))
-                                    ->to($new_email, $user->first_name.' '.$user->middle_name.' '.$user->last_name)
-                                    ->subject($default_subject);
+                                    ->to($user->email, $user->first_name.' '.$user->middle_name.' '.$user->last_name)
+                                    ->subject($subject);
                             });
-
-
 
                         $personal_details->personal_email = $vars['new_email'];
                         $personal_details->save();
                         $user->email = $vars['new_email'];
                         $user->username = $vars['new_email'];
                         $user->save();
+
+                        // we logout user so that he logs in using new user email
                         Auth::logout();
                         return [
                             'success' => true,
@@ -4976,15 +4981,15 @@ This message is private and confidential. If you have received this message in e
                             'message' => 'Page will reload and you will be signed out'
                         ];
                     }
-                    else
-                    {
+                    else {
                         return [
                             'success' => false,
                             'title'  => 'Error updating email',
                             'errors' => $updatePassword['message']
                         ];
                     }
-                } else {
+                }
+                else {
                     return [
                         'success' => false,
                         'title'  => 'Error updating email. (API)',
@@ -4992,7 +4997,8 @@ This message is private and confidential. If you have received this message in e
                     ];
                 }
             }
-        } else {
+        }
+        else {
             return [
                 'success' => false,
                 'title'   => 'Permission denied.',
