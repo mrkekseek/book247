@@ -257,22 +257,26 @@ class ShopLocations extends Model
                 'category_id' => $category,
             ])->first();
             
-            $time_start = $this->opening_hours()->where([
-                ['date_start','<',$date->format('Y-m-d')],
-                ['date_stop','>',$date->format('Y-m-d')]
-            ])->orWhere([
-                ['date_start','=',NULL],
-                ['date_stop','=',NULL]
-            ])->min('time_start');
+            $number_day = $date->dayOfWeek;
             
-            $time_stop = $this->opening_hours()->where([
-                ['date_start','<',$date->format('Y-m-d')],
-                ['date_stop','>',$date->format('Y-m-d')]
-            ])->orWhere([
-                ['date_start','=',NULL],
-                ['date_stop','=',NULL]
-            ])->max('time_stop');
-            
+            $opening_hours = $this->opening_hours()
+                ->where(function($query) use ($date){
+                $query->where([
+                    ['date_start','<',$date->format('Y-m-d')],
+                    ['date_stop','>',$date->format('Y-m-d')]
+                ]);
+                $query->orWhere([
+                    ['date_start','=',NULL],
+                    ['date_stop','=',NULL]
+                ]);
+            })->get();
+
+            $opening_hours = $opening_hours->filter(function($item, $key) use ($number_day){
+                return in_array($number_day, json_decode($item->days));
+            });
+            $time_start = $opening_hours->min('time_start');
+            $time_stop = $opening_hours->max('time_stop');
+                        
             $resources = $this->resources()->get();
             $booking = $this->bookings()->whereDate('date_of_booking','=', $date)->get();
             
