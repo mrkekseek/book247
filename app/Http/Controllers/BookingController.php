@@ -1252,8 +1252,8 @@ class BookingController extends Controller
                 'last-name'               => '',
                 'middle-name'             => '',
                 'booking_date'            => '',
-                'booking_details'         => '',
-                'cancel_booking_details'  => '',
+                'booking_details'         => '<br />',
+                'cancel_booking_details'  => '<br />',
                 'my_booking_link'         => '<a href="'.route("front/my_bookings").'" target="_blank">My Bookings</a>'
             ];
             
@@ -1311,7 +1311,7 @@ class BookingController extends Controller
                         }
                         else 
                         {
-                            $data['cancel_booking_details'] .= '<strong>'.$booking_details['bookingDate']. ', location ' . $booking_details['location'] . ' - ' . $booking_details['room'].'</strong>';
+                            $data['cancel_booking_details'] .= ' - '.$booking_details['bookingDate']. ', location ' . $booking_details['location'] . ' - ' . $booking_details['room'].';<br/>';
                         }
                     }
 
