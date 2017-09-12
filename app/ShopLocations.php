@@ -274,9 +274,12 @@ class ShopLocations extends Model
             $opening_hours = $opening_hours->filter(function($item, $key) use ($number_day){
                 return in_array($number_day, json_decode($item->days));
             });
-            $time_start = $opening_hours->min('time_start');
-            $time_stop = $opening_hours->max('time_stop');
-                        
+
+            $time_start = $opening_hours->where('type','open_hours')->min('time_start');
+            $time_stop = $opening_hours->where('type','open_hours')->max('time_stop');
+            $time_close_start = $opening_hours->where('type','close_hours')->min('time_start');
+            $time_close_stop = $opening_hours->where('type','close_hours')->max('time_stop');
+            
             $resources = $this->resources()->get();
             $booking = $this->bookings()->whereDate('date_of_booking','=', $date)->get();
             
@@ -286,16 +289,24 @@ class ShopLocations extends Model
                 {
                     $carbon_int_time_start = new Carbon($date->format('Y-m-d').$time_start);
                     $int_time_start = $carbon_int_time_start->format('H:i:s');
+                    
+                    $carbon_close_start = ! empty($time_close_start) ? new Carbon($date->format('Y-m-d').$time_close_start) : FALSE;
+                    $carbon_close_stop = ! empty($time_close_stop) ? new Carbon($date->format('Y-m-d').$time_close_stop) : FALSE;
                     $carbon_int_time_next = $carbon_int_time_start->addMinutes($interval->time_interval);
                     $int_time_next = $carbon_int_time_next->format('H:i:s');
                     $carbon_time_stop = new Carbon($date->format('Y-m-d').$time_stop);
+                    $time_start = $int_time_next;
+                    if ( ! empty($carbon_close_start) && ! empty($carbon_close_stop) && $carbon_int_time_start->between($carbon_close_start,$carbon_close_stop))
+                    {
+                        continue;
+                    }
                     foreach ($resources as $item)
                     {
                         $result['resouses'][$item->id]['resouse_id'] = $item->id;
                         $result['resouses'][$item->id]['resouse_name'] = $item->name;
                         
                         $exists_booking = $booking->contains(function ($key, $value) use ($int_time_start,$int_time_next,$item){
-                            return ($value->booking_time_start == $int_time_start && $value->booking_time_stop == $int_time_next && $value->resource_id = $item->id) ? TRUE : FALSE;
+                            return ($value->booking_time_start == $int_time_start && $value->booking_time_stop == $int_time_next && $value->resource_id == $item->id) ? TRUE : FALSE;
                         }
                         );
                         $status = ! empty($exists_booking) ? 'booked' : 'free';
@@ -303,7 +314,6 @@ class ShopLocations extends Model
                             'status' => $status,
                         ];
                     }
-                    $time_start = $int_time_next;
                     if ($carbon_int_time_next > $carbon_time_stop)
                     {
                         break;
