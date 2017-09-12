@@ -1387,8 +1387,6 @@ class BookingController extends Controller
             ];
         }
 
-        dd($booking);
-
         /*if ($booking){
             //if (in_array($booking->status,['active','pending'])){
             if ($this->can_cancel_booking($booking->id) || $user->is_back_user()){
@@ -2364,6 +2362,33 @@ class BookingController extends Controller
         }
 
         $restrictions = $user->get_membership_restrictions();
+        if (is_array($hours_interval)){
+            foreach($hours_interval as $time_key=>$time_values){
+                //echo $time_key.' : ';
+                $value = BookingController::check_single_booking_interval_restrictions($restrictions, $time_key, $selected_date, $activity);
+                //echo $value.'<br />';
+                if ($value=='cash'){
+                    $hours_interval[$time_key]['color_stripe'] = 'purple-stripe';
+                }
+            }
+        }
+        else{
+            $value = BookingController::check_single_booking_interval_restrictions($restrictions, $hours_interval, $selected_date, $activity);
+            if ($value=='cash'){
+
+            }
+        }
+
+        return $hours_interval;
+    }
+
+    public static function check_bookings_intervals_restrictions_dropins($hours_interval, $selected_date, $activity){
+        // get dropin plan
+        $dropInPlan = MembershipPlan::where('id','=',1)->first();
+        $restrictions = $dropInPlan->get_restrictions();
+
+        // need to be redone
+        $restrictions = [];
         if (is_array($hours_interval)){
             foreach($hours_interval as $time_key=>$time_values){
                 //echo $time_key.' : ';

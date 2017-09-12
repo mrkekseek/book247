@@ -91,9 +91,9 @@ class Kernel extends ConsoleKernel
         /* Optimizations tasks - Stop */
 
         /* Clear pending memberships */
-        $schedule->command('memberships:clear_pending')
-            ->hourly()
-            ->timezone('Europe/Oslo')
-            ->appendOutputTo('storage/logs/cleared_pending_memberships.log');
+        //$schedule->command('memberships:clear_pending')
+        //    ->hourly()
+        //    ->timezone('Europe/Oslo')
+        //    ->appendOutputTo('storage/logs/cleared_pending_memberships.log');
     }
 }

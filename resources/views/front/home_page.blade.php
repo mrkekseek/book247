@@ -374,7 +374,7 @@
                                         </a>
                                         @endif
                                     @endforeach
-                                    <input type="hidden" name="selected_location" value="{{ isset($settings['settings_preferred_location'])?$settings['settings_preferred_location']:4 }}" />
+                                    <input type="hidden" name="selected_location" value="{{ isset($settings['settings_preferred_location'])?$settings['settings_preferred_location']:$defaultLocation }}" />
                                 </div>
                             </div>
 
@@ -389,7 +389,7 @@
                                                 </a>
                                             @endif
                                         @endforeach
-                                        <input type="hidden" name="selected_category" value="{{ isset($settings['settings_preferred_activity'])?$settings['settings_preferred_activity']:2 }}" />
+                                        <input type="hidden" name="selected_category" value="{{ isset($settings['settings_preferred_activity'])?$settings['settings_preferred_activity']:$defaultActivity }}" />
                                     </div>
                                 </div>
                             </div>

@@ -465,7 +465,7 @@ class Booking extends Model
     }
 
     public function invoice(){
-        return $this->belongsTo('App\BookingInvoice', 'invoice_id', 'id');
+        return $this->belongsTo('App\BookingInvoice', 'invoice_id', 'id')->orderBy('booking_invoices.created_at','asc');
     }
 
     public static function rules($method, $id=0){

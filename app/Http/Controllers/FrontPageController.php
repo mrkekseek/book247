@@ -122,6 +122,22 @@ class FrontPageController extends Controller
             $unreadNotes = $user->get_public_notes('DESC', 'unread', true);
         }
 
+        // prepare default location + activity
+        $oneLocation = ShopLocations::where('visibility','=','public')->first();
+        if ($oneLocation){
+            $defaultLocation = $oneLocation->id;
+            $oneActivity = ShopResource::where('location_id','=',$defaultLocation)->first();
+            if($oneActivity){
+                $defaultActivity = $oneActivity->category_id;
+            }
+            else{
+                $defaultActivity = 0;
+            }
+        }
+        else{
+            $defaultLocation = 0;
+        }
+
         $breadcrumbs = [
             'Home'      => route('admin'),
             'Dashboard' => '',
@@ -144,7 +160,9 @@ class FrontPageController extends Controller
             'resourceCategories' => $resourceCategories,
             'meAndFriendsBookings' => @$own_friends_bookings,
             'settings'  => @$settings,
-            'unredNotes'=> $unreadNotes
+            'unredNotes'=> $unreadNotes,
+            'defaultLocation'=>$defaultLocation,
+            'defaultActivity'=>$defaultActivity
         ]);
     }
 
@@ -278,16 +296,19 @@ class FrontPageController extends Controller
             }
         }
 
-        if (!isset($user)){
-            if (AppSettings::get_setting_value_by_name('show_calendar_availability_rule')!=1) {
-                foreach ($hours as $key => $val) {
-                    $hours[$key]['color_stripe'] = 'dark-stripe';
-                    $hours[$key]['percent'] = 100;
-                }
+        if (!isset($user) && AppSettings::get_setting_value_by_name('show_calendar_availability_rule')!=1){
+            foreach ($hours as $key => $val) {
+                $hours[$key]['color_stripe'] = 'dark-stripe';
+                $hours[$key]['percent'] = 100;
             }
         }
         else{
-            $hours = BookingController::check_bookings_intervals_restrictions($hours, $vars['date_selected'], $vars['selected_category'], $user->id);
+            if (isset($user)){
+                $hours = BookingController::check_bookings_intervals_restrictions($hours, $vars['date_selected'], $vars['selected_category'], $user->id);
+            }
+            else{
+                $hours = BookingController::check_bookings_intervals_restrictions_dropins($hours, $vars['date_selected'], $vars['selected_category']);
+            }
             //xdebug_var_dump($hours); exit;
 
             foreach($resourcesAvailability as $key=>$percentage){
