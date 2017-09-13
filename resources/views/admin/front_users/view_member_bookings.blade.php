@@ -129,7 +129,7 @@
                                                                 @foreach($upcomingBookings as $key=>$booking)
                                                                     <tr>
                                                                         <td>
-                                                                            <input type="checkbox" class="check-cancel" data-id="{{ $booking['id'] }}" />
+                                                                            <input type="checkbox" class="check-cancel" data-key="{{ $booking['search_key'] }}" />
                                                                         </td>
                                                                         <td> <small>{{$booking['date']}} {{$booking['timeInterval']}}</small> </td>
                                                                         <td class="hidden-xs"> <small>{{$booking['location']}} {{$booking['room']}}</small> </td>
@@ -664,7 +664,7 @@
                     method : 'post',
                     url : '{{ route("ajax/cancel_many_bookings") }}',
                     data : {
-                        bookings : check_canceled(),
+                        search_keys : check_canceled(),
                         comment_public : $('#comment_public').val(),
                         comment_private : $('#comment_private').val()
                     },
@@ -701,7 +701,7 @@
             $(".check-cancel").each(function(index, value){
                 if ($(value).prop('checked'))
                 {
-                    cancel.push($(value).data('id'));
+                    cancel.push($(value).data('key'));
                 }
             });
             return cancel;

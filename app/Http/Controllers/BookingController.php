@@ -1233,7 +1233,7 @@ class BookingController extends Controller
         
         $user = Auth::user();
         
-        $vars = $request->only('comment_public', 'comment_private', 'bookings');
+        $vars = $request->only('comment_public', 'comment_private', 'search_keys');
         if ( ! $user->can('booking-change-update'))
         {
             return [
@@ -1243,7 +1243,7 @@ class BookingController extends Controller
             ];
         }
         
-        $bookings = Booking::whereIn('id', $vars['bookings'])->get();
+        $bookings = Booking::whereIn('search_key', $vars['search_keys'])->get();
         
         if ($bookings->count())
         {
