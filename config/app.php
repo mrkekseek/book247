@@ -151,6 +151,7 @@ return [
         /*
          * Application Service Providers...
          */
+        Barryvdh\DomPDF\ServiceProvider::class,
         App\Providers\AppServiceProvider::class,
         App\Providers\AuthServiceProvider::class,
         App\Providers\EventServiceProvider::class,
@@ -213,6 +214,7 @@ return [
         'Debugbar'  => Barryvdh\Debugbar\Facade::class,
         'Excel'     => Maatwebsite\Excel\Facades\Excel::class,
         'Auth'     => App\Http\Libraries\Auth::class,
+        'PDF' => Barryvdh\DomPDF\Facade::class
     ],
 
 ];

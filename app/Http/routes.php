@@ -1318,6 +1318,11 @@ if (env('FEDERATION',false)){
             'uses' => 'InvoiceController@mark_as_paid'
         ]);
 
+        Route::post('ajax/download_pdf', [
+            'as' => 'ajax/download_pdf',
+            'uses' => 'FrontEndUserController@download_pdf'
+        ]);
+
         Route::post('get_friends_players_list', [
             'as' => 'ajax/get_players_list',
             'uses' => 'FrontEndUserController@ajax_get_available_players_list'

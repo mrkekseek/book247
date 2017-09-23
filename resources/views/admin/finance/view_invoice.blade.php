@@ -45,8 +45,8 @@
                                 </div>
                             </div>
                             <hr/>
-                            <div class="row">
-                                <div class="col-md-4">
+                            <div class="row wrap clearfix">
+                                <div class="col-md-4 left">
                                     <h3>Client:</h3>
                                     <ul class="list-unstyled">
                                         <li> {{ $member['full_name'] }} </li>
@@ -56,7 +56,7 @@
                                 </div>
                                 <div class="col-md-4  hidden-print">
                                 </div>
-                                <div class="col-md-4 invoice-payment">
+                                <div class="col-md-4 invoice-payment right">
                                     <h3>Payment Details:</h3>
                                     <ul class="list-unstyled">
                                         <li>
@@ -102,8 +102,8 @@
                                     </table>
                                 </div>
                             </div>
-                            <div class="row">
-                                <div class="col-md-4">
+                            <div class="row wrap">
+                                <div class="col-md-4 left">
                                     <div class="well">
                                         <address>
                                             <strong>{{ !isset($financial_profile->address1) ? (isset($financial_profile->address2) ? $financial_profile->address2 : '') : $financial_profile->address1 }}</strong>
@@ -125,7 +125,7 @@
                                         </address>
                                     </div>
                                 </div>
-                                <div class="col-md-8 invoice-block">
+                                <div class="col-md-8 invoice-block right">
                                     <ul class="list-unstyled amounts">
                                         <li>
                                             <strong>Sub - Total amount:</strong> {{$sub_total.' '.$currency}} </li>
@@ -256,8 +256,6 @@
     <script src="{{ asset('assets/layouts/layout4/scripts/layout.min.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/layouts/layout4/scripts/demo.min.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/layouts/global/scripts/quick-sidebar.min.js') }}" type="text/javascript"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.4/jspdf.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></script>
 @endsection
 
 @section('pageCustomJScripts')
@@ -352,25 +350,18 @@
             FormValidation.init();
 
             $(".download").click(function(){
-                $(".bordered").find("[hidden]").hide();
-                var doc = new jsPDF();
-                doc.addHTML($('.bordered').first(), function(){
-                    $(".bordered").find("[hidden]").show();
-                    doc.save("test.pdf");
-                })
-                /*html2canvas($('.bordered')[0], {
-                    onrendered: function(canvas) {
-                        $(".bordered").find("[hidden]").show();
-
-                        var doc = new jsPDF("p", "mm", "a4");
-                        var image = canvas.toDataURL("image/png");
-
-                        doc.addImage(image, 'PNG', 10, 10, 190, 160 );
-                        doc.save('export.pdf');
-
+                $('.bordered').find('.hidden-print').hide();
+                $.ajax({
+                    url : "{{route('ajax/download_pdf')}}",
+                    method : "post",
+                    data : {
+                        html : $('.bordered').first().html()
+                    },
+                    success: function(request){
+                        $('.bordered').find('.hidden-print').show();
+                        window.location.href = request.file;
                     }
-                });*/
-
+                })
             });
             
         });
