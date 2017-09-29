@@ -66,7 +66,8 @@ use App\StoreCreditPurchases;
 use App\Http\Controllers\StripeController;
 use App\InvoiceFinancialTransaction;
 use App\UserSubscribeLists;
-
+use Dompdf\Dompdf;
+use GuzzleHttp;
 class FrontEndUserController extends Controller
 {
     /**
@@ -168,19 +169,8 @@ class FrontEndUserController extends Controller
 
     public function download_pdf(Request $request)
     {
-        \PDF::setOptions(['rootDir' => public_path()]);
-        
-        if ( ! File::exists(public_path("downloads"))) {
-            File::makeDirectory("downloads");
-        }
-
-        File::deleteDirectory(public_path("downloads/" . Auth::user()->id));
-        File::makeDirectory("downloads/" . Auth::user()->id);
-        
-        $file = "downloads/" . Auth::user()->id .'/pdf_' . time() . '.pdf';
-        $pdf = \PDF::loadView("vendor.dompdf.invoices", [ "html" => $request->input("html") ]);
-        $pdf->save($file);
-        return ['file' => url($file)];
+        $html = \PDF::loadView("vendor.dompdf.invoices", ["html" => $request->input("html")])->stream();
+        return ['pdf' => base64_encode($html)];
     }
 
     public function buy_store_credit_ajax_call(Request $request)

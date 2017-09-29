@@ -34,11 +34,11 @@
                 <div class="portlet light portlet-fit portlet-datatable bordered">
                     <div class="portlet-body">
                         <div class="invoice">
-                            <div class="row invoice-logo ">
-                                <div class="col-md-6 invoice-logo-space">
+                            <div class="row invoice-logo wrap">
+                                <div class="col-md-6 invoice-logo-space left">
                                     <img src="{{ \App\Http\Controllers\AppSettings::get_setting_value_by_name('globalWebsite_account_logo_image')?\App\Http\Controllers\AppSettings::get_setting_value_by_name('globalWebsite_account_logo_image'):asset('assets/global/img/logo.png') }}" class="img-responsive" alt="" />
                                 </div>
-                                <div class="col-md-6">
+                                <div class="col-md-6 right">
                                     <p class="md-text-center"> #{{ $invoice->invoice_number }} / {{ \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $invoice->created_at)->format('d M Y') }}
                                         <span class="muted"> {{ $invoice->invoice_type }} </span>
                                     </p>
@@ -139,7 +139,7 @@
                                             <strong>Total:</strong> {{$grand_total}} </li>
                                     </ul>
                                     <br/>
-                                    <a class="btn btn blue hidden-print margin-bottom-5 download" hidden >
+                                    <a href="javascript:;" class="btn btn blue hidden-print margin-bottom-5 download">
                                         Download PDF
                                         <i class="fa fa-download"></i>
                                     </a>
@@ -349,17 +349,26 @@
         $(document).ready(function(){
             FormValidation.init();
 
-            $(".download").click(function(){
-                $('.bordered').find('.hidden-print').hide();
+           $(".download").click(function(){
+                
                 $.ajax({
                     url : "{{route('ajax/download_pdf')}}",
                     method : "post",
                     data : {
                         html : $('.bordered').first().html()
                     },
-                    success: function(request){
-                        $('.bordered').find('.hidden-print').show();
-                        window.location.href = request.file;
+                    success: function(response){
+                        
+                        var href = 'data:application/pdf;base64,' + response.pdf;
+                        
+
+                        var link = document.createElement('a');
+                        link.href = href;
+                        link.download = "pdf_" + (new Date() / 1000) + ".pdf";
+                        link.target = "blank";
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
                     }
                 })
             });

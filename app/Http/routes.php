@@ -1318,7 +1318,7 @@ if (env('FEDERATION',false)){
             'uses' => 'InvoiceController@mark_as_paid'
         ]);
 
-        Route::post('ajax/download_pdf', [
+        Route::post('download_pdf', [
             'as' => 'ajax/download_pdf',
             'uses' => 'FrontEndUserController@download_pdf'
         ]);
