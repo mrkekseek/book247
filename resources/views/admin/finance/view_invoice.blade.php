@@ -108,7 +108,7 @@
                                         <address>
                                             <strong>{{ !isset($financial_profile->address1) ? (isset($financial_profile->address2) ? $financial_profile->address2 : '') : $financial_profile->address1 }}</strong>
                                             <br/> {{ isset($financial_profile->city) ? $financial_profile->city : ''}}
-                                            <abbr title="Postal Code">P:</abbr> {{ isset($financial_profile->postal_code) ? $financial_profile->postal_code : '' }}
+                                            <abbr >P:</abbr> {{ isset($financial_profile->postal_code) ? $financial_profile->postal_code : '' }}
                                             <br/> {{ isset($financial_profile->region) ? $financial_profile->region : ''}}
                                             <br/> {{ isset($country) ? $country : ''}}
                                         </address>
@@ -139,12 +139,12 @@
                                             <strong>Total:</strong> {{$grand_total}} </li>
                                     </ul>
                                     <br/>
-                                    <a href="javascript:;" class="btn btn blue hidden-print margin-bottom-5 download">
+                                    <a href="javascript:;" hidden class="btn btn blue hidden-print margin-bottom-5 download">
                                         Download PDF
                                         <i class="fa fa-download"></i>
                                     </a>
                                     @if ($invoice->status=='pending')
-                                    <a class="btn green hidden-print margin-bottom-5" hidden data-toggle="confirmation-custom" data-key="{{$invoice->invoice_number}}" data-original-title="How would you pay?" data-singleton="true">
+                                    <a class="btn green hidden-print margin-bottom-5 " hidden data-toggle="confirmation-custom" data-key="{{$invoice->invoice_number}}" data-original-title="How would you pay?" data-singleton="true">
                                         Make Manual Payment <i class="fa fa-check"></i>
                                     </a>
                                     @elseif ($invoice->status=='processing')

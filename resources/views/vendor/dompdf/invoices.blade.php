@@ -115,7 +115,7 @@
             margin-bottom: 20px;
         }
 
-        .download {
+        [hidden] {
             display: none;
         }
 
